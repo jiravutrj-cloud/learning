@@ -193,10 +193,10 @@
                 department: 'กรมการแพทย์',
                 hospital: 'รพ.ราชวิถี',
                 province: 'กรุงเทพมหานคร',
-                userType: 'Masterclass',
+                userType: 'เรียนต่อเนื่อง',
                 status: 'ผ่าน',
                 progress: 100,
-                studySeconds: 36000,
+                studySeconds: 28800,
                 pretest: '30/40',
                 posttest: '38/40',
                 skillLabPassed: true,
@@ -215,10 +215,10 @@
                 department: 'เขตสุขภาพที่ 1',
                 hospital: 'รพ.มหาราชนครเชียงใหม่',
                 province: 'เชียงใหม่',
-                userType: 'Onsite',
+                userType: 'เรียนต่อเนื่อง',
                 status: 'กำลังเรียน',
                 progress: 85,
-                studySeconds: 30600,
+                studySeconds: 24480,
                 pretest: '26/40',
                 posttest: '-',
                 skillLabPassed: false,
@@ -722,14 +722,9 @@
                         const license = String(cols[2] || '').replace(/[^a-zA-Z0-9]/g, '');
                         if (!license) continue;
 
-                        const rawType = String(cols[8] || '').trim().toLowerCase();
-                        let userType = 'เรียนใหม่';
-                        if (rawType.includes('masterclass')) userType = 'Masterclass';
-                        else if (rawType.includes('onsite')) userType = 'Onsite';
-                        else if (rawType.includes('online')) userType = 'Online';
-
+                        const rawType = String(cols[8] || '').trim();
                         const existing = updatedLocalMap.get(license);
-                        const isVip = userType === 'Onsite' || userType === 'Masterclass';
+                        const userType = (existing || rawType.includes('ต่อเนื่อง')) ? 'เรียนต่อเนื่อง' : 'เรียนใหม่';
 
                         const payload = {
                             id: license,
@@ -746,8 +741,8 @@
                             pretest: existing?.pretest || '-',
                             posttest: existing?.posttest || '-',
                             lastVideoId: existing?.lastVideoId || 1,
-                            progress: isVip ? 100 : (existing?.progress ?? 0),
-                            studySeconds: isVip ? 36000 : (existing?.studySeconds ?? 0),
+                            progress: existing?.progress ?? 0,
+                            studySeconds: existing?.studySeconds ?? 0,
                             skillLabPassed: existing?.skillLabPassed ?? false
                         };
 
@@ -807,10 +802,6 @@
             const handleUpdateUser = async (u, changes) => {
                 const uid = u.id || getUserLicense(u);
                 const merged = { ...u, ...changes, license: getUserLicense(u) };
-                if (changes.userType === 'Onsite' || changes.userType === 'Masterclass') {
-                    merged.progress = 100;
-                    merged.studySeconds = 36000;
-                }
                 if (adminSession?.mode === 'cloud' && fbDb) {
                     try {
                         await setDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', uid), merged, { merge: true });
@@ -854,7 +845,6 @@
                     showToast('กรุณากรอกชื่อ-สกุล และเลขใบอนุญาตให้ครบค่ะ', 'error');
                     return;
                 }
-                const isVip = manualForm.userType === 'Onsite' || manualForm.userType === 'Masterclass';
                 const newUser = {
                     id: cleanLic,
                     license: cleanLic,
@@ -863,10 +853,10 @@
                     phone: manualForm.phone.trim(),
                     department: manualForm.department.trim(),
                     hospital: manualForm.hospital.trim(),
-                    userType: manualForm.userType,
+                    userType: manualForm.userType === 'เรียนต่อเนื่อง' ? 'เรียนต่อเนื่อง' : 'เรียนใหม่',
                     status: 'กำลังเรียน',
-                    progress: isVip ? 100 : 0,
-                    studySeconds: isVip ? 36000 : 0,
+                    progress: 0,
+                    studySeconds: 0,
                     pretest: '-',
                     posttest: '-',
                     skillLabPassed: false,
@@ -1005,12 +995,12 @@
 
             const quickStats = useMemo(() => {
                 const passed = usersList.filter(u => u.status === 'ผ่าน').length;
-                const master = usersList.filter(u => u.userType === 'Masterclass').length;
+                const continuing = usersList.filter(u => u.userType === 'เรียนต่อเนื่อง').length;
                 const csatUsers = usersList.filter(u => typeof u.satisfactionScore === 'number' && u.satisfactionScore > 0);
                 const avgCsat = csatUsers.length
                     ? (csatUsers.reduce((s, u) => s + u.satisfactionScore, 0) / csatUsers.length).toFixed(1)
                     : '0.0';
-                return { total: usersList.length, passed, master, avgCsat };
+                return { total: usersList.length, passed, continuing, avgCsat };
             }, [usersList]);
 
             // ============================================================================
@@ -1238,9 +1228,7 @@
                                                 <label className="block text-xs font-bold text-slate-600 mb-1.5 ml-1">ประเภทสิทธิ์</label>
                                                 <select value={manualForm.userType} onChange={e => setManualForm({ ...manualForm, userType: e.target.value })} className="touch-target w-full px-3.5 py-2.5 rounded-2xl bg-white border border-slate-200 text-sm font-medium">
                                                     <option value="เรียนใหม่">เรียนใหม่</option>
-                                                    <option value="Online">Online</option>
-                                                    <option value="Onsite">Onsite</option>
-                                                    <option value="Masterclass">Masterclass</option>
+                                                    <option value="เรียนต่อเนื่อง">เรียนต่อเนื่อง</option>
                                                 </select>
                                             </div>
                                             <FieldInput label="โรงพยาบาล" value={manualForm.hospital} onChange={e => setManualForm({ ...manualForm, hospital: e.target.value })} />
@@ -1268,8 +1256,8 @@
                                     <div className="flex gap-1.5 overflow-x-auto custom-scrollbar pb-0.5">
                                         {[
                                             { k: 'ALL', l: 'ทั้งหมด' },
-                                            { k: 'Masterclass', l: 'Masterclass' },
-                                            { k: 'Onsite', l: 'Onsite' },
+                                            { k: 'เรียนใหม่', l: 'เรียนใหม่' },
+                                            { k: 'เรียนต่อเนื่อง', l: 'เรียนต่อเนื่อง' },
                                             { k: 'PASSED', l: 'สอบผ่านแล้ว' }
                                         ].map(f => (
                                             <button
@@ -1311,14 +1299,12 @@
 
                                             <div className="grid grid-cols-2 gap-2">
                                                 <select
-                                                    value={u.userType || 'เรียนใหม่'}
+                                                    value={u.userType === 'เรียนต่อเนื่อง' ? 'เรียนต่อเนื่อง' : 'เรียนใหม่'}
                                                     onChange={e => handleUpdateUser(u, { userType: e.target.value })}
                                                     className="touch-target px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700"
                                                 >
                                                     <option value="เรียนใหม่">เรียนใหม่</option>
-                                                    <option value="Online">Online</option>
-                                                    <option value="Onsite">Onsite</option>
-                                                    <option value="Masterclass">Masterclass</option>
+                                                    <option value="เรียนต่อเนื่อง">เรียนต่อเนื่อง</option>
                                                 </select>
                                                 <select
                                                     value={u.status || 'กำลังเรียน'}
@@ -1365,14 +1351,12 @@
                                                         <td className="p-4 font-mono text-xs text-slate-600">{getUserLicense(u)}</td>
                                                         <td className="p-4">
                                                             <select
-                                                                value={u.userType || 'เรียนใหม่'}
+                                                                value={u.userType === 'เรียนต่อเนื่อง' ? 'เรียนต่อเนื่อง' : 'เรียนใหม่'}
                                                                 onChange={e => handleUpdateUser(u, { userType: e.target.value })}
                                                                 className="px-2.5 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-bold"
                                                             >
                                                                 <option value="เรียนใหม่">เรียนใหม่</option>
-                                                                <option value="Online">Online</option>
-                                                                <option value="Onsite">Onsite</option>
-                                                                <option value="Masterclass">Masterclass</option>
+                                                                <option value="เรียนต่อเนื่อง">เรียนต่อเนื่อง</option>
                                                             </select>
                                                         </td>
                                                         <td className="p-4">
@@ -1787,8 +1771,8 @@
 
                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                                     <div className="bento-glass rounded-2xl p-4">
-                                        <p className="text-xs font-bold text-slate-500">ผู้เรียนทั้งหมด</p>
-                                        <p className="font-mono text-2xl font-extrabold text-slate-900 mt-1">{quickStats.total}</p>
+                                        <p className="text-xs font-bold text-slate-500">เรียนต่อเนื่อง</p>
+                                        <p className="font-mono text-2xl font-extrabold text-violet-700 mt-1">{quickStats.continuing}</p>
                                     </div>
                                     <div className="bento-glass rounded-2xl p-4">
                                         <p className="text-xs font-bold text-slate-500">สอบผ่านแล้ว</p>
