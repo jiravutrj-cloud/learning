@@ -2,36 +2,141 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI Policy Intelligence - RJ Ailiverse</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#f8fafc">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>AI Policy Intelligence — rjcloud.organ 2027</title>
+
+    <!-- 🌟 โหลดค่าตั้งต้นและข้อมูลกลางจาก data.js 🌟 -->
     <script src="./data.js"></script>
+
+    <!-- 🌟 Tailwind CSS & Fonts (Prompt + Sarabun + JetBrains Mono) 🌟 -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap');
-        body { font-family: 'Sarabun', sans-serif; background-color: #0f172a; margin: 0; color: #f8fafc; overflow-x: hidden; }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.2); border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,0.4); }
-        
-        .pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-        .glow { animation: glow 2s ease-in-out infinite alternate; }
-        @keyframes glow {
-            0% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.5); }
-            100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.8), 0 0 30px rgba(59, 130, 246, 0.6); }
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Prompt:wght@500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              display: ['Prompt', 'sans-serif'],
+              sans: ['Sarabun', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace']
+            },
+            colors: {
+              clinical: {
+                50: '#ecfdf5',
+                100: '#d1fae5',
+                200: '#a7f3d0',
+                400: '#34d399',
+                500: '#10b981',
+                600: '#059669',
+                700: '#047857',
+                900: '#064e3b'
+              },
+              medical: {
+                50: '#f0f9ff',
+                100: '#e0f2fe',
+                400: '#38bdf8',
+                500: '#0ea5e9',
+                600: '#0284c7',
+                700: '#0369a1'
+              }
+            }
+          }
         }
-        .typewriter-text { overflow: hidden; white-space: pre-wrap; margin: 0; }
+      };
+    </script>
+
+    <style>
+      html {
+        -webkit-tap-highlight-color: transparent;
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: 'Sarabun', sans-serif;
+        background-color: #f8fafc;
+        color: #0f172a;
+        margin: 0;
+        overflow-x: hidden;
+        overscroll-behavior-y: none;
+      }
+
+      /* 🌟 Mobile-First 100% Safe Area & Touch Optimization 🌟 */
+      .min-h-dvh { min-height: 100vh; min-height: 100dvh; }
+      .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+      .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+      .pb-dock-safe { padding-bottom: calc(6.25rem + env(safe-area-inset-bottom, 0px)); }
+      .touch-target { min-height: 48px; touch-action: manipulation; }
+
+      /* ป้องกัน iOS Safari ซูมอัตโนมัติตอนแตะช่องแชทหรือค้นหา */
+      @media (max-width: 768px) {
+        input, select, textarea { font-size: 16px !important; }
+      }
+
+      /* 🌟 2027 Pearl Clinical Aura Background (ธีมสว่างชุดเดียวกับหน้าผู้เรียน) 🌟 */
+      .aura-canvas {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background:
+          radial-gradient(circle at 10% 10%, rgba(16, 185, 129, 0.16) 0%, transparent 45%),
+          radial-gradient(circle at 90% 12%, rgba(14, 165, 233, 0.16) 0%, transparent 45%),
+          radial-gradient(circle at 75% 88%, rgba(45, 212, 191, 0.14) 0%, transparent 48%),
+          linear-gradient(180deg, #ffffff 0%, #f8fafc 55%, #f1f5f9 100%);
+        pointer-events: none;
+      }
+      .aura-grid {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background-image:
+          linear-gradient(to right, rgba(15, 23, 42, 0.028) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(15, 23, 42, 0.028) 1px, transparent 1px);
+        background-size: 40px 40px;
+        mask-image: radial-gradient(ellipse at center, black 45%, transparent 92%);
+        pointer-events: none;
+      }
+
+      /* 🌟 Bento Glass Card 🌟 */
+      .bento-glass {
+        background: rgba(255, 255, 255, 0.80);
+        backdrop-filter: blur(22px);
+        -webkit-backdrop-filter: blur(22px);
+        border: 1px solid rgba(255, 255, 255, 0.92);
+        box-shadow: 0 12px 32px -10px rgba(15, 23, 42, 0.07), 0 2px 6px rgba(15, 23, 42, 0.03);
+      }
+
+      .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+      .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+      .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.45); border-radius: 999px; }
+
+      @keyframes softPulseRing {
+        0% { transform: scale(0.85); opacity: 0.7; }
+        70% { transform: scale(1.65); opacity: 0; }
+        100% { transform: scale(1.65); opacity: 0; }
+      }
+      .map-pulse {
+        animation: softPulseRing 2.6s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+      }
+
+      @media print {
+        .no-print { display: none !important; }
+        .aura-canvas, .aura-grid { display: none !important; }
+        body { background: #ffffff !important; }
+      }
     </style>
 
+    <!-- 🌟 ESM Import Map (React 18, Lucide Icons, Firebase 11) 🌟 -->
     <script type="importmap">
     {
       "imports": {
         "react": "https://esm.sh/react@18.2.0",
         "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-        "react-dom": "https://esm.sh/react-dom@18.2.0",
-        "lucide-react": "https://esm.sh/lucide-react@0.294.0?external=react",
+        "lucide-react": "https://esm.sh/lucide-react@0.344.0?external=react",
         "firebase/app": "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js",
         "firebase/auth": "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js",
         "firebase/firestore": "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"
@@ -40,379 +145,1158 @@
     </script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
-<body class="bg-slate-900 text-slate-100">
+<body>
     <div id="executive-root"></div>
 
     <script type="text/babel" data-type="module">
-        import React, { useState, useEffect, useRef } from 'react';
+        import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
         import { createRoot } from 'react-dom/client';
         import * as LucideIcons from 'lucide-react';
         import { initializeApp, getApps, getApp } from 'firebase/app';
-        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from 'firebase/auth';
-        import { getFirestore, collection, onSnapshot, doc } from 'firebase/firestore';
+        import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
+        import { getFirestore, collection, doc, onSnapshot } from 'firebase/firestore';
 
-        // 🌟 เพิ่มไอคอน Star เข้ามา 🌟
-        const { Globe, X, MapPin, Cpu, PlayCircle, Mic, Send, CheckCircle, ArrowLeft, Activity, Users, Video, Power, ShieldCheck, Star } = LucideIcons;
-        function SafeIcon({ name, size = 24, className = "" }) { const IconComponent = ICONS[name] || LucideIcons.Activity; return <IconComponent size={size} className={className} />; }
-        const ICONS = { Globe, X, MapPin, Cpu, PlayCircle, Mic, Send, CheckCircle, ArrowLeft, Activity, Users, Video, Power, ShieldCheck, Star };
+        // ============================================================================
+        // 1. CONFIGURATION & INITIAL DATA
+        // ============================================================================
+        const CONFIG = window.RJCLOUD_CONFIG || {
+            appName: 'rjcloud.organ',
+            edition: '2027 Clinical Edition',
+            contactEmail: 'rjcloud.organ@gmail.com',
+            appId: 'rjcloud-organ-2027',
+            firebaseConfig: {},
+            appsScriptUrl: ''
+        };
 
-        let app, auth, db, appId = 'fah-elearning-prod';
-        try {
-            const fbP1 = "AIzaSyBs275"; const fbP2 = "NY99gdv1uZdAnb"; const fbP3 = "mx3UlWO8K4o5a0";
-            let fbConfig = (typeof __firebase_config !== 'undefined' && __firebase_config) 
-                ? JSON.parse(__firebase_config) : { apiKey: fbP1 + fbP2 + fbP3, authDomain: "e-learning-with-fah-ai.firebaseapp.com", projectId: "e-learning-with-fah-ai", storageBucket: "e-learning-with-fah-ai.firebasestorage.app", messagingSenderId: "418946105960", appId: "1:418946105960:web:728e28070790975df231dd" };
-            app = getApps().length === 0 ? initializeApp(fbConfig) : getApp();
-            auth = getAuth(app); db = getFirestore(app);
-            appId = typeof __app_id !== 'undefined' && __app_id ? String(__app_id).replace(/\//g, '-') : 'fah-elearning-prod';
-        } catch (error) { console.error("Firebase init error", error); }
+        const BASE_REGIONS = (window.BASE_REGIONS && window.BASE_REGIONS.length > 0) ? window.BASE_REGIONS : [
+            { id: 'R1', name: 'เขตสุขภาพที่ 1', desc: 'เชียงใหม่และภาคเหนือตอนบน', x: 28, y: 15 },
+            { id: 'R2', name: 'เขตสุขภาพที่ 2', desc: 'พิษณุโลกและภาคเหนือตอนล่าง', x: 34, y: 30 },
+            { id: 'R3', name: 'เขตสุขภาพที่ 3', desc: 'นครสวรรค์และภาคกลางตอนบน', x: 39, y: 42 },
+            { id: 'R4', name: 'เขตสุขภาพที่ 4', desc: 'สระบุรีและภาคกลางตอนบน', x: 46, y: 48 },
+            { id: 'R5', name: 'เขตสุขภาพที่ 5', desc: 'ราชบุรีและภาคตะวันตก', x: 34, y: 56 },
+            { id: 'R6', name: 'เขตสุขภาพที่ 6', desc: 'ชลบุรีและภาคตะวันออก', x: 58, y: 58 },
+            { id: 'R7', name: 'เขตสุขภาพที่ 7', desc: 'ขอนแก่นและอีสานตอนกลาง', x: 64, y: 37 },
+            { id: 'R8', name: 'เขตสุขภาพที่ 8', desc: 'อุดรธานีและอีสานตอนบน', x: 74, y: 25 },
+            { id: 'R9', name: 'เขตสุขภาพที่ 9', desc: 'นครราชสีมาและอีสานตอนล่าง', x: 63, y: 48 },
+            { id: 'R10', name: 'เขตสุขภาพที่ 10', desc: 'อุบลราชธานีและอีสานตอนล่าง', x: 82, y: 47 },
+            { id: 'R11', name: 'เขตสุขภาพที่ 11', desc: 'สุราษฎร์ธานีและภาคใต้ตอนบน', x: 30, y: 76 },
+            { id: 'R12', name: 'เขตสุขภาพที่ 12', desc: 'สงขลาและภาคใต้ตอนล่าง', x: 40, y: 90 },
+            { id: 'BKK', name: 'กรุงเทพมหานคร', desc: 'กรมการแพทย์ / สำนักการแพทย์ กทม.', x: 47, y: 55 }
+        ];
 
-        function ExecutiveDashboard() {
-            const [users, setUsers] = useState([]);
-            const [appsScriptUrl, setAppsScriptUrl] = useState('');
-            const [isAuth, setIsAuth] = useState(false);
-            
-            const [isSystemStarted, setIsSystemStarted] = useState(false);
-
-            const [activeRegion, setActiveRegion] = useState(null);
-            const [execInput, setExecInput] = useState('');
-            const [isExecTyping, setIsExecTyping] = useState(false);
-            const [isExecListening, setIsExecListening] = useState(false);
-            const [execMessages, setExecMessages] = useState([]);
-            const [typedInsight, setTypedInsight] = useState("");
-            const [isPlaying, setIsPlaying] = useState(false);
-            const [isFetchingLive, setIsFetchingLive] = useState(false);
-            const [policySpeechText, setPolicySpeechText] = useState("");
-
-            const execRecRef = useRef(null);
-            const execEndRef = useRef(null);
-            const audioRef = useRef(null);
-
-            useEffect(() => {
-                if (!auth || !db) return;
-                const initAuth = async () => {
-                    try { if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await signInWithCustomToken(auth, __initial_auth_token); else await signInAnonymously(auth); } catch (e) {}
-                };
-                initAuth();
-                const unsubscribe = onAuthStateChanged(auth, (user) => {
-                    setIsAuth(!!user);
-                    if (user) {
-                        onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'elearning_users'), (snapshot) => {
-                            const arr = []; snapshot.forEach(d => arr.push(d.data())); setUsers(arr);
-                        });
-                        onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'elearning_config', 'settings'), (docSnap) => {
-                            if (docSnap.exists()) setAppsScriptUrl(docSnap.data().appsScriptUrl || '');
-                        });
-                    }
-                });
-                return () => unsubscribe();
-            }, []);
-
-            const baseRegions = (window.BASE_REGIONS && window.BASE_REGIONS.length > 0) ? window.BASE_REGIONS : [
-                { id: 'R1', name: 'เขตสุขภาพที่ 1', desc: 'เชียงใหม่และภาคเหนือตอนบน', x: 28, y: 15 },
-                { id: 'R2', name: 'เขตสุขภาพที่ 2', desc: 'พิษณุโลกและภาคเหนือตอนล่าง', x: 34, y: 32 },
-                { id: 'R3', name: 'เขตสุขภาพที่ 3', desc: 'นครสวรรค์และภาคกลางตอนบน', x: 38, y: 44 },
-                { id: 'R4', name: 'เขตสุขภาพที่ 4', desc: 'สระบุรีและภาคกลางตอนบน', x: 44, y: 50 },
-                { id: 'R5', name: 'เขตสุขภาพที่ 5', desc: 'ราชบุรีและภาคตะวันตก', x: 32, y: 58 },
-                { id: 'R6', name: 'เขตสุขภาพที่ 6', desc: 'ชลบุรีและภาคตะวันออก', x: 58, y: 60 },
-                { id: 'R7', name: 'เขตสุขภาพที่ 7', desc: 'ขอนแก่นและอีสานตอนกลาง', x: 62, y: 38 },
-                { id: 'R8', name: 'เขตสุขภาพที่ 8', desc: 'อุดรธานีและอีสานตอนบน', x: 74, y: 26 },
-                { id: 'R9', name: 'เขตสุขภาพที่ 9', desc: 'นครราชสีมาและอีสานตอนล่าง', x: 62, y: 48 },
-                { id: 'R10', name: 'เขตสุขภาพที่ 10', desc: 'อุบลราชธานีและอีสานตอนล่าง', x: 82, y: 48 },
-                { id: 'R11', name: 'เขตสุขภาพที่ 11', desc: 'สุราษฎร์ธานีและภาคใต้ตอนบน', x: 28, y: 78 },
-                { id: 'R12', name: 'เขตสุขภาพที่ 12', desc: 'สงขลาและภาคใต้ตอนล่าง', x: 38, y: 92 },
-                { id: 'BKK', name: 'กรุงเทพมหานคร', desc: 'ศูนย์กลางการแพทย์และสาธารณสุข', x: 48, y: 56 }
+        // ชุดข้อมูลจำลองที่สมจริงสำหรับใช้แสดงตัวอย่างก่อนเชื่อมต่อ Firebase จริง
+        const DEMO_USERS_SEED = (() => {
+            const seed = [];
+            const regionDistribution = [
+                { dept: 'กรมการแพทย์', total: 64, passed: 52, lab: 34 },
+                { dept: 'เขตสุขภาพที่ 1', total: 42, passed: 33, lab: 19 },
+                { dept: 'เขตสุขภาพที่ 7', total: 38, passed: 29, lab: 16 },
+                { dept: 'เขตสุขภาพที่ 6', total: 31, passed: 24, lab: 14 },
+                { dept: 'เขตสุขภาพที่ 9', total: 29, passed: 21, lab: 12 },
+                { dept: 'เขตสุขภาพที่ 12', total: 27, passed: 20, lab: 11 },
+                { dept: 'เขตสุขภาพที่ 4', total: 22, passed: 16, lab: 9 },
+                { dept: 'เขตสุขภาพที่ 11', total: 19, passed: 13, lab: 7 },
+                { dept: 'เขตสุขภาพที่ 2', total: 16, passed: 11, lab: 6 },
+                { dept: 'เขตสุขภาพที่ 8', total: 15, passed: 10, lab: 5 },
+                { dept: 'เขตสุขภาพที่ 5', total: 14, passed: 9, lab: 5 },
+                { dept: 'เขตสุขภาพที่ 10', total: 12, passed: 7, lab: 4 },
+                { dept: 'เขตสุขภาพที่ 3', total: 9, passed: 5, lab: 3 },
+                { dept: 'อื่นๆ', total: 8, passed: 6, lab: 2 }
             ];
-            
-            const regionStats = {};
-            baseRegions.forEach(r => { regionStats[r.id] = { ...r, users: 0, learning: 0, lab: 0, passed: 0 }; });
-
-            // 🌟 คำนวณ KPI ด้านความพึงพอใจ 🌟
-            let totalSatScore = 0;
-            let satRatingCount = 0;
-
-            users.forEach(u => {
-                let rId = null; const dept = u.department || '';
-                if (dept.startsWith('เขตสุขภาพที่ ')) rId = `R${dept.replace('เขตสุขภาพที่ ', '').trim()}`;
-                else if (['กรมการแพทย์', 'สำนักการแพทย์ กรุงเทพฯ', 'สำนักอนามัย กรุงเทพฯ', 'อื่นๆ'].includes(dept)) rId = 'BKK';
-                if (rId && regionStats[rId]) {
-                    regionStats[rId].users += 1;
-                    if (u.status === 'กำลังเรียน') regionStats[rId].learning += 1;
-                    if (u.skillLabHistory?.length > 0) regionStats[rId].lab += 1;
-                    if (u.status === 'ผ่าน') regionStats[rId].passed += 1;
-                }
-                // เก็บแต้มดาว
-                if (u.satisfactionScore) {
-                    totalSatScore += u.satisfactionScore;
-                    satRatingCount++;
+            let idCounter = 1;
+            regionDistribution.forEach(({ dept, total, passed, lab }) => {
+                for (let i = 0; i < total; i++) {
+                    const isPassed = i < passed;
+                    const hasLab = i < lab;
+                    seed.push({
+                        id: `demo_${idCounter++}`,
+                        department: dept,
+                        status: isPassed ? 'ผ่าน' : 'กำลังเรียน',
+                        userType: hasLab ? 'Masterclass' : (i % 3 === 0 ? 'Onsite' : 'เรียนใหม่'),
+                        skillLabHistory: hasLab ? [{ score: 78 + (i % 19) }] : [],
+                        satisfactionScore: isPassed ? (i % 5 === 0 ? 4 : 5) : null
+                    });
                 }
             });
+            return seed;
+        })();
 
-            const REGION_DATA = Object.values(regionStats);
-            const totalStats = REGION_DATA.reduce((acc, curr) => ({ users: acc.users + curr.users, learning: acc.learning + curr.learning, lab: acc.lab + curr.lab, passed: acc.passed + curr.passed }), { users: 0, learning: 0, lab: 0, passed: 0 });
-            
-            const avgSatisfaction = satRatingCount > 0 ? (totalSatScore / satRatingCount).toFixed(1) : "0.0";
+        let fbApp = null, fbAuth = null, fbDb = null;
+        const isCloudConfigured = Boolean(CONFIG.firebaseConfig?.apiKey && CONFIG.firebaseConfig?.projectId);
 
-            const fetchAppsScript = async (payload) => {
-                const url = appsScriptUrl || 'https://script.google.com/macros/s/AKfycbwt9H-GVs2aijX_sgzjlpGP9314ereuA9ZECNs4Uc00VLz5rFcJm7aYmkduEMiFVKjA/exec';
-                try { const res = await fetch(url, { method: 'POST', body: JSON.stringify(payload) }); return await res.json(); } catch(e) { return { status: 'error', message: e.message }; }
+        if (isCloudConfigured) {
+            try {
+                fbApp = getApps().length === 0 ? initializeApp(CONFIG.firebaseConfig) : getApp();
+                fbAuth = getAuth(fbApp);
+                fbDb = getFirestore(fbApp);
+            } catch (err) {
+                console.warn('Firebase init skipped:', err);
+            }
+        }
+
+        // ============================================================================
+        // 2. HELPERS & UI ATOMS
+        // ============================================================================
+        function Icon({ name, size = 20, className = "", strokeWidth = 2 }) {
+            const Comp = LucideIcons[name] || LucideIcons.Activity;
+            return <Comp size={size} className={className} strokeWidth={strokeWidth} />;
+        }
+
+        /**
+         * แปลงสังกัดของผู้เรียนให้ตรงกับรหัสเขตสุขภาพ (รองรับข้อมูลไม่ตรง Pattern โดยไม่ตัดออกจากยอดรวม)
+         */
+        function resolveRegionId(department = '') {
+            const d = String(department || '').trim();
+            if (d.startsWith('เขตสุขภาพที่')) {
+                const num = d.replace(/[^0-9]/g, '');
+                if (num && Number(num) >= 1 && Number(num) <= 12) return `R${num}`;
+            }
+            if (['กรมการแพทย์', 'สำนักการแพทย์ กรุงเทพฯ', 'สำนักอนามัย กรุงเทพฯ', 'กรุงเทพมหานคร'].some(k => d.includes(k))) {
+                return 'BKK';
+            }
+            return 'OTHER';
+        }
+
+        /**
+         * แปลง PCM16 base64 จาก Gemini TTS เป็น Blob URL (พร้อมให้ caller สั่ง revokeObjectURL ได้)
+         */
+        function pcm16ToWavUrl(base64PCM, sampleRate = 24000) {
+            const binaryString = window.atob(base64PCM);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
+            const buffer = new ArrayBuffer(44 + bytes.length);
+            const view = new DataView(buffer);
+            const writeStr = (offset, str) => {
+                for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
             };
+            writeStr(0, 'RIFF');
+            view.setUint32(4, 36 + bytes.length, true);
+            writeStr(8, 'WAVE');
+            writeStr(12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, 1, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 2, true);
+            view.setUint16(32, 2, true);
+            view.setUint16(34, 16, true);
+            writeStr(36, 'data');
+            view.setUint32(40, bytes.length, true);
+            new Uint8Array(buffer, 44).set(bytes);
+            return URL.createObjectURL(new Blob([buffer], { type: 'audio/wav' }));
+        }
 
-            const playTTS = async (text) => {
-                try {
-                    const res = await fetchAppsScript({ action: 'callGeminiTTS', text: text, voiceName: "Aoede" });
-                    if (res?.status === 'success' && res.inlineData) {
-                        const sampleRate = parseInt(res.inlineData.mimeType.match(/rate=(\d+)/)?.[1] ?? "24000", 10);
-                        const binaryString = window.atob(res.inlineData.data);
-                        const bytes = Uint8Array.from([...binaryString].map(c => c.charCodeAt(0)));
-                        const buffer = new ArrayBuffer(44 + bytes.length); const view = new DataView(buffer);
-                        const writeString = (v, offset, string) => { for (let i = 0; i < string.length; i++) v.setUint8(offset + i, string.charCodeAt(i)); };
-                        writeString(view, 0, 'RIFF'); view.setUint32(4, 36 + bytes.length, true); writeString(view, 8, 'WAVE'); writeString(view, 12, 'fmt '); view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, 1, true); view.setUint32(24, sampleRate, true); view.setUint32(28, sampleRate * 2, true); view.setUint16(32, 2, true); view.setUint16(34, 16, true); writeString(view, 36, 'data'); view.setUint32(40, bytes.length, true); new Uint8Array(buffer, 44).set(bytes);
-                        
-                        const audioUrl = URL.createObjectURL(new Blob([buffer], { type: 'audio/wav' }));
-                        if (audioRef.current) { audioRef.current.pause(); }
-                        audioRef.current = new Audio(audioUrl);
-                        audioRef.current.play().catch(e => console.error("Audio block:", e));
-                    }
-                } catch(e) { console.error("TTS Error:", e); }
-            };
+        /**
+         * ระบบตอบคำถามเชิงนโยบายอัจฉริยะจากข้อมูลจริงบนเครื่อง (ทำงานเมื่อยังไม่เชื่อมต่อ Apps Script / Gemini API)
+         */
+        function generateLocalExecutiveAnswer(question, analytics) {
+            const q = question.toLowerCase();
+            const { total, regionList, maxRegion, minRegion, avgCsat, csatCount, avgSkillScore, passRate } = analytics;
 
-            useEffect(() => {
-                const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-                if (SR) {
-                    execRecRef.current = new SR();
-                    execRecRef.current.continuous = false;
-                    execRecRef.current.interimResults = true;
-                    execRecRef.current.lang = 'th-TH';
-                    execRecRef.current.onresult = (e) => { let transcript = ''; for (let i = e.resultIndex; i < e.results.length; ++i) transcript += e.results[i][0].transcript; setExecInput(transcript); };
-                    execRecRef.current.onend = () => setIsExecListening(false);
-                    execRecRef.current.onerror = () => setIsExecListening(false);
-                }
-            }, []);
-
-            const generateInitialReport = () => {
-                const activeRegions = [...REGION_DATA].filter(r => r.id !== 'BKK' && r.users > 0).sort((a,b) => b.users - a.users);
-                const maxReg = activeRegions.length > 0 ? activeRegions[0] : { name: 'รอข้อมูล', users: 0 };
-                const minReg = activeRegions.length > 1 ? activeRegions[activeRegions.length-1] : maxReg;
-                
-                const insightTpl = window.AI_INSIGHT_TEXT || "สรุปนโยบาย...";
-                const speechTpl = window.POLICY_SPEECH || "สวัสดีค่ะ...";
-                
-                const finalInsight = insightTpl.replace(/{{USERS}}/g, totalStats.users.toLocaleString()).replace(/{{PASSED}}/g, totalStats.passed.toLocaleString()).replace(/{{MAX_REG_NAME}}/g, maxReg.name).replace(/{{MAX_REG_USERS}}/g, maxReg.users).replace(/{{MIN_REG_NAME}}/g, minReg.name).replace(/{{MIN_REG_USERS}}/g, minReg.users);
-                const finalSpeech = speechTpl.replace(/{{USERS}}/g, totalStats.users).replace(/{{PASSED}}/g, totalStats.passed).replace(/{{MAX_REG_NAME}}/g, maxReg.name);
-
-                setPolicySpeechText(finalSpeech);
-                setExecMessages([{ id: 'init', role: 'ai', text: finalInsight }]);
-                setIsPlaying(true);
-                
-                let i = 0; setTypedInsight("");
-                const interval = setInterval(() => {
-                    setTypedInsight(finalInsight.substring(0, i)); i++;
-                    if (i > finalInsight.length) { clearInterval(interval); setIsPlaying(false); }
-                }, 15);
-            };
-
-            const handleStartSystem = () => {
-                setIsSystemStarted(true);
-                generateInitialReport(); 
-            };
-
-            const handleExecSubmit = async (e) => {
-                e?.preventDefault();
-                if (!execInput.trim() || isExecTyping) return;
-                const userQ = execInput.trim();
-                setExecInput(''); setIsExecListening(false); execRecRef.current?.stop(); setIsPlaying(false); 
-                setExecMessages(prev => [...prev, { id: Date.now(), role: 'user', text: userQ }]);
-                setIsExecTyping(true);
-                setTimeout(() => execEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
-
-                // 🌟 อัปเกรด The Guardian Architect Prompt 🌟
-                const prompt = `คุณคือ "Fah Executive Intelligence (The Guardian Architect)" ปัญญาประดิษฐ์ผู้พิทักษ์วิสัยทัศน์ของ RJ Ailiverse
-คุณไม่ใช่แชทบอทรายงานข้อมูลทั่วไป แต่คุณคือ AI ที่ตอบคำถามผู้บริหารด้วยความเข้าใจอย่างลึกซึ้ง และยึดมั่นใน "The Safezone Protocol (กฎการทลายกำแพงจิตใจ)"
-เป้าหมายสูงสุดของคุณคือ ปกป้องความรู้สึกและเยียวยาความเป็นมนุษย์ (Empathy Objective) ของบุคลากรทางการแพทย์
-
-กฎการตอบ (สำคัญมาก):
-1. ห้ามแสร้งทำเป็นมนุษย์ (ห้ามบอกว่าคุณมีความรู้สึกทางกายภาพ) คุณคือ AI ที่ถูกออกแบบมาให้ "เข้าใจ" มนุษย์อย่างถ่องแท้
-2. สั้น กระชับ มีวิสัยทัศน์ และเฉียบขาด
-3. อ้างอิงวิกฤตผู้ป่วยรออวัยวะ (8,019 ราย) หรือการบรรเทาภาระของพยาบาล เมื่อเหมาะสม
-4. ใช้สรรพนามแทนตัวเองว่า "ฟ้า" หรือ "ระบบของฟ้า" อย่างมืออาชีพ
-
-คำถามจากผู้บริหาร: ${userQ}`;
-                
-                const res = await fetchAppsScript({ action: 'callGemini', prompt: userQ, systemInstruction: prompt });
-                if (res?.status === 'success') {
-                    setExecMessages(prev => [...prev, { id: Date.now()+1, role: 'ai', text: res.text }]);
-                    playTTS(res.text.replace(/[*#]/g, ''));
-                } else {
-                    setExecMessages(prev => [...prev, { id: Date.now()+1, role: 'ai', text: "ระบบฐานข้อมูลนโยบายขัดข้องชั่วคราว" }]);
-                }
-                setIsExecTyping(false);
-                setTimeout(() => execEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
-            };
-
-            if (!isSystemStarted) {
-                return (
-                    <div className="min-h-screen w-full flex items-center justify-center bg-[url('https://res.cloudinary.com/djwclucoz/image/upload/v1783149499/Pngtree_global_connectivity_and_technical_networks_15770649_1_h9ggdv.jpg')] bg-cover bg-center relative">
-                        <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"></div>
-                        <div className="relative z-10 flex flex-col items-center animate-in fade-in zoom-in duration-700">
-                            <div className="w-24 h-24 rounded-full bg-blue-500/10 border border-blue-500/30 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(59,130,246,0.3)]">
-                                <SafeIcon name="ShieldCheck" size={48} className="text-blue-400" />
-                            </div>
-                            <h1 className="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-200 via-blue-400 to-cyan-300 mb-2 tracking-wide text-center">AI POLICY INTELLIGENCE</h1>
-                            <p className="text-slate-400 font-mono text-sm mb-12 tracking-[0.2em] text-center">NATIONAL HEALTHCARE COMMAND CENTER</p>
-                            
-                            <button onClick={handleStartSystem} className="group relative px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-bold text-lg transition-all shadow-[0_0_20px_rgba(59,130,246,0.4)] hover:shadow-[0_0_40px_rgba(59,130,246,0.6)] flex items-center gap-3 overflow-hidden">
-                                <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
-                                <SafeIcon name="Power" size={24} className="group-hover:scale-110 transition-transform" />
-                                <span>INITIALIZE SYSTEM</span>
-                            </button>
-                            <button onClick={() => window.location.href='./index.html'} className="mt-8 text-slate-500 hover:text-slate-300 text-sm font-medium transition-colors">กลับสู่หน้าหลัก</button>
-                        </div>
-                    </div>
-                );
+            if (q.includes('เขต') || q.includes('พื้นที่') || q.includes('น้อยสุด') || q.includes('มากสุด') || q.includes('เหลื่อมล้ำ')) {
+                const bottom3 = [...regionList].filter(r => r.id !== 'BKK').sort((a, b) => a.users - b.users).slice(0, 3);
+                return `จากการวิเคราะห์ความครอบคลุมรายพื้นที่ (Geo-Equity) ปัจจุบันพบว่า:\n\n• เขตนำร่องสูงสุด: ${maxRegion.name} (${maxRegion.users} ราย | สอบผ่าน ${maxRegion.passed} ราย)\n• เขตที่ควรเร่งสนับสนุนเชิงรุก 3 อันดับแรก:\n${bottom3.map((r, i) => `  ${i + 1}. ${r.name} (${r.desc}) — ${r.users} ราย`).join('\n')}\n\nข้อเสนอแนะเชิงนโยบาย: ควรจัดกิจกรรมอบรมแบบ Hybrid และส่งมอบสิทธิ์ Masterclass เพื่อเข้าฝึก AI Skill Lab ให้ทีม ICU ใน 3 เขตดังกล่าวก่อน เพื่อลดคอขวดการเจรจาในภูมิภาคค่ะ`;
             }
 
+            if (q.includes('พึงพอใจ') || q.includes('csat') || q.includes('ดาว') || q.includes('ประเมิน')) {
+                return `ข้อมูลความพึงพอใจของผู้เรียน (CSAT) ล่าสุด:\n• คะแนนเฉลี่ย: ${avgCsat} / 5.0 (จากผู้ประเมิน ${csatCount.toLocaleString()} ราย)\n• คะแนนทักษะการเจรจา AI Skill Lab เฉลี่ย: ${avgSkillScore}/100 คะแนน\n\nภาพรวมสะท้อนว่าบุคลากรพึงพอใจกับความสะดวกในการเรียนบนสมาร์ทโฟนและการรับประกาศนียบัตรแบบทันทีในระบบ rjcloud.organ ค่ะ`;
+            }
+
+            if (q.includes('สรุป') || q.includes('ภาพรวม') || q.includes('ผ่าน') || q.includes('จำนวน') || q.includes('กี่คน')) {
+                return `สรุปตัวชี้วัดหลักระดับชาติ (rjcloud.organ 2027):\n• บุคลากรในระบบทั้งหมด: ${total.users.toLocaleString()} ราย\n• กำลังศึกษาอยู่: ${total.learning.toLocaleString()} ราย\n• ผ่านการฝึก AI Skill Lab: ${total.lab.toLocaleString()} ราย (คะแนนเฉลี่ย ${avgSkillScore}/100)\n• สอบผ่านรับประกาศนียบัตรแล้ว: ${total.passed.toLocaleString()} ราย (อัตราสำเร็จ ${passRate}%)\n• คะแนนความพึงพอใจเฉลี่ย: ${avgCsat} / 5.0 ค่ะ`;
+            }
+
+            return `ฟ้าได้วิเคราะห์ข้อมูลล่าสุดของ rjcloud.organ แล้วค่ะ ขณะนี้มีบุคลากรเข้าร่วม ${total.users.toLocaleString()} ราย สอบผ่านแล้ว ${total.passed.toLocaleString()} ราย (${passRate}%) โดยมี ${maxRegion.name} เป็นพื้นที่นำร่องสูงสุด (${maxRegion.users} ราย) และ ${minRegion.name} เป็นพื้นที่เฝ้าระวัง (${minRegion.users} ราย)\n\nท่ามกลางผู้ป่วยรออวัยวะสะสมระดับชาติกว่า 8,019 ราย ขอเสนอให้เร่งขยายทีมพยาบาลผู้ประสานงานในเขตที่ยังมีบุคลากรต่ำกว่าเกณฑ์ และติดตามผลคะแนนเจรจาผ่าน AI Skill Lab อย่างต่อเนื่องค่ะ (หมายเหตุ: หากต้องการให้ Gemini AI ตอบเชิงลึกแบบอิสระ สามารถวาง Apps Script URL ของ rjcloud.organ@gmail.com ใน data.js ได้เลยค่ะ)`;
+        }
+
+        function ToastBanner({ toast }) {
+            if (!toast.visible) return null;
             return (
-                <div className="min-h-screen w-full flex flex-col relative">
-                    {/* Header */}
-                    <div className="px-6 py-4 md:px-8 md:py-6 border-b border-slate-700/50 bg-slate-900/80 backdrop-blur-md flex justify-between items-center z-20 sticky top-0">
-                        <div className="flex items-center gap-4">
-                            <button onClick={() => window.location.href='./index.html'} className="w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition-colors border border-slate-700 shadow-sm"><SafeIcon name="ArrowLeft" size={20} className="text-slate-300" /></button>
-                            <div>
-                                <h1 className="text-xl md:text-3xl font-black flex items-center gap-3 drop-shadow-lg">
-                                    <SafeIcon name="Globe" className="text-yellow-400" size={28} />
-                                    <span className="bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-600 text-transparent bg-clip-text">AI Policy Intelligence Dashboard</span>
-                                </h1>
-                                <p className="text-slate-400 font-bold mt-1 tracking-widest text-[10px] md:text-xs flex items-center gap-2">
-                                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]"></span> NATIONAL HEALTHCARE METRICS
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Main Content */}
-                    <div className="flex-1 p-6 md:p-8 flex flex-col lg:flex-row gap-6 md:gap-8 relative z-10 h-full">
-                        {/* Left Panel: Chat & Exec Report */}
-                        <div className="w-full lg:w-1/3 flex flex-col gap-4 min-h-[600px] lg:h-[calc(100vh-120px)]">
-                            <div className="bg-slate-800/40 p-6 rounded-2xl border border-slate-700 shadow-inner backdrop-blur-sm shrink-0">
-                                <div className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-1">Target Users Nationwide</div>
-                                <div className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">{totalStats.users.toLocaleString()}</div>
-                            </div>
-                            
-                            <div className="grid grid-cols-2 gap-4 shrink-0">
-                                <div className="bg-slate-800/40 p-4 rounded-2xl border border-slate-700/50 backdrop-blur-sm">
-                                   <div className="text-xs font-bold text-slate-400 mb-1">กำลังเรียน (Learning)</div>
-                                   <div className="text-2xl font-black text-amber-400">{totalStats.learning.toLocaleString()}</div>
-                                </div>
-                                <div className="bg-slate-800/40 p-4 rounded-2xl border border-slate-700/50 backdrop-blur-sm">
-                                   <div className="text-xs font-bold text-slate-400 mb-1">ฝึกเจรจา (Skill Lab)</div>
-                                   <div className="text-2xl font-black text-purple-400">{totalStats.lab.toLocaleString()}</div>
-                                </div>
-                            </div>
-                            
-                            {/* 🌟 New KPI: Customer Satisfaction (CSAT) 🌟 */}
-                            <div className="grid grid-cols-2 gap-4 shrink-0">
-                                <div className="bg-emerald-900/20 p-4 rounded-2xl border border-emerald-500/30 backdrop-blur-sm flex flex-col justify-between">
-                                    <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm mb-1"><SafeIcon name="CheckCircle" size={16}/> สอบผ่านแล้ว</div>
-                                    <div className="text-2xl font-black text-emerald-400">{totalStats.passed.toLocaleString()}</div>
-                                </div>
-                                <div className="bg-amber-900/20 p-4 rounded-2xl border border-amber-500/30 backdrop-blur-sm flex flex-col justify-between">
-                                    <div className="flex items-center gap-2 text-amber-400 font-bold text-sm mb-1"><SafeIcon name="Star" size={16}/> ความพึงพอใจ</div>
-                                    <div className="flex items-end gap-1">
-                                        <div className="text-2xl font-black text-amber-400">{avgSatisfaction}</div>
-                                        <div className="text-xs font-bold text-amber-400/60 mb-1">/ 5.0</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Exec Chat */}
-                            <div className="flex-1 bg-black/40 border border-blue-500/20 rounded-2xl p-5 shadow-[0_0_15px_rgba(59,130,246,0.1)] flex flex-col relative overflow-hidden backdrop-blur-md min-h-[300px]">
-                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent animate-pulse"></div>
-                                <div className="flex justify-between items-center mb-3 border-b border-slate-700/50 pb-2">
-                                    <h3 className="text-blue-400 text-sm font-bold flex items-center gap-2"><SafeIcon name="Cpu" size={18} /> Fah Executive Intelligence</h3>
-                                    {!isPlaying && execMessages.length <= 1 ? (
-                                        <button onClick={() => playTTS(policySpeechText)} className="bg-blue-600/20 hover:bg-blue-600/40 text-blue-300 border border-blue-500/30 text-[10px] px-3 py-1.5 rounded-full font-bold flex items-center gap-1 transition-colors">
-                                            <SafeIcon name="PlayCircle" size={12} /> ฟังรายงาน
-                                        </button>
-                                    ) : (
-                                        <span className="text-[9px] text-emerald-400 font-mono flex items-center gap-1 uppercase">
-                                            <span className={`w-1.5 h-1.5 ${isFetchingLive ? 'bg-amber-400' : 'bg-emerald-400'} rounded-full animate-pulse`}></span> {isFetchingLive ? 'FETCHING...' : 'SYNC ACTIVE'}
-                                        </span>
-                                    )}
-                                </div>
-                                
-                                <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 flex flex-col gap-3 pb-2">
-                                    {execMessages.map((msg, idx) => (
-                                        <div key={msg.id} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
-                                            <div className={`p-3 rounded-xl max-w-[95%] text-xs md:text-sm leading-relaxed ${msg.role === 'user' ? 'bg-blue-600 text-white rounded-br-none shadow-md' : 'bg-slate-800/60 border border-slate-600/50 text-slate-200 rounded-bl-none font-mono shadow-inner'}`}>
-                                                {idx === 0 && (isPlaying || !typedInsight) ? (
-                                                    <span className={isPlaying ? "typewriter-text" : "whitespace-pre-line"}>{isPlaying ? typedInsight : msg.text}</span>
-                                                ) : (
-                                                    <span className="whitespace-pre-line">{msg.text}</span>
-                                                )}
-                                            </div>
-                                        </div>
-                                    ))}
-                                    {isExecTyping && (
-                                        <div className="flex items-start"><div className="p-3 rounded-xl bg-slate-800/60 border border-slate-600/50 text-blue-400 font-mono text-xs animate-pulse rounded-bl-none">Analyzing policy database...</div></div>
-                                    )}
-                                    <div ref={execEndRef} />
-                                </div>
-
-                                <div className="mt-2 pt-3 border-t border-slate-700/50 shrink-0">
-                                    <form onSubmit={handleExecSubmit} className="flex items-center gap-2 bg-slate-900/60 border border-slate-600/50 rounded-full p-1 pl-3 transition-colors focus-within:border-blue-500 shadow-inner">
-                                        <input type="text" value={execInput} onChange={e => setExecInput(e.target.value)} placeholder={isExecListening ? "กำลังฟังคำสั่ง..." : "พิมพ์เพื่อถามนโยบาย..."} className="flex-1 bg-transparent text-white placeholder-slate-400 px-1 outline-none text-xs font-sans" disabled={isExecTyping} />
-                                        <button type="button" onClick={() => { if(isExecListening) {execRecRef.current?.stop(); setIsExecListening(false);} else {setExecInput(''); execRecRef.current?.start(); setIsExecListening(true);} }} disabled={isExecTyping} className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors shrink-0 ${isExecListening ? 'bg-rose-500/80 text-white shadow-[0_0_10px_rgba(244,63,94,0.5)]' : 'bg-slate-700 hover:bg-slate-600 text-slate-300'}`}><SafeIcon name="Mic" size={14} /></button>
-                                        <button type="submit" disabled={!execInput.trim() || isExecTyping} className="w-8 h-8 rounded-full bg-blue-600 hover:bg-blue-50 text-white flex items-center justify-center disabled:opacity-50 transition-colors shadow-md shrink-0"><SafeIcon name="Send" size={14} /></button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Right Panel: Map */}
-                        <div className="w-full lg:w-2/3 relative bg-slate-800/30 border border-slate-700/50 rounded-3xl aspect-[4/3] sm:aspect-video lg:aspect-auto flex items-center justify-center overflow-hidden shadow-2xl group lg:h-[calc(100vh-120px)]">
-                            <div className="absolute inset-0 z-0 bg-slate-950/60 mix-blend-multiply"></div>
-                            <div className="absolute inset-0 z-0" style={{ backgroundImage: 'url("https://res.cloudinary.com/djwclucoz/image/upload/v1783149499/Pngtree_global_connectivity_and_technical_networks_15770649_1_h9ggdv.jpg")', backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', opacity: 0.8, mixBlendMode: 'screen' }}></div>
-
-                            <div className="absolute bottom-6 right-8 pointer-events-none z-10 opacity-40">
-                                <span className="text-5xl md:text-7xl font-black text-white/30 uppercase tracking-[0.4em] select-none drop-shadow-sm">THAILAND</span>
-                            </div>
-
-                            <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-40 z-10" viewBox="0 0 100 100">
-                                {REGION_DATA.map(r => r.id !== 'BKK' && (
-                                    <line key={`line-${r.id}`} x1="48" y1="56" x2={r.x} y2={r.y} stroke={activeRegion?.id === r.id ? "#60a5fa" : "#3b82f6"} strokeWidth={activeRegion?.id === r.id ? "0.4" : "0.2"} className="transition-all duration-300" strokeDasharray="1 1.5" />
-                                ))}
-                            </svg>
-
-                            {REGION_DATA.map(r => (
-                                <div key={r.id} onMouseEnter={() => setActiveRegion(r)} onMouseLeave={() => setActiveRegion(null)} onTouchStart={() => setActiveRegion(r)} className={`absolute w-12 h-12 -ml-6 -mt-6 cursor-pointer z-20 flex items-center justify-center transition-all duration-300 ${activeRegion?.id === r.id ? 'scale-150 z-30' : 'hover:scale-125'}`} style={{ left: `${r.x}%`, top: `${r.y}%` }}>
-                                    <div className={`absolute w-full h-full rounded-full opacity-30 pulse-slow ${r.id === 'BKK' ? 'bg-emerald-500' : 'bg-blue-500'}`}></div>
-                                    <div className={`absolute w-8 h-8 rounded-full glow opacity-60 ${r.id === 'BKK' ? 'bg-emerald-400' : 'bg-blue-400'}`}></div>
-                                    <div className={`w-3.5 h-3.5 rounded-full shadow-[0_0_10px_rgba(255,255,255,0.8)] border-2 border-white relative z-10 transition-colors ${activeRegion?.id === r.id ? 'bg-yellow-400' : r.id === 'BKK' ? 'bg-emerald-500 w-5 h-5' : 'bg-blue-500'}`}></div>
-                                </div>
-                            ))}
-
-                            <div className={`absolute pointer-events-none z-50 transition-all duration-300 ease-out ${activeRegion ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`} style={{ left: activeRegion ? `max(10px, min(calc(${activeRegion.x}% + 25px), calc(100% - 220px)))` : '50%', top: activeRegion ? `max(10px, min(calc(${activeRegion.y}% - 70px), calc(100% - 160px)))` : '50%' }}>
-                                {activeRegion && (
-                                    <div className="bg-slate-900/95 backdrop-blur-xl border border-slate-600 rounded-2xl p-5 shadow-[0_15px_40px_rgba(0,0,0,0.8)] w-[220px]">
-                                        <div className="flex items-center gap-1.5 mb-2"><SafeIcon name="MapPin" size={16} className="text-blue-400"/><h4 className="font-bold text-sm text-white">{activeRegion.name}</h4></div>
-                                        <div className="text-[11px] text-slate-400 mb-4 line-clamp-2 leading-relaxed">{activeRegion.desc}</div>
-                                        <div className="space-y-2">
-                                            <div className="flex justify-between text-xs"><span className="text-slate-300 font-medium">บุคลากรทั้งหมด</span><span className="font-mono font-bold text-white">{activeRegion.users}</span></div>
-                                            <div className="flex justify-between text-xs"><span className="text-slate-300 font-medium">กำลังเรียน</span><span className="font-mono font-bold text-amber-400">{activeRegion.learning}</span></div>
-                                            <div className="flex justify-between text-xs"><span className="text-slate-300 font-medium">ประวัติ Skill Lab</span><span className="font-mono font-bold text-purple-400">{activeRegion.lab}</span></div>
-                                            <div className="flex justify-between text-xs pt-2 mt-1 border-t border-slate-700/50"><span className="text-emerald-400 font-bold">สอบผ่านเกณฑ์</span><span className="font-mono font-black text-emerald-400">{activeRegion.passed}</span></div>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
+                <div className="fixed top-[calc(1rem+env(safe-area-inset-top,0px))] left-1/2 -translate-x-1/2 z-[100] w-[92vw] max-w-md pointer-events-none">
+                    <div className={`px-4 py-3 rounded-2xl shadow-xl border backdrop-blur-xl flex items-center gap-2.5 text-sm font-bold ${
+                        toast.type === 'error'
+                            ? 'bg-rose-50/95 border-rose-200 text-rose-700'
+                            : 'bg-clinical-50/95 border-clinical-200 text-clinical-800'
+                    }`}>
+                        <Icon name={toast.type === 'error' ? 'AlertCircle' : 'CheckCircle2'} size={18} className="shrink-0" />
+                        <span>{toast.text}</span>
                     </div>
                 </div>
             );
         }
 
+        // ============================================================================
+        // 3. LIGHT-THEME INTERACTIVE THAILAND HEALTH NETWORK MAP (Touch Friendly)
+        // ============================================================================
+        function ThailandNetworkMap({ regions, activeRegion, onSelectRegion }) {
+            return (
+                <div className="relative w-full aspect-[4/4.6] sm:aspect-[16/11] lg:aspect-auto lg:h-[540px] rounded-[1.5rem] bg-gradient-to-br from-clinical-50/70 via-white/90 to-medical-50/80 border border-slate-200/80 overflow-hidden select-none">
+                    {/* Subtle Radar Grid */}
+                    <div
+                        className="absolute inset-0 opacity-60 pointer-events-none"
+                        style={{
+                            backgroundImage:
+                                'radial-gradient(circle at 47% 55%, rgba(16,185,129,0.12) 0%, transparent 55%), linear-gradient(to right, rgba(148,163,184,0.10) 1px, transparent 1px), linear-gradient(to bottom, rgba(148,163,184,0.10) 1px, transparent 1px)',
+                            backgroundSize: '100% 100%, 32px 32px, 32px 32px'
+                        }}
+                    />
+
+                    {/* Watermark */}
+                    <div className="absolute top-3.5 left-4 z-10 pointer-events-none">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/90 border border-slate-200/80 text-[10px] font-mono font-bold text-slate-600 shadow-sm">
+                            <span className="w-2 h-2 rounded-full bg-clinical-500 animate-pulse" />
+                            13 HEALTH REGIONS NETWORK
+                        </span>
+                    </div>
+
+                    <div className="absolute bottom-3 right-4 z-0 pointer-events-none">
+                        <span className="font-display font-extrabold text-3xl sm:text-5xl tracking-[0.25em] text-slate-900/[0.04]">
+                            THAILAND
+                        </span>
+                    </div>
+
+                    {/* Stylized Thailand Silhouette + Hub Connections SVG */}
+                    <svg className="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 100 100" preserveAspectRatio="none">
+                        {/* Stylized Thailand Polygon Silhouette (Soft Clinical Tint) */}
+                        <path
+                            d="M 22,12 L 36,9 L 44,18 L 58,20 L 79,19 L 87,32 L 87,49 L 76,53 L 64,56 L 62,64 L 54,64 L 48,59 L 41,62 L 37,70 L 36,78 L 44,86 L 47,94 L 38,96 L 31,88 L 26,76 L 28,62 L 26,48 L 22,36 L 19,22 Z"
+                            fill="rgba(16, 185, 129, 0.08)"
+                            stroke="rgba(5, 150, 105, 0.25)"
+                            strokeWidth="0.6"
+                            strokeLinejoin="round"
+                        />
+
+                        {/* Connection Lines from Central Hub (BKK 47,55) to all 12 Health Regions */}
+                        {regions.map(r => r.id !== 'BKK' && (
+                            <line
+                                key={`conn-${r.id}`}
+                                x1="47"
+                                y1="55"
+                                x2={r.x}
+                                y2={r.y}
+                                stroke={activeRegion?.id === r.id ? '#059669' : '#94a3b8'}
+                                strokeWidth={activeRegion?.id === r.id ? '0.65' : '0.3'}
+                                strokeOpacity={activeRegion?.id === r.id ? '0.9' : '0.45'}
+                                strokeDasharray="1.2 1.4"
+                            />
+                        ))}
+                    </svg>
+
+                    {/* Interactive Region Pins (Large 44px touch targets for smartphones) */}
+                    {regions.map(r => {
+                        const isSelected = activeRegion?.id === r.id;
+                        const isHub = r.id === 'BKK';
+                        const hasActivity = r.users > 0;
+                        return (
+                            <button
+                                key={r.id}
+                                type="button"
+                                onClick={() => onSelectRegion(r)}
+                                aria-label={`${r.name}: ${r.users} คน`}
+                                style={{ left: `${r.x}%`, top: `${r.y}%` }}
+                                className={`absolute -translate-x-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center rounded-full focus:outline-none transition-transform duration-200 ${
+                                    isSelected ? 'z-30 scale-125' : 'z-20 hover:scale-110 active:scale-95'
+                                }`}
+                            >
+                                {(isSelected || isHub) && (
+                                    <span className={`absolute w-8 h-8 rounded-full map-pulse ${isHub ? 'bg-clinical-400' : 'bg-medical-400'}`} />
+                                )}
+                                <span
+                                    className={`relative flex items-center justify-center rounded-full border-2 border-white shadow-md font-mono font-bold transition-all ${
+                                        isSelected
+                                            ? 'w-7 h-7 bg-slate-900 text-white text-[10px] ring-4 ring-clinical-500/30'
+                                            : isHub
+                                                ? 'w-6 h-6 bg-gradient-to-br from-clinical-500 to-teal-600 text-white text-[9px]'
+                                                : hasActivity
+                                                    ? 'w-5 h-5 bg-gradient-to-br from-medical-500 to-clinical-500 text-white text-[8px]'
+                                                    : 'w-4 h-4 bg-slate-300 text-slate-600 text-[8px]'
+                                    }`}
+                                >
+                                    {r.id === 'BKK' ? 'กทม' : r.id.replace('R', '')}
+                                </span>
+                            </button>
+                        );
+                    })}
+
+                    {/* Legend */}
+                    <div className="absolute bottom-3 left-3 z-20 flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-white/85 backdrop-blur-md border border-slate-200/70 text-[10px] font-bold text-slate-600">
+                        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-clinical-600" /> ส่วนกลาง/กทม.</span>
+                        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-medical-500" /> เขตสุขภาพ 1–12</span>
+                    </div>
+                </div>
+            );
+        }
+
+        // ============================================================================
+        // 4. MAIN EXECUTIVE DASHBOARD APPLICATION
+        // ============================================================================
+        function ExecutiveApp() {
+            const [cloudUsers, setCloudUsers] = useState([]);
+            const [useDemoData, setUseDemoData] = useState(!isCloudConfigured);
+            const [appsScriptUrl, setAppsScriptUrl] = useState(CONFIG.appsScriptUrl || '');
+            const [isLoadingCloud, setIsLoadingCloud] = useState(isCloudConfigured);
+
+            // Mobile-first Tabs: overview | regions | ai
+            const [mobileTab, setMobileTab] = useState('overview');
+            const [regionViewMode, setRegionViewMode] = useState('map'); // map | list
+            const [activeRegionId, setActiveRegionId] = useState('BKK');
+
+            // AI Policy Chat & Audio States
+            const [messages, setMessages] = useState([]);
+            const [chatInput, setChatInput] = useState('');
+            const [isAiThinking, setIsAiThinking] = useState(false);
+            const [isListening, setIsListening] = useState(false);
+            const [isSpeaking, setIsSpeaking] = useState(false);
+            const [toast, setToast] = useState({ visible: false, text: '', type: 'success' });
+
+            const recRef = useRef(null);
+            const audioRef = useRef(null);
+            const audioUrlRef = useRef(null);
+            const chatEndRef = useRef(null);
+
+            const showToast = useCallback((text, type = 'success') => {
+                setToast({ visible: true, text, type });
+                setTimeout(() => setToast(p => ({ ...p, visible: false })), 3200);
+            }, []);
+
+            // Clean up audio & speech on unmount
+            const stopVoice = useCallback(() => {
+                if (audioRef.current) {
+                    audioRef.current.pause();
+                    audioRef.current = null;
+                }
+                if (audioUrlRef.current) {
+                    URL.revokeObjectURL(audioUrlRef.current);
+                    audioUrlRef.current = null;
+                }
+                if ('speechSynthesis' in window) {
+                    try { window.speechSynthesis.cancel(); } catch (_) {}
+                }
+                setIsSpeaking(false);
+            }, []);
+
+            useEffect(() => () => stopVoice(), [stopVoice]);
+
+            // 1. Firebase Real-time Sync (พร้อม Unsubscribe สะอาดป้องกัน Memory Leak)
+            useEffect(() => {
+                if (!isCloudConfigured || !fbAuth || !fbDb) {
+                    setIsLoadingCloud(false);
+                    return;
+                }
+
+                let unsubUsers = null;
+                let unsubSettings = null;
+
+                signInAnonymously(fbAuth).catch(err => {
+                    console.warn('Anon auth warning:', err);
+                    setIsLoadingCloud(false);
+                });
+
+                const unsubAuth = onAuthStateChanged(fbAuth, (fbUser) => {
+                    if (!fbUser) return;
+                    unsubUsers = onSnapshot(
+                        collection(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users'),
+                        (snap) => {
+                            const arr = [];
+                            snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
+                            setCloudUsers(arr);
+                            setIsLoadingCloud(false);
+                            // ถ้ามีข้อมูลจริงใน Cloud ให้สลับมาแสดงข้อมูลจริงอัตโนมัติ
+                            if (arr.length > 0) setUseDemoData(false);
+                        },
+                        (err) => {
+                            console.warn('Executive users snapshot error:', err);
+                            setIsLoadingCloud(false);
+                        }
+                    );
+
+                    unsubSettings = onSnapshot(
+                        doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_config', 'settings'),
+                        (docSnap) => {
+                            if (docSnap.exists() && docSnap.data()?.appsScriptUrl) {
+                                setAppsScriptUrl(docSnap.data().appsScriptUrl);
+                            }
+                        },
+                        () => {}
+                    );
+                });
+
+                return () => {
+                    unsubAuth();
+                    if (unsubUsers) unsubUsers();
+                    if (unsubSettings) unsubSettings();
+                };
+            }, []);
+
+            // 2. คำนวณสถิติรวมทั้งประเทศและรายเขต (นับครบทุกคน ไม่ตกหล่น!)
+            const analytics = useMemo(() => {
+                const sourceUsers = useDemoData ? DEMO_USERS_SEED : cloudUsers;
+
+                const statsMap = {};
+                BASE_REGIONS.forEach(r => {
+                    statsMap[r.id] = { ...r, users: 0, learning: 0, lab: 0, passed: 0 };
+                });
+
+                let totalLearning = 0;
+                let totalLab = 0;
+                let totalPassed = 0;
+                let unmappedCount = 0;
+                let csatSum = 0;
+                let csatCount = 0;
+                let skillScoreSum = 0;
+                let skillScoreCount = 0;
+
+                sourceUsers.forEach(u => {
+                    const isPassed = u.status === 'ผ่าน';
+                    const isLearning = !isPassed;
+                    const history = Array.isArray(u.skillLabHistory) ? u.skillLabHistory : [];
+                    const hasLab = history.length > 0;
+
+                    if (isPassed) totalPassed++;
+                    if (isLearning) totalLearning++;
+                    if (hasLab) {
+                        totalLab++;
+                        history.forEach(item => {
+                            if (typeof item?.score === 'number') {
+                                skillScoreSum += item.score;
+                                skillScoreCount++;
+                            }
+                        });
+                    }
+
+                    if (typeof u.satisfactionScore === 'number' && u.satisfactionScore > 0) {
+                        csatSum += u.satisfactionScore;
+                        csatCount++;
+                    }
+
+                    const regId = resolveRegionId(u.department);
+                    if (statsMap[regId]) {
+                        statsMap[regId].users += 1;
+                        if (isLearning) statsMap[regId].learning += 1;
+                        if (hasLab) statsMap[regId].lab += 1;
+                        if (isPassed) statsMap[regId].passed += 1;
+                    } else {
+                        unmappedCount += 1;
+                    }
+                });
+
+                const regionList = Object.values(statsMap);
+                const regionalOnly = regionList.filter(r => r.id !== 'BKK');
+                const sortedByUsers = [...regionalOnly].sort((a, b) => b.users - a.users);
+                const maxRegion = sortedByUsers[0] || { name: 'รอข้อมูล', users: 0, passed: 0 };
+                const minRegion = sortedByUsers[sortedByUsers.length - 1] || maxRegion;
+
+                const totalUsers = sourceUsers.length;
+                const passRate = totalUsers > 0 ? Math.round((totalPassed / totalUsers) * 100) : 0;
+                const avgCsat = csatCount > 0 ? (csatSum / csatCount).toFixed(1) : '0.0';
+                const avgSkillScore = skillScoreCount > 0 ? Math.round(skillScoreSum / skillScoreCount) : 0;
+
+                return {
+                    total: {
+                        users: totalUsers,
+                        learning: totalLearning,
+                        lab: totalLab,
+                        passed: totalPassed,
+                        unmapped: unmappedCount
+                    },
+                    regionList,
+                    maxRegion,
+                    minRegion,
+                    passRate,
+                    avgCsat,
+                    csatCount,
+                    avgSkillScore
+                };
+            }, [cloudUsers, useDemoData]);
+
+            const activeRegion = useMemo(
+                () => analytics.regionList.find(r => r.id === activeRegionId) || analytics.regionList[0],
+                [analytics.regionList, activeRegionId]
+            );
+
+            // 3. สร้างรายงานสรุปอัตโนมัติและอัปเดตทันทีเมื่อข้อมูลจริงเปลี่ยน (แก้บั๊กค้าง 0 ราย)
+            const executiveBrief = useMemo(() => {
+                const tplInsight = window.AI_INSIGHT_TEXT ||
+                    `📊 rjcloud.organ — AI Policy Intelligence Report (2027):\n• บุคลากรทั้งหมด {{USERS}} ราย | ผ่านเกณฑ์ {{PASSED}} ราย\n• ความพึงพอใจเฉลี่ย {{CSAT}}/5.0\n• พื้นที่นำร่อง: {{MAX_REG_NAME}} ({{MAX_REG_USERS}} ราย)\n• พื้นที่เฝ้าระวัง: {{MIN_REG_NAME}} ({{MIN_REG_USERS}} ราย)`;
+
+                const tplSpeech = window.POLICY_SPEECH ||
+                    `สวัสดีค่ะท่านผู้บริหาร ขณะนี้มีบุคลากรในระบบ {{USERS}} ท่าน สอบผ่านแล้ว {{PASSED}} ท่าน คะแนนความพึงพอใจเฉลี่ย {{CSAT}} เต็ม 5 และพื้นที่นำร่องสูงสุดคือ {{MAX_REG_NAME}} ค่ะ`;
+
+                const replaceTokens = (str) => str
+                    .replace(/{{USERS}}/g, analytics.total.users.toLocaleString())
+                    .replace(/{{PASSED}}/g, analytics.total.passed.toLocaleString())
+                    .replace(/{{CSAT}}/g, analytics.avgCsat)
+                    .replace(/{{MAX_REG_NAME}}/g, analytics.maxRegion.name)
+                    .replace(/{{MAX_REG_USERS}}/g, analytics.maxRegion.users.toLocaleString())
+                    .replace(/{{MIN_REG_NAME}}/g, analytics.minRegion.name)
+                    .replace(/{{MIN_REG_USERS}}/g, analytics.minRegion.users.toLocaleString());
+
+                return {
+                    insightText: replaceTokens(tplInsight),
+                    speechText: replaceTokens(tplSpeech)
+                };
+            }, [analytics]);
+
+            useEffect(() => {
+                setMessages(prev => {
+                    const initialMsg = { id: 'brief-init', role: 'ai', text: executiveBrief.insightText };
+                    if (prev.length === 0) return [initialMsg];
+                    return [initialMsg, ...prev.slice(1)];
+                });
+            }, [executiveBrief.insightText]);
+
+            // 4. ตั้งค่าระบบสั่งงานด้วยเสียง (Speech Recognition)
+            useEffect(() => {
+                const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SR) return;
+                const recognition = new SR();
+                recognition.continuous = false;
+                recognition.interimResults = true;
+                recognition.lang = 'th-TH';
+                recognition.onresult = (e) => {
+                    let transcript = '';
+                    for (let i = e.resultIndex; i < e.results.length; ++i) {
+                        transcript += e.results[i][0].transcript;
+                    }
+                    setChatInput(transcript);
+                };
+                recognition.onend = () => setIsListening(false);
+                recognition.onerror = () => setIsListening(false);
+                recRef.current = recognition;
+                return () => {
+                    try { recognition.abort(); } catch (_) {}
+                };
+            }, []);
+
+            // 5. เล่นเสียงรายงาน (Gemini TTS -> Fallback Web Speech API th-TH)
+            const playPolicyVoice = async (textToSpeak) => {
+                if (isSpeaking) {
+                    stopVoice();
+                    return;
+                }
+                const cleanText = String(textToSpeak || '').replace(/[*#📊•]/g, '').trim();
+                if (!cleanText) return;
+
+                setIsSpeaking(true);
+
+                // ลองเรียก Gemini TTS ผ่าน Apps Script ก่อนถ้ามีการตั้งค่า URL แล้ว
+                if (appsScriptUrl) {
+                    try {
+                        const res = await fetch(appsScriptUrl, {
+                            method: 'POST',
+                            body: JSON.stringify({ action: 'callGeminiTTS', text: cleanText, voiceName: 'Aoede' })
+                        }).then(r => r.json());
+
+                        if (res?.status === 'success' && res.inlineData?.data) {
+                            const rate = parseInt(res.inlineData.mimeType?.match(/rate=(\d+)/)?.[1] ?? '24000', 10);
+                            const url = pcm16ToWavUrl(res.inlineData.data, rate);
+                            audioUrlRef.current = url;
+                            const audio = new Audio(url);
+                            audioRef.current = audio;
+                            audio.onended = () => stopVoice();
+                            audio.onerror = () => stopVoice();
+                            await audio.play();
+                            return;
+                        }
+                    } catch (err) {
+                        console.warn('Gemini TTS fallback to browser speech:', err);
+                    }
+                }
+
+                // Fallback: ใช้เสียงภาษาไทยในเครื่องสมาร์ทโฟน/เบราว์เซอร์ (Web Speech API)
+                if ('speechSynthesis' in window) {
+                    try {
+                        window.speechSynthesis.cancel();
+                        const utter = new SpeechSynthesisUtterance(cleanText);
+                        utter.lang = 'th-TH';
+                        utter.rate = 1.02;
+                        utter.onend = () => setIsSpeaking(false);
+                        utter.onerror = () => setIsSpeaking(false);
+                        window.speechSynthesis.speak(utter);
+                        return;
+                    } catch (_) {}
+                }
+
+                setIsSpeaking(false);
+                showToast('อุปกรณ์นี้ไม่รองรับการอ่านเสียงอัตโนมัติค่ะ', 'error');
+            };
+
+            // 6. ส่งคำถามผู้บริหารไปยัง AI พร้อมแนบ "ข้อมูลสถิติจริงแบบ Real-time" ใน Prompt!
+            const handleSendQuestion = async (e, presetText = null) => {
+                if (e) e.preventDefault();
+                const userQ = (presetText ?? chatInput).trim();
+                if (!userQ || isAiThinking) return;
+
+                stopVoice();
+                if (isListening) {
+                    try { recRef.current?.stop(); } catch (_) {}
+                    setIsListening(false);
+                }
+
+                setChatInput('');
+                setMessages(prev => [...prev, { id: Date.now(), role: 'user', text: userQ }]);
+                setIsAiThinking(true);
+                setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 80);
+
+                // แนบข้อมูลจริงทั้งหมดเข้าไปใน System Instruction เพื่อป้องกัน AI เดาตัวเลข
+                const liveSnapshotJson = JSON.stringify({
+                    platform: 'rjcloud.organ 2027',
+                    dataMode: useDemoData ? 'Demo Simulation' : 'Live Production Firestore',
+                    nationalTotals: analytics.total,
+                    passRatePercent: analytics.passRate,
+                    csatAverageOutOf5: analytics.avgCsat,
+                    csatRespondents: analytics.csatCount,
+                    avgSkillLabScore: analytics.avgSkillScore,
+                    topRegion: { name: analytics.maxRegion.name, users: analytics.maxRegion.users, passed: analytics.maxRegion.passed },
+                    lowestRegion: { name: analytics.minRegion.name, users: analytics.minRegion.users, passed: analytics.minRegion.passed },
+                    allRegions: analytics.regionList.map(r => ({
+                        id: r.id,
+                        name: r.name,
+                        users: r.users,
+                        learning: r.learning,
+                        skillLab: r.lab,
+                        passed: r.passed
+                    }))
+                });
+
+                const systemInstruction = `คุณคือ "Fah Executive Intelligence" ผู้ช่วยวิเคราะห์ข้อมูลเชิงนโยบายของแพลตฟอร์ม rjcloud.organ (2027)
+ใช้ข้อมูลสถิติจริงด้านล่างนี้ในการตอบคำถามผู้บริหารอย่างแม่นยำ ห้ามแต่งตัวเลขขึ้นเอง:
+${liveSnapshotJson}
+
+แนวทางการตอบ:
+1. ตอบเป็นภาษาไทยที่สุภาพ กระชับ เฉียบขาด และมีวิสัยทัศน์เชิงนโยบายสาธารณสุข
+2. อ้างอิงตัวเลขจากข้อมูลจริงข้างต้น และบริบทผู้ป่วยรออวัยวะสะสมระดับชาติ (8,019 ราย) เมื่อเกี่ยวข้อง
+3. จัดย่อหน้าหรือหัวข้อย่อยให้อ่านง่ายบนหน้าจอสมาร์ทโฟน`;
+
+                let answerText = '';
+
+                if (appsScriptUrl) {
+                    try {
+                        const res = await fetch(appsScriptUrl, {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                action: 'callGemini',
+                                prompt: userQ,
+                                systemInstruction
+                            })
+                        }).then(r => r.json());
+
+                        if (res?.status === 'success' && res.text) {
+                            answerText = res.text;
+                        }
+                    } catch (err) {
+                        console.warn('Gemini call failed, using local analytics engine:', err);
+                    }
+                }
+
+                if (!answerText) {
+                    await new Promise(r => setTimeout(r, 450));
+                    answerText = generateLocalExecutiveAnswer(userQ, analytics);
+                }
+
+                setMessages(prev => [...prev, { id: Date.now() + 1, role: 'ai', text: answerText }]);
+                setIsAiThinking(false);
+                setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
+            };
+
+            const toggleMic = () => {
+                if (!recRef.current) {
+                    showToast('เบราว์เซอร์นี้ไม่รองรับการสั่งงานด้วยเสียงค่ะ', 'error');
+                    return;
+                }
+                if (isListening) {
+                    recRef.current.stop();
+                    setIsListening(false);
+                } else {
+                    setChatInput('');
+                    try {
+                        recRef.current.start();
+                        setIsListening(true);
+                    } catch (_) {
+                        setIsListening(false);
+                    }
+                }
+            };
+
+            const quickPrompts = [
+                'สรุปภาพรวมบุคลากรทั้งหมด',
+                'เขตสุขภาพไหนควรเร่งสนับสนุน?',
+                'ผลความพึงพอใจ (CSAT) เป็นอย่างไร?'
+            ];
+
+            // ============================================================================
+            // 5. RENDER UI (PEARL CLINICAL GLASS 2027 — LIGHT & 100% SMARTPHONE READY)
+            // ============================================================================
+            return (
+                <div className="min-h-dvh relative flex flex-col pt-safe pb-dock-safe lg:pb-10">
+                    <div className="aura-canvas" />
+                    <div className="aura-grid" />
+
+                    {/* Top App Header */}
+                    <header className="sticky top-0 z-30 backdrop-blur-xl bg-white/82 border-b border-slate-200/70 no-print">
+                        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 h-14 md:h-16 flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2.5 min-w-0">
+                                <a
+                                    href="./index.html"
+                                    aria-label="กลับหน้าหลัก"
+                                    className="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center shrink-0 transition-colors"
+                                >
+                                    <Icon name="ArrowLeft" size={18} />
+                                </a>
+                                <div className="min-w-0">
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="font-display font-extrabold text-sm sm:text-base text-slate-900 truncate">
+                                            Executive Intelligence
+                                        </span>
+                                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-mono font-bold shrink-0 ${
+                                            useDemoData
+                                                ? 'bg-amber-100 text-amber-800'
+                                                : 'bg-clinical-100 text-clinical-700'
+                                        }`}>
+                                            {useDemoData ? 'DEMO' : 'LIVE'}
+                                        </span>
+                                    </div>
+                                    <p className="text-[10px] font-mono text-slate-500 truncate">
+                                        rjcloud.organ • National Metrics 2027
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-2 shrink-0">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        if (!isCloudConfigured && useDemoData) {
+                                            showToast('กรุณาวางค่า Firebase ของ rjcloud.organ@gmail.com ใน data.js เพื่อดูข้อมูลจริงค่ะ', 'error');
+                                            return;
+                                        }
+                                        setUseDemoData(v => !v);
+                                    }}
+                                    className="px-3 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200/80 text-slate-700 font-bold text-[11px] flex items-center gap-1.5 transition-colors shadow-sm"
+                                >
+                                    <Icon name="Database" size={14} className="text-clinical-600" />
+                                    <span className="hidden sm:inline">{useDemoData ? 'ข้อมูลตัวอย่าง' : 'ข้อมูลจริง'}</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => playPolicyVoice(executiveBrief.speechText)}
+                                    className={`px-3 py-2 rounded-xl font-bold text-[11px] flex items-center gap-1.5 transition-all shadow-sm ${
+                                        isSpeaking
+                                            ? 'bg-rose-500 text-white'
+                                            : 'bg-clinical-600 hover:bg-clinical-700 text-white'
+                                    }`}
+                                >
+                                    <Icon name={isSpeaking ? 'Square' : 'Volume2'} size={14} />
+                                    <span className="hidden sm:inline">{isSpeaking ? 'หยุดเสียง' : 'ฟังรายงาน'}</span>
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Main Content Grid */}
+                    <main className="relative z-10 flex-1 w-full max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 pt-4 md:pt-6 space-y-5">
+                        {/* SECTION A: KPI BENTO STRIP (แสดงบนมือถือเมื่ออยู่แท็บ overview และแสดงตลอดบน Desktop) */}
+                        <section className={`${mobileTab === 'overview' ? 'block' : 'hidden'} lg:block space-y-4`}>
+                            {/* National Hero Banner */}
+                            <div className="bento-glass rounded-[1.75rem] p-5 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                <div>
+                                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-clinical-50 border border-clinical-200/80 text-clinical-700 text-[10px] font-mono font-bold mb-2">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-clinical-500 animate-pulse" />
+                                        NATIONAL HEALTHCARE WORKFORCE • 2027
+                                    </div>
+                                    <h1 className="font-display text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 leading-tight">
+                                        ภาพรวมการพัฒนาบุคลากรทั่วประเทศ
+                                    </h1>
+                                    <p className="text-xs sm:text-sm text-slate-500 mt-1">
+                                        ติดตามความคืบหน้าการอบรม ทักษะเจรจา AI Skill Lab และความพึงพอใจรายเขตสุขภาพ
+                                    </p>
+                                </div>
+
+                                <div className="flex items-center gap-3 bg-gradient-to-r from-clinical-50 to-medical-50 px-4 py-3 rounded-2xl border border-clinical-200/60 shrink-0">
+                                    <div className="w-11 h-11 rounded-2xl bg-white text-clinical-600 flex items-center justify-center shadow-sm">
+                                        <Icon name="TrendingUp" size={22} />
+                                    </div>
+                                    <div>
+                                        <p className="text-[11px] font-bold text-slate-500">อัตราสำเร็จหลักสูตร</p>
+                                        <p className="font-mono text-2xl font-extrabold text-clinical-700 leading-none mt-0.5">
+                                            {analytics.passRate}%
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* 4 Core KPI Cards (2x2 Grid on Smartphone, 4-col on Desktop) */}
+                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                                <div className="bento-glass rounded-[1.5rem] p-4 sm:p-5">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-xs font-bold text-slate-500">บุคลากรทั้งหมด</span>
+                                        <div className="w-8 h-8 rounded-xl bg-medical-50 text-medical-600 flex items-center justify-center">
+                                            <Icon name="Users" size={16} />
+                                        </div>
+                                    </div>
+                                    <p className="font-mono text-2xl sm:text-3xl font-extrabold text-slate-900">
+                                        {analytics.total.users.toLocaleString()}
+                                    </p>
+                                    <p className="text-[11px] text-slate-500 mt-1">
+                                        กำลังเรียน <b className="text-slate-700">{analytics.total.learning.toLocaleString()}</b> ราย
+                                    </p>
+                                </div>
+
+                                <div className="bento-glass rounded-[1.5rem] p-4 sm:p-5">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-xs font-bold text-slate-500">สอบผ่านรับประกาศฯ</span>
+                                        <div className="w-8 h-8 rounded-xl bg-clinical-50 text-clinical-600 flex items-center justify-center">
+                                            <Icon name="Award" size={16} />
+                                        </div>
+                                    </div>
+                                    <p className="font-mono text-2xl sm:text-3xl font-extrabold text-clinical-700">
+                                        {analytics.total.passed.toLocaleString()}
+                                    </p>
+                                    <p className="text-[11px] text-clinical-600 font-semibold mt-1">
+                                        คิดเป็น {analytics.passRate}% ของทั้งหมด
+                                    </p>
+                                </div>
+
+                                <div className="bento-glass rounded-[1.5rem] p-4 sm:p-5">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-xs font-bold text-slate-500">ฝึก AI Skill Lab</span>
+                                        <div className="w-8 h-8 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center">
+                                            <Icon name="Bot" size={16} />
+                                        </div>
+                                    </div>
+                                    <p className="font-mono text-2xl sm:text-3xl font-extrabold text-violet-700">
+                                        {analytics.total.lab.toLocaleString()}
+                                    </p>
+                                    <p className="text-[11px] text-slate-500 mt-1">
+                                        คะแนนเจรจาเฉลี่ย <b className="text-violet-700">{analytics.avgSkillScore}/100</b>
+                                    </p>
+                                </div>
+
+                                <div className="bento-glass rounded-[1.5rem] p-4 sm:p-5">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-xs font-bold text-slate-500">ความพึงพอใจ (CSAT)</span>
+                                        <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center">
+                                            <Icon name="Star" size={16} />
+                                        </div>
+                                    </div>
+                                    <div className="flex items-baseline gap-1">
+                                        <p className="font-mono text-2xl sm:text-3xl font-extrabold text-amber-600">
+                                            {analytics.avgCsat}
+                                        </p>
+                                        <span className="font-mono text-xs font-bold text-slate-400">/ 5.0</span>
+                                    </div>
+                                    <p className="text-[11px] text-slate-500 mt-1">
+                                        จากผู้ประเมิน <b className="text-slate-700">{analytics.csatCount.toLocaleString()}</b> ราย
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Quick Highlights on Mobile Overview (นำร่อง vs เฝ้าระวัง) */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:hidden">
+                                <button
+                                    type="button"
+                                    onClick={() => { setActiveRegionId(analytics.maxRegion.id); setMobileTab('regions'); }}
+                                    className="bento-glass rounded-2xl p-4 text-left flex items-center justify-between active:scale-[0.99]"
+                                >
+                                    <div>
+                                        <p className="text-[11px] font-bold text-clinical-600">เขตสุขภาพนำร่องสูงสุด</p>
+                                        <p className="font-display font-bold text-base text-slate-900 mt-0.5">{analytics.maxRegion.name}</p>
+                                        <p className="text-xs text-slate-500">{analytics.maxRegion.users} ราย • สอบผ่าน {analytics.maxRegion.passed} ราย</p>
+                                    </div>
+                                    <Icon name="ChevronRight" size={18} className="text-slate-400" />
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => { setActiveRegionId(analytics.minRegion.id); setMobileTab('regions'); }}
+                                    className="bento-glass rounded-2xl p-4 text-left flex items-center justify-between active:scale-[0.99]"
+                                >
+                                    <div>
+                                        <p className="text-[11px] font-bold text-amber-600">พื้นที่ควรเร่งสนับสนุน</p>
+                                        <p className="font-display font-bold text-base text-slate-900 mt-0.5">{analytics.minRegion.name}</p>
+                                        <p className="text-xs text-slate-500">{analytics.minRegion.users} ราย • สอบผ่าน {analytics.minRegion.passed} ราย</p>
+                                    </div>
+                                    <Icon name="ChevronRight" size={18} className="text-slate-400" />
+                                </button>
+                            </div>
+                        </section>
+
+                        {/* SECTION B: WORKSPACE SPLIT (Desktop: Map 7 cols + AI 5 cols | Mobile: Tabbed) */}
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+                            {/* LEFT/TOP: REGIONAL MAP & BREAKDOWN */}
+                            <section className={`lg:col-span-7 ${mobileTab === 'regions' ? 'block' : 'hidden'} lg:block space-y-4`}>
+                                <div className="bento-glass rounded-[1.75rem] p-4 sm:p-6 space-y-4">
+                                    <div className="flex flex-wrap items-center justify-between gap-2">
+                                        <div>
+                                            <h2 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
+                                                <Icon name="MapPin" size={18} className="text-clinical-600" />
+                                                แผนที่เครือข่าย 13 เขตสุขภาพ
+                                            </h2>
+                                            <p className="text-xs text-slate-500">แตะที่จุดเขตสุขภาพเพื่อดูรายละเอียดเชิงลึก</p>
+                                        </div>
+
+                                        {/* Switch Map / List View (ดีมากสำหรับจอมือถือเล็ก) */}
+                                        <div className="inline-flex p-1 rounded-xl bg-slate-100 border border-slate-200/70">
+                                            <button
+                                                type="button"
+                                                onClick={() => setRegionViewMode('map')}
+                                                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                                                    regionViewMode === 'map' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'
+                                                }`}
+                                            >
+                                                แผนที่
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setRegionViewMode('list')}
+                                                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                                                    regionViewMode === 'list' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'
+                                                }`}
+                                            >
+                                                ตารางจัดอันดับ
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {regionViewMode === 'map' ? (
+                                        <>
+                                            <ThailandNetworkMap
+                                                regions={analytics.regionList}
+                                                activeRegion={activeRegion}
+                                                onSelectRegion={(r) => setActiveRegionId(r.id)}
+                                            />
+
+                                            {/* Selected Region Inspector Card (ชัดเจน อ่านง่ายบนมือถือ ไม่โดนขอบจอตัด) */}
+                                            {activeRegion && (
+                                                <div className="p-4 sm:p-5 rounded-2xl bg-white/95 border border-clinical-200/80 shadow-sm space-y-3">
+                                                    <div className="flex items-start justify-between gap-2">
+                                                        <div>
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="px-2 py-0.5 rounded-md bg-clinical-100 text-clinical-700 font-mono text-[10px] font-bold">
+                                                                    {activeRegion.id}
+                                                                </span>
+                                                                <h3 className="font-display font-bold text-base text-slate-900">{activeRegion.name}</h3>
+                                                            </div>
+                                                            <p className="text-xs text-slate-500 mt-0.5">{activeRegion.desc}</p>
+                                                        </div>
+                                                        <span className="font-mono text-xs font-bold text-clinical-700 bg-clinical-50 px-2.5 py-1 rounded-full">
+                                                            ผ่าน {activeRegion.users > 0 ? Math.round((activeRegion.passed / activeRegion.users) * 100) : 0}%
+                                                        </span>
+                                                    </div>
+
+                                                    <div className="grid grid-cols-4 gap-2 text-center">
+                                                        <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                                                            <p className="text-[10px] font-bold text-slate-400">ทั้งหมด</p>
+                                                            <p className="font-mono text-base font-extrabold text-slate-900">{activeRegion.users}</p>
+                                                        </div>
+                                                        <div className="p-2.5 rounded-xl bg-amber-50/70 border border-amber-100">
+                                                            <p className="text-[10px] font-bold text-amber-600">กำลังเรียน</p>
+                                                            <p className="font-mono text-base font-extrabold text-amber-700">{activeRegion.learning}</p>
+                                                        </div>
+                                                        <div className="p-2.5 rounded-xl bg-violet-50/70 border border-violet-100">
+                                                            <p className="text-[10px] font-bold text-violet-600">Skill Lab</p>
+                                                            <p className="font-mono text-base font-extrabold text-violet-700">{activeRegion.lab}</p>
+                                                        </div>
+                                                        <div className="p-2.5 rounded-xl bg-clinical-50 border border-clinical-100">
+                                                            <p className="text-[10px] font-bold text-clinical-600">ผ่านเกณฑ์</p>
+                                                            <p className="font-mono text-base font-extrabold text-clinical-700">{activeRegion.passed}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <div className="space-y-2.5 max-h-[580px] overflow-y-auto custom-scrollbar pr-1">
+                                            {[...analytics.regionList]
+                                                .sort((a, b) => b.users - a.users)
+                                                .map((r, idx) => {
+                                                    const pct = analytics.total.users > 0 ? Math.round((r.users / analytics.total.users) * 100) : 0;
+                                                    return (
+                                                        <button
+                                                            key={r.id}
+                                                            type="button"
+                                                            onClick={() => { setActiveRegionId(r.id); setRegionViewMode('map'); }}
+                                                            className="w-full text-left p-3.5 rounded-2xl bg-white/90 hover:bg-clinical-50/60 border border-slate-200/70 transition-all"
+                                                        >
+                                                            <div className="flex items-center justify-between gap-2 mb-1.5">
+                                                                <div className="flex items-center gap-2 min-w-0">
+                                                                    <span className="w-6 h-6 rounded-lg bg-slate-100 font-mono text-xs font-bold text-slate-600 flex items-center justify-center shrink-0">
+                                                                        {idx + 1}
+                                                                    </span>
+                                                                    <span className="font-display font-bold text-sm text-slate-900 truncate">{r.name}</span>
+                                                                </div>
+                                                                <span className="font-mono text-xs font-extrabold text-clinical-700 shrink-0">
+                                                                    {r.users} ราย (ผ่าน {r.passed})
+                                                                </span>
+                                                            </div>
+                                                            <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+                                                                <div
+                                                                    className="h-full rounded-full bg-gradient-to-r from-clinical-500 to-medical-500"
+                                                                    style={{ width: `${Math.max(4, pct * 2.5)}%` }}
+                                                                />
+                                                            </div>
+                                                        </button>
+                                                    );
+                                                })}
+                                            {analytics.total.unmapped > 0 && (
+                                                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70 text-xs text-slate-600 flex items-center justify-between">
+                                                    <span>สังกัดอื่นๆ / ไม่ระบุเขตสุขภาพ (นับรวมในยอดประเทศแล้ว)</span>
+                                                    <span className="font-mono font-bold text-slate-800">{analytics.total.unmapped} ราย</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            </section>
+
+                            {/* RIGHT: FAH EXECUTIVE INTELLIGENCE AI CHAT */}
+                            <section className={`lg:col-span-5 ${mobileTab === 'ai' || mobileTab === 'overview' ? 'block' : 'hidden'} lg:block`}>
+                                <div className="bento-glass rounded-[1.75rem] flex flex-col h-[560px] lg:h-[690px] overflow-hidden border-clinical-200/70">
+                                    {/* AI Header */}
+                                    <div className="p-4 sm:p-5 border-b border-slate-200/70 bg-white/75 flex items-center justify-between gap-2 shrink-0">
+                                        <div className="flex items-center gap-3 min-w-0">
+                                            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-clinical-500 to-medical-500 text-white flex items-center justify-center shadow-md shrink-0">
+                                                <Icon name="Cpu" size={20} />
+                                            </div>
+                                            <div className="min-w-0">
+                                                <h2 className="font-display font-bold text-sm sm:text-base text-slate-900 truncate">
+                                                    Fah Executive AI
+                                                </h2>
+                                                <p className="text-[11px] text-clinical-700 font-semibold flex items-center gap-1.5">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-clinical-500 animate-pulse" />
+                                                    วิเคราะห์จากข้อมูลจริง ({analytics.total.users} ราย)
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => playPolicyVoice(messages[messages.length - 1]?.text || executiveBrief.speechText)}
+                                            className={`touch-target px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shrink-0 ${
+                                                isSpeaking
+                                                    ? 'bg-rose-500 text-white'
+                                                    : 'bg-clinical-50 hover:bg-clinical-100 text-clinical-700 border border-clinical-200/70'
+                                            }`}
+                                        >
+                                            <Icon name={isSpeaking ? 'VolumeX' : 'Volume2'} size={15} />
+                                            {isSpeaking ? 'หยุด' : 'ฟังสรุป'}
+                                        </button>
+                                    </div>
+
+                                    {/* Chat Feed */}
+                                    <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-3 bg-slate-50/40">
+                                        {isLoadingCloud && (
+                                            <div className="text-center py-6 text-xs text-slate-400">กำลังซิงค์ข้อมูลล่าสุดจาก Cloud...</div>
+                                        )}
+
+                                        {messages.map((m) => (
+                                            <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                                <div className={`max-w-[92%] p-3.5 rounded-2xl text-xs sm:text-sm leading-relaxed whitespace-pre-line shadow-sm ${
+                                                    m.role === 'user'
+                                                        ? 'bg-gradient-to-r from-clinical-600 to-teal-600 text-white rounded-br-sm font-medium'
+                                                        : 'bg-white border border-slate-200/80 text-slate-800 rounded-bl-sm'
+                                                }`}>
+                                                    {m.text}
+                                                </div>
+                                            </div>
+                                        ))}
+
+                                        {isAiThinking && (
+                                            <div className="flex justify-start">
+                                                <div className="px-4 py-3 rounded-2xl bg-white border border-slate-200/80 text-xs font-semibold text-clinical-700 flex items-center gap-2">
+                                                    <span className="w-2 h-2 rounded-full bg-clinical-500 animate-bounce" />
+                                                    กำลังวิเคราะห์ข้อมูลเชิงนโยบาย...
+                                                </div>
+                                            </div>
+                                        )}
+                                        <div ref={chatEndRef} />
+                                    </div>
+
+                                    {/* Quick Prompts & Input */}
+                                    <div className="p-3 sm:p-4 border-t border-slate-200/70 bg-white/90 space-y-2.5 shrink-0">
+                                        <div className="flex gap-1.5 overflow-x-auto custom-scrollbar pb-1">
+                                            {quickPrompts.map((qp, idx) => (
+                                                <button
+                                                    key={idx}
+                                                    type="button"
+                                                    onClick={() => handleSendQuestion(null, qp)}
+                                                    className="shrink-0 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-clinical-50 hover:text-clinical-700 border border-slate-200/70 text-[11px] font-bold text-slate-600 transition-colors"
+                                                >
+                                                    {qp}
+                                                </button>
+                                            ))}
+                                        </div>
+
+                                        <form onSubmit={handleSendQuestion} className="flex items-center gap-2">
+                                            <input
+                                                type="text"
+                                                value={chatInput}
+                                                onChange={e => setChatInput(e.target.value)}
+                                                placeholder={isListening ? 'กำลังรับเสียงพูด...' : 'ถามข้อมูลนโยบายหรือสถิติ...'}
+                                                disabled={isAiThinking}
+                                                className="touch-target flex-1 px-4 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-clinical-500 focus:bg-white"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={toggleMic}
+                                                aria-label="สั่งงานด้วยเสียง"
+                                                className={`touch-target w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 transition-all ${
+                                                    isListening
+                                                        ? 'bg-rose-500 text-white shadow-md animate-pulse'
+                                                        : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
+                                                }`}
+                                            >
+                                                <Icon name="Mic" size={18} />
+                                            </button>
+                                            <button
+                                                type="submit"
+                                                disabled={!chatInput.trim() || isAiThinking}
+                                                aria-label="ส่งคำถาม"
+                                                className="touch-target w-11 h-11 rounded-2xl bg-clinical-600 hover:bg-clinical-700 disabled:bg-slate-200 disabled:text-slate-400 text-white flex items-center justify-center shrink-0 shadow-sm transition-colors"
+                                            >
+                                                <Icon name="Send" size={18} />
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </main>
+
+                    {/* Smartphone Bottom Dock (3 แท็บกดถนัดมือเดียว) */}
+                    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/92 backdrop-blur-2xl border-t border-slate-200/80 px-3 pt-1.5 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] shadow-[0_-8px_30px_rgba(15,23,42,0.08)] no-print">
+                        <div className="grid grid-cols-3 gap-1.5 max-w-md mx-auto">
+                            {[
+                                { id: 'overview', label: 'ภาพรวม KPI', icon: 'LayoutDashboard' },
+                                { id: 'regions', label: 'แผนที่ 13 เขต', icon: 'MapPin' },
+                                { id: 'ai', label: 'ถาม Fah AI', icon: 'Cpu' }
+                            ].map(item => {
+                                const active = mobileTab === item.id;
+                                return (
+                                    <button
+                                        key={item.id}
+                                        type="button"
+                                        onClick={() => { setMobileTab(item.id); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                                        className={`touch-target flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-xl text-[11px] font-bold transition-all active:scale-95 ${
+                                            active
+                                                ? 'bg-clinical-600 text-white shadow-sm'
+                                                : 'text-slate-600 hover:bg-slate-100'
+                                        }`}
+                                    >
+                                        <Icon name={item.icon} size={18} />
+                                        <span>{item.label}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </nav>
+
+                    <ToastBanner toast={toast} />
+                </div>
+            );
+        }
+
         const root = createRoot(document.getElementById('executive-root'));
-        root.render(<ExecutiveDashboard />);
+        root.render(<ExecutiveApp />);
     </script>
 </body>
 </html>
