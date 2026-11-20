@@ -2,33 +2,126 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - e-Learning RJ Ailiverse</title>
-    
-    <!-- 🌟 เรียกใช้ไฟล์ข้อมูลแยก (Static Data) เพื่อรีดน้ำหนักโค้ด 🌟 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#f8fafc">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>Admin Studio — rjcloud.organ 2027</title>
+
+    <!-- 🌟 โหลดค่าตั้งต้นและข้อมูลกลางจาก data.js 🌟 -->
     <script src="./data.js"></script>
 
+    <!-- 🌟 Tailwind CSS & Fonts (Prompt + Sarabun + JetBrains Mono) 🌟 -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Prompt:wght@500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <script>
-      tailwind.config = { theme: { extend: { colors: { line: { 50: '#e5f8e5', 100: '#cbf1cb', 200: '#9ce49c', 300: '#6dd66d', 400: '#3ec93e', 500: '#00B900', 600: '#009400', 700: '#006f00', 800: '#004a00', 900: '#002500' } } } } }
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              display: ['Prompt', 'sans-serif'],
+              sans: ['Sarabun', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace']
+            },
+            colors: {
+              clinical: {
+                50: '#ecfdf5',
+                100: '#d1fae5',
+                200: '#a7f3d0',
+                400: '#34d399',
+                500: '#10b981',
+                600: '#059669',
+                700: '#047857',
+                900: '#064e3b'
+              },
+              medical: {
+                50: '#f0f9ff',
+                100: '#e0f2fe',
+                400: '#38bdf8',
+                500: '#0ea5e9',
+                600: '#0284c7',
+                700: '#0369a1'
+              }
+            }
+          }
+        }
+      };
     </script>
-    
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap');
-        body { font-family: 'Sarabun', sans-serif; background-color: #f1f5f9; color: #1e293b; margin: 0; }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: #94a3b8; }
+      html {
+        -webkit-tap-highlight-color: transparent;
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: 'Sarabun', sans-serif;
+        background-color: #f8fafc;
+        color: #0f172a;
+        margin: 0;
+        overflow-x: hidden;
+        overscroll-behavior-y: none;
+      }
+
+      /* 🌟 Mobile-First 100% Safe Area & Touch Optimization 🌟 */
+      .min-h-dvh { min-height: 100vh; min-height: 100dvh; }
+      .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+      .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+      .pb-dock-safe { padding-bottom: calc(6.5rem + env(safe-area-inset-bottom, 0px)); }
+      .touch-target { min-height: 48px; touch-action: manipulation; }
+
+      /* ป้องกัน iOS Safari ซูมหน้าจออัตโนมัติเวลาแตะช่องกรอกข้อมูล */
+      @media (max-width: 768px) {
+        input, select, textarea { font-size: 16px !important; }
+      }
+
+      /* 🌟 2027 Pearl Clinical Aura Background 🌟 */
+      .aura-canvas {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background:
+          radial-gradient(circle at 8% 10%, rgba(16, 185, 129, 0.14) 0%, transparent 45%),
+          radial-gradient(circle at 92% 12%, rgba(14, 165, 233, 0.14) 0%, transparent 45%),
+          radial-gradient(circle at 75% 88%, rgba(45, 212, 191, 0.12) 0%, transparent 48%),
+          linear-gradient(180deg, #ffffff 0%, #f8fafc 55%, #f1f5f9 100%);
+        pointer-events: none;
+      }
+      .aura-grid {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background-image:
+          linear-gradient(to right, rgba(15, 23, 42, 0.026) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(15, 23, 42, 0.026) 1px, transparent 1px);
+        background-size: 40px 40px;
+        mask-image: radial-gradient(ellipse at center, black 45%, transparent 92%);
+        pointer-events: none;
+      }
+
+      /* 🌟 Bento Glass Card 🌟 */
+      .bento-glass {
+        background: rgba(255, 255, 255, 0.84);
+        backdrop-filter: blur(22px);
+        -webkit-backdrop-filter: blur(22px);
+        border: 1px solid rgba(255, 255, 255, 0.94);
+        box-shadow: 0 12px 32px -10px rgba(15, 23, 42, 0.07), 0 2px 6px rgba(15, 23, 42, 0.03);
+      }
+
+      .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+      .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+      .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.45); border-radius: 999px; }
     </style>
 
+    <!-- 🌟 ESM Import Map (React 18, Lucide Icons, Firebase 11) 🌟 -->
     <script type="importmap">
     {
       "imports": {
         "react": "https://esm.sh/react@18.2.0",
         "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-        "react-dom": "https://esm.sh/react-dom@18.2.0",
-        "lucide-react": "https://esm.sh/lucide-react@0.294.0?external=react",
+        "lucide-react": "https://esm.sh/lucide-react@0.344.0?external=react",
         "firebase/app": "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js",
         "firebase/auth": "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js",
         "firebase/firestore": "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"
@@ -41,506 +134,1279 @@
     <div id="admin-root"></div>
 
     <script type="text/babel" data-type="module">
-        // 🛡️ ป้องกันจอขาว (Global Error Handler)
-        window.onerror = function(message, source, lineno, colno, error) {
-            document.body.innerHTML = `
-                <div style="min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#1e293b; font-family:sans-serif; padding:20px; text-align:center;">
-                    <h2 style="font-size:24px; font-weight:bold; margin-bottom:10px; color:#ef4444;">พบข้อผิดพลาดในโค้ด (Syntax Error)</h2>
-                    <p style="color:#64748b; max-width:600px; line-height:1.5; background:#f8fafc; padding:15px; border-radius:8px; border:1px solid #e2e8f0;">${message}</p>
-                </div>
-            `;
-            return true;
-        };
-
-        import React, { useState, useEffect, useRef } from 'react';
+        import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
         import { createRoot } from 'react-dom/client';
         import * as LucideIcons from 'lucide-react';
         import { initializeApp, getApps, getApp } from 'firebase/app';
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
-        import { getFirestore, collection, doc, setDoc, onSnapshot, deleteDoc } from 'firebase/firestore';
+        import {
+            getAuth,
+            signInWithEmailAndPassword,
+            signOut,
+            onAuthStateChanged
+        } from 'firebase/auth';
+        import {
+            getFirestore,
+            collection,
+            doc,
+            setDoc,
+            deleteDoc,
+            onSnapshot
+        } from 'firebase/firestore';
 
-        const ICONS = {
-          Users: LucideIcons.Users, Radio: LucideIcons.Radio, BookOpen: LucideIcons.BookOpen, 
-          Database: LucideIcons.Database, Activity: LucideIcons.Activity, LogOut: LucideIcons.LogOut,
-          Search: LucideIcons.Search, Edit: LucideIcons.Edit, CheckCircle: LucideIcons.CheckCircle,
-          XCircle: LucideIcons.XCircle, Save: LucideIcons.Save, UploadCloud: LucideIcons.UploadCloud,
-          Trash2: LucideIcons.Trash2, Plus: LucideIcons.Plus, Download: LucideIcons.Download,
-          RefreshCw: LucideIcons.RefreshCw, ShieldCheck: LucideIcons.ShieldCheck, Info: LucideIcons.Info, CheckSquare: LucideIcons.CheckSquare,
-          ArrowLeft: LucideIcons.ArrowLeft, MonitorPlay: LucideIcons.MonitorPlay, Lock: LucideIcons.Lock, Globe: LucideIcons.Globe
+        // ============================================================================
+        // 1. CONFIGURATION & DEFAULT DATA
+        // ============================================================================
+        const CONFIG = window.RJCLOUD_CONFIG || {
+            appName: 'rjcloud.organ',
+            edition: '2027 Clinical Edition',
+            contactEmail: 'rjcloud.organ@gmail.com',
+            appId: 'rjcloud-organ-2027',
+            adminEmails: ['rjcloud.organ@gmail.com'],
+            firebaseConfig: {},
+            appsScriptUrl: ''
         };
+
+        const DEFAULT_CERT_TEMPLATE = window.DEFAULT_CERT_TEMPLATE || {
+            certPrefix: 'RJC-2027',
+            orgTitleTH: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ',
+            orgTitleEN: 'rjcloud.organ • Clinical Organ Donation & Transplantation Network',
+            courseTitleTH: 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ',
+            courseTitleEN: 'Organ Donation & Transplantation Clinical Coordination Program',
+            subtitleTH: 'ขอมอบประกาศนียบัตรฉบับนี้เพื่อแสดงว่า',
+            completionTextTH: 'ได้ผ่านการอบรมและประเมินผลตามเกณฑ์มาตรฐานหลักสูตรประจำปี 2027',
+            signerName: 'นายแพทย์สมชาย ตัวอย่างดี',
+            signerPosition: 'ผู้อำนวยการโครงการ rjcloud.organ (ตัวอย่าง — แก้ไขได้ในหน้า Admin)',
+            hoursText: 'ระยะเวลาการเรียนรู้ตามเกณฑ์มาตรฐานวิชาชีพ',
+            logoUrl: '',
+            signatureUrl: ''
+        };
+
+        const DEMO_ADMIN_USERS = [
+            {
+                id: '65012345',
+                license: '65012345',
+                name: 'พว.ใจดี มีเมตตา',
+                email: 'jaidee@hospital.go.th',
+                phone: '0812345678',
+                position: 'พยาบาลวิชาชีพชำนาญการ (ICU)',
+                workContext: 'ปฏิบัติงานรับบริจาค/ปลูกถ่ายอวัยวะ',
+                department: 'กรมการแพทย์',
+                hospital: 'รพ.ราชวิถี',
+                province: 'กรุงเทพมหานคร',
+                userType: 'Masterclass',
+                status: 'ผ่าน',
+                progress: 100,
+                studySeconds: 36000,
+                pretest: '30/40',
+                posttest: '38/40',
+                skillLabPassed: true,
+                skillLabHistory: [{ score: 92 }],
+                satisfactionScore: 5,
+                certificateCode: 'RJC-2027-DEMO01'
+            },
+            {
+                id: '66098765',
+                license: '66098765',
+                name: 'พว.สมหญิง รักษาดี',
+                email: 'somying@cmh.go.th',
+                phone: '0898765432',
+                position: 'พยาบาลประสานงานรับบริจาคอวัยวะ',
+                workContext: 'ปฏิบัติงานรับบริจาค/ปลูกถ่ายอวัยวะ',
+                department: 'เขตสุขภาพที่ 1',
+                hospital: 'รพ.มหาราชนครเชียงใหม่',
+                province: 'เชียงใหม่',
+                userType: 'Onsite',
+                status: 'กำลังเรียน',
+                progress: 85,
+                studySeconds: 30600,
+                pretest: '26/40',
+                posttest: '-',
+                skillLabPassed: false,
+                skillLabHistory: [],
+                satisfactionScore: null,
+                certificateCode: ''
+            },
+            {
+                id: '67054321',
+                license: '67054321',
+                name: 'นพ.ธีรภัทร เกื้อกูล',
+                email: 'teerapat@kkh.go.th',
+                phone: '0861112233',
+                position: 'อายุรแพทย์โรคไต',
+                workContext: 'ไม่ได้ปฏิบัติงานด้านนี้โดยตรง แต่สนใจศึกษา',
+                department: 'เขตสุขภาพที่ 7',
+                hospital: 'รพ.ขอนแก่น',
+                province: 'ขอนแก่น',
+                userType: 'เรียนใหม่',
+                status: 'กำลังเรียน',
+                progress: 45,
+                studySeconds: 12960,
+                pretest: '32/40',
+                posttest: '-',
+                skillLabPassed: false,
+                skillLabHistory: [],
+                satisfactionScore: null,
+                certificateCode: ''
+            }
+        ];
+
+        let fbApp = null, fbAuth = null, fbDb = null;
+        const isCloudConfigured = Boolean(CONFIG.firebaseConfig?.apiKey && CONFIG.firebaseConfig?.projectId);
+
+        if (isCloudConfigured) {
+            try {
+                fbApp = getApps().length === 0 ? initializeApp(CONFIG.firebaseConfig) : getApp();
+                fbAuth = getAuth(fbApp);
+                fbDb = getFirestore(fbApp);
+            } catch (err) {
+                console.warn('Firebase init skipped:', err);
+            }
+        }
+
+        // ============================================================================
+        // 2. HELPERS & CSV UTILITIES
+        // ============================================================================
+        function Icon({ name, size = 20, className = "", strokeWidth = 2 }) {
+            const Comp = LucideIcons[name] || LucideIcons.Activity;
+            return <Comp size={size} className={className} strokeWidth={strokeWidth} />;
+        }
 
         function parseRawExams(raw) {
             if (!raw || !Array.isArray(raw)) return [];
             return raw.map((str, idx) => {
-                const parts = str.split('|').map(s => s.trim());
+                const parts = String(str).split('|').map(s => s.trim());
                 return {
                     id: idx + 1,
                     question: parts[0] ? parts[0].replace(/^[0-9]+\.\s*/, '') : '',
-                    options: parts.slice(1, parts.length - 1),
+                    options: parts.slice(1, Math.max(2, parts.length - 1)),
                     answer: parseInt((parts[parts.length - 1] || '0').replace(/[^0-9]/g, ''), 10) || 0
                 };
             });
         }
 
-        function SafeIcon({ name, size = 20, className = "" }) {
-          const IconComponent = ICONS[name] || ICONS['Activity'];
-          return <IconComponent size={size} className={className} />;
+        /**
+         * แปลงค่า CSV หนึ่งช่องตามมาตรฐาน RFC-4180 (แก้บั๊กคอลัมน์เลื่อนเมื่อชื่อมีเครื่องหมายจุลภาค)
+         */
+        function escapeCsvCell(val) {
+            const str = val === null || val === undefined ? '' : String(val);
+            return `"${str.replace(/"/g, '""')}"`;
+        }
+
+        /**
+         * อ่านเลขใบประกอบวิชาชีพมาตรฐานเดียว (รองรับทั้งข้อมูลใหม่ license และข้อมูลเก่า licenseId/id)
+         */
+        function getUserLicense(u) {
+            return String(u?.license || u?.licenseId || u?.id || '').trim();
+        }
+
+        function normalizeQuestionSets(rawSets) {
+            if (!rawSets) return [parseRawExams(window.QUIZ_QUESTIONS_RAW || [])];
+            if (Array.isArray(rawSets)) return rawSets;
+            if (typeof rawSets === 'object') {
+                return Object.keys(rawSets)
+                    .sort((a, b) => Number(a) - Number(b))
+                    .map(k => (Array.isArray(rawSets[k]) ? rawSets[k] : []));
+            }
+            return [[]];
+        }
+
+        /**
+         * วาดตัวอย่างใบประกาศนียบัตรแบบย่อบน Canvas ในหน้า Admin ทันทีที่แก้ข้อความ
+         */
+        function drawMiniCertPreview(canvas, tpl) {
+            if (!canvas) return;
+            const W = 1200, H = 848;
+            canvas.width = W;
+            canvas.height = H;
+            const ctx = canvas.getContext('2d');
+
+            const bg = ctx.createLinearGradient(0, 0, W, H);
+            bg.addColorStop(0, '#ffffff');
+            bg.addColorStop(0.6, '#f8fafc');
+            bg.addColorStop(1, '#ecfdf5');
+            ctx.fillStyle = bg;
+            ctx.fillRect(0, 0, W, H);
+
+            // Aura glow
+            const glow1 = ctx.createRadialGradient(140, 120, 10, 140, 120, 360);
+            glow1.addColorStop(0, 'rgba(16, 185, 129, 0.16)');
+            glow1.addColorStop(1, 'rgba(16, 185, 129, 0)');
+            ctx.fillStyle = glow1;
+            ctx.fillRect(0, 0, W, H);
+
+            const glow2 = ctx.createRadialGradient(W - 140, H - 120, 10, W - 140, H - 120, 380);
+            glow2.addColorStop(0, 'rgba(14, 165, 233, 0.14)');
+            glow2.addColorStop(1, 'rgba(14, 165, 233, 0)');
+            ctx.fillStyle = glow2;
+            ctx.fillRect(0, 0, W, H);
+
+            // Borders
+            ctx.strokeStyle = '#059669';
+            ctx.lineWidth = 5;
+            ctx.strokeRect(36, 36, W - 72, H - 72);
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(48, 48, W - 96, H - 96);
+
+            // Top Ribbon
+            ctx.fillStyle = '#059669';
+            ctx.fillRect(W / 2 - 140, 36, 280, 10);
+
+            // Texts
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#047857';
+            ctx.font = '700 22px "Prompt", sans-serif';
+            ctx.fillText(tpl.orgTitleTH || '', W / 2, 130);
+
+            ctx.fillStyle = '#64748b';
+            ctx.font = '600 15px "JetBrains Mono", monospace';
+            ctx.fillText(tpl.orgTitleEN || '', W / 2, 162);
+
+            ctx.fillStyle = '#0f172a';
+            ctx.font = '800 44px "Prompt", sans-serif';
+            ctx.fillText('ประกาศนียบัตร', W / 2, 245);
+
+            ctx.fillStyle = '#475569';
+            ctx.font = '500 20px "Sarabun", sans-serif';
+            ctx.fillText(tpl.subtitleTH || '', W / 2, 295);
+
+            ctx.fillStyle = '#064e3b';
+            ctx.font = '800 46px "Prompt", sans-serif';
+            ctx.fillText('พว.ใจดี มีเมตตา (ชื่อผู้เรียน)', W / 2, 375);
+
+            ctx.fillStyle = '#64748b';
+            ctx.font = '600 18px "Sarabun", sans-serif';
+            ctx.fillText('โรงพยาบาลราชวิถี • เลขใบอนุญาต 65012345', W / 2, 415);
+
+            ctx.fillStyle = '#334155';
+            ctx.font = '500 20px "Sarabun", sans-serif';
+            ctx.fillText(tpl.completionTextTH || '', W / 2, 475);
+
+            ctx.fillStyle = '#0f172a';
+            ctx.font = '700 24px "Prompt", sans-serif';
+            ctx.fillText(tpl.courseTitleTH || '', W / 2, 525);
+
+            ctx.fillStyle = '#0284c7';
+            ctx.font = '600 16px "Prompt", sans-serif';
+            ctx.fillText(tpl.courseTitleEN || '', W / 2, 558);
+
+            // Signer
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(W / 2 - 150, 690);
+            ctx.lineTo(W / 2 + 150, 690);
+            ctx.stroke();
+
+            ctx.fillStyle = '#0f172a';
+            ctx.font = '700 20px "Prompt", sans-serif';
+            ctx.fillText(tpl.signerName || '', W / 2, 725);
+
+            ctx.fillStyle = '#64748b';
+            ctx.font = '500 16px "Sarabun", sans-serif';
+            ctx.fillText(tpl.signerPosition || '', W / 2, 755);
+
+            // Mock QR Box
+            ctx.fillStyle = '#ffffff';
+            ctx.strokeStyle = '#e2e8f0';
+            ctx.lineWidth = 2;
+            ctx.fillRect(W - 190, H - 195, 110, 110);
+            ctx.strokeRect(W - 190, H - 195, 110, 110);
+            ctx.fillStyle = '#059669';
+            ctx.font = '700 14px "JetBrains Mono", monospace';
+            ctx.fillText('QR VERIFY', W - 135, H - 135);
+
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#64748b';
+            ctx.font = '600 14px "JetBrains Mono", monospace';
+            ctx.fillText(`REF: ${tpl.certPrefix || 'RJC-2027'}-XXXXXX`, 75, H - 90);
         }
 
         // ============================================================================
-        // การเชื่อมต่อ Firebase
+        // 3. SHARED UI COMPONENTS (NO alert() / confirm())
         // ============================================================================
-        let app, auth, db, appId = 'fah-elearning-prod';
-        try {
-          const fbP1 = "AIzaSyBs275"; const fbP2 = "NY99gdv1uZdAnb"; const fbP3 = "mx3UlWO8K4o5a0";
-          let fbConfig = (typeof __firebase_config !== 'undefined' && __firebase_config) 
-            ? JSON.parse(__firebase_config) : { apiKey: fbP1 + fbP2 + fbP3, authDomain: "e-learning-with-fah-ai.firebaseapp.com", projectId: "e-learning-with-fah-ai", storageBucket: "e-learning-with-fah-ai.firebasestorage.app", messagingSenderId: "418946105960", appId: "1:418946105960:web:728e28070790975df231dd" };
-          
-          app = getApps().length === 0 ? initializeApp(fbConfig) : getApp();
-          auth = getAuth(app);
-          db = getFirestore(app);
-          appId = typeof __app_id !== 'undefined' && __app_id ? String(__app_id).replace(/\//g, '-') : 'fah-elearning-prod';
-        } catch (error) { console.error("Firebase init error", error); }
+        function ToastBanner({ toast }) {
+            if (!toast.visible) return null;
+            return (
+                <div className="fixed top-[calc(1rem+env(safe-area-inset-top,0px))] left-1/2 -translate-x-1/2 z-[120] w-[92vw] max-w-md pointer-events-none">
+                    <div className={`px-4 py-3 rounded-2xl shadow-xl border backdrop-blur-xl flex items-center gap-2.5 text-sm font-bold ${
+                        toast.type === 'error'
+                            ? 'bg-rose-50/95 border-rose-200 text-rose-700'
+                            : toast.type === 'info'
+                                ? 'bg-medical-50/95 border-medical-200 text-medical-700'
+                                : 'bg-clinical-50/95 border-clinical-200 text-clinical-800'
+                    }`}>
+                        <Icon name={toast.type === 'error' ? 'AlertCircle' : toast.type === 'info' ? 'Info' : 'CheckCircle2'} size={18} className="shrink-0" />
+                        <span>{toast.text}</span>
+                    </div>
+                </div>
+            );
+        }
 
+        function ConfirmModal({ dialog, onClose }) {
+            if (!dialog.open) return null;
+            return (
+                <div className="fixed inset-0 z-[110] bg-slate-900/55 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+                    <div className="w-full sm:max-w-md bg-white rounded-t-[2rem] sm:rounded-[2rem] p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] shadow-2xl border border-slate-100 space-y-4">
+                        <div className="flex items-start gap-3.5">
+                            <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 ${
+                                dialog.danger ? 'bg-rose-50 text-rose-600' : 'bg-amber-50 text-amber-600'
+                            }`}>
+                                <Icon name={dialog.danger ? 'AlertTriangle' : 'HelpCircle'} size={22} />
+                            </div>
+                            <div>
+                                <h3 className="font-display font-bold text-lg text-slate-900">{dialog.title}</h3>
+                                <p className="text-sm text-slate-600 mt-1 leading-relaxed">{dialog.message}</p>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2.5 pt-2">
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                className="touch-target py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-display font-semibold text-sm transition-colors"
+                            >
+                                ยกเลิก
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    const fn = dialog.onConfirm;
+                                    onClose();
+                                    if (fn) fn();
+                                }}
+                                className={`touch-target py-3 rounded-2xl text-white font-display font-semibold text-sm transition-colors ${
+                                    dialog.danger
+                                        ? 'bg-rose-600 hover:bg-rose-700'
+                                        : 'bg-clinical-600 hover:bg-clinical-700'
+                                }`}
+                            >
+                                {dialog.confirmText || 'ยืนยัน'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function FieldInput({ label, className = "", ...props }) {
+            return (
+                <div className={`w-full ${className}`}>
+                    {label && <label className="block text-xs font-bold text-slate-600 mb-1.5 ml-1">{label}</label>}
+                    <input
+                        className="touch-target w-full px-3.5 py-2.5 rounded-2xl bg-white border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-clinical-500 focus:ring-4 focus:ring-clinical-500/10 text-sm font-medium transition-all"
+                        {...props}
+                    />
+                </div>
+            );
+        }
+
+        // ============================================================================
+        // 4. MAIN ADMIN APPLICATION
+        // ============================================================================
         function AdminApp() {
-            const [user, setUser] = useState(null);
-            const [isAuth, setIsAuth] = useState(false);
-            const [password, setPassword] = useState('');
-            const [activeTab, setActiveTab] = useState('users');
-            const [usersList, setUsersList] = useState([]);
-            const [contentConfig, setContentConfig] = useState({ 
-                lessons: window.INITIAL_LESSONS || [],
-                questionSets: window.QUIZ_QUESTIONS_RAW ? [parseRawExams(window.QUIZ_QUESTIONS_RAW)] : [[]]
+            // Auth State
+            const [authChecked, setAuthChecked] = useState(!isCloudConfigured);
+            const [adminSession, setAdminSession] = useState(null); // { email, mode: 'cloud' | 'demo' }
+            const [loginEmail, setLoginEmail] = useState(CONFIG.contactEmail || 'rjcloud.organ@gmail.com');
+            const [loginPassword, setLoginPassword] = useState('');
+            const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+            // Navigation State
+            const [activeTab, setActiveTab] = useState('users'); // users | cert | sync | live | content | overview
+            const [contentSubTab, setContentSubTab] = useState('lessons'); // lessons | quiz
+
+            // Core Data States
+            const [usersList, setUsersList] = useState(() => (isCloudConfigured ? [] : DEMO_ADMIN_USERS));
+            const [certTemplate, setCertTemplate] = useState(() => {
+                try {
+                    const saved = localStorage.getItem('rjcloud_cert_template_v2027');
+                    if (saved) return { ...DEFAULT_CERT_TEMPLATE, ...JSON.parse(saved) };
+                } catch (_) {}
+                return { ...DEFAULT_CERT_TEMPLATE };
             });
-            const [liveConfig, setLiveConfig] = useState({ status: 'offline', days: 1, hours: 10, topic: '', url: '', documentUrl: '' });
-            const [systemConfig, setSystemConfig] = useState({ appsScriptUrl: '', certScriptUrl: '', lookerStudioUrl: '', masterCsvUrl: '', autoSyncFromSheet: false });
-            const [alertMsg, setAlertMsg] = useState({ show: false, text: '', type: 'success' });
-            
+            const [liveConfig, setLiveConfig] = useState({
+                status: 'offline',
+                days: 1,
+                hours: 10,
+                allowPosttest: false,
+                topic: 'การบรรยายพิเศษด้านการรับบริจาคและปลูกถ่ายอวัยวะ 2027',
+                url: '',
+                documentUrl: ''
+            });
+            const [systemConfig, setSystemConfig] = useState({
+                appsScriptUrl: CONFIG.appsScriptUrl || '',
+                masterCsvUrl: '',
+                autoSyncFromSheet: false
+            });
+            const [contentConfig, setContentConfig] = useState({
+                lessons: window.INITIAL_LESSONS || [],
+                questionSets: [parseRawExams(window.QUIZ_QUESTIONS_RAW || [])]
+            });
+
+            // UI Controls
             const [searchTerm, setSearchTerm] = useState('');
-            const [showManualForm, setShowManualForm] = useState(false);
-            const [manualForm, setManualForm] = useState({ name: '', license: '', userType: 'เรียนใหม่', hospital: 'รพ.ราชวิถี' });
+            const [filterType, setFilterType] = useState('ALL');
+            const [showAddUser, setShowAddUser] = useState(false);
+            const [isSyncing, setIsSyncing] = useState(false);
+            const [lastSyncTime, setLastSyncTime] = useState('');
+            const [manualForm, setManualForm] = useState({
+                name: '',
+                license: '',
+                userType: 'เรียนใหม่',
+                hospital: 'รพ.ราชวิถี',
+                department: 'กรมการแพทย์',
+                email: '',
+                phone: ''
+            });
 
-            const showAlert = (text, type = 'success') => {
-                setAlertMsg({ show: true, text, type });
-                setTimeout(() => setAlertMsg({ show: false, text: '', type }), 4000);
-            };
+            const [toast, setToast] = useState({ visible: false, text: '', type: 'success' });
+            const [confirmDialog, setConfirmDialog] = useState({ open: false, title: '', message: '', danger: false, confirmText: 'ยืนยัน', onConfirm: null });
 
-            useEffect(() => {
-                if (!auth || !db) return;
-                const initAuth = async () => {
-                    try {
-                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                            await signInWithCustomToken(auth, __initial_auth_token);
-                        } else {
-                            await signInAnonymously(auth);
-                        }
-                    } catch (err) {
-                        console.error("Auth init error:", err);
-                    }
-                };
-                initAuth();
-                const unsubscribe = onAuthStateChanged(auth, setUser);
-                return () => unsubscribe();
+            const certCanvasRef = useRef(null);
+            // ใช้ Ref เก็บรายชื่อล่าสุดเพื่อไม่ให้ Auto-Sync useEffect รีเซ็ต Loop ทุกครั้งที่ข้อมูลอัปเดต
+            const usersListRef = useRef(usersList);
+            useEffect(() => { usersListRef.current = usersList; }, [usersList]);
+
+            const showToast = useCallback((text, type = 'success') => {
+                setToast({ visible: true, text, type });
+                setTimeout(() => setToast(p => ({ ...p, visible: false })), 3500);
             }, []);
 
+            const askConfirm = useCallback(({ title, message, danger = false, confirmText = 'ยืนยัน', onConfirm }) => {
+                setConfirmDialog({ open: true, title, message, danger, confirmText, onConfirm });
+            }, []);
+
+            // 1. ตรวจสอบสถานะ Firebase Auth (Production Mode)
             useEffect(() => {
-                if (!user || !db) return;
-                
-                const unsubUsers = onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'elearning_users'), (snapshot) => {
-                    const arr = []; snapshot.forEach(doc => arr.push({ id: doc.id, ...doc.data() })); setUsersList(arr);
-                }, (err) => console.error("Users sync error:", err));
-
-                const unsubSettings = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'elearning_config', 'settings'), (docSnap) => {
-                    if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        if (data.liveConfig) setLiveConfig(data.liveConfig);
-                        setSystemConfig(prev => ({ ...prev, ...data }));
-                    }
-                }, (err) => console.error("Settings sync error:", err));
-
-                const unsubContent = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'elearning_config', 'content'), (docSnap) => {
-                    if (docSnap.exists() && docSnap.data()) {
-                        const data = docSnap.data();
-                        
-                        // 🌟 แปลง Object จาก Firebase กลับเป็น Array เพื่อให้หน้าจอแสดงผลได้ 🌟
-                        let parsedQuestionSets = data.questionSets;
-                        if (parsedQuestionSets && !Array.isArray(parsedQuestionSets)) {
-                            parsedQuestionSets = Object.keys(parsedQuestionSets).sort().map(k => parsedQuestionSets[k]);
+                if (!isCloudConfigured || !fbAuth) {
+                    setAuthChecked(true);
+                    return;
+                }
+                const unsub = onAuthStateChanged(fbAuth, (fbUser) => {
+                    if (fbUser && fbUser.email) {
+                        const allowed = (CONFIG.adminEmails || [CONFIG.contactEmail]).map(e => e.toLowerCase());
+                        if (allowed.includes(fbUser.email.toLowerCase())) {
+                            setAdminSession({ email: fbUser.email, mode: 'cloud' });
+                        } else {
+                            setAdminSession(null);
                         }
-
-                        setContentConfig(prev => ({
-                            lessons: data.lessons || prev.lessons,
-                            questionSets: parsedQuestionSets || prev.questionSets
-                        }));
+                    } else {
+                        setAdminSession(null);
                     }
-                }, (err) => console.error("Content sync error:", err));
-                
+                    setAuthChecked(true);
+                });
+                return () => unsub();
+            }, []);
+
+            // 2. Real-time Firestore Subscriptions (เมื่อล็อกอินในโหมด Cloud)
+            useEffect(() => {
+                if (!adminSession || adminSession.mode !== 'cloud' || !fbDb) return;
+
+                const unsubUsers = onSnapshot(
+                    collection(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users'),
+                    (snap) => {
+                        const arr = [];
+                        snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
+                        setUsersList(arr);
+                    },
+                    (err) => console.error('Users snapshot error:', err)
+                );
+
+                const unsubSettings = onSnapshot(
+                    doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_config', 'settings'),
+                    (docSnap) => {
+                        if (!docSnap.exists()) return;
+                        const data = docSnap.data();
+                        if (data.liveConfig) setLiveConfig(prev => ({ ...prev, ...data.liveConfig }));
+                        if (data.certTemplate) setCertTemplate(prev => ({ ...prev, ...data.certTemplate }));
+                        setSystemConfig(prev => ({
+                            ...prev,
+                            appsScriptUrl: data.appsScriptUrl ?? prev.appsScriptUrl,
+                            masterCsvUrl: data.masterCsvUrl ?? prev.masterCsvUrl,
+                            autoSyncFromSheet: data.autoSyncFromSheet ?? prev.autoSyncFromSheet
+                        }));
+                    },
+                    (err) => console.error('Settings snapshot error:', err)
+                );
+
+                const unsubContent = onSnapshot(
+                    doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_config', 'content'),
+                    (docSnap) => {
+                        if (!docSnap.exists()) return;
+                        const data = docSnap.data();
+                        setContentConfig(prev => ({
+                            lessons: Array.isArray(data.lessons) ? data.lessons : prev.lessons,
+                            questionSets: data.questionSets ? normalizeQuestionSets(data.questionSets) : prev.questionSets
+                        }));
+                    },
+                    (err) => console.error('Content snapshot error:', err)
+                );
+
                 return () => {
                     unsubUsers();
                     unsubSettings();
                     unsubContent();
                 };
-            }, [user]);
+            }, [adminSession]);
 
-            const syncFromGoogleSheet = async (isManual = false) => {
-                if (!systemConfig.masterCsvUrl) {
-                    if (isManual) showAlert('กรุณาระบุลิงก์ Google Sheets แบบ CSV ก่อน (ตั้งค่าที่แท็บ Auto-Sync)', 'error');
+            // 3. วาดตัวอย่างใบประกาศนียบัตรแบบ Real-time เมื่ออยู่ในแท็บ Certificate Studio
+            useEffect(() => {
+                if (activeTab === 'cert' && certCanvasRef.current) {
+                    drawMiniCertPreview(certCanvasRef.current, certTemplate);
+                }
+            }, [activeTab, certTemplate]);
+
+            // 4. ระบบ Login (Firebase Email/Password จริงเมื่อต่อ Cloud, หรือโหมด Sandbox เมื่อยังไม่ใส่คีย์)
+            const handleCloudLogin = async (e) => {
+                e.preventDefault();
+                if (!isCloudConfigured || !fbAuth) {
+                    setAdminSession({ email: CONFIG.contactEmail, mode: 'demo' });
+                    showToast('เข้าสู่ระบบโหมด Sandbox (ยังไม่เชื่อมต่อ Firebase จริง)', 'info');
                     return;
                 }
-                if (isManual) showAlert('กำลังดึงข้อมูลสิทธิ์ผู้เรียนจากตาราง...', 'info');
+                const allowed = (CONFIG.adminEmails || [CONFIG.contactEmail]).map(x => x.toLowerCase());
+                if (!allowed.includes(loginEmail.trim().toLowerCase())) {
+                    showToast(`อีเมลนี้ไม่มีสิทธิ์ผู้ดูแลระบบ (อนุญาตเฉพาะ ${CONFIG.contactEmail})`, 'error');
+                    return;
+                }
+                setIsLoggingIn(true);
                 try {
-                    const noCacheUrl = systemConfig.masterCsvUrl + (systemConfig.masterCsvUrl.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
-                    const res = await fetch(noCacheUrl, { cache: 'no-store' });
-                    
-                    if (!res.ok) throw new Error('Cannot fetch CSV');
+                    await signInWithEmailAndPassword(fbAuth, loginEmail.trim(), loginPassword);
+                    showToast('เข้าสู่ระบบผู้ดูแล rjcloud.organ สำเร็จค่ะ');
+                } catch (err) {
+                    console.error('Admin login error:', err);
+                    showToast('อีเมลหรือรหัสผ่านไม่ถูกต้อง กรุณาตรวจสอบใน Firebase Auth ค่ะ', 'error');
+                } finally {
+                    setIsLoggingIn(false);
+                }
+            };
+
+            const handleAdminLogout = async () => {
+                if (adminSession?.mode === 'cloud' && fbAuth) {
+                    await signOut(fbAuth).catch(() => {});
+                }
+                setAdminSession(null);
+                setLoginPassword('');
+                showToast('ออกจากระบบหลังบ้านแล้วค่ะ');
+            };
+
+            // 5. Google Sheets CSV Auto-Sync (แก้บั๊ก Loop รีเซ็ต + คอลัมน์ตรงกับคำแนะนำ)
+            const syncFromGoogleSheet = useCallback(async (isManual = false) => {
+                if (!systemConfig.masterCsvUrl) {
+                    if (isManual) showToast('กรุณาระบุลิงก์ Google Sheets (CSV) ก่อนดึงข้อมูลค่ะ', 'error');
+                    return;
+                }
+                setIsSyncing(true);
+                if (isManual) showToast('กำลังดึงรายชื่อและสิทธิ์ผู้เรียนจาก Google Sheets...', 'info');
+                try {
+                    const sep = systemConfig.masterCsvUrl.includes('?') ? '&' : '?';
+                    const res = await fetch(`${systemConfig.masterCsvUrl}${sep}t=${Date.now()}`, { cache: 'no-store' });
+                    if (!res.ok) throw new Error('ไม่สามารถโหลดไฟล์ CSV ได้');
                     const text = await res.text();
-                    const rows = text.split('\n').filter(r => r.trim());
+                    const rows = text.split(/\r?\n/).filter(r => r.trim());
                     if (rows.length <= 1) {
-                        if (isManual) showAlert('ไม่พบข้อมูลผู้เรียนในตาราง', 'error');
+                        if (isManual) showToast('ไม่พบข้อมูลผู้เรียนในตาราง CSV ค่ะ', 'error');
                         return;
                     }
 
-                    let newCount = 0; let updateCount = 0;
+                    const currentUsers = usersListRef.current;
+                    let added = 0, updated = 0;
+                    const updatedLocalMap = new Map(currentUsers.map(u => [getUserLicense(u), u]));
+
                     for (let i = 1; i < rows.length; i++) {
-                        const regex = /,(?=(?:(?:[^"]*"){2})*[^"]*$)/;
-                        const cols = rows[i].split(regex).map(c => c.trim().replace(/^"|"$/g, ''));
-                        
-                        if (cols.length >= 3 && cols[2]) {
-                            const name = cols[1] || ''; 
-                            const license = String(cols[2]).replace(/[^a-zA-Z0-9]/g, ''); 
-                            if (!license) continue;
+                        const cols = rows[i]
+                            .split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
+                            .map(c => c.trim().replace(/^"|"$/g, '').replace(/""/g, '"'));
 
-                            const email = cols[3] || '';
-                            const position = cols[4] || '';
-                            const department = cols[5] || '';
-                            const hospital = cols[6] || ''; 
-                            const province = cols[7] || '';
-                            
-                            let userType = 'เรียนใหม่';
-                            let rawUserType = String(cols[8] || '').trim().toLowerCase();
-                            
-                            if (rawUserType.includes('onsite')) {
-                                userType = 'Onsite';
-                            } else if (rawUserType.includes('masterclass')) {
-                                userType = 'Masterclass';
-                            } else if (rawUserType.includes('online')) {
-                                userType = 'Online';
-                            } else {
-                                const fullRowText = rows[i].toLowerCase();
-                                if (fullRowText.includes('onsite')) userType = 'Onsite';
-                                else if (fullRowText.includes('masterclass')) userType = 'Masterclass';
-                                else if (fullRowText.includes('online')) userType = 'Online';
-                            }
+                        // รูปแบบตารางมาตรฐาน (0:Timestamp, 1:ชื่อ-สกุล, 2:ใบอนุญาต, 3:อีเมล, 4:ตำแหน่ง, 5:สังกัด, 6:รพ., 7:จังหวัด, 8:สิทธิ์, 16:เบอร์โทร)
+                        const license = String(cols[2] || '').replace(/[^a-zA-Z0-9]/g, '');
+                        if (!license) continue;
 
-                            const phone = (cols[16] || '').replace(/[^0-9]/g, '');
+                        const rawType = String(cols[8] || '').trim().toLowerCase();
+                        let userType = 'เรียนใหม่';
+                        if (rawType.includes('masterclass')) userType = 'Masterclass';
+                        else if (rawType.includes('onsite')) userType = 'Onsite';
+                        else if (rawType.includes('online')) userType = 'Online';
 
-                            const existingUser = usersList.find(u => String(u.id) === license);
-                            const isOnsiteOrMaster = userType === 'Onsite' || userType === 'Masterclass';
+                        const existing = updatedLocalMap.get(license);
+                        const isVip = userType === 'Onsite' || userType === 'Masterclass';
 
-                            let targetPayload = {
-                                id: license, 
-                                name: name,
-                                license: license,
-                                phone: phone,
-                                email: email,
-                                position: position,
-                                department: department,
-                                hospital: hospital,
-                                province: province,
-                                userType: userType
-                            };
+                        const payload = {
+                            id: license,
+                            license,
+                            name: cols[1] || existing?.name || 'ผู้เรียน',
+                            email: cols[3] || existing?.email || '',
+                            position: cols[4] || existing?.position || '',
+                            department: cols[5] || existing?.department || '',
+                            hospital: cols[6] || existing?.hospital || '',
+                            province: cols[7] || existing?.province || '',
+                            phone: String(cols[16] || existing?.phone || '').replace(/[^0-9]/g, ''),
+                            userType,
+                            status: existing?.status || 'กำลังเรียน',
+                            pretest: existing?.pretest || '-',
+                            posttest: existing?.posttest || '-',
+                            lastVideoId: existing?.lastVideoId || 1,
+                            progress: isVip ? 100 : (existing?.progress ?? 0),
+                            studySeconds: isVip ? 36000 : (existing?.studySeconds ?? 0),
+                            skillLabPassed: existing?.skillLabPassed ?? false
+                        };
 
-                            if (!existingUser) {
-                                targetPayload.status = 'กำลังเรียน';
-                                targetPayload.pretest = '-';
-                                targetPayload.posttest = '-';
-                                targetPayload.lastVideoId = 1;
-                                targetPayload.videoTimes = {};
-                                targetPayload.progress = isOnsiteOrMaster ? 100 : 0;
-                                targetPayload.studySeconds = isOnsiteOrMaster ? 36000 : 0;
-                                targetPayload.skillLabPassed = userType === 'Masterclass';
-                                
-                                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'elearning_users', license), targetPayload, { merge: true });
-                                newCount++;
-                            } else {
-                                if (isOnsiteOrMaster && ((existingUser.progress || 0) < 100 || (userType === 'Masterclass' && !existingUser.skillLabPassed))) {
-                                    targetPayload.progress = 100;
-                                    targetPayload.studySeconds = 36000;
-                                    if (userType === 'Masterclass') targetPayload.skillLabPassed = true;
-                                }
-                                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'elearning_users', license), targetPayload, { merge: true });
-                                updateCount++;
-                            }
+                        if (adminSession?.mode === 'cloud' && fbDb) {
+                            await setDoc(
+                                doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', license),
+                                payload,
+                                { merge: true }
+                            );
+                        } else {
+                            updatedLocalMap.set(license, { ...existing, ...payload });
                         }
-                    }
-                    if (isManual) showAlert(`ซิงค์ข้อมูลสำเร็จ! (เพิ่มใหม่ ${newCount} คน, อัปเดต/Auto-refill ${updateCount} คน)`);
-                } catch (e) {
-                    if (isManual) showAlert('ดึงข้อมูลล้มเหลว กรุณาตรวจสอบลิงก์ CSV', 'error');
-                    console.error("Sync Sheet Error:", e);
-                }
-            };
 
-            const handleForceRefillAll = async () => {
-                if(!window.confirm('ระบบจะค้นหาผู้เรียนที่มีสิทธิ์ Onsite หรือ Masterclass ทั้งหมด และเติมเวลาเรียนเป็น 100% พร้อมมอบสิทธิ์พิเศษอัตโนมัติ ยืนยันหรือไม่?')) return;
-                let count = 0;
-                showAlert('กำลังประมวลผล Auto-Refill...', 'info');
-                try {
-                    for(const u of usersList) {
-                        const uTypeStr = String(u.userType).toLowerCase();
-                        const isUserOnsite = ['onsite', 'masterclass'].includes(uTypeStr);
-                        const isMasterclass = uTypeStr === 'masterclass';
-                        
-                        if (isUserOnsite && (u.progress < 100 || (isMasterclass && !u.skillLabPassed))) {
-                            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'elearning_users', String(u.id)), { 
-                                progress: 100, 
-                                studySeconds: 36000, 
-                                skillLabPassed: isMasterclass, 
-                                userType: u.userType 
-                            }, { merge: true });
-                            count++;
-                        }
+                        if (existing) updated++;
+                        else added++;
                     }
-                    showAlert(`ดำเนินการ Auto-Refill สำเร็จ ${count} รายการ`);
-                } catch(e) {
-                    showAlert('เกิดข้อผิดพลาดในการ Refill', 'error');
-                    console.error(e);
-                }
-            };
 
+                    if (adminSession?.mode !== 'cloud') {
+                        setUsersList(Array.from(updatedLocalMap.values()));
+                    }
+                    setLastSyncTime(new Date().toLocaleTimeString('th-TH'));
+                    if (isManual) showToast(`ซิงค์สำเร็จ! เพิ่มใหม่ ${added} ราย, อัปเดต ${updated} ราย`);
+                } catch (err) {
+                    console.error('CSV Sync Error:', err);
+                    if (isManual) showToast('ดึงข้อมูล CSV ไม่สำเร็จ กรุณาตรวจสอบการเผยแพร่ลิงก์ Google Sheets ค่ะ', 'error');
+                } finally {
+                    setIsSyncing(false);
+                }
+            }, [systemConfig.masterCsvUrl, adminSession?.mode, showToast]);
+
+            // Auto-Sync Timer (ไม่ใส่ usersList ใน dependency เพื่อป้องกัน Loop รีเซ็ตถี่เกินไป)
             useEffect(() => {
-                if (isAuth && systemConfig.autoSyncFromSheet && systemConfig.masterCsvUrl) {
-                    const interval = setInterval(() => syncFromGoogleSheet(false), 30000);
-                    return () => clearInterval(interval);
-                }
-            }, [isAuth, systemConfig.autoSyncFromSheet, systemConfig.masterCsvUrl, usersList]);
+                if (!adminSession || !systemConfig.autoSyncFromSheet || !systemConfig.masterCsvUrl) return;
+                const timer = setInterval(() => syncFromGoogleSheet(false), 30000);
+                return () => clearInterval(timer);
+            }, [adminSession, systemConfig.autoSyncFromSheet, systemConfig.masterCsvUrl, syncFromGoogleSheet]);
 
-            const handleLogin = (e) => { e.preventDefault(); if (password === 'admin2026') setIsAuth(true); else showAlert('รหัสผ่านไม่ถูกต้อง', 'error'); };
-
-            const saveSettings = async (settingsToUpdate) => {
+            // 6. CRUD Operations
+            const persistSettings = async (partial) => {
                 try {
-                    const newSettings = { ...systemConfig, ...settingsToUpdate };
-                    setSystemConfig(newSettings);
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'elearning_config', 'settings'), newSettings, { merge: true });
-                    showAlert('บันทึกการตั้งค่าเรียบร้อย');
-                } catch (e) { showAlert('เกิดข้อผิดพลาด', 'error'); }
-            };
-
-            const saveLiveConfig = async () => {
-                try {
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'elearning_config', 'settings'), { liveConfig }, { merge: true });
-                    showAlert('อัปเดตและเผยแพร่สถานะ Live สำเร็จ');
-                } catch (e) { 
-                    showAlert('เกิดข้อผิดพลาดในการบันทึก Live', 'error'); 
-                    console.error("Save Live Error:", e);
-                }
-            };
-
-            const updateUserStatus = async (userId, newStatus, newType) => {
-                try {
-                    let updatePayload = { status: newStatus, userType: newType };
-                    if (newType === 'Onsite' || newType === 'Masterclass') {
-                        updatePayload.studySeconds = 36000;
-                        updatePayload.progress = 100;
-                        updatePayload.skillLabPassed = (newType === 'Masterclass'); // เฉพาะ Masterclass ทะลุกำแพง skill lab
+                    if (adminSession?.mode === 'cloud' && fbDb) {
+                        await setDoc(
+                            doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_config', 'settings'),
+                            partial,
+                            { merge: true }
+                        );
                     }
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'elearning_users', userId), updatePayload, { merge: true });
-                    showAlert('อัปเดตสิทธิ์สำเร็จ');
-                } catch (e) { showAlert('เกิดข้อผิดพลาด', 'error'); }
+                    if (partial.certTemplate) {
+                        localStorage.setItem('rjcloud_cert_template_v2027', JSON.stringify(partial.certTemplate));
+                    }
+                    showToast('บันทึกการตั้งค่าเรียบร้อยแล้วค่ะ');
+                } catch (err) {
+                    showToast('บันทึกข้อมูลไม่สำเร็จ: ' + err.message, 'error');
+                }
             };
 
-            const deleteUser = async (userId) => {
-                if (window.confirm('ยืนยันการลบสิทธิ์ผู้ใช้งานนี้ออกจากระบบ? (ข้อมูลการเรียนจะถูกลบถาวร)')) {
-                    try {
-                        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'elearning_users', userId));
-                        showAlert('ลบผู้เรียนออกจากระบบเรียบร้อย');
-                    } catch (e) { showAlert('ลบข้อมูลไม่สำเร็จ', 'error'); }
+            const handleUpdateUser = async (u, changes) => {
+                const uid = u.id || getUserLicense(u);
+                const merged = { ...u, ...changes, license: getUserLicense(u) };
+                if (changes.userType === 'Onsite' || changes.userType === 'Masterclass') {
+                    merged.progress = 100;
+                    merged.studySeconds = 36000;
                 }
+                if (adminSession?.mode === 'cloud' && fbDb) {
+                    try {
+                        await setDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', uid), merged, { merge: true });
+                        showToast('อัปเดตข้อมูลผู้เรียนแล้วค่ะ');
+                    } catch (err) {
+                        showToast('อัปเดตไม่สำเร็จ: ' + err.message, 'error');
+                    }
+                } else {
+                    setUsersList(prev => prev.map(x => (x.id === uid ? merged : x)));
+                    showToast('อัปเดตข้อมูลผู้เรียน (Sandbox) แล้วค่ะ');
+                }
+            };
+
+            const handleDeleteUser = (u) => {
+                const uid = u.id || getUserLicense(u);
+                askConfirm({
+                    title: 'ยืนยันการลบผู้เรียน',
+                    message: `ต้องการลบ "${u.name}" (${getUserLicense(u)}) ออกจากระบบหรือไม่? ข้อมูลการเรียนจะถูกลบถาวร`,
+                    danger: true,
+                    confirmText: 'ลบผู้เรียน',
+                    onConfirm: async () => {
+                        if (adminSession?.mode === 'cloud' && fbDb) {
+                            try {
+                                await deleteDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', uid));
+                                showToast('ลบผู้เรียนเรียบร้อยแล้วค่ะ');
+                            } catch (err) {
+                                showToast('ลบข้อมูลไม่สำเร็จ: ' + err.message, 'error');
+                            }
+                        } else {
+                            setUsersList(prev => prev.filter(x => x.id !== uid));
+                            showToast('ลบผู้เรียนเรียบร้อยแล้วค่ะ');
+                        }
+                    }
+                });
             };
 
             const handleAddManualUser = async (e) => {
                 e.preventDefault();
-                const uid = manualForm.license || Date.now().toString();
-                const isOnsiteOrMaster = manualForm.userType === 'Onsite' || manualForm.userType === 'Masterclass';
-                const newUser = { 
-                    id: uid, 
-                    ...manualForm, 
-                    progress: isOnsiteOrMaster ? 100 : 0, 
-                    studySeconds: isOnsiteOrMaster ? 36000 : 0, 
-                    status: 'กำลังเรียน', 
-                    pretest: '-', 
-                    posttest: '-', 
-                    skillLabPassed: manualForm.userType === 'Masterclass', 
-                    lastVideoId: 1, 
-                    videoTimes: {} 
+                const cleanLic = manualForm.license.trim().replace(/[^a-zA-Z0-9]/g, '');
+                if (!cleanLic || !manualForm.name.trim()) {
+                    showToast('กรุณากรอกชื่อ-สกุล และเลขใบอนุญาตให้ครบค่ะ', 'error');
+                    return;
+                }
+                const isVip = manualForm.userType === 'Onsite' || manualForm.userType === 'Masterclass';
+                const newUser = {
+                    id: cleanLic,
+                    license: cleanLic,
+                    name: manualForm.name.trim(),
+                    email: manualForm.email.trim(),
+                    phone: manualForm.phone.trim(),
+                    department: manualForm.department.trim(),
+                    hospital: manualForm.hospital.trim(),
+                    userType: manualForm.userType,
+                    status: 'กำลังเรียน',
+                    progress: isVip ? 100 : 0,
+                    studySeconds: isVip ? 36000 : 0,
+                    pretest: '-',
+                    posttest: '-',
+                    skillLabPassed: false,
+                    skillLabHistory: [],
+                    lastVideoId: 1
                 };
-                try {
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'elearning_users', uid), newUser, { merge: true });
-                    setShowManualForm(false);
-                    showAlert('เพิ่มผู้เรียนใหม่สำเร็จ');
-                } catch (e) { showAlert('เพิ่มข้อมูลไม่สำเร็จ', 'error'); }
+                if (adminSession?.mode === 'cloud' && fbDb) {
+                    try {
+                        await setDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', cleanLic), newUser, { merge: true });
+                        showToast('เพิ่มผู้เรียนใหม่เข้าฐานข้อมูลแล้วค่ะ');
+                    } catch (err) {
+                        showToast('เพิ่มผู้เรียนไม่สำเร็จ: ' + err.message, 'error');
+                        return;
+                    }
+                } else {
+                    setUsersList(prev => [newUser, ...prev.filter(x => x.id !== cleanLic)]);
+                    showToast('เพิ่มผู้เรียนใหม่ (Sandbox) แล้วค่ะ');
+                }
+                setManualForm({ name: '', license: '', userType: 'เรียนใหม่', hospital: 'รพ.ราชวิถี', department: 'กรมการแพทย์', email: '', phone: '' });
+                setShowAddUser(false);
             };
 
-            const saveContentConfig = async () => {
+            const handleAutoRefillVip = () => {
+                askConfirm({
+                    title: 'Auto-Refill สิทธิ์ Onsite / Masterclass',
+                    message: 'ระบบจะเติมเวลาเรียนเป็น 100% (10 ชม.) ให้กับผู้เรียนที่มีสิทธิ์ Onsite และ Masterclass ทุกรายในระบบ ยืนยันหรือไม่?',
+                    confirmText: 'ดำเนินการเลย',
+                    onConfirm: async () => {
+                        let count = 0;
+                        const updated = [];
+                        for (const u of usersList) {
+                            const isVip = ['onsite', 'masterclass'].includes(String(u.userType || '').toLowerCase());
+                            if (isVip && (u.progress || 0) < 100) {
+                                const nextU = { ...u, progress: 100, studySeconds: 36000 };
+                                if (adminSession?.mode === 'cloud' && fbDb) {
+                                    await setDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', u.id), { progress: 100, studySeconds: 36000 }, { merge: true });
+                                }
+                                updated.push(nextU);
+                                count++;
+                            } else {
+                                updated.push(u);
+                            }
+                        }
+                        if (adminSession?.mode !== 'cloud') setUsersList(updated);
+                        showToast(`เติมเวลาเรียนสำเร็จทั้งหมด ${count} รายการค่ะ`);
+                    }
+                });
+            };
+
+            const handleExportCSV = () => {
+                const headers = [
+                    'ชื่อ-สกุล', 'เลขใบประกอบวิชาชีพ', 'อีเมล', 'เบอร์โทร',
+                    'ตำแหน่ง', 'ลักษณะงาน', 'สังกัด', 'หน่วยงาน/โรงพยาบาล',
+                    'สิทธิ์การเรียน', 'สถานะ', 'Pretest', 'Posttest',
+                    'ความคืบหน้า (%)', 'คะแนนเจรจาเฉลี่ย', 'ความพึงพอใจ (CSAT)', 'รหัสประกาศนียบัตร'
+                ];
+                const rows = usersList.map(u => {
+                    const hist = Array.isArray(u.skillLabHistory) ? u.skillLabHistory : [];
+                    const avgSkill = hist.length > 0 ? Math.round(hist.reduce((s, r) => s + (r.score || 0), 0) / hist.length) : 0;
+                    return [
+                        u.name, getUserLicense(u), u.email, u.phone,
+                        u.position, u.workContext, u.department, u.hospital,
+                        u.userType, u.status, u.pretest, u.posttest,
+                        u.progress || 0, avgSkill, u.satisfactionScore || '-', u.certificateCode || '-'
+                    ].map(escapeCsvCell).join(',');
+                });
+                const csvText = '\ufeff' + [headers.map(escapeCsvCell).join(','), ...rows].join('\n');
+                const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `rjcloud_organ_users_${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+                showToast('ส่งออกไฟล์ CSV (รองรับภาษาไทยใน Excel) เรียบร้อยแล้วค่ะ');
+            };
+
+            const handleSaveContent = async () => {
                 try {
-                    // 🌟 ป้องกัน Error: แปลง Nested Array เป็น Object ก่อนเซฟลง Firebase 🌟
-                    const firestorePayload = {
-                        lessons: contentConfig.lessons,
-                        questionSets: Object.assign({}, contentConfig.questionSets) 
-                    };
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'elearning_config', 'content'), firestorePayload, { merge: true });
-                    showAlert('อัปเดตและเผยแพร่เนื้อหาเรียบร้อยแล้ว');
-                } catch (e) {
-                    showAlert('เกิดข้อผิดพลาดในการบันทึกเนื้อหา: ' + e.message, 'error');
+                    if (adminSession?.mode === 'cloud' && fbDb) {
+                        await setDoc(
+                            doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_config', 'content'),
+                            {
+                                lessons: contentConfig.lessons,
+                                questionSets: Object.assign({}, contentConfig.questionSets)
+                            },
+                            { merge: true }
+                        );
+                    }
+                    showToast('เผยแพร่บทเรียนและข้อสอบขึ้นระบบเรียบร้อยแล้วค่ะ');
+                } catch (err) {
+                    showToast('บันทึกเนื้อหาไม่สำเร็จ: ' + err.message, 'error');
                 }
             };
 
-            // 🌟 ปุ่มฉุกเฉิน: ดึงข้อมูลจากไฟล์ data.js มากู้คืนระบบ 🌟
-            const handleRestoreDefaultContent = async () => {
-                if (!window.confirm("🚨 ยืนยันการกู้คืนข้อมูลหรือไม่? ระบบจะดึง 20 บทเรียน และ 40 ข้อสอบดั้งเดิม กลับมาทับข้อมูลที่ว่างเปล่าทันที")) return;
-                
-                const defaultLessons = window.INITIAL_LESSONS || [];
-                const defaultQuizzes = window.QUIZ_QUESTIONS_RAW ? [parseRawExams(window.QUIZ_QUESTIONS_RAW)] : [[]];
-                
-                const resetData = { lessons: defaultLessons, questionSets: defaultQuizzes };
-                
-                // 🌟 แปลงร่างเป็น Object ป้องกันการ Error ทันทีที่กดกู้คืน 🌟
-                const firestorePayload = {
-                    lessons: defaultLessons,
-                    questionSets: Object.assign({}, defaultQuizzes)
-                };
-                
-                try {
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'elearning_config', 'content'), firestorePayload, { merge: true });
-                    setContentConfig(resetData);
-                    showAlert('✅ กู้คืนข้อมูลสำเร็จ! 20 บทเรียน 40 ข้อสอบ กลับมาแล้วครับ', 'success');
-                } catch(e) {
-                    showAlert('❌ เกิดข้อผิดพลาดในการกู้คืน: ' + e.message, 'error');
-                }
+            const handleRestoreDefaultContent = () => {
+                askConfirm({
+                    title: 'กู้คืนบทเรียนและข้อสอบเริ่มต้น',
+                    message: 'ระบบจะดึง 20 บทเรียน และ 40 ข้อสอบมาตรฐานจาก data.js กลับมาแทนที่ข้อมูลปัจจุบัน ยืนยันหรือไม่?',
+                    danger: true,
+                    confirmText: 'กู้คืนข้อมูล',
+                    onConfirm: async () => {
+                        const restored = {
+                            lessons: window.INITIAL_LESSONS || [],
+                            questionSets: [parseRawExams(window.QUIZ_QUESTIONS_RAW || [])]
+                        };
+                        setContentConfig(restored);
+                        if (adminSession?.mode === 'cloud' && fbDb) {
+                            await setDoc(
+                                doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_config', 'content'),
+                                { lessons: restored.lessons, questionSets: Object.assign({}, restored.questionSets) },
+                                { merge: true }
+                            );
+                        }
+                        showToast('กู้คืนบทเรียนและข้อสอบมาตรฐานเรียบร้อยแล้วค่ะ');
+                    }
+                });
             };
 
-            const filteredUsers = usersList.filter(u => u.name?.toLowerCase().includes(searchTerm.toLowerCase()) || u.license?.includes(searchTerm));
+            // Filtered Users
+            const filteredUsers = useMemo(() => {
+                const q = searchTerm.trim().toLowerCase();
+                return usersList.filter(u => {
+                    const matchType = filterType === 'ALL' || u.userType === filterType || (filterType === 'PASSED' && u.status === 'ผ่าน');
+                    if (!matchType) return false;
+                    if (!q) return true;
+                    return (
+                        String(u.name || '').toLowerCase().includes(q) ||
+                        getUserLicense(u).toLowerCase().includes(q) ||
+                        String(u.hospital || '').toLowerCase().includes(q)
+                    );
+                });
+            }, [usersList, searchTerm, filterType]);
 
-            if (!isAuth) {
+            const quickStats = useMemo(() => {
+                const passed = usersList.filter(u => u.status === 'ผ่าน').length;
+                const master = usersList.filter(u => u.userType === 'Masterclass').length;
+                const csatUsers = usersList.filter(u => typeof u.satisfactionScore === 'number' && u.satisfactionScore > 0);
+                const avgCsat = csatUsers.length
+                    ? (csatUsers.reduce((s, u) => s + u.satisfactionScore, 0) / csatUsers.length).toFixed(1)
+                    : '0.0';
+                return { total: usersList.length, passed, master, avgCsat };
+            }, [usersList]);
+
+            // ============================================================================
+            // 5. LOGIN GATE (ปลอดภัย ไม่มี Hardcode Password ในโค้ด!)
+            // ============================================================================
+            if (!authChecked) {
                 return (
-                    <div className="min-h-screen flex items-center justify-center bg-slate-900">
-                        <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md text-center">
-                            <div className="w-16 h-16 bg-line-100 text-line-600 rounded-full flex items-center justify-center mx-auto mb-6"><SafeIcon name="Lock" size={32} /></div>
-                            <h2 className="text-2xl font-black text-slate-800 mb-2">RJ Ailiverse Backend</h2>
-                            <p className="text-slate-500 mb-8 text-sm">ระบบจัดการข้อมูลส่วนกลาง (Admin Only)</p>
-                            <form onSubmit={handleLogin} className="flex flex-col gap-4">
-                                <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="ระบุรหัสผ่านแอดมิน" className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-line-500 outline-none text-center tracking-widest text-lg" />
-                                <button type="submit" className="w-full bg-line-500 text-white font-bold py-3 rounded-xl hover:bg-line-600 transition-colors">เข้าสู่ระบบหลังบ้าน</button>
-                                <button type="button" onClick={() => window.location.href = './index.html'} className="text-sm text-slate-500 hover:text-slate-800 mt-2">กลับสู่หน้าจอผู้เรียน</button>
-                            </form>
-                        </div>
-                        {alertMsg.show && <div className={`fixed top-4 px-6 py-3 rounded-full font-bold shadow-lg animate-in fade-in slide-in-from-top-4 ${alertMsg.type === 'error' ? 'bg-rose-100 border border-rose-400 text-rose-700' : 'bg-emerald-100 border border-emerald-400 text-emerald-800'}`}>{alertMsg.text}</div>}
+                    <div className="min-h-dvh flex items-center justify-center bg-slate-50">
+                        <div className="w-10 h-10 border-4 border-clinical-500 border-t-transparent rounded-full animate-spin" />
                     </div>
                 );
             }
 
-            const handleExportCSV = () => {
-                const headers = ["ชื่อ-สกุล", "อีเมล", "เบอร์โทร", "ใบประกอบวิชาชีพ", "ตำแหน่ง", "ลักษณะงาน", "หน่วยงาน", "สิทธิ์การเรียน", "สถานะ", "Pretest", "Posttest", "ความคืบหน้า (%)", "คะแนนเจรจาเฉลี่ย"];
-                const csvData = usersList.map(u => {
-                    const avgScore = u.skillLabHistory?.length > 0 ? Math.round(u.skillLabHistory.reduce((sum, r) => sum + (r.score || 0), 0) / u.skillLabHistory.length) : 0;
-                    return [u.name, u.email, u.phone, u.licenseId, u.position, u.workContext || '-', u.hospital, u.userType, u.status, u.pretest, u.posttest, u.progress, avgScore];
-                });
-                const csvContent = [headers, ...csvData].map(e => e.join(",")).join("\n");
-                const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
-                const link = document.createElement("a");
-                const url = URL.createObjectURL(blob);
-                link.setAttribute("href", url);
-                link.setAttribute("download", `rjailiverse_users_${new Date().toISOString().split('T')[0]}.csv`);
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            };
+            if (!adminSession) {
+                return (
+                    <div className="min-h-dvh relative flex items-center justify-center p-4 pt-safe pb-safe">
+                        <div className="aura-canvas" /><div className="aura-grid" />
+                        <div className="bento-glass relative z-10 w-full max-w-md rounded-[2rem] p-6 sm:p-8 space-y-6">
+                            <div className="text-center space-y-2">
+                                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-clinical-500 to-teal-600 text-white flex items-center justify-center mx-auto shadow-lg shadow-clinical-500/25">
+                                    <Icon name="ShieldCheck" size={28} />
+                                </div>
+                                <span className="inline-block px-2.5 py-0.5 rounded-full bg-clinical-50 text-clinical-700 font-mono text-[10px] font-bold">
+                                    ADMIN STUDIO • 2027
+                                </span>
+                                <h1 className="font-display text-2xl font-extrabold text-slate-900">rjcloud.organ Backend</h1>
+                                <p className="text-xs text-slate-500">
+                                    ยืนยันตัวตนผู้ดูแลระบบด้วยบัญชี <b className="text-slate-700">{CONFIG.contactEmail}</b>
+                                </p>
+                            </div>
+
+                            {isCloudConfigured ? (
+                                <form onSubmit={handleCloudLogin} className="space-y-4">
+                                    <FieldInput
+                                        label="อีเมลผู้ดูแลระบบ (Firebase Auth)"
+                                        type="email"
+                                        required
+                                        value={loginEmail}
+                                        onChange={e => setLoginEmail(e.target.value)}
+                                        placeholder="rjcloud.organ@gmail.com"
+                                    />
+                                    <FieldInput
+                                        label="รหัสผ่าน"
+                                        type="password"
+                                        required
+                                        value={loginPassword}
+                                        onChange={e => setLoginPassword(e.target.value)}
+                                        placeholder="ระบุรหัสผ่านบัญชีผู้ดูแล"
+                                    />
+                                    <button
+                                        type="submit"
+                                        disabled={isLoggingIn}
+                                        className="touch-target w-full py-3.5 rounded-2xl bg-gradient-to-r from-clinical-500 to-teal-600 hover:from-clinical-600 hover:to-teal-700 text-white font-display font-bold text-base shadow-lg shadow-clinical-500/25 transition-all active:scale-[0.98]"
+                                    >
+                                        {isLoggingIn ? 'กำลังยืนยันตัวตน...' : 'เข้าสู่ระบบหลังบ้าน'}
+                                    </button>
+                                </form>
+                            ) : (
+                                <div className="space-y-4">
+                                    <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 leading-relaxed space-y-1.5">
+                                        <p className="font-bold flex items-center gap-1.5">
+                                            <Icon name="Info" size={15} className="text-amber-600 shrink-0" />
+                                            โหมดทดลองใช้งาน (Sandbox Mode)
+                                        </p>
+                                        <p>
+                                            ยังไม่ได้วางค่า Firebase Config ในไฟล์ <code className="font-mono font-bold">data.js</code> คุณสามารถเข้าสู่ระบบเพื่อทดลองจัดการผู้เรียน ออกแบบใบประกาศฯ และตั้งค่าต่างๆ ได้ทันทีค่ะ (เมื่อวางค่า Firebase ของ <b>{CONFIG.contactEmail}</b> แล้ว ระบบจะสลับเป็นล็อกอินด้วย Email/Password อัตโนมัติ)
+                                        </p>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setAdminSession({ email: CONFIG.contactEmail, mode: 'demo' });
+                                            showToast('เข้าสู่ระบบหลังบ้าน (โหมด Sandbox) เรียบร้อยค่ะ');
+                                        }}
+                                        className="touch-target w-full py-3.5 rounded-2xl bg-gradient-to-r from-clinical-500 to-teal-600 hover:from-clinical-600 hover:to-teal-700 text-white font-display font-bold text-base shadow-lg shadow-clinical-500/25 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                                    >
+                                        <Icon name="Sparkles" size={18} /> เข้าจัดการระบบหลังบ้าน (Sandbox)
+                                    </button>
+                                </div>
+                            )}
+
+                            <div className="text-center pt-2 border-t border-slate-100">
+                                <a href="./index.html" className="text-xs font-bold text-slate-500 hover:text-clinical-700 inline-flex items-center gap-1">
+                                    <Icon name="ArrowLeft" size={14} /> กลับหน้าหลักผู้เรียน
+                                </a>
+                            </div>
+                        </div>
+                        <ToastBanner toast={toast} />
+                    </div>
+                );
+            }
+
+            // ============================================================================
+            // 6. MAIN ADMIN WORKSPACE (100% SMARTPHONE-FIRST + DESKTOP SIDEBAR)
+            // ============================================================================
+            const navItems = [
+                { id: 'users', label: 'ผู้เรียน', fullLabel: 'จัดการสิทธิ์ผู้เรียน', icon: 'Users' },
+                { id: 'cert', label: 'ประกาศฯ', fullLabel: 'ออกแบบประกาศนียบัตร', icon: 'Award' },
+                { id: 'live', label: 'Live สด', fullLabel: 'ควบคุม Live สด', icon: 'Radio' },
+                { id: 'content', label: 'บทเรียน', fullLabel: 'บทเรียน & ข้อสอบ', icon: 'BookOpen' },
+                { id: 'sync', label: 'Sync', fullLabel: 'Auto-Sync & Cloud', icon: 'Database' },
+                { id: 'overview', label: 'ภาพรวม', fullLabel: 'ลิงก์ระบบ & สรุป', icon: 'LayoutDashboard' }
+            ];
 
             return (
-                <div className="flex h-screen bg-slate-100 overflow-hidden">
-                    {/* Sidebar */}
-                    <div className="w-64 bg-white border-r border-slate-200 flex flex-col shadow-sm z-20 shrink-0 hidden md:flex">
-                        <div className="p-6 border-b border-slate-100 text-center">
-                            <h1 className="text-xl font-black text-line-600">Admin Panel</h1>
-                            <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">RJ Ailiverse</p>
+                <div className="min-h-dvh relative flex flex-col lg:flex-row pt-safe">
+                    <div className="aura-canvas" /><div className="aura-grid" />
+
+                    {/* Desktop Sidebar */}
+                    <aside className="hidden lg:flex w-64 shrink-0 flex-col bg-white/85 backdrop-blur-2xl border-r border-slate-200/80 z-20 sticky top-0 h-screen">
+                        <div className="p-5 border-b border-slate-100">
+                            <div className="flex items-center gap-2.5">
+                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-clinical-500 to-teal-600 text-white flex items-center justify-center shadow-sm">
+                                    <Icon name="ShieldCheck" size={20} />
+                                </div>
+                                <div className="min-w-0">
+                                    <span className="font-display font-extrabold text-base text-slate-900 block leading-none">
+                                        rjcloud<span className="text-clinical-600">.organ</span>
+                                    </span>
+                                    <span className="text-[10px] font-mono text-slate-500">Admin Studio 2027</span>
+                                </div>
+                            </div>
+                            <div className="mt-3 px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200/70 text-[11px] font-mono text-slate-600 truncate">
+                                {adminSession.email}
+                            </div>
                         </div>
-                        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-                            {[{id: 'users', label: 'จัดการสิทธิ์ผู้เรียน', icon: 'Users'}, {id: 'data', label: 'Auto-Sync & ระบบคิว', icon: 'Database'}, {id: 'live', label: 'ระบบถ่ายทอดสด', icon: 'Radio'}, {id: 'content', label: 'แก้ไขบทเรียน', icon: 'BookOpen'}, {id: 'quiz', label: 'จัดการข้อสอบ', icon: 'CheckSquare'}, {id: 'analytics', label: 'Dashboard', icon: 'Activity'}].map(t => (
-                                <button key={t.id} onClick={() => setActiveTab(t.id)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-colors ${activeTab === t.id ? 'bg-line-50 text-line-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}><SafeIcon name={t.icon} /> {t.label}</button>
+
+                        <nav className="flex-1 p-3 space-y-1.5 overflow-y-auto custom-scrollbar">
+                            {navItems.map(item => (
+                                <button
+                                    key={item.id}
+                                    type="button"
+                                    onClick={() => setActiveTab(item.id)}
+                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all ${
+                                        activeTab === item.id
+                                            ? 'bg-clinical-600 text-white shadow-md shadow-clinical-600/20'
+                                            : 'text-slate-600 hover:bg-slate-100/90 hover:text-slate-900'
+                                    }`}
+                                >
+                                    <Icon name={item.icon} size={18} />
+                                    <span>{item.fullLabel}</span>
+                                </button>
                             ))}
                         </nav>
-                        <div className="p-4 border-t border-slate-100">
-                            <button onClick={() => window.location.href = './index.html'} className="w-full flex items-center justify-center gap-2 py-3 text-sm font-bold text-slate-500 hover:bg-slate-50 rounded-xl transition-colors"><SafeIcon name="LogOut" size={16}/> สลับไปหน้าผู้เรียน</button>
+
+                        <div className="p-3 border-t border-slate-100 space-y-1.5">
+                            <a href="./index.html" className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors">
+                                <Icon name="ExternalLink" size={15} /> ไปหน้าผู้เรียน
+                            </a>
+                            <button onClick={handleAdminLogout} className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold transition-colors">
+                                <Icon name="LogOut" size={15} /> ออกจากระบบ
+                            </button>
                         </div>
-                    </div>
+                    </aside>
+
+                    {/* Mobile Top Header */}
+                    <header className="lg:hidden sticky top-0 z-30 backdrop-blur-xl bg-white/85 border-b border-slate-200/70">
+                        <div className="px-3.5 h-14 flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2 min-w-0">
+                                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-clinical-500 to-teal-600 text-white flex items-center justify-center shrink-0">
+                                    <Icon name="ShieldCheck" size={17} />
+                                </div>
+                                <div className="min-w-0">
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="font-display font-extrabold text-sm text-slate-900 truncate">Admin Studio</span>
+                                        <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-mono font-bold ${adminSession.mode === 'cloud' ? 'bg-clinical-100 text-clinical-700' : 'bg-amber-100 text-amber-800'}`}>
+                                            {adminSession.mode === 'cloud' ? 'LIVE' : 'DEMO'}
+                                        </span>
+                                    </div>
+                                    <span className="text-[10px] font-mono text-slate-500 block truncate">{adminSession.email}</span>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-1.5 shrink-0">
+                                <a href="./index.html" className="w-9 h-9 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center" title="หน้าผู้เรียน">
+                                    <Icon name="Home" size={17} />
+                                </a>
+                                <button onClick={handleAdminLogout} className="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center" title="ออกจากระบบ">
+                                    <Icon name="LogOut" size={17} />
+                                </button>
+                            </div>
+                        </div>
+                    </header>
 
                     {/* Main Content Area */}
-                    <div className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8 relative">
-                        {alertMsg.show && <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-full font-bold shadow-lg animate-in fade-in slide-in-from-top-4 flex items-center gap-2 ${alertMsg.type === 'error' ? 'bg-rose-100 border border-rose-400 text-rose-800' : 'bg-emerald-100 border border-emerald-400 text-emerald-800'}`}><SafeIcon name={alertMsg.type === 'error' ? 'XCircle' : 'CheckCircle'} /> {alertMsg.text}</div>}
-                        
-                        {/* Mobile Tabs */}
-                        <div className="md:hidden flex gap-2 overflow-x-auto mb-6 custom-scrollbar pb-2">
-                             {[{id: 'users', label: 'ผู้ใช้'}, {id: 'live', label: 'Live สด'}, {id: 'content', label: 'บทเรียน'}, {id: 'quiz', label: 'ข้อสอบ'}].map(t => (
-                                <button key={t.id} onClick={() => setActiveTab(t.id)} className={`px-4 py-2 rounded-xl font-bold text-sm whitespace-nowrap ${activeTab === t.id ? 'bg-line-500 text-white' : 'bg-white text-slate-600'}`}>{t.label}</button>
-                            ))}
-                        </div>
+                    <main className="relative z-10 flex-1 w-full max-w-6xl mx-auto px-3.5 sm:px-6 lg:px-8 py-4 md:py-7 pb-dock-safe lg:pb-10">
 
-                        {/* 1. จัดการสิทธิ์ผู้เรียน (User Management) */}
+                        {/* ==================== TAB 1: USERS ==================== */}
                         {activeTab === 'users' && (
-                            <div className="animate-in fade-in flex flex-col h-full">
-                                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                            <div className="space-y-4">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <div>
-                                        <h2 className="text-2xl font-black text-slate-800 flex items-center gap-2"><SafeIcon name="Users" className="text-line-600" /> จัดการสิทธิ์ผู้เรียน</h2>
-                                        <p className="text-slate-500 text-sm mt-1">ผู้เรียนทั้งหมดในระบบ: {usersList.length} ราย</p>
+                                        <h2 className="font-display text-xl sm:text-2xl font-extrabold text-slate-900">จัดการสิทธิ์ผู้เรียน</h2>
+                                        <p className="text-xs sm:text-sm text-slate-500">ทั้งหมด {usersList.length} ราย • สอบผ่านแล้ว {quickStats.passed} ราย</p>
                                     </div>
-                                    <div className="flex flex-wrap gap-2 w-full md:w-auto mt-4 md:mt-0">
-                                        <div className="bg-white px-4 py-2 rounded-lg border flex items-center gap-2 flex-1 md:w-64 min-w-[200px]"><SafeIcon name="Search" className="text-slate-400 shrink-0" /><input type="text" placeholder="ค้นหาชื่อ หรือ ใบอนุญาต..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="outline-none text-sm w-full bg-transparent" /></div>
-                                        
-                                        <button onClick={() => syncFromGoogleSheet(true)} className="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-sm hover:bg-blue-500 shrink-0 flex items-center gap-1"><SafeIcon name="RefreshCw" size={16}/> ดึงสิทธิ์จาก Sheet</button>
-                                        
-                                        <button onClick={handleForceRefillAll} className="bg-amber-500 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-sm hover:bg-amber-400 shrink-0 flex items-center gap-1"><SafeIcon name="Activity" size={16}/> Auto-Refill VIP</button>
-
-                                        <button onClick={() => setShowManualForm(!showManualForm)} className="bg-slate-800 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-sm hover:bg-slate-700 shrink-0 flex items-center gap-1"><SafeIcon name="Plus" size={16}/> เพิ่มมือ</button>
-                                        
-                                        <button onClick={handleExportCSV} className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-sm flex items-center gap-1"><SafeIcon name="Download" size={16}/> CSV</button>
+                                    <div className="grid grid-cols-2 sm:flex flex-wrap gap-2">
+                                        <button onClick={() => setShowAddUser(v => !v)} className="touch-target px-3.5 py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-1.5">
+                                            <Icon name="UserPlus" size={15} /> เพิ่มผู้เรียน
+                                        </button>
+                                        <button onClick={() => syncFromGoogleSheet(true)} disabled={isSyncing} className="touch-target px-3.5 py-2.5 rounded-2xl bg-medical-600 hover:bg-medical-700 text-white font-bold text-xs flex items-center justify-center gap-1.5">
+                                            <Icon name="RefreshCw" size={15} className={isSyncing ? 'animate-spin' : ''} /> ดึงจาก Sheet
+                                        </button>
+                                        <button onClick={handleAutoRefillVip} className="touch-target px-3.5 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center justify-center gap-1.5">
+                                            <Icon name="Zap" size={15} /> เติมเวลา VIP
+                                        </button>
+                                        <button onClick={handleExportCSV} className="touch-target px-3.5 py-2.5 rounded-2xl bg-clinical-600 hover:bg-clinical-700 text-white font-bold text-xs flex items-center justify-center gap-1.5">
+                                            <Icon name="Download" size={15} /> ส่งออก CSV
+                                        </button>
                                     </div>
                                 </div>
 
-                                {showManualForm && (
-                                    <form onSubmit={handleAddManualUser} className="mb-6 p-6 bg-white rounded-2xl shadow-sm border border-slate-200 grid grid-cols-1 md:grid-cols-5 gap-4 items-end animate-in fade-in slide-in-from-top-4">
-                                        <div><label className="block text-xs font-bold text-slate-500 mb-1">ชื่อ-สกุล</label><input required value={manualForm.name} onChange={e => setManualForm({...manualForm, name: e.target.value})} className="w-full px-3 py-2 border rounded-lg outline-none focus:border-line-500 text-sm" /></div>
-                                        <div><label className="block text-xs font-bold text-slate-500 mb-1">ใบอนุญาต (ID)</label><input required value={manualForm.license} onChange={e => setManualForm({...manualForm, license: e.target.value})} className="w-full px-3 py-2 border rounded-lg outline-none focus:border-line-500 text-sm" /></div>
-                                        <div><label className="block text-xs font-bold text-slate-500 mb-1">โรงพยาบาล</label><input required value={manualForm.hospital} onChange={e => setManualForm({...manualForm, hospital: e.target.value})} className="w-full px-3 py-2 border rounded-lg outline-none focus:border-line-500 text-sm" /></div>
-                                        <div><label className="block text-xs font-bold text-slate-500 mb-1">สิทธิ์ (Type)</label><select value={manualForm.userType} onChange={e => setManualForm({...manualForm, userType: e.target.value})} className="w-full px-3 py-2 border rounded-lg outline-none focus:border-line-500 text-sm bg-white"><option>เรียนใหม่</option><option>Onsite</option><option>Online</option><option>Masterclass</option></select></div>
-                                        <button type="submit" className="w-full bg-slate-800 text-white font-bold py-2 rounded-lg shadow-sm hover:bg-slate-700">บันทึก</button>
+                                {/* Add User Form Drawer */}
+                                {showAddUser && (
+                                    <form onSubmit={handleAddManualUser} className="bento-glass rounded-[1.5rem] p-4 sm:p-5 space-y-3 border-clinical-200">
+                                        <div className="flex items-center justify-between">
+                                            <h3 className="font-display font-bold text-sm text-clinical-700">เพิ่มรายชื่อผู้เรียนด้วยตนเอง</h3>
+                                            <button type="button" onClick={() => setShowAddUser(false)} className="text-slate-400 hover:text-slate-700">
+                                                <Icon name="X" size={18} />
+                                            </button>
+                                        </div>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                            <FieldInput label="ชื่อ - นามสกุล *" required value={manualForm.name} onChange={e => setManualForm({ ...manualForm, name: e.target.value })} placeholder="พว.ใจดี มีเมตตา" />
+                                            <FieldInput label="เลขใบประกอบวิชาชีพ *" required value={manualForm.license} onChange={e => setManualForm({ ...manualForm, license: e.target.value })} placeholder="65012345" />
+                                            <div>
+                                                <label className="block text-xs font-bold text-slate-600 mb-1.5 ml-1">ประเภทสิทธิ์</label>
+                                                <select value={manualForm.userType} onChange={e => setManualForm({ ...manualForm, userType: e.target.value })} className="touch-target w-full px-3.5 py-2.5 rounded-2xl bg-white border border-slate-200 text-sm font-medium">
+                                                    <option value="เรียนใหม่">เรียนใหม่</option>
+                                                    <option value="Online">Online</option>
+                                                    <option value="Onsite">Onsite</option>
+                                                    <option value="Masterclass">Masterclass</option>
+                                                </select>
+                                            </div>
+                                            <FieldInput label="โรงพยาบาล" value={manualForm.hospital} onChange={e => setManualForm({ ...manualForm, hospital: e.target.value })} />
+                                            <FieldInput label="สังกัด / เขตสุขภาพ" value={manualForm.department} onChange={e => setManualForm({ ...manualForm, department: e.target.value })} />
+                                            <FieldInput label="อีเมล" type="email" value={manualForm.email} onChange={e => setManualForm({ ...manualForm, email: e.target.value })} />
+                                        </div>
+                                        <button type="submit" className="touch-target w-full sm:w-auto px-6 py-2.5 rounded-2xl bg-clinical-600 hover:bg-clinical-700 text-white font-display font-bold text-sm">
+                                            บันทึกผู้เรียนใหม่
+                                        </button>
                                     </form>
                                 )}
 
-                                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex-1 relative">
-                                    <div className="absolute inset-0 overflow-auto custom-scrollbar">
-                                        <table className="w-full text-left text-sm whitespace-nowrap min-w-[800px]">
-                                            <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider sticky top-0 z-10 shadow-sm">
-                                                <tr><th className="p-4">ชื่อผู้เรียน</th><th className="p-4">ใบอนุญาต</th><th className="p-4">ประเภทสิทธิ์</th><th className="p-4">ความคืบหน้า</th><th className="p-4">สถานะการเรียน</th><th className="p-4 text-center">เพิกถอนสิทธิ์</th></tr>
+                                {/* Search & Filter Bar */}
+                                <div className="bento-glass rounded-2xl p-3 flex flex-col sm:flex-row gap-2.5">
+                                    <div className="relative flex-1">
+                                        <Icon name="Search" size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                                        <input
+                                            type="text"
+                                            value={searchTerm}
+                                            onChange={e => setSearchTerm(e.target.value)}
+                                            placeholder="ค้นหาชื่อ, เลขใบอนุญาต หรือโรงพยาบาล..."
+                                            className="touch-target w-full pl-10 pr-3 py-2 rounded-xl bg-white border border-slate-200 text-sm outline-none focus:border-clinical-500"
+                                        />
+                                    </div>
+                                    <div className="flex gap-1.5 overflow-x-auto custom-scrollbar pb-0.5">
+                                        {[
+                                            { k: 'ALL', l: 'ทั้งหมด' },
+                                            { k: 'Masterclass', l: 'Masterclass' },
+                                            { k: 'Onsite', l: 'Onsite' },
+                                            { k: 'PASSED', l: 'สอบผ่านแล้ว' }
+                                        ].map(f => (
+                                            <button
+                                                key={f.k}
+                                                type="button"
+                                                onClick={() => setFilterType(f.k)}
+                                                className={`shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+                                                    filterType === f.k
+                                                        ? 'bg-clinical-600 text-white'
+                                                        : 'bg-white border border-slate-200 text-slate-600'
+                                                }`}
+                                            >
+                                                {f.l}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Mobile Card List (100% Smartphone Friendly — ไม่ต้องเลื่อนตารางแนวนอน) */}
+                                <div className="space-y-3 md:hidden">
+                                    {filteredUsers.map(u => (
+                                        <div key={u.id} className="bento-glass rounded-2xl p-4 space-y-3">
+                                            <div className="flex items-start justify-between gap-2">
+                                                <div className="min-w-0">
+                                                    <h3 className="font-display font-bold text-base text-slate-900 truncate">{u.name}</h3>
+                                                    <p className="text-xs text-slate-500 truncate">{u.hospital || 'ไม่ระบุหน่วยงาน'} • <span className="font-mono">{getUserLicense(u)}</span></p>
+                                                </div>
+                                                <button onClick={() => handleDeleteUser(u)} className="w-9 h-9 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center shrink-0">
+                                                    <Icon name="Trash2" size={16} />
+                                                </button>
+                                            </div>
+
+                                            <div className="flex items-center gap-2">
+                                                <div className="flex-1 h-2 rounded-full bg-slate-100 overflow-hidden">
+                                                    <div className="h-full bg-clinical-500 rounded-full" style={{ width: `${u.progress || 0}%` }} />
+                                                </div>
+                                                <span className="font-mono text-xs font-bold text-clinical-700">{u.progress || 0}%</span>
+                                            </div>
+
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <select
+                                                    value={u.userType || 'เรียนใหม่'}
+                                                    onChange={e => handleUpdateUser(u, { userType: e.target.value })}
+                                                    className="touch-target px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700"
+                                                >
+                                                    <option value="เรียนใหม่">เรียนใหม่</option>
+                                                    <option value="Online">Online</option>
+                                                    <option value="Onsite">Onsite</option>
+                                                    <option value="Masterclass">Masterclass</option>
+                                                </select>
+                                                <select
+                                                    value={u.status || 'กำลังเรียน'}
+                                                    onChange={e => handleUpdateUser(u, { status: e.target.value })}
+                                                    className={`touch-target px-3 py-2 rounded-xl border text-xs font-bold ${
+                                                        u.status === 'ผ่าน'
+                                                            ? 'bg-clinical-50 border-clinical-200 text-clinical-700'
+                                                            : 'bg-amber-50 border-amber-200 text-amber-700'
+                                                    }`}
+                                                >
+                                                    <option value="กำลังเรียน">กำลังเรียน</option>
+                                                    <option value="ผ่าน">ผ่านเกณฑ์</option>
+                                                    <option value="ไม่ผ่าน">ไม่ผ่าน</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {filteredUsers.length === 0 && (
+                                        <div className="bento-glass rounded-2xl p-8 text-center text-sm text-slate-400">ไม่พบรายชื่อผู้เรียนที่ค้นหาค่ะ</div>
+                                    )}
+                                </div>
+
+                                {/* Desktop Data Table */}
+                                <div className="hidden md:block bento-glass rounded-[1.5rem] overflow-hidden">
+                                    <div className="overflow-x-auto custom-scrollbar">
+                                        <table className="w-full text-left text-sm">
+                                            <thead className="bg-slate-50/90 border-b border-slate-200 text-slate-500 text-xs font-bold uppercase">
+                                                <tr>
+                                                    <th className="p-4">ชื่อผู้เรียน / หน่วยงาน</th>
+                                                    <th className="p-4">ใบอนุญาต</th>
+                                                    <th className="p-4">สิทธิ์การเรียน</th>
+                                                    <th className="p-4">ความคืบหน้า</th>
+                                                    <th className="p-4">สถานะ</th>
+                                                    <th className="p-4 text-center">จัดการ</th>
+                                                </tr>
                                             </thead>
-                                            <tbody className="divide-y divide-slate-100">
-                                                {filteredUsers.length > 0 ? filteredUsers.map(u => (
-                                                    <tr key={u.id} className="hover:bg-slate-50 transition-colors">
-                                                        <td className="p-4 font-bold text-slate-800">{u.name}</td>
-                                                        <td className="p-4 text-slate-600 font-mono text-xs">{u.license || u.id}</td>
+                                            <tbody className="divide-y divide-slate-100 bg-white/60">
+                                                {filteredUsers.map(u => (
+                                                    <tr key={u.id} className="hover:bg-clinical-50/40 transition-colors">
                                                         <td className="p-4">
-                                                            <select value={u.userType || 'เรียนใหม่'} onChange={(e) => updateUserStatus(u.id, u.status, e.target.value)} className="bg-white border border-slate-300 rounded px-2 py-1 text-xs font-bold outline-none shadow-sm focus:border-line-500">
-                                                                <option value="เรียนใหม่">เรียนใหม่</option><option value="Online">Online</option><option value="Onsite">Onsite</option><option value="Masterclass">Masterclass</option>
+                                                            <p className="font-bold text-slate-900">{u.name}</p>
+                                                            <p className="text-xs text-slate-500">{u.hospital || '-'}</p>
+                                                        </td>
+                                                        <td className="p-4 font-mono text-xs text-slate-600">{getUserLicense(u)}</td>
+                                                        <td className="p-4">
+                                                            <select
+                                                                value={u.userType || 'เรียนใหม่'}
+                                                                onChange={e => handleUpdateUser(u, { userType: e.target.value })}
+                                                                className="px-2.5 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-bold"
+                                                            >
+                                                                <option value="เรียนใหม่">เรียนใหม่</option>
+                                                                <option value="Online">Online</option>
+                                                                <option value="Onsite">Onsite</option>
+                                                                <option value="Masterclass">Masterclass</option>
                                                             </select>
                                                         </td>
-                                                        <td className="p-4"><div className="flex items-center gap-2"><div className="w-16 h-1.5 bg-slate-200 rounded-full overflow-hidden"><div className="bg-line-500 h-full" style={{width: `${u.progress}%`}}></div></div><span className="text-xs text-slate-500 font-bold">{u.progress}%</span></div></td>
                                                         <td className="p-4">
-                                                            <select value={u.status || 'กำลังเรียน'} onChange={(e) => updateUserStatus(u.id, e.target.value, u.userType)} className={`border rounded px-2 py-1 text-xs font-bold outline-none shadow-sm ${u.status === 'ผ่าน' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200'}`}>
-                                                                <option value="กำลังเรียน">กำลังเรียน</option><option value="ผ่าน">สอบผ่าน (บังคับ)</option><option value="ไม่ผ่าน">ไม่ผ่าน</option>
+                                                            <div className="flex items-center gap-2">
+                                                                <div className="w-20 h-2 bg-slate-100 rounded-full overflow-hidden">
+                                                                    <div className="h-full bg-clinical-500" style={{ width: `${u.progress || 0}%` }} />
+                                                                </div>
+                                                                <span className="font-mono text-xs font-bold text-slate-600">{u.progress || 0}%</span>
+                                                            </div>
+                                                        </td>
+                                                        <td className="p-4">
+                                                            <select
+                                                                value={u.status || 'กำลังเรียน'}
+                                                                onChange={e => handleUpdateUser(u, { status: e.target.value })}
+                                                                className={`px-2.5 py-1.5 rounded-xl border text-xs font-bold ${
+                                                                    u.status === 'ผ่าน'
+                                                                        ? 'bg-clinical-50 border-clinical-200 text-clinical-700'
+                                                                        : 'bg-amber-50 border-amber-200 text-amber-700'
+                                                                }`}
+                                                            >
+                                                                <option value="กำลังเรียน">กำลังเรียน</option>
+                                                                <option value="ผ่าน">ผ่านเกณฑ์</option>
+                                                                <option value="ไม่ผ่าน">ไม่ผ่าน</option>
                                                             </select>
                                                         </td>
-                                                        <td className="p-4 text-center"><button onClick={() => deleteUser(u.id)} className="text-slate-400 hover:text-rose-600 hover:bg-rose-50 p-2 rounded-lg transition-colors" title="ลบผู้ใช้งาน"><SafeIcon name="Trash2" size={18} /></button></td>
+                                                        <td className="p-4 text-center">
+                                                            <button onClick={() => handleDeleteUser(u)} className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors">
+                                                                <Icon name="Trash2" size={17} />
+                                                            </button>
+                                                        </td>
                                                     </tr>
-                                                )) : (
-                                                    <tr><td colSpan="6" className="p-12 text-center text-slate-400 font-medium">ไม่พบข้อมูลผู้เรียน</td></tr>
+                                                ))}
+                                                {filteredUsers.length === 0 && (
+                                                    <tr><td colSpan="6" className="p-10 text-center text-slate-400">ไม่พบข้อมูลผู้เรียน</td></tr>
                                                 )}
                                             </tbody>
                                         </table>
@@ -549,215 +1415,442 @@
                             </div>
                         )}
 
-                        {/* 2. ระบบดึงข้อมูลอัตโนมัติ (Data Auto-Sync) */}
-                        {activeTab === 'data' && (
-                            <div className="animate-in fade-in max-w-4xl">
-                                <h2 className="text-2xl font-black text-slate-800 mb-2 flex items-center gap-2"><SafeIcon name="Database" className="text-line-600" /> ระบบเชื่อมโยงข้อมูล & Auto-Sync</h2>
-                                <p className="text-slate-500 text-sm mb-6">ตั้งค่าให้ระบบดึงรายชื่อและสิทธิ์นักเรียนจาก Google Sheets เข้ามาให้อัตโนมัติ</p>
-                                
-                                <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200 space-y-6">
-                                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl flex gap-3 text-blue-800 text-sm">
-                                        <SafeIcon name="Info" className="shrink-0 mt-0.5" />
-                                        <div><b>วิธีใช้งาน:</b> ให้ไปที่ Google Sheets ของคุณ เลือก ไฟล์ (File) &gt; แชร์ (Share) &gt; เผยแพร่ทางเว็บ (Publish to web) &gt; เปลี่ยนจาก 'หน้าเว็บ' เป็น 'ค่าที่คั่นด้วยจุลภาค (CSV)' แล้วนำลิงก์ที่ได้มาวางในช่องด้านล่าง (คอลัมน์ในตารางต้องเรียงตามนี้: ชื่อ, ใบอนุญาต, โรงพยาบาล, สิทธิ์)</div>
-                                    </div>
-                                    
+                        {/* ==================== TAB 2: CERTIFICATE DESIGNER (NEW 2027) ==================== */}
+                        {activeTab === 'cert' && (
+                            <div className="space-y-5">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <div>
-                                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">ลิงก์ Google Sheets (รูปแบบ CSV)</label>
-                                        <input type="url" value={systemConfig.masterCsvUrl || ''} onChange={e => setSystemConfig({...systemConfig, masterCsvUrl: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-slate-300 outline-none focus:border-line-500 font-mono text-sm" placeholder="https://docs.google.com/spreadsheets/d/.../pub?output=csv" />
+                                        <span className="px-2.5 py-0.5 rounded-full bg-clinical-100 text-clinical-700 font-mono text-[10px] font-bold">IN-APP CERTIFICATE STUDIO</span>
+                                        <h2 className="font-display text-xl sm:text-2xl font-extrabold text-slate-900 mt-1">ออกแบบประกาศนียบัตรในระบบ</h2>
+                                        <p className="text-xs sm:text-sm text-slate-500">แก้ไขข้อความ โลโก้ และลายเซ็นได้เองทันที โดยไม่ต้องพึ่งสคริปต์ภายนอก</p>
                                     </div>
-                                    
-                                    <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
-                                        <div className="flex-1 w-full bg-slate-50 p-4 rounded-xl border border-slate-200 flex items-center justify-between">
-                                            <div>
-                                                <div className="font-bold text-slate-800 text-sm">อัปเดตสิทธิ์อัตโนมัติ (Auto-Sync)</div>
-                                                <div className="text-xs text-slate-500 mt-0.5">ระบบจะดึงข้อมูลใหม่ทุกๆ 30 วินาที เมื่อเปิดหน้านี้ไว้</div>
-                                            </div>
-                                            <label className="relative inline-flex items-center cursor-pointer">
-                                                <input type="checkbox" className="sr-only peer" checked={systemConfig.autoSyncFromSheet} onChange={e => saveSettings({ autoSyncFromSheet: e.target.checked })} />
-                                                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-line-500"></div>
-                                            </label>
-                                        </div>
-                                        <button onClick={() => syncFromGoogleSheet(true)} className="w-full sm:w-auto bg-line-50 text-line-600 hover:bg-line-100 border border-line-200 font-bold py-4 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 whitespace-nowrap"><SafeIcon name="RefreshCw" size={18} /> ดึงข้อมูลเดี๋ยวนี้</button>
-                                    </div>
-                                    
-                                    <div className="border-t border-slate-100 pt-6 mt-6">
-                                        <button onClick={() => saveSettings(systemConfig)} className="w-full bg-slate-800 text-white hover:bg-slate-700 font-bold py-3.5 rounded-xl transition-colors shadow-sm">บันทึกลิงก์และตั้งค่าส่วนกลาง</button>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* 3. ระบบ Live และเอกสาร (Live Stream & Docs) */}
-                        {activeTab === 'live' && (
-                            <div className="animate-in fade-in max-w-3xl">
-                                <h2 className="text-2xl font-black text-slate-800 mb-6 flex items-center gap-2"><SafeIcon name="Radio" className="text-rose-500" /> ระบบควบคุม Live สด และเอกสาร</h2>
-                                <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200 space-y-6">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div>
-                                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">สถานะการถ่ายทอด</label>
-                                            <div className="flex gap-2">
-                                                <button onClick={() => setLiveConfig({...liveConfig, status: 'live'})} className={`flex-1 py-2.5 rounded-lg font-bold border transition-colors ${liveConfig.status === 'live' ? 'bg-rose-100 text-rose-700 border-rose-300' : 'bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100'}`}>🔴 LIVE</button>
-                                                <button onClick={() => setLiveConfig({...liveConfig, status: 'offline'})} className={`flex-1 py-2.5 rounded-lg font-bold border transition-colors ${liveConfig.status === 'offline' ? 'bg-slate-800 text-white border-slate-800' : 'bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100'}`}>ปิด (Offline)</button>
-                                            </div>
-                                        </div>
-                                        <div><label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">หัวข้อการบรรยาย</label><input type="text" value={liveConfig.topic} onChange={e => setLiveConfig({...liveConfig, topic: e.target.value})} className="w-full px-4 py-2.5 rounded-lg border border-slate-300 outline-none focus:border-line-500" placeholder="เช่น บรรยายพิเศษนโยบายชาติ..." /></div>
-                                    </div>
-                                    
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                                        <div>
-                                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">จำนวนวัน (สำหรับโชว์ในเว็บ)</label>
-                                            <input type="number" min="1" value={liveConfig.days || 1} onChange={e => setLiveConfig({...liveConfig, days: parseInt(e.target.value) || 1})} className="w-full px-4 py-2.5 rounded-lg border border-slate-300 outline-none focus:border-line-500 font-mono text-sm" placeholder="1" />
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">ชั่วโมงบังคับเรียน (สำหรับสิทธิ์ Online)</label>
-                                            <input type="number" min="1" value={liveConfig.hours || 10} onChange={e => setLiveConfig({...liveConfig, hours: parseInt(e.target.value) || 10})} className="w-full px-4 py-2.5 rounded-lg border border-slate-300 outline-none focus:border-line-500 font-mono text-sm" placeholder="10" />
-                                        </div>
-                                    </div>
-
-                                    <div><label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 mt-2">Embed URL (ลิงก์วิดีโอจาก Canva/Vimeo/Youtube)</label><input type="text" value={liveConfig.url} onChange={e => setLiveConfig({...liveConfig, url: e.target.value})} className="w-full px-4 py-2.5 rounded-lg border border-slate-300 outline-none focus:border-line-500 font-mono text-sm" placeholder="https://www.canva.com/..." /></div>
-                                    <div className="pt-4 border-t border-slate-100"><label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-2"><SafeIcon name="UploadCloud" size={16} className="text-line-500"/> ลิงก์เอกสารประกอบ Live (Google Drive / PDF)</label><input type="text" value={liveConfig.documentUrl || ''} onChange={e => setLiveConfig({...liveConfig, documentUrl: e.target.value})} className="w-full px-4 py-2.5 rounded-lg border border-slate-300 outline-none focus:border-line-500 font-mono text-sm" placeholder="วางลิงก์เอกสารให้ผู้เรียนดาวน์โหลด..." /></div>
-                                    <button onClick={saveLiveConfig} className="w-full bg-line-500 hover:bg-line-600 text-white font-bold py-3.5 rounded-xl transition-colors shadow-md flex items-center justify-center gap-2"><SafeIcon name="Save" size={20} /> เผยแพร่สถานะ Live ให้นักเรียนเห็น</button>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* 4. จัดการเนื้อหา (Content Editor) */}
-                        {activeTab === 'content' && (
-                            <div className="animate-in fade-in max-w-5xl">
-                                <div className="flex justify-between items-center mb-6">
-                                    <h2 className="text-2xl font-black text-slate-800 flex items-center gap-2"><SafeIcon name="BookOpen" className="text-line-600" /> แก้ไขรายวิชา</h2>
                                     <div className="flex gap-2">
-                                        <button onClick={handleRestoreDefaultContent} className="bg-amber-500 text-white px-4 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-sm hover:bg-amber-600 transition-colors"><SafeIcon name="RefreshCw" size={18}/> กู้คืนข้อมูลเริ่มต้น</button>
-                                        <button onClick={saveContentConfig} className="bg-line-500 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-sm hover:bg-line-600 transition-colors"><SafeIcon name="UploadCloud" size={18}/> เผยแพร่ขึ้น Cloud</button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setCertTemplate({ ...DEFAULT_CERT_TEMPLATE })}
+                                            className="touch-target px-4 py-2.5 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold text-xs"
+                                        >
+                                            คืนค่าเริ่มต้น
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => persistSettings({ certTemplate })}
+                                            className="touch-target px-5 py-2.5 rounded-2xl bg-clinical-600 hover:bg-clinical-700 text-white font-display font-bold text-xs flex items-center gap-1.5 shadow-sm"
+                                        >
+                                            <Icon name="Save" size={16} /> บันทึกและเผยแพร่
+                                        </button>
                                     </div>
                                 </div>
-                                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                                    <div className="space-y-4 max-h-[65vh] overflow-y-auto pr-2 custom-scrollbar">
-                                        {(contentConfig.lessons || []).map(l => (
-                                            <div key={l.id} className="p-4 bg-slate-50 border border-slate-200 rounded-xl flex flex-col md:flex-row gap-4 items-start md:items-center">
-                                                <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center font-black text-slate-500 shrink-0">{l.id}</div>
-                                                <div className="flex-1 w-full space-y-2">
-                                                    <input type="text" value={l.title} onChange={e => setContentConfig(p => ({ ...p, lessons: (p.lessons || []).map(x => x.id === l.id ? { ...x, title: e.target.value } : x) }))} className="w-full text-sm font-bold p-2 border rounded-lg outline-none focus:border-line-500" placeholder="ชื่อบทเรียน" />
-                                                    <input type="text" value={l.videoId} onChange={e => setContentConfig(p => ({ ...p, lessons: (p.lessons || []).map(x => x.id === l.id ? { ...x, videoId: e.target.value } : x) }))} className="w-full text-xs font-mono p-2 border rounded-lg outline-none focus:border-line-500 text-slate-500" placeholder="Google Drive Video ID" />
+
+                                <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+                                    {/* Live Preview */}
+                                    <div className="lg:col-span-7 bento-glass rounded-[1.75rem] p-3 sm:p-5 space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-xs font-bold text-slate-600 flex items-center gap-1.5">
+                                                <Icon name="Eye" size={15} className="text-clinical-600" /> ตัวอย่างใบประกาศนียบัตร (Live Preview)
+                                            </span>
+                                            <span className="font-mono text-[10px] text-slate-400">A4 LANDSCAPE • 300 DPI</span>
+                                        </div>
+                                        <div className="w-full aspect-[1.414/1] rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-sm">
+                                            <canvas ref={certCanvasRef} className="w-full h-full object-contain block" />
+                                        </div>
+                                    </div>
+
+                                    {/* Editor Controls */}
+                                    <div className="lg:col-span-5 bento-glass rounded-[1.75rem] p-4 sm:p-6 space-y-3.5">
+                                        <FieldInput label="รหัสนำหน้าใบประกาศฯ (Prefix)" value={certTemplate.certPrefix} onChange={e => setCertTemplate(p => ({ ...p, certPrefix: e.target.value }))} />
+                                        <FieldInput label="ชื่อหน่วยงานหลัก (ไทย)" value={certTemplate.orgTitleTH} onChange={e => setCertTemplate(p => ({ ...p, orgTitleTH: e.target.value }))} />
+                                        <FieldInput label="ชื่อหน่วยงาน (อังกฤษ)" value={certTemplate.orgTitleEN} onChange={e => setCertTemplate(p => ({ ...p, orgTitleEN: e.target.value }))} />
+                                        <FieldInput label="ชื่อหลักสูตร (ไทย)" value={certTemplate.courseTitleTH} onChange={e => setCertTemplate(p => ({ ...p, courseTitleTH: e.target.value }))} />
+                                        <FieldInput label="ชื่อหลักสูตร (อังกฤษ)" value={certTemplate.courseTitleEN} onChange={e => setCertTemplate(p => ({ ...p, courseTitleEN: e.target.value }))} />
+                                        <FieldInput label="ข้อความรับรองการผ่านหลักสูตร" value={certTemplate.completionTextTH} onChange={e => setCertTemplate(p => ({ ...p, completionTextTH: e.target.value }))} />
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                            <FieldInput label="ชื่อผู้ลงนาม" value={certTemplate.signerName} onChange={e => setCertTemplate(p => ({ ...p, signerName: e.target.value }))} />
+                                            <FieldInput label="ตำแหน่งผู้ลงนาม" value={certTemplate.signerPosition} onChange={e => setCertTemplate(p => ({ ...p, signerPosition: e.target.value }))} />
+                                        </div>
+                                        <FieldInput label="ลิงก์โลโก้ PNG โปร่งใส (ไม่บังคับ)" value={certTemplate.logoUrl} onChange={e => setCertTemplate(p => ({ ...p, logoUrl: e.target.value }))} placeholder="https://.../logo.png" />
+                                        <FieldInput label="ลิงก์ลายเซ็น PNG โปร่งใส (ไม่บังคับ)" value={certTemplate.signatureUrl} onChange={e => setCertTemplate(p => ({ ...p, signatureUrl: e.target.value }))} placeholder="https://.../signature.png" />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* ==================== TAB 3: LIVE STREAM CONTROL ==================== */}
+                        {activeTab === 'live' && (
+                            <div className="max-w-3xl space-y-5">
+                                <div>
+                                    <h2 className="font-display text-xl sm:text-2xl font-extrabold text-slate-900">ระบบควบคุม Live สด & เอกสาร</h2>
+                                    <p className="text-xs sm:text-sm text-slate-500">เปิด/ปิดการถ่ายทอดสดและกำหนดชั่วโมงบังคับสำหรับผู้เรียนแบบ Online</p>
+                                </div>
+
+                                <div className="bento-glass rounded-[1.75rem] p-5 sm:p-7 space-y-5">
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-600 mb-2">สถานะการถ่ายทอดสด</label>
+                                        <div className="grid grid-cols-3 gap-2">
+                                            {[
+                                                { id: 'live', label: '🔴 LIVE สด', activeCls: 'bg-rose-600 text-white border-rose-600' },
+                                                { id: 'paused', label: '⏸️ พักเบรก', activeCls: 'bg-amber-500 text-white border-amber-500' },
+                                                { id: 'offline', label: '⚫ ออฟไลน์', activeCls: 'bg-slate-800 text-white border-slate-800' }
+                                            ].map(s => (
+                                                <button
+                                                    key={s.id}
+                                                    type="button"
+                                                    onClick={() => setLiveConfig(p => ({ ...p, status: s.id }))}
+                                                    className={`touch-target py-3 rounded-2xl border font-bold text-xs sm:text-sm transition-all ${
+                                                        liveConfig.status === s.id ? s.activeCls : 'bg-white border-slate-200 text-slate-600'
+                                                    }`}
+                                                >
+                                                    {s.label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <FieldInput label="หัวข้อการบรรยาย" value={liveConfig.topic} onChange={e => setLiveConfig(p => ({ ...p, topic: e.target.value }))} />
+
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <FieldInput label="จำนวนวันอบรม" type="number" min="1" value={liveConfig.days} onChange={e => setLiveConfig(p => ({ ...p, days: parseInt(e.target.value, 10) || 1 }))} />
+                                        <FieldInput label="ชั่วโมงบังคับ (สิทธิ์ Online)" type="number" min="1" value={liveConfig.hours} onChange={e => setLiveConfig(p => ({ ...p, hours: parseInt(e.target.value, 10) || 10 }))} />
+                                    </div>
+
+                                    <FieldInput label="Embed URL (YouTube / Vimeo / Canva)" value={liveConfig.url} onChange={e => setLiveConfig(p => ({ ...p, url: e.target.value }))} placeholder="https://www.youtube.com/embed/..." />
+                                    <FieldInput label="ลิงก์เอกสารประกอบ Live (Google Drive / PDF)" value={liveConfig.documentUrl} onChange={e => setLiveConfig(p => ({ ...p, documentUrl: e.target.value }))} placeholder="https://drive.google.com/..." />
+
+                                    <label className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-200 cursor-pointer">
+                                        <div>
+                                            <p className="text-sm font-bold text-slate-800">ปลดล็อก Posttest ทันทีสำหรับทุกคน</p>
+                                            <p className="text-xs text-slate-500">เปิดใช้เฉพาะช่วงท้ายงานอบรมสดที่ต้องการให้ทุกคนเข้าสอบพร้อมกัน</p>
+                                        </div>
+                                        <input
+                                            type="checkbox"
+                                            checked={Boolean(liveConfig.allowPosttest)}
+                                            onChange={e => setLiveConfig(p => ({ ...p, allowPosttest: e.target.checked }))}
+                                            className="w-5 h-5 accent-clinical-600"
+                                        />
+                                    </label>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => persistSettings({ liveConfig })}
+                                        className="touch-target w-full py-3.5 rounded-2xl bg-clinical-600 hover:bg-clinical-700 text-white font-display font-bold text-sm flex items-center justify-center gap-2 shadow-md"
+                                    >
+                                        <Icon name="Save" size={18} /> บันทึกและเผยแพร่สถานะ Live
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* ==================== TAB 4: LESSONS & QUIZ CONTENT ==================== */}
+                        {activeTab === 'content' && (
+                            <div className="space-y-4">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                    <div>
+                                        <h2 className="font-display text-xl sm:text-2xl font-extrabold text-slate-900">จัดการบทเรียนและคลังข้อสอบ</h2>
+                                        <p className="text-xs sm:text-sm text-slate-500">บทเรียน {contentConfig.lessons.length} บท • ข้อสอบ {(contentConfig.questionSets[0] || []).length} ข้อ</p>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <button onClick={handleRestoreDefaultContent} className="touch-target px-4 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center gap-1.5">
+                                            <Icon name="RotateCcw" size={15} /> กู้คืนค่าเริ่มต้น
+                                        </button>
+                                        <button onClick={handleSaveContent} className="touch-target px-5 py-2.5 rounded-2xl bg-clinical-600 hover:bg-clinical-700 text-white font-display font-bold text-xs flex items-center gap-1.5 shadow-sm">
+                                            <Icon name="UploadCloud" size={16} /> เผยแพร่ขึ้น Cloud
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="inline-flex p-1 rounded-2xl bg-white/90 border border-slate-200/80">
+                                    <button
+                                        type="button"
+                                        onClick={() => setContentSubTab('lessons')}
+                                        className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${contentSubTab === 'lessons' ? 'bg-clinical-600 text-white' : 'text-slate-600'}`}
+                                    >
+                                        บทเรียน ({contentConfig.lessons.length})
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setContentSubTab('quiz')}
+                                        className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${contentSubTab === 'quiz' ? 'bg-clinical-600 text-white' : 'text-slate-600'}`}
+                                    >
+                                        คลังข้อสอบ ({(contentConfig.questionSets[0] || []).length})
+                                    </button>
+                                </div>
+
+                                {contentSubTab === 'lessons' ? (
+                                    <div className="bento-glass rounded-[1.75rem] p-4 sm:p-6 space-y-3">
+                                        {contentConfig.lessons.map((l, idx) => (
+                                            <div key={l.id} className="p-4 rounded-2xl bg-white/90 border border-slate-200/80 space-y-2.5">
+                                                <div className="flex items-center justify-between gap-2">
+                                                    <span className="px-2.5 py-1 rounded-lg bg-clinical-50 text-clinical-700 font-mono text-xs font-bold">บทที่ {idx + 1}</span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setContentConfig(p => ({ ...p, lessons: p.lessons.filter((_, i) => i !== idx) }))}
+                                                        className="text-rose-400 hover:text-rose-600 p-1.5"
+                                                    >
+                                                        <Icon name="Trash2" size={16} />
+                                                    </button>
+                                                </div>
+                                                <FieldInput
+                                                    label="ชื่อบทเรียน"
+                                                    value={l.title}
+                                                    onChange={e => setContentConfig(p => ({
+                                                        ...p,
+                                                        lessons: p.lessons.map((x, i) => (i === idx ? { ...x, title: e.target.value } : x))
+                                                    }))}
+                                                />
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                                    <FieldInput
+                                                        label="Google Drive Video ID"
+                                                        value={l.videoId || ''}
+                                                        onChange={e => setContentConfig(p => ({
+                                                            ...p,
+                                                            lessons: p.lessons.map((x, i) => (i === idx ? { ...x, videoId: e.target.value } : x))
+                                                        }))}
+                                                    />
+                                                    <FieldInput
+                                                        label="ลิงก์เอกสารประกอบ (ไม่บังคับ)"
+                                                        value={l.documentUrl || ''}
+                                                        onChange={e => setContentConfig(p => ({
+                                                            ...p,
+                                                            lessons: p.lessons.map((x, i) => (i === idx ? { ...x, documentUrl: e.target.value } : x))
+                                                        }))}
+                                                    />
                                                 </div>
                                             </div>
                                         ))}
+                                        <button
+                                            type="button"
+                                            onClick={() => setContentConfig(p => ({
+                                                ...p,
+                                                lessons: [...p.lessons, { id: p.lessons.length + 1, title: 'บทเรียนใหม่', videoId: '', documentUrl: '' }]
+                                            }))}
+                                            className="touch-target w-full py-3 rounded-2xl border-2 border-dashed border-clinical-300 text-clinical-700 hover:bg-clinical-50 font-bold text-sm flex items-center justify-center gap-1.5"
+                                        >
+                                            <Icon name="Plus" size={18} /> เพิ่มบทเรียนใหม่
+                                        </button>
                                     </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* 5. จัดการข้อสอบ */}
-                        {activeTab === 'quiz' && (
-                            <div className="animate-in fade-in max-w-5xl">
-                                <div className="flex justify-between items-center mb-6">
-                                    <h2 className="text-2xl font-black text-slate-800 flex items-center gap-2"><SafeIcon name="CheckSquare" className="text-line-600" /> จัดการข้อสอบ (Pretest / Posttest)</h2>
-                                    <div className="flex gap-2">
-                                        <button onClick={handleRestoreDefaultContent} className="bg-amber-500 text-white px-4 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-sm hover:bg-amber-600 transition-colors"><SafeIcon name="RefreshCw" size={18}/> กู้คืนข้อมูลเริ่มต้น</button>
-                                        <button onClick={saveContentConfig} className="bg-line-500 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-sm hover:bg-line-600 transition-colors"><SafeIcon name="UploadCloud" size={18}/> เผยแพร่ข้อสอบขึ้น Cloud</button>
-                                    </div>
-                                </div>
-                                
-                                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col h-[70vh]">
-                                    <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-6">
-                                        {(contentConfig.questionSets && contentConfig.questionSets[0] ? contentConfig.questionSets[0] : []).map((q, qIndex) => (
-                                            <div key={q.id || qIndex} className="p-5 bg-slate-50 border border-slate-200 rounded-xl relative">
-                                                <button onClick={() => {
-                                                    const newQuiz = [...(contentConfig.questionSets[0] || [])];
-                                                    newQuiz.splice(qIndex, 1);
-                                                    setContentConfig(p => ({ ...p, questionSets: [newQuiz] }));
-                                                }} className="absolute top-4 right-4 text-rose-400 hover:text-rose-600 hover:bg-rose-50 p-2 rounded-lg transition-colors" title="ลบข้อนี้"><SafeIcon name="Trash2" size={18}/></button>
-                                                
-                                                <div className="mb-4 pr-12">
-                                                    <label className="block text-xs font-bold text-slate-500 mb-1">ข้อที่ {qIndex + 1} (คำถาม)</label>
-                                                    <textarea value={q.question} onChange={e => {
-                                                        const newQuiz = [...(contentConfig.questionSets[0] || [])];
-                                                        newQuiz[qIndex] = { ...newQuiz[qIndex], question: e.target.value };
-                                                        setContentConfig(p => ({ ...p, questionSets: [newQuiz] }));
-                                                    }} className="w-full text-sm font-bold p-3 border rounded-lg outline-none focus:border-line-500 min-h-[80px]" placeholder="ระบุคำถาม..." />
+                                ) : (
+                                    <div className="bento-glass rounded-[1.75rem] p-4 sm:p-6 space-y-4">
+                                        {(contentConfig.questionSets[0] || []).map((q, qIdx) => (
+                                            <div key={q.id || qIdx} className="p-4 rounded-2xl bg-white/90 border border-slate-200/80 space-y-3">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="px-2.5 py-1 rounded-lg bg-medical-50 text-medical-700 font-mono text-xs font-bold">ข้อที่ {qIdx + 1}</span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const next = [...(contentConfig.questionSets[0] || [])];
+                                                            next.splice(qIdx, 1);
+                                                            setContentConfig(p => ({ ...p, questionSets: [next] }));
+                                                        }}
+                                                        className="text-rose-400 hover:text-rose-600 p-1.5"
+                                                    >
+                                                        <Icon name="Trash2" size={16} />
+                                                    </button>
                                                 </div>
-                                                
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    {q.options.map((opt, optIndex) => (
-                                                        <div key={optIndex} className="flex items-center gap-2">
-                                                            <input type="radio" name={`correct-${qIndex}`} checked={q.answer === optIndex} onChange={() => {
-                                                                const newQuiz = [...(contentConfig.questionSets[0] || [])];
-                                                                newQuiz[qIndex] = { ...newQuiz[qIndex], answer: optIndex };
-                                                                setContentConfig(p => ({ ...p, questionSets: [newQuiz] }));
-                                                            }} className="w-4 h-4 text-line-600 cursor-pointer" title="เลือกเป็นคำตอบที่ถูกต้อง" />
-                                                            <input type="text" value={opt} onChange={e => {
-                                                                const newQuiz = [...(contentConfig.questionSets[0] || [])];
-                                                                const newOptions = [...newQuiz[qIndex].options];
-                                                                newOptions[optIndex] = e.target.value;
-                                                                newQuiz[qIndex] = { ...newQuiz[qIndex], options: newOptions };
-                                                                setContentConfig(p => ({ ...p, questionSets: [newQuiz] }));
-                                                            }} className={`w-full text-sm p-2 border rounded-lg outline-none focus:border-line-500 ${q.answer === optIndex ? 'border-line-500 bg-line-50 font-bold text-line-800' : 'text-slate-700'}`} placeholder={`ตัวเลือกที่ ${optIndex + 1}`} />
-                                                            <button onClick={() => {
-                                                                const newQuiz = [...(contentConfig.questionSets[0] || [])];
-                                                                const newOptions = [...newQuiz[qIndex].options];
-                                                                newOptions.splice(optIndex, 1);
-                                                                if (newQuiz[qIndex].answer === optIndex) newQuiz[qIndex].answer = 0;
-                                                                else if (newQuiz[qIndex].answer > optIndex) newQuiz[qIndex].answer -= 1;
-                                                                newQuiz[qIndex] = { ...newQuiz[qIndex], options: newOptions };
-                                                                setContentConfig(p => ({ ...p, questionSets: [newQuiz] }));
-                                                            }} className="text-slate-400 hover:text-rose-500 p-1"><SafeIcon name="XCircle" size={16}/></button>
+                                                <textarea
+                                                    value={q.question}
+                                                    onChange={e => {
+                                                        const next = [...(contentConfig.questionSets[0] || [])];
+                                                        next[qIdx] = { ...next[qIdx], question: e.target.value };
+                                                        setContentConfig(p => ({ ...p, questionSets: [next] }));
+                                                    }}
+                                                    rows={2}
+                                                    className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-bold text-slate-800 outline-none focus:border-clinical-500"
+                                                />
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                                    {(q.options || []).map((opt, optIdx) => (
+                                                        <div key={optIdx} className={`flex items-center gap-2 p-2 rounded-xl border ${q.answer === optIdx ? 'bg-clinical-50 border-clinical-400' : 'bg-white border-slate-200'}`}>
+                                                            <input
+                                                                type="radio"
+                                                                name={`ans-${qIdx}`}
+                                                                checked={q.answer === optIdx}
+                                                                onChange={() => {
+                                                                    const next = [...(contentConfig.questionSets[0] || [])];
+                                                                    next[qIdx] = { ...next[qIdx], answer: optIdx };
+                                                                    setContentConfig(p => ({ ...p, questionSets: [next] }));
+                                                                }}
+                                                                className="w-4 h-4 accent-clinical-600 shrink-0"
+                                                            />
+                                                            <input
+                                                                type="text"
+                                                                value={opt}
+                                                                onChange={e => {
+                                                                    const next = [...(contentConfig.questionSets[0] || [])];
+                                                                    const opts = [...next[qIdx].options];
+                                                                    opts[optIdx] = e.target.value;
+                                                                    next[qIdx] = { ...next[qIdx], options: opts };
+                                                                    setContentConfig(p => ({ ...p, questionSets: [next] }));
+                                                                }}
+                                                                className="flex-1 bg-transparent text-xs sm:text-sm outline-none font-medium"
+                                                            />
                                                         </div>
                                                     ))}
-                                                    <button onClick={() => {
-                                                        const newQuiz = [...(contentConfig.questionSets[0] || [])];
-                                                        newQuiz[qIndex] = { ...newQuiz[qIndex], options: [...newQuiz[qIndex].options, "ตัวเลือกใหม่"] };
-                                                        setContentConfig(p => ({ ...p, questionSets: [newQuiz] }));
-                                                    }} className="text-xs font-bold text-line-600 hover:bg-line-50 py-2 rounded-lg border border-dashed border-line-300 flex items-center justify-center gap-1"><SafeIcon name="Plus" size={14}/> เพิ่มตัวเลือก</button>
                                                 </div>
                                             </div>
                                         ))}
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                const next = [...(contentConfig.questionSets[0] || [])];
+                                                next.push({ id: Date.now(), question: 'คำถามใหม่...', options: ['ตัวเลือก ก', 'ตัวเลือก ข', 'ตัวเลือก ค', 'ตัวเลือก ง'], answer: 0 });
+                                                setContentConfig(p => ({ ...p, questionSets: [next] }));
+                                            }}
+                                            className="touch-target w-full py-3 rounded-2xl border-2 border-dashed border-clinical-300 text-clinical-700 hover:bg-clinical-50 font-bold text-sm flex items-center justify-center gap-1.5"
+                                        >
+                                            <Icon name="Plus" size={18} /> เพิ่มข้อสอบใหม่
+                                        </button>
                                     </div>
-                                    <div className="pt-4 mt-4 border-t border-slate-100 flex justify-center shrink-0">
-                                        <button onClick={() => {
-                                            const newQuiz = [...(contentConfig.questionSets && contentConfig.questionSets[0] ? contentConfig.questionSets[0] : [])];
-                                            newQuiz.push({ id: Date.now(), question: "คำถามใหม่...", options: ["ก.", "ข.", "ค.", "ง."], answer: 0 });
-                                            setContentConfig(p => ({ ...p, questionSets: [newQuiz] }));
-                                            setTimeout(() => {
-                                                const container = document.querySelector('.custom-scrollbar');
-                                                if(container) container.scrollTop = container.scrollHeight;
-                                            }, 100);
-                                        }} className="bg-slate-800 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-sm hover:bg-slate-700 flex items-center gap-2"><SafeIcon name="Plus" size={16}/> เพิ่มข้อสอบใหม่</button>
+                                )}
+                            </div>
+                        )}
+
+                        {/* ==================== TAB 5: AUTO-SYNC & CLOUD CONFIG ==================== */}
+                        {activeTab === 'sync' && (
+                            <div className="max-w-3xl space-y-5">
+                                <div>
+                                    <h2 className="font-display text-xl sm:text-2xl font-extrabold text-slate-900">Auto-Sync & การเชื่อมต่อ Cloud</h2>
+                                    <p className="text-xs sm:text-sm text-slate-500">ผูกบัญชีกลาง <b className="text-slate-700">{CONFIG.contactEmail}</b> กับ Google Sheets และ Apps Script</p>
+                                </div>
+
+                                <div className="bento-glass rounded-[1.75rem] p-5 sm:p-7 space-y-5">
+                                    <div className="p-4 rounded-2xl bg-medical-50 border border-medical-200 text-xs text-medical-900 leading-relaxed space-y-1">
+                                        <p className="font-bold">รูปแบบคอลัมน์ Google Sheets (Publish as CSV):</p>
+                                        <p className="font-mono text-[11px]">
+                                            คอลัมน์ B: ชื่อ-สกุล | C: เลขใบอนุญาต | D: อีเมล | E: ตำแหน่ง | F: สังกัด | G: โรงพยาบาล | H: จังหวัด | I: สิทธิ์ (Online/Onsite/Masterclass) | Q: เบอร์โทร
+                                        </p>
+                                    </div>
+
+                                    <FieldInput
+                                        label="ลิงก์ Google Sheets (CSV Publish URL)"
+                                        type="url"
+                                        value={systemConfig.masterCsvUrl}
+                                        onChange={e => setSystemConfig(p => ({ ...p, masterCsvUrl: e.target.value }))}
+                                        placeholder="https://docs.google.com/spreadsheets/d/.../pub?output=csv"
+                                    />
+
+                                    <FieldInput
+                                        label="Google Apps Script Web App URL (สำหรับ OTP + Gemini AI)"
+                                        type="url"
+                                        value={systemConfig.appsScriptUrl}
+                                        onChange={e => setSystemConfig(p => ({ ...p, appsScriptUrl: e.target.value }))}
+                                        placeholder="https://script.google.com/macros/s/.../exec"
+                                    />
+
+                                    <label className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-200 cursor-pointer">
+                                        <div>
+                                            <p className="text-sm font-bold text-slate-800">เปิดใช้งาน Auto-Sync ทุก 30 วินาที</p>
+                                            <p className="text-xs text-slate-500">ดึงข้อมูลรายชื่อใหม่จาก Sheet อัตโนมัติขณะเปิดหน้านี้ {lastSyncTime && `(ล่าสุด: ${lastSyncTime})`}</p>
+                                        </div>
+                                        <input
+                                            type="checkbox"
+                                            checked={Boolean(systemConfig.autoSyncFromSheet)}
+                                            onChange={e => {
+                                                const val = e.target.checked;
+                                                setSystemConfig(p => ({ ...p, autoSyncFromSheet: val }));
+                                                persistSettings({ autoSyncFromSheet: val });
+                                            }}
+                                            className="w-5 h-5 accent-clinical-600"
+                                        />
+                                    </label>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => syncFromGoogleSheet(true)}
+                                            disabled={isSyncing}
+                                            className="touch-target py-3.5 rounded-2xl bg-medical-50 hover:bg-medical-100 border border-medical-200 text-medical-700 font-bold text-sm flex items-center justify-center gap-2"
+                                        >
+                                            <Icon name="RefreshCw" size={17} className={isSyncing ? 'animate-spin' : ''} /> ดึงข้อมูลจาก Sheet เดี๋ยวนี้
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => persistSettings({
+                                                masterCsvUrl: systemConfig.masterCsvUrl,
+                                                appsScriptUrl: systemConfig.appsScriptUrl,
+                                                autoSyncFromSheet: systemConfig.autoSyncFromSheet
+                                            })}
+                                            className="touch-target py-3.5 rounded-2xl bg-clinical-600 hover:bg-clinical-700 text-white font-display font-bold text-sm flex items-center justify-center gap-2 shadow-sm"
+                                        >
+                                            <Icon name="Save" size={17} /> บันทึกการตั้งค่าส่วนกลาง
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         )}
 
-                        {/* 6. Analytics Dashboard */}
-                        {activeTab === 'analytics' && (
-                             <div className="animate-in fade-in flex flex-col h-[85vh]">
-                                 <div className="flex justify-between items-center mb-6">
-                                     <h2 className="text-2xl font-black text-slate-800 flex items-center gap-2"><SafeIcon name="Activity" className="text-line-600" /> แดชบอร์ดสรุปผลภาพรวม</h2>
-                                 </div>
-                                 
-                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 relative z-10">
-                                     <div onClick={() => window.open('./executive.html', '_blank')} className="bg-gradient-to-br from-blue-900 to-cyan-900 p-6 rounded-2xl border border-blue-500/30 shadow-[0_10px_30px_rgba(59,130,246,0.3)] cursor-pointer hover:scale-[1.02] transition-all flex flex-col items-center justify-center text-center group">
-                                         <div className="w-16 h-16 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><SafeIcon name="Globe" size={32} /></div>
-                                         <h3 className="text-xl font-black text-white mb-2">AI Policy Intelligence</h3>
-                                         <p className="text-sm text-blue-200">เปิดหน้าต่างแดชบอร์ดผู้บริหาร (Real-time Map & AI Chat)</p>
-                                     </div>
-                                     
-                                     <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center justify-center text-center">
-                                         <div className="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mb-4"><SafeIcon name="Database" size={32} /></div>
-                                         <h3 className="text-xl font-bold text-slate-800 mb-2">Looker Studio (Legacy)</h3>
-                                         <input type="url" value={systemConfig.lookerStudioUrl || ''} onChange={e=>setSystemConfig({...systemConfig, lookerStudioUrl: e.target.value})} onBlur={() => saveSettings({ lookerStudioUrl: systemConfig.lookerStudioUrl })} placeholder="วางลิงก์ Looker Studio Embed..." className="w-full mt-2 p-3 rounded-xl bg-slate-50 border border-slate-200 outline-none text-sm text-slate-700 text-center focus:border-line-500"/>
-                                     </div>
-                                 </div>
+                        {/* ==================== TAB 6: OVERVIEW & QUICK LINKS ==================== */}
+                        {activeTab === 'overview' && (
+                            <div className="space-y-5">
+                                <div>
+                                    <h2 className="font-display text-xl sm:text-2xl font-extrabold text-slate-900">ภาพรวมและทางลัดระบบ rjcloud.organ</h2>
+                                    <p className="text-xs sm:text-sm text-slate-500">ตรวจสอบสถานะระบบและเปิดหน้าต่างบริการต่างๆ ได้ในแตะเดียว</p>
+                                </div>
 
-                                 <div className="w-full flex-1 bg-slate-50 rounded-2xl border border-slate-200 shadow-inner overflow-hidden relative flex items-center justify-center">
-                                     {systemConfig.lookerStudioUrl ? (
-                                         <iframe src={systemConfig.lookerStudioUrl} className="absolute inset-0 w-full h-full border-none"></iframe>
-                                     ) : (
-                                         <div className="text-center text-slate-400"><SafeIcon name="Activity" size={48} className="mx-auto mb-2 opacity-50" /><p className="font-bold">ยังไม่ได้ตั้งค่าลิงก์ Looker Studio</p></div>
-                                     )}
-                                 </div>
-                             </div>
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                    <div className="bento-glass rounded-2xl p-4">
+                                        <p className="text-xs font-bold text-slate-500">ผู้เรียนทั้งหมด</p>
+                                        <p className="font-mono text-2xl font-extrabold text-slate-900 mt-1">{quickStats.total}</p>
+                                    </div>
+                                    <div className="bento-glass rounded-2xl p-4">
+                                        <p className="text-xs font-bold text-slate-500">สอบผ่านแล้ว</p>
+                                        <p className="font-mono text-2xl font-extrabold text-clinical-700 mt-1">{quickStats.passed}</p>
+                                    </div>
+                                    <div className="bento-glass rounded-2xl p-4">
+                                        <p className="text-xs font-bold text-slate-500">สิทธิ์ Masterclass</p>
+                                        <p className="font-mono text-2xl font-extrabold text-violet-700 mt-1">{quickStats.master}</p>
+                                    </div>
+                                    <div className="bento-glass rounded-2xl p-4">
+                                        <p className="text-xs font-bold text-slate-500">CSAT เฉลี่ย</p>
+                                        <p className="font-mono text-2xl font-extrabold text-amber-600 mt-1">{quickStats.avgCsat}/5</p>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                    {[
+                                        { href: './executive.html', title: 'AI Policy Intelligence', desc: 'แดชบอร์ดผู้บริหาร แผนที่ 13 เขต และ Fah AI', icon: 'Globe', color: 'bg-medical-50 text-medical-600' },
+                                        { href: './verify.html', title: 'QR Verify Portal', desc: 'หน้าสแกนตรวจสอบความถูกต้องประกาศนียบัตร', icon: 'QrCode', color: 'bg-clinical-50 text-clinical-600' },
+                                        { href: './aiskilllab.html', title: 'AI Skill Lab 2027', desc: 'ห้องจำลองสถานการณ์ฝึกเจรจาญาติผู้ป่วย', icon: 'Bot', color: 'bg-violet-50 text-violet-600' },
+                                        { href: './index.html', title: 'หน้าหลักผู้เรียน (Student App)', desc: 'สลับไปดูมุมมองผู้เรียนบนสมาร์ทโฟน', icon: 'Smartphone', color: 'bg-amber-50 text-amber-600' }
+                                    ].map(card => (
+                                        <a key={card.href} href={card.href} target="_blank" rel="noreferrer" className="bento-glass rounded-2xl p-5 flex items-center gap-4 hover:border-clinical-300 transition-all active:scale-[0.99]">
+                                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${card.color}`}>
+                                                <Icon name={card.icon} size={24} />
+                                            </div>
+                                            <div className="min-w-0 flex-1">
+                                                <h3 className="font-display font-bold text-base text-slate-900">{card.title}</h3>
+                                                <p className="text-xs text-slate-500 mt-0.5">{card.desc}</p>
+                                            </div>
+                                            <Icon name="ExternalLink" size={16} className="text-slate-400 shrink-0" />
+                                        </a>
+                                    ))}
+                                </div>
+                            </div>
                         )}
-                    </div>
+                    </main>
+
+                    {/* Smartphone Bottom Dock (ครบทั้ง 6 เมนู กดง่ายบนมือถือ) */}
+                    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/94 backdrop-blur-2xl border-t border-slate-200/80 px-2 pt-1.5 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] shadow-[0_-8px_30px_rgba(15,23,42,0.08)]">
+                        <div className="grid grid-cols-6 gap-1 max-w-xl mx-auto">
+                            {navItems.map(item => {
+                                const active = activeTab === item.id;
+                                return (
+                                    <button
+                                        key={item.id}
+                                        type="button"
+                                        onClick={() => { setActiveTab(item.id); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                                        className={`touch-target flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-xl text-[10px] font-bold transition-all active:scale-95 ${
+                                            active ? 'bg-clinical-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
+                                        }`}
+                                    >
+                                        <Icon name={item.icon} size={17} />
+                                        <span className="truncate max-w-full px-0.5">{item.label}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </nav>
+
+                    <ConfirmModal dialog={confirmDialog} onClose={() => setConfirmDialog(p => ({ ...p, open: false }))} />
+                    <ToastBanner toast={toast} />
                 </div>
             );
         }
