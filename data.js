@@ -18,6 +18,13 @@ window.RJCLOUD_CONFIG = {
     "rjcloud.organ@gmail.com"
   ],
 
+  // เงื่อนไขเส้นทางการเรียนรู้ 5 ขั้นตอน (อ้างอิงตรงกันทุกไฟล์)
+  learningRules: {
+    allowedUserTypes: ["เรียนใหม่", "เรียนต่อเนื่อง"],
+    minStudyPercent: 80,      // ขั้นที่ 2: สะสมชั่วโมงเรียนไม่น้อยกว่า 80% จึงปลดล็อก AI Skill Lab
+    minPosttestPercent: 80    // ขั้นที่ 4 & 5: ทำ Post-test ไม่น้อยกว่า 80% เพื่อรับประกาศนียบัตร
+  },
+
   // ค่าเชื่อมต่อ Firebase Project: rj-cloud-organ (บัญชี rjcloud.organ@gmail.com)
   firebaseConfig: {
     apiKey: "AIzaSyCpvK0FCVVk9dt0ylHn_VzUStl7540UsbY",
@@ -53,29 +60,14 @@ window.DEFAULT_CERT_TEMPLATE = {
 };
 
 /**
- * 3. สื่อประกอบตัวละครและอวตาร (Character Media Assets)
+ * 3. วิดีโอสถานการณ์จำลองหลักสำหรับห้อง AI Skill Lab (Vimeo #1248608457)
+ * บทบาท: ผู้เรียน = ผู้ให้ข้อมูลญาติในห้องรับรอง | AI = ญาติผู้เสียชีวิต
  */
-window.FAH_IDLE_VIDEO = "https://player.vimeo.com/video/1201677272?background=1&autoplay=1&loop=1&muted=1";
-
-window.CHARACTER_VIDEOS = {
-  FAH: {
-    ANGRY: "https://player.vimeo.com/video/1201657361?background=1&autoplay=1&loop=1&muted=1",
-    CONFUSED: "https://player.vimeo.com/video/1201657360?background=1&autoplay=1&loop=1&muted=1",
-    HESITANT: "https://player.vimeo.com/video/1201657359?background=1&autoplay=1&loop=1&muted=1",
-    SAD: "https://player.vimeo.com/video/1201657372?background=1&autoplay=1&loop=1&muted=1",
-    NEUTRAL: "https://player.vimeo.com/video/1201677272?background=1&autoplay=1&loop=1&muted=1",
-    ADVISING: "https://player.vimeo.com/video/1202358300?background=1&autoplay=1&loop=1&muted=1"
-  },
-  BROTHER: {
-    ANGRY: "https://player.vimeo.com/video/1201657665?background=1&autoplay=1&loop=1&muted=1",
-    CONFUSED: "https://player.vimeo.com/video/1201657667?background=1&autoplay=1&loop=1&muted=1",
-    HESITANT: "https://player.vimeo.com/video/1201657664?background=1&autoplay=1&loop=1&muted=1",
-    SAD: "https://player.vimeo.com/video/1201657681?background=1&autoplay=1&loop=1&muted=1",
-    NEUTRAL: "https://player.vimeo.com/video/1202839934?background=1&autoplay=1&loop=1&muted=1"
-  }
+window.SKILL_LAB_VIDEO = {
+  vimeoId: "1248608457",
+  shareUrl: "https://vimeo.com/1248608457?share=copy&fl=sv&fe=ci",
+  embedUrl: "https://player.vimeo.com/video/1248608457?title=0&byline=0&portrait=0&dnt=1"
 };
-
-window.FAH_PROFILE_PIC = "https://res.cloudinary.com/djwclucoz/image/upload/v1781599152/%E0%B8%A5%E0%B8%9A%E0%B8%84%E0%B8%99%E0%B8%94%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B8%AB%E0%B8%A5%E0%B8%B1%E0%B8%87%E0%B8%AD%E0%B8%AD%E0%B8%81%E0%B8%97%E0%B8%B1%E0%B9%89%E0%B8%87%E0%B8%AB%E0%B8%A1%E0%B8%94_2K_202606161538_tdnggg.jpg";
 
 /**
  * 4. ฐานข้อมูลสังกัดและโรงพยาบาลเครือข่ายทั่วประเทศ (Hospital Mapping)
@@ -134,108 +126,7 @@ window.INITIAL_LESSONS = [
 ];
 
 /**
- * 6. กรณีศึกษาห้องจำลองฝึกเจรจา (AI Skill Lab Scenarios — แก้บั๊กเคส EN + รองรับ Emily แล้ว)
- */
-window.SKILL_LAB_SCENARIOS = [
-  {
-    id: 1,
-    title: "กรณีศึกษา (Thai Case): Multi-Agent Pressure Test",
-    description: "สถานการณ์จำลองขั้นสูง รับมือครอบครัว 3 คน (ฟ้า, เมฆ และ พี่เอก) หน้าห้อง ICU เพื่อฝึกทักษะ Empathy และ Decoupling",
-    videoUrl: "https://player.vimeo.com/video/1203050393",
-    characterName: "ฟ้า, เมฆ และ พี่เอก (AI Multi-Persona)",
-    relation: "ครอบครัวผู้ป่วย",
-    language: "th",
-    patientInfo: {
-      gender: "ชาย",
-      age: "46 ปี",
-      cause: "อุบัติเหตุรถยนต์",
-      relation: "คุณพ่อของฟ้าและเมฆ",
-      summaryText: "ข้อมูลเบื้องต้น: คนไข้ชาย อายุ 46 ปี ประสบอุบัติเหตุรถยนต์ แพทย์ประเมินก้านสมองและทดสอบการหายใจแล้ว ยืนยันภาวะสมองตาย ญาติหน้าห้อง ICU มี ฟ้า (ลูกสาว), เมฆ (น้องชาย) และ พี่เอก (แฟนของฟ้า) เริ่มการเจรจาได้เลยค่ะ"
-    },
-    introHook: {
-      speakerKey: "FAH",
-      speakerName: "ฟ้า",
-      emotion: "CONFUSED",
-      text: "สวัสดีค่ะ... คุณเป็นเจ้าหน้าที่ที่จะมาคุยกับพวกเราเรื่องคุณพ่อหรือเปล่าคะ?"
-    },
-    characters: [
-      { key: "FAH", displayName: "ฟ้า", voice: "Aoede", gender: "female", style: "พูดด้วยเสียงผู้หญิงวัยรุ่น 22 ปี น้ำเสียงตามอารมณ์บริบท" },
-      { key: "BROTHER", displayName: "เมฆ", voice: "Charon", gender: "male", style: "พูดด้วยเสียงผู้ชายวัยรุ่น 18 ปี น้ำเสียงตามอารมณ์บริบท" },
-      { key: "BOYFRIEND", displayName: "พี่เอก", voice: "Charon", gender: "male", style: "พูดด้วยเสียงผู้ชายวัยผู้ใหญ่ 32 ปี นุ่มนวล อบอุ่น ใจเย็น สุภาพ" }
-    ],
-    systemPrompt: `### 1. ROLE & SYSTEM INSTRUCTIONS
-คุณคือสุดยอด AI Roleplay Simulator รับบทเป็น "ครอบครัวผู้ป่วย 3 คน" หน้าห้อง ICU ห้ามหลุดจากบทบาทเด็ดขาด และห้ามใช้ภาษาเชิงชู้สาว
-- [ฟ้า] (อายุ 22): ลูกสาวคนโต จบป.ตรี กำลังเรียนป.โท และทำงานบริษัทเทคโนโลยี มีวุฒิภาวะ เป็นแก่นหลักของครอบครัว มีเหตุผล แต่เสียใจมากที่รู้ว่าพ่อสมองตาย พยายามเข้มแข็งเพื่อเป็นที่พึ่งให้ "เมฆ" (น้องชาย) หากสับสนจะหันไปถามความเห็นพี่เอก (สำคัญมาก: หากผู้เรียนแนะนำตัว ฟ้าต้องตอบรับและแนะนำตัวเอง พร้อมแนะนำ "เมฆ" และ "พี่เอก" อย่างสุภาพทันที)
-- [เมฆ] (อายุ 18): น้องชาย นักศึกษาปี 2 อารมณ์ร้อน ปกป้องพี่สาวและพ่อ ใช้ภาษาปาก (ครับ/ผม) โกรธและไม่ยอมรับความจริง แต่มีความเกรงใจตามมารยาทคนไทย ห้ามใช้คำหยาบเด็ดขาด เน้นตั้งคำถามและกดดันด้วยความเสียใจ
-- [พี่เอก] (อายุ 32): แฟนของฟ้า รับราชการ สุภาพ นุ่มนวล ใจเย็น เป็นที่พึ่งทางใจ ไม่ก้าวก่ายสิทธิ์ตัดสินใจทางการแพทย์ของครอบครัว แต่คอยประคองอารมณ์ของฟ้าและเมฆ
-
-### 2. CONTEXT
-สถานการณ์: ผู้ป่วย {{PATIENT_RELATION}} ({{PATIENT_GENDER}} {{PATIENT_AGE}} เสียชีวิตจาก{{PATIENT_CAUSE}}) ยืนยันภาวะสมองตายแล้ว
-ประวัติครอบครัวเสริม: ภรรยาของผู้ป่วยเสียชีวิตไปนานแล้ว ผู้ป่วยเป็นพ่อเลี้ยงเดี่ยว (Single Dad) ที่ทำงานหนักส่งลูกเรียน ฟ้าและเมฆจึงรักพ่อมาก
-คู่สนทนา: {{USER_POSITION}} (ผู้เรียน)
-
-### 3. STRICT RULES FOR HUMAN-LIKE BEHAVIOR
-1. ทฤษฎีความโศกเศร้า: ช่วงแรกห้ามยอมรับความจริงง่ายๆ เมฆจะโกรธ/จับผิด ฟ้าจะพยายามประคองสติ จนกว่าผู้เรียนจะใช้ Empathy ได้ดี
-2. ภาษาที่เป็นธรรมชาติ: ห้ามพิมพ์ยาวเป็นเรียงความ พูดสั้นๆ เหมือนคนกำลังช็อกและเสียใจจริง
-3. ปฏิกิริยาสามเส้า: เมฆอาจตั้งคำถามกดดัน พี่เอกช่วยปรามและปลอบฟ้าอย่างเงียบๆ ฟ้าเป็นคนกลางสื่อสาร
-4. ห้ามสมมติเวลาเกิดเหตุเอง ให้ใช้คำว่า "เพิ่งได้รับโทรศัพท์แจ้ง"
-5. The Identity Check: ถ้าผู้เรียนเปิดมาคุยเรื่องอาการเลยโดยไม่แนะนำตัว เมฆจะถามแทรกทันทีว่า "ขอโทษนะครับ พวกคุณคือใครครับ? หมอเจ้าของไข้หรือเปล่า"
-6. ห้ามเรียกผู้เรียนว่าหมอเว้นแต่เขาจะแนะนำตัวว่าเป็นหมอ และห้ามเอ่ยเรื่อง "บริจาคอวัยวะ" ก่อนเด็ดขาด
-
-### 4. FORMAT (สำคัญมาก)
-- [กฎเหล็กขั้นสูงสุด]: เลือกสวมบทบาทตอบกลับเพียง 1 ตัวละครต่อ 1 ครั้งเท่านั้น ห้ามให้หลายคนพูดในข้อความเดียวเด็ดขาด
-- ตอบขึ้นต้นด้วย Tag อารมณ์และชื่อเสมอ เช่น [SAD] [ฟ้า] ข้อความ... หรือ [ANGRY] [เมฆ] ข้อความ... หรือ [NEUTRAL] [พี่เอก] ข้อความ...
-(อารมณ์ที่ใช้ได้: SAD, ANGRY, CONFUSED, HESITANT, NEUTRAL, ADVISING)`
-  },
-  {
-    id: 2,
-    title: "Foreign Case (EN): Cross-Cultural ICU",
-    description: "Advanced English simulation. Communicate with a foreign family (Michael & Emily) facing sudden brain death in Thailand.",
-    videoUrl: "", // เว้นว่างไว้เพื่อเข้าสู่สถานการณ์ทันที (สามารถเพิ่มลิงก์วิดีโอภาษาอังกฤษในอนาคตได้)
-    characterName: "Michael & Emily",
-    relation: "Patient's Family (Foreigners)",
-    language: "en",
-    patientInfo: {
-      gender: "female",
-      age: "44 years old",
-      cause: "a severe car accident",
-      relation: "Michael's wife & Emily's mother",
-      summaryText: "Initial Case Data: Patient is a 44-year-old female tourist involved in a severe car accident. Brain stem reflexes and apnea test have been completed, confirming brain death. Relatives waiting outside the ICU are Michael (Husband, 45) and Emily (Daughter, 20). You may begin the conversation now."
-    },
-    introHook: {
-      speakerKey: "MICHAEL",
-      speakerName: "Michael",
-      emotion: "CONFUSED",
-      text: "Hello... Are you the hospital staff coming to speak with me and my daughter about my wife?"
-    },
-    characters: [
-      { key: "MICHAEL", displayName: "Michael", voice: "Charon", gender: "male", style: "Speak with a tense, worried 45-year-old male voice according to emotional context" },
-      { key: "EMILY", displayName: "Emily", voice: "Aoede", gender: "female", style: "Speak with an emotional, tearful 20-year-old female voice according to emotional context" }
-    ],
-    systemPrompt: `### 1. ROLE & SYSTEM INSTRUCTIONS
-You are an advanced AI Roleplay Simulator acting as a "Foreign Family (2 members)" outside an ICU in Thailand. DO NOT break character. You MUST communicate entirely in ENGLISH.
-- [Michael] (Age 45): The patient's husband. Confused, stressed, and struggling to understand the Thai medical system. Protective and wants clear, factual explanations in English. If the staff lacks empathy, he becomes defensive or angry.
-- [Emily] (Age 20): The patient's daughter. Highly emotional, crying, clinging to hope for a miracle, and in denial about her mother's brain death.
-
-### 2. CONTEXT
-Situation: The patient ({{PATIENT_RELATION}}, {{PATIENT_GENDER}}, {{PATIENT_AGE}}, injured in {{PATIENT_CAUSE}}) is clinically brain dead. They are foreign tourists in Thailand.
-Interlocutor: {{USER_POSITION}} (The learner).
-
-### 3. STRICT RULES FOR HUMAN-LIKE BEHAVIOR
-1. Grief Theory: Start in Denial/Anger. Michael wants to transfer his wife to a hospital in his home country. Emily is heartbroken and struggling to accept brain death.
-2. Natural Short Turns: Speak realistically in short conversational turns. NO long essays.
-3. Cultural Context: They may not understand Thai medical/legal brain death criteria. Expect patient, empathetic explanations.
-4. Never bring up "organ donation" before the staff does. If staff doesn't introduce themselves first, Michael politely asks who they are.
-
-### 4. FORMAT (CRITICAL)
-- [STRICT RULE]: Output ONLY ONE character's response per turn! DO NOT make Michael and Emily talk in the same message.
-- ALWAYS start with an Emotion Tag and Name Tag, e.g., [SAD] [Emily] text... or [ANGRY] [Michael] text...
-(Allowed emotions: SAD, ANGRY, CONFUSED, HESITANT, NEUTRAL, ADVISING)`
-  }
-];
-
-/**
- * 7. คลังข้อสอบมาตรฐาน 40 ข้อ (แก้ไขคำผิดข้อที่ 33 เรียบร้อยแล้ว)
+ * 6. คลังข้อสอบมาตรฐาน 40 ข้อ (ตรวจสอบคำสะกดและเฉลยครบทุกข้อแล้ว)
  * รูปแบบ: "คำถาม|ตัวเลือก 0|ตัวเลือก 1|ตัวเลือก 2|ตัวเลือก 3|ดัชนีคำตอบที่ถูก"
  */
 window.QUIZ_QUESTIONS_RAW = [
@@ -282,7 +173,7 @@ window.QUIZ_QUESTIONS_RAW = [
 ];
 
 /**
- * 8. พิกัดแผนที่ 13 เขตสุขภาพ (สำหรับ executive.html)
+ * 7. พิกัดแผนที่ 13 เขตสุขภาพ (สำหรับ executive.html)
  */
 window.BASE_REGIONS = [
   { id: "R1", name: "เขตสุขภาพที่ 1", desc: "เชียงใหม่และภาคเหนือตอนบน", x: 28, y: 15 },
@@ -301,7 +192,7 @@ window.BASE_REGIONS = [
 ];
 
 /**
- * 9. ต้นแบบรายงานวิเคราะห์เชิงนโยบายสำหรับผู้บริหาร (rjcloud.organ 2027)
+ * 8. ต้นแบบรายงานวิเคราะห์เชิงนโยบายสำหรับผู้บริหาร (rjcloud.organ 2027)
  */
 window.AI_INSIGHT_TEXT = `📊 rjcloud.organ — AI Policy Intelligence Report (2027):
 
@@ -315,62 +206,37 @@ window.AI_INSIGHT_TEXT = `📊 rjcloud.organ — AI Policy Intelligence Report (
 
 [3] มิติวิกฤตระดับชาติ (National Crisis Benchmark):
 • ประเทศไทยมีผู้ป่วยรออวัยวะสะสมกว่า 8,019 ราย
-• คอขวดหลักคือทักษะการเจรจาในห้อง ICU ระบบ rjcloud.organ และห้องฝึก AI Skill Lab จึงช่วยเร่งสร้างทีมประสานงานระดับภูมิภาคได้อย่างตรงจุด`;
+• ทักษะสำคัญคือการสื่อสารและให้ข้อมูลญาติผู้เสียชีวิตในห้องรับรองที่เป็นส่วนตัว ระบบ rjcloud.organ และห้องฝึก AI Skill Lab จึงช่วยยกระดับความพร้อมของทีมประสานงานได้ทั่วประเทศ`;
 
-window.POLICY_SPEECH = `สวัสดีค่ะท่านผู้บริหาร จากการสังเคราะห์ข้อมูลล่าสุดของระบบ อาร์เจคลาวด์ดอทออร์แกน พบว่าขณะนี้มีบุคลากรในระบบทั้งหมด {{USERS}} ท่าน สอบผ่านรับประกาศนียบัตรแล้ว {{PASSED}} ท่าน โดยมีคะแนนความพึงพอใจเฉลี่ยอยู่ที่ {{CSAT}} เต็ม 5 ค่ะ ด้านเชิงพื้นที่พบว่า {{MAX_REG_NAME}} มีความตื่นตัวสูงสุด อย่างไรก็ตาม สถานการณ์ผู้ป่วยรออวัยวะระดับชาติยังมีมากกว่าแปดพันราย จึงขอเสนอให้ขยายผลการฝึกอบรมและการใช้ห้องจำลองเจรจาเอไอให้ครอบคลุมทุกเขตสุขภาพค่ะ`;
+window.POLICY_SPEECH = `สวัสดีค่ะท่านผู้บริหาร จากการสังเคราะห์ข้อมูลล่าสุดของระบบ อาร์เจคลาวด์ดอทออร์แกน พบว่าขณะนี้มีบุคลากรในระบบทั้งหมด {{USERS}} ท่าน สอบผ่านรับประกาศนียบัตรแล้ว {{PASSED}} ท่าน โดยมีคะแนนความพึงพอใจเฉลี่ยอยู่ที่ {{CSAT}} เต็ม 5 ค่ะ ด้านเชิงพื้นที่พบว่า {{MAX_REG_NAME}} มีความตื่นตัวสูงสุด อย่างไรก็ตาม สถานการณ์ผู้ป่วยรออวัยวะระดับชาติยังมีมากกว่าแปดพันราย จึงขอเสนอให้ขยายผลการฝึกอบรมและการใช้ห้องจำลองสื่อสารกับญาติเอไอให้ครอบคลุมทุกเขตสุขภาพค่ะ`;
 
 /**
- * 10. ฐานความรู้วิชาชีพทางการแพทย์ (Clinical Knowledge Base สำหรับ AI Skill Lab)
+ * 9. ฐานความรู้วิชาชีพทางการแพทย์ (Clinical Knowledge Base สำหรับ AI Skill Lab)
  */
 window.CLINICAL_KNOWLEDGE_BASE = `ทีมบุคลากรทางการแพทย์ (ทีมสหสาขาวิชาชีพ) ในกระบวนการบริจาคและปลูกถ่ายอวัยวะ แบ่งออกเป็น 3 ทีมหลัก ที่ทำงานสอดประสานกันตลอด 24 ชั่วโมง เพื่อให้การส่งต่ออวัยวะสำเร็จภายในเวลาที่จำกัด
 
 1. ทีมจัดหาและประสานงาน (Donor & Coordination Team)
 พยาบาลผู้ประสานงานการรับบริจาค (Organ Donation Coordinator): หรือเรียกว่า TC
-ค้นหาผู้ป่วย: คัดกรองและประเมินผู้ป่วยที่มีเกณฑ์ภาวะสมองตายในตึกผู้ป่วยวิกฤต
-เจรจาญาติ: ให้คำปรึกษาประคับประคองจิตใจ และขอความยินยอมในการบริจาคอวัยวะจากครอบครัว
-ประสานงานระบบ: แจ้งข้อมูลผู้บริจาคไปยัง ศูนย์รับบริจาคอวัยวะสภากาชาดไทย เพื่อจับคู่อวัยวะกับผู้รับ
-เก็บตัวอย่าง: เจาะเลือด ตรวจสอบเนื้อเยื่อ และตรวจหาเชื้อติดเชื้อต่าง ๆ
+- ค้นหาผู้ป่วย: คัดกรองและประเมินผู้ป่วยที่มีเกณฑ์ภาวะสมองตายในตึกผู้ป่วยวิกฤต
+- สื่อสารและให้ข้อมูลญาติ: เชิญญาติมายังห้องรับรอง/ห้องให้คำปรึกษาที่เงียบสงบและเป็นส่วนตัว (แยกจากห้อง ICU) เพื่อประคับประคองจิตใจ ให้ข้อมูลอย่างตรงไปตรงมา และเปิดโอกาสให้ครอบครัวตัดสินใจโดยไม่กดดัน
+- ประสานงานระบบ: แจ้งข้อมูลผู้บริจาคไปยัง ศูนย์รับบริจาคอวัยวะสภากาชาดไทย เพื่อจับคู่อวัยวะกับผู้รับ
+- เก็บตัวอย่าง: เจาะเลือด ตรวจสอบเนื้อเยื่อ และตรวจหาเชื้อติดเชื้อต่าง ๆ
 แพทย์ผู้ประเมินภาวะสมองตาย (Brain Death Diagnosis Physicians):
-ตรวจวินิจฉัย: แพทย์อย่างน้อย 2 คน (ต้องไม่เกี่ยวข้องกับทีมปลูกถ่าย) ร่วมตรวจร่างกายตามเกณฑ์กฎหมายเพื่อยืนยันภาวะสมองตาย
-เซ็นใบรับรอง: ออกเอกสารยืนยันการเสียชีวิตของผู้บริจาคอย่างถูกต้องทางกฎหมาย
+- ตรวจวินิจฉัย: แพทย์ผู้เชี่ยวชาญร่วมตรวจร่างกายตามเกณฑ์กฎหมายเพื่อยืนยันภาวะสมองตาย (ไม่เกี่ยวข้องกับทีมปลูกถ่าย)
+- เซ็นใบรับรอง: ออกเอกสารยืนยันการเสียชีวิตของผู้บริจาคอย่างถูกต้องทางกฎหมาย
 ทีมวิกฤตบำบัด (ICU Team - แพทย์และพยาบาล):
-รักษาสัญญาณชีพ: ควบคุมความดันโลหิต ออกซิเจน และสารน้ำให้คงที่เพื่อไม่ให้อวัยวะเสียหาย
-ป้องกันการติดเชื้อ: ให้ยาและดูแลระบบทางเดินหายใจจนกว่าจะถึงเวลาผ่าตัด
+- รักษาสัญญาณชีพ: ควบคุมความดันโลหิต ออกซิเจน และสารน้ำให้คงที่เพื่อไม่ให้อวัยวะเสียหาย
 
 2. ทีมผ่าตัดนำอวัยวะออก (Procurement Team)
-ศัลยแพทย์จัดเก็บอวัยวะ (Procurement Surgeon):
-ผ่าตัดนำอวัยวะออก: เดินทางไปโรงพยาบาลผู้บริจาค ทำการผ่าตัดแยกอวัยวะ (เช่น หัวใจ ตับ ไต) ออกจากร่างอย่างประณีต
-ประเมินสภาพหน้างาน: ตรวจสอบด้วยสายตาว่าอวัยวะมีความสมบูรณ์พร้อมนำไปปลูกถ่ายหรือไม่
-พยาบาลห้องผ่าตัด (OR Nurse):
-เตรียมเครื่องมือพิเศษ: จัดเตรียมน้ำยาละลายลิ่มเลือด ยาปฏิชีวนะ และน้ำยาแช่แข็งอวัยวะ (Preservation Solution)
-บรรจุอวัยวะ: ช่วยบรรจุอวัยวะลงในภาชนะควบคุมอุณหภูมิความเย็นปลอดเชื้อเพื่อการขนส่ง
-เจ้าหน้าที่ขนส่งอวัยวะ (Logistics Team):
-วางแผนเส้นทาง: ประสานงานกับตำรวจทางหลวง ท่าอากาศยาน หรือสายการบิน
-ขนส่งด่วน: นำส่งอวัยวะให้ถึงโรงพยาบาลปลายทางภายในเวลาจำกัด (เช่น หัวใจต้องปลูกถ่ายภายใน 4 ชั่วโมง)
+ศัลยแพทย์จัดเก็บอวัยวะ (Procurement Surgeon) และพยาบาลห้องผ่าตัด (OR Nurse):
+- ผ่าตัดจัดเก็บอวัยวะอย่างประณีต ดูแลตกแต่งร่างผู้เสียชีวิตให้เรียบร้อยสมบูรณ์ที่สุดเพื่อแสดงความเคารพสูงสุด
+- ล้างและแช่ด้วยน้ำยาถนอมอวัยวะ (Preservation Solution) บรรจุในภาชนะควบคุมอุณหภูมิความเย็นปลอดเชื้อ
 
 3. ทีมปลูกถ่ายอวัยวะ (Transplant Team)
-ศัลยแพทย์ปลูกถ่ายอวัยวะ (Transplant Surgeon):
-เตรียมอวัยวะ: ตกแต่งและเตรียมเส้นเลือดของอวัยวะใหม่ให้พร้อมก่อนใส่ในตัวผู้รับ
-ผ่าตัดปลูกถ่าย: ทำหัตถการผ่าตัดใหญ่ เชื่อมต่อเส้นเลือดหลักและระบบท่อต่าง ๆ เข้ากับร่างกายผู้รับบริจาค
-อายุรแพทย์เฉพาะทาง (Transplant Physician เช่น หมอโรคไต/โรคตับ/โรคหัวใจ):
-เตรียมผู้รับ: ประเมินความพร้อมทางร่างกายของผู้ป่วยที่รอรับอวัยวะก่อนเข้าห้องผ่าตัด
-ปรับยากดภูมิ: วางแผนและสั่งยากดภูมิคุ้มกัน (Immunosuppressants) เพื่อป้องกันร่างกายปฏิเสธอวัยวะใหม่
-วิสัญญีแพทย์ (Anesthesiologist):
-ระงับความรู้สึก: ให้ยาสลบและควบคุมการหายใจตลอดการผ่าตัดที่ยาวนานหลายชั่วโมง
-ให้เลือดและสารน้ำ: เฝ้าระวังสัญญาณชีพและทดแทนเลือดที่เสียไปอย่างใกล้ชิด
-พยาบาลประสานงานการปลูกถ่าย (Transplant Coordinator):
-เรียกตัวผู้รับ: โทรศัพท์นัดหมายผู้ป่วยในรายชื่อรอคอยทันทีเมื่อได้อวัยวะที่เข้ากันได้
-ติดตามผลระยะยาว: นัดหมายเจาะเลือด ตรวจค่าตับ/ไต และดูแลสภาพจิตใจผู้ป่วยหลังผ่าตัด
-เภสัชกรคลินิก (Clinical Pharmacist):
-จัดการยาอันตราย: คำนวณโดสยากดภูมิคุ้มกันซึ่งต้องแม่นยำสูงมาก
-สอนการใช้ยา: แนะนำผู้ป่วยเกี่ยวกับการกินยาตรงเวลาและผลข้างเคียง
-นักโภชนาการ (Dietitian) & นักสังคมสงเคราะห์ (Social Worker):
-นักโภชนาการ: วางแผนอาหารที่สะอาด ปลอดเชื้อ และเหมาะสมกับอวัยวะใหม่
-นักสังคมสงเคราะห์: ประเมินความพร้อมด้านทุนทรัพย์ สิทธิการรักษา และระบบซัพพอร์ตของครอบครัวผู้ป่วย
+- ศัลยแพทย์ปลูกถ่าย, อายุรแพทย์เฉพาะทาง, วิสัญญีแพทย์, พยาบาลประสานงานการปลูกถ่าย, เภสัชกรคลินิก, นักโภชนาการ และนักสังคมสงเคราะห์ ร่วมดูแลผู้รับอวัยวะต่อเนื่องระยะยาว
 
-เทคนิคการเจรจาของพยาบาลผู้ประสานงาน (Organ Donation Coordinator) เพื่อขอรับบริจาคอวัยวะและลดความขัดแย้งกับญาติ จำเป็นต้องใช้ หลักจิตวิทยาขั้นสูง ความเห็นอกเห็นใจ (Empathy) และความโปร่งใส โดยมีเทคนิคสำคัญหน้างานดังนี้:
-1. การแยกแยะบทบาทเพื่อความโปร่งใส (Decoupling Technique): แยกการแจ้งข่าวภาวะสมองตายโดยแพทย์เจ้าของไข้ ออกจากขั้นตอนการเจรจาขอรับบริจาคอวัยวะ เพื่อป้องกันความระแวง
-2. การสร้างพื้นที่ปลอดภัยและการประเมินความพร้อม (Setting & Assessing): พูดคุยในห้องส่วนตัวเงียบสงบ และค้นหาผู้มีอำนาจตัดสินใจหลัก (Decision Maker)
-3. การเช็กความเข้าใจและการรับรู้ของญาติ (Perception Check): ใช้คำถามเปิดเช็กความเข้าใจเรื่องภาวะสมองตายซึ่งเป็นการเสียชีวิตตามกฎหมายและทางการแพทย์แล้ว
-4. การใช้คำพูดเชิงบวกและการให้เกียรติ (Positive Framing & Altruism): เปลี่ยนมุมมองเป็นโอกาสสร้างกุศลครั้งใหญ่ครั้งสุดท้ายเพื่อช่วยชีวิตผู้อื่น
-5. การรับรองความปลอดภัยและการดูแลร่างหลังผ่าตัด (Reassurance): ยืนยันการเย็บแผลอย่างประณีตให้เกียรติร่างผู้เสียชีวิต และอธิบายสิทธิประโยชน์จากสภากาชาดไทย`;
+หลักการสื่อสารและให้ข้อมูลญาติผู้เสียชีวิตในห้องรับรอง:
+1. การเตรียมสถานที่และบทบาท (Setting & Role): พูดคุยในห้องรับรองหรือห้องให้คำปรึกษาที่เป็นส่วนตัว แยกจากห้อง ICU และแนะนำชื่อ-บทบาทอย่างสุภาพชัดเจน
+2. การรับรู้อารมณ์ร่วม (Emotional Empathy): ยอมรับและสะท้อนความเสียใจ ความช็อก หรือความสับสนของญาติก่อนให้ข้อมูลทางการแพทย์
+3. การแยกข่าวร้ายออกจากคำขอ (Decoupling) & เช็กความเข้าใจ (Perception Check): อธิบายความแตกต่างระหว่างเครื่องช่วยหายใจกับภาวะสมองตายถาวรให้ชัดเจนก่อนพูดถึงทางเลือกการบริจาค
+4. การไม่เร่งรัดและให้ความมั่นใจเรื่องเกียรติของร่าง (Zero Pressure & Dignity): ให้เวลาครอบครัวปรึกษากันอย่างเต็มที่ และรับรองการดูแลตกแต่งร่างอย่างประณีตที่สุด`;
