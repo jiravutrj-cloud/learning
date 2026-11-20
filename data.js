@@ -5,8 +5,7 @@
 
 /**
  * 1. การตั้งค่าระบบส่วนกลาง (System Configuration)
- * หมายเหตุ: เมื่อสร้าง Firebase Project และ Google Apps Script ด้วยบัญชี rjcloud.organ@gmail.com แล้ว
- * ให้นำค่ามาวางแทนที่ช่องว่างด้านล่างได้เลยค่ะ (หากยังไม่วาง ระบบจะทำงานในโหมด Demo/Sandbox ให้อัตโนมัติ)
+ * เชื่อมต่อ Firebase Project (rj-cloud-organ) และ Google Apps Script เรียบร้อยแล้ว
  */
 window.RJCLOUD_CONFIG = {
   appName: "rjcloud.organ",
@@ -19,17 +18,18 @@ window.RJCLOUD_CONFIG = {
     "rjcloud.organ@gmail.com"
   ],
 
-  // วางค่า Firebase Config จากคอนโซลของบัญชี rjcloud.organ@gmail.com ที่นี่
+  // ค่าเชื่อมต่อ Firebase Project: rj-cloud-organ (บัญชี rjcloud.organ@gmail.com)
   firebaseConfig: {
-    apiKey: "",
-    authDomain: "",
-    projectId: "",
-    storageBucket: "",
-    messagingSenderId: "",
-    appId: ""
+    apiKey: "AIzaSyCpvK0FCVVk9dt0ylHn_VzUStl7540UsbY",
+    authDomain: "rj-cloud-organ.firebaseapp.com",
+    projectId: "rj-cloud-organ",
+    storageBucket: "rj-cloud-organ.firebasestorage.app",
+    messagingSenderId: "1030088973707",
+    appId: "1:1030088973707:web:8104bb1d90ac6a58f8e38e",
+    measurementId: "G-X5YLDTC6V4"
   },
 
-  // วางลิงก์ Web App URL ของ Google Apps Script (ใช้สำหรับส่งอีเมล OTP และเรียก Gemini AI/TTS)
+  // ลิงก์ Web App URL ของ Google Apps Script (สำหรับส่งอีเมล OTP และเรียก Gemini AI/TTS)
   appsScriptUrl: "https://script.google.com/macros/s/AKfycbziuUaRF3ia_EMvpklsiLaMLsXK8kb9_7Tcx0jzh5yf_8jF9_A66wf1wY3w4y7UVVNivQ/exec"
 };
 
