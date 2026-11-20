@@ -22,40 +22,42 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              display: ['Prompt', 'sans-serif'],
-              sans: ['Sarabun', 'sans-serif'],
-              mono: ['JetBrains Mono', 'monospace']
-            },
-            colors: {
-              clinical: {
-                50: '#ecfdf5',
-                100: '#d1fae5',
-                200: '#a7f3d0',
-                300: '#6ee7b7',
-                400: '#34d399',
-                500: '#10b981',
-                600: '#059669',
-                700: '#047857',
-                800: '#065f46',
-                900: '#064e3b'
+      if (window.tailwind) {
+        tailwind.config = {
+          theme: {
+            extend: {
+              fontFamily: {
+                display: ['Prompt', 'sans-serif'],
+                sans: ['Sarabun', 'sans-serif'],
+                mono: ['JetBrains Mono', 'monospace']
               },
-              medical: {
-                50: '#f0f9ff',
-                100: '#e0f2fe',
-                200: '#bae6fd',
-                400: '#38bdf8',
-                500: '#0ea5e9',
-                600: '#0284c7',
-                700: '#0369a1'
+              colors: {
+                clinical: {
+                  50: '#ecfdf5',
+                  100: '#d1fae5',
+                  200: '#a7f3d0',
+                  300: '#6ee7b7',
+                  400: '#34d399',
+                  500: '#10b981',
+                  600: '#059669',
+                  700: '#047857',
+                  800: '#065f46',
+                  900: '#064e3b'
+                },
+                medical: {
+                  50: '#f0f9ff',
+                  100: '#e0f2fe',
+                  200: '#bae6fd',
+                  400: '#38bdf8',
+                  500: '#0ea5e9',
+                  600: '#0284c7',
+                  700: '#0369a1'
+                }
               }
             }
           }
-        }
-      };
+        };
+      }
     </script>
 
     <style>
@@ -272,7 +274,8 @@
         // 3. HELPERS & CERTIFICATE CANVAS RENDERER
         // ============================================================================
         function Icon({ name, size = 20, className = '', strokeWidth = 2 }) {
-            const Comp = LucideIcons[name] || LucideIcons.HeartPulse;
+            const Comp = LucideIcons[name] || LucideIcons.HeartPulse || LucideIcons.Activity;
+            if (!Comp) return null;
             return <Comp size={size} className={className} strokeWidth={strokeWidth} />;
         }
 
@@ -405,11 +408,11 @@
                             ctx.drawImage(qrImg, 0, 0, size, size);
                             result = c;
                         }
-                        document.body.removeChild(holder);
+                        if (holder.parentNode) holder.parentNode.removeChild(holder);
                         resolve(result);
                     }, 120);
                 } catch (_) {
-                    document.body.removeChild(holder);
+                    if (holder.parentNode) holder.parentNode.removeChild(holder);
                     resolve(null);
                 }
             });
@@ -1042,16 +1045,12 @@
                 };
             }, [screen, activeTab, user?.id, currentLessonId, targetStudySeconds, adminPreviewMode, persistUser]);
 
-            // 3. นับถอยหลังเวลาทำข้อสอบ
+            // 3. นับถอยหลังเวลาทำข้อสอบ (แยกการนับถอยหลังออกจากการส่งข้อสอบเพื่อไม่ให้เกิด Side-effect ใน State Updater)
             useEffect(() => {
                 if (screen !== 'quiz' || quiz.finished) return;
                 const timer = setInterval(() => {
                     setQuiz(prev => {
-                        if (prev.finished) return prev;
-                        if (prev.timeLeft <= 1) {
-                            handleFinishQuiz({ ...prev, timeLeft: 0 });
-                            return { ...prev, timeLeft: 0 };
-                        }
+                        if (prev.finished || prev.timeLeft <= 0) return prev;
                         return { ...prev, timeLeft: prev.timeLeft - 1 };
                     });
                 }, 1000);
@@ -1466,6 +1465,13 @@
                     setScreen('quiz_fail');
                 }
             };
+
+            // ส่งข้อสอบอัตโนมัติเมื่อหมดเวลาทำข้อสอบ
+            useEffect(() => {
+                if (screen === 'quiz' && !quiz.finished && quiz.timeLeft <= 0 && quiz.questions.length > 0) {
+                    handleFinishQuiz(quiz);
+                }
+            }, [screen, quiz.finished, quiz.timeLeft, quiz.questions.length]);
 
             // ============================================================================
             // 8. LIVE CHECK-IN, CSAT, CERTIFICATE ISSUANCE & LOGOUT
