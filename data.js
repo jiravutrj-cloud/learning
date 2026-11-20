@@ -30,7 +30,7 @@ window.RJCLOUD_CONFIG = {
   },
 
   // ลิงก์ Web App URL ของ Google Apps Script (สำหรับส่งอีเมล OTP และเรียก Gemini AI/TTS)
-  appsScriptUrl: "https://script.google.com/macros/s/AKfycbziuUaRF3ia_EMvpklsiLaMLsXK8kb9_7Tcx0jzh5yf_8jF9_A66wf1wY3w4y7UVVNivQ/exec"
+  appsScriptUrl: "https://script.google.com/macros/s/AKfycbwuN8MeZhhhomEhpkfXtpoTP341cugDqw1DbQPK_6NSHun2pGZCE0Kfc3eH4YYJ6aWQIg/exec"
 };
 
 /**
