@@ -8,8 +8,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Admin Studio — rjcloud.organ 2027</title>
 
-    <!-- 🌟 โหลดค่าตั้งต้นและข้อมูลกลางจาก data.js 🌟 -->
-    <script src="./data.js"></script>
+    <!-- 🌟 โหลดค่าตั้งต้นและข้อมูลกลางจาก data.js (มี Fallback ในตัวหากเปิด Preview เดี่ยว) 🌟 -->
+    <script src="./data.js" onerror="console.warn('data.js not loaded, using sandbox defaults')"></script>
 
     <!-- 🌟 Tailwind CSS & Fonts (Prompt + Sarabun + JetBrains Mono) 🌟 -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -120,6 +120,7 @@
     {
       "imports": {
         "react": "https://esm.sh/react@18.2.0",
+        "react-dom": "https://esm.sh/react-dom@18.2.0",
         "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
         "lucide-react": "https://esm.sh/lucide-react@0.344.0?external=react",
         "firebase/app": "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js",
@@ -264,8 +265,42 @@
         }
 
         // ============================================================================
-        // 2. HELPERS & CSV UTILITIES
+        // 2. ERROR BOUNDARY & HELPERS
         // ============================================================================
+        class AdminErrorBoundary extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = { hasError: false, error: null };
+            }
+            static getDerivedStateFromError(error) {
+                return { hasError: true, error };
+            }
+            componentDidCatch(error, info) {
+                console.error('Admin ErrorBoundary:', error, info);
+            }
+            render() {
+                if (this.state.hasError) {
+                    return (
+                        <div className="min-h-dvh flex items-center justify-center p-6 bg-slate-50">
+                            <div className="max-w-md w-full bg-white rounded-3xl p-6 border border-rose-200 shadow-lg text-center space-y-4">
+                                <h2 className="font-display font-bold text-lg text-rose-700">พบข้อผิดพลาดในการแสดงผลหน้า Admin</h2>
+                                <p className="text-xs font-mono bg-rose-50 text-rose-800 p-3 rounded-xl overflow-auto">
+                                    {String(this.state.error?.message || this.state.error)}
+                                </p>
+                                <button
+                                    onClick={() => window.location.reload()}
+                                    className="touch-target w-full py-3 rounded-2xl bg-clinical-600 text-white font-display font-bold text-sm"
+                                >
+                                    โหลดหน้าใหม่
+                                </button>
+                            </div>
+                        </div>
+                    );
+                }
+                return this.props.children;
+            }
+        }
+
         function Icon({ name, size = 20, className = "", strokeWidth = 2 }) {
             const Comp = LucideIcons[name] || LucideIcons.Activity;
             return <Comp size={size} className={className} strokeWidth={strokeWidth} />;
@@ -327,7 +362,6 @@
             ctx.fillStyle = bg;
             ctx.fillRect(0, 0, W, H);
 
-            // Aura glow
             const glow1 = ctx.createRadialGradient(140, 120, 10, 140, 120, 360);
             glow1.addColorStop(0, 'rgba(16, 185, 129, 0.16)');
             glow1.addColorStop(1, 'rgba(16, 185, 129, 0)');
@@ -340,7 +374,6 @@
             ctx.fillStyle = glow2;
             ctx.fillRect(0, 0, W, H);
 
-            // Borders
             ctx.strokeStyle = '#059669';
             ctx.lineWidth = 5;
             ctx.strokeRect(36, 36, W - 72, H - 72);
@@ -348,11 +381,9 @@
             ctx.lineWidth = 1.5;
             ctx.strokeRect(48, 48, W - 96, H - 96);
 
-            // Top Ribbon
             ctx.fillStyle = '#059669';
             ctx.fillRect(W / 2 - 140, 36, 280, 10);
 
-            // Texts
             ctx.textAlign = 'center';
             ctx.fillStyle = '#047857';
             ctx.font = '700 22px "Prompt", sans-serif';
@@ -390,7 +421,6 @@
             ctx.font = '600 16px "Prompt", sans-serif';
             ctx.fillText(tpl.courseTitleEN || '', W / 2, 558);
 
-            // Signer
             ctx.strokeStyle = '#94a3b8';
             ctx.lineWidth = 1.5;
             ctx.beginPath();
@@ -406,7 +436,6 @@
             ctx.font = '500 16px "Sarabun", sans-serif';
             ctx.fillText(tpl.signerPosition || '', W / 2, 755);
 
-            // Mock QR Box
             ctx.fillStyle = '#ffffff';
             ctx.strokeStyle = '#e2e8f0';
             ctx.lineWidth = 2;
@@ -527,7 +556,7 @@
             const [liveConfig, setLiveConfig] = useState({
                 status: 'offline',
                 days: 1,
-                hours: 10,
+                hours: 8,
                 allowPosttest: false,
                 topic: 'การบรรยายพิเศษด้านการรับบริจาคและปลูกถ่ายอวัยวะ 2027',
                 url: '',
@@ -563,7 +592,6 @@
             const [confirmDialog, setConfirmDialog] = useState({ open: false, title: '', message: '', danger: false, confirmText: 'ยืนยัน', onConfirm: null });
 
             const certCanvasRef = useRef(null);
-            // ใช้ Ref เก็บรายชื่อล่าสุดเพื่อไม่ให้ Auto-Sync useEffect รีเซ็ต Loop ทุกครั้งที่ข้อมูลอัปเดต
             const usersListRef = useRef(usersList);
             useEffect(() => { usersListRef.current = usersList; }, [usersList]);
 
@@ -690,7 +718,7 @@
                 showToast('ออกจากระบบหลังบ้านแล้วค่ะ');
             };
 
-            // 5. Google Sheets CSV Auto-Sync (แก้บั๊ก Loop รีเซ็ต + คอลัมน์ตรงกับคำแนะนำ)
+            // 5. Google Sheets CSV Auto-Sync (รองรับเฉพาะสิทธิ์ เรียนใหม่ / เรียนต่อเนื่อง)
             const syncFromGoogleSheet = useCallback(async (isManual = false) => {
                 if (!systemConfig.masterCsvUrl) {
                     if (isManual) showToast('กรุณาระบุลิงก์ Google Sheets (CSV) ก่อนดึงข้อมูลค่ะ', 'error');
@@ -718,7 +746,6 @@
                             .split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
                             .map(c => c.trim().replace(/^"|"$/g, '').replace(/""/g, '"'));
 
-                        // รูปแบบตารางมาตรฐาน (0:Timestamp, 1:ชื่อ-สกุล, 2:ใบอนุญาต, 3:อีเมล, 4:ตำแหน่ง, 5:สังกัด, 6:รพ., 7:จังหวัด, 8:สิทธิ์, 16:เบอร์โทร)
                         const license = String(cols[2] || '').replace(/[^a-zA-Z0-9]/g, '');
                         if (!license) continue;
 
@@ -773,7 +800,7 @@
                 }
             }, [systemConfig.masterCsvUrl, adminSession?.mode, showToast]);
 
-            // Auto-Sync Timer (ไม่ใส่ usersList ใน dependency เพื่อป้องกัน Loop รีเซ็ตถี่เกินไป)
+            // Auto-Sync Timer
             useEffect(() => {
                 if (!adminSession || !systemConfig.autoSyncFromSheet || !systemConfig.masterCsvUrl) return;
                 const timer = setInterval(() => syncFromGoogleSheet(false), 30000);
@@ -879,33 +906,6 @@
                 setShowAddUser(false);
             };
 
-            const handleAutoRefillVip = () => {
-                askConfirm({
-                    title: 'Auto-Refill สิทธิ์ Onsite / Masterclass',
-                    message: 'ระบบจะเติมเวลาเรียนเป็น 100% (10 ชม.) ให้กับผู้เรียนที่มีสิทธิ์ Onsite และ Masterclass ทุกรายในระบบ ยืนยันหรือไม่?',
-                    confirmText: 'ดำเนินการเลย',
-                    onConfirm: async () => {
-                        let count = 0;
-                        const updated = [];
-                        for (const u of usersList) {
-                            const isVip = ['onsite', 'masterclass'].includes(String(u.userType || '').toLowerCase());
-                            if (isVip && (u.progress || 0) < 100) {
-                                const nextU = { ...u, progress: 100, studySeconds: 36000 };
-                                if (adminSession?.mode === 'cloud' && fbDb) {
-                                    await setDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', u.id), { progress: 100, studySeconds: 36000 }, { merge: true });
-                                }
-                                updated.push(nextU);
-                                count++;
-                            } else {
-                                updated.push(u);
-                            }
-                        }
-                        if (adminSession?.mode !== 'cloud') setUsersList(updated);
-                        showToast(`เติมเวลาเรียนสำเร็จทั้งหมด ${count} รายการค่ะ`);
-                    }
-                });
-            };
-
             const handleExportCSV = () => {
                 const headers = [
                     'ชื่อ-สกุล', 'เลขใบประกอบวิชาชีพ', 'อีเมล', 'เบอร์โทร',
@@ -919,7 +919,8 @@
                     return [
                         u.name, getUserLicense(u), u.email, u.phone,
                         u.position, u.workContext, u.department, u.hospital,
-                        u.userType, u.status, u.pretest, u.posttest,
+                        u.userType === 'เรียนต่อเนื่อง' ? 'เรียนต่อเนื่อง' : 'เรียนใหม่',
+                        u.status, u.pretest, u.posttest,
                         u.progress || 0, avgSkill, u.satisfactionScore || '-', u.certificateCode || '-'
                     ].map(escapeCsvCell).join(',');
                 });
@@ -982,7 +983,8 @@
             const filteredUsers = useMemo(() => {
                 const q = searchTerm.trim().toLowerCase();
                 return usersList.filter(u => {
-                    const matchType = filterType === 'ALL' || u.userType === filterType || (filterType === 'PASSED' && u.status === 'ผ่าน');
+                    const normalizedType = u.userType === 'เรียนต่อเนื่อง' ? 'เรียนต่อเนื่อง' : 'เรียนใหม่';
+                    const matchType = filterType === 'ALL' || normalizedType === filterType || (filterType === 'PASSED' && u.status === 'ผ่าน');
                     if (!matchType) return false;
                     if (!q) return true;
                     return (
@@ -1066,7 +1068,7 @@
                                             โหมดทดลองใช้งาน (Sandbox Mode)
                                         </p>
                                         <p>
-                                            ยังไม่ได้วางค่า Firebase Config ในไฟล์ <code className="font-mono font-bold">data.js</code> คุณสามารถเข้าสู่ระบบเพื่อทดลองจัดการผู้เรียน ออกแบบใบประกาศฯ และตั้งค่าต่างๆ ได้ทันทีค่ะ (เมื่อวางค่า Firebase ของ <b>{CONFIG.contactEmail}</b> แล้ว ระบบจะสลับเป็นล็อกอินด้วย Email/Password อัตโนมัติ)
+                                            ยังไม่ได้เชื่อมต่อไฟล์ <code className="font-mono font-bold">data.js</code> คุณสามารถเข้าสู่ระบบเพื่อทดลองจัดการผู้เรียน ออกแบบใบประกาศฯ และตั้งค่าต่างๆ ได้ทันทีค่ะ (เมื่ออัปโหลดคู่กับ <code className="font-mono font-bold">data.js</code> บน GitHub ระบบจะสลับเป็นล็อกอินด้วยอีเมล <b>{CONFIG.contactEmail}</b> อัตโนมัติ)
                                         </p>
                                     </div>
                                     <button
@@ -1196,15 +1198,12 @@
                                         <h2 className="font-display text-xl sm:text-2xl font-extrabold text-slate-900">จัดการสิทธิ์ผู้เรียน</h2>
                                         <p className="text-xs sm:text-sm text-slate-500">ทั้งหมด {usersList.length} ราย • สอบผ่านแล้ว {quickStats.passed} ราย</p>
                                     </div>
-                                    <div className="grid grid-cols-2 sm:flex flex-wrap gap-2">
+                                    <div className="grid grid-cols-3 sm:flex flex-wrap gap-2">
                                         <button onClick={() => setShowAddUser(v => !v)} className="touch-target px-3.5 py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-1.5">
                                             <Icon name="UserPlus" size={15} /> เพิ่มผู้เรียน
                                         </button>
                                         <button onClick={() => syncFromGoogleSheet(true)} disabled={isSyncing} className="touch-target px-3.5 py-2.5 rounded-2xl bg-medical-600 hover:bg-medical-700 text-white font-bold text-xs flex items-center justify-center gap-1.5">
                                             <Icon name="RefreshCw" size={15} className={isSyncing ? 'animate-spin' : ''} /> ดึงจาก Sheet
-                                        </button>
-                                        <button onClick={handleAutoRefillVip} className="touch-target px-3.5 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center justify-center gap-1.5">
-                                            <Icon name="Zap" size={15} /> เติมเวลา VIP
                                         </button>
                                         <button onClick={handleExportCSV} className="touch-target px-3.5 py-2.5 rounded-2xl bg-clinical-600 hover:bg-clinical-700 text-white font-bold text-xs flex items-center justify-center gap-1.5">
                                             <Icon name="Download" size={15} /> ส่งออก CSV
@@ -1276,7 +1275,7 @@
                                     </div>
                                 </div>
 
-                                {/* Mobile Card List (100% Smartphone Friendly — ไม่ต้องเลื่อนตารางแนวนอน) */}
+                                {/* Mobile Card List */}
                                 <div className="space-y-3 md:hidden">
                                     {filteredUsers.map(u => (
                                         <div key={u.id} className="bento-glass rounded-2xl p-4 space-y-3">
@@ -1427,7 +1426,6 @@
                                 </div>
 
                                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-                                    {/* Live Preview */}
                                     <div className="lg:col-span-7 bento-glass rounded-[1.75rem] p-3 sm:p-5 space-y-3">
                                         <div className="flex items-center justify-between">
                                             <span className="text-xs font-bold text-slate-600 flex items-center gap-1.5">
@@ -1440,7 +1438,6 @@
                                         </div>
                                     </div>
 
-                                    {/* Editor Controls */}
                                     <div className="lg:col-span-5 bento-glass rounded-[1.75rem] p-4 sm:p-6 space-y-3.5">
                                         <FieldInput label="รหัสนำหน้าใบประกาศฯ (Prefix)" value={certTemplate.certPrefix} onChange={e => setCertTemplate(p => ({ ...p, certPrefix: e.target.value }))} />
                                         <FieldInput label="ชื่อหน่วยงานหลัก (ไทย)" value={certTemplate.orgTitleTH} onChange={e => setCertTemplate(p => ({ ...p, orgTitleTH: e.target.value }))} />
@@ -1464,7 +1461,7 @@
                             <div className="max-w-3xl space-y-5">
                                 <div>
                                     <h2 className="font-display text-xl sm:text-2xl font-extrabold text-slate-900">ระบบควบคุม Live สด & เอกสาร</h2>
-                                    <p className="text-xs sm:text-sm text-slate-500">เปิด/ปิดการถ่ายทอดสดและกำหนดชั่วโมงบังคับสำหรับผู้เรียนแบบ Online</p>
+                                    <p className="text-xs sm:text-sm text-slate-500">เปิด/ปิดการถ่ายทอดสดและกำหนดชั่วโมงการอบรมของหลักสูตร</p>
                                 </div>
 
                                 <div className="bento-glass rounded-[1.75rem] p-5 sm:p-7 space-y-5">
@@ -1494,7 +1491,7 @@
 
                                     <div className="grid grid-cols-2 gap-3">
                                         <FieldInput label="จำนวนวันอบรม" type="number" min="1" value={liveConfig.days} onChange={e => setLiveConfig(p => ({ ...p, days: parseInt(e.target.value, 10) || 1 }))} />
-                                        <FieldInput label="ชั่วโมงบังคับ (สิทธิ์ Online)" type="number" min="1" value={liveConfig.hours} onChange={e => setLiveConfig(p => ({ ...p, hours: parseInt(e.target.value, 10) || 10 }))} />
+                                        <FieldInput label="ชั่วโมงอบรมหลักสูตร" type="number" min="1" value={liveConfig.hours} onChange={e => setLiveConfig(p => ({ ...p, hours: parseInt(e.target.value, 10) || 8 }))} />
                                     </div>
 
                                     <FieldInput label="Embed URL (YouTube / Vimeo / Canva)" value={liveConfig.url} onChange={e => setLiveConfig(p => ({ ...p, url: e.target.value }))} placeholder="https://www.youtube.com/embed/..." />
@@ -1699,7 +1696,7 @@
                                     <div className="p-4 rounded-2xl bg-medical-50 border border-medical-200 text-xs text-medical-900 leading-relaxed space-y-1">
                                         <p className="font-bold">รูปแบบคอลัมน์ Google Sheets (Publish as CSV):</p>
                                         <p className="font-mono text-[11px]">
-                                            คอลัมน์ B: ชื่อ-สกุล | C: เลขใบอนุญาต | D: อีเมล | E: ตำแหน่ง | F: สังกัด | G: โรงพยาบาล | H: จังหวัด | I: สิทธิ์ (Online/Onsite/Masterclass) | Q: เบอร์โทร
+                                            คอลัมน์ B: ชื่อ-สกุล | C: เลขใบอนุญาต | D: อีเมล | E: ตำแหน่ง | F: สังกัด | G: โรงพยาบาล | H: จังหวัด | I: สิทธิ์ (เรียนใหม่/เรียนต่อเนื่อง) | Q: เบอร์โทร
                                         </p>
                                     </div>
 
@@ -1771,16 +1768,16 @@
 
                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                                     <div className="bento-glass rounded-2xl p-4">
-                                        <p className="text-xs font-bold text-slate-500">เรียนต่อเนื่อง</p>
-                                        <p className="font-mono text-2xl font-extrabold text-violet-700 mt-1">{quickStats.continuing}</p>
+                                        <p className="text-xs font-bold text-slate-500">ผู้เรียนทั้งหมด</p>
+                                        <p className="font-mono text-2xl font-extrabold text-slate-900 mt-1">{quickStats.total}</p>
                                     </div>
                                     <div className="bento-glass rounded-2xl p-4">
                                         <p className="text-xs font-bold text-slate-500">สอบผ่านแล้ว</p>
                                         <p className="font-mono text-2xl font-extrabold text-clinical-700 mt-1">{quickStats.passed}</p>
                                     </div>
                                     <div className="bento-glass rounded-2xl p-4">
-                                        <p className="text-xs font-bold text-slate-500">สิทธิ์ Masterclass</p>
-                                        <p className="font-mono text-2xl font-extrabold text-violet-700 mt-1">{quickStats.master}</p>
+                                        <p className="text-xs font-bold text-slate-500">เรียนต่อเนื่อง</p>
+                                        <p className="font-mono text-2xl font-extrabold text-violet-700 mt-1">{quickStats.continuing}</p>
                                     </div>
                                     <div className="bento-glass rounded-2xl p-4">
                                         <p className="text-xs font-bold text-slate-500">CSAT เฉลี่ย</p>
@@ -1840,7 +1837,7 @@
         }
 
         const root = createRoot(document.getElementById('admin-root'));
-        root.render(<AdminApp />);
+        root.render(<AdminErrorBoundary><AdminApp /></AdminErrorBoundary>);
     </script>
 </body>
 </html>
