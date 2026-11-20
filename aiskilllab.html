@@ -2,77 +2,145 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI Skill Lab - RJ Ailiverse</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#070b14">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>AI Skill Lab 2027 — rjcloud.organ</title>
+
+    <!-- 🌟 โหลดค่าตั้งต้นและฐานข้อมูลกรณีศึกษาจาก data.js 🌟 -->
     <script src="./data.js"></script>
+
+    <!-- 🌟 Tailwind CSS & Fonts (Prompt + Sarabun + JetBrains Mono) 🌟 -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Prompt:wght@500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <script>
       tailwind.config = {
         theme: {
           extend: {
+            fontFamily: {
+              display: ['Prompt', 'sans-serif'],
+              sans: ['Sarabun', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace']
+            },
             colors: {
-              line: { 50: '#e5f8e5', 100: '#cbf1cb', 200: '#9ce49c', 300: '#6dd66d', 400: '#3ec93e', 500: '#00B900', 600: '#009400', 700: '#006f00', 800: '#004a00', 900: '#002500' },
-              gold: { 200: '#FDE68A', 300: '#FCD34D', 400: '#FBBF24', 500: '#F59E0B', 600: '#D97706' }
-            },
-            animation: {
-              'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-              'glow': 'glow 2s ease-in-out infinite alternate',
-            },
-            keyframes: {
-              glow: {
-                '0%': { boxShadow: '0 0 5px rgba(59, 130, 246, 0.5)' },
-                '100%': { boxShadow: '0 0 20px rgba(59, 130, 246, 0.8), 0 0 30px rgba(59, 130, 246, 0.6)' }
+              obsidian: {
+                950: '#050811',
+                900: '#0a1020',
+                800: '#11192e',
+                700: '#1b2642'
+              },
+              biotech: {
+                300: '#6ee7b7',
+                400: '#34d399',
+                500: '#10b981',
+                600: '#059669'
+              },
+              cyber: {
+                300: '#67e8f9',
+                400: '#22d3ee',
+                500: '#06b6d4',
+                600: '#0891b2'
               }
             }
           }
         }
-      }
+      };
     </script>
-    
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap');
-        body { font-family: 'Sarabun', sans-serif; margin: 0; overflow-x: hidden; background-color: #0f172a; color: white; }
-        
-        /* 🌟 GLOBAL BACKGROUND (100% BRIGHTNESS) 🌟 */
-        .sky-bg { 
-            position: fixed; 
-            inset: 0; 
-            z-index: 0; 
-            /* เปลี่ยนภาพพื้นหลังหลักเป็นภาพใหม่ เพื่อไม่ให้ซ้ำซ้อนกับใน Card */
-            background-image: url('https://res.cloudinary.com/djwclucoz/image/upload/v1783834700/Gemini_Generated_Image_vu0rpvvu0rpvvu0r_td26sx.png');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-        }
-        
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.4); border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,0.6); }
-        
-        .pt-safe { padding-top: env(safe-area-inset-top, 20px); }
-        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 20px); }
 
-        /* 🌟 HOLOGRAM ANIMATIONS 🌟 */
-        @keyframes holo-pulse {
-            0% { transform: scale(0.9); opacity: 0.7; box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.6); }
-            70% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 0 25px rgba(34, 211, 238, 0); }
-            100% { transform: scale(0.9); opacity: 0.7; box-shadow: 0 0 0 0 rgba(34, 211, 238, 0); }
-        }
-        .animate-holo-pulse {
-            animation: holo-pulse 1.5s infinite;
-        }
+    <style>
+      html {
+        -webkit-tap-highlight-color: transparent;
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: 'Sarabun', sans-serif;
+        background-color: #050811;
+        color: #f8fafc;
+        margin: 0;
+        overflow-x: hidden;
+        overscroll-behavior-y: none;
+      }
+
+      /* 🌟 Mobile-First 100% Viewport & Safe Area 🌟 */
+      .h-dvh { height: 100vh; height: 100dvh; }
+      .min-h-dvh { min-height: 100vh; min-height: 100dvh; }
+      .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+      .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+      .touch-target { min-height: 46px; touch-action: manipulation; }
+
+      /* ป้องกัน iOS Safari ซูมอัตโนมัติตอนแตะช่องพิมพ์ข้อความ */
+      @media (max-width: 768px) {
+        input, select, textarea { font-size: 16px !important; }
+      }
+
+      /* 🌟 Obsidian Bio-Tech 2027 Mesh Aura Background 🌟 */
+      .obsidian-aura {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background:
+          radial-gradient(circle at 15% 15%, rgba(16, 185, 129, 0.16) 0%, transparent 45%),
+          radial-gradient(circle at 85% 18%, rgba(6, 182, 212, 0.16) 0%, transparent 45%),
+          radial-gradient(circle at 50% 88%, rgba(99, 102, 241, 0.14) 0%, transparent 50%),
+          linear-gradient(180deg, #050811 0%, #091122 60%, #050811 100%);
+        pointer-events: none;
+      }
+      .obsidian-grid {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background-image:
+          linear-gradient(to right, rgba(148, 163, 184, 0.05) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(148, 163, 184, 0.05) 1px, transparent 1px);
+        background-size: 38px 38px;
+        mask-image: radial-gradient(ellipse at center, black 40%, transparent 92%);
+        pointer-events: none;
+      }
+
+      /* 🌟 Dark Clinical Glass Card 🌟 */
+      .lab-glass {
+        background: rgba(15, 23, 42, 0.72);
+        backdrop-filter: blur(22px);
+        -webkit-backdrop-filter: blur(22px);
+        border: 1px solid rgba(255, 255, 255, 0.11);
+        box-shadow: 0 20px 50px -15px rgba(0, 0, 0, 0.65);
+      }
+
+      /* 🌟 Hologram Ring Animations 🌟 */
+      @keyframes holoSpin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      @keyframes holoPulse {
+        0% { transform: scale(0.92); opacity: 0.78; box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.55); }
+        70% { transform: scale(1.06); opacity: 1; box-shadow: 0 0 0 22px rgba(34, 211, 238, 0); }
+        100% { transform: scale(0.92); opacity: 0.78; box-shadow: 0 0 0 0 rgba(34, 211, 238, 0); }
+      }
+      @keyframes waveBar {
+        0%, 100% { transform: scaleY(0.35); }
+        50% { transform: scaleY(1); }
+      }
+      .holo-spin-cw { animation: holoSpin 7s linear infinite; }
+      .holo-spin-ccw { animation: holoSpin 10s linear infinite reverse; }
+      .holo-core-active { animation: holoPulse 1.6s ease-out infinite; }
+      .eq-bar { animation: waveBar 0.75s ease-in-out infinite; transform-origin: bottom; }
+
+      .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+      .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+      .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.28); border-radius: 999px; }
     </style>
 
+    <!-- 🌟 ESM Import Map (React 18, Lucide Icons, Firebase 11) 🌟 -->
     <script type="importmap">
     {
       "imports": {
         "react": "https://esm.sh/react@18.2.0",
         "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-        "react-dom": "https://esm.sh/react-dom@18.2.0",
-        "lucide-react": "https://esm.sh/lucide-react@0.294.0?external=react",
+        "lucide-react": "https://esm.sh/lucide-react@0.344.0?external=react",
         "firebase/app": "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js",
         "firebase/auth": "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js",
         "firebase/firestore": "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"
@@ -85,39 +153,130 @@
     <div id="skilllab-root"></div>
 
     <script type="text/babel" data-type="module">
-        import React, { useState, useEffect, useRef, useCallback } from 'react';
+        import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
         import { createRoot } from 'react-dom/client';
         import * as LucideIcons from 'lucide-react';
         import { initializeApp, getApps, getApp } from 'firebase/app';
         import { getAuth, signInAnonymously } from 'firebase/auth';
-        import { getFirestore, doc, setDoc } from 'firebase/firestore';
+        import { getFirestore, doc, setDoc, onSnapshot } from 'firebase/firestore';
 
-        const { ArrowLeft, PlayCircle, Bot, Volume2, X, Send, Mic, Image: ImageIcon, Target, Lock, ArrowRight, FileText, CheckCircle, Info, Lightbulb, SkipForward } = LucideIcons;
+        // ============================================================================
+        // 1. CONFIGURATION, FALLBACK SCENARIOS & FIREBASE INIT
+        // ============================================================================
+        const CONFIG = window.RJCLOUD_CONFIG || {
+            appName: 'rjcloud.organ',
+            edition: '2027 Clinical Edition',
+            contactEmail: 'rjcloud.organ@gmail.com',
+            appId: 'rjcloud-organ-2027',
+            firebaseConfig: {},
+            appsScriptUrl: ''
+        };
 
+        // กรณีศึกษาสำรอง (กรณีเปิดพรีวิวไฟล์เดี่ยวโดยไม่มี data.js)
+        const FALLBACK_SCENARIOS = [
+            {
+                id: 1,
+                title: 'กรณีศึกษา (Thai Case): Multi-Agent ICU',
+                description: 'รับมือครอบครัว 3 คน (ฟ้า, เมฆ และ พี่เอก) หน้าห้อง ICU เพื่อฝึกทักษะ Empathy, Decoupling และ SPIKES',
+                videoUrl: 'https://player.vimeo.com/video/1203050393',
+                characterName: 'ฟ้า, เมฆ และ พี่เอก',
+                relation: 'ครอบครัวผู้ป่วย',
+                language: 'th',
+                patientInfo: {
+                    gender: 'ชาย',
+                    age: '46 ปี',
+                    cause: 'อุบัติเหตุรถยนต์',
+                    relation: 'คุณพ่อของฟ้าและเมฆ',
+                    summaryText: 'ข้อมูลเบื้องต้น: คนไข้ชาย อายุ 46 ปี ประสบอุบัติเหตุรถยนต์ แพทย์ประเมินก้านสมองและทดสอบการหายใจแล้ว ยืนยันภาวะสมองตาย ญาติหน้าห้อง ICU มี ฟ้า (ลูกสาว), เมฆ (น้องชาย) และ พี่เอก (แฟนของฟ้า) เริ่มการเจรจาได้เลยค่ะ'
+                },
+                introHook: {
+                    speakerKey: 'FAH',
+                    speakerName: 'ฟ้า',
+                    emotion: 'CONFUSED',
+                    text: 'สวัสดีค่ะ... คุณเป็นเจ้าหน้าที่ที่จะมาคุยกับพวกเราเรื่องคุณพ่อหรือเปล่าคะ?'
+                },
+                characters: [
+                    { key: 'FAH', displayName: 'ฟ้า', voice: 'Aoede', gender: 'female', style: 'พูดด้วยเสียงผู้หญิงวัยรุ่น 22 ปี น้ำเสียงตามอารมณ์บริบท' },
+                    { key: 'BROTHER', displayName: 'เมฆ', voice: 'Charon', gender: 'male', style: 'พูดด้วยเสียงผู้ชายวัยรุ่น 18 ปี น้ำเสียงตามอารมณ์บริบท' },
+                    { key: 'BOYFRIEND', displayName: 'พี่เอก', voice: 'Charon', gender: 'male', style: 'พูดด้วยเสียงผู้ชายวัยผู้ใหญ่ 32 ปี นุ่มนวล อบอุ่น ใจเย็น สุภาพ' }
+                ],
+                systemPrompt: 'รับบทครอบครัวผู้ป่วย 3 คน (ฟ้า, เมฆ, พี่เอก) หน้าห้อง ICU ตอบทีละ 1 ตัวละครขึ้นต้นด้วย [EMOTION] [ชื่อ]'
+            },
+            {
+                id: 2,
+                title: 'Foreign Case (EN): Cross-Cultural ICU',
+                description: 'Handle a foreign family (Michael & Emily) outside an ICU in Thailand. Practice cross-cultural empathy entirely in English.',
+                videoUrl: '',
+                characterName: 'Michael & Emily',
+                relation: "Patient's Family (Foreigners)",
+                language: 'en',
+                patientInfo: {
+                    gender: 'female',
+                    age: '44 years old',
+                    cause: 'a severe car accident',
+                    relation: "Michael's wife & Emily's mother",
+                    summaryText: 'Initial Case Data: Patient is a 44-year-old female tourist involved in a severe car accident. Brain stem reflexes and apnea test have been completed, confirming brain death. Relatives waiting outside the ICU are Michael (Husband, 45) and Emily (Daughter, 20). You may begin the conversation now.'
+                },
+                introHook: {
+                    speakerKey: 'MICHAEL',
+                    speakerName: 'Michael',
+                    emotion: 'CONFUSED',
+                    text: 'Hello... Are you the hospital staff coming to speak with me and my daughter about my wife?'
+                },
+                characters: [
+                    { key: 'MICHAEL', displayName: 'Michael', voice: 'Charon', gender: 'male', style: 'Speak with a tense, worried 45-year-old male voice according to context' },
+                    { key: 'EMILY', displayName: 'Emily', voice: 'Aoede', gender: 'female', style: 'Speak with an emotional, tearful 20-year-old female voice according to context' }
+                ],
+                systemPrompt: 'Act as foreign family Michael & Emily outside ICU in Thailand. Respond as ONE character per turn prefixed with [EMOTION] [Name].'
+            }
+        ];
+
+        const SCENARIOS = (window.SKILL_LAB_SCENARIOS && window.SKILL_LAB_SCENARIOS.length > 0)
+            ? window.SKILL_LAB_SCENARIOS
+            : FALLBACK_SCENARIOS;
+
+        let fbApp = null, fbAuth = null, fbDb = null;
+        const isCloudConfigured = Boolean(CONFIG.firebaseConfig?.apiKey && CONFIG.firebaseConfig?.projectId);
+
+        if (isCloudConfigured) {
+            try {
+                fbApp = getApps().length === 0 ? initializeApp(CONFIG.firebaseConfig) : getApp();
+                fbAuth = getAuth(fbApp);
+                fbDb = getFirestore(fbApp);
+            } catch (err) {
+                console.warn('Firebase init skipped:', err);
+            }
+        }
+
+        // ============================================================================
+        // 2. ERROR BOUNDARY & UI ATOMS
+        // ============================================================================
         class ErrorBoundary extends React.Component {
             constructor(props) {
                 super(props);
-                this.state = { hasError: false, error: null, errorInfo: null };
+                this.state = { hasError: false, error: null };
             }
             static getDerivedStateFromError(error) {
                 return { hasError: true, error };
             }
-            componentDidCatch(error, errorInfo) {
-                console.error("ErrorBoundary caught an error", error, errorInfo);
-                this.setState({ errorInfo });
+            componentDidCatch(error, info) {
+                console.error('SkillLab ErrorBoundary:', error, info);
             }
             render() {
                 if (this.state.hasError) {
                     return (
-                        <div className="min-h-screen flex flex-col items-center justify-center bg-rose-950 p-8 text-white font-sans z-[9999] relative">
-                            <div className="bg-rose-900/50 p-8 rounded-3xl border border-rose-500 max-w-3xl w-full shadow-2xl backdrop-blur-md">
-                                <h1 className="text-3xl font-black text-rose-400 mb-4 flex items-center gap-3"><SafeIcon icon={Info} size={32} /> ระบบขัดข้อง (React Crash)</h1>
-                                <p className="mb-6 text-rose-200">กรุณาก๊อปปี้ข้อความสีแดงด้านล่างนี้ ส่งให้ AI เพื่อแก้ไขครับ</p>
-                                <div className="bg-black/50 p-4 rounded-xl overflow-x-auto text-sm font-mono text-rose-300 border border-rose-500/30">
-                                    <p className="font-bold">{this.state.error && this.state.error.toString()}</p>
-                                    <pre className="mt-4 text-xs opacity-70">{this.state.errorInfo && this.state.errorInfo.componentStack}</pre>
-                                </div>
-                                <button onClick={() => window.location.reload()} className="mt-8 px-6 py-3 bg-white text-rose-900 font-bold rounded-xl hover:bg-rose-100 transition-colors shadow-lg">รีเฟรชหน้าจอใหม่</button>
+                        <div className="min-h-dvh bg-obsidian-950 text-white flex items-center justify-center p-6">
+                            <div className="lab-glass max-w-md w-full rounded-3xl p-6 text-center space-y-4 border-rose-500/40">
+                                <h2 className="font-display text-xl font-bold text-rose-400">พบข้อผิดพลาดชั่วคราวในห้องจำลอง</h2>
+                                <p className="text-xs text-slate-300 font-mono bg-black/40 p-3 rounded-xl overflow-x-auto">
+                                    {String(this.state.error?.message || this.state.error)}
+                                </p>
+                                <button
+                                    onClick={() => window.location.reload()}
+                                    className="touch-target w-full py-3 rounded-2xl bg-biotech-500 text-slate-950 font-display font-bold text-sm"
+                                >
+                                    โหลดห้องจำลองใหม่
+                                </button>
                             </div>
                         </div>
                     );
@@ -126,620 +285,1540 @@
             }
         }
 
-        function SafeIcon({ icon: Icon, size = 24, className = "" }) {
-          if (!Icon) return null;
-          return <Icon size={size} className={className} />;
+        function Icon({ name, size = 20, className = "", strokeWidth = 2 }) {
+            const Comp = LucideIcons[name] || LucideIcons.Bot;
+            return <Comp size={size} className={className} strokeWidth={strokeWidth} />;
         }
 
-        const SKILL_LAB_SCENARIOS = window.SKILL_LAB_SCENARIOS || [];
-
-        let app, auth, db, appId = 'fah-elearning-prod';
-        try {
-          const fbP1 = "AIzaSyBs275"; const fbP2 = "NY99gdv1uZdAnb"; const fbP3 = "mx3UlWO8K4o5a0";
-          let fbConfig = (typeof __firebase_config !== 'undefined' && __firebase_config) 
-            ? JSON.parse(__firebase_config) : { apiKey: fbP1 + fbP2 + fbP3, authDomain: "e-learning-with-fah-ai.firebaseapp.com", projectId: "e-learning-with-fah-ai", storageBucket: "e-learning-with-fah-ai.firebasestorage.app", messagingSenderId: "418946105960", appId: "1:418946105960:web:728e28070790975df231dd" };
-          app = getApps().length === 0 ? initializeApp(fbConfig) : getApp();
-          auth = getAuth(app); db = getFirestore(app);
-        } catch (error) { console.warn("Firebase init error", error); }
-
-        const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbwt9H-GVs2aijX_sgzjlpGP9314ereuA9ZECNs4Uc00VLz5rFcJm7aYmkduEMiFVKjA/exec';
-
-        const fetchAppsScript = async (payload) => { 
-            try { const res = await fetch(appsScriptUrl, { method: 'POST', body: JSON.stringify(payload) }); return await res.json(); } catch(e) { return { status: 'error', message: e.message }; } 
-        };
-
-        const callGeminiAPI = async (prompt, systemInstruction, base64Image = null) => {
-            try {
-                const res = await fetchAppsScript({ action: 'callGemini', prompt: prompt, systemInstruction: systemInstruction, base64Image: base64Image });
-                if (res.status === 'success' && res.text) return res.text;
-                throw new Error(res.message || "ไม่มีข้อมูลตอบกลับจาก AI");
-            } catch (e) { return `[ระบบขัดข้อง] ${e.message}`; }
-        };
-
-        const callGeminiTTS = async (text, voiceName = "Aoede") => {
-            for (let i = 0; i < 3; i++) {
-                try {
-                    const res = await fetchAppsScript({ action: 'callGeminiTTS', text: text, voiceName: voiceName });
-                    if (res.status === 'success' && res.inlineData) return res.inlineData;
-                    throw new Error(res.message || 'TTS Error');
-                } catch (e) { if (i < 2) await new Promise(r => setTimeout(r, 2000)); else throw e; }
-            }
-        };
-
-        const pcm16ToWav = (base64PCM, sampleRate = 24000) => {
-          const binaryString = window.atob(base64PCM); const bytes = new Uint8Array(binaryString.length); for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
-          const buffer = new ArrayBuffer(44 + bytes.length); const view = new DataView(buffer);
-          const writeStr = (offset, str) => { for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i)); };
-          writeStr(0, 'RIFF'); view.setUint32(4, 36 + bytes.length, true); writeStr(8, 'WAVE'); writeStr(12, 'fmt '); view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, 1, true); view.setUint32(24, sampleRate, true); view.setUint32(28, sampleRate * 2, true); view.setUint16(32, 2, true); view.setUint16(34, 16, true); writeStr(36, 'data'); view.setUint32(40, bytes.length, true);
-          new Uint8Array(buffer, 44).set(bytes); return URL.createObjectURL(new Blob([buffer], { type: 'audio/wav' }));
-        };
-
-        function GlassCard({ children, className = "", onClick, ...rest }) {
-          let radiusClass = 'rounded-[2rem]'; const m = className.match(/rounded-(?:\[.*?\]|\w+)/); if (m) radiusClass = m[0];
-          let bgClass = className.replace(/\bbg-(?:white|slate-[12]00)(?:\/\d+)?\b/g, '').replace(/\bborder-white(?:\/\d+)?\b/g, '').replace(/\bbackdrop-blur-(?:sm|md|lg|xl|2xl|3xl)\b/g, '').replace(/\b!border-none\b/g, '').replace(/\bborder-none\b/g, '');
-          return (
-            <div onClick={onClick} className={`relative overflow-hidden bg-white/10 backdrop-blur-xl border border-white/20 shadow-[0_15px_40px_rgba(0,0,0,0.4)] ${radiusClass} transition-all duration-300 ${onClick ? 'cursor-pointer hover:-translate-y-1 hover:bg-white/20' : ''} ${bgClass}`} {...rest}>
-              <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-white/5 to-transparent pointer-events-none z-0" />
-              <div className="relative z-10 w-full h-full text-white">{children}</div>
-            </div>
-          );
+        function ToastBanner({ toast }) {
+            if (!toast.visible) return null;
+            return (
+                <div className="fixed top-[calc(1rem+env(safe-area-inset-top,0px))] left-1/2 -translate-x-1/2 z-[120] w-[92vw] max-w-md pointer-events-none">
+                    <div className={`px-4 py-3 rounded-2xl shadow-2xl border backdrop-blur-xl flex items-center gap-2.5 text-xs sm:text-sm font-bold ${
+                        toast.type === 'error'
+                            ? 'bg-rose-950/95 border-rose-500/40 text-rose-200'
+                            : toast.type === 'info'
+                                ? 'bg-slate-900/95 border-cyber-400/40 text-cyber-300'
+                                : 'bg-emerald-950/95 border-biotech-400/40 text-biotech-300'
+                    }`}>
+                        <Icon name={toast.type === 'error' ? 'AlertCircle' : toast.type === 'info' ? 'Info' : 'CheckCircle2'} size={17} className="shrink-0" />
+                        <span>{toast.text}</span>
+                    </div>
+                </div>
+            );
         }
 
-        function SkillLabApp() {
-            const [user, setUser] = useState(null);
-            const [selectedScenario, setSelectedScenario] = useState(null);
-            const [accessDenied, setAccessDenied] = useState(false); 
-            
-            // Chatbot States
-            const [chatInput, setChatInput] = useState(''); 
-            const [isTyping, setIsTyping] = useState(false); 
-            const [messages, setMessages] = useState([]); 
-            const [isListening, setIsListening] = useState(false); 
-            const [isVadMode, setIsVadMode] = useState(false); 
-            const [audioLevel, setAudioLevel] = useState(0); 
-            const [selectedImage, setSelectedImage] = useState(null);
-            const [uiMessage, setUiMessage] = useState({ show: false, text: '', type: 'success' });
-            
-            // Features States
-            const [smartSuggestions, setSmartSuggestions] = useState([]); 
-            const [isAiSpeaking, setIsAiSpeaking] = useState(false);
-            
-            // Roleplay States
-            const [roleplayPhase, setRoleplayPhase] = useState('none'); 
-            const [currentEmotion, setCurrentEmotion] = useState('NEUTRAL');
-            const [currentSpeaker, setCurrentSpeaker] = useState('FAH');
-            const [scenarioLang, setScenarioLang] = useState('th');
-            const [currentScenarioPrompt, setCurrentScenarioPrompt] = useState('');
+        // ============================================================================
+        // 3. HELPERS (AUDIO, CHARACTER PARSER, LOCAL SIMULATOR FALLBACK)
+        // ============================================================================
+        const EMOTION_META = {
+            NEUTRAL: { labelTH: 'ปกติ', labelEN: 'Neutral', color: 'text-cyber-300 bg-cyber-500/15 border-cyber-400/30', aura: 'from-cyber-500/40 to-biotech-500/30' },
+            CONFUSED: { labelTH: 'สับสน', labelEN: 'Confused', color: 'text-amber-300 bg-amber-500/15 border-amber-400/30', aura: 'from-amber-500/40 to-cyber-500/30' },
+            SAD: { labelTH: 'โศกเศร้า', labelEN: 'Grieving', color: 'text-blue-300 bg-blue-500/15 border-blue-400/30', aura: 'from-blue-500/45 to-indigo-500/30' },
+            ANGRY: { labelTH: 'โกรธ / กดดัน', labelEN: 'Distressed', color: 'text-rose-300 bg-rose-500/15 border-rose-400/30', aura: 'from-rose-500/45 to-orange-500/30' },
+            HESITANT: { labelTH: 'ลังเล', labelEN: 'Hesitant', color: 'text-violet-300 bg-violet-500/15 border-violet-400/30', aura: 'from-violet-500/40 to-cyber-500/30' },
+            ADVISING: { labelTH: 'ประเมินผล', labelEN: 'Evaluation', color: 'text-biotech-300 bg-biotech-500/15 border-biotech-400/30', aura: 'from-biotech-500/45 to-teal-500/30' }
+        };
 
-            // Define isEn variable correctly in component scope!
-            const isEn = selectedScenario?.language === 'en';
-
-            // Refs
-            const audioContextRef = useRef(null); const analyserRef = useRef(null); const microphoneRef = useRef(null); const vadSilenceTimerRef = useRef(null); const isSpeakingRef = useRef(false); const latestTranscriptRef = useRef('');
-            const recognitionRef = useRef(null); const messagesEndRef = useRef(null); const audioRef = useRef(null); const currentSpeechIdRef = useRef(0);
-
-            const showMsg = (text, type = 'success') => {
-                setUiMessage({ show: true, text, type });
-                setTimeout(() => setUiMessage({ show: false, text: '', type }), 3500);
+        /**
+         * แปลง PCM16 Base64 จาก Gemini TTS เป็น WAV Blob URL (ต้องสั่ง revokeObjectURL เมื่อใช้เสร็จ)
+         */
+        function pcm16ToWavUrl(base64PCM, sampleRate = 24000) {
+            const binaryString = window.atob(base64PCM);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
+            const buffer = new ArrayBuffer(44 + bytes.length);
+            const view = new DataView(buffer);
+            const writeStr = (offset, str) => {
+                for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
             };
+            writeStr(0, 'RIFF');
+            view.setUint32(4, 36 + bytes.length, true);
+            writeStr(8, 'WAVE');
+            writeStr(12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, 1, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 2, true);
+            view.setUint16(32, 2, true);
+            view.setUint16(34, 16, true);
+            writeStr(36, 'data');
+            view.setUint32(40, bytes.length, true);
+            new Uint8Array(buffer, 44).set(bytes);
+            return URL.createObjectURL(new Blob([buffer], { type: 'audio/wav' }));
+        }
 
-            const safeRedirect = (url) => { try { window.location.href = url; } catch (e) {} };
-
-            useEffect(() => {
-                try {
-                    const saved = localStorage.getItem('elearning_app_state');
-                    if (saved) {
-                        const parsed = JSON.parse(saved);
-                        if (parsed.loggedInUser) {
-                            const uType = parsed.loggedInUser.userType;
-                            // Masterclass restriction
-                            if (uType !== 'Masterclass') {
-                                setAccessDenied(true);
-                                return;
-                            }
-                            setUser(parsed.loggedInUser);
-                            signInAnonymously(auth).catch(e => console.warn(e));
-                        } else {
-                            safeRedirect('./index.html');
-                        }
-                    } else {
-                        safeRedirect('./index.html');
-                    }
-                } catch (e) { safeRedirect('./index.html'); }
-            }, []);
-
-            useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, smartSuggestions]);
-
-            useEffect(() => {
-                const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-                if (SR) {
-                    recognitionRef.current = new SR(); recognitionRef.current.continuous = true; recognitionRef.current.interimResults = true; recognitionRef.current.lang = scenarioLang === 'en' ? 'en-US' : 'th-TH'; 
-                    recognitionRef.current.onresult = (e) => { let finalT = ''; let interT = ''; for (let i = e.resultIndex; i < e.results.length; ++i) { if (e.results[i].isFinal) finalT += e.results[i][0].transcript; else interT += e.results[i][0].transcript; } setChatInput(p => { const newText = p + finalT; latestTranscriptRef.current = newText || interT; return newText || interT; }); };
-                    recognitionRef.current.onend = () => { if (isVadMode && isListening) { try { recognitionRef.current.start(); } catch(err){} } else { setIsListening(false); setChatInput(curr => { const corText = curr.trim(); if (corText && corText !== 'พร้อม') handleSendChat(null, corText); return curr; }); } };
-                    recognitionRef.current.onerror = (e) => { if(e.error !== 'no-speech') setIsListening(false); };
+        /**
+         * ตรวจจับชื่อตัวละครและเสียงพากย์อย่างแม่นยำ (รองรับครบทั้ง ฟ้า, เมฆ, พี่เอก, Michael และ Emily!)
+         */
+        function detectSpeakerFromTag(tagText, scenario) {
+            const t = String(tagText || '').toLowerCase();
+            const isEn = scenario?.language === 'en';
+            if (isEn) {
+                if (t.includes('emily') || t.includes('daughter')) {
+                    return { key: 'EMILY', displayName: 'Emily', voice: 'Aoede', gender: 'female' };
                 }
-            }, [selectedScenario, messages, isVadMode, isListening, scenarioLang]);
+                return { key: 'MICHAEL', displayName: 'Michael', voice: 'Charon', gender: 'male' };
+            }
+            if (t.match(/เมฆ|น้องชาย|mek|brother/)) {
+                return { key: 'BROTHER', displayName: 'เมฆ', voice: 'Charon', gender: 'male' };
+            }
+            if (t.match(/พี่เอก|เอก|แฟน|boyfriend/)) {
+                return { key: 'BOYFRIEND', displayName: 'พี่เอก', voice: 'Charon', gender: 'male' };
+            }
+            return { key: 'FAH', displayName: 'ฟ้า', voice: 'Aoede', gender: 'female' };
+        }
 
-            const processAudio = useCallback(() => {
-                if (!analyserRef.current || !isListening || !isVadMode) return;
-                const dataArr = new Uint8Array(analyserRef.current.frequencyBinCount); analyserRef.current.getByteFrequencyData(dataArr);
-                let sum = 0; for (let i = 0; i < dataArr.length; i++) sum += dataArr[i]; const avg = sum / dataArr.length; setAudioLevel(avg);
-                if (avg > 15) { if (!isSpeakingRef.current) isSpeakingRef.current = true; if (vadSilenceTimerRef.current) { clearTimeout(vadSilenceTimerRef.current); vadSilenceTimerRef.current = null; } } else { if (isSpeakingRef.current && !vadSilenceTimerRef.current) { vadSilenceTimerRef.current = setTimeout(() => { isSpeakingRef.current = false; const finalSp = latestTranscriptRef.current.trim(); if (finalSp) { handleSendChat(null, finalSp); setChatInput(''); latestTranscriptRef.current = ''; } vadSilenceTimerRef.current = null; }, 800); } }
-                if (isListening && isVadMode) requestAnimationFrame(processAudio);
-            }, [isListening, isVadMode]);
+        /**
+         * เครื่องจำลองบทสนทนาอัจฉริยะ (Sandbox Mode) ใช้ทำงานได้ทันทีแม้ยังไม่ได้เชื่อม Apps Script / Gemini API
+         */
+        function generateLocalRoleplayReply(userMsg, scenario, turnCount) {
+            const msg = String(userMsg || '').toLowerCase();
+            const isEn = scenario.language === 'en';
 
-            const startVAD = async () => { try { if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error("NotSupportedError"); const stream = await navigator.mediaDevices.getUserMedia({ audio: true }); audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)(); analyserRef.current = audioContextRef.current.createAnalyser(); microphoneRef.current = audioContextRef.current.createMediaStreamSource(stream); microphoneRef.current.connect(analyserRef.current); analyserRef.current.fftSize = 256; setIsVadMode(true); setIsListening(true); recognitionRef.current?.start(); processAudio(); showMsg(isEn ? '🎙️ VAD Mic Active' : '🎙️ เปิดโหมด VAD'); } catch (err) { showMsg(isEn ? 'Mic Error' : 'ไมค์ไม่ทำงาน', 'error'); } };
-            const stopVAD = () => { setIsVadMode(false); setIsListening(false); recognitionRef.current?.stop(); if (audioContextRef.current) audioContextRef.current.close(); if (vadSilenceTimerRef.current) clearTimeout(vadSilenceTimerRef.current); showMsg(isEn ? 'Mic Suspended' : 'ปิดไมโครโฟนแล้ว', 'success'); };
-            const toggleMic = () => { if (isListening) stopVAD(); else { setChatInput(''); latestTranscriptRef.current = ''; startVAD(); } };
-
-            const stopAudio = useCallback(() => { 
-                currentSpeechIdRef.current += 1; 
-                setIsAiSpeaking(false);
-                if (audioRef.current) { audioRef.current.pause(); audioRef.current.removeAttribute('src'); audioRef.current.load(); audioRef.current = null; } 
-            }, []);
-            
-            const speakThai = async (text, onEndCallback = null, speaker = 'FAH', isSystemVoice = false, emotion = 'NEUTRAL') => {
-                stopAudio(); currentSpeechIdRef.current += 1; const speechId = currentSpeechIdRef.current; 
-                let callbackFired = false;
-                
-                const safeCallback = () => {
-                    if (!callbackFired) {
-                        callbackFired = true;
-                        if (onEndCallback) onEndCallback();
+            if (isEn) {
+                if (turnCount <= 1) {
+                    if (msg.match(/my name|i am|i'm|nurse|doctor|coordinator|staff/)) {
+                        return `[CONFUSED] [Michael] Thank you for introducing yourself... I'm Michael, and this is our daughter Emily. We just got the call about the accident. Please tell me honestly—is she going to wake up?\n[SUGGESTION 1] I'm truly sorry for what happened, Michael and Emily. Could we step into a quiet room together so I can explain clearly?\n[SUGGESTION 2] Before I share the medical update, may I ask what the doctors have explained to you so far?`;
                     }
+                    return `[ANGRY] [Michael] Wait—excuse me, who are you exactly? Are you the attending doctor? Nobody has given us a straight answer yet!\n[SUGGESTION 1] I apologize for not introducing myself first. I am the transplant coordinator nurse working with the ICU team.\n[SUGGESTION 2] I understand how stressful this wait is. My name is Nurse Joy from the care team, and I'm here to support your family.`;
+                }
+                if (msg.match(/brain death|brain dead|passed away|died|gone|cannot recover|irreversible/)) {
+                    return `[SAD] [Emily] No... please don't say that! Her chest is still moving and her hand is still warm! How can you say Mom is gone?!\n[SUGGESTION 1] I hear how heartbreaking this is, Emily. Her chest moves only because the ventilator is pushing air, and the brain stem tests confirmed her brain can no longer recover.\n[SUGGESTION 2] Take a deep breath, Emily. I'm right here with you. It's completely understandable to feel confused when her body still feels warm.`;
+                }
+                if (msg.match(/donate|donation|organ|gift|help other/)) {
+                    return `[HESITANT] [Michael] Organ donation...? That's a huge decision. Emily is devastated right now... Would it disfigure her body? We need time to think.\n[SUGGESTION 1] Please take all the time you need with no pressure. I can assure you our surgeons treat her body with the utmost dignity and care, just like a standard operation.\n[SUGGESTION 2] Of course, there is no rush at all. Whenever you are ready, I'm happy to answer any questions about how this honors her memory.`;
+                }
+                return `[SAD] [Emily] Mom was so healthy just yesterday... We came to Thailand for a family holiday. I just don't know how we can go home without her.\n[SUGGESTION 1] This sudden loss is unimaginably painful, Emily. Please know you don't have to face the next steps alone.\n[SUGGESTION 2] It sounds like she meant the world to both of you. Would you like to sit quietly for a moment, or have me explain the clinical findings gently?`;
+            }
+
+            // Thai Case (ฟ้า, เมฆ, พี่เอก)
+            if (turnCount <= 1) {
+                if (msg.match(/สวัสดี|ชื่อ|พยาบาล|หมอ|แพทย์|ผู้ประสาน|เจ้าหน้าที่/)) {
+                    return `[SAD] [ฟ้า] สวัสดีค่ะ หนูชื่อฟ้านะคะ นี่เมฆน้องชายหนู แล้วก็นี่พี่เอกแฟนหนูค่ะ... พวกเราเพิ่งได้รับโทรศัพท์แจ้งเรื่องอุบัติเหตุ คุณพ่อจะเป็นอะไรมากไหมคะ?\n[SUGGESTION 1] ขอแสดงความเสียใจอย่างสุดซึ้งกับอุบัติเหตุที่เกิดขึ้นนะคะ ขอเชิญคุณฟ้า คุณเมฆ และคุณเอกเข้าไปคุยในห้องที่เงียบและเป็นส่วนตัวด้านนี้ก่อนดีไหมคะ\n[SUGGESTION 2] ก่อนอื่นขออนุญาตสอบถามว่า หลังจากที่คุณหมอเจ้าของไข้ได้แจ้งอาการล่าสุดไป คุณฟ้ากับคุณเมฆเข้าใจอาการคุณพ่อว่าอย่างไรบ้างคะ`;
+                }
+                return `[ANGRY] [เมฆ] เดี๋ยวนะครับ ขอโทษนะครับ พวกคุณคือใครครับ? เป็นหมอเจ้าของไข้พ่อผมหรือเปล่า ทำไมยังไม่มีใครบอกชัดๆ สักทีว่าพ่อจะฟื้นเมื่อไหร่!\n[SUGGESTION 1] ต้องขออภัยด้วยนะคะที่ยังไม่ได้แนะนำตัว ดิฉันเป็นพยาบาลผู้ประสานงานดูแลครอบครัวผู้ป่วยค่ะ เข้าใจดีเลยว่าคุณเมฆกำลังกังวลและเป็นห่วงคุณพ่อมาก\n[SUGGESTION 2] ขอโทษนะคะที่ทำให้รอ ดิฉันเป็นเจ้าหน้าที่ทีมดูแลครอบครัวจากโรงพยาบาลค่ะ อยากเชิญทุกท่านนั่งพักและค่อยๆ คุยกันอย่างละเอียดนะคะ`;
+            }
+            if (msg.match(/สมองตาย|เสียชีวิต|ไม่ฟื้น|จากไป|หยุดทำงาน/)) {
+                return `[ANGRY] [เมฆ] ไม่จริงหรอกครับ! เมื่อกี้ผมยังเห็นหน้าจอมอนิเตอร์หัวใจพ่อเต้นอยู่เลย ตัวพ่อก็ยังอุ่นๆ อยู่ จะบอกว่าพ่อเสียชีวิตได้ยังไงครับ!\n[SUGGESTION 1] เข้าใจความรู้สึกคุณเมฆเลยค่ะที่เห็นตัวคุณพ่อยังอุ่นอยู่ แต่ที่เป็นแบบนั้นเกิดจากเครื่องช่วยหายใจและยาประคองความดันนะคะ ส่วนสมองได้หยุดทำงานอย่างถาวรแล้ว\n[SUGGESTION 2] มันเป็นเรื่องที่ทำใจยอมรับได้ยากมากเลยนะคะ คุณเมฆมีสิทธิ์ที่จะรู้สึกเสียใจและโกรธ ดิฉันขออนุญาตค่อยๆ อธิบายเรื่องภาวะสมองตายให้ชัดเจนนะคะ`;
+            }
+            if (msg.match(/บริจาค|อวัยวะ|บุญ|กุศล|ช่วยชีวิต/)) {
+                return `[HESITANT] [พี่เอก] ใจเย็นๆ นะฟ้า เมฆ... คือผมเข้าใจเจตนาดีของทางโรงพยาบาลนะครับ แต่เรื่องนี้มันใหญ่มากสำหรับน้องสองคน ถ้ายินยอม ร่างของคุณพ่อจะไม่เสียรูปทรงใช่ไหมครับ?\n[SUGGESTION 1] ขอบคุณคุณเอกมากค่ะที่ช่วยดูแลใจน้องๆ ขอรับรองเลยค่ะว่าทีมศัลยแพทย์จะผ่าตัดเย็บแผลอย่างประณีตที่สุดและให้เกียรติร่างคุณพ่ออย่างเต็มที่ ร่างกายภายนอกจะเรียบร้อยสมบูรณ์ค่ะ\n[SUGGESTION 2] ไม่ต้องรีบตัดสินใจนะคะ ให้ครอบครัวได้ใช้เวลาคุยกันก่อนอย่างสบายใจ หากมีข้อสงสัยเรื่องขั้นตอนหรือสิทธิประโยชน์จากสภากาชาดไทย ดิฉันยินดีอธิบายทุกข้อค่ะ`;
+            }
+            return `[SAD] [ฟ้า] ฮึก... คุณพ่อเลี้ยงหนูกับเมฆมาคนเดียวตั้งแต่แม่เสีย พ่อเหนื่อยมาทั้งชีวิต หนูยังไม่ได้พาพ่อไปเที่ยวอย่างที่สัญญาไว้เลยค่ะ...\n[SUGGESTION 1] คุณพ่อต้องภูมิใจในตัวคุณฟ้ากับคุณเมฆมากแน่ๆ ค่ะ ดิฉันขออยู่เป็นเพื่อนรับฟังตรงนี้นะคะ หากพร้อมเมื่อไหร่ค่อยคุยกันต่อก็ได้ค่ะ\n[SUGGESTION 2] ความรักที่คุณพ่อมีให้ลูกทั้งสองคนยิ่งใหญ่มากจริงๆ ค่ะ ดิฉันขออนุญาตให้เวลาทุกท่านได้อยู่ด้วยกันสักครู่นะคะ`;
+        }
+
+        function generateLocalEvaluation(messages, scenario) {
+            const isEn = scenario.language === 'en';
+            const userMsgs = messages.filter(m => m.sender === 'user' && !m.isSystemAction).map(m => m.text).join(' ').toLowerCase();
+            let score = 62;
+            const strengths = [];
+            const improvements = [];
+
+            if (userMsgs.match(/ชื่อ|พยาบาล|แพทย์|หมอ|สวัสดี|my name|i am|nurse|doctor|coordinator/)) {
+                score += 10;
+                strengths.push(isEn ? 'Clear self-introduction and role transparency (Decoupling).' : 'มีการแนะนำตัวและระบุบทบาทหน้าที่อย่างสุภาพชัดเจน (Identity & Decoupling)');
+            } else {
+                improvements.push(isEn ? 'Remember to introduce your name and role before clinical discussion.' : 'ควรแนะนำชื่อและบทบาทของตนเองก่อนเริ่มสนทนาเสมอ เพื่อลดความระแวงของญาติ');
+            }
+
+            if (userMsgs.match(/เสียใจ|เข้าใจ|ห่วง|เป็นส่วนตัว|ห้อง|รับฟัง|เวลา|sorry|understand|quiet|room|time|support|here/)) {
+                score += 14;
+                strengths.push(isEn ? 'Strong empathetic presence and emotional validation.' : 'แสดงความเห็นอกเห็นใจ (Empathy) และสร้างพื้นที่ปลอดภัยในการสื่อสารได้ดี');
+            } else {
+                improvements.push(isEn ? 'Validate the family’s grief and emotions before giving medical details.' : 'ควรสะท้อนความรู้สึกและแสดงความเห็นอกเห็นใจก่อนอธิบายข้อมูลทางการแพทย์');
+            }
+
+            if (userMsgs.match(/สมองตาย|เครื่องช่วยหายใจ|ประณีต|ให้เกียรติ|กุศล|brain death|ventilator|dignity|care|respect/)) {
+                score += 10;
+                strengths.push(isEn ? 'Clear, dignified clinical explanation without pressure.' : 'อธิบายภาวะสมองตายหรือการดูแลร่างอย่างสุภาพ ชัดเจน และไม่กดดันญาติ');
+            } else {
+                improvements.push(isEn ? 'Practice Perception Check to confirm understanding of brain death.' : 'ควรใช้คำถามเปิด (Perception Check) เพื่อประเมินความเข้าใจเรื่องภาวะสมองตายของญาติ');
+            }
+
+            score = Math.min(96, Math.max(45, score));
+            const passed = score >= 60;
+
+            const report = isEn
+                ? `Cognitive Profiler Assessment (Sandbox Mode)\n\n• Empathy & Communication Score: ${score}/100 (${passed ? 'PASSED' : 'NEEDS PRACTICE'})\n\n✅ Strengths:\n${(strengths.length ? strengths : ['Maintained respectful communication throughout the simulation.']).map(s => `- ${s}`).join('\n')}\n\n💡 Recommendations:\n${(improvements.length ? improvements : ['Continue refining open-ended questions for cross-cultural sensitivity.']).map(s => `- ${s}`).join('\n')}`
+                : `รายงานประเมินทักษะการเจรจา (Sandbox Mode)\n\n• คะแนนความเห็นอกเห็นใจและการสื่อสาร (Empathy Score): ${score}/100 (${passed ? 'ผ่านเกณฑ์' : 'ควรฝึกเพิ่มเติม'})\n\n✅ จุดแข็งที่ทำได้ดี:\n${(strengths.length ? strengths : ['รักษามารยาทและความสุภาพในการสื่อสารตลอดการสนทนา']).map(s => `- ${s}`).join('\n')}\n\n💡 ข้อเสนอแนะเพื่อพัฒนาต่อ:\n${(improvements.length ? improvements : ['ฝึกใช้คำถามปลายเปิดควบคู่กับหลัก SPIKES เพื่อประคองอารมณ์ญาติในจังหวะวิกฤตได้ดียิ่งขึ้น']).map(s => `- ${s}`).join('\n')}`;
+
+            return { score, passed, report };
+        }
+
+        /**
+         * โหลดข้อมูลผู้เรียนจาก localStorage (รองรับทั้งคีย์ใหม่ rjcloud.organ 2027 และคีย์เดิม)
+         */
+        function loadStoredUser() {
+            const keys = ['rjcloud_organ_state_v2027', 'elearning_app_state'];
+            for (const k of keys) {
+                try {
+                    const raw = localStorage.getItem(k);
+                    if (!raw) continue;
+                    const parsed = JSON.parse(raw);
+                    const u = parsed?.user || parsed?.loggedInUser;
+                    if (u && (u.id || u.license || u.name)) return u;
+                } catch (_) {}
+            }
+            return null;
+        }
+
+        function saveStoredUser(updatedUser) {
+            const keys = ['rjcloud_organ_state_v2027', 'elearning_app_state'];
+            keys.forEach(k => {
+                try {
+                    const raw = localStorage.getItem(k);
+                    if (!raw) return;
+                    const parsed = JSON.parse(raw);
+                    if (parsed.user) parsed.user = updatedUser;
+                    if (parsed.loggedInUser) parsed.loggedInUser = updatedUser;
+                    localStorage.setItem(k, JSON.stringify(parsed));
+                } catch (_) {}
+            });
+        }
+
+        // ============================================================================
+        // 4. MAIN AI SKILL LAB APPLICATION (100% SMARTPHONE OPTIMIZED)
+        // ============================================================================
+        function SkillLabApp() {
+            // User & Cloud Config State
+            const [user, setUser] = useState(null);
+            const [authState, setAuthState] = useState('checking'); // checking | ready | denied | guest_prompt
+            const [appsScriptUrl, setAppsScriptUrl] = useState(CONFIG.appsScriptUrl || '');
+
+            // Scenario & Roleplay State
+            const [selectedScenario, setSelectedScenario] = useState(null);
+            const [roleplayPhase, setRoleplayPhase] = useState('menu'); // menu | watching_video | giving_context | negotiating | evaluating
+            const [messages, setMessages] = useState([]);
+            const [smartSuggestions, setSmartSuggestions] = useState([]);
+            const [lastEvalResult, setLastEvalResult] = useState(null);
+
+            // Speaker, Emotion & Audio States
+            const [currentSpeaker, setCurrentSpeaker] = useState({ key: 'FAH', displayName: 'ฟ้า', voice: 'Aoede', gender: 'female' });
+            const [currentEmotion, setCurrentEmotion] = useState('NEUTRAL');
+            const [isAiSpeaking, setIsAiSpeaking] = useState(false);
+            const [voiceEnabled, setVoiceEnabled] = useState(true);
+
+            // Composer & Mic States
+            const [chatInput, setChatInput] = useState('');
+            const [isTyping, setIsTyping] = useState(false);
+            const [selectedImage, setSelectedImage] = useState(null);
+            const [isListening, setIsListening] = useState(false);
+            const [audioLevel, setAudioLevel] = useState(0);
+
+            // UI Drawers & Notifications
+            const [showHistoryModal, setShowHistoryModal] = useState(false);
+            const [toast, setToast] = useState({ visible: false, text: '', type: 'success' });
+
+            // Refs (Clean resource management — ป้องกัน Memory Leak & Mic ค้าง)
+            const audioRef = useRef(null);
+            const audioUrlRef = useRef(null);
+            const speechIdRef = useRef(0);
+            const messagesEndRef = useRef(null);
+
+            const recognitionRef = useRef(null);
+            const mediaStreamRef = useRef(null);
+            const audioCtxRef = useRef(null);
+            const analyserRef = useRef(null);
+            const rafIdRef = useRef(null);
+            const silenceTimerRef = useRef(null);
+            const isSpeakingUserRef = useRef(false);
+            const latestTranscriptRef = useRef('');
+            const isListeningRef = useRef(false);
+            const handleSendChatRef = useRef(null);
+            const scenarioPromptRef = useRef('');
+
+            const isEn = selectedScenario?.language === 'en';
+            const emotionMeta = EMOTION_META[currentEmotion] || EMOTION_META.NEUTRAL;
+
+            const showToast = useCallback((text, type = 'success') => {
+                setToast({ visible: true, text, type });
+                setTimeout(() => setToast(p => ({ ...p, visible: false })), 3400);
+            }, []);
+
+            // 1. ตรวจสอบสิทธิ์ผู้ใช้ & ซิงค์ Apps Script URL จาก Firestore (ไม่ Hardcode!)
+            useEffect(() => {
+                const stored = loadStoredUser();
+                if (stored) {
+                    if (stored.userType === 'Masterclass') {
+                        setUser(stored);
+                        setAuthState('ready');
+                    } else {
+                        setUser(stored);
+                        setAuthState('denied');
+                    }
+                } else {
+                    setAuthState('guest_prompt');
+                }
+
+                let unsubSettings = null;
+                if (isCloudConfigured && fbAuth && fbDb) {
+                    signInAnonymously(fbAuth)
+                        .then(() => {
+                            unsubSettings = onSnapshot(
+                                doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_config', 'settings'),
+                                (snap) => {
+                                    if (snap.exists() && snap.data()?.appsScriptUrl) {
+                                        setAppsScriptUrl(snap.data().appsScriptUrl);
+                                    }
+                                },
+                                () => {}
+                            );
+                        })
+                        .catch(() => {});
+                }
+                return () => { if (unsubSettings) unsubSettings(); };
+            }, []);
+
+            // 2. Auto-scroll chat feed
+            useEffect(() => {
+                messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+            }, [messages, smartSuggestions, isTyping]);
+
+            // 3. หยุดเสียง AI และคืนหน่วยความจำ ObjectURL สะอาดทุกครั้ง
+            const stopAudio = useCallback(() => {
+                speechIdRef.current += 1;
+                setIsAiSpeaking(false);
+                if (audioRef.current) {
+                    audioRef.current.pause();
+                    audioRef.current.onended = null;
+                    audioRef.current.onerror = null;
+                    audioRef.current = null;
+                }
+                if (audioUrlRef.current) {
+                    URL.revokeObjectURL(audioUrlRef.current);
+                    audioUrlRef.current = null;
+                }
+                if ('speechSynthesis' in window) {
+                    try { window.speechSynthesis.cancel(); } catch (_) {}
+                }
+            }, []);
+
+            // 4. ปิดไมโครโฟน VAD อย่างสมบูรณ์ (ปิด MediaStream Track + AudioContext + rAF ไม่มีไมค์ค้าง!)
+            const stopVAD = useCallback((silent = false) => {
+                isListeningRef.current = false;
+                setIsListening(false);
+                setAudioLevel(0);
+                isSpeakingUserRef.current = false;
+
+                if (rafIdRef.current) {
+                    cancelAnimationFrame(rafIdRef.current);
+                    rafIdRef.current = null;
+                }
+                if (silenceTimerRef.current) {
+                    clearTimeout(silenceTimerRef.current);
+                    silenceTimerRef.current = null;
+                }
+                if (recognitionRef.current) {
+                    try { recognitionRef.current.onend = null; recognitionRef.current.stop(); } catch (_) {}
+                    recognitionRef.current = null;
+                }
+                if (mediaStreamRef.current) {
+                    mediaStreamRef.current.getTracks().forEach(track => {
+                        try { track.stop(); } catch (_) {}
+                    });
+                    mediaStreamRef.current = null;
+                }
+                if (audioCtxRef.current) {
+                    try { audioCtxRef.current.close(); } catch (_) {}
+                    audioCtxRef.current = null;
+                }
+                analyserRef.current = null;
+                if (!silent) showToast(isEn ? 'Microphone muted' : 'ปิดไมโครโฟนเรียบร้อยแล้วค่ะ', 'info');
+            }, [isEn, showToast]);
+
+            // Cleanup on unmount
+            useEffect(() => () => {
+                stopAudio();
+                stopVAD(true);
+            }, [stopAudio, stopVAD]);
+
+            // 5. เรียก Apps Script (Gemini Text & Gemini TTS)
+            const callAppsScript = useCallback(async (payload) => {
+                if (!appsScriptUrl) return { status: 'sandbox' };
+                try {
+                    const res = await fetch(appsScriptUrl, {
+                        method: 'POST',
+                        body: JSON.stringify(payload)
+                    });
+                    return await res.json();
+                } catch (err) {
+                    return { status: 'error', message: err.message };
+                }
+            }, [appsScriptUrl]);
+
+            // 6. ระบบเสียง AI (Gemini TTS -> Fallback Web Speech API) พร้อมปลดล็อกข้อความเมื่อพูดจบ
+            const speakText = useCallback(async (rawText, speakerObj, isSystemVoice = false, onEndCallback = null) => {
+                stopAudio();
+                speechIdRef.current += 1;
+                const mySpeechId = speechIdRef.current;
+
+                let finished = false;
+                const finishOnce = () => {
+                    if (finished) return;
+                    finished = true;
+                    setIsAiSpeaking(false);
+                    if (onEndCallback) onEndCallback();
                 };
 
-                let targetVoice = "Aoede"; 
-                // ทำความสะอาดข้อความ ลบ Tag ชื่อก่อนส่งให้ TTS
-                let cleanSpeakText = text.replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '').replace(/\*.*?\*/g, '').replace(/#.*?#/g, '');
-                cleanSpeakText = cleanSpeakText.replace(/^(ฟ้า|เมฆ|พี่เอก|เอก|น้องชาย|ลูกสาว|แฟน|แฟนของฟ้า|Fah|Mek|Brother|Sister|Boyfriend|AI|Michael)\s*:\s*/i, '');
-                cleanSpeakText = cleanSpeakText.replace(/^\[(ฟ้า|เมฆ|พี่เอก|เอก|น้องชาย|ลูกสาว|แฟน|แฟนของฟ้า|Fah|Mek|Brother|Sister|Boyfriend|AI|Michael)\]\s*/i, '').trim();
+                if (!voiceEnabled) {
+                    // หากผู้ใช้ปิดเสียง ให้เปิดเผยข้อความทันทีหลังหน่วงเล็กน้อย
+                    setTimeout(finishOnce, 350);
+                    return;
+                }
 
-                let emotionPrompt = "";
-                
-                if (isListening) { recognitionRef.current?.stop(); setIsListening(false); }
-                
-                if (isSystemVoice) {
-                    targetVoice = "Aoede";
-                    emotionPrompt = scenarioLang === 'en' 
-                      ? `[Speak with a professional, warm, and highly supportive female announcer voice]: ${cleanSpeakText}`
-                      : `[พูดด้วยเสียงผู้ประกาศหญิง น้ำเสียงเป็นทางการ สุภาพ นุ่มนวล ใจดี ให้กำลังใจ ไม่ร้องไห้]: ${cleanSpeakText}`;
-                } else {
-                    if (speaker === 'BROTHER' || speaker === 'MICHAEL') { 
-                        targetVoice = "Charon"; 
-                        emotionPrompt = scenarioLang === 'en'
-                          ? `[Speak with a vulnerable, sad, or frustrated male voice according to context]: ${cleanSpeakText}`
-                          : `[พูดด้วยเสียงผู้ชาย น้ำเสียงตามอารมณ์บริบท]: ${cleanSpeakText}`; 
-                    } 
-                    else if (speaker === 'BOYFRIEND') { 
-                        targetVoice = "Charon"; 
-                        emotionPrompt = scenarioLang === 'en'
-                          ? `[Speak with an adult male voice, supportive, calm, and comforting]: ${cleanSpeakText}`
-                          : `[พูดด้วยเสียงผู้ชายวัยผู้ใหญ่ นุ่มนวล อบอุ่น ใจเย็น สุภาพ และคอยให้กำลังใจ]: ${cleanSpeakText}`; 
-                    } 
-                    else { 
-                        targetVoice = "Aoede"; 
-                        emotionPrompt = scenarioLang === 'en'
-                          ? `[Speak with a 22-year-old female voice, emotionally charged according to context]: ${cleanSpeakText}`
-                          : `[พูดด้วยเสียงผู้หญิงวัยรุ่น 22 ปี น้ำเสียงตามอารมณ์บริบท]: ${cleanSpeakText}`; 
+                // หยุดไมค์ชั่วคราวขณะ AI พูด เพื่อไม่ให้ไมค์ดูดเสียง AI กลับเข้าไป
+                if (isListeningRef.current) stopVAD(true);
+
+                const cleanText = String(rawText || '')
+                    .replace(/\[.*?\]/g, '')
+                    .replace(/\(.*?\)/g, '')
+                    .replace(/[*#]/g, '')
+                    .trim();
+
+                if (!cleanText) {
+                    finishOnce();
+                    return;
+                }
+
+                const langCode = selectedScenario?.language === 'en' ? 'en-US' : 'th-TH';
+                const targetVoice = isSystemVoice ? 'Aoede' : (speakerObj?.voice || 'Aoede');
+                const stylePrompt = isSystemVoice
+                    ? (langCode === 'en-US'
+                        ? `[Speak with a warm, professional female clinical narrator voice]: ${cleanText}`
+                        : `[พูดด้วยเสียงผู้บรรยายหญิง สุภาพ นุ่มนวล ชัดเจน เป็นทางการ]: ${cleanText}`)
+                    : `[${speakerObj?.style || (langCode === 'en-US' ? 'Speak naturally with realistic emotion' : 'พูดด้วยน้ำเสียงตามอารมณ์บริบทอย่างเป็นธรรมชาติ')}]: ${cleanText}`;
+
+                // 6.1 ลองใช้ Gemini Neural TTS ถ้าต่อ Apps Script แล้ว
+                if (appsScriptUrl) {
+                    try {
+                        const res = await callAppsScript({
+                            action: 'callGeminiTTS',
+                            text: stylePrompt,
+                            voiceName: targetVoice
+                        });
+                        if (mySpeechId !== speechIdRef.current) return;
+                        if (res?.status === 'success' && res.inlineData?.data) {
+                            const rate = parseInt(res.inlineData.mimeType?.match(/rate=(\d+)/)?.[1] ?? '24000', 10);
+                            const wavUrl = pcm16ToWavUrl(res.inlineData.data, rate);
+                            audioUrlRef.current = wavUrl;
+                            const audio = new Audio(wavUrl);
+                            audioRef.current = audio;
+                            setIsAiSpeaking(true);
+                            audio.onended = () => {
+                                if (audioUrlRef.current === wavUrl) {
+                                    URL.revokeObjectURL(wavUrl);
+                                    audioUrlRef.current = null;
+                                }
+                                finishOnce();
+                            };
+                            audio.onerror = () => finishOnce();
+                            await audio.play();
+                            return;
+                        }
+                    } catch (err) {
+                        console.warn('Gemini TTS fallback to browser speech:', err);
                     }
                 }
 
+                // 6.2 Fallback: Web Speech API (รองรับบนสมาร์ทโฟนทันทีในโหมด Sandbox)
+                if ('speechSynthesis' in window && mySpeechId === speechIdRef.current) {
+                    try {
+                        window.speechSynthesis.cancel();
+                        const utter = new SpeechSynthesisUtterance(cleanText);
+                        utter.lang = langCode;
+                        utter.pitch = speakerObj?.gender === 'male' && !isSystemVoice ? 0.85 : 1.05;
+                        utter.rate = 1.0;
+                        setIsAiSpeaking(true);
+                        utter.onend = finishOnce;
+                        utter.onerror = finishOnce;
+                        window.speechSynthesis.speak(utter);
+                        return;
+                    } catch (_) {}
+                }
+
+                finishOnce();
+            }, [voiceEnabled, selectedScenario?.language, appsScriptUrl, callAppsScript, stopAudio, stopVAD]);
+
+            // 7. เปิดไมโครโฟน VAD (ไม่สร้าง Instance ซ้ำเมื่อข้อความเปลี่ยน)
+            const startVAD = async () => {
+                const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SR) {
+                    showToast(isEn ? 'Speech recognition not supported on this browser.' : 'เบราว์เซอร์นี้ไม่รองรับการพิมพ์ด้วยเสียง กรุณาพิมพ์ข้อความแทนค่ะ', 'error');
+                    return;
+                }
+                if (roleplayPhase === 'giving_context' || isTyping) return;
+
+                stopAudio();
+                setChatInput('');
+                latestTranscriptRef.current = '';
+
                 try {
-                    const inlineData = await callGeminiTTS(emotionPrompt, targetVoice); 
-                    if (speechId !== currentSpeechIdRef.current) return;
-                    const sampleRate = parseInt(inlineData.mimeType.match(/rate=(\d+)/)?.[1] ?? "24000", 10); 
-                    const audioUrl = pcm16ToWav(inlineData.data, sampleRate);
-                    const audio = new Audio(audioUrl); 
-                    audio.crossOrigin = "anonymous";
-                    audioRef.current = audio; 
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaStreamRef.current = stream;
 
-                    setIsAiSpeaking(true);
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    const ctx = new AudioCtx();
+                    audioCtxRef.current = ctx;
+                    const analyser = ctx.createAnalyser();
+                    analyser.fftSize = 256;
+                    analyserRef.current = analyser;
+                    const src = ctx.createMediaStreamSource(stream);
+                    src.connect(analyser);
 
-                    audio.onended = () => { setIsAiSpeaking(false); safeCallback(); }; 
-                    audio.onerror = () => { setIsAiSpeaking(false); safeCallback(); }; 
-                    
-                    audio.play().catch(e => { console.error("Audio Play Error:", e); setIsAiSpeaking(false); safeCallback(); }); 
-                } catch (error) { 
-                    if (speechId === currentSpeechIdRef.current) { setIsAiSpeaking(false); safeCallback(); } 
+                    const rec = new SR();
+                    rec.continuous = true;
+                    rec.interimResults = true;
+                    rec.lang = isEn ? 'en-US' : 'th-TH';
+
+                    rec.onresult = (e) => {
+                        let fullText = '';
+                        for (let i = 0; i < e.results.length; i++) {
+                            fullText += e.results[i][0].transcript;
+                        }
+                        latestTranscriptRef.current = fullText;
+                        setChatInput(fullText);
+                    };
+
+                    rec.onerror = (e) => {
+                        if (e.error !== 'no-speech') {
+                            stopVAD(true);
+                            showToast(isEn ? 'Microphone paused.' : 'ไมโครโฟนหยุดทำงานชั่วคราว', 'error');
+                        }
+                    };
+
+                    rec.onend = () => {
+                        if (isListeningRef.current) {
+                            try { rec.start(); } catch (_) {}
+                        }
+                    };
+
+                    recognitionRef.current = rec;
+                    isListeningRef.current = true;
+                    setIsListening(true);
+                    rec.start();
+                    showToast(isEn ? '🎙️ Listening... Pause speaking to auto-send' : '🎙️ กำลังฟัง... พูดจบแล้วหยุดสักครู่ระบบจะส่งให้อัตโนมัติ', 'info');
+
+                    // Voice Activity Detection Loop
+                    const dataArr = new Uint8Array(analyser.frequencyBinCount);
+                    const monitorVolume = () => {
+                        if (!isListeningRef.current || !analyserRef.current) return;
+                        analyserRef.current.getByteFrequencyData(dataArr);
+                        let sum = 0;
+                        for (let i = 0; i < dataArr.length; i++) sum += dataArr[i];
+                        const avg = sum / dataArr.length;
+                        setAudioLevel(Math.min(100, Math.round(avg * 2.2)));
+
+                        if (avg > 14) {
+                            isSpeakingUserRef.current = true;
+                            if (silenceTimerRef.current) {
+                                clearTimeout(silenceTimerRef.current);
+                                silenceTimerRef.current = null;
+                            }
+                        } else if (isSpeakingUserRef.current && !silenceTimerRef.current) {
+                            silenceTimerRef.current = setTimeout(() => {
+                                isSpeakingUserRef.current = false;
+                                silenceTimerRef.current = null;
+                                const spoken = latestTranscriptRef.current.trim();
+                                if (spoken && handleSendChatRef.current) {
+                                    stopVAD(true);
+                                    handleSendChatRef.current(null, spoken);
+                                }
+                            }, 1100);
+                        }
+                        rafIdRef.current = requestAnimationFrame(monitorVolume);
+                    };
+                    rafIdRef.current = requestAnimationFrame(monitorVolume);
+                } catch (err) {
+                    stopVAD(true);
+                    showToast(isEn ? 'Cannot access microphone. Please allow permission.' : 'ไม่สามารถเข้าถึงไมโครโฟนได้ กรุณาอนุญาตสิทธิ์ไมค์ค่ะ', 'error');
                 }
             };
 
-            const triggerScenarioNegotiation = () => {
-                const isEnglish = selectedScenario?.language === 'en';
-                const contextText = isEnglish 
-                    ? "Initial Case Data: Patient is a 46yo male, car accident. Brain stem reflexes and apnea test performed, confirming brain death. Relatives outside ICU include Michael (Spouse). The negotiation has started." 
-                    : "ข้อมูลเบื้องต้น: คนไข้ชาย อายุ 46 ปี ประสบอุบัติเหตุรถยนต์ แพทย์ประเมินก้านสมองและทดสอบการหายใจแล้ว ยืนยันภาวะสมองตาย ญาติหน้าห้อง ICU มี ฟ้า (ลูกสาว), เมฆ (น้องชาย) และ พี่เอก (แฟนของฟ้า) เริ่มการเจรจาได้เลยค่ะ";
-                
-                setRoleplayPhase('giving_context'); setCurrentEmotion('NEUTRAL'); setCurrentSpeaker('FAH');
-                const contextMsgId = Date.now(); 
-                
-                setMessages([{ id: contextMsgId, sender: 'ai', text: contextText, isVoiceOnly: false, speakerName: 'System', isContext: true }]);
-                
-                // The Intro-Hook
-                const introHookText = isEnglish
-                    ? "Hello... Are you the staff member coming to talk to me about my wife?"
-                    : "สวัสดีค่ะ... คุณเป็นเจ้าหน้าที่ที่จะมาคุยกับพวกเราเรื่องคุณพ่อหรือเปล่าคะ?";
-                const introSpeaker = isEnglish ? 'MICHAEL' : 'FAH';
-
-                speakThai(contextText, () => {
-                    setRoleplayPhase('negotiating');
-                    
-                    const introMsgId = 'static-intro-hook-msg'; // Static ID ป้องกันบั๊กเบิ้ล
-                    const visualSpeakerName = isEnglish ? 'Michael' : 'ฟ้า';
-                    
-                    setMessages(prev => {
-                        if(prev.some(m => m.id === introMsgId)) return prev;
-                        return [...prev, { id: introMsgId, sender: 'ai', text: `(${visualSpeakerName}) ${introHookText}`, isVoiceOnly: true, speakerName: visualSpeakerName }]
-                    });
-                    
-                    setCurrentEmotion('CONFUSED');
-                    setCurrentSpeaker(introSpeaker);
-                    
-                    speakThai(introHookText, () => {
-                        setMessages(prev => prev.map(m => m.id === introMsgId ? { ...m, isVoiceOnly: false } : m));
-                    }, introSpeaker, false, 'CONFUSED');
-                    
-                }, 'FAH', true, 'NEUTRAL');
+            const toggleMic = () => {
+                if (isListening) stopVAD(false);
+                else startVAD();
             };
 
-            const startScenario = (sc) => {
-                // 🌟 AUTOPLAY UNLOCKER: เล่นเสียงเปล่าทันทีที่กดคลิกเลือกเคส เพื่อปลดล็อกสิทธิ์การเล่นเสียง
-                const silentAudio = new Audio("data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU5LjI3LjEwMAAAAAAAAAAAAAAA//OEAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAEAAABIwADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw");
-                silentAudio.play().catch(e => console.log("Unlock audio failed", e));
-
-                setSelectedScenario(sc); 
-                setMessages([]); 
-                setSmartSuggestions([]); 
-                setScenarioLang(sc.language || 'th'); 
-                
-                const userPosition = user?.position || "บุคลากรทางการแพทย์";
-                
+            // 8. เริ่มต้นบทบาทสมมติ (ดึงข้อมูลคนไข้ & ประโยคเปิดเรื่องจาก data.js อย่างแม่นยำ 100%)
+            const beginNegotiationPhase = useCallback((sc) => {
                 const isEnglish = sc.language === 'en';
-                const patientGender = isEnglish ? 'male' : 'ชาย';
-                const patientAge = isEnglish ? '46 years old' : '46 ปี';
-                const patientCause = isEnglish ? 'car accident' : 'อุบัติเหตุรถยนต์';
-                const patientRelation = isEnglish ? 'patient' : 'คนไข้';
-                
-                const dynamicPrompt = sc.systemPrompt.replace(/{{USER_POSITION}}/g, userPosition).replace(/{{PATIENT_GENDER}}/g, patientGender).replace(/{{PATIENT_AGE}}/g, patientAge).replace(/{{PATIENT_CAUSE}}/g, patientCause).replace(/{{PATIENT_RELATION}}/g, patientRelation).replace(/{{REL1_ROLE}}/g, sc.language === 'en' ? 'Fah' : 'ฟ้า').replace(/{{REL2_ROLE}}/g, sc.language === 'en' ? 'Mek' : 'เมฆ'); 
-                const clinicalDB = window.CLINICAL_KNOWLEDGE_BASE || "";
-                
-                const finalPromptInstruction = isEnglish 
-                    ? `[Specialized Knowledge Base]\n${clinicalDB}\n\n${dynamicPrompt}\n\n[CRITICAL RULE]: You must respond as ONLY ONE character per message. Never let characters talk to each other in a single message. Everything must be in English.`
-                    : `[ฐานความรู้เฉพาะทาง]\n${clinicalDB}\n\n${dynamicPrompt}\n\n[ข้อบังคับสำคัญที่สุด]: คุณต้องตอบกลับมาในฐานะตัวละครเพียง 1 ตัวละครต่อ 1 ข้อความเท่านั้น ห้ามให้ตัวละครคุยกันเองในข้อความเดียวเด็ดขาด`;
-                
-                setCurrentScenarioPrompt(finalPromptInstruction); 
-                
+                const pInfo = sc.patientInfo || {};
+                const summaryText = pInfo.summaryText || (isEnglish
+                    ? 'Initial Case Data: Brain death confirmed. You may begin speaking with the family now.'
+                    : 'ข้อมูลเบื้องต้น: ยืนยันภาวะสมองตายแล้ว เริ่มการเจรจากับญาติผู้ป่วยได้เลยค่ะ');
+
+                const introHook = sc.introHook || {
+                    speakerKey: isEnglish ? 'MICHAEL' : 'FAH',
+                    speakerName: isEnglish ? 'Michael' : 'ฟ้า',
+                    emotion: 'CONFUSED',
+                    text: isEnglish
+                        ? 'Hello... Are you the hospital staff coming to speak with us?'
+                        : 'สวัสดีค่ะ... คุณเป็นเจ้าหน้าที่ที่จะมาคุยกับพวกเราเรื่องคุณพ่อหรือเปล่าคะ?'
+                };
+
+                const hookSpeaker = detectSpeakerFromTag(introHook.speakerName, sc);
+
+                setRoleplayPhase('giving_context');
+                setCurrentEmotion('NEUTRAL');
+                setCurrentSpeaker(hookSpeaker);
+                setLastEvalResult(null);
+
+                const contextId = `ctx-${Date.now()}`;
+                setMessages([{
+                    id: contextId,
+                    sender: 'ai',
+                    isContext: true,
+                    isVoiceOnly: false,
+                    speakerName: isEnglish ? 'Case Briefing' : 'ข้อมูลกรณีศึกษา',
+                    text: summaryText
+                }]);
+
+                // อ่านบริบทเริ่มต้น (ล็อกช่องพิมพ์ระหว่างนี้จนกว่าจะอ่านจบ)
+                speakText(summaryText, { voice: 'Aoede', gender: 'female' }, true, () => {
+                    setRoleplayPhase('negotiating');
+                    setCurrentEmotion(introHook.emotion || 'CONFUSED');
+                    setCurrentSpeaker(hookSpeaker);
+
+                    const introId = `intro-${Date.now()}`;
+                    setMessages(prev => {
+                        if (prev.some(m => m.id === introId)) return prev;
+                        return [...prev, {
+                            id: introId,
+                            sender: 'ai',
+                            isContext: false,
+                            isVoiceOnly: voiceEnabled,
+                            speakerName: hookSpeaker.displayName,
+                            emotion: introHook.emotion || 'CONFUSED',
+                            text: introHook.text
+                        }];
+                    });
+
+                    // สร้างทางเลือกแนะนำเริ่มต้น 2 ข้อ
+                    setSmartSuggestions(isEnglish ? [
+                        "Hello, my name is Nurse Joy from the ICU care team. I'm so sorry about the accident.",
+                        "Good day, I'm the clinical coordinator here to support you and your daughter. May we sit in a quiet room?"
+                    ] : [
+                        'สวัสดีค่ะ ดิฉันเป็นพยาบาลผู้ประสานงานจากโรงพยาบาลค่ะ ขอแสดงความเสียใจกับเหตุการณ์ที่เกิดขึ้นนะคะ',
+                        'สวัสดีค่ะ ขอเชิญทุกท่านเข้าไปพูดคุยในห้องส่วนตัวที่เงียบสงบด้านนี้ก่อนดีไหมคะ'
+                    ]);
+
+                    speakText(introHook.text, hookSpeaker, false, () => {
+                        setMessages(prev => prev.map(m => (m.id === introId ? { ...m, isVoiceOnly: false } : m)));
+                    });
+                });
+            }, [speakText, voiceEnabled]);
+
+            const startScenario = (sc) => {
+                stopAudio();
+                stopVAD(true);
+
+                // ปลดล็อกสิทธิ์ Autoplay บน iOS/Android ทันทีที่ผู้ใช้กดแตะ
+                try {
+                    const silent = new Audio('data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU5LjI3LjEwMAAAAAAAAAAAAAAA//OEAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAEAAABIwADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw');
+                    silent.play().catch(() => {});
+                } catch (_) {}
+
+                setSelectedScenario(sc);
+                setMessages([]);
+                setSmartSuggestions([]);
+                setLastEvalResult(null);
+
+                // สร้าง System Prompt ที่มีข้อมูลคนไข้ถูกต้องตามเคสนั้นๆ 100%
+                const pInfo = sc.patientInfo || {};
+                const userPos = user?.position || (sc.language === 'en' ? 'Medical Professional' : 'บุคลากรทางการแพทย์');
+                const filledPrompt = (sc.systemPrompt || '')
+                    .replace(/{{USER_POSITION}}/g, userPos)
+                    .replace(/{{PATIENT_GENDER}}/g, pInfo.gender || '')
+                    .replace(/{{PATIENT_AGE}}/g, pInfo.age || '')
+                    .replace(/{{PATIENT_CAUSE}}/g, pInfo.cause || '')
+                    .replace(/{{PATIENT_RELATION}}/g, pInfo.relation || '');
+
+                const clinicalDB = window.CLINICAL_KNOWLEDGE_BASE || '';
+                scenarioPromptRef.current = sc.language === 'en'
+                    ? `[Clinical Knowledge Base]\n${clinicalDB}\n\n${filledPrompt}\n\n[CRITICAL RULE]: Output ONLY ONE character per response prefixed with [EMOTION] [Name].`
+                    : `[ฐานความรู้ทางการแพทย์]\n${clinicalDB}\n\n${filledPrompt}\n\n[กฎเหล็ก]: ตอบในฐานะตัวละครเพียง 1 คนต่อ 1 ครั้งเท่านั้น ขึ้นต้นด้วย [EMOTION] [ชื่อ]`;
+
                 if (sc.videoUrl) {
                     setRoleplayPhase('watching_video');
                 } else {
-                    triggerScenarioNegotiation();
+                    beginNegotiationPhase(sc);
                 }
             };
 
-            const handleAIResponse = (rawResponse) => {
-                let aiText = rawResponse;
-                let sug1 = "", sug2 = "";
-                const sug1Match = aiText.match(/\[SUGGESTION 1\](.*?)(?=\[SUGGESTION 2\]|$)/is);
-                const sug2Match = aiText.match(/\[SUGGESTION 2\](.*?)$/is);
-                if (sug1Match) sug1 = sug1Match[1].trim();
-                if (sug2Match) sug2 = sug2Match[1].trim();
-                aiText = aiText.replace(/\[SUGGESTION 1\].*$/is, '').replace(/\[DIALOGUE\]/i, '').trim();
+            // 9. ประมวลผลคำตอบจาก AI (แยกตัวละคร ฟ้า/เมฆ/พี่เอก/Michael/Emily และอารมณ์ได้สมบูรณ์)
+            const processAiDialogue = useCallback((rawResponse, sc) => {
+                let text = String(rawResponse || '');
+                let sug1 = '', sug2 = '';
+
+                const m1 = text.match(/\[SUGGESTION 1\](.*?)(?=\[SUGGESTION 2\]|$)/is);
+                const m2 = text.match(/\[SUGGESTION 2\](.*?)$/is);
+                if (m1) sug1 = m1[1].trim();
+                if (m2) sug2 = m2[1].trim();
+                text = text.replace(/\[SUGGESTION 1\][\s\S]*$/i, '').replace(/\[DIALOGUE\]/i, '').trim();
                 setSmartSuggestions([sug1, sug2].filter(Boolean));
-                
-                let spk = 'FAH'; let visualSpeaker = 'FAH'; 
-                let cleanText = aiText;
-                
-                // 1. ตรวจสอบอารมณ์ก่อน (เพื่อไม่ให้ไปกวนตอนเช็คชื่อตัวละคร)
-                let foundEmotion = "SAD"; const emotionsList = ["SAD", "HESITANT", "CONFUSED", "ANGRY", "ADVISING", "NEUTRAL"]; 
-                for (const em of emotionsList) { 
-                    if (new RegExp(`\\[\\s*${em}\\s*\\]`, 'i').test(cleanText)) { 
-                        foundEmotion = em; 
-                        break; 
-                    } 
-                }
-                
-                // ลบแท็กอารมณ์ทิ้งไปเลย จะได้ไม่สับสนกับชื่อตัวละคร
-                cleanText = cleanText.replace(/\[\s*(SAD|HESITANT|CONFUSED|ANGRY|ADVISING|NEUTRAL)\s*\]/gi, '');
 
-                // 2. ค้นหาชื่อตัวละครที่กำลังพูด
-                const speakerPattern = /\[\s*(ฟ้า|เมฆ|พี่เอก|เอก|น้องชาย|ลูกสาว|แฟน|แฟนของฟ้า|Fah|Mek|Brother|Sister|Boyfriend|AI|Michael)\s*\]/gi;
-                const matches = [...cleanText.matchAll(speakerPattern)];
-                
-                if (matches.length > 0) {
-                    const speakerTag = matches[0][1].toLowerCase();
-                    if (speakerTag.match(/เมฆ|น้องชาย|mek|brother/)) { spk = 'BROTHER'; visualSpeaker = 'BROTHER'; }
-                    else if (speakerTag.match(/พี่เอก|เอก|แฟน|แฟนของฟ้า|แฟนหนุ่ม|boyfriend/)) { spk = 'BOYFRIEND'; visualSpeaker = 'FAH'; }
-                    else if (speakerTag.match(/michael|spouse|สามี/)) { spk = 'MICHAEL'; visualSpeaker = 'FAH'; }
-                    else { spk = 'FAH'; visualSpeaker = 'FAH'; }
-                    
-                    // หากมีตัวละครคนที่ 2 โผล่มา ให้ตัดข้อความของคนที่ 2 ทิ้งไป (บังคับพูดทีละคน)
-                    if (matches.length > 1) {
-                        cleanText = cleanText.substring(0, matches[1].index).trim();
+                // 1) แยกอารมณ์
+                let emotion = 'SAD';
+                const emotions = ['SAD', 'HESITANT', 'CONFUSED', 'ANGRY', 'ADVISING', 'NEUTRAL'];
+                for (const em of emotions) {
+                    if (new RegExp(`\\[\\s*${em}\\s*\\]`, 'i').test(text)) {
+                        emotion = em;
+                        break;
                     }
                 }
-                
-                setCurrentSpeaker(visualSpeaker); setCurrentEmotion(foundEmotion);
-                
-                // ทำความสะอาดข้อความเพื่อแสดงผล
-                cleanText = cleanText.replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '').replace(/^(ฟ้า|เมฆ|พี่เอก|เอก|น้องชาย|ลูกสาว|แฟน|แฟนของฟ้า|Fah|Mek|Brother|Sister|Boyfriend|Michael)\s*:\s*/i, '').replace(/[*#]/g, '').trim();
-                
-                const isVoiceOnly = roleplayPhase === 'negotiating'; 
-                const speakerName = spk === 'BROTHER' ? 'เมฆ' : spk === 'BOYFRIEND' ? "พี่เอก" : spk === 'MICHAEL' ? 'Michael' : 'ฟ้า'; 
-                const msgId = Date.now() + 1;
-                const displayChatText = (roleplayPhase === 'negotiating') ? `(${speakerName}) ${cleanText}` : cleanText;
-                
-                setMessages(prev => [...prev, { id: msgId, sender: 'ai', text: displayChatText, isVoiceOnly, speakerName }]); setIsTyping(false); 
-                
-                speakThai(cleanText, () => setMessages(prev => prev.map(m => m.id === msgId ? { ...m, isVoiceOnly: false } : m)), spk, false, foundEmotion);
-            };
+                text = text.replace(/\[\s*(SAD|HESITANT|CONFUSED|ANGRY|ADVISING|NEUTRAL)\s*\]/gi, '').trim();
 
-            const handleSendChat = async (e, quickActionText = null) => {
-                if (e) e.preventDefault(); const userMsg = quickActionText ?? chatInput.trim(); if ((!userMsg && !selectedImage) || isTyping) return;
-                stopAudio(); if (['speaking_intro', 'playing_scenario'].includes(roleplayPhase)) return; 
-                
-                setMessages(prev => [...prev, { id: Date.now(), sender: 'user', text: userMsg, image: selectedImage }]); setChatInput(''); const imageToSend = selectedImage; setSelectedImage(null); setIsTyping(true); setSmartSuggestions([]); 
-                
-                const historyContext = messages.filter(m => !m.isContext).slice(-10).map(m => `${m.sender === 'user' ? 'Learner/Staff' : 'Family'}: ${m.text}`).join('\n');
-                
-                let introGuideline = "";
-                if (messages.length <= 4) {
-                    introGuideline = scenarioLang === 'en' 
-                        ? `\n[CRITICAL INITIALIZATION]: If the user just introduced themselves (e.g., Doctor, Nurse, Coordinator), acknowledge their role respectfully. Michael must introduce himself and ask about his wife's condition directly.`
-                        : `\n[การตอบรับการแนะนำตัว]: หากผู้เรียนเพิ่งแนะนำตัวว่าเป็นใคร ให้ญาติรับทราบอย่างสุภาพ และให้ญาติหลักแนะนำสมาชิกครอบครัวที่เหลือให้ผู้เรียนรู้จักพร้อมกัน และเข้าสู่บทสนทนาถามอาการพ่อทันที`;
+                // 2) แยกตัวละคร (รองรับ Emily เพิ่มเข้ามาเรียบร้อย!)
+                const speakerRegex = /\[\s*(ฟ้า|เมฆ|พี่เอก|เอก|น้องชาย|ลูกสาว|แฟน|Fah|Mek|Brother|Boyfriend|Michael|Emily|Daughter|Husband)\s*\]/gi;
+                const matches = [...text.matchAll(speakerRegex)];
+                let speakerObj = detectSpeakerFromTag(matches[0]?.[1] || '', sc);
+
+                // หาก AI เผลอพิมพ์ตัวละครที่ 2 ต่อท้าย ให้ตัดทิ้งเพื่อคุมกติกาพูดทีละคน
+                if (matches.length > 1) {
+                    text = text.substring(0, matches[1].index).trim();
                 }
-                
-                const suggestionInstruction = scenarioLang === 'en'
-                    ? `\n\n[SPECIAL HOOK: SMART SUGGESTIONS]\nProvide 2 realistic response options for the user at the very end in English. Format:\n[SUGGESTION 1] (Option 1)\n[SUGGESTION 2] (Option 2)`
-                    : `\n\n[ข้อบังคับพิเศษ: SMART HOOKS]\nสร้างทางเลือกตอบกลับเบื้องต้นให้ผู้เรียน 2 ทางเลือกในตอนท้ายสุด โดยให้จัดรูปแบบดังนี้:\n[SUGGESTION 1] (ทางเลือกที่ 1)\n[SUGGESTION 2] (ทางเลือกที่ 2)`;
 
-                const roleplayPrompt = `${currentScenarioPrompt}${introGuideline}${suggestionInstruction}\n\nHistory:\n${historyContext}\nLearner: ${userMsg}\nFamily (Respond as ONE character, prefix with Emotion and Name Tags):`;
-                
-                try {
-                    let rawResponse = await callGeminiAPI(userMsg, roleplayPrompt, imageToSend); 
-                    
-                    if (rawResponse.startsWith('[ระบบขัดข้อง]')) {
-                        setMessages(prev => [...prev, { id: Date.now(), sender: 'ai', text: rawResponse, isVoiceOnly: false, speakerName: 'System' }]);
-                        showMsg(rawResponse, 'error');
-                        setIsTyping(false);
-                        return; 
-                    }
-                    handleAIResponse(rawResponse);
-                    
-                } catch (err) { 
-                    setIsTyping(false); 
-                    setMessages(prev => [...prev, { id: Date.now(), sender: 'ai', text: `Error (${err.message})`, isVoiceOnly: false, speakerName: 'System' }]); 
-                }
-            };
+                const cleanDisplay = text
+                    .replace(/\[.*?\]/g, '')
+                    .replace(/^(ฟ้า|เมฆ|พี่เอก|เอก|Fah|Mek|Michael|Emily)\s*:\s*/i, '')
+                    .replace(/[*#]/g, '')
+                    .trim();
 
-            const endScenarioAndEvaluate = async () => {
-                stopAudio(); setIsTyping(true); setRoleplayPhase('evaluating'); setCurrentEmotion('ADVISING'); setCurrentSpeaker('FAH'); setSmartSuggestions([]);
-                setMessages(prev => [...prev, { id: Date.now(), sender: 'user', text: isEn ? "🛑 End simulation. Please evaluate my performance." : "🛑 จบการจำลองสถานการณ์ ช่วยประเมินให้หน่อยค่ะ" }]);
-                
-                const history = messages.slice(-15).map(m => `${m.sender === 'ai' ? 'Family' : 'Staff'}: ${m.text}`).join('\n');
-                const clinicalDB = window.CLINICAL_KNOWLEDGE_BASE || "";
-                
-                const evalPrompt = isEn 
-                    ? `You are a "Cognitive Profiler". Evaluate this negotiation based on the user's role (${user?.position || 'Professional'}) and DTI guidelines.\nHistory:\n${history}\n1. Score Empathy from 0-100 (Always include tag [EMPATHY: score]).\n2. If score > 60, write [PASS], else [FAIL].\n3. Analyze technique usage and cultural competence.\n4. Summarize strengths and weaknesses clearly in English.`
-                    : `คุณคือ "ปรมาจารย์ด้านจิตวิทยาการแพทย์" ประเมินการเจรจานี้อ้างอิงจากบทบาทผู้เรียน(${user?.position || 'บุคลากร'}) และความรู้ในคู่มือนี้:\n${clinicalDB}\n\nประวัติการสนทนา:\n${history}\n\n1. ให้คะแนนความเห็นอกเห็นใจ (Empathy Score) จาก 0-100 (ระบุแท็ก [EMPATHY: คะแนน] เสมอ)\n2. หากคะแนนเกิน 60 ถือว่าผ่าน พิมพ์ [PASS] ไม่ผ่านพิมพ์ [FAIL]\n3. วิเคราะห์ว่าผู้เรียนใช้เทคนิคได้เหมาะสมกับบริบทวัฒนธรรมหรือไม่\n4. สรุป จุดแข็ง และ จุดอ่อน ให้ชัดเจน`;
-                
-                try {
-                    const aiResponse = await callGeminiAPI(isEn ? "Please evaluate" : "ประเมินการเจรจาหน่อย", evalPrompt); 
-                    if (aiResponse.startsWith('[ระบบขัดข้อง]')) {
-                        setMessages(prev => [...prev, { id: Date.now(), sender: 'ai', text: aiResponse, isVoiceOnly: false, speakerName: 'System' }]);
-                        showMsg(aiResponse, 'error'); setIsTyping(false); return; 
-                    }
-                    
-                    const isPass = aiResponse.includes('[PASS]'); 
-                    const empathyMatch = aiResponse.match(/\[EMPATHY:\s*(\d+)\]/i);
-                    const empathyScore = empathyMatch ? parseInt(empathyMatch[1]) : (isPass ? 80 : 40);
-                    let cleanResponse = aiResponse.replace(/\[PASS\]/g, '').replace(/\[FAIL\]/g, '').replace(/\[EMPATHY:\s*\d+\]/gi, '').trim();
-                    
-                    setMessages(prev => [...prev, { id: Date.now()+1, sender: 'ai', text: cleanResponse, isVoiceOnly: false, speakerName: 'System' }]); 
-                    
-                    const evalRecord = { timestamp: new Date().toISOString(), scenarioId: selectedScenario.id, passed: isPass, score: empathyScore, evaluation: cleanResponse, chatLog: history }; 
-                    const upUser = { ...user, skillLabPassed: true, skillLabHistory: [...(user.skillLabHistory || []), evalRecord] }; 
-                    setUser(upUser);
-                    try {
-                        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'elearning_users', upUser.id), upUser, { merge: true });
-                        const lState = JSON.parse(localStorage.getItem('elearning_app_state') || '{}');
-                        lState.loggedInUser = upUser; localStorage.setItem('elearning_app_state', JSON.stringify(lState));
-                    } catch(e) {}
-                    
-                    showMsg(isEn ? `Result Recorded (Empathy Score: ${empathyScore})` : `บันทึกผลเรียบร้อย (Empathy Score: ${empathyScore})`, 'success'); 
-                    speakThai(cleanResponse.replace(/[*#]/g, ''), null, 'FAH', true, 'ADVISING');
-                } catch (e) { setMessages(prev => [...prev, { id: Date.now(), sender: 'ai', text: `Error: ${e.message}`, isVoiceOnly: false, speakerName: 'System' }]); }
+                setCurrentSpeaker(speakerObj);
+                setCurrentEmotion(emotion);
+
+                const msgId = `ai-${Date.now()}`;
+                setMessages(prev => [...prev, {
+                    id: msgId,
+                    sender: 'ai',
+                    isContext: false,
+                    isVoiceOnly: voiceEnabled,
+                    speakerName: speakerObj.displayName,
+                    emotion,
+                    text: cleanDisplay
+                }]);
                 setIsTyping(false);
+
+                speakText(cleanDisplay, speakerObj, false, () => {
+                    setMessages(prev => prev.map(m => (m.id === msgId ? { ...m, isVoiceOnly: false } : m)));
+                });
+            }, [voiceEnabled, speakText]);
+
+            // 10. ส่งข้อความของผู้เรียน
+            const handleSendChat = useCallback(async (e, quickText = null) => {
+                if (e) e.preventDefault();
+                if (!selectedScenario || roleplayPhase !== 'negotiating' || isTyping) return;
+
+                const userMsg = (quickText ?? chatInput).trim();
+                if (!userMsg && !selectedImage) return;
+
+                stopAudio();
+                if (isListeningRef.current) stopVAD(true);
+
+                const imgToSend = selectedImage;
+                setChatInput('');
+                setSelectedImage(null);
+                setSmartSuggestions([]);
+                setIsTyping(true);
+
+                const userEntry = { id: `u-${Date.now()}`, sender: 'user', text: userMsg, image: imgToSend };
+                const updatedMessages = [...messages, userEntry];
+                setMessages(updatedMessages);
+
+                const userTurnCount = updatedMessages.filter(m => m.sender === 'user').length;
+                const historyStr = updatedMessages
+                    .filter(m => !m.isContext)
+                    .slice(-10)
+                    .map(m => `${m.sender === 'user' ? 'Learner' : m.speakerName}: ${m.text}`)
+                    .join('\n');
+
+                const sugInstr = selectedScenario.language === 'en'
+                    ? `\n\n[SMART SUGGESTIONS]\nAt the very end, add 2 realistic empathetic reply options for the learner:\n[SUGGESTION 1] ...\n[SUGGESTION 2] ...`
+                    : `\n\n[SMART SUGGESTIONS]\nท้ายสุดสร้างทางเลือกตอบกลับที่เหมาะสมให้ผู้เรียน 2 ข้อ:\n[SUGGESTION 1] ...\n[SUGGESTION 2] ...`;
+
+                const fullInstruction = `${scenarioPromptRef.current}${sugInstr}\n\nConversation History:\n${historyStr}\nLearner: ${userMsg}\nFamily (Respond as ONE character with [EMOTION] [Name]):`;
+
+                // เรียก Gemini API ผ่าน Apps Script (หรือใช้ Sandbox Simulator ถ้ายังไม่เชื่อม)
+                if (appsScriptUrl) {
+                    const res = await callAppsScript({
+                        action: 'callGemini',
+                        prompt: userMsg || 'Please analyze the attached image.',
+                        systemInstruction: fullInstruction,
+                        base64Image: imgToSend
+                    });
+                    if (res?.status === 'success' && res.text) {
+                        processAiDialogue(res.text, selectedScenario);
+                        return;
+                    }
+                    showToast('ไม่สามารถติดต่อ Gemini API ได้ สลับเป็นโหมดจำลองสำรองให้อัตโนมัติค่ะ', 'info');
+                }
+
+                await new Promise(r => setTimeout(r, 650));
+                const localReply = generateLocalRoleplayReply(userMsg, selectedScenario, userTurnCount);
+                processAiDialogue(localReply, selectedScenario);
+            }, [selectedScenario, roleplayPhase, isTyping, chatInput, selectedImage, messages, appsScriptUrl, callAppsScript, processAiDialogue, stopAudio, stopVAD, showToast]);
+
+            // ผูก Ref ให้ VAD ส่งข้อความได้โดยไม่ต้อง Rebuild SpeechRecognition
+            useEffect(() => {
+                handleSendChatRef.current = handleSendChat;
+            }, [handleSendChat]);
+
+            // 11. จบสถานการณ์และประเมินผล Empathy Score (0-100) + บันทึกลง Cloud/Local
+            const handleEvaluate = async () => {
+                if (!selectedScenario || isTyping) return;
+                stopAudio();
+                stopVAD(true);
+
+                setIsTyping(true);
+                setRoleplayPhase('evaluating');
+                setCurrentEmotion('ADVISING');
+                setSmartSuggestions([]);
+
+                const endMsg = {
+                    id: `end-${Date.now()}`,
+                    sender: 'user',
+                    isSystemAction: true,
+                    text: isEn ? '🛑 End simulation and request Empathy Evaluation.' : '🛑 จบการจำลองสถานการณ์ ขอรับผลการประเมินทักษะค่ะ'
+                };
+                const fullLogMessages = [...messages, endMsg];
+                setMessages(fullLogMessages);
+
+                const transcript = fullLogMessages
+                    .filter(m => !m.isContext && !m.isSystemAction)
+                    .map(m => `${m.sender === 'user' ? 'Learner' : m.speakerName}: ${m.text}`)
+                    .join('\n');
+
+                let score = 75;
+                let passed = true;
+                let reportText = '';
+
+                if (appsScriptUrl) {
+                    const evalPrompt = isEn
+                        ? `You are a Clinical Communication Evaluator. Evaluate this ICU negotiation.\nTranscript:\n${transcript}\n1. Give an Empathy Score from 0-100 with tag [EMPATHY: score].\n2. If score >= 60 include [PASS], else [FAIL].\n3. List clear Strengths and Recommendations in English.`
+                        : `คุณคืออาจารย์ผู้เชี่ยวชาญด้านจิตวิทยาการสื่อสารการแพทย์ ประเมินการเจรจานี้จากคู่มือวิชาชีพ:\n${window.CLINICAL_KNOWLEDGE_BASE || ''}\n\nบทสนทนา:\n${transcript}\n\n1. ให้คะแนน Empathy Score 0-100 พร้อมแท็ก [EMPATHY: คะแนน]\n2. หากคะแนน >= 60 ใส่ [PASS] หากต่ำกว่าใส่ [FAIL]\n3. สรุปจุดแข็งและข้อเสนอแนะที่นำไปใช้จริงในห้อง ICU ได้ชัดเจน`;
+
+                    const res = await callAppsScript({
+                        action: 'callGemini',
+                        prompt: isEn ? 'Evaluate this negotiation.' : 'ประเมินผลการเจรจานี้',
+                        systemInstruction: evalPrompt
+                    });
+
+                    if (res?.status === 'success' && res.text) {
+                        const raw = res.text;
+                        const scoreMatch = raw.match(/\[EMPATHY:\s*(\d+)\]/i);
+                        score = scoreMatch ? Math.min(100, Math.max(0, parseInt(scoreMatch[1], 10))) : (raw.includes('[PASS]') ? 80 : 50);
+                        passed = raw.includes('[PASS]') || score >= 60;
+                        reportText = raw.replace(/\[PASS\]|\[FAIL\]|\[EMPATHY:\s*\d+\]/gi, '').trim();
+                    }
+                }
+
+                if (!reportText) {
+                    await new Promise(r => setTimeout(r, 700));
+                    const localEval = generateLocalEvaluation(fullLogMessages, selectedScenario);
+                    score = localEval.score;
+                    passed = localEval.passed;
+                    reportText = localEval.report;
+                }
+
+                const evalRecord = {
+                    timestamp: new Date().toISOString(),
+                    scenarioId: selectedScenario.id,
+                    scenarioTitle: selectedScenario.title,
+                    passed,
+                    score,
+                    evaluation: reportText
+                };
+
+                setLastEvalResult(evalRecord);
+                setMessages(prev => [...prev, {
+                    id: `eval-${Date.now()}`,
+                    sender: 'ai',
+                    isEvaluation: true,
+                    isVoiceOnly: false,
+                    speakerName: 'Cognitive Profiler AI',
+                    text: reportText
+                }]);
+                setIsTyping(false);
+
+                // บันทึกประวัติและปลดล็อก skillLabPassed ให้ผู้เรียน
+                if (user) {
+                    const nextUser = {
+                        ...user,
+                        skillLabPassed: true,
+                        skillLabHistory: [...(user.skillLabHistory || []), evalRecord]
+                    };
+                    setUser(nextUser);
+                    saveStoredUser(nextUser);
+
+                    if (isCloudConfigured && fbDb && nextUser.id && !String(nextUser.id).startsWith('demo_')) {
+                        try {
+                            await setDoc(
+                                doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', String(nextUser.id)),
+                                { skillLabPassed: true, skillLabHistory: nextUser.skillLabHistory },
+                                { merge: true }
+                            );
+                        } catch (err) {
+                            console.warn('Firestore save skill lab error:', err);
+                        }
+                    }
+                }
+
+                showToast(
+                    isEn ? `Evaluation saved (Empathy Score: ${score}/100)` : `บันทึกผลประเมินเรียบร้อย (Empathy Score: ${score}/100)`,
+                    'success'
+                );
+
+                speakText(reportText, { voice: 'Aoede', gender: 'female' }, true);
             };
 
-            const handleImageUpload = (e) => { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onloadend = () => setSelectedImage(reader.result); reader.readAsDataURL(file); };
+            const handleImageUpload = (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onloadend = () => setSelectedImage(reader.result);
+                reader.readAsDataURL(file);
+                e.target.value = '';
+            };
 
-            if (accessDenied) return (
-                <div className="min-h-screen sky-bg flex items-center justify-center p-4 relative z-50">
-                    <div className="bg-slate-900/80 backdrop-blur-xl border border-white/20 p-8 rounded-[2.5rem] text-center shadow-2xl max-w-md w-full animate-in zoom-in fade-in duration-500">
-                        <div className="w-20 h-20 bg-rose-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-rose-500/30 shadow-[0_0_20px_rgba(244,63,94,0.3)]"><SafeIcon icon={Lock} size={40} className="text-rose-400" /></div>
-                        <h2 className="text-2xl font-black text-white mb-3 drop-shadow-md">สงวนสิทธิ์เฉพาะกลุ่ม</h2>
-                        <p className="text-slate-300 font-medium text-sm mb-8 leading-relaxed drop-shadow-sm">ขณะนี้ห้องจำลองเปิดให้ทดสอบเฉพาะสิทธิ์ <b>Masterclass</b> เท่านั้น</p>
-                        <button onClick={() => safeRedirect('./index.html#dashboard')} className="w-full py-4 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold transition-all border border-white/20 shadow-sm active:scale-95">กลับสู่ห้องเรียนหลัก</button>
-                    </div>
-                </div>
-            );
+            const handleEnterSandboxGuest = () => {
+                const demoLearner = {
+                    id: 'demo_masterclass',
+                    license: '65012345',
+                    name: 'พว.ใจดี มีเมตตา (Demo)',
+                    position: 'พยาบาลวิชาชีพชำนาญการ (ICU)',
+                    userType: 'Masterclass',
+                    skillLabHistory: []
+                };
+                setUser(demoLearner);
+                setAuthState('ready');
+                showToast('เข้าสู่ห้องจำลองโหมดทดลอง (Masterclass Sandbox) เรียบร้อยค่ะ');
+            };
 
-            if (!user) return (
-                <div className="min-h-screen sky-bg flex items-center justify-center relative">
-                    <div className="bg-black/50 backdrop-blur-xl border border-white/20 p-8 rounded-3xl text-center shadow-2xl animate-in fade-in zoom-in">
-                        <div className="w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
-                        <h2 className="text-2xl font-black text-white mb-2">ตรวจสอบสิทธิ์...</h2>
+            // ============================================================================
+            // 5. ACCESS & LOADING GATES
+            // ============================================================================
+            if (authState === 'checking') {
+                return (
+                    <div className="min-h-dvh bg-obsidian-950 flex items-center justify-center">
+                        <div className="w-10 h-10 border-4 border-cyber-400 border-t-transparent rounded-full animate-spin" />
                     </div>
-                </div>
-            );
+                );
+            }
+
+            if (authState === 'denied' || authState === 'guest_prompt') {
+                return (
+                    <div className="min-h-dvh relative flex items-center justify-center p-4 pt-safe pb-safe">
+                        <div className="obsidian-aura" /><div className="obsidian-grid" />
+                        <div className="lab-glass relative z-10 max-w-md w-full rounded-[2rem] p-6 sm:p-8 text-center space-y-5">
+                            <div className={`w-16 h-16 rounded-2xl mx-auto flex items-center justify-center border ${
+                                authState === 'denied'
+                                    ? 'bg-rose-500/15 border-rose-400/30 text-rose-400'
+                                    : 'bg-cyber-500/15 border-cyber-400/30 text-cyber-300'
+                            }`}>
+                                <Icon name={authState === 'denied' ? 'Lock' : 'Bot'} size={32} />
+                            </div>
+                            <div className="space-y-2">
+                                <span className="px-2.5 py-0.5 rounded-full bg-white/10 font-mono text-[10px] font-bold text-cyber-300">
+                                    RJCLOUD.ORGAN • AI SKILL LAB 2027
+                                </span>
+                                <h1 className="font-display text-2xl font-extrabold text-white">
+                                    {authState === 'denied' ? 'สงวนสิทธิ์เฉพาะ Masterclass' : 'ห้องจำลองฝึกเจรจา AI Skill Lab'}
+                                </h1>
+                                <p className="text-sm text-slate-300 leading-relaxed">
+                                    {authState === 'denied'
+                                        ? 'ห้องปฏิบัติการนี้เปิดสำหรับผู้เรียนที่มีสิทธิ์ Masterclass (หรือปฏิบัติงานรับบริจาคอวัยวะและสะสมเวลาครบ 8 ชม.) ค่ะ'
+                                        : 'กรุณาเข้าสู่ระบบจากหน้าหลักผู้เรียน หรือทดลองฝึกเจรจาในโหมด Sandbox Demo ได้ทันทีค่ะ'}
+                                </p>
+                            </div>
+                            <div className="space-y-2.5 pt-2">
+                                <button
+                                    type="button"
+                                    onClick={handleEnterSandboxGuest}
+                                    className="touch-target w-full py-3.5 rounded-2xl bg-gradient-to-r from-biotech-500 to-cyber-500 hover:from-biotech-400 hover:to-cyber-400 text-slate-950 font-display font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-cyber-500/20"
+                                >
+                                    <Icon name="Sparkles" size={18} /> ทดลองฝึกเจรจา (Sandbox Demo)
+                                </button>
+                                <a
+                                    href="./index.html"
+                                    className="touch-target w-full py-3.5 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 text-white font-display font-semibold text-sm flex items-center justify-center gap-2"
+                                >
+                                    <Icon name="ArrowLeft" size={17} /> กลับหน้าหลักผู้เรียน
+                                </a>
+                            </div>
+                        </div>
+                        <ToastBanner toast={toast} />
+                    </div>
+                );
+            }
+
+            // ============================================================================
+            // 6. MAIN SKILL LAB UI (OBSIDIAN BIO-TECH 2027 • 100% SMARTPHONE READY)
+            // ============================================================================
+            const isInputLocked = roleplayPhase !== 'negotiating' || isTyping;
 
             return (
-                <div className="min-h-screen w-full font-sans antialiased overflow-hidden relative">
-                    <div className="sky-bg"></div>
-                    
-                    {uiMessage.show && <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-[100] px-6 py-3 rounded-full font-bold shadow-xl animate-in slide-in-from-top-4 border backdrop-blur-md ${uiMessage.type === 'error' ? 'bg-rose-500/20 text-rose-300 border-rose-500/50' : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'}`}>{uiMessage.text}</div>}
+                <div className={`${selectedScenario && roleplayPhase !== 'watching_video' ? 'h-dvh overflow-hidden' : 'min-h-dvh'} relative flex flex-col pt-safe`}>
+                    <div className="obsidian-aura" /><div className="obsidian-grid" />
 
-                    {/* Navbar */}
-                    <div className="px-6 py-4 border-b border-white/10 bg-white/5 backdrop-blur-lg flex justify-between items-center z-20 relative shadow-md">
-                        <div className="flex items-center gap-4">
-                            <button onClick={() => { stopAudio(); safeRedirect('./index.html#dashboard'); }} className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors border border-white/20 shadow-sm text-white"><SafeIcon icon={ArrowLeft} size={20} /></button>
-                            <h1 className="text-xl md:text-2xl font-black text-white flex items-center gap-2 drop-shadow-md"><SafeIcon icon={Bot} size={24} /> AI Skill Lab</h1>
+                    {/* Top Clinical Lab HUD Bar */}
+                    <header className="relative z-30 shrink-0 bg-obsidian-950/75 backdrop-blur-xl border-b border-white/10">
+                        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 h-14 flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2.5 min-w-0">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        stopAudio();
+                                        stopVAD(true);
+                                        if (selectedScenario) {
+                                            setSelectedScenario(null);
+                                            setRoleplayPhase('menu');
+                                            setMessages([]);
+                                        } else {
+                                            window.location.href = './index.html';
+                                        }
+                                    }}
+                                    aria-label="ย้อนกลับ"
+                                    className="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-white flex items-center justify-center shrink-0 active:scale-95"
+                                >
+                                    <Icon name="ArrowLeft" size={18} />
+                                </button>
+                                <div className="min-w-0">
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="font-display font-extrabold text-sm sm:text-base text-white truncate">
+                                            AI Skill Lab
+                                        </span>
+                                        <span className="px-1.5 py-0.5 rounded-md bg-cyber-500/20 border border-cyber-400/30 font-mono text-[9px] font-bold text-cyber-300 shrink-0">
+                                            {appsScriptUrl ? 'NEURAL' : 'SANDBOX'}
+                                        </span>
+                                    </div>
+                                    <p className="text-[10px] font-mono text-slate-400 truncate">
+                                        {selectedScenario ? selectedScenario.title : 'rjcloud.organ • 2027'}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-1.5 shrink-0">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const next = !voiceEnabled;
+                                        setVoiceEnabled(next);
+                                        if (!next) stopAudio();
+                                        showToast(next ? 'เปิดเสียงพากย์ AI แล้วค่ะ' : 'ปิดเสียงพากย์ (อ่านข้อความทันที)', 'info');
+                                    }}
+                                    aria-label="เปิด/ปิดเสียง"
+                                    className={`w-9 h-9 rounded-xl border flex items-center justify-center transition-colors ${
+                                        voiceEnabled
+                                            ? 'bg-biotech-500/15 border-biotech-400/30 text-biotech-300'
+                                            : 'bg-white/5 border-white/10 text-slate-400'
+                                    }`}
+                                >
+                                    <Icon name={voiceEnabled ? 'Volume2' : 'VolumeX'} size={17} />
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setShowHistoryModal(true)}
+                                    className="px-2.5 h-9 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-slate-200 text-xs font-bold flex items-center gap-1.5"
+                                >
+                                    <Icon name="History" size={15} className="text-cyber-300" />
+                                    <span className="hidden sm:inline">ประวัติประเมิน</span>
+                                    <span className="font-mono text-[10px] px-1.5 py-0.5 rounded-full bg-white/10">
+                                        {(user?.skillLabHistory || []).length}
+                                    </span>
+                                </button>
+                            </div>
                         </div>
-                        <div className="text-white/90 font-bold text-sm bg-white/10 px-4 py-1.5 rounded-full border border-white/30 shadow-sm hidden sm:flex items-center gap-2 backdrop-blur-md"><span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> {user.name}</div>
-                    </div>
+                    </header>
 
-                    <div className={`flex-1 w-full relative z-10 flex flex-col md:flex-row items-center p-4 md:p-8 ${!selectedScenario || roleplayPhase === 'watching_video' ? 'justify-center' : 'justify-end'}`}>
-                        
-                        {!selectedScenario ? (
-                            // MENU SCREEN
-                            <div className="w-full max-w-5xl mx-auto flex flex-col gap-8 h-full justify-center animate-in fade-in zoom-in-95">
-                                <div className="p-4 bg-white/10 border border-white/20 rounded-2xl mb-4 backdrop-blur-xl max-w-3xl mx-auto text-center shadow-lg">
-                                    <p className="text-sm md:text-base font-bold text-white flex flex-col sm:flex-row items-center justify-center gap-2 leading-relaxed"><SafeIcon icon={Target} size={24} className="shrink-0 text-cyan-300" /><span><strong>คำชี้แจง:</strong> พื้นที่นี้คือสถานการณ์จำลอง AI ขอให้ผู้เรียนนำความรู้การเจรจามาประยุกต์ใช้อย่างเต็มที่</span></p>
+                    {/* ==================== VIEW 1: SCENARIO MENU ==================== */}
+                    {!selectedScenario && (
+                        <main className="relative z-10 flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10 pb-safe flex flex-col justify-center space-y-6">
+                            <div className="lab-glass rounded-[1.75rem] p-5 sm:p-6 border-cyber-400/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div className="space-y-1">
+                                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-biotech-500/15 border border-biotech-400/30 text-biotech-300 font-mono text-[10px] font-bold">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-biotech-400 animate-pulse" />
+                                        MASTERCLASS SIMULATION LAB
+                                    </div>
+                                    <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-white">
+                                        เลือกกรณีศึกษาเพื่อเริ่มฝึกเจรจา
+                                    </h1>
+                                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-2xl">
+                                        ฝึกทักษะการแจ้งข่าวร้าย (SPIKES), การแยกบทบาท (Decoupling) และความเห็นอกเห็นใจกับครอบครัวจำลอง AI รองรับทั้งพิมพ์และพูดผ่านไมโครโฟนบนสมาร์ทโฟน
+                                    </p>
                                 </div>
-                                <h2 className="text-3xl font-black text-white drop-shadow-lg text-center">เลือกกรณีศึกษาเพื่อเริ่มฝึกเจรจา</h2>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-10 max-w-3xl mx-auto w-full">
-                                    {SKILL_LAB_SCENARIOS.map((sc, idx) => (
-                                        <GlassCard key={sc.id} onClick={() => startScenario(sc)} className="p-8 text-center border-t-4 border-t-cyan-400 hover:border-t-cyan-300 group hover:scale-[1.02]">
-                                            <div className={`w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center text-white shadow-[0_10px_30px_rgba(0,0,0,0.4)] ${sc.language === 'en' ? 'bg-gradient-to-br from-indigo-500 to-purple-600' : 'bg-gradient-to-br from-cyan-500 to-blue-600'}`}>
-                                                <span className="text-2xl font-black">{sc.language === 'en' ? 'EN' : 'TH'}</span>
-                                            </div>
-                                            <h3 className="font-extrabold text-2xl text-white mb-3 group-hover:text-cyan-300 transition-colors drop-shadow-sm">{sc.title}</h3>
-                                            <p className="text-base text-white/80 line-clamp-3">{sc.description}</p>
-                                        </GlassCard>
-                                    ))}
+                                <div className="px-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 text-xs shrink-0">
+                                    <p className="text-slate-400">ผู้เข้าฝึกปฏิบัติ</p>
+                                    <p className="font-display font-bold text-white text-sm">{user?.name}</p>
                                 </div>
                             </div>
-                        ) : roleplayPhase === 'watching_video' ? (
-                            
-                            // VIDEO SCENARIO PHASE
-                            <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex flex-col items-center justify-center p-4 animate-in fade-in zoom-in duration-500">
-                                <div className="w-full max-w-full h-[70vh] md:h-[85vh] aspect-[9/16] bg-black rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.8)] border border-white/20 relative">
-                                    <iframe src={`${selectedScenario.videoUrl}?autoplay=1&title=0&byline=0&portrait=0`} className="absolute inset-0 w-full h-full border-none" allow="autoplay; fullscreen"></iframe>
-                                </div>
-                                <div className="mt-8 flex flex-col items-center gap-4 relative z-10">
-                                    <p className="text-white/80 text-sm font-medium animate-pulse">{isEn ? "Watch the scenario to understand the context before starting." : "ชมวิดีโอเพื่อทำความเข้าใจสถานการณ์ก่อนเริ่มฝึกเจรจา"}</p>
-                                    <button onClick={triggerScenarioNegotiation} className="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 text-white rounded-full font-bold flex items-center gap-3 transition-all active:scale-95 shadow-lg group">
-                                        <SafeIcon icon={SkipForward} size={20} className="text-cyan-300" />
-                                        {isEn ? "Skip Video & Start" : "ข้ามวิดีโอ (เริ่มฝึกเจรจา)"} <SafeIcon icon={ArrowRight} size={20} className="group-hover:translate-x-1 transition-transform" />
-                                    </button>
-                                </div>
-                            </div>
-                            
-                        ) : (
-                        
-                            // CHAT PHASE (GLASSMORPHISM ON RIGHT)
-                            <div className="w-full max-w-[1200px] mx-auto h-[85vh] flex flex-col md:flex-row relative rounded-[2rem] shadow-[0_30px_80px_rgba(0,0,0,0.8)] border border-white/20 bg-black overflow-hidden animate-in fade-in zoom-in duration-500 z-30">
-                                {/* Background Image Layer (Inside Card) */}
-                                <div className="absolute inset-0 z-0" style={{ backgroundImage: `url('https://res.cloudinary.com/djwclucoz/image/upload/v1783830896/Gemini_Generated_Image_r508lgr508lgr508_exrlwo.png')`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
 
-                                {/* Dark Gradient Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-black/80 via-black/40 to-transparent md:from-transparent md:via-black/40 md:to-black/90 z-0 pointer-events-none"></div>
-
-                                {/* 🌟 AI HOLOGRAM VISUALIZER (Sci-Fi Theme) 🌟 */}
-                                <div className={`absolute inset-0 z-0 flex items-center justify-center md:justify-start md:pl-[15%] transition-all duration-1000 pointer-events-none ${isAiSpeaking ? 'opacity-100 scale-100' : 'opacity-40 scale-95'}`}>
-                                    <div className="relative w-[250px] h-[250px] md:w-[400px] md:h-[400px] flex items-center justify-center">
-                                        
-                                        {/* Glowing Aura Filter */}
-                                        <div className={`absolute inset-0 rounded-full mix-blend-screen filter blur-[40px] transition-all duration-700 ${isAiSpeaking ? 'bg-gradient-to-r from-cyan-500 to-fuchsia-500 opacity-60 animate-pulse' : 'bg-blue-900 opacity-20'}`}></div>
-
-                                        {/* Outer Rotating Ring */}
-                                        <div className={`absolute inset-4 rounded-full border-2 border-transparent border-t-cyan-400/80 border-l-cyan-400/30 transition-all duration-500 ${isAiSpeaking ? 'animate-spin' : ''}`} style={{ animationDuration: '3s' }}></div>
-
-                                        {/* Inner Rotating Ring */}
-                                        <div className={`absolute inset-10 rounded-full border-2 border-transparent border-b-fuchsia-400/80 border-r-fuchsia-400/30 transition-all duration-500 ${isAiSpeaking ? 'animate-spin' : ''}`} style={{ animationDuration: '4s', animationDirection: 'reverse' }}></div>
-
-                                        {/* Pulsing Core (Soundwave Effect) */}
-                                        <div className={`absolute inset-[35%] rounded-full bg-gradient-to-tr from-cyan-300 to-purple-400 shadow-[0_0_30px_rgba(34,211,238,0.6)] flex items-center justify-center transition-all duration-300 ${isAiSpeaking ? 'animate-holo-pulse' : 'opacity-50 blur-sm'}`}>
-                                            <SafeIcon icon={isAiSpeaking ? Volume2 : Bot} size={48} className="text-white drop-shadow-[0_0_10px_rgba(255,255,255,1)]" />
-                                        </div>
-                                    </div>
-                                    
-                                    {/* Speaking Status Text */}
-                                    <div className="absolute bottom-[10%] md:bottom-[20%] text-center w-full md:w-auto">
-                                        <p className={`font-mono font-black text-sm tracking-widest uppercase transition-all ${isAiSpeaking ? 'text-cyan-300 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)] animate-pulse' : 'text-white/30'}`}>
-                                            {isAiSpeaking ? 'AI IS SPEAKING...' : 'SYSTEM IDLE'}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                {/* Spacer for avatar area (visible on desktop) */}
-                                <div className="hidden md:flex flex-1 relative z-10"></div>
-
-                                {/* Chat Box (Transparent Glassmorphism) */}
-                                <div className="w-full md:w-[400px] lg:w-[480px] h-full flex flex-col relative bg-white/5 backdrop-blur-xl border-t md:border-t-0 md:border-l border-white/10 shrink-0 z-10 transition-all duration-500">
-                                
-                                    {/* Chat Header */}
-                                    <div className="p-4 md:p-5 border-b border-white/10 flex items-center justify-between shrink-0 bg-black/30">
-                                        <div className="flex items-center gap-3">
-                                            <div>
-                                                <h3 className="font-extrabold text-sm text-white drop-shadow-md">{selectedScenario.title}</h3>
-                                                <p className="text-[10px] text-white/80 font-bold flex items-center gap-1 mt-0.5"><SafeIcon icon={Volume2} size={12}/> {currentSpeaker === 'BROTHER' ? 'Charon Neural' : 'Aoede Neural'}</p>
-                                            </div>
-                                        </div>
-                                        <button onClick={() => { stopAudio(); setSelectedScenario(null); setMessages([]); setRoleplayPhase('none'); }} className="p-2 rounded-full bg-white/10 hover:bg-rose-500/80 text-white transition-colors shadow-sm" title={isEn ? "Close" : "ปิด"}><SafeIcon icon={X} size={18} /></button>
-                                    </div>
-                                    
-                                    {/* Messages Area */}
-                                    <div className="flex-1 p-4 overflow-y-auto custom-scrollbar space-y-4 flex flex-col relative z-30">
-                                        {messages.map((m, idx) => (
-                                            <div key={idx} className={`flex w-full ${m.sender === 'user' ? 'justify-end' : 'justify-start'} ${m.isHidden ? 'hidden' : ''}`}>
-                                                <div className={`p-3.5 rounded-2xl max-w-[85%] text-sm leading-relaxed whitespace-pre-wrap shadow-lg backdrop-blur-md border ${m.sender === 'ai' ? 'bg-white/80 border-white/50 text-slate-900 font-bold rounded-tl-none' : 'bg-blue-600/90 border-blue-400/50 text-white font-medium rounded-tr-none'}`}>
-                                                    {m.image && <img src={m.image} className="w-full rounded-lg mb-2 object-cover border border-white/20" />}
-                                                    {m.text}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+                                {SCENARIOS.map((sc) => {
+                                    const english = sc.language === 'en';
+                                    return (
+                                        <button
+                                            key={sc.id}
+                                            type="button"
+                                            onClick={() => startScenario(sc)}
+                                            className="lab-glass text-left rounded-[1.75rem] p-6 border-t-4 transition-all duration-200 hover:-translate-y-1 hover:bg-slate-800/80 active:scale-[0.99] group flex flex-col justify-between gap-5"
+                                            style={{ borderTopColor: english ? '#a855f7' : '#22d3ee' }}
+                                        >
+                                            <div className="space-y-3">
+                                                <div className="flex items-center justify-between">
+                                                    <span className={`px-3 py-1 rounded-xl font-mono text-xs font-extrabold ${
+                                                        english
+                                                            ? 'bg-purple-500/20 text-purple-300 border border-purple-400/30'
+                                                            : 'bg-cyber-500/20 text-cyber-300 border border-cyber-400/30'
+                                                    }`}>
+                                                        {english ? 'ENGLISH • EN' : 'ภาษาไทย • TH'}
+                                                    </span>
+                                                    <span className="text-xs font-semibold text-slate-400 flex items-center gap-1">
+                                                        <Icon name="Users" size={14} /> {sc.characterName}
+                                                    </span>
                                                 </div>
-                                            </div>
-                                        ))}
-                                        {isTyping && (
-                                            <div className="flex justify-start animate-in fade-in">
-                                                <div className="p-4 rounded-2xl bg-white/60 backdrop-blur-md border border-white/50 rounded-tl-none flex gap-1.5 shadow-lg">
-                                                    <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce"></div>
-                                                    <div className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
-                                                    <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
-                                                </div>
-                                            </div>
-                                        )}
-                                        
-                                        {/* Actions after AI response */}
-                                        {!isTyping && messages[messages.length-1]?.sender === 'ai' && (
-                                            <div className="flex flex-wrap justify-end gap-2 mt-2 animate-in fade-in">
-                                                {roleplayPhase === 'negotiating' && <button onClick={endScenarioAndEvaluate} className="text-[11px] bg-rose-600/90 backdrop-blur-md border border-rose-400 text-white px-4 py-2 rounded-full hover:bg-rose-500 active:scale-95 transition-all font-bold shadow-lg">{isEn ? "🛑 End Simulation (Evaluate)" : "🛑 จบการเจรจา (ประเมินผล)"}</button>}
-                                                {roleplayPhase === 'evaluating' && <><button onClick={() => startScenario(selectedScenario)} className="text-[11px] bg-cyan-600/90 backdrop-blur-md border border-cyan-400 text-white px-4 py-2 rounded-full hover:bg-cyan-500 active:scale-95 transition-all font-bold shadow-lg">{isEn ? "🔄 Retry This Case" : "🔄 ลองฝึกเคสนี้อีกครั้ง"}</button></>}
-                                            </div>
-                                        )}
-                                        <div ref={messagesEndRef} />
-                                    </div>
-                                    
-                                    {/* Input Area */}
-                                    <div className="shrink-0 p-4 bg-black/30 border-t border-white/10 relative z-30 pb-safe">
-                                        
-                                        {/* 💡 Smart Suggestions Hooks */}
-                                        {roleplayPhase === 'negotiating' && smartSuggestions.length > 0 && !isTyping && (
-                                            <div className="flex flex-col gap-2 mb-3 px-1 animate-in fade-in slide-in-from-bottom-2">
-                                                <div className="flex flex-col gap-2">
-                                                    {smartSuggestions.map((sug, i) => (
-                                                        <button key={i} onClick={() => handleSendChat(null, sug)} className="text-xs bg-white/80 hover:bg-white backdrop-blur-md border border-white/50 text-slate-800 font-medium px-4 py-2.5 rounded-xl text-left transition-colors active:scale-95 break-words line-clamp-2 shadow-lg shadow-black/10">{sug}</button>
+
+                                                <h2 className="font-display text-lg sm:text-xl font-bold text-white group-hover:text-cyber-300 transition-colors">
+                                                    {sc.title}
+                                                </h2>
+                                                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                                                    {sc.description}
+                                                </p>
+
+                                                <div className="flex flex-wrap gap-1.5 pt-1">
+                                                    {(sc.characters || []).map(ch => (
+                                                        <span key={ch.key} className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-[11px] font-semibold text-slate-300">
+                                                            {ch.displayName} ({ch.gender === 'male' ? '♂' : '♀'})
+                                                        </span>
                                                     ))}
                                                 </div>
                                             </div>
-                                        )}
 
-                                        {isVadMode && <div className="absolute -top-1 left-8 right-8 h-1 bg-transparent"><div className="h-full bg-cyan-400 transition-all duration-100 rounded-full shadow-[0_0_8px_rgba(34,211,238,1)]" style={{ width: `${Math.min(100, audioLevel * 2)}%` }}></div></div>}
-                                        {selectedImage && <div className="mb-2 relative inline-block"><img src={selectedImage} alt="Preview" className="h-14 w-14 object-cover rounded-xl border border-white/40 shadow-lg" /><button onClick={() => setSelectedImage(null)} className="absolute -top-2 -right-2 bg-slate-900 text-white rounded-full p-0.5 border border-slate-700 hover:bg-rose-500"><SafeIcon icon={X} size={14} /></button></div>}
-                                        
-                                        <form onSubmit={handleSendChat} className={`flex items-center gap-2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-1.5 pl-3 transition-colors shadow-[0_5px_15px_rgba(0,0,0,0.2)] ${isVadMode ? '!border-cyan-400 bg-cyan-900/40' : ''}`}>
-                                            <input type="file" id="ai-image-upload" accept="image/*" className="hidden" onChange={handleImageUpload} />
-                                            <label htmlFor="ai-image-upload" className="text-white hover:text-white/80 cursor-pointer p-1.5"><SafeIcon icon={ImageIcon} size={20} /></label>
-                                            <input type="text" value={chatInput} onChange={e => setChatInput(e.target.value)} placeholder={isListening ? (isEn ? "Listening..." : "กำลังฟัง...") : (isEn ? "Type a message..." : "พิมพ์ตอบกลับ หรือกดไมค์...")} disabled={isTyping || roleplayPhase === 'playing_scenario'} className="flex-1 bg-transparent text-white placeholder-white/70 px-1 outline-none text-sm font-bold drop-shadow-sm" />
-                                            
-                                            <button type="button" onClick={toggleMic} disabled={isTyping || roleplayPhase === 'playing_scenario'} className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all relative shrink-0 ${isListening ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/50' : 'bg-white/20 text-white hover:bg-white/30 border border-white/30'}`}><SafeIcon icon={Mic} size={16} />{isListening && <span className="absolute inset-0 rounded-xl border-2 border-rose-300 animate-ping opacity-75"></span>}</button>
-                                            <button type="submit" disabled={(!chatInput.trim() && !selectedImage) || isTyping || roleplayPhase === 'playing_scenario'} className="w-9 h-9 rounded-xl bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center disabled:opacity-50 transition-colors shadow-lg shrink-0"><SafeIcon icon={Send} size={16} /></button>
-                                        </form>
+                                            <div className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-biotech-500/20 to-cyber-500/20 border border-cyber-400/30 text-cyber-300 font-display font-bold text-sm flex items-center justify-between group-hover:from-biotech-500 group-hover:to-cyber-500 group-hover:text-slate-950 transition-all">
+                                                <span>{english ? 'Start Simulation' : 'เริ่มจำลองสถานการณ์'}</span>
+                                                <Icon name="ArrowRight" size={18} />
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </main>
+                    )}
+
+                    {/* ==================== VIEW 2: INTRO VIDEO BRIEFING ==================== */}
+                    {selectedScenario && roleplayPhase === 'watching_video' && (
+                        <main className="relative z-20 flex-1 flex flex-col items-center justify-center p-4 pb-safe gap-5">
+                            <div className="w-full max-w-[380px] h-[64dvh] max-h-[680px] rounded-[2rem] overflow-hidden bg-black border border-white/20 shadow-2xl relative">
+                                <iframe
+                                    src={`${selectedScenario.videoUrl}?autoplay=1&title=0&byline=0&portrait=0`}
+                                    className="absolute inset-0 w-full h-full border-none"
+                                    allow="autoplay; fullscreen"
+                                    title="Scenario Briefing Video"
+                                />
+                            </div>
+                            <div className="text-center space-y-3 w-full max-w-sm">
+                                <p className="text-xs text-slate-300">
+                                    {isEn ? 'Watch the case introduction before starting the negotiation.' : 'ชมวิดีโอทำความเข้าใจสถานการณ์เบื้องต้น หรือกดข้ามเพื่อเริ่มเจรจาได้ทันที'}
+                                </p>
+                                <button
+                                    type="button"
+                                    onClick={() => beginNegotiationPhase(selectedScenario)}
+                                    className="touch-target w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-biotech-500 to-cyber-500 text-slate-950 font-display font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-cyber-500/25 active:scale-[0.98]"
+                                >
+                                    <Icon name="SkipForward" size={18} />
+                                    {isEn ? 'Start Negotiation Now' : 'เริ่มฝึกเจรจาทันที'}
+                                </button>
+                            </div>
+                        </main>
+                    )}
+
+                    {/* ==================== VIEW 3: LIVE SIMULATION & EVALUATION ==================== */}
+                    {selectedScenario && roleplayPhase !== 'watching_video' && (
+                        <main className="relative z-10 flex-1 min-h-0 w-full max-w-7xl mx-auto md:p-4 lg:p-6 flex flex-col md:flex-row gap-0 md:gap-5 overflow-hidden">
+
+                            {/* DESKTOP LEFT PANE: HOLOGRAM VISUALIZER STAGE */}
+                            <aside className="hidden md:flex md:w-[340px] lg:w-[400px] shrink-0 lab-glass rounded-[2rem] p-6 flex-col items-center justify-between relative overflow-hidden">
+                                <div className={`absolute inset-0 bg-gradient-to-br ${emotionMeta.aura} opacity-25 pointer-events-none transition-all duration-700`} />
+
+                                {/* Active Character & Emotion Pill */}
+                                <div className="relative z-10 w-full flex items-center justify-between">
+                                    <span className="px-3 py-1 rounded-full bg-white/10 border border-white/15 font-mono text-[11px] font-bold text-slate-200">
+                                        {roleplayPhase === 'giving_context' ? 'BRIEFING' : roleplayPhase === 'evaluating' ? 'PROFILER' : 'LIVE ICU'}
+                                    </span>
+                                    <span className={`px-3 py-1 rounded-full border text-xs font-bold ${emotionMeta.color}`}>
+                                        {isEn ? emotionMeta.labelEN : emotionMeta.labelTH}
+                                    </span>
+                                </div>
+
+                                {/* Hologram Core */}
+                                <div className="relative z-10 flex flex-col items-center justify-center my-6">
+                                    <div className="relative w-56 h-56 flex items-center justify-center">
+                                        <div className={`absolute inset-0 rounded-full blur-3xl transition-opacity duration-500 bg-gradient-to-tr ${emotionMeta.aura} ${isAiSpeaking ? 'opacity-90' : 'opacity-30'}`} />
+                                        <div className={`absolute inset-2 rounded-full border-2 border-transparent border-t-cyber-400/80 border-r-cyber-400/20 ${isAiSpeaking ? 'holo-spin-cw' : 'opacity-40'}`} />
+                                        <div className={`absolute inset-7 rounded-full border-2 border-transparent border-b-biotech-400/80 border-l-biotech-400/20 ${isAiSpeaking ? 'holo-spin-ccw' : 'opacity-30'}`} />
+                                        <div className={`relative w-28 h-28 rounded-full bg-gradient-to-tr from-cyber-500/30 to-biotech-500/30 border border-white/30 backdrop-blur-md flex flex-col items-center justify-center ${isAiSpeaking ? 'holo-core-active' : ''}`}>
+                                            <Icon name={isAiSpeaking ? 'Volume2' : 'Bot'} size={36} className="text-white" />
+                                        </div>
                                     </div>
+
+                                    <h2 className="font-display text-2xl font-extrabold text-white mt-4">
+                                        {roleplayPhase === 'evaluating' ? 'Cognitive Profiler' : currentSpeaker.displayName}
+                                    </h2>
+                                    <p className="font-mono text-xs uppercase tracking-widest mt-1 text-cyber-300">
+                                        {isAiSpeaking ? 'SPEAKING...' : isTyping ? 'THINKING...' : roleplayPhase === 'giving_context' ? 'READING BRIEFING...' : 'LISTENING'}
+                                    </p>
+                                </div>
+
+                                {/* Family Roster & Quick End Button */}
+                                <div className="relative z-10 w-full space-y-3">
+                                    <div className="p-3 rounded-2xl bg-black/30 border border-white/10">
+                                        <p className="text-[10px] font-mono text-slate-400 uppercase mb-2">
+                                            {isEn ? 'Active Personas' : 'ตัวละครในห้องจำลอง'}
+                                        </p>
+                                        <div className="flex flex-wrap gap-1.5">
+                                            {(selectedScenario.characters || []).map(ch => {
+                                                const active = currentSpeaker.key === ch.key && roleplayPhase === 'negotiating';
+                                                return (
+                                                    <span
+                                                        key={ch.key}
+                                                        className={`px-2.5 py-1 rounded-xl text-xs font-bold border transition-all ${
+                                                            active
+                                                                ? 'bg-cyber-500/25 border-cyber-400 text-cyber-200'
+                                                                : 'bg-white/5 border-white/10 text-slate-400'
+                                                        }`}
+                                                    >
+                                                        {ch.displayName}
+                                                    </span>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+
+                                    {roleplayPhase === 'negotiating' && (
+                                        <button
+                                            type="button"
+                                            onClick={handleEvaluate}
+                                            disabled={isTyping}
+                                            className="touch-target w-full py-3 rounded-2xl bg-rose-500/20 hover:bg-rose-500/30 border border-rose-400/40 text-rose-200 font-display font-bold text-xs flex items-center justify-center gap-2 transition-colors"
+                                        >
+                                            <Icon name="Square" size={14} />
+                                            {isEn ? 'End & Evaluate Empathy' : 'จบการเจรจาและประเมินผล'}
+                                        </button>
+                                    )}
+                                </div>
+                            </aside>
+
+                            {/* CHAT WORKSPACE (100% Full-Screen Mobile App Experience) */}
+                            <section className="flex-1 min-h-0 flex flex-col lab-glass md:rounded-[2rem] border-x-0 border-b-0 md:border overflow-hidden">
+
+                                {/* COMPACT MOBILE HOLOGRAM HUD STRIP (ประหยัดพื้นที่จอมือถือให้เห็นแชทกว้างที่สุด) */}
+                                <div className="md:hidden shrink-0 px-3.5 py-2.5 bg-obsidian-900/90 border-b border-white/10 flex items-center justify-between gap-2">
+                                    <div className="flex items-center gap-2.5 min-w-0">
+                                        <div className={`w-10 h-10 rounded-full bg-gradient-to-tr from-cyber-500/30 to-biotech-500/30 border border-cyber-400/40 flex items-center justify-center shrink-0 ${isAiSpeaking ? 'holo-core-active' : ''}`}>
+                                            {isAiSpeaking ? (
+                                                <div className="flex items-end gap-0.5 h-4">
+                                                    <span className="w-1 h-full bg-cyber-300 rounded-full eq-bar" />
+                                                    <span className="w-1 h-full bg-biotech-300 rounded-full eq-bar" style={{ animationDelay: '0.18s' }} />
+                                                    <span className="w-1 h-full bg-cyber-300 rounded-full eq-bar" style={{ animationDelay: '0.35s' }} />
+                                                </div>
+                                            ) : (
+                                                <Icon name="Bot" size={18} className="text-cyber-300" />
+                                            )}
+                                        </div>
+                                        <div className="min-w-0">
+                                            <div className="flex items-center gap-1.5">
+                                                <span className="font-display font-bold text-sm text-white truncate">
+                                                    {roleplayPhase === 'evaluating' ? 'Cognitive Profiler' : currentSpeaker.displayName}
+                                                </span>
+                                                <span className={`px-2 py-0.5 rounded-full border text-[10px] font-bold shrink-0 ${emotionMeta.color}`}>
+                                                    {isEn ? emotionMeta.labelEN : emotionMeta.labelTH}
+                                                </span>
+                                            </div>
+                                            <p className="text-[10px] font-mono text-slate-400">
+                                                {isAiSpeaking ? 'AI กำลังพูด...' : roleplayPhase === 'giving_context' ? 'กำลังอ่านข้อมูลเบื้องต้น...' : isTyping ? 'กำลังตอบกลับ...' : 'พร้อมรับการสนทนา'}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {roleplayPhase === 'negotiating' && (
+                                        <button
+                                            type="button"
+                                            onClick={handleEvaluate}
+                                            disabled={isTyping}
+                                            className="px-3 py-2 rounded-xl bg-rose-500/20 border border-rose-400/40 text-rose-200 font-bold text-[11px] shrink-0 active:scale-95"
+                                        >
+                                            {isEn ? 'Evaluate' : 'จบ & ประเมิน'}
+                                        </button>
+                                    )}
+                                </div>
+
+                                {/* MESSAGES STREAM */}
+                                <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-3.5 sm:p-5 space-y-3.5">
+                                    {messages.map((m) => {
+                                        if (m.isContext) {
+                                            return (
+                                                <div key={m.id} className="p-3.5 rounded-2xl bg-cyber-500/10 border border-cyber-400/25 text-xs sm:text-sm text-cyber-100 leading-relaxed">
+                                                    <p className="font-mono text-[10px] font-bold text-cyber-300 uppercase mb-1 flex items-center gap-1.5">
+                                                        <Icon name="FileText" size={13} /> {m.speakerName}
+                                                    </p>
+                                                    <p>{m.text}</p>
+                                                </div>
+                                            );
+                                        }
+
+                                        if (m.isEvaluation && lastEvalResult) {
+                                            return (
+                                                <div key={m.id} className="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-obsidian-800/95 to-obsidian-900/95 border border-biotech-400/35 space-y-4 shadow-xl">
+                                                    <div className="flex items-center justify-between gap-3 pb-3 border-b border-white/10">
+                                                        <div>
+                                                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold ${
+                                                                lastEvalResult.passed
+                                                                    ? 'bg-biotech-500/20 text-biotech-300 border border-biotech-400/30'
+                                                                    : 'bg-amber-500/20 text-amber-300 border border-amber-400/30'
+                                                            }`}>
+                                                                {lastEvalResult.passed ? 'PASSED' : 'PRACTICE MORE'}
+                                                            </span>
+                                                            <h3 className="font-display text-base sm:text-lg font-bold text-white mt-1">
+                                                                {isEn ? 'Empathy Evaluation Result' : 'ผลการประเมินทักษะการเจรจา'}
+                                                            </h3>
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <p className="font-mono text-3xl font-extrabold text-biotech-300 leading-none">
+                                                                {lastEvalResult.score}
+                                                            </p>
+                                                            <p className="font-mono text-[10px] text-slate-400">/ 100</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="text-xs sm:text-sm text-slate-200 whitespace-pre-line leading-relaxed">
+                                                        {m.text}
+                                                    </div>
+
+                                                    <div className="grid grid-cols-2 gap-2.5 pt-2">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => startScenario(selectedScenario)}
+                                                            className="touch-target py-2.5 px-4 rounded-xl bg-cyber-500/20 hover:bg-cyber-500/30 border border-cyber-400/40 text-cyber-200 font-bold text-xs flex items-center justify-center gap-1.5"
+                                                        >
+                                                            <Icon name="RotateCcw" size={15} /> {isEn ? 'Retry Case' : 'ฝึกเคสนี้อีกครั้ง'}
+                                                        </button>
+                                                        <a
+                                                            href="./index.html"
+                                                            className="touch-target py-2.5 px-4 rounded-xl bg-biotech-500 hover:bg-biotech-400 text-slate-950 font-display font-bold text-xs flex items-center justify-center gap-1.5"
+                                                        >
+                                                            <Icon name="ArrowRight" size={15} /> {isEn ? 'Back to Course' : 'กลับห้องเรียนหลัก'}
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            );
+                                        }
+
+                                        const isUser = m.sender === 'user';
+                                        return (
+                                            <div key={m.id} className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}>
+                                                {!isUser && (
+                                                    <span className="text-[10px] font-bold text-slate-400 mb-1 ml-1">
+                                                        {m.speakerName}
+                                                    </span>
+                                                )}
+
+                                                <div className={`max-w-[88%] sm:max-w-[80%] p-3.5 rounded-2xl text-sm leading-relaxed shadow-md ${
+                                                    isUser
+                                                        ? 'bg-gradient-to-r from-biotech-600 to-cyber-600 text-white rounded-br-sm font-medium'
+                                                        : 'bg-white/10 border border-white/15 text-slate-100 rounded-tl-sm'
+                                                }`}>
+                                                    {m.image && (
+                                                        <img src={m.image} alt="Uploaded" className="w-full max-h-56 object-cover rounded-xl mb-2 border border-white/20" />
+                                                    )}
+
+                                                    {/* Voice-First Mode: ซ่อนข้อความเป็นแถบเสียงขณะ AI พูด และแตะเปิดอ่านได้ตลอด */}
+                                                    {m.isVoiceOnly ? (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setMessages(prev => prev.map(x => (x.id === m.id ? { ...x, isVoiceOnly: false } : x)))}
+                                                            className="flex items-center gap-3 text-left text-xs text-cyber-200"
+                                                        >
+                                                            <div className="flex items-end gap-0.5 h-4 shrink-0">
+                                                                <span className="w-1 h-full bg-cyber-400 rounded-full eq-bar" />
+                                                                <span className="w-1 h-full bg-biotech-400 rounded-full eq-bar" style={{ animationDelay: '0.15s' }} />
+                                                                <span className="w-1 h-full bg-cyber-400 rounded-full eq-bar" style={{ animationDelay: '0.3s' }} />
+                                                            </div>
+                                                            <span>{isEn ? 'Listening to voice... (Tap to show transcript)' : 'กำลังฟังเสียงญาติ... (แตะเพื่อเปิดอ่านข้อความ)'}</span>
+                                                        </button>
+                                                    ) : (
+                                                        <span className="whitespace-pre-wrap">{m.text}</span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+
+                                    {isTyping && (
+                                        <div className="flex justify-start">
+                                            <div className="px-4 py-3 rounded-2xl bg-white/10 border border-white/15 flex items-center gap-1.5">
+                                                <span className="w-2 h-2 rounded-full bg-cyber-400 animate-bounce" />
+                                                <span className="w-2 h-2 rounded-full bg-biotech-400 animate-bounce" style={{ animationDelay: '0.15s' }} />
+                                                <span className="w-2 h-2 rounded-full bg-cyber-400 animate-bounce" style={{ animationDelay: '0.3s' }} />
+                                            </div>
+                                        </div>
+                                    )}
+                                    <div ref={messagesEndRef} />
+                                </div>
+
+                                {/* BOTTOM COMPOSER AREA (Thumb-Friendly + Safe Area) */}
+                                <div className="shrink-0 p-3 sm:p-4 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] bg-obsidian-900/95 border-t border-white/10 space-y-2.5">
+
+                                    {/* Smart Suggestion Chips */}
+                                    {roleplayPhase === 'negotiating' && smartSuggestions.length > 0 && !isTyping && (
+                                        <div className="flex flex-col gap-1.5">
+                                            <p className="text-[10px] font-mono text-slate-400 px-1 flex items-center gap-1">
+                                                <Icon name="Lightbulb" size={11} className="text-amber-300" />
+                                                {isEn ? 'Suggested empathetic replies:' : 'แนวทางคำพูดแนะนำ (แตะเพื่อส่ง):'}
+                                            </p>
+                                            <div className="flex flex-col sm:grid sm:grid-cols-2 gap-1.5">
+                                                {smartSuggestions.map((sug, idx) => (
+                                                    <button
+                                                        key={idx}
+                                                        type="button"
+                                                        onClick={() => handleSendChat(null, sug)}
+                                                        className="text-left px-3 py-2 rounded-xl bg-white/8 hover:bg-white/15 border border-white/15 text-[11px] sm:text-xs text-slate-200 line-clamp-2 transition-colors active:scale-[0.99]"
+                                                    >
+                                                        {sug}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* VAD Audio Volume Bar */}
+                                    {isListening && (
+                                        <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+                                            <div
+                                                className="h-full bg-gradient-to-r from-biotech-400 to-cyber-400 transition-all duration-75"
+                                                style={{ width: `${Math.max(8, audioLevel)}%` }}
+                                            />
+                                        </div>
+                                    )}
+
+                                    {/* Attached Image Preview */}
+                                    {selectedImage && (
+                                        <div className="relative inline-block">
+                                            <img src={selectedImage} alt="Preview" className="h-14 w-14 rounded-xl object-cover border border-white/30" />
+                                            <button
+                                                type="button"
+                                                onClick={() => setSelectedImage(null)}
+                                                className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-rose-500 text-white flex items-center justify-center"
+                                            >
+                                                <Icon name="X" size={13} />
+                                            </button>
+                                        </div>
+                                    )}
+
+                                    {/* Input Form (ล็อกอัตโนมัติระหว่าง giving_context / evaluating / isTyping) */}
+                                    <form onSubmit={handleSendChat} className="flex items-center gap-2">
+                                        <input type="file" id="lab-img-upload" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={isInputLocked} />
+                                        <label
+                                            htmlFor="lab-img-upload"
+                                            className={`touch-target w-11 h-11 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center shrink-0 transition-colors ${
+                                                isInputLocked ? 'opacity-40 pointer-events-none' : 'text-slate-300 hover:bg-white/15 cursor-pointer'
+                                            }`}
+                                        >
+                                            <Icon name="Image" size={18} />
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            value={chatInput}
+                                            onChange={e => setChatInput(e.target.value)}
+                                            disabled={isInputLocked}
+                                            placeholder={
+                                                roleplayPhase === 'giving_context'
+                                                    ? (isEn ? 'Reading case briefing...' : 'กำลังอ่านข้อมูลเบื้องต้น...')
+                                                    : roleplayPhase === 'evaluating'
+                                                        ? (isEn ? 'Simulation ended.' : 'จบการประเมินแล้ว')
+                                                        : isListening
+                                                            ? (isEn ? 'Listening...' : 'กำลังฟังเสียงพูด...')
+                                                            : (isEn ? 'Type or tap mic to speak...' : 'พิมพ์โต้ตอบ หรือกดไมค์พูด...')
+                                            }
+                                            className="touch-target flex-1 px-4 py-2.5 rounded-2xl bg-white/10 border border-white/15 text-white placeholder-slate-400 focus:outline-none focus:border-cyber-400 disabled:opacity-50 text-sm"
+                                        />
+
+                                        <button
+                                            type="button"
+                                            onClick={toggleMic}
+                                            disabled={isInputLocked}
+                                            aria-label="เปิด/ปิดไมโครโฟน"
+                                            className={`touch-target w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 transition-all disabled:opacity-40 ${
+                                                isListening
+                                                    ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/40 animate-pulse'
+                                                    : 'bg-white/10 hover:bg-white/15 border border-white/15 text-slate-200'
+                                            }`}
+                                        >
+                                            <Icon name={isListening ? 'MicOff' : 'Mic'} size={18} />
+                                        </button>
+
+                                        <button
+                                            type="submit"
+                                            disabled={isInputLocked || (!chatInput.trim() && !selectedImage)}
+                                            aria-label="ส่งข้อความ"
+                                            className="touch-target w-11 h-11 rounded-2xl bg-gradient-to-r from-biotech-500 to-cyber-500 disabled:from-slate-700 disabled:to-slate-700 disabled:text-slate-400 text-slate-950 flex items-center justify-center shrink-0 shadow-md active:scale-95"
+                                        >
+                                            <Icon name="Send" size={18} />
+                                        </button>
+                                    </form>
+                                </div>
+                            </section>
+                        </main>
+                    )}
+
+                    {/* ==================== EVALUATION HISTORY MODAL ==================== */}
+                    {showHistoryModal && (
+                        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
+                            <div className="w-full sm:max-w-lg max-h-[82dvh] flex flex-col bg-obsidian-900 border border-white/15 rounded-t-[2rem] sm:rounded-[2rem] p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] shadow-2xl">
+                                <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                                    <h3 className="font-display font-bold text-base text-white flex items-center gap-2">
+                                        <Icon name="History" size={18} className="text-cyber-300" /> ประวัติผลการประเมิน Skill Lab
+                                    </h3>
+                                    <button onClick={() => setShowHistoryModal(false)} className="w-9 h-9 rounded-full bg-white/10 text-slate-300 flex items-center justify-center">
+                                        <Icon name="X" size={18} />
+                                    </button>
+                                </div>
+
+                                <div className="flex-1 overflow-y-auto custom-scrollbar py-4 space-y-3">
+                                    {(user?.skillLabHistory || []).length > 0 ? (
+                                        [...user.skillLabHistory].reverse().map((item, i) => (
+                                            <div key={i} className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+                                                <div className="flex items-center justify-between gap-2">
+                                                    <span className="font-display font-bold text-sm text-white truncate">
+                                                        {item.scenarioTitle || `Case #${item.scenarioId}`}
+                                                    </span>
+                                                    <span className={`font-mono text-sm font-extrabold px-2.5 py-0.5 rounded-full ${
+                                                        item.passed ? 'bg-biotech-500/20 text-biotech-300' : 'bg-amber-500/20 text-amber-300'
+                                                    }`}>
+                                                        {item.score}/100
+                                                    </span>
+                                                </div>
+                                                <p className="text-[11px] font-mono text-slate-400">
+                                                    {item.timestamp ? new Date(item.timestamp).toLocaleString('th-TH') : ''}
+                                                </p>
+                                                <p className="text-xs text-slate-300 whitespace-pre-line leading-relaxed line-clamp-5">
+                                                    {item.evaluation}
+                                                </p>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="text-center py-10 text-sm text-slate-400">
+                                            ยังไม่มีประวัติการประเมิน ลองเลือกกรณีศึกษาเพื่อเริ่มฝึกได้เลยค่ะ
+                                        </div>
+                                    )}
                                 </div>
                             </div>
-                        )}
-                    </div>
+                        </div>
+                    )}
+
+                    <ToastBanner toast={toast} />
                 </div>
             );
         }
