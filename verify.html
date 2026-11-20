@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#f8fafc">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>ตรวจสอบประกาศนียบัตร — rjcloud.organ 2027</title>
+
+    <!-- 🌟 โหลดค่าตั้งต้นและข้อมูลกลางจาก data.js 🌟 -->
+    <script src="./data.js"></script>
+
+    <!-- 🌟 Tailwind CSS & Fonts (Prompt + Sarabun + JetBrains Mono) 🌟 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Prompt:wght@500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- 🌟 ไลบรารีสแกน QR Code ผ่านกล้องมือถือ (html5-qrcode) 🌟 -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              display: ['Prompt', 'sans-serif'],
+              sans: ['Sarabun', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace']
+            },
+            colors: {
+              clinical: {
+                50: '#ecfdf5',
+                100: '#d1fae5',
+                200: '#a7f3d0',
+                400: '#34d399',
+                500: '#10b981',
+                600: '#059669',
+                700: '#047857',
+                900: '#064e3b'
+              },
+              medical: {
+                50: '#f0f9ff',
+                100: '#e0f2fe',
+                500: '#0ea5e9',
+                600: '#0284c7',
+                700: '#0369a1'
+              }
+            }
+          }
+        }
+      };
+    </script>
+
+    <style>
+      html {
+        -webkit-tap-highlight-color: transparent;
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: 'Sarabun', sans-serif;
+        background-color: #f8fafc;
+        color: #0f172a;
+        margin: 0;
+        overflow-x: hidden;
+        overscroll-behavior-y: none;
+      }
+
+      /* 🌟 Mobile-First 100% Safe Area & Touch Optimization 🌟 */
+      .min-h-dvh { min-height: 100vh; min-height: 100dvh; }
+      .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+      .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+      .touch-target { min-height: 48px; touch-action: manipulation; }
+
+      /* ป้องกัน iOS Safari ซูมหน้าจออัตโนมัติตอนแตะช่องกรอกรหัส */
+      @media (max-width: 768px) {
+        input, select, textarea { font-size: 16px !important; }
+      }
+
+      /* 🌟 2027 Pearl Clinical Aura Background (โทนสว่างคู่กับ index.html) 🌟 */
+      .aura-canvas {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background:
+          radial-gradient(circle at 12% 14%, rgba(16, 185, 129, 0.16) 0%, transparent 46%),
+          radial-gradient(circle at 88% 12%, rgba(14, 165, 233, 0.15) 0%, transparent 45%),
+          radial-gradient(circle at 75% 88%, rgba(45, 212, 191, 0.14) 0%, transparent 48%),
+          linear-gradient(180deg, #ffffff 0%, #f8fafc 55%, #f1f5f9 100%);
+        pointer-events: none;
+      }
+      .aura-grid {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background-image:
+          linear-gradient(to right, rgba(15, 23, 42, 0.028) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(15, 23, 42, 0.028) 1px, transparent 1px);
+        background-size: 40px 40px;
+        mask-image: radial-gradient(ellipse at center, black 45%, transparent 90%);
+        pointer-events: none;
+      }
+
+      /* 🌟 Bento Glass Card 🌟 */
+      .bento-glass {
+        background: rgba(255, 255, 255, 0.80);
+        backdrop-filter: blur(22px);
+        -webkit-backdrop-filter: blur(22px);
+        border: 1px solid rgba(255, 255, 255, 0.92);
+        box-shadow: 0 12px 32px -10px rgba(15, 23, 42, 0.07), 0 2px 6px rgba(15, 23, 42, 0.03);
+      }
+
+      /* 🌟 QR Scanner Styling 🌟 */
+      #qr-reader video {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        border-radius: 1rem;
+      }
+      #qr-reader__dashboard, #qr-reader__status_span {
+        display: none !important;
+      }
+
+      @keyframes scanLine {
+        0% { transform: translateY(0%); opacity: 0.3; }
+        50% { opacity: 1; }
+        100% { transform: translateY(100%); opacity: 0.3; }
+      }
+      .scan-beam {
+        animation: scanLine 2.2s ease-in-out infinite alternate;
+      }
+
+      @media print {
+        .no-print { display: none !important; }
+        .aura-canvas, .aura-grid { display: none !important; }
+        body { background: #ffffff !important; }
+        .bento-glass { box-shadow: none !important; border: 1px solid #cbd5e1 !important; }
+      }
+    </style>
+
+    <!-- 🌟 ESM Import Map (React 18, Lucide Icons, Firebase 11) 🌟 -->
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@18.2.0",
+        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+        "lucide-react": "https://esm.sh/lucide-react@0.344.0?external=react",
+        "firebase/app": "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"
+      }
+    }
+    </script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+    <div id="verify-root"></div>
+
+    <script type="text/babel" data-type="module">
+        import React, { useState, useEffect, useRef, useCallback } from 'react';
+        import { createRoot } from 'react-dom/client';
+        import * as LucideIcons from 'lucide-react';
+        import { initializeApp, getApps, getApp } from 'firebase/app';
+        import { getAuth, signInAnonymously } from 'firebase/auth';
+        import { getFirestore, doc, getDoc } from 'firebase/firestore';
+
+        // ============================================================================
+        // 1. CONFIGURATION & FIREBASE INITIALIZATION
+        // ============================================================================
+        const CONFIG = window.RJCLOUD_CONFIG || {
+            appName: 'rjcloud.organ',
+            edition: '2027 Clinical Edition',
+            contactEmail: 'rjcloud.organ@gmail.com',
+            appId: 'rjcloud-organ-2027',
+            firebaseConfig: {}
+        };
+
+        const DEFAULT_CERT = window.DEFAULT_CERT_TEMPLATE || {
+            certPrefix: 'RJC-2027',
+            orgTitleTH: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ',
+            courseTitleTH: 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ',
+            signerName: 'นายแพทย์สมชาย ตัวอย่างดี',
+            signerPosition: 'ผู้อำนวยการโครงการ rjcloud.organ'
+        };
+
+        // ข้อมูลตัวอย่างสำหรับกดทดสอบระบบตรวจสอบก่อนเชื่อมต่อฐานข้อมูลจริง
+        const SAMPLE_DEMO_CERTS = {
+            'RJC-2027-DEMO01': {
+                code: 'RJC-2027-DEMO01',
+                name: 'พว.ใจดี มีเมตตา (ตัวอย่างทดสอบ)',
+                license: 'ว.65012345',
+                position: 'พยาบาลวิชาชีพชำนาญการ (ICU)',
+                hospital: 'โรงพยาบาลราชวิถี',
+                department: 'กรมการแพทย์',
+                province: 'กรุงเทพมหานคร',
+                userType: 'Masterclass',
+                courseTitleTH: DEFAULT_CERT.courseTitleTH,
+                orgTitleTH: DEFAULT_CERT.orgTitleTH,
+                signerName: DEFAULT_CERT.signerName,
+                signerPosition: DEFAULT_CERT.signerPosition,
+                posttestScore: '38/40',
+                issuedAt: '2027-01-15T09:30:00.000Z',
+                status: 'valid',
+                source: 'demo'
+            }
+        };
+
+        let fbApp = null, fbAuth = null, fbDb = null;
+        const isCloudConfigured = Boolean(CONFIG.firebaseConfig?.apiKey && CONFIG.firebaseConfig?.projectId);
+
+        if (isCloudConfigured) {
+            try {
+                fbApp = getApps().length === 0 ? initializeApp(CONFIG.firebaseConfig) : getApp();
+                fbAuth = getAuth(fbApp);
+                fbDb = getFirestore(fbApp);
+            } catch (err) {
+                console.warn('Firebase init skipped:', err);
+            }
+        }
+
+        // ============================================================================
+        // 2. HELPERS & UI ATOMS
+        // ============================================================================
+        function Icon({ name, size = 20, className = "", strokeWidth = 2 }) {
+            const Comp = LucideIcons[name] || LucideIcons.ShieldCheck;
+            return <Comp size={size} className={className} strokeWidth={strokeWidth} />;
+        }
+
+        /**
+         * แยกสกัดรหัสประกาศนียบัตรออกจากข้อความที่สแกน QR ได้ (รองรับทั้ง URL และรหัสล้วน)
+         */
+        function extractCertCode(rawInput) {
+            if (!rawInput) return '';
+            const trimmed = String(rawInput).trim();
+            try {
+                if (trimmed.includes('http://') || trimmed.includes('https://') || trimmed.includes('code=')) {
+                    const urlObj = new URL(trimmed.startsWith('http') ? trimmed : `https://example.com/${trimmed}`);
+                    const fromParam = urlObj.searchParams.get('code');
+                    if (fromParam) return fromParam.trim().toUpperCase();
+                }
+            } catch (_) {
+                // fallback to regex if URL parsing fails
+                const match = trimmed.match(/code=([A-Za-z0-9\-_]+)/i);
+                if (match && match[1]) return match[1].trim().toUpperCase();
+            }
+            return trimmed.toUpperCase();
+        }
+
+        /**
+         * แปลงวันที่เป็นรูปแบบภาษาไทย (พ.ศ.)
+         */
+        function formatThaiDate(isoStr) {
+            try {
+                const date = isoStr ? new Date(isoStr) : new Date();
+                if (isNaN(date.getTime())) return '—';
+                return date.toLocaleDateString('th-TH', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            } catch {
+                return '—';
+            }
+        }
+
+        /**
+         * ซ่อนเลขใบประกอบวิชาชีพบางส่วนเพื่อความปลอดภัยด้าน PDPA (โชว์ 3 ตัวหน้า + 3 ตัวท้าย)
+         */
+        function maskLicense(val) {
+            const s = String(val || '').trim();
+            if (!s) return '—';
+            if (s.length <= 5) return s;
+            return `${s.slice(0, 3)}${'•'.repeat(Math.max(2, s.length - 6))}${s.slice(-3)}`;
+        }
+
+        /**
+         * คัดลอกข้อความลงคลิปบอร์ดอย่างปลอดภัยในทุกเบราว์เซอร์และ iFrame
+         */
+        function copyTextFallback(text) {
+            const el = document.createElement('textarea');
+            el.value = text;
+            el.setAttribute('readonly', '');
+            el.style.position = 'fixed';
+            el.style.opacity = '0';
+            document.body.appendChild(el);
+            el.select();
+            let ok = false;
+            try {
+                ok = document.execCommand('copy');
+            } catch (_) {
+                ok = false;
+            }
+            document.body.removeChild(el);
+            return ok;
+        }
+
+        /**
+         * ค้นหาใบประกาศนียบัตรที่สร้างบนเครื่องนี้จาก localStorage (สำหรับโหมด Sandbox/Demo)
+         */
+        function findLocalCertificate(code) {
+            try {
+                // ตรวจสอบจาก cache ใบประกาศฯ ที่บันทึกไว้
+                const savedCerts = JSON.parse(localStorage.getItem('rjcloud_local_certificates') || '{}');
+                if (savedCerts[code]) return { ...savedCerts[code], source: 'local' };
+
+                // ตรวจสอบจาก session ของผู้เรียนล่าสุดใน index.html
+                const possibleKeys = ['rjcloud_organ_state_v2027', 'rjcloud_user_v2027', 'elearning_app_state'];
+                for (const key of possibleKeys) {
+                    const raw = localStorage.getItem(key);
+                    if (!raw) continue;
+                    const parsed = JSON.parse(raw);
+                    const u = parsed?.user || parsed?.loggedInUser || parsed;
+                    if (u && (String(u.certificateCode || '').toUpperCase() === code)) {
+                        return {
+                            code,
+                            name: u.name || 'ผู้สำเร็จการอบรม',
+                            license: u.license || u.licenseId || u.id || '',
+                            position: u.position || 'บุคลากรทางการแพทย์',
+                            hospital: u.hospital || 'เครือข่าย rjcloud.organ',
+                            department: u.department || '',
+                            province: u.province || '',
+                            userType: u.userType || 'เรียนใหม่',
+                            courseTitleTH: DEFAULT_CERT.courseTitleTH,
+                            orgTitleTH: DEFAULT_CERT.orgTitleTH,
+                            signerName: DEFAULT_CERT.signerName,
+                            signerPosition: DEFAULT_CERT.signerPosition,
+                            posttestScore: u.posttest || 'ผ่านเกณฑ์',
+                            issuedAt: u.certificateIssuedAt || new Date().toISOString(),
+                            status: 'valid',
+                            source: 'local'
+                        };
+                    }
+                }
+            } catch (err) {
+                console.warn('Local lookup error:', err);
+            }
+            return null;
+        }
+
+        function ToastBanner({ toast }) {
+            if (!toast.visible) return null;
+            return (
+                <div className="fixed top-[calc(1rem+env(safe-area-inset-top,0px))] left-1/2 -translate-x-1/2 z-[100] w-[92vw] max-w-md pointer-events-none">
+                    <div className={`px-4 py-3 rounded-2xl shadow-xl border backdrop-blur-xl flex items-center gap-2.5 text-sm font-bold ${
+                        toast.type === 'error'
+                            ? 'bg-rose-50/95 border-rose-200 text-rose-700'
+                            : 'bg-clinical-50/95 border-clinical-200 text-clinical-800'
+                    }`}>
+                        <Icon name={toast.type === 'error' ? 'AlertCircle' : 'CheckCircle2'} size={18} className="shrink-0" />
+                        <span>{toast.text}</span>
+                    </div>
+                </div>
+            );
+        }
+
+        // ============================================================================
+        // 3. CAMERA QR SCANNER MODAL (100% Smartphone Ready)
+        // ============================================================================
+        function QrScannerModal({ isOpen, onClose, onScanSuccess }) {
+            const [camError, setCamError] = useState('');
+            const [isStarting, setIsStarting] = useState(true);
+            const scannerRef = useRef(null);
+            const hasScannedRef = useRef(false);
+
+            useEffect(() => {
+                if (!isOpen) return;
+                hasScannedRef.current = false;
+                setCamError('');
+                setIsStarting(true);
+
+                let active = true;
+
+                const startScanner = async () => {
+                    if (!window.Html5Qrcode) {
+                        setCamError('ไม่พบไลบรารีสแกน QR กรุณารีเฟรชหน้าเว็บหรือกรอกรหัสด้วยตนเองค่ะ');
+                        setIsStarting(false);
+                        return;
+                    }
+                    try {
+                        const html5Qr = new window.Html5Qrcode('qr-reader');
+                        scannerRef.current = html5Qr;
+                        await html5Qr.start(
+                            { facingMode: 'environment' },
+                            { fps: 10, qrbox: { width: 220, height: 220 }, aspectRatio: 1.0 },
+                            (decodedText) => {
+                                if (hasScannedRef.current) return;
+                                hasScannedRef.current = true;
+                                const extracted = extractCertCode(decodedText);
+                                onScanSuccess(extracted);
+                            },
+                            () => {} // เงียบ error ระหว่างค้นหา QR ในแต่ละเฟรม
+                        );
+                        if (active) setIsStarting(false);
+                    } catch (err) {
+                        console.warn('QR camera start failed:', err);
+                        if (active) {
+                            setIsStarting(false);
+                            setCamError('ไม่สามารถเปิดกล้องได้ (กรุณาอนุญาตสิทธิ์กล้องบนเบราว์เซอร์ หรือพิมพ์รหัสประกาศนียบัตรด้านล่างแทนค่ะ)');
+                        }
+                    }
+                };
+
+                const timer = setTimeout(startScanner, 150);
+
+                return () => {
+                    active = false;
+                    clearTimeout(timer);
+                    if (scannerRef.current) {
+                        const instance = scannerRef.current;
+                        scannerRef.current = null;
+                        Promise.resolve()
+                            .then(() => instance.isScanning ? instance.stop() : null)
+                            .then(() => instance.clear())
+                            .catch(() => {});
+                    }
+                };
+            }, [isOpen, onScanSuccess]);
+
+            if (!isOpen) return null;
+
+            return (
+                <div className="fixed inset-0 z-50 bg-slate-900/75 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
+                    <div className="w-full sm:max-w-md bg-white rounded-t-[2rem] sm:rounded-[2rem] p-5 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] shadow-2xl border border-slate-100">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2.5">
+                                <div className="w-9 h-9 rounded-xl bg-clinical-50 text-clinical-600 flex items-center justify-center">
+                                    <Icon name="Camera" size={20} />
+                                </div>
+                                <div>
+                                    <h3 className="font-display font-bold text-base text-slate-900">สแกน QR ประกาศนียบัตร</h3>
+                                    <p className="text-xs text-slate-500">วาง QR Code ให้อยู่ในกรอบสี่เหลี่ยม</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={onClose}
+                                aria-label="ปิดกล้อง"
+                                className="touch-target w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center active:scale-95"
+                            >
+                                <Icon name="X" size={20} />
+                            </button>
+                        </div>
+
+                        <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-slate-950 border border-slate-200 flex items-center justify-center">
+                            <div id="qr-reader" className="w-full h-full" />
+
+                            {/* กรอบเล็ง QR Code สไตล์คลินิก 2027 */}
+                            {!camError && (
+                                <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+                                    <div className="w-56 h-56 relative">
+                                        <span className="absolute top-0 left-0 w-7 h-7 border-t-4 border-l-4 border-clinical-400 rounded-tl-xl" />
+                                        <span className="absolute top-0 right-0 w-7 h-7 border-t-4 border-r-4 border-clinical-400 rounded-tr-xl" />
+                                        <span className="absolute bottom-0 left-0 w-7 h-7 border-b-4 border-l-4 border-clinical-400 rounded-bl-xl" />
+                                        <span className="absolute bottom-0 right-0 w-7 h-7 border-b-4 border-r-4 border-clinical-400 rounded-br-xl" />
+                                        <div className="absolute inset-x-2 top-0 h-full overflow-hidden">
+                                            <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-clinical-400 to-transparent shadow-[0_0_12px_#34d399] scan-beam" />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {isStarting && !camError && (
+                                <div className="absolute inset-0 bg-slate-950/80 flex flex-col items-center justify-center text-white gap-3">
+                                    <div className="w-9 h-9 border-4 border-clinical-400 border-t-transparent rounded-full animate-spin" />
+                                    <p className="text-xs font-medium text-slate-300">กำลังเปิดกล้องสมาร์ทโฟน...</p>
+                                </div>
+                            )}
+
+                            {camError && (
+                                <div className="absolute inset-0 bg-slate-900/95 p-6 flex flex-col items-center justify-center text-center gap-3">
+                                    <div className="w-12 h-12 rounded-2xl bg-rose-500/20 text-rose-400 flex items-center justify-center">
+                                        <Icon name="CameraOff" size={24} />
+                                    </div>
+                                    <p className="text-sm font-medium text-slate-200 leading-relaxed">{camError}</p>
+                                </div>
+                            )}
+                        </div>
+
+                        <button
+                            onClick={onClose}
+                            className="touch-target w-full mt-4 py-3.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-display font-semibold text-sm transition-colors"
+                        >
+                            ปิดกล้องและพิมพ์รหัสเอง
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+
+        // ============================================================================
+        // 4. MAIN VERIFICATION APPLICATION
+        // ============================================================================
+        function VerifyApp() {
+            const [inputCode, setInputCode] = useState('');
+            const [status, setStatus] = useState('idle'); // idle | loading | verified | not_found | error
+            const [record, setRecord] = useState(null);
+            const [lastSearched, setLastSearched] = useState('');
+            const [scannerOpen, setScannerOpen] = useState(false);
+            const [toast, setToast] = useState({ visible: false, text: '', type: 'success' });
+
+            const showToast = useCallback((text, type = 'success') => {
+                setToast({ visible: true, text, type });
+                setTimeout(() => setToast(p => ({ ...p, visible: false })), 3200);
+            }, []);
+
+            /**
+             * ฟังก์ชันตรวจสอบรหัสประกาศนียบัตร (Cloud Firestore -> Local Cache -> Demo Sample)
+             */
+            const verifyCode = useCallback(async (rawCode) => {
+                const code = extractCertCode(rawCode);
+                if (!code) {
+                    showToast('กรุณากรอกรหัสประกาศนียบัตรก่อนตรวจสอบค่ะ', 'error');
+                    return;
+                }
+
+                setInputCode(code);
+                setLastSearched(code);
+                setStatus('loading');
+                setRecord(null);
+
+                // อัปเดต URL query string เพื่อให้แชร์ลิงก์ผลตรวจต่อได้ทันที
+                try {
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('code', code);
+                    window.history.replaceState({}, '', url.toString());
+                } catch (_) {}
+
+                // 1. ตรวจสอบจากตัวอย่าง Demo (เพื่อให้ผู้ใช้ทดลองดูหน้าตาได้ทันที)
+                if (SAMPLE_DEMO_CERTS[code]) {
+                    await new Promise(r => setTimeout(r, 350));
+                    setRecord(SAMPLE_DEMO_CERTS[code]);
+                    setStatus('verified');
+                    return;
+                }
+
+                // 2. ตรวจสอบจาก Cloud Firestore (เมื่อตั้งค่า Firebase ใน data.js แล้ว)
+                if (isCloudConfigured && fbAuth && fbDb) {
+                    try {
+                        if (!fbAuth.currentUser) {
+                            await signInAnonymously(fbAuth);
+                        }
+                        const certRef = doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'certificates', code);
+                        const snap = await getDoc(certRef);
+                        if (snap.exists()) {
+                            const data = snap.data();
+                            setRecord({
+                                code: data.code || code,
+                                name: data.name || 'ผู้สำเร็จการอบรม',
+                                license: data.license || data.licenseId || '',
+                                position: data.position || 'บุคลากรทางการแพทย์',
+                                hospital: data.hospital || 'เครือข่าย rjcloud.organ',
+                                department: data.department || '',
+                                province: data.province || '',
+                                userType: data.userType || 'เรียนใหม่',
+                                courseTitleTH: data.courseTitleTH || DEFAULT_CERT.courseTitleTH,
+                                orgTitleTH: data.orgTitleTH || DEFAULT_CERT.orgTitleTH,
+                                signerName: data.signerName || DEFAULT_CERT.signerName,
+                                signerPosition: data.signerPosition || DEFAULT_CERT.signerPosition,
+                                posttestScore: data.posttestScore || data.posttest || 'ผ่านเกณฑ์',
+                                issuedAt: data.issuedAt || data.certificateIssuedAt || '',
+                                status: data.status || 'valid',
+                                source: 'cloud'
+                            });
+                            setStatus('verified');
+                            return;
+                        }
+                    } catch (err) {
+                        console.error('Firestore verify error:', err);
+                        // ถ้าเชื่อมต่อ Cloud ล้มเหลว ลองเช็ก Local Cache เป็นแผนสำรอง
+                    }
+                }
+
+                // 3. ตรวจสอบจาก Local Cache (สำหรับประกาศนียบัตรที่เพิ่งสร้างในโหมด Sandbox บนเครื่องเดียวกัน)
+                const localHit = findLocalCertificate(code);
+                if (localHit) {
+                    setRecord(localHit);
+                    setStatus('verified');
+                    return;
+                }
+
+                // 4. หากไม่พบข้อมูลใดๆ
+                await new Promise(r => setTimeout(r, 300));
+                setStatus('not_found');
+            }, [showToast]);
+
+            // ตรวจสอบอัตโนมัติทันทีถ้าเปิดลิงก์มาจาก QR Code (?code=...)
+            useEffect(() => {
+                try {
+                    const params = new URLSearchParams(window.location.search);
+                    const initialCode = params.get('code');
+                    if (initialCode) {
+                        verifyCode(initialCode);
+                    }
+                } catch (_) {}
+            }, [verifyCode]);
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                verifyCode(inputCode);
+            };
+
+            const handleScanResult = useCallback((scannedCode) => {
+                setScannerOpen(false);
+                if (scannedCode) {
+                    showToast(`สแกนพบรหัส ${scannedCode} กำลังตรวจสอบ...`);
+                    verifyCode(scannedCode);
+                }
+            }, [verifyCode, showToast]);
+
+            const handleShareOrCopy = async () => {
+                const verifyUrl = `${window.location.origin}${window.location.pathname}?code=${encodeURIComponent(record?.code || lastSearched)}`;
+                try {
+                    if (navigator.share) {
+                        await navigator.share({
+                            title: `ผลการรับรองประกาศนียบัตร ${record?.code || ''}`,
+                            text: `ยืนยันความถูกต้องประกาศนียบัตร rjcloud.organ ของ ${record?.name || ''}`,
+                            url: verifyUrl
+                        });
+                        return;
+                    }
+                } catch (err) {
+                    if (err?.name === 'AbortError') return;
+                }
+                const copied = copyTextFallback(verifyUrl);
+                if (copied) showToast('คัดลอกลิงก์ยืนยันความถูกต้องแล้วค่ะ');
+                else showToast('ไม่สามารถคัดลอกลิงก์ได้ในขณะนี้ค่ะ', 'error');
+            };
+
+            return (
+                <div className="min-h-dvh relative flex flex-col pt-safe pb-safe">
+                    <div className="aura-canvas" />
+                    <div className="aura-grid" />
+
+                    {/* Top App Header */}
+                    <header className="relative z-20 sticky top-0 backdrop-blur-xl bg-white/80 border-b border-slate-200/70 no-print">
+                        <div className="max-w-3xl mx-auto px-4 h-14 md:h-16 flex items-center justify-between gap-2">
+                            <a href="./index.html" className="flex items-center gap-2.5 group">
+                                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-clinical-500 to-teal-600 text-white flex items-center justify-center shadow-sm">
+                                    <Icon name="HeartPulse" size={19} />
+                                </div>
+                                <div>
+                                    <span className="font-display font-extrabold text-base text-slate-900 block leading-none">
+                                        rjcloud<span className="text-clinical-600">.organ</span>
+                                    </span>
+                                    <span className="text-[10px] font-mono font-semibold text-slate-500 uppercase tracking-wider">
+                                        Verify Portal
+                                    </span>
+                                </div>
+                            </a>
+
+                            <a
+                                href="./index.html"
+                                className="touch-target px-3.5 py-2 rounded-xl bg-slate-100/90 hover:bg-slate-200/80 text-slate-700 font-bold text-xs inline-flex items-center gap-1.5 transition-colors"
+                            >
+                                <Icon name="ArrowLeft" size={15} /> หน้าหลักผู้เรียน
+                            </a>
+                        </div>
+                    </header>
+
+                    {/* Main Content Container */}
+                    <main className="relative z-10 flex-1 w-full max-w-2xl mx-auto px-3.5 sm:px-6 py-6 md:py-10 space-y-5">
+                        {/* Search & Scan Card */}
+                        <section className="bento-glass rounded-[1.75rem] p-5 sm:p-7 no-print">
+                            <div className="flex items-start justify-between gap-3 mb-4">
+                                <div>
+                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-clinical-50 border border-clinical-200/70 text-clinical-700 font-mono text-[10px] font-bold">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-clinical-500" />
+                                        {isCloudConfigured ? 'CLOUD VERIFICATION ACTIVE' : 'SANDBOX & DEMO READY'}
+                                    </span>
+                                    <h1 className="font-display text-xl sm:text-2xl font-bold text-slate-900 mt-2 leading-tight">
+                                        ตรวจสอบประกาศนียบัตรอิเล็กทรอนิกส์
+                                    </h1>
+                                    <p className="text-xs sm:text-sm text-slate-500 mt-1">
+                                        สแกน QR Code จากใบประกาศฯ หรือกรอกรหัสอ้างอิงเพื่อยืนยันความถูกต้อง
+                                    </p>
+                                </div>
+                                <div className="w-11 h-11 rounded-2xl bg-clinical-50 text-clinical-600 flex items-center justify-center shrink-0">
+                                    <Icon name="ShieldCheck" size={24} />
+                                </div>
+                            </div>
+
+                            <form onSubmit={handleSubmit} className="space-y-3">
+                                <div className="relative">
+                                    <Icon name="Search" size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                                    <input
+                                        type="text"
+                                        value={inputCode}
+                                        onChange={e => setInputCode(e.target.value)}
+                                        placeholder="กรอกรหัส เช่น RJC-2027-XXXXXX"
+                                        autoComplete="off"
+                                        className="touch-target w-full pl-11 pr-11 py-3.5 rounded-2xl bg-white border border-slate-200 font-mono text-base font-semibold uppercase tracking-wide text-slate-800 placeholder:font-sans placeholder:normal-case placeholder:tracking-normal placeholder:text-slate-400 focus:outline-none focus:border-clinical-500 focus:ring-4 focus:ring-clinical-500/10"
+                                    />
+                                    {inputCode && (
+                                        <button
+                                            type="button"
+                                            onClick={() => { setInputCode(''); setStatus('idle'); setRecord(null); }}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center"
+                                        >
+                                            <Icon name="X" size={16} />
+                                        </button>
+                                    )}
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                    <button
+                                        type="submit"
+                                        disabled={status === 'loading' || !inputCode.trim()}
+                                        className="touch-target w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-clinical-500 to-teal-600 hover:from-clinical-600 hover:to-teal-700 disabled:from-slate-200 disabled:to-slate-200 disabled:text-slate-400 text-white font-display font-semibold text-sm sm:text-base shadow-[0_10px_25px_-5px_rgba(5,150,105,0.35)] flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                                    >
+                                        <Icon name="CheckCircle2" size={18} />
+                                        {status === 'loading' ? 'กำลังตรวจสอบ...' : 'ตรวจสอบรหัส'}
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setScannerOpen(true)}
+                                        className="touch-target w-full py-3.5 px-5 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 font-display font-semibold text-sm sm:text-base shadow-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                                    >
+                                        <Icon name="QrCode" size={18} className="text-clinical-600" />
+                                        เปิดกล้องสแกน QR
+                                    </button>
+                                </div>
+                            </form>
+
+                            {/* Quick Demo Button */}
+                            <div className="mt-4 pt-3.5 border-t border-slate-200/70 flex flex-wrap items-center justify-between gap-2 text-xs">
+                                <span className="text-slate-500">ต้องการทดสอบหน้าตาผลรับรอง?</span>
+                                <button
+                                    type="button"
+                                    onClick={() => verifyCode('RJC-2027-DEMO01')}
+                                    className="font-mono font-bold text-clinical-700 bg-clinical-50 hover:bg-clinical-100 px-3 py-1.5 rounded-xl transition-colors"
+                                >
+                                    ลองรหัสตัวอย่าง: RJC-2027-DEMO01
+                                </button>
+                            </div>
+                        </section>
+
+                        {/* Loading State */}
+                        {status === 'loading' && (
+                            <div className="bento-glass rounded-[1.75rem] p-10 text-center flex flex-col items-center justify-center gap-3">
+                                <div className="w-11 h-11 border-4 border-clinical-500 border-t-transparent rounded-full animate-spin" />
+                                <p className="font-display font-semibold text-slate-700">กำลังตรวจสอบฐานข้อมูล rjcloud.organ...</p>
+                                <p className="font-mono text-xs text-slate-400">{lastSearched}</p>
+                            </div>
+                        )}
+
+                        {/* Verified Result Card */}
+                        {status === 'verified' && record && (
+                            <section className="bento-glass rounded-[1.75rem] overflow-hidden border-clinical-200/90 shadow-xl">
+                                {/* Top Verified Banner */}
+                                <div className="bg-gradient-to-r from-clinical-600 via-teal-600 to-medical-600 p-5 sm:p-6 text-white">
+                                    <div className="flex items-center justify-between gap-3">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shrink-0">
+                                                <Icon name="BadgeCheck" size={28} />
+                                            </div>
+                                            <div>
+                                                <p className="text-[11px] font-mono uppercase tracking-widest text-clinical-100 font-semibold">
+                                                    OFFICIAL VERIFICATION • VALID
+                                                </p>
+                                                <h2 className="font-display text-lg sm:text-xl font-bold leading-snug">
+                                                    เอกสารได้รับการรับรองความถูกต้อง
+                                                </h2>
+                                            </div>
+                                        </div>
+                                        {record.source === 'demo' && (
+                                            <span className="px-2.5 py-1 rounded-full bg-white/20 text-[10px] font-mono font-bold shrink-0">
+                                                DEMO
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Certificate Holder Details (PDPA Compliant - ไม่แสดงอีเมล/เบอร์โทรสาธารณะ) */}
+                                <div className="p-5 sm:p-7 space-y-5 bg-white/60">
+                                    <div className="text-center pb-5 border-b border-slate-200/80">
+                                        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">ผู้ได้รับประกาศนียบัตร</p>
+                                        <h3 className="font-display text-2xl sm:text-3xl font-extrabold text-slate-900">
+                                            {record.name}
+                                        </h3>
+                                        <p className="text-sm font-semibold text-clinical-700 mt-1">
+                                            {record.position} • {record.hospital}
+                                        </p>
+                                        <div className="inline-flex items-center gap-2 mt-3 px-3.5 py-1.5 rounded-full bg-slate-100 border border-slate-200/80 font-mono text-xs font-bold text-slate-700">
+                                            <Icon name="Hash" size={13} className="text-clinical-600" />
+                                            {record.code}
+                                        </div>
+                                    </div>
+
+                                    {/* Metadata Grid */}
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <div className="p-3.5 rounded-2xl bg-white/90 border border-slate-200/70">
+                                            <p className="text-[11px] font-bold text-slate-400">หลักสูตรที่ผ่านการอบรม</p>
+                                            <p className="text-sm font-bold text-slate-800 mt-0.5 leading-snug">{record.courseTitleTH}</p>
+                                        </div>
+                                        <div className="p-3.5 rounded-2xl bg-white/90 border border-slate-200/70">
+                                            <p className="text-[11px] font-bold text-slate-400">หน่วยงานผู้รับรอง</p>
+                                            <p className="text-sm font-bold text-slate-800 mt-0.5 leading-snug">{record.orgTitleTH}</p>
+                                        </div>
+                                        <div className="p-3.5 rounded-2xl bg-white/90 border border-slate-200/70">
+                                            <p className="text-[11px] font-bold text-slate-400">วันที่ออกประกาศนียบัตร</p>
+                                            <p className="text-sm font-bold text-slate-800 mt-0.5">{formatThaiDate(record.issuedAt)}</p>
+                                        </div>
+                                        <div className="p-3.5 rounded-2xl bg-white/90 border border-slate-200/70">
+                                            <p className="text-[11px] font-bold text-slate-400">เลขใบประกอบวิชาชีพ (คุ้มครอง PDPA)</p>
+                                            <p className="font-mono text-sm font-bold text-slate-800 mt-0.5">{maskLicense(record.license)}</p>
+                                        </div>
+                                        <div className="p-3.5 rounded-2xl bg-white/90 border border-slate-200/70">
+                                            <p className="text-[11px] font-bold text-slate-400">ผู้ลงนามรับรอง</p>
+                                            <p className="text-sm font-bold text-slate-800 mt-0.5">{record.signerName}</p>
+                                            <p className="text-[11px] text-slate-500 mt-0.5">{record.signerPosition}</p>
+                                        </div>
+                                        <div className="p-3.5 rounded-2xl bg-clinical-50/70 border border-clinical-200/70">
+                                            <p className="text-[11px] font-bold text-clinical-700">สถานะการประเมินผล</p>
+                                            <div className="flex items-center gap-2 mt-1">
+                                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-clinical-600 text-white text-xs font-bold">
+                                                    <Icon name="Check" size={13} /> ผ่านเกณฑ์มาตรฐาน
+                                                </span>
+                                                {record.userType && (
+                                                    <span className="text-xs font-bold text-clinical-800">{record.userType}</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Action Buttons */}
+                                    <div className="grid grid-cols-2 gap-2.5 pt-2 no-print">
+                                        <button
+                                            type="button"
+                                            onClick={handleShareOrCopy}
+                                            className="touch-target py-3 px-4 rounded-2xl bg-clinical-600 hover:bg-clinical-700 text-white font-display font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm active:scale-[0.98]"
+                                        >
+                                            <Icon name="Share2" size={16} /> แชร์ / คัดลอกลิงก์
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => window.print()}
+                                            className="touch-target py-3 px-4 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-display font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 active:scale-[0.98]"
+                                        >
+                                            <Icon name="Printer" size={16} /> พิมพ์หลักฐานรับรอง
+                                        </button>
+                                    </div>
+                                </div>
+                            </section>
+                        )}
+
+                        {/* Not Found State */}
+                        {status === 'not_found' && (
+                            <section className="bento-glass rounded-[1.75rem] p-6 sm:p-8 text-center border-rose-200/80">
+                                <div className="w-14 h-14 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center mx-auto mb-3.5">
+                                    <Icon name="FileWarning" size={28} />
+                                </div>
+                                <h2 className="font-display text-lg sm:text-xl font-bold text-slate-900">
+                                    ไม่พบข้อมูลประกาศนียบัตรนี้ในระบบ
+                                </h2>
+                                <p className="text-sm text-slate-600 mt-1.5 max-w-md mx-auto leading-relaxed">
+                                    รหัส <span className="font-mono font-bold text-rose-600">{lastSearched}</span> ไม่ตรงกับรายการที่ได้รับการรับรอง กรุณาตรวจสอบตัวอักษรอีกครั้ง หรือติดต่อผู้ดูแลระบบที่{' '}
+                                    <a href={`mailto:${CONFIG.contactEmail}`} className="font-bold text-clinical-700 underline">
+                                        {CONFIG.contactEmail}
+                                    </a>
+                                </p>
+                                <button
+                                    type="button"
+                                    onClick={() => setScannerOpen(true)}
+                                    className="touch-target mt-5 px-6 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-display font-semibold text-sm inline-flex items-center gap-2"
+                                >
+                                    <Icon name="QrCode" size={17} /> ลองสแกน QR Code ใหม่อีกครั้ง
+                                </button>
+                            </section>
+                        )}
+
+                        {/* Idle Helper Info */}
+                        {status === 'idle' && (
+                            <section className="grid grid-cols-1 sm:grid-cols-3 gap-3 no-print">
+                                {[
+                                    { icon: 'QrCode', title: 'สแกนได้ทันที', desc: 'ใช้กล้องมือถือสแกน QR มุมขวาบนของใบประกาศนียบัตร' },
+                                    { icon: 'ShieldCheck', title: 'ป้องกันการปลอมแปลง', desc: 'ตรวจสอบรหัสอ้างอิงตรงกับฐานข้อมูล rjcloud.organ' },
+                                    { icon: 'Lock', title: 'คุ้มครองข้อมูล PDPA', desc: 'แสดงเฉพาะข้อมูลยืนยันคุณวุฒิ ไม่เปิดเผยข้อมูลส่วนตัว' }
+                                ].map((item, i) => (
+                                    <div key={i} className="bento-glass rounded-2xl p-4 flex sm:flex-col items-start gap-3 sm:gap-2">
+                                        <div className="w-9 h-9 rounded-xl bg-clinical-50 text-clinical-600 flex items-center justify-center shrink-0">
+                                            <Icon name={item.icon} size={18} />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-display font-bold text-sm text-slate-800">{item.title}</h3>
+                                            <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{item.desc}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </section>
+                        )}
+                    </main>
+
+                    {/* Footer */}
+                    <footer className="relative z-10 text-center px-4 py-5 text-[11px] text-slate-400 font-medium no-print">
+                        <p>{CONFIG.appName} • {CONFIG.edition}</p>
+                        <p className="mt-0.5">ศูนย์ประสานงานและสนับสนุนระบบ: {CONFIG.contactEmail}</p>
+                    </footer>
+
+                    {/* Camera Scanner Modal */}
+                    <QrScannerModal
+                        isOpen={scannerOpen}
+                        onClose={() => setScannerOpen(false)}
+                        onScanSuccess={handleScanResult}
+                    />
+
+                    <ToastBanner toast={toast} />
+                </div>
+            );
+        }
+
+        const root = createRoot(document.getElementById('verify-root'));
+        root.render(<VerifyApp />);
+    </script>
+</body>
+</html>
