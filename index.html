@@ -8,7 +8,53 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>rjcloud.organ — Clinical e-Learning Platform 2027</title>
 
-<!-- ... existing code ... -->
+    <!-- 🌟 โหลดข้อมูลกลางจาก data.js (มี Fallback ในตัวหาก data.js โหลดไม่สำเร็จ) 🌟 -->
+    <script src="./data.js" onerror="console.warn('data.js not loaded, using built-in defaults')"></script>
+
+    <!-- 🌟 Tailwind CSS & Fonts (Prompt + Sarabun + JetBrains Mono) 🌟 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Prompt:wght@500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- 🌟 ไลบรารีสำหรับสร้างประกาศนียบัตร PDF (A4) และ QR Code ในตัวเว็บ 🌟 -->
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              display: ['Prompt', 'sans-serif'],
+              sans: ['Sarabun', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace']
+            },
+            colors: {
+              clinical: {
+                50: '#ecfdf5',
+                100: '#d1fae5',
+                200: '#a7f3d0',
+                400: '#34d399',
+                500: '#10b981',
+                600: '#059669',
+                700: '#047857',
+                900: '#064e3b'
+              },
+              medical: {
+                50: '#f0f9ff',
+                100: '#e0f2fe',
+                400: '#38bdf8',
+                500: '#0ea5e9',
+                600: '#0284c7',
+                700: '#0369a1'
+              }
+            }
+          }
+        }
+      };
+    </script>
+
     <style>
       html {
         -webkit-tap-highlight-color: transparent;
@@ -32,14 +78,553 @@
 
       /* ป้องกัน iOS Safari ซูมหน้าจออัตโนมัติเวลาแตะช่องกรอกข้อมูล */
       @media (max-width: 768px) {
-        input, select, textarea {
-          font-size: 16px !important;
-        }
+        input, select, textarea { font-size: 16px !important; }
       }
 
-      /* 🌟 2027 Pearl Clinical Aura Background (สว่าง สบายตา ลื่นไหล) 🌟 */
-<!-- ... existing code ... -->
-        function PrimaryButton({ children, disabled, className = "", variant = "clinical", ...props }) {
+      /* 🌟 2027 Pearl Clinical Aura Background 🌟 */
+      .aura-canvas {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background:
+          radial-gradient(circle at 12% 14%, rgba(16, 185, 129, 0.16) 0%, transparent 46%),
+          radial-gradient(circle at 88% 12%, rgba(14, 165, 233, 0.16) 0%, transparent 45%),
+          radial-gradient(circle at 75% 88%, rgba(45, 212, 191, 0.14) 0%, transparent 48%),
+          linear-gradient(180deg, #ffffff 0%, #f8fafc 55%, #f1f5f9 100%);
+        pointer-events: none;
+      }
+      .aura-grid {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background-image:
+          linear-gradient(to right, rgba(15, 23, 42, 0.028) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(15, 23, 42, 0.028) 1px, transparent 1px);
+        background-size: 40px 40px;
+        mask-image: radial-gradient(ellipse at center, black 45%, transparent 90%);
+        pointer-events: none;
+      }
+
+      /* 🌟 Bento Glass Card 🌟 */
+      .bento-glass {
+        background: rgba(255, 255, 255, 0.80);
+        backdrop-filter: blur(22px);
+        -webkit-backdrop-filter: blur(22px);
+        border: 1px solid rgba(255, 255, 255, 0.92);
+        box-shadow: 0 12px 32px -10px rgba(15, 23, 42, 0.07), 0 2px 6px rgba(15, 23, 42, 0.03);
+      }
+
+      .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+      .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+      .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.45); border-radius: 999px; }
+    </style>
+
+    <!-- 🌟 ESM Import Map (React 18, Lucide Icons, Firebase 11) 🌟 -->
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@18.2.0",
+        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+        "react-dom": "https://esm.sh/react-dom@18.2.0",
+        "lucide-react": "https://esm.sh/lucide-react@0.344.0?external=react",
+        "firebase/app": "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"
+      }
+    }
+    </script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+    <div id="root">
+        <!-- แสดงตัวโหลดระหว่างรอ Babel & React เริ่มทำงาน (กันความรู้สึกหน้าขาว) -->
+        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f8fafc;font-family:'Sarabun',sans-serif;color:#0f172a;padding:24px;text-align:center;">
+            <div style="width:44px;height:44px;border:4px solid #d1fae5;border-top-color:#059669;border-radius:50%;animation:spin 0.9s linear infinite;margin-bottom:14px;"></div>
+            <div style="font-weight:700;font-size:18px;color:#064e3b;">rjcloud.organ</div>
+            <div style="font-size:13px;color:#64748b;margin-top:4px;">กำลังเตรียมห้องเรียนออนไลน์ 2027...</div>
+            <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+        </div>
+    </div>
+
+    <!-- 🛡️ Global Error Guard ป้องกันหน้าขาวเงียบๆ 🛡️ -->
+    <script>
+      window.addEventListener('error', function(ev) {
+        if (!ev || !ev.message) return;
+        // ข้าม error เล็กน้อยจากไฟล์ data.js ภายนอก เพราะเรามี Fallback ในตัวแล้ว
+        if (ev.filename && ev.filename.includes('data.js')) {
+          console.warn('Ignored data.js error (using built-in fallback):', ev.message);
+          return;
+        }
+        var rootEl = document.getElementById('root');
+        if (rootEl && !rootEl.dataset.mounted) {
+          rootEl.innerHTML =
+            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#f8fafc;font-family:Sarabun,sans-serif;">' +
+              '<div style="max-width:480px;width:100%;background:#fff;border:1px solid #fecdd3;border-radius:24px;padding:24px;box-shadow:0 12px 30px rgba(0,0,0,0.06);">' +
+                '<h2 style="margin:0 0 8px;color:#be123c;font-size:20px;font-weight:800;">พบข้อผิดพลาดระหว่างโหลดหน้าเว็บ</h2>' +
+                '<p style="margin:0 0 14px;color:#475569;font-size:14px;">กรุณารีเฟรชหน้าเว็บอีกครั้ง หรือส่งข้อความด้านล่างให้ผู้ช่วยตรวจสอบค่ะ</p>' +
+                '<pre style="background:#fff1f2;color:#9f1239;padding:12px;border-radius:12px;font-size:12px;white-space:pre-wrap;overflow:auto;">' + ev.message + '</pre>' +
+                '<button onclick="location.reload()" style="margin-top:14px;width:100%;padding:12px;border:none;border-radius:14px;background:#059669;color:#fff;font-weight:700;font-size:14px;cursor:pointer;">โหลดหน้าใหม่</button>' +
+              '</div>' +
+            '</div>';
+        }
+      });
+    </script>
+
+    <script type="text/babel" data-type="module">
+        import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+        import { createRoot } from 'react-dom/client';
+        import * as LucideIcons from 'lucide-react';
+        import { initializeApp, getApps, getApp } from 'firebase/app';
+        import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
+        import { getFirestore, collection, doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
+
+        // ============================================================================
+        // 1. CONFIGURATION & BUILT-IN FALLBACK DATA (เชื่อมต่อ rj-cloud-organ ครบแล้ว)
+        // ============================================================================
+        const BUILTIN_CONFIG = {
+            appName: 'rjcloud.organ',
+            edition: '2027 Clinical Edition',
+            contactEmail: 'rjcloud.organ@gmail.com',
+            appId: 'rjcloud-organ-2027',
+            firebaseConfig: {
+                apiKey: 'AIzaSyCpvK0FCVVk9dt0ylHn_VzUStl7540UsbY',
+                authDomain: 'rj-cloud-organ.firebaseapp.com',
+                projectId: 'rj-cloud-organ',
+                storageBucket: 'rj-cloud-organ.firebasestorage.app',
+                messagingSenderId: '1030088973707',
+                appId: '1:1030088973707:web:8104bb1d90ac6a58f8e38e',
+                measurementId: 'G-X5YLDTC6V4'
+            },
+            appsScriptUrl: 'https://script.google.com/macros/s/AKfycbziuUaRF3ia_EMvpklsiLaMLsXK8kb9_7Tcx0jzh5yf_8jF9_A66wf1wY3w4y7UVVNivQ/exec'
+        };
+
+        const CONFIG = {
+            ...BUILTIN_CONFIG,
+            ...(window.RJCLOUD_CONFIG || {}),
+            firebaseConfig: (window.RJCLOUD_CONFIG?.firebaseConfig?.apiKey)
+                ? window.RJCLOUD_CONFIG.firebaseConfig
+                : BUILTIN_CONFIG.firebaseConfig,
+            appsScriptUrl: window.RJCLOUD_CONFIG?.appsScriptUrl || BUILTIN_CONFIG.appsScriptUrl
+        };
+
+        const DEFAULT_CERT_TEMPLATE = {
+            certPrefix: 'RJC-2027',
+            orgTitleTH: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ',
+            orgTitleEN: 'rjcloud.organ • Clinical Organ Donation & Transplantation Network',
+            courseTitleTH: 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ',
+            courseTitleEN: 'Organ Donation & Transplantation Clinical Coordination Program',
+            subtitleTH: 'ขอมอบประกาศนียบัตรฉบับนี้เพื่อแสดงว่า',
+            completionTextTH: 'ได้ผ่านการอบรมและประเมินผลตามเกณฑ์มาตรฐานหลักสูตรประจำปี 2027',
+            signerName: 'นายแพทย์สมชาย ตัวอย่างดี',
+            signerPosition: 'ผู้อำนวยการโครงการ rjcloud.organ (ตัวอย่าง — แก้ไขได้ในหน้า Admin)',
+            hoursText: 'ระยะเวลาการเรียนรู้ตามเกณฑ์มาตรฐานวิชาชีพ',
+            logoUrl: '',
+            signatureUrl: '',
+            ...(window.DEFAULT_CERT_TEMPLATE || {})
+        };
+
+        const HOSPITAL_MAPPING = window.HOSPITAL_MAPPING || {
+            'เขตสุขภาพที่ 1': [{ name: 'รพ.มหาราชนครเชียงใหม่', prov: 'เชียงใหม่' }],
+            'เขตสุขภาพที่ 2': [{ name: 'รพ.พุทธชินราช', prov: 'พิษณุโลก' }],
+            'เขตสุขภาพที่ 3': [{ name: 'รพ.สวรรค์ประชารักษ์', prov: 'นครสวรรค์' }],
+            'เขตสุขภาพที่ 4': [{ name: 'รพ.สระบุรี', prov: 'สระบุรี' }],
+            'เขตสุขภาพที่ 5': [{ name: 'รพ.ราชบุรี', prov: 'ราชบุรี' }],
+            'เขตสุขภาพที่ 6': [{ name: 'รพ.ชลบุรี', prov: 'ชลบุรี' }],
+            'เขตสุขภาพที่ 7': [{ name: 'รพ.ขอนแก่น', prov: 'ขอนแก่น' }],
+            'เขตสุขภาพที่ 8': [{ name: 'รพ.อุดรธานี', prov: 'อุดรธานี' }],
+            'เขตสุขภาพที่ 9': [{ name: 'รพ.มหาราชนครราชสีมา', prov: 'นครราชสีมา' }],
+            'เขตสุขภาพที่ 10': [{ name: 'รพ.สรรพสิทธิประสงค์', prov: 'อุบลราชธานี' }],
+            'เขตสุขภาพที่ 11': [{ name: 'รพ.สุราษฎร์ธานี', prov: 'สุราษฎร์ธานี' }],
+            'เขตสุขภาพที่ 12': [{ name: 'รพ.หาดใหญ่', prov: 'สงขลา' }],
+            'กรมการแพทย์': [
+                { name: 'รพ.ราชวิถี', prov: 'กรุงเทพมหานคร' },
+                { name: 'รพ.เลิดสิน', prov: 'กรุงเทพมหานคร' },
+                { name: 'รพ.นพรัตนราชธานี', prov: 'กรุงเทพมหานคร' }
+            ],
+            'สำนักการแพทย์ กรุงเทพฯ': [
+                { name: 'รพ.กลาง', prov: 'กรุงเทพมหานคร' },
+                { name: 'รพ.ตากสิน', prov: 'กรุงเทพมหานคร' },
+                { name: 'รพ.เจริญกรุงประชารักษ์', prov: 'กรุงเทพมหานคร' }
+            ],
+            'สำนักอนามัย กรุงเทพฯ': [{ name: 'ศูนย์บริการสาธารณสุข', prov: 'กรุงเทพมหานคร' }],
+            'อื่นๆ': [{ name: 'อื่นๆ', prov: '' }]
+        };
+
+        const FALLBACK_LESSONS = [
+            { id: 1, title: 'ยุทธศาสตร์และเป้าหมายการพัฒนาระบบบริการสุขภาพ (Service plan)', videoId: '1-sX4LnWRMSjoEQmWee-9GuiQ2XMvkSro', documentUrl: 'https://drive.google.com/file/d/1FrJt9TCbOy5oewg_eMrRG8pW4dNzJHS9/view?usp=sharing' },
+            { id: 2, title: 'แนวทางการประเมินผู้เสียชีวิตเพื่อบริจาคดวงตาและการประสานงานฯ', videoId: '15QOjyhd0hoxpSSO0tZ7Fj4qFaZByiAzT', documentUrl: 'https://drive.google.com/file/d/1iJbKaj0VwcsH0AzdyUqrt2jsTjEyhfSg/view?usp=sharing' },
+            { id: 3, title: 'จริยธรรม กฎหมายที่เกี่ยวข้องกับการรับบริจาคอวัยวะ และบทบาทของศูนย์ฯ', videoId: '1L5pFZh85OPDz7lWwJCBKlFDXxkTZSxt_', documentUrl: 'https://drive.google.com/file/d/1PtfxrqDZrNpX_NDQBGyCqqfZsPnMRg6e/view?usp=sharing' },
+            { id: 4, title: 'ความสำคัญของการบริจาคและปลูกถ่ายอวัยวะ และบทบาทของบุคลากรฯ', videoId: '14hnZ80UE0KvCmW2oHE2zBTx8uBCg4rIB', documentUrl: 'https://drive.google.com/file/d/1HXXlSqONQ3eq7E1Os0C8OtbZcSGbG6a5/view?usp=sharing' },
+            { id: 5, title: 'การประสานงานเมื่อมีผู้บริจาคอวัยวะสมองตาย และหลักเกณฑ์การจัดสรรอวัยวะ', videoId: '1wkE2CCaRgxlzHmho1ijK49SE028vNqcV', documentUrl: 'https://drive.google.com/file/d/1w4xefABcn2GRTQevhpvYuybD2kLozlA6/view?usp=sharing' },
+            { id: 6, title: 'การเตรียมผู้ป่วยเพื่อเข้ารับการปลูกถ่ายไต และการดูแลหลังปลูกถ่ายไต', videoId: '1pu1O3swHMtTzBXjF3rG_NzfIgjYfgnLm', documentUrl: 'https://drive.google.com/file/d/1u_xSPv95dvxXw85QsSx7FYYsKonJbJjj/view?usp=sharing' },
+            { id: 7, title: 'การจัดกิจกรรมส่งเสริมและประชาสัมพันธ์ชีวิตใหม่หลังการปลูกถ่ายอวัยวะ', videoId: '1Sc-2Z_MOD85kvWBduEEWbPiGxw1zeTec', documentUrl: 'https://drive.google.com/file/d/1RSPtCHRe38si6P75CCA_85djfwJhUrdE/view?usp=sharing' },
+            { id: 8, title: 'กลุ่มงานการพยาบาลรับบริจาค ปลูกถ่ายอวัยวะและเนื้อเยื่อ สธ.', videoId: '1vc4b07Ooas4cozJK5cnweIl2KeeKvHbk', documentUrl: 'https://drive.google.com/file/d/1WUO677apoQJeJKboj0iOZmrTIybd4_hM/view?usp=sharing' },
+            { id: 9, title: 'Identification of Potential Organ Donors and Assessment', videoId: '1TRLOGabpI66ZUEPybGyrpHTN5dNlYP-f', documentUrl: 'https://drive.google.com/file/d/14-GXQS4-KHEUraOt8Ey2cGVkhxN12Ump/view?usp=sharing' },
+            { id: 10, title: 'Organ Packaging and Transportation สำหรับ รพ Donor', videoId: '1POFnLm_G2BuXWgOojDRpotM5YhBxcCnk', documentUrl: 'https://drive.google.com/file/d/1VQk-wMxYRbphaBDkCnOkapwgVdTGShbV/view?usp=sharing' },
+            { id: 11, title: 'Family Approach', videoId: '1GpfjRpbDnilV22iL52ZyOyUcRs9MUVbu', documentUrl: 'https://drive.google.com/file/d/1aRjlUNctesyliehy5KXLW7VwmGPW2R4h/view?usp=sharing' },
+            { id: 12, title: 'Brain Death Diagnosis', videoId: '136Gl3ocDivGYU764t7t9Qvpn_iTJTfs4', documentUrl: 'https://drive.google.com/file/d/1TMceKfI3azgRVRo-GtSDluTzq1lhe8-U/view?usp=sharing' },
+            { id: 13, title: 'Donor Management', videoId: '1YPyTis-9VzJLPhUvwMp1IC_xs7TLIao0', documentUrl: 'https://drive.google.com/file/d/1OeZIm6x3lg_-dFTUPgd9LiombnRrPrQh/view?usp=sharing' },
+            { id: 14, title: 'Organ Procurement', videoId: '12lOd6KsekmV0PDbdLVr2wYsz-gNnovHK', documentUrl: 'https://drive.google.com/file/d/1e-PwnXUCVScRLg5bmXRjOMSC0dIeDv5r/view?usp=sharing' },
+            { id: 15, title: 'การปฏิบัติตัวหลังผ่าตัด', videoId: '1k2bsL3ZT7dG85c63fC7SPCAQlrkWVzHC', documentUrl: '' },
+            { id: 16, title: 'ภาพรวมการปลูกถ่ายไต', videoId: '1U5W7QGZm4CQaKIwiwR3mE3FgSeKA3JxS', documentUrl: '' },
+            { id: 17, title: 'การปฏิบัติตัวหลังปลูกถ่าย (ยา)', videoId: '1v1QN-Qq1zHRtEYyKt1iJ6XrSfSfy7zuM', documentUrl: '' },
+            { id: 18, title: 'โภชนาการอาหาร', videoId: '1Ekf354d86SJ43JRkqAAEH9D-XB9725Dr', documentUrl: '' },
+            { id: 19, title: 'ขั้นตอนการเข้ารับบริการคลินิกปลูกถ่ายไต', videoId: '1Om2A00CDS8seta7eiz47-gbXExzzU4RU', documentUrl: '' },
+            { id: 20, title: 'ขั้นตอนการดูแลผู้ป่วยปลูกถ่ายไตในระยะต่างๆ', videoId: '15qb9D-gNqw-cEJoLozRY2DW1Dc6huB0e', documentUrl: '' }
+        ];
+
+        const FALLBACK_QUIZ_RAW = [
+            'เป้าหมายหลักของ Service Plan สาขาการรับบริจาคและปลูกถ่ายอวัยวะคือข้อใด?|ลดค่าใช้จ่ายในการดูแลผู้ป่วยวิกฤต|เพิ่มจำนวนผู้บริจาคอวัยวะสมองตายและผู้ได้รับการปลูกถ่ายอวัยวะให้เพียงพอ|ลดภาระงานของบุคลากรทางการแพทย์ในห้องICU|สร้างศูนย์ปลูกถ่ายอวัยวะในทุกชุมชน|1',
+            'การจัดเก็บดวงตา (Eye procurement) ควรดำเนินการให้แล้วเสร็จอย่างช้าที่สุดภายในกี่ชั่วโมงหลังผู้ป่วยเสียชีวิต?|ภายใน 2 ชั่วโมง|ภายใน 24-48 ชั่วโมง|ภายใน 3 วัน|ภายใน 6-8 ชั่วโมง (หากมีการประคบเย็นอาจยืดได้)|3',
+            'การทำ Decoupling หมายถึงการแยกเรื่องใดออกจากเรื่องใด?|แยกการทำงานของหัวใจออกจากปอด|แยกหมอออกจากพยาบาล|แยกการแจ้งข่าวสมองตาย ออกจากการเจรจาขอรับบริจาคอวัยวะ|แยกญาติผู้ชายออกจากญาติผู้หญิง|2',
+            'การทำ Apnea Test เป็นขั้นตอนสำคัญเพื่อพิสูจน์สิ่งใด?|เพื่อดูว่าหัวใจยังเต้นอยู่หรือไม่|เพื่อพิสูจน์ว่าศูนย์ควบคุมการหายใจที่ก้านสมองสูญเสียการทำงานอย่างถาวร|เพื่อกระตุ้นให้ผู้ป่วยฟื้นคืนสติ|เพื่อดูการทำงานของปอดก่อนบริจาค|1',
+            'ระยะเวลาทอง (Golden Period) ในการนำหัวใจที่ได้จากการจัดเก็บไปปลูกถ่ายให้ผู้รับคือเท่าใด?|ไม่เกิน 4 ชั่วโมง|ไม่เกิน 12 ชั่วโมง|ไม่เกิน 24 ชั่วโมง|ไม่เกิน 48 ชั่วโมง|0'
+        ];
+
+        const INITIAL_LESSONS = (window.INITIAL_LESSONS && window.INITIAL_LESSONS.length > 0) ? window.INITIAL_LESSONS : FALLBACK_LESSONS;
+        const INITIAL_QUIZ_RAW = (window.QUIZ_QUESTIONS_RAW && window.QUIZ_QUESTIONS_RAW.length > 0) ? window.QUIZ_QUESTIONS_RAW : FALLBACK_QUIZ_RAW;
+
+        const STORAGE_KEY = 'rjcloud_organ_state_v2027';
+
+        // ============================================================================
+        // 2. FIREBASE INITIALIZATION
+        // ============================================================================
+        let fbApp = null, fbAuth = null, fbDb = null;
+        const isCloudConfigured = Boolean(CONFIG.firebaseConfig?.apiKey && CONFIG.firebaseConfig?.projectId);
+
+        if (isCloudConfigured) {
+            try {
+                fbApp = getApps().length === 0 ? initializeApp(CONFIG.firebaseConfig) : getApp();
+                fbAuth = getAuth(fbApp);
+                fbDb = getFirestore(fbApp);
+            } catch (err) {
+                console.warn('Firebase init error:', err);
+            }
+        }
+
+        // ============================================================================
+        // 3. HELPERS & QUIZ / TIME / CERTIFICATE UTILITIES
+        // ============================================================================
+        function Icon({ name, size = 20, className = '', strokeWidth = 2 }) {
+            const Comp = LucideIcons[name] || LucideIcons.Sparkles;
+            return <Comp size={size} className={className} strokeWidth={strokeWidth} />;
+        }
+
+        function shuffleArray(arr) {
+            const copy = [...arr];
+            for (let i = copy.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [copy[i], copy[j]] = [copy[j], copy[i]];
+            }
+            return copy;
+        }
+
+        function parseRawExams(raw) {
+            if (!Array.isArray(raw)) return [];
+            return raw.map((str, idx) => {
+                const parts = String(str).split('|').map(s => s.trim());
+                return {
+                    id: idx + 1,
+                    question: (parts[0] || '').replace(/^[0-9]+\.\s*/, ''),
+                    options: parts.slice(1, Math.max(2, parts.length - 1)),
+                    answer: parseInt((parts[parts.length - 1] || '0').replace(/[^0-9]/g, ''), 10) || 0
+                };
+            });
+        }
+
+        function prepareShuffledExam(questions) {
+            return shuffleArray(questions).map(q => {
+                const correctText = q.options[q.answer];
+                const shuffledOpts = shuffleArray(q.options);
+                return {
+                    ...q,
+                    options: shuffledOpts,
+                    answer: Math.max(0, shuffledOpts.indexOf(correctText))
+                };
+            });
+        }
+
+        function normalizeQuestionSets(rawSets) {
+            if (!rawSets) return [parseRawExams(INITIAL_QUIZ_RAW)];
+            if (Array.isArray(rawSets)) return rawSets;
+            if (typeof rawSets === 'object') {
+                return Object.keys(rawSets)
+                    .sort((a, b) => Number(a) - Number(b))
+                    .map(k => (Array.isArray(rawSets[k]) ? rawSets[k] : []));
+            }
+            return [parseRawExams(INITIAL_QUIZ_RAW)];
+        }
+
+        function getTargetHours(userType, liveHours = 10) {
+            if (userType === 'Onsite' || userType === 'Masterclass') return 10;
+            if (userType === 'Online') return Number(liveHours) || 10;
+            return 8;
+        }
+
+        function calcProgress(studySeconds, userType, liveHours = 10) {
+            const targetSecs = getTargetHours(userType, liveHours) * 3600;
+            return Math.min(100, Math.round(((studySeconds || 0) / targetSecs) * 100));
+        }
+
+        function formatDuration(secs) {
+            const total = Math.max(0, Math.floor(secs || 0));
+            const h = Math.floor(total / 3600);
+            const m = Math.floor((total % 3600) / 60);
+            return `${h} ชม. ${m} นาที`;
+        }
+
+        function generateCertCode(prefix = 'RJC-2027') {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = '';
+            for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+            return `${prefix || 'RJC-2027'}-${code}`;
+        }
+
+        function formatThaiDate(isoStr) {
+            try {
+                const d = isoStr ? new Date(isoStr) : new Date();
+                return d.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+            } catch {
+                return '';
+            }
+        }
+
+        function loadImageSafe(url) {
+            return new Promise((resolve) => {
+                if (!url) return resolve(null);
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = () => resolve(img);
+                img.onerror = () => resolve(null);
+                img.src = url;
+            });
+        }
+
+        /**
+         * สร้างใบประกาศนียบัตรความละเอียดสูง 300 DPI (2480 x 1754 px) พร้อม QR Code ในตัวเว็บ
+         */
+        async function renderCertificateCanvas(canvas, user, tpl) {
+            if (!canvas) return;
+            const W = 2480, H = 1754;
+            canvas.width = W;
+            canvas.height = H;
+            const ctx = canvas.getContext('2d');
+
+            try {
+                if (document.fonts?.ready) await document.fonts.ready;
+            } catch (_) {}
+
+            // 1. พื้นหลัง Pearl Clinical 2027
+            const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+            bgGrad.addColorStop(0, '#ffffff');
+            bgGrad.addColorStop(0.55, '#f8fafc');
+            bgGrad.addColorStop(1, '#ecfdf5');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, W, H);
+
+            // Soft Medical Aura Accents
+            const aura1 = ctx.createRadialGradient(260, 240, 20, 260, 240, 780);
+            aura1.addColorStop(0, 'rgba(16, 185, 129, 0.16)');
+            aura1.addColorStop(1, 'rgba(16, 185, 129, 0)');
+            ctx.fillStyle = aura1;
+            ctx.fillRect(0, 0, W, H);
+
+            const aura2 = ctx.createRadialGradient(W - 260, H - 220, 20, W - 260, H - 220, 820);
+            aura2.addColorStop(0, 'rgba(14, 165, 233, 0.15)');
+            aura2.addColorStop(1, 'rgba(14, 165, 233, 0)');
+            ctx.fillStyle = aura2;
+            ctx.fillRect(0, 0, W, H);
+
+            // 2. กรอบสองชั้นสีเขียวมรกต-ทองคลินิก
+            ctx.strokeStyle = '#059669';
+            ctx.lineWidth = 10;
+            ctx.strokeRect(72, 72, W - 144, H - 144);
+
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(98, 98, W - 196, H - 196);
+
+            // แถบหัวด้านบน
+            const barGrad = ctx.createLinearGradient(W / 2 - 360, 72, W / 2 + 360, 72);
+            barGrad.addColorStop(0, '#10b981');
+            barGrad.addColorStop(1, '#0284c7');
+            ctx.fillStyle = barGrad;
+            ctx.fillRect(W / 2 - 360, 72, 720, 18);
+
+            // 3. โลโก้หน่วยงาน (หากมี) หรือตราสัญลักษณ์ rjcloud.organ
+            const logoImg = await loadImageSafe(tpl.logoUrl);
+            let cursorY = 230;
+            if (logoImg) {
+                const maxH = 150;
+                const ratio = Math.min(maxH / logoImg.height, 360 / logoImg.width);
+                const lw = logoImg.width * ratio;
+                const lh = logoImg.height * ratio;
+                ctx.drawImage(logoImg, W / 2 - lw / 2, 130, lw, lh);
+                cursorY = 320;
+            } else {
+                // วาดตราหัวใจ/คลินิกมินิมอล
+                ctx.fillStyle = '#ecfdf5';
+                ctx.strokeStyle = '#10b981';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.arc(W / 2, 195, 58, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.textAlign = 'center';
+                ctx.fillStyle = '#059669';
+                ctx.font = '800 32px "JetBrains Mono", monospace';
+                ctx.fillText('RJ', W / 2, 207);
+                cursorY = 305;
+            }
+
+            // 4. ข้อความหัวเรื่องและผู้รับ
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#047857';
+            ctx.font = '700 40px "Prompt", sans-serif';
+            ctx.fillText(tpl.orgTitleTH || '', W / 2, cursorY);
+
+            ctx.fillStyle = '#64748b';
+            ctx.font = '600 28px "JetBrains Mono", monospace';
+            ctx.fillText(tpl.orgTitleEN || '', W / 2, cursorY + 52);
+
+            ctx.fillStyle = '#0f172a';
+            ctx.font = '800 88px "Prompt", sans-serif';
+            ctx.fillText('ประกาศนียบัตร', W / 2, cursorY + 190);
+
+            ctx.fillStyle = '#475569';
+            ctx.font = '500 38px "Sarabun", sans-serif';
+            ctx.fillText(tpl.subtitleTH || 'ขอมอบประกาศนียบัตรฉบับนี้เพื่อแสดงว่า', W / 2, cursorY + 275);
+
+            // ชื่อผู้สำเร็จการอบรม
+            ctx.fillStyle = '#064e3b';
+            ctx.font = '800 94px "Prompt", sans-serif';
+            ctx.fillText(user?.name || 'ผู้สำเร็จการอบรม', W / 2, cursorY + 415);
+
+            // สังกัด / เลขใบอนุญาต
+            const metaLine = [
+                user?.position,
+                user?.hospital,
+                user?.license ? `เลขใบประกอบวิชาชีพ ${user.license}` : ''
+            ].filter(Boolean).join(' • ');
+            ctx.fillStyle = '#475569';
+            ctx.font = '600 34px "Sarabun", sans-serif';
+            ctx.fillText(metaLine, W / 2, cursorY + 485);
+
+            // เส้นคั่นบางๆ
+            ctx.strokeStyle = '#a7f3d0';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(W / 2 - 420, cursorY + 530);
+            ctx.lineTo(W / 2 + 420, cursorY + 530);
+            ctx.stroke();
+
+            // ชื่อหลักสูตร
+            ctx.fillStyle = '#334155';
+            ctx.font = '500 38px "Sarabun", sans-serif';
+            ctx.fillText(tpl.completionTextTH || '', W / 2, cursorY + 605);
+
+            ctx.fillStyle = '#0f172a';
+            ctx.font = '700 48px "Prompt", sans-serif';
+            ctx.fillText(tpl.courseTitleTH || '', W / 2, cursorY + 690);
+
+            ctx.fillStyle = '#0284c7';
+            ctx.font = '600 32px "Prompt", sans-serif';
+            ctx.fillText(tpl.courseTitleEN || '', W / 2, cursorY + 750);
+
+            // วันที่ให้ไว้
+            const issuedLabel = `ให้ไว้ ณ วันที่ ${formatThaiDate(user?.certificateIssuedAt || new Date().toISOString())}`;
+            ctx.fillStyle = '#64748b';
+            ctx.font = '600 32px "Sarabun", sans-serif';
+            ctx.fillText(issuedLabel, W / 2, cursorY + 835);
+
+            // 5. ส่วนลายเซ็นผู้ลงนาม (ตรงกลางด้านล่าง)
+            const signImg = await loadImageSafe(tpl.signatureUrl);
+            if (signImg) {
+                const maxSH = 130;
+                const sRatio = Math.min(maxSH / signImg.height, 360 / signImg.width);
+                const sw = signImg.width * sRatio;
+                const sh = signImg.height * sRatio;
+                ctx.drawImage(signImg, W / 2 - sw / 2, H - 410, sw, sh);
+            }
+
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(W / 2 - 300, H - 265);
+            ctx.lineTo(W / 2 + 300, H - 265);
+            ctx.stroke();
+
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#0f172a';
+            ctx.font = '700 40px "Prompt", sans-serif';
+            ctx.fillText(tpl.signerName || '', W / 2, H - 205);
+
+            ctx.fillStyle = '#64748b';
+            ctx.font = '500 30px "Sarabun", sans-serif';
+            ctx.fillText(tpl.signerPosition || '', W / 2, H - 155);
+
+            // 6. รหัสอ้างอิงมุมซ้ายล่าง
+            const certCode = user?.certificateCode || generateCertCode(tpl.certPrefix);
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#475569';
+            ctx.font = '700 28px "JetBrains Mono", monospace';
+            ctx.fillText(`CERTIFICATE ID: ${certCode}`, 145, H - 195);
+            ctx.fillStyle = '#64748b';
+            ctx.font = '500 24px "Sarabun", sans-serif';
+            ctx.fillText('ตรวจสอบความถูกต้องได้ที่ verify.html หรือสแกน QR Code', 145, H - 152);
+
+            // 7. วาด QR Code ความคมชัดสูง (มุมขวาล่าง)
+            const basePath = `${window.location.origin}${window.location.pathname.replace(/[^/]*$/, '')}`;
+            const verifyUrl = `${basePath}verify.html?code=${encodeURIComponent(certCode)}`;
+            const qrSize = 230;
+            const qrX = W - 155 - qrSize;
+            const qrY = H - 155 - qrSize;
+
+            ctx.fillStyle = '#ffffff';
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 3;
+            ctx.fillRect(qrX - 18, qrY - 18, qrSize + 36, qrSize + 36);
+            ctx.strokeRect(qrX - 18, qrY - 18, qrSize + 36, qrSize + 36);
+
+            if (typeof window.qrcode === 'function') {
+                try {
+                    const qr = window.qrcode(0, 'M');
+                    qr.addData(verifyUrl);
+                    qr.make();
+                    const count = qr.getModuleCount();
+                    const cell = qrSize / count;
+                    ctx.fillStyle = '#0f172a';
+                    for (let r = 0; r < count; r++) {
+                        for (let c = 0; c < count; c++) {
+                            if (qr.isDark(r, c)) {
+                                ctx.fillRect(qrX + c * cell, qrY + r * cell, Math.ceil(cell), Math.ceil(cell));
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.warn('QR draw error:', e);
+                }
+            }
+
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#047857';
+            ctx.font = '700 20px "JetBrains Mono", monospace';
+            ctx.fillText('SCAN TO VERIFY', qrX + qrSize / 2, qrY + qrSize + 44);
+        }
+
+        // ============================================================================
+        // 4. SHARED UI COMPONENTS (PEARL CLINICAL GLASS 2027)
+        // ============================================================================
+        function BentoCard({ children, className = '', ...rest }) {
+            return (
+                <div className={`bento-glass rounded-[1.75rem] transition-all duration-200 ${className}`} {...rest}>
+                    {children}
+                </div>
+            );
+        }
+
+        function PrimaryButton({ children, disabled, className = '', variant = 'clinical', ...props }) {
             const variants = {
                 clinical: 'bg-gradient-to-r from-clinical-500 to-teal-600 hover:from-clinical-600 hover:to-teal-700 text-white shadow-[0_10px_25px_-5px_rgba(5,150,105,0.4)]',
                 sky: 'bg-gradient-to-r from-medical-500 to-blue-600 hover:from-medical-600 hover:to-blue-700 text-white shadow-[0_10px_25px_-5px_rgba(14,165,233,0.4)]',
@@ -61,7 +646,7 @@
             );
         }
 
-        function InputField({ label, className = "", ...props }) {
+        function InputField({ label, className = '', ...props }) {
             return (
                 <div className={`w-full ${className}`}>
                     {label && <label className="block text-xs font-bold text-slate-600 mb-1.5 ml-1">{label}</label>}
@@ -73,7 +658,7 @@
             );
         }
 
-        function SelectField({ label, options = [], placeholder, className = "", ...props }) {
+        function SelectField({ label, options = [], placeholder, className = '', ...props }) {
             return (
                 <div className={`w-full ${className}`}>
                     {label && <label className="block text-xs font-bold text-slate-600 mb-1.5 ml-1">{label}</label>}
@@ -88,8 +673,26 @@
             );
         }
 
+        function ToastBanner({ toast }) {
+            if (!toast.visible) return null;
+            return (
+                <div className="fixed top-[calc(1rem+env(safe-area-inset-top,0px))] left-1/2 -translate-x-1/2 z-[120] w-[92vw] max-w-md pointer-events-none">
+                    <div className={`px-4 py-3 rounded-2xl shadow-xl border backdrop-blur-xl flex items-center gap-2.5 text-sm font-bold ${
+                        toast.type === 'error'
+                            ? 'bg-rose-50/95 border-rose-200 text-rose-700'
+                            : toast.type === 'info'
+                                ? 'bg-medical-50/95 border-medical-200 text-medical-700'
+                                : 'bg-clinical-50/95 border-clinical-200 text-clinical-800'
+                    }`}>
+                        <Icon name={toast.type === 'error' ? 'AlertCircle' : toast.type === 'info' ? 'Info' : 'CheckCircle2'} size={18} className="shrink-0" />
+                        <span>{toast.text}</span>
+                    </div>
+                </div>
+            );
+        }
+
         // ============================================================================
-        // 7. CERTIFICATE STUDIO MODAL / SCREEN COMPONENT (100% Smartphone Ready)
+        // 5. CERTIFICATE STUDIO VIEW (BUILT-IN PDF / PNG / MOBILE SHARE)
         // ============================================================================
         function CertificateStudioView({ user, certTemplate, onBack, onToast }) {
             const canvasRef = useRef(null);
@@ -157,99 +760,100 @@
                 try {
                     document.execCommand('copy');
                     onToast('คัดลอกลิงก์ตรวจสอบความถูกต้องแล้วค่ะ');
-                } catch (e) {
+                } catch {
                     onToast('ไม่สามารถคัดลอกได้ กรุณาเปิดหน้า verify.html ค่ะ', 'error');
                 }
                 document.body.removeChild(el);
             };
 
             return (
-                <div className="w-full max-w-6xl mx-auto px-3 sm:px-4 pt-4 md:pt-8 pb-dock-safe md:pb-10 relative z-10">
-                    <div className="flex flex-wrap items-center justify-between gap-3 mb-4 md:mb-6">
-                        <div className="flex items-center gap-3">
-                            <button onClick={onBack} className="touch-target w-11 h-11 rounded-2xl bento-glass flex items-center justify-center text-slate-700 hover:text-clinical-600 active:scale-95">
-                                <Icon name="ArrowLeft" size={20} />
-                            </button>
-                            <div>
-                                <div className="flex items-center gap-2">
-                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-clinical-100 text-clinical-700">STUDIO</span>
-                                    <span className="text-[11px] font-mono text-slate-500">{certCode}</span>
+                <div className="min-h-dvh relative pt-safe pb-dock-safe md:pb-10">
+                    <div className="aura-canvas" /><div className="aura-grid" />
+                    <div className="w-full max-w-6xl mx-auto px-3 sm:px-4 pt-4 md:pt-8 relative z-10">
+                        <div className="flex flex-wrap items-center justify-between gap-3 mb-4 md:mb-6">
+                            <div className="flex items-center gap-3">
+                                <button onClick={onBack} className="touch-target w-11 h-11 rounded-2xl bento-glass flex items-center justify-center text-slate-700 hover:text-clinical-600 active:scale-95">
+                                    <Icon name="ArrowLeft" size={20} />
+                                </button>
+                                <div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-clinical-100 text-clinical-700">STUDIO</span>
+                                        <span className="text-[11px] font-mono text-slate-500">{certCode}</span>
+                                    </div>
+                                    <h2 className="font-display text-lg md:text-2xl font-bold text-slate-900 leading-tight">ประกาศนียบัตรอิเล็กทรอนิกส์</h2>
                                 </div>
-                                <h2 className="font-display text-lg md:text-2xl font-bold text-slate-900 leading-tight">ประกาศนียบัตรอิเล็กทรอนิกส์</h2>
                             </div>
+
+                            <div className="hidden md:flex flex-wrap gap-2">
+                                <PrimaryButton variant="ghost" onClick={() => setShowPreviewTweaker(v => !v)} className="!py-2.5 !px-4 !text-xs">
+                                    <Icon name="Sliders" size={16} /> {showPreviewTweaker ? 'ซ่อนแผงทดลองแก้ข้อความ' : 'ทดลองแก้ข้อความตัวอย่าง'}
+                                </PrimaryButton>
+                                <PrimaryButton variant="sky" onClick={handleDownloadPNG} className="!py-2.5 !px-4 !text-sm">
+                                    <Icon name="Image" size={18} /> โหลด PNG
+                                </PrimaryButton>
+                                <PrimaryButton onClick={handleDownloadPDF} className="!py-2.5 !px-5 !text-sm">
+                                    <Icon name="Download" size={18} /> โหลด PDF (A4)
+                                </PrimaryButton>
+                            </div>
+
+                            <button
+                                onClick={() => setShowPreviewTweaker(v => !v)}
+                                className="md:hidden touch-target px-3.5 py-2 rounded-2xl bento-glass text-xs font-bold text-slate-700 flex items-center gap-1.5"
+                            >
+                                <Icon name="Sliders" size={15} className="text-clinical-600" /> {showPreviewTweaker ? 'ปิดแก้ไข' : 'แก้ข้อความ'}
+                            </button>
                         </div>
 
-                        <div className="hidden md:flex flex-wrap gap-2">
-                            <PrimaryButton variant="ghost" onClick={() => setShowPreviewTweaker(v => !v)} className="!py-2.5 !px-4 !text-xs">
-                                <Icon name="Sliders" size={16} /> {showPreviewTweaker ? 'ซ่อนแผงทดลองแก้ข้อความ' : 'ทดลองแก้ข้อความตัวอย่าง'}
-                            </PrimaryButton>
-                            <PrimaryButton variant="sky" onClick={handleDownloadPNG} className="!py-2.5 !px-4 !text-sm">
-                                <Icon name="Image" size={18} /> โหลด PNG
-                            </PrimaryButton>
-                            <PrimaryButton onClick={handleDownloadPDF} className="!py-2.5 !px-5 !text-sm">
-                                <Icon name="Download" size={18} /> โหลด PDF (A4)
-                            </PrimaryButton>
-                        </div>
-
-                        <button
-                            onClick={() => setShowPreviewTweaker(v => !v)}
-                            className="md:hidden touch-target px-3.5 py-2 rounded-2xl bento-glass text-xs font-bold text-slate-700 flex items-center gap-1.5"
-                        >
-                            <Icon name="Sliders" size={15} className="text-clinical-600" /> {showPreviewTweaker ? 'ปิดแก้ไข' : 'แก้ข้อความ'}
-                        </button>
-                    </div>
-
-                    {showPreviewTweaker && (
-                        <BentoCard className="p-4 md:p-5 mb-4 md:mb-6 border-clinical-200">
-                            <div className="flex items-center justify-between mb-3">
-                                <p className="text-xs font-bold text-clinical-700 flex items-center gap-1.5">
+                        {showPreviewTweaker && (
+                            <BentoCard className="p-4 md:p-5 mb-4 md:mb-6 border-clinical-200">
+                                <p className="text-xs font-bold text-clinical-700 flex items-center gap-1.5 mb-3">
                                     <Icon name="Edit3" size={15} /> ทดลองปรับข้อความตัวอย่างบนใบประกาศฯ
                                 </p>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                    <InputField label="ชื่อหน่วยงานหลัก" value={customTpl.orgTitleTH} onChange={e => setCustomTpl(p => ({ ...p, orgTitleTH: e.target.value }))} />
+                                    <InputField label="ชื่อหลักสูตร" value={customTpl.courseTitleTH} onChange={e => setCustomTpl(p => ({ ...p, courseTitleTH: e.target.value }))} />
+                                    <InputField label="ชื่อผู้ลงนาม" value={customTpl.signerName} onChange={e => setCustomTpl(p => ({ ...p, signerName: e.target.value }))} />
+                                    <InputField label="ตำแหน่งผู้ลงนาม" value={customTpl.signerPosition} onChange={e => setCustomTpl(p => ({ ...p, signerPosition: e.target.value }))} />
+                                    <InputField label="ลิงก์โลโก้ PNG (ไม่บังคับ)" value={customTpl.logoUrl} placeholder="https://.../logo.png" onChange={e => setCustomTpl(p => ({ ...p, logoUrl: e.target.value }))} />
+                                    <InputField label="ลิงก์ลายเซ็น PNG (ไม่บังคับ)" value={customTpl.signatureUrl} placeholder="https://.../sign.png" onChange={e => setCustomTpl(p => ({ ...p, signatureUrl: e.target.value }))} />
+                                </div>
+                            </BentoCard>
+                        )}
+
+                        <BentoCard className="p-2.5 sm:p-4 md:p-6">
+                            <div className="relative w-full aspect-[1.414/1] rounded-2xl overflow-hidden bg-white shadow-lg border border-slate-200/80">
+                                {isRendering && (
+                                    <div className="absolute inset-0 bg-white/85 backdrop-blur-sm flex flex-col items-center justify-center z-20 gap-3">
+                                        <div className="w-10 h-10 border-4 border-clinical-500 border-t-transparent rounded-full animate-spin"></div>
+                                        <p className="text-xs sm:text-sm font-semibold text-slate-600">กำลังสร้างประกาศนียบัตรความละเอียดสูง...</p>
+                                    </div>
+                                )}
+                                <canvas ref={canvasRef} className="w-full h-full object-contain block" />
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                <InputField label="ชื่อหน่วยงานหลัก" value={customTpl.orgTitleTH} onChange={e => setCustomTpl(p => ({ ...p, orgTitleTH: e.target.value }))} />
-                                <InputField label="ชื่อหลักสูตร" value={customTpl.courseTitleTH} onChange={e => setCustomTpl(p => ({ ...p, courseTitleTH: e.target.value }))} />
-                                <InputField label="ชื่อผู้ลงนาม" value={customTpl.signerName} onChange={e => setCustomTpl(p => ({ ...p, signerName: e.target.value }))} />
-                                <InputField label="ตำแหน่งผู้ลงนาม" value={customTpl.signerPosition} onChange={e => setCustomTpl(p => ({ ...p, signerPosition: e.target.value }))} />
-                                <InputField label="ลิงก์โลโก้ PNG (ไม่บังคับ)" value={customTpl.logoUrl} placeholder="https://.../logo.png" onChange={e => setCustomTpl(p => ({ ...p, logoUrl: e.target.value }))} />
-                                <InputField label="ลิงก์ลายเซ็น PNG (ไม่บังคับ)" value={customTpl.signatureUrl} placeholder="https://.../sign.png" onChange={e => setCustomTpl(p => ({ ...p, signatureUrl: e.target.value }))} />
+
+                            <div className="mt-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 pt-4 border-t border-slate-200/70">
+                                <div className="flex items-center gap-3 text-xs text-slate-600">
+                                    <div className="w-10 h-10 rounded-xl bg-clinical-50 text-clinical-600 flex items-center justify-center shrink-0">
+                                        <Icon name="ShieldCheck" size={20} />
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-slate-800">รับรองความถูกต้องด้วย QR Code</p>
+                                        <p className="text-slate-500">รหัส <span className="font-mono font-bold text-clinical-700">{certCode}</span> ตรวจสอบได้ที่ verify.html</p>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-2 md:flex items-center gap-2 w-full md:w-auto">
+                                    <button onClick={handleCopyVerifyLink} className="touch-target px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors">
+                                        <Icon name="Copy" size={15} /> คัดลอกลิงก์
+                                    </button>
+                                    <a href={`./verify.html?code=${encodeURIComponent(certCode)}`} target="_blank" rel="noreferrer" className="touch-target px-3.5 py-2.5 rounded-xl bg-clinical-50 hover:bg-clinical-100 text-clinical-700 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors">
+                                        <Icon name="ExternalLink" size={15} /> ตรวจสอบ QR
+                                    </a>
+                                </div>
                             </div>
                         </BentoCard>
-                    )}
+                    </div>
 
-                    <BentoCard className="p-2.5 sm:p-4 md:p-6">
-                        <div className="relative w-full aspect-[1.414/1] rounded-2xl overflow-hidden bg-white shadow-lg border border-slate-200/80">
-                            {isRendering && (
-                                <div className="absolute inset-0 bg-white/85 backdrop-blur-sm flex flex-col items-center justify-center z-20 gap-3">
-                                    <div className="w-10 h-10 border-4 border-clinical-500 border-t-transparent rounded-full animate-spin"></div>
-                                    <p className="text-xs sm:text-sm font-semibold text-slate-600">กำลังสร้างประกาศนียบัตรความละเอียดสูง...</p>
-                                </div>
-                            )}
-                            <canvas ref={canvasRef} className="w-full h-full object-contain block" />
-                        </div>
-
-                        <div className="mt-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 pt-4 border-t border-slate-200/70">
-                            <div className="flex items-center gap-3 text-xs text-slate-600">
-                                <div className="w-10 h-10 rounded-xl bg-clinical-50 text-clinical-600 flex items-center justify-center shrink-0">
-                                    <Icon name="ShieldCheck" size={20} />
-                                </div>
-                                <div>
-                                    <p className="font-bold text-slate-800">รับรองความถูกต้องด้วย QR Code</p>
-                                    <p className="text-slate-500">รหัส <span className="font-mono font-bold text-clinical-700">{certCode}</span> ตรวจสอบได้ที่ verify.html</p>
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-2 md:flex items-center gap-2 w-full md:w-auto">
-                                <button onClick={handleCopyVerifyLink} className="touch-target px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors">
-                                    <Icon name="Copy" size={15} /> คัดลอกลิงก์
-                                </button>
-                                <a href={`./verify.html?code=${encodeURIComponent(certCode)}`} target="_blank" rel="noreferrer" className="touch-target px-3.5 py-2.5 rounded-xl bg-clinical-50 hover:bg-clinical-100 text-clinical-700 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors">
-                                    <Icon name="ExternalLink" size={15} /> ตรวจสอบ QR
-                                </a>
-                            </div>
-                        </div>
-                    </BentoCard>
-
-                    {/* แถบปุ่มดาวน์โหลด/แชร์ติดขอบล่างเฉพาะสมาร์ทโฟน (กดง่ายด้วยนิ้วโป้ง) */}
+                    {/* แถบปุ่มดาวน์โหลด/แชร์ติดขอบล่างเฉพาะสมาร์ทโฟน */}
                     <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/92 backdrop-blur-xl border-t border-slate-200/80 px-3 pt-2.5 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-[0_-10px_30px_rgba(15,23,42,0.08)]">
                         <div className="grid grid-cols-2 gap-2.5 max-w-lg mx-auto">
                             <PrimaryButton variant="sky" onClick={handleShareMobile} className="!py-3 !text-sm">
@@ -263,14 +867,574 @@
                 </div>
             );
         }
-<!-- ... existing code ... -->
-            // --- 1. LANDING SCREEN (2027 Pearl Clinical Glass — Mobile-First 100%) ---
+
+        // ============================================================================
+        // 6. MAIN APPLICATION (RJCLOUD.ORGAN 2027)
+        // ============================================================================
+        function App() {
+            // โหลดเซสชันล่าสุดจาก localStorage
+            const initialSaved = useMemo(() => {
+                try {
+                    return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+                } catch {
+                    return null;
+                }
+            }, []);
+
+            const [screen, setScreen] = useState(() => {
+                const hash = window.location.hash.replace('#', '');
+                if (hash === 'dashboard' && initialSaved?.user) return 'dashboard';
+                if (initialSaved?.user && ['dashboard', 'certificate'].includes(initialSaved.screen)) return initialSaved.screen;
+                return 'landing';
+            });
+            const [user, setUser] = useState(() => initialSaved?.user || null);
+            const [activeTab, setActiveTab] = useState(() => initialSaved?.activeTab || 'video');
+            const [currentVideoId, setCurrentVideoId] = useState(() => initialSaved?.currentVideoId || initialSaved?.user?.lastVideoId || 1);
+            const [studySeconds, setStudySeconds] = useState(() => initialSaved?.studySeconds ?? initialSaved?.user?.studySeconds ?? 0);
+
+            // Cloud & Dynamic Config States
+            const [isCloudConnected, setIsCloudConnected] = useState(false);
+            const [appsScriptUrl, setAppsScriptUrl] = useState(CONFIG.appsScriptUrl || '');
+            const [lessons, setLessons] = useState(INITIAL_LESSONS);
+            const [questionSets, setQuestionSets] = useState(() => [parseRawExams(INITIAL_QUIZ_RAW)]);
+            const [certTemplate, setCertTemplate] = useState(() => {
+                try {
+                    const localTpl = localStorage.getItem('rjcloud_cert_template_v2027');
+                    if (localTpl) return { ...DEFAULT_CERT_TEMPLATE, ...JSON.parse(localTpl) };
+                } catch (_) {}
+                return DEFAULT_CERT_TEMPLATE;
+            });
+            const [liveConfig, setLiveConfig] = useState({
+                status: 'offline',
+                days: 1,
+                hours: 10,
+                allowPosttest: false,
+                topic: 'การบรรยายพิเศษด้านการรับบริจาคและปลูกถ่ายอวัยวะ 2027',
+                url: '',
+                documentUrl: ''
+            });
+            const [leaderboard, setLeaderboard] = useState([]);
+
+            // Auth Wizard States
+            const [authStep, setAuthStep] = useState('license'); // license | profile | otp
+            const [licenseInput, setLicenseInput] = useState('');
+            const [regData, setRegData] = useState({
+                license: '', name: '', email: '', phone: '', position: '',
+                workContext: '', department: '', hospital: '', customHospital: '',
+                province: '', userType: 'เรียนใหม่', isPrefilled: false
+            });
+            const [otpInput, setOtpInput] = useState('');
+            const [sandboxOtp, setSandboxOtp] = useState('');
+            const [isBusy, setIsBusy] = useState(false);
+
+            // Quiz & CSAT States
+            const [quiz, setQuiz] = useState({ type: 'pretest', questions: [], idx: 0, answers: {}, score: 0, timeLeft: 2700, finished: false });
+            const [csatScore, setCsatScore] = useState(5);
+            const [csatComment, setCsatComment] = useState('');
+            const [certFormName, setCertFormName] = useState('');
+            const [certFormHosp, setCertFormHosp] = useState('');
+
+            // UI States
+            const [lessonSearch, setLessonSearch] = useState('');
+            const [isTabVisible, setIsTabVisible] = useState(!document.hidden);
+            const [toast, setToast] = useState({ visible: false, text: '', type: 'success' });
+            const adminClickRef = useRef(0);
+            const userRef = useRef(user);
+            const studySecondsRef = useRef(studySeconds);
+
+            useEffect(() => { userRef.current = user; }, [user]);
+            useEffect(() => { studySecondsRef.current = studySeconds; }, [studySeconds]);
+
+            // ระบุว่า Mount สำเร็จแล้วสำหรับ Error Guard
+            useEffect(() => {
+                const rootEl = document.getElementById('root');
+                if (rootEl) rootEl.dataset.mounted = 'true';
+            }, []);
+
+            const showToast = useCallback((text, type = 'success') => {
+                setToast({ visible: true, text: String(text), type });
+                setTimeout(() => setToast(p => ({ ...p, visible: false })), 3500);
+            }, []);
+
+            // บันทึกลง localStorage และ Firestore (ไม่ดึงข้อมูลส่วนตัวผู้เรียนคนอื่น - PDPA Safe!)
+            const persistUser = useCallback(async (nextUser, syncCloud = true) => {
+                setUser(nextUser);
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                        screen: 'dashboard',
+                        user: nextUser,
+                        activeTab,
+                        currentVideoId: nextUser.lastVideoId || currentVideoId,
+                        studySeconds: nextUser.studySeconds ?? studySecondsRef.current
+                    }));
+                } catch (_) {}
+
+                if (syncCloud && isCloudConfigured && fbDb && nextUser?.id && !String(nextUser.id).startsWith('demo_')) {
+                    try {
+                        await setDoc(
+                            doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', String(nextUser.id)),
+                            nextUser,
+                            { merge: true }
+                        );
+                    } catch (err) {
+                        console.warn('Firestore save user warning:', err);
+                    }
+                }
+            }, [activeTab, currentVideoId]);
+
+            // 1. เชื่อมต่อ Firebase (Anonymous Auth + ฟังเฉพาะ Config & Public Leaderboard)
+            useEffect(() => {
+                if (!isCloudConfigured || !fbAuth || !fbDb) return;
+                let unsubSettings = null, unsubContent = null, unsubBoard = null;
+
+                signInAnonymously(fbAuth).catch(err => console.warn('Anon auth warning:', err));
+
+                const unsubAuth = onAuthStateChanged(fbAuth, (fbUser) => {
+                    if (!fbUser) return;
+                    setIsCloudConnected(true);
+
+                    unsubSettings = onSnapshot(
+                        doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_config', 'settings'),
+                        (snap) => {
+                            if (!snap.exists()) return;
+                            const d = snap.data();
+                            if (d.liveConfig) setLiveConfig(prev => ({ ...prev, ...d.liveConfig }));
+                            if (d.certTemplate) setCertTemplate(prev => ({ ...prev, ...d.certTemplate }));
+                            if (d.appsScriptUrl) setAppsScriptUrl(d.appsScriptUrl);
+                        },
+                        () => {}
+                    );
+
+                    unsubContent = onSnapshot(
+                        doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_config', 'content'),
+                        (snap) => {
+                            if (!snap.exists()) return;
+                            const d = snap.data();
+                            if (Array.isArray(d.lessons) && d.lessons.length > 0) setLessons(d.lessons);
+                            if (d.questionSets) setQuestionSets(normalizeQuestionSets(d.questionSets));
+                        },
+                        () => {}
+                    );
+
+                    unsubBoard = onSnapshot(
+                        collection(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'leaderboard'),
+                        (snap) => {
+                            const list = [];
+                            snap.forEach(docSnap => list.push({ id: docSnap.id, ...docSnap.data() }));
+                            list.sort((a, b) => (b.score || 0) - (a.score || 0));
+                            setLeaderboard(list.slice(0, 50));
+                        },
+                        () => {}
+                    );
+                });
+
+                return () => {
+                    unsubAuth();
+                    if (unsubSettings) unsubSettings();
+                    if (unsubContent) unsubContent();
+                    if (unsubBoard) unsubBoard();
+                };
+            }, []);
+
+            // 2. ติดตาม Page Visibility (นับเวลาเฉพาะตอนเปิดหน้าจออยู่เท่านั้น + เซฟเมื่อสลับแท็บ)
+            useEffect(() => {
+                const onVisChange = () => {
+                    const visible = !document.hidden;
+                    setIsTabVisible(visible);
+                    if (!visible && userRef.current) {
+                        const u = userRef.current;
+                        const secs = studySecondsRef.current;
+                        persistUser({ ...u, studySeconds: secs, progress: calcProgress(secs, u.userType, liveConfig.hours) }, true);
+                    }
+                };
+                document.addEventListener('visibilitychange', onVisChange);
+                return () => document.removeEventListener('visibilitychange', onVisChange);
+            }, [persistUser, liveConfig.hours]);
+
+            // 3. นับเวลาเรียนสะสมอัตโนมัติ (เฉพาะตอนดูวิดีโอหรือเช็คอิน Live + หน้าจอเปิดอยู่)
+            useEffect(() => {
+                if (screen !== 'dashboard' || !user || !isTabVisible) return;
+                const shouldCount = activeTab === 'video' || (activeTab === 'live' && liveConfig.status === 'live' && user.liveCheckedIn);
+                if (!shouldCount) return;
+
+                const interval = setInterval(() => {
+                    setStudySeconds(prevSecs => {
+                        const nextSecs = prevSecs + 10;
+                        const curU = userRef.current;
+                        if (!curU) return nextSecs;
+
+                        let nextType = curU.userType;
+                        let upgraded = false;
+                        if (curU.workContext === 'ปฏิบัติงานรับบริจาค/ปลูกถ่ายอวัยวะ' && nextSecs >= 28800 && nextType !== 'Masterclass') {
+                            nextType = 'Masterclass';
+                            upgraded = true;
+                        }
+
+                        const nextProg = calcProgress(nextSecs, nextType, liveConfig.hours);
+                        const nextU = { ...curU, studySeconds: nextSecs, progress: nextProg, userType: nextType };
+                        const shouldSyncCloud = nextSecs % 30 === 0 || upgraded;
+                        persistUser(nextU, shouldSyncCloud);
+
+                        if (upgraded) {
+                            showToast('🎉 สะสมเวลาครบ 8 ชม.! ปลดล็อกสิทธิ์ Masterclass เข้าห้อง AI Skill Lab ได้แล้วค่ะ');
+                        }
+                        return nextSecs;
+                    });
+                }, 10000);
+
+                return () => clearInterval(interval);
+            }, [screen, user?.id, activeTab, isTabVisible, liveConfig.status, liveConfig.hours, user?.liveCheckedIn, persistUser, showToast]);
+
+            // 4. ตัวจับเวลาข้อสอบ
+            useEffect(() => {
+                if (screen !== 'quiz' || quiz.finished) return;
+                const timer = setInterval(() => {
+                    setQuiz(prev => {
+                        if (prev.timeLeft <= 1) {
+                            clearInterval(timer);
+                            return { ...prev, timeLeft: 0 };
+                        }
+                        return { ...prev, timeLeft: prev.timeLeft - 1 };
+                    });
+                }, 1000);
+                return () => clearInterval(timer);
+            }, [screen, quiz.finished]);
+
+            // ส่งข้อสอบอัตโนมัติเมื่อหมดเวลา
+            useEffect(() => {
+                if (screen === 'quiz' && !quiz.finished && quiz.timeLeft === 0 && quiz.questions.length > 0) {
+                    handleFinishQuiz(quiz);
+                }
+            }, [screen, quiz.timeLeft, quiz.finished]);
+
+            // 5. เรียก Google Apps Script API
+            const callAppsScript = async (payload) => {
+                if (!appsScriptUrl) return { status: 'sandbox' };
+                try {
+                    const res = await fetch(appsScriptUrl, { method: 'POST', body: JSON.stringify(payload) });
+                    return await res.json();
+                } catch (err) {
+                    return { status: 'error', message: err.message };
+                }
+            };
+
+            // 6. Auth Handlers
+            const handleCheckLicense = async (e) => {
+                e.preventDefault();
+                const cleanLic = licenseInput.trim().replace(/[^a-zA-Z0-9]/g, '');
+                if (!cleanLic) return showToast('กรุณาระบุเลขที่ใบประกอบวิชาชีพค่ะ', 'error');
+
+                setIsBusy(true);
+                let existing = null;
+                if (isCloudConfigured && fbDb) {
+                    try {
+                        const snap = await getDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', cleanLic));
+                        if (snap.exists()) existing = snap.data();
+                    } catch (err) {
+                        console.warn('License lookup warning:', err);
+                    }
+                }
+
+                setRegData({
+                    license: cleanLic,
+                    name: existing?.name || '',
+                    email: existing?.email || '',
+                    phone: existing?.phone || '',
+                    position: existing?.position || '',
+                    workContext: existing?.workContext || '',
+                    department: existing?.department || '',
+                    hospital: existing?.hospital || '',
+                    customHospital: '',
+                    province: existing?.province || '',
+                    userType: existing?.userType || 'เรียนใหม่',
+                    isPrefilled: Boolean(existing),
+                    _existingRecord: existing
+                });
+                setIsBusy(false);
+                setAuthStep('profile');
+            };
+
+            const handleRequestOtp = async (e) => {
+                e.preventDefault();
+                if (!regData.email || !regData.name) return showToast('กรุณากรอกข้อมูลให้ครบถ้วนค่ะ', 'error');
+
+                setIsBusy(true);
+                setSandboxOtp('');
+                const res = await callAppsScript({ action: 'requestOTP', email: regData.email.trim(), name: regData.name.trim() });
+                setIsBusy(false);
+
+                if (res?.status === 'success') {
+                    showToast('ส่งรหัส OTP 6 หลักไปยังอีเมลของคุณแล้วค่ะ');
+                    setAuthStep('otp');
+                } else if (res?.status === 'sandbox') {
+                    const demoCode = String(Math.floor(100000 + Math.random() * 900000));
+                    setSandboxOtp(demoCode);
+                    showToast(`โหมดทดสอบ: รหัส OTP คือ ${demoCode}`, 'info');
+                    setAuthStep('otp');
+                } else {
+                    showToast(res?.message || 'ส่งรหัส OTP ไม่สำเร็จ กรุณาตรวจสอบอีเมลหรือลองใหม่อีกครั้งค่ะ', 'error');
+                }
+            };
+
+            const handleVerifyOtp = async (e) => {
+                e.preventDefault();
+                if (otpInput.length < 6) return;
+                setIsBusy(true);
+
+                let verified = false;
+                if (sandboxOtp) {
+                    verified = otpInput === sandboxOtp;
+                    if (!verified) {
+                        setIsBusy(false);
+                        return showToast('รหัส OTP ทดสอบไม่ถูกต้องค่ะ', 'error');
+                    }
+                } else {
+                    const res = await callAppsScript({ action: 'verifyOTP', email: regData.email.trim(), otp: otpInput });
+                    if (res?.status === 'success') {
+                        verified = true;
+                    } else {
+                        setIsBusy(false);
+                        return showToast(res?.message || 'รหัส OTP ไม่ถูกต้องหรือหมดอายุค่ะ', 'error');
+                    }
+                }
+
+                if (!verified) return;
+
+                const ex = regData._existingRecord || {};
+                let finalUserType = ex.userType || regData.userType || 'เรียนใหม่';
+                const initSecs = ex.studySeconds ?? ((finalUserType === 'Onsite' || finalUserType === 'Masterclass') ? 36000 : 0);
+
+                if (regData.workContext === 'ปฏิบัติงานรับบริจาค/ปลูกถ่ายอวัยวะ' && initSecs >= 28800) {
+                    finalUserType = 'Masterclass';
+                }
+
+                const finalHosp = regData.hospital === 'อื่นๆ'
+                    ? regData.customHospital
+                    : (regData.hospital === 'ศูนย์บริการสาธารณสุข' ? `ศูนย์บริการสาธารณสุข ${regData.customHospital}` : regData.hospital);
+
+                const fullUser = {
+                    ...ex,
+                    id: regData.license,
+                    license: regData.license,
+                    name: regData.name.trim(),
+                    email: regData.email.trim(),
+                    phone: regData.phone.trim(),
+                    position: regData.position.trim(),
+                    workContext: regData.workContext,
+                    department: regData.department,
+                    hospital: finalHosp || ex.hospital || '',
+                    province: regData.province.trim(),
+                    userType: finalUserType,
+                    studySeconds: initSecs,
+                    progress: calcProgress(initSecs, finalUserType, liveConfig.hours),
+                    status: ex.status || 'กำลังเรียน',
+                    pretest: ex.pretest || '-',
+                    posttest: ex.posttest || '-',
+                    skillLabPassed: ex.skillLabPassed ?? false,
+                    skillLabHistory: ex.skillLabHistory || [],
+                    lastVideoId: ex.lastVideoId || 1,
+                    liveCheckedIn: ex.liveCheckedIn || false
+                };
+
+                setStudySeconds(initSecs);
+                setCurrentVideoId(fullUser.lastVideoId || 1);
+                await persistUser(fullUser, true);
+                callAppsScript({ action: 'upsertUser', user: fullUser });
+
+                setIsBusy(false);
+                setOtpInput('');
+
+                if (fullUser.pretest === '-') {
+                    startQuiz('pretest');
+                } else {
+                    setScreen('dashboard');
+                    showToast(`ยินดีต้อนรับกลับมาค่ะ คุณ${fullUser.name}`);
+                }
+            };
+
+            const handleEnterDemoMode = (openCertDirectly = false) => {
+                const demoUser = {
+                    id: 'demo_65012345',
+                    license: '65012345',
+                    name: 'พว.ใจดี มีเมตตา (โหมดทดลอง)',
+                    email: 'demo@rjcloud.organ',
+                    phone: '0812345678',
+                    position: 'พยาบาลวิชาชีพชำนาญการ (ICU)',
+                    workContext: 'ปฏิบัติงานรับบริจาค/ปลูกถ่ายอวัยวะ',
+                    department: 'กรมการแพทย์',
+                    hospital: 'โรงพยาบาลราชวิถี',
+                    province: 'กรุงเทพมหานคร',
+                    userType: 'Masterclass',
+                    studySeconds: 36000,
+                    progress: 100,
+                    status: 'ผ่าน',
+                    pretest: '30/40',
+                    posttest: '38/40',
+                    skillLabPassed: true,
+                    skillLabHistory: [{ score: 92, passed: true, timestamp: new Date().toISOString() }],
+                    satisfactionScore: 5,
+                    certificateClaimed: true,
+                    certificateCode: 'RJC-2027-DEMO01',
+                    certificateIssuedAt: new Date().toISOString(),
+                    lastVideoId: 1,
+                    liveCheckedIn: false
+                };
+                setUser(demoUser);
+                setStudySeconds(36000);
+                setCurrentVideoId(1);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({ screen: 'dashboard', user: demoUser, activeTab: 'video', currentVideoId: 1, studySeconds: 36000 }));
+                setScreen(openCertDirectly ? 'certificate' : 'dashboard');
+                showToast(openCertDirectly ? 'เปิดตัวอย่าง Certificate Studio 2027 แล้วค่ะ' : 'เข้าสู่ระบบโหมดทดลองชม (Demo) เรียบร้อยค่ะ');
+            };
+
+            const handleLogout = async () => {
+                if (user) {
+                    const finalUser = {
+                        ...user,
+                        studySeconds,
+                        progress: calcProgress(studySeconds, user.userType, liveConfig.hours)
+                    };
+                    await persistUser(finalUser, true);
+                }
+                localStorage.removeItem(STORAGE_KEY);
+                setUser(null);
+                setStudySeconds(0);
+                setAuthStep('license');
+                setLicenseInput('');
+                setScreen('landing');
+                showToast('ออกจากระบบเรียบร้อยแล้วค่ะ');
+            };
+
+            // 7. Quiz Handlers
+            const startQuiz = (type) => {
+                const rawSet = questionSets[0] || parseRawExams(INITIAL_QUIZ_RAW);
+                const prepared = prepareShuffledExam(rawSet);
+                setQuiz({ type, questions: prepared, idx: 0, answers: {}, score: 0, timeLeft: 2700, finished: false });
+                setScreen('quiz');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
+            const handleFinishQuiz = async (quizState) => {
+                if (quizState.finished || !user) return;
+                const score = quizState.questions.reduce((acc, q) => acc + (quizState.answers[q.id] === q.answer ? 1 : 0), 0);
+                const total = quizState.questions.length || 1;
+                const isPre = quizState.type === 'pretest';
+                const passed = score >= Math.ceil(total * 0.8);
+
+                const updatedUser = {
+                    ...user,
+                    ...(isPre
+                        ? { pretest: `${score}/${total}` }
+                        : { posttest: `${score}/${total}`, status: passed ? 'ผ่าน' : 'ไม่ผ่าน' })
+                };
+
+                setQuiz(prev => ({ ...prev, score, finished: true }));
+                await persistUser(updatedUser, true);
+                callAppsScript({ action: 'upsertUser', user: updatedUser });
+
+                if (isPre) {
+                    setScreen('quiz_result');
+                } else if (passed) {
+                    setCertFormName(updatedUser.name || '');
+                    setCertFormHosp(updatedUser.hospital || '');
+                    setScreen('cert_confirm');
+                } else {
+                    setScreen('quiz_fail');
+                }
+            };
+
+            // 8. CSAT & Issue In-App Certificate
+            const handleClaimCertificate = async (e) => {
+                e.preventDefault();
+                if (!user) return;
+                setIsBusy(true);
+
+                const certCode = user.certificateCode || generateCertCode(certTemplate.certPrefix);
+                const issuedAt = user.certificateIssuedAt || new Date().toISOString();
+
+                const nextUser = {
+                    ...user,
+                    name: certFormName.trim() || user.name,
+                    hospital: certFormHosp.trim() || user.hospital,
+                    status: 'ผ่าน',
+                    satisfactionScore: csatScore,
+                    satisfactionComment: csatComment.trim(),
+                    certificateClaimed: true,
+                    certificateCode: certCode,
+                    certificateIssuedAt: issuedAt
+                };
+
+                await persistUser(nextUser, true);
+
+                // บันทึกระเบียนตรวจสอบประกาศนียบัตรลง Firestore (สำหรับหน้า verify.html สแกน QR)
+                const certPublicDoc = {
+                    code: certCode,
+                    name: nextUser.name,
+                    license: nextUser.license || nextUser.id,
+                    position: nextUser.position || 'บุคลากรทางการแพทย์',
+                    hospital: nextUser.hospital || 'เครือข่าย rjcloud.organ',
+                    department: nextUser.department || '',
+                    province: nextUser.province || '',
+                    userType: nextUser.userType || 'เรียนใหม่',
+                    courseTitleTH: certTemplate.courseTitleTH,
+                    orgTitleTH: certTemplate.orgTitleTH,
+                    signerName: certTemplate.signerName,
+                    signerPosition: certTemplate.signerPosition,
+                    posttestScore: nextUser.posttest || 'ผ่านเกณฑ์',
+                    issuedAt,
+                    status: 'valid'
+                };
+
+                // บันทึก Local Cache เผื่อเปิด verify.html ในเครื่องเดียวกัน
+                try {
+                    const localCerts = JSON.parse(localStorage.getItem('rjcloud_local_certificates') || '{}');
+                    localCerts[certCode] = certPublicDoc;
+                    localStorage.setItem('rjcloud_local_certificates', JSON.stringify(localCerts));
+                } catch (_) {}
+
+                if (isCloudConfigured && fbDb && !String(nextUser.id).startsWith('demo_')) {
+                    try {
+                        await setDoc(
+                            doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'certificates', certCode),
+                            certPublicDoc,
+                            { merge: true }
+                        );
+                    } catch (err) {
+                        console.warn('Cert record save warning:', err);
+                    }
+                }
+
+                callAppsScript({ action: 'upsertUser', user: nextUser });
+                setIsBusy(false);
+                showToast('ออกประกาศนียบัตรอิเล็กทรอนิกส์สำเร็จแล้วค่ะ 🎉');
+                setScreen('certificate');
+            };
+
+            const handleLiveCheckIn = async () => {
+                if (!user) return;
+                const nextU = { ...user, liveCheckedIn: true, liveCheckedInAt: new Date().toISOString() };
+                await persistUser(nextU, true);
+                showToast('เช็คอินเข้าเรียน Live สดเรียบร้อยแล้วค่ะ ระบบจะนับเวลาให้อัตโนมัติ');
+            };
+
+            const handleAdminSecretClick = () => {
+                adminClickRef.current += 1;
+                if (adminClickRef.current >= 3) {
+                    adminClickRef.current = 0;
+                    window.open('./admin.html', '_blank');
+                }
+            };
+
+            // ============================================================================
+            // 7. RENDER SCREENS
+            // ============================================================================
+
+            // --- SCREEN 1: LANDING ---
             if (screen === 'landing') {
                 return (
                     <div className="min-h-dvh relative flex flex-col pt-safe pb-safe">
                         <div className="aura-canvas" /><div className="aura-grid" />
 
-                        {/* Top Navbar */}
                         <header className="relative z-20 w-full max-w-6xl mx-auto px-4 md:px-8 pt-4 md:pt-6 flex items-center justify-between">
                             <div className="flex items-center gap-2.5">
                                 <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-clinical-500 to-teal-600 text-white flex items-center justify-center shadow-lg shadow-clinical-500/25 shrink-0">
@@ -286,12 +1450,11 @@
                                     <Icon name="QrCode" size={16} className="text-clinical-600" /> <span className="hidden sm:inline">ตรวจสอบประกาศฯ</span>
                                 </a>
                                 <a href="./executive.html" className="touch-target px-3 sm:px-4 py-2 rounded-full bento-glass text-xs font-bold text-slate-700 hover:text-medical-600 inline-flex items-center gap-1.5 transition-colors">
-                                    <Icon name="Globe" size={16} className="text-medical-500" /> <span className="hidden xs:inline sm:inline">Executive</span>
+                                    <Icon name="Globe" size={16} className="text-medical-500" /> <span className="hidden sm:inline">Executive</span>
                                 </a>
                             </div>
                         </header>
 
-                        {/* Hero Section (จัดระยะให้ปุ่มเข้าสู่ระบบอยู่เหนือรอยพับจอมือถือทันที) */}
                         <main className="relative z-10 flex-1 w-full max-w-6xl mx-auto px-4 md:px-8 py-6 md:py-12 flex flex-col justify-center">
                             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
                                 <div className="lg:col-span-7 space-y-4 md:space-y-6">
@@ -328,7 +1491,6 @@
                                     </div>
                                 </div>
 
-                                {/* Right Bento Showcase */}
                                 <div className="lg:col-span-5 grid grid-cols-2 gap-3 md:gap-4 pb-12 sm:pb-0">
                                     <BentoCard className="col-span-2 p-4 sm:p-6 relative overflow-hidden">
                                         <div className="flex items-start justify-between mb-3">
@@ -360,7 +1522,6 @@
                             </div>
                         </main>
 
-                        {/* Discreet Single Admin Trigger (3 clicks) */}
                         <button
                             onClick={handleAdminSecretClick}
                             title="System Settings"
@@ -368,13 +1529,12 @@
                         >
                             <Icon name="Settings" size={18} />
                         </button>
-
                         <ToastBanner toast={toast} />
                     </div>
                 );
             }
 
-            // --- 2. AUTH WIZARD SCREEN (Mobile Keyboard Friendly) ---
+            // --- SCREEN 2: AUTH WIZARD ---
             if (screen === 'auth') {
                 const depts = [...Object.keys(HOSPITAL_MAPPING).filter(k => k !== 'อื่นๆ'), 'อื่นๆ'];
                 const hospOptions = regData.department && HOSPITAL_MAPPING[regData.department]
@@ -503,7 +1663,7 @@
                                     </div>
                                     {sandboxOtp && (
                                         <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-medium">
-                                            โหมดทดสอบ (ยังไม่ได้เชื่อม Apps Script URL ของ {CONFIG.contactEmail}) — รหัส OTP ทดสอบคือ <b className="font-mono text-sm">{sandboxOtp}</b>
+                                            รหัส OTP ทดสอบคือ <b className="font-mono text-sm">{sandboxOtp}</b>
                                         </div>
                                     )}
                                     <input
@@ -528,7 +1688,7 @@
                 );
             }
 
-            // --- 3. QUIZ SCREEN (One-Handed Smartphone Experience) ---
+            // --- SCREEN 3: QUIZ ---
             if (screen === 'quiz') {
                 const q = quiz.questions[quiz.idx];
                 const selectedOpt = q ? quiz.answers[q.id] : undefined;
@@ -573,10 +1733,7 @@
                                         <button
                                             key={oIdx}
                                             type="button"
-                                            onClick={() => {
-                                                const nextAnswers = { ...quiz.answers, [q.id]: oIdx };
-                                                setQuiz(p => ({ ...p, answers: nextAnswers }));
-                                            }}
+                                            onClick={() => setQuiz(p => ({ ...p, answers: { ...p.answers, [q.id]: oIdx } }))}
                                             className={`touch-target w-full text-left p-4 rounded-2xl border transition-all flex items-center gap-3.5 active:scale-[0.99] ${
                                                 active
                                                     ? 'bg-clinical-50 border-clinical-500 text-clinical-900 font-semibold shadow-sm'
@@ -592,7 +1749,6 @@
                                 })}
                             </div>
 
-                            {/* ปุ่มนำทางบน Desktop */}
                             <div className="hidden md:flex items-center justify-between mt-8 pt-4 border-t border-slate-100">
                                 <PrimaryButton variant="ghost" disabled={quiz.idx === 0} onClick={() => setQuiz(p => ({ ...p, idx: Math.max(0, p.idx - 1) }))}>
                                     <Icon name="ArrowLeft" size={18} /> ข้อก่อนหน้า
@@ -609,7 +1765,6 @@
                             </div>
                         </BentoCard>
 
-                        {/* แถบปุ่มควบคุมข้อสอบติดขอบล่างสำหรับสมาร์ทโฟน (กดง่ายด้วยมือเดียว) */}
                         <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/92 backdrop-blur-xl border-t border-slate-200/80 px-3 pt-2.5 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-[0_-10px_30px_rgba(15,23,42,0.08)]">
                             <div className="flex items-center gap-2.5 max-w-lg mx-auto">
                                 <PrimaryButton variant="ghost" disabled={quiz.idx === 0} onClick={() => setQuiz(p => ({ ...p, idx: Math.max(0, p.idx - 1) }))} className="!px-4 !py-3 shrink-0">
@@ -631,15 +1786,185 @@
                     </div>
                 );
             }
-<!-- ... existing code ... -->
+
+            // --- SCREEN 4: PRETEST RESULT / POSTTEST FAIL ---
+            if (screen === 'quiz_result' || screen === 'quiz_fail') {
+                const isFail = screen === 'quiz_fail';
+                return (
+                    <div className="min-h-dvh relative flex items-center justify-center p-4 pt-safe pb-safe">
+                        <div className="aura-canvas" /><div className="aura-grid" />
+                        <BentoCard className="relative z-10 w-full max-w-md p-6 sm:p-8 text-center space-y-5">
+                            <div className={`w-16 h-16 rounded-2xl mx-auto flex items-center justify-center ${isFail ? 'bg-rose-50 text-rose-500' : 'bg-clinical-50 text-clinical-600'}`}>
+                                <Icon name={isFail ? 'AlertTriangle' : 'CheckCircle2'} size={34} />
+                            </div>
+                            <div>
+                                <h2 className="font-display text-2xl font-bold text-slate-900">
+                                    {isFail ? 'ยังไม่ผ่านเกณฑ์ 80%' : 'บันทึกผล Pre-test เรียบร้อย'}
+                                </h2>
+                                <p className="text-sm text-slate-500 mt-1">
+                                    {isFail ? 'สามารถทบทวนบทเรียนแล้วกลับมาสอบใหม่ได้ทันทีค่ะ' : 'พร้อมเข้าสู่ห้องเรียนออนไลน์ rjcloud.organ แล้วค่ะ'}
+                                </p>
+                            </div>
+                            <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100">
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">คะแนนที่ได้</p>
+                                <p className={`font-mono text-5xl font-extrabold mt-1 ${isFail ? 'text-rose-600' : 'text-clinical-600'}`}>
+                                    {quiz.score} <span className="text-2xl text-slate-400">/ {quiz.questions.length}</span>
+                                </p>
+                            </div>
+                            <div className="space-y-2.5">
+                                {isFail && (
+                                    <PrimaryButton onClick={() => startQuiz('posttest')} className="w-full">
+                                        ทำแบบทดสอบหลังเรียนอีกครั้ง
+                                    </PrimaryButton>
+                                )}
+                                <PrimaryButton variant={isFail ? 'ghost' : 'clinical'} onClick={() => setScreen('dashboard')} className="w-full">
+                                    เข้าสู่ห้องเรียนหลัก
+                                </PrimaryButton>
+                            </div>
+                        </BentoCard>
+                        <ToastBanner toast={toast} />
+                    </div>
+                );
+            }
+
+            // --- SCREEN 5: CERTIFICATE CONFIRMATION + CSAT RATING ---
+            if (screen === 'cert_confirm' && user) {
+                return (
+                    <div className="min-h-dvh relative flex items-center justify-center p-4 pt-safe pb-safe">
+                        <div className="aura-canvas" /><div className="aura-grid" />
+                        <BentoCard className="relative z-10 w-full max-w-xl p-5 sm:p-8 space-y-5">
+                            <div className="text-center space-y-1.5">
+                                <div className="w-14 h-14 rounded-2xl bg-clinical-50 text-clinical-600 flex items-center justify-center mx-auto">
+                                    <Icon name="Award" size={30} />
+                                </div>
+                                <h2 className="font-display text-2xl font-extrabold text-slate-900">ยินดีด้วย! คุณสอบผ่านเกณฑ์แล้ว 🎉</h2>
+                                <p className="text-xs sm:text-sm text-slate-500">ตรวจสอบชื่อบนประกาศนียบัตรและประเมินความพึงพอใจเพื่อรับใบประกาศฯ ทันที</p>
+                            </div>
+
+                            <form onSubmit={handleClaimCertificate} className="space-y-4">
+                                <InputField label="ชื่อ - นามสกุล ที่จะแสดงบนประกาศนียบัตร" required value={certFormName} onChange={e => setCertFormName(e.target.value)} />
+                                <InputField label="หน่วยงาน / โรงพยาบาล" required value={certFormHosp} onChange={e => setCertFormHosp(e.target.value)} />
+
+                                {/* CSAT 1–5 Stars */}
+                                <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/70 text-center space-y-2">
+                                    <p className="text-xs font-bold text-amber-900">ความพึงพอใจต่อการเรียนรู้บน rjcloud.organ</p>
+                                    <div className="flex items-center justify-center gap-2">
+                                        {[1, 2, 3, 4, 5].map(star => (
+                                            <button
+                                                key={star}
+                                                type="button"
+                                                onClick={() => setCsatScore(star)}
+                                                className="p-1 transition-transform active:scale-90"
+                                            >
+                                                <Icon
+                                                    name="Star"
+                                                    size={32}
+                                                    className={star <= csatScore ? 'text-amber-500 fill-amber-400' : 'text-slate-300'}
+                                                />
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <input
+                                        type="text"
+                                        value={csatComment}
+                                        onChange={e => setCsatComment(e.target.value)}
+                                        placeholder="ข้อเสนอแนะเพิ่มเติม (ไม่บังคับ)..."
+                                        className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-amber-200 text-sm outline-none"
+                                    />
+                                </div>
+
+                                <PrimaryButton type="submit" disabled={isBusy} className="w-full py-4">
+                                    <Icon name="Sparkles" size={18} /> {isBusy ? 'กำลังออกประกาศนียบัตร...' : 'ยืนยันและสร้างประกาศนียบัตรทันที'}
+                                </PrimaryButton>
+                            </form>
+                        </BentoCard>
+                        <ToastBanner toast={toast} />
+                    </div>
+                );
+            }
+
+            // --- SCREEN 6: CERTIFICATE STUDIO ---
+            if (screen === 'certificate' && user) {
+                return (
+                    <>
+                        <CertificateStudioView
+                            user={user}
+                            certTemplate={certTemplate}
+                            onBack={() => setScreen('dashboard')}
+                            onToast={showToast}
+                        />
+                        <ToastBanner toast={toast} />
+                    </>
+                );
+            }
+
+            // --- SCREEN 7: STUDENT DASHBOARD ---
+            if (!user) {
+                setScreen('landing');
+                return null;
+            }
+
+            const targetHours = getTargetHours(user.userType, liveConfig.hours);
+            const isTimeMet = (user.progress || 0) >= 100 || liveConfig.allowPosttest;
+            const isMasterclass = user.userType === 'Masterclass';
+            const hasDoneLab = Boolean(user.skillLabPassed || (user.skillLabHistory && user.skillLabHistory.length > 0));
+            const canTakePosttest = isMasterclass ? (isTimeMet && hasDoneLab) : isTimeMet;
+            const hasPassedCourse = user.status === 'ผ่าน';
+            const activeLesson = lessons.find(l => l.id === currentVideoId) || lessons[0];
+            const filteredLessons = lessons.filter(l => l.title.toLowerCase().includes(lessonSearch.trim().toLowerCase()));
+            const currentLessonIndex = Math.max(0, lessons.findIndex(l => l.id === activeLesson?.id));
+
+            const nextAction = hasPassedCourse
+                ? {
+                    badge: 'CERTIFIED 2027',
+                    title: 'ยินดีด้วย! คุณสำเร็จหลักสูตรแล้ว 🎉',
+                    desc: 'สามารถเปิดดู ดาวน์โหลด PDF (A4) หรือแชร์ประกาศนียบัตรพร้อม QR Code ได้ตลอดเวลา',
+                    btn: 'เปิด Certificate Studio',
+                    variant: 'clinical',
+                    onClick: () => {
+                        if (!user.certificateClaimed) {
+                            setCertFormName(user.name || '');
+                            setCertFormHosp(user.hospital || '');
+                            setScreen('cert_confirm');
+                        } else {
+                            setScreen('certificate');
+                        }
+                    }
+                }
+                : (isMasterclass && isTimeMet && !hasDoneLab)
+                    ? {
+                        badge: 'MASTERCLASS MISSION',
+                        title: 'ภารกิจภาคปฏิบัติ: AI Skill Lab',
+                        desc: 'เข้าฝึกจำลองการเจรจากับครอบครัวผู้ป่วย AI เพื่อเก็บคะแนนและปลดล็อก Post-test',
+                        btn: 'เข้าห้อง AI Skill Lab',
+                        variant: 'amber',
+                        onClick: () => { window.location.href = './aiskilllab.html'; }
+                    }
+                    : canTakePosttest
+                        ? {
+                            badge: 'READY FOR EXAM',
+                            title: 'สะสมเวลาเรียนครบแล้ว พร้อมสอบ Post-test!',
+                            desc: 'ทำแบบทดสอบหลังเรียนให้ผ่านเกณฑ์ 80% เพื่อรับประกาศนียบัตรทันทีในระบบ',
+                            btn: 'เริ่มสอบ Post-test',
+                            variant: 'sky',
+                            onClick: () => startQuiz('posttest')
+                        }
+                        : {
+                            badge: `MODULE ${String(activeLesson?.id || 1).padStart(2, '0')}`,
+                            title: `เรียนต่อ: ${activeLesson?.title || 'บทเรียนออนไลน์'}`,
+                            desc: `สะสมเวลาเรียนให้ครบ ${targetHours} ชม. เพื่อปลดล็อกขั้นตอนถัดไป`,
+                            btn: 'เปิดบทเรียน',
+                            variant: 'clinical',
+                            onClick: () => setActiveTab('video')
+                        };
+
             const avgSkillScore = user.skillLabHistory?.length
                 ? Math.round(user.skillLabHistory.reduce((s, r) => s + (r.score || 0), 0) / user.skillLabHistory.length)
                 : 0;
 
-            const currentLessonIndex = Math.max(0, lessons.findIndex(l => l.id === currentVideoId));
             const handleSelectLesson = (lessonId) => {
                 setCurrentVideoId(lessonId);
-                persistUser({ ...user, lastVideoId: lessonId });
+                persistUser({ ...user, lastVideoId: lessonId }, false);
                 if (window.innerWidth < 1024) window.scrollTo({ top: 0, behavior: 'smooth' });
             };
 
@@ -647,7 +1972,7 @@
                 <div className="min-h-dvh relative pb-dock-safe md:pb-12">
                     <div className="aura-canvas" /><div className="aura-grid" />
 
-                    {/* Top Navigation Header (Compact Mobile App Header) */}
+                    {/* Top Header */}
                     <header className="sticky top-0 z-30 backdrop-blur-xl bg-white/82 border-b border-slate-200/70 pt-safe">
                         <div className="max-w-7xl mx-auto px-3.5 md:px-8 h-14 md:h-16 flex items-center justify-between gap-2">
                             <div className="flex items-center gap-2 min-w-0">
@@ -687,8 +2012,7 @@
                     <main className="relative z-10 max-w-7xl mx-auto px-3 sm:px-4 md:px-8 pt-4 md:pt-6 space-y-4 md:space-y-6">
                         {/* Bento Summary Row */}
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 md:gap-5">
-                            {/* Next Best Action Card */}
-                            <BentoCard className="lg:col-span-8 p-4 sm:p-6 md:p-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative overflow-hidden">
+                            <BentoCard className="lg:col-span-8 p-4 sm:p-6 md:p-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                                 <div className="space-y-1 max-w-xl">
                                     <span className="inline-block px-2.5 py-0.5 rounded-full bg-clinical-100 text-clinical-700 font-mono text-[10px] md:text-[11px] font-bold">
                                         {nextAction.badge}
@@ -701,7 +2025,6 @@
                                 </PrimaryButton>
                             </BentoCard>
 
-                            {/* Progress & Study Time Card */}
                             <BentoCard className="lg:col-span-4 p-4 sm:p-6 flex flex-col justify-between">
                                 <div className="flex items-start justify-between">
                                     <div>
@@ -724,7 +2047,7 @@
                             </BentoCard>
                         </div>
 
-                        {/* Native-Like Smartphone Bottom Dock + Desktop Pill Navigation */}
+                        {/* Smartphone Bottom Dock + Desktop Pill Nav */}
                         <nav className="fixed bottom-0 left-0 right-0 md:static z-40">
                             <div className="bg-white/92 md:bg-white/75 backdrop-blur-2xl border-t md:border border-slate-200/80 md:rounded-2xl px-2 pt-1.5 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] md:p-1.5 grid grid-cols-5 md:flex items-center md:w-fit gap-1 shadow-[0_-8px_30px_rgba(15,23,42,0.08)] md:shadow-sm">
                                 {[
@@ -764,7 +2087,7 @@
                             </div>
                         </nav>
 
-                        {/* TAB 1: VIDEO LEARNING (Mobile-First Sticky Player + Quick Prev/Next Controls) */}
+                        {/* TAB 1: VIDEO LEARNING */}
                         {activeTab === 'video' && (
                             <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 items-start">
                                 <BentoCard className="lg:col-span-8 overflow-hidden p-0">
@@ -794,7 +2117,6 @@
                                             )}
                                         </div>
 
-                                        {/* ปุ่มเปลี่ยนบทเรียนก่อนหน้า/ถัดไปสำหรับใช้งานบนมือถือมือเดียว */}
                                         <div className="grid grid-cols-2 gap-2.5 pt-3 border-t border-slate-100">
                                             <button
                                                 type="button"
@@ -816,11 +2138,8 @@
                                     </div>
                                 </BentoCard>
 
-                                {/* Playlist Sidebar */}
                                 <BentoCard className="lg:col-span-4 p-4 md:p-5 flex flex-col lg:max-h-[580px]">
-                                    <div className="flex items-center justify-between mb-3">
-                                        <h4 className="font-display font-bold text-sm text-slate-800">รายการบทเรียน ({lessons.length})</h4>
-                                    </div>
+                                    <h4 className="font-display font-bold text-sm text-slate-800 mb-3">รายการบทเรียน ({lessons.length})</h4>
                                     <div className="relative mb-3">
                                         <Icon name="Search" size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                                         <input
@@ -833,7 +2152,7 @@
                                     </div>
                                     <div className="flex-1 overflow-y-auto custom-scrollbar space-y-2 pr-1 max-h-[380px] lg:max-h-none">
                                         {filteredLessons.map(l => {
-                                            const playing = l.id === currentVideoId;
+                                            const playing = l.id === activeLesson?.id;
                                             return (
                                                 <button
                                                     key={l.id}
@@ -856,4 +2175,151 @@
                                 </BentoCard>
                             </div>
                         )}
-<!-- ... existing code ... -->
+
+                        {/* TAB 2: LIVE STREAM */}
+                        {activeTab === 'live' && (
+                            <BentoCard className="p-5 sm:p-8">
+                                {liveConfig.status !== 'offline' ? (
+                                    <div className="space-y-5">
+                                        <div className="relative w-full pb-[56.25%] h-0 rounded-2xl overflow-hidden bg-slate-900">
+                                            {liveConfig.status === 'paused' && (
+                                                <div className="absolute inset-0 z-20 bg-slate-900/80 backdrop-blur-md flex flex-col items-center justify-center text-white gap-2">
+                                                    <Icon name="PauseCircle" size={48} className="text-amber-400" />
+                                                    <p className="font-display text-lg font-bold">พักการถ่ายทอดสดชั่วคราว</p>
+                                                </div>
+                                            )}
+                                            <iframe src={liveConfig.url} className="absolute inset-0 w-full h-full border-none" allowFullScreen title="Live Stream" />
+                                        </div>
+
+                                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                            <div>
+                                                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-600 text-xs font-bold mb-1">
+                                                    <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" /> LIVE BROADCAST
+                                                </div>
+                                                <h3 className="font-display text-lg sm:text-xl font-bold text-slate-900">{liveConfig.topic}</h3>
+                                                <p className="text-xs text-slate-500 mt-0.5">หลักสูตร {liveConfig.hours} ชั่วโมง ({liveConfig.days} วัน)</p>
+                                            </div>
+                                            <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+                                                {liveConfig.documentUrl && (
+                                                    <a href={liveConfig.documentUrl} target="_blank" rel="noreferrer" className="touch-target flex-1 sm:flex-none px-4 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-1.5">
+                                                        <Icon name="FileText" size={16} /> เอกสาร Live
+                                                    </a>
+                                                )}
+                                                {user.liveCheckedIn ? (
+                                                    <div className="touch-target flex-1 sm:flex-none px-4 py-2.5 rounded-2xl bg-clinical-50 border border-clinical-200 text-clinical-700 font-bold text-xs flex items-center justify-center gap-1.5">
+                                                        <Icon name="CheckCircle2" size={16} /> เช็คอินเข้าเรียนแล้ว
+                                                    </div>
+                                                ) : (
+                                                    <PrimaryButton onClick={handleLiveCheckIn} className="flex-1 sm:flex-none !py-2.5 !text-xs">
+                                                        <Icon name="CheckCircle2" size={16} /> ยืนยันเช็คอินเข้าเรียน
+                                                    </PrimaryButton>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="py-12 text-center space-y-3">
+                                        <div className="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
+                                            <Icon name="Radio" size={30} />
+                                        </div>
+                                        <h3 className="font-display text-xl font-bold text-slate-800">ขณะนี้ยังไม่มีการถ่ายทอดสด</h3>
+                                        <p className="text-sm text-slate-500">คุณสามารถศึกษาบทเรียนวิดีโอในแท็บ "บทเรียน" เพื่อสะสมเวลาได้ตลอด 24 ชั่วโมงค่ะ</p>
+                                    </div>
+                                )}
+                            </BentoCard>
+                        )}
+
+                        {/* TAB 3: LEADERBOARD (PDPA Safe Public Feed) */}
+                        {activeTab === 'leaderboard' && (
+                            <BentoCard className="p-5 sm:p-8 max-w-3xl mx-auto space-y-5">
+                                <div className="text-center space-y-1">
+                                    <div className="w-14 h-14 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center mx-auto mb-2">
+                                        <Icon name="Trophy" size={28} />
+                                    </div>
+                                    <h3 className="font-display text-2xl font-extrabold text-slate-900">Hall of Fame 2027</h3>
+                                    <p className="text-xs sm:text-sm text-slate-500">อันดับคะแนนทักษะการเจรจา AI Skill Lab (แสดงเฉพาะชื่อและหน่วยงาน)</p>
+                                </div>
+
+                                <div className="space-y-2.5">
+                                    {leaderboard.length > 0 ? leaderboard.map((row, idx) => (
+                                        <div key={row.id} className="p-4 rounded-2xl bg-white/90 border border-slate-200/70 flex items-center justify-between gap-3">
+                                            <div className="flex items-center gap-3 min-w-0">
+                                                <div className={`w-9 h-9 rounded-xl font-mono text-sm font-extrabold flex items-center justify-center shrink-0 ${
+                                                    idx === 0 ? 'bg-amber-400 text-white' : idx === 1 ? 'bg-slate-400 text-white' : idx === 2 ? 'bg-orange-400 text-white' : 'bg-slate-100 text-slate-600'
+                                                }`}>
+                                                    {idx + 1}
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <p className="font-bold text-sm text-slate-900 truncate">{row.name}</p>
+                                                    <p className="text-xs text-slate-500 truncate">{row.hospital || '-'}</p>
+                                                </div>
+                                            </div>
+                                            <div className="text-right shrink-0">
+                                                <p className="font-mono text-xl font-extrabold text-clinical-600 leading-none">{row.score}</p>
+                                                <p className="text-[10px] font-bold text-slate-400">EMPATHY</p>
+                                            </div>
+                                        </div>
+                                    )) : (
+                                        <div className="py-10 text-center text-sm text-slate-400">
+                                            ยังไม่มีรายชื่อจัดอันดับในรอบปี 2027 — ลองฝึกในห้อง AI Skill Lab เพื่อเป็นคนแรกได้เลยค่ะ
+                                        </div>
+                                    )}
+                                </div>
+                            </BentoCard>
+                        )}
+
+                        {/* TAB 4: PROFILE & CERTIFICATE ACCESS */}
+                        {activeTab === 'profile' && (
+                            <BentoCard className="p-5 sm:p-8 max-w-2xl mx-auto space-y-5">
+                                <div className="flex items-center gap-4 pb-5 border-b border-slate-100">
+                                    <div className="w-16 h-16 rounded-2xl bg-clinical-50 text-clinical-600 flex items-center justify-center shrink-0">
+                                        <Icon name="User" size={32} />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <h3 className="font-display text-xl font-extrabold text-slate-900 truncate">{user.name}</h3>
+                                        <p className="text-xs sm:text-sm text-slate-500 truncate">{user.position} • {user.hospital}</p>
+                                        <div className="flex flex-wrap gap-1.5 mt-2">
+                                            <span className="px-2.5 py-0.5 rounded-full bg-clinical-100 text-clinical-700 text-[11px] font-bold">{user.userType}</span>
+                                            <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 font-mono text-[11px] font-bold">{user.license}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                                        <p className="text-[11px] font-bold text-slate-400">Pre-test</p>
+                                        <p className="font-mono text-lg font-extrabold text-medical-600 mt-0.5">{user.pretest || '-'}</p>
+                                    </div>
+                                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                                        <p className="text-[11px] font-bold text-slate-400">Post-test</p>
+                                        <p className="font-mono text-lg font-extrabold text-clinical-600 mt-0.5">{user.posttest || '-'}</p>
+                                    </div>
+                                    <div className="col-span-2 sm:col-span-1 p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                                        <p className="text-[11px] font-bold text-slate-400">AI Skill Lab</p>
+                                        <p className="font-mono text-lg font-extrabold text-violet-600 mt-0.5">{avgSkillScore > 0 ? `${avgSkillScore}/100` : '-'}</p>
+                                    </div>
+                                </div>
+
+                                {hasPassedCourse && (
+                                    <PrimaryButton onClick={() => setScreen(user.certificateClaimed ? 'certificate' : 'cert_confirm')} className="w-full py-4">
+                                        <Icon name="Award" size={20} /> เปิดดู / ดาวน์โหลดประกาศนียบัตร (PDF & PNG)
+                                    </PrimaryButton>
+                                )}
+
+                                <button onClick={handleLogout} className="touch-target w-full py-3 rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-sm transition-colors">
+                                    ออกจากระบบ
+                                </button>
+                            </BentoCard>
+                        )}
+                    </main>
+
+                    <ToastBanner toast={toast} />
+                </div>
+            );
+        }
+
+        const root = createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
