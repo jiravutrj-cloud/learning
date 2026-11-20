@@ -1411,6 +1411,13 @@
                 }
             };
 
+            // ป้องกันการเรียก setScreen ระหว่าง Render เมื่อยังไม่มีเซสชันผู้เรียน
+            useEffect(() => {
+                if (!user && !['landing', 'auth'].includes(screen)) {
+                    setScreen('landing');
+                }
+            }, [user, screen]);
+
             // ============================================================================
             // 7. RENDER SCREENS
             // ============================================================================
@@ -1886,7 +1893,6 @@
 
             // --- SCREEN 7: STUDENT DASHBOARD ---
             if (!user) {
-                setScreen('landing');
                 return null;
             }
 
