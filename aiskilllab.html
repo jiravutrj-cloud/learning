@@ -18,40 +18,42 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Prompt:wght@500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              display: ['Prompt', 'sans-serif'],
-              sans: ['Sarabun', 'sans-serif'],
-              mono: ['JetBrains Mono', 'monospace']
-            },
-            colors: {
-              obsidian: {
-                950: '#050914',
-                900: '#0a1122',
-                800: '#111b33',
-                700: '#1b294a'
+      if (window.tailwind) {
+        tailwind.config = {
+          theme: {
+            extend: {
+              fontFamily: {
+                display: ['Prompt', 'sans-serif'],
+                sans: ['Sarabun', 'sans-serif'],
+                mono: ['JetBrains Mono', 'monospace']
               },
-              biotech: {
-                100: '#d1fae5',
-                200: '#a7f3d0',
-                300: '#6ee7b7',
-                400: '#34d399',
-                500: '#10b981',
-                600: '#059669'
-              },
-              cyber: {
-                200: '#a5f3fc',
-                300: '#67e8f9',
-                400: '#22d3ee',
-                500: '#06b6d4',
-                600: '#0891b2'
+              colors: {
+                obsidian: {
+                  950: '#050914',
+                  900: '#0a1122',
+                  800: '#111b33',
+                  700: '#1b294a'
+                },
+                biotech: {
+                  100: '#d1fae5',
+                  200: '#a7f3d0',
+                  300: '#6ee7b7',
+                  400: '#34d399',
+                  500: '#10b981',
+                  600: '#059669'
+                },
+                cyber: {
+                  200: '#a5f3fc',
+                  300: '#67e8f9',
+                  400: '#22d3ee',
+                  500: '#06b6d4',
+                  600: '#0891b2'
+                }
               }
             }
           }
-        }
-      };
+        };
+      }
     </script>
 
     <style>
@@ -226,6 +228,11 @@
             edition: '2027 Clinical Edition',
             contactEmail: 'rjcloud.organ@gmail.com',
             appId: 'rjcloud-organ-2027',
+            learningRules: {
+                allowedUserTypes: ['เรียนใหม่', 'เรียนต่อเนื่อง'],
+                minStudyPercent: 80,
+                minPosttestPercent: 80
+            },
             firebaseConfig: {
                 apiKey: 'AIzaSyCpvK0FCVVk9dt0ylHn_VzUStl7540UsbY',
                 authDomain: 'rj-cloud-organ.firebaseapp.com',
@@ -241,20 +248,26 @@
         const CONFIG = {
             ...BUILTIN_CONFIG,
             ...(window.RJCLOUD_CONFIG || {}),
+            learningRules: {
+                ...BUILTIN_CONFIG.learningRules,
+                ...(window.RJCLOUD_CONFIG?.learningRules || {})
+            },
             firebaseConfig: (window.RJCLOUD_CONFIG?.firebaseConfig?.apiKey)
                 ? window.RJCLOUD_CONFIG.firebaseConfig
                 : BUILTIN_CONFIG.firebaseConfig,
             appsScriptUrl: window.RJCLOUD_CONFIG?.appsScriptUrl || BUILTIN_CONFIG.appsScriptUrl
         };
 
+        const MIN_STUDY_PERCENT = Number(CONFIG.learningRules?.minStudyPercent || 80);
+        const MIN_POSTTEST_PERCENT = Number(CONFIG.learningRules?.minPosttestPercent || 80);
         const STORAGE_KEY = 'rjcloud_organ_state_v2027';
 
-        // วิดีโอสถานการณ์จำลองหลักตามลิงก์ Vimeo ที่กำหนด (แทนที่วิดีโอตัวละครเดิมทั้งหมด)
-        const SCENARIO_VIMEO_ID = '1248608457';
-        const SCENARIO_VIMEO_SHARE_URL = 'https://vimeo.com/1248608457?share=copy&fl=sv&fe=ci';
-        const SCENARIO_VIMEO_EMBED_URL = `https://player.vimeo.com/video/${SCENARIO_VIMEO_ID}?title=0&byline=0&portrait=0&dnt=1`;
+        // วิดีโอสถานการณ์จำลองหลักตามลิงก์ Vimeo ที่กำหนด (ซิงค์กับ data.js พร้อมค่าเริ่มต้นในตัว)
+        const SCENARIO_VIMEO_ID = window.SKILL_LAB_VIDEO?.vimeoId || '1248608457';
+        const SCENARIO_VIMEO_SHARE_URL = window.SKILL_LAB_VIDEO?.shareUrl || `https://vimeo.com/${SCENARIO_VIMEO_ID}?share=copy&fl=sv&fe=ci`;
+        const SCENARIO_VIMEO_EMBED_URL = window.SKILL_LAB_VIDEO?.embedUrl || `https://player.vimeo.com/video/${SCENARIO_VIMEO_ID}?title=0&byline=0&portrait=0&dnt=1`;
 
-        // สถานะอารมณ์ของญาติผู้เสียชีวิต (AI Relative) เพื่อช่วยให้ผู้เรียนรับรู้อารมณ์ร่วมผ่านจอโฮโลแกรม
+        // สถานะอารมณ์ของญาติผู้เสียชีวิต (เชื่อมสี แสงออร่า และระดับการเปิดใจบนจอโฮโลแกรม)
         const EMOTION_META = {
             SHOCK: {
                 labelTH: 'ช็อก / สับสน',
@@ -262,7 +275,7 @@
                 color: 'text-amber-300 bg-amber-500/15 border-amber-400/30',
                 dot: 'bg-amber-400',
                 ring: 'border-amber-400/50',
-                glow: 'rgba(245, 158, 11, 0.34)',
+                glow: 'rgba(251, 191, 36, 0.34)',
                 bar: 'bg-amber-400',
                 textTone: 'text-amber-300',
                 icon: 'AlertTriangle',
@@ -571,7 +584,8 @@
         // 3. UTILITIES, AUDIO DECODING & DUAL-DIMENSION EVALUATION ENGINE
         // ============================================================================
         function Icon({ name, size = 20, className = '', strokeWidth = 2 }) {
-            const Comp = LucideIcons[name] || LucideIcons.Sparkles;
+            const Comp = LucideIcons[name] || LucideIcons.Sparkles || LucideIcons.Activity;
+            if (!Comp) return null;
             return <Comp size={size} className={className} strokeWidth={strokeWidth} />;
         }
 
@@ -892,7 +906,27 @@
         // 5. MAIN AI SKILL LAB APPLICATION
         // ============================================================================
         function AiSkillLabApp() {
+            // ตรวจสอบว่าเปิดจากหน้า Admin Inspector (?admin_preview=1) หรือไม่
+            const isAdminPreview = useMemo(() => {
+                try {
+                    return new URLSearchParams(window.location.search).get('admin_preview') === '1';
+                } catch (_) {
+                    return false;
+                }
+            }, []);
+
             const [user, setUser] = useState(() => {
+                if (isAdminPreview) {
+                    return {
+                        id: 'admin_preview_2027',
+                        license: 'ADMIN2027',
+                        name: 'พว.ทดสอบ ระบบผู้ดูแล (Admin Preview)',
+                        position: 'พยาบาลวิชาชีพชำนาญการ',
+                        hospital: 'รพ.ราชวิถี',
+                        pretest: '30/40',
+                        progress: 100
+                    };
+                }
                 try {
                     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
                     if (saved?.user) return saved.user;
@@ -908,7 +942,7 @@
 
             const [appsScriptUrl, setAppsScriptUrl] = useState(CONFIG.appsScriptUrl || '');
             const [isCloudReady, setIsCloudReady] = useState(false);
-
+            const [previewBarOpen, setPreviewBarOpen] = useState(false);
             // Screen & Training States
             const [selectedMode, setSelectedMode] = useState(null); // LAB_MODES[0] | LAB_MODES[1]
             const [trainingTrack, setTrainingTrack] = useState('full_sim'); // micro_drill | full_sim
@@ -974,7 +1008,7 @@
 
                     // ซิงค์สถานะล่าสุดของผู้เรียนจาก Cloud (เช่น progress >= 80%)
                     const cur = userRef.current;
-                    if (cur?.id && !String(cur.id).startsWith('guest_') && !String(cur.id).startsWith('demo_')) {
+                    if (!isAdminPreview && cur?.id && !String(cur.id).startsWith('guest_') && !String(cur.id).startsWith('demo_') && !String(cur.id).startsWith('admin_preview_')) {
                         try {
                             const snap = await getDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', String(cur.id)));
                             if (snap.exists()) {
@@ -1006,7 +1040,7 @@
                     unsubAuth();
                     if (unsubSettings) unsubSettings();
                 };
-            }, []);
+            }, [isAdminPreview]);
 
             // หยุดเสียง AI และคืน Memory ของ Blob URL อย่างสะอาด
             const stopAiVoice = useCallback(() => {
@@ -1481,6 +1515,11 @@
                 setPhase('debrief');
 
                 // บันทึกประวัติคะแนนลง localStorage และ Firestore เพื่อให้ index.html ปลดล็อกขั้นที่ 4 (Post-test) ทันที
+                if (isAdminPreview) {
+                    showToast('แสดงผลการประเมินในโหมด Admin Preview (ไม่บันทึกทับข้อมูลผู้เรียนจริง)', 'info');
+                    return;
+                }
+
                 try {
                     const historyItem = {
                         score: finalResult.totalScore,
@@ -1569,10 +1608,10 @@
                 ? 'You have practiced all 4 core principles! Tap "Evaluate" above whenever ready to unlock Post-test.'
                 : 'คุณฝึกสื่อสารครบทั้ง 4 หลักการสำคัญแล้วค่ะ! สามารถกดปุ่ม "จบ & ประเมินผล" ด้านบนเพื่อปลดล็อก Post-test ได้เลยค่ะ');
 
-            // ขั้นที่ 2 -> 3: ผู้เรียนจริงต้องทำ Pre-test และสะสมชั่วโมงเรียนไม่น้อยกว่า 80% ก่อนเข้า AI Skill Lab
-            const isRealLearner = Boolean(user?.id && !String(user.id).startsWith('guest_') && !String(user.id).startsWith('demo_'));
+            // ขั้นที่ 2 -> 3: ผู้เรียนจริงต้องทำ Pre-test และสะสมชั่วโมงเรียนไม่น้อยกว่าเกณฑ์ก่อนเข้า AI Skill Lab (Admin Preview เข้าตรวจได้ทันที)
+            const isRealLearner = Boolean(!isAdminPreview && user?.id && !String(user.id).startsWith('guest_') && !String(user.id).startsWith('demo_') && !String(user.id).startsWith('admin_preview_'));
             const hasDonePretest = Boolean(user?.pretest && user.pretest !== '-');
-            const isStudyHoursMet = (user?.progress || 0) >= 80;
+            const isStudyHoursMet = (user?.progress || 0) >= MIN_STUDY_PERCENT;
             const isLabLocked = isRealLearner && (!hasDonePretest || !isStudyHoursMet);
 
             if (isLabLocked) {
@@ -1592,7 +1631,7 @@
                                     ยังไม่ปลดล็อกห้อง AI Skill Lab
                                 </h1>
                                 <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                                    ตามเงื่อนไขหลักสูตร ผู้เรียนต้องทำ <b className="text-white">Pre-test</b> และสะสมชั่วโมงเรียนไม่น้อยกว่า <b className="text-biotech-300">80%</b> ก่อนจึงจะเข้าฝึกในห้อง AI Skill Lab ได้ค่ะ
+                                    ตามเงื่อนไขหลักสูตร ผู้เรียนต้องทำ <b className="text-white">Pre-test</b> และสะสมชั่วโมงเรียนไม่น้อยกว่า <b className="text-biotech-300">{MIN_STUDY_PERCENT}%</b> ก่อนจึงจะเข้าฝึกในห้อง AI Skill Lab ได้ค่ะ
                                 </p>
                             </div>
 
@@ -1605,13 +1644,13 @@
                                 </div>
                                 <div className="space-y-1.5">
                                     <div className="flex items-center justify-between text-xs">
-                                        <span className="text-slate-300">2. สะสมชั่วโมงเรียนไม่น้อยกว่า 80%</span>
-                                        <span className="font-mono font-bold text-cyber-300">{user?.progress || 0}% / 80%</span>
+                                        <span className="text-slate-300">2. สะสมชั่วโมงเรียนไม่น้อยกว่า {MIN_STUDY_PERCENT}%</span>
+                                        <span className="font-mono font-bold text-cyber-300">{user?.progress || 0}% / {MIN_STUDY_PERCENT}%</span>
                                     </div>
                                     <div className="w-full h-2 rounded-full bg-slate-900 overflow-hidden">
                                         <div
                                             className="h-full bg-gradient-to-r from-biotech-400 to-cyber-400 rounded-full"
-                                            style={{ width: `${Math.min(100, Math.round(((user?.progress || 0) / 80) * 100))}%` }}
+                                            style={{ width: `${Math.min(100, Math.round(((user?.progress || 0) / MIN_STUDY_PERCENT) * 100))}%` }}
                                         />
                                     </div>
                                 </div>
@@ -2393,7 +2432,7 @@
                                             <Icon name="Unlock" size={16} /> ปลดล็อกขั้นที่ 4: แบบทดสอบหลังเรียน (Post-test) แล้วค่ะ!
                                         </p>
                                         <p className="text-xs text-slate-200">
-                                            กลับไปหน้าห้องเรียนหลักเพื่อทำ Post-test ให้ได้ไม่น้อยกว่า 80% เพื่อรับประกาศนียบัตร (ขั้นที่ 5)
+                                            กลับไปหน้าห้องเรียนหลักเพื่อทำ Post-test ให้ได้ไม่น้อยกว่า {MIN_POSTTEST_PERCENT}% เพื่อรับประกาศนียบัตร (ขั้นที่ 5)
                                         </p>
                                     </div>
                                     <a
@@ -2489,6 +2528,46 @@
 
                     <ConfirmModal dialog={confirmDialog} onClose={() => setConfirmDialog(p => ({ ...p, open: false }))} />
                     <ToastBanner toast={toast} />
+
+                    {isAdminPreview && (
+                        <div className="fixed top-[calc(4rem+env(safe-area-inset-top,0px))] right-3 z-[130] flex flex-col items-end gap-1.5 pointer-events-none">
+                            {previewBarOpen ? (
+                                <div className="pointer-events-auto bg-obsidian-900/95 border border-biotech-400/40 backdrop-blur-xl rounded-2xl p-2.5 shadow-2xl flex flex-wrap items-center gap-1.5 text-[11px] font-bold max-w-[92vw]">
+                                    <span className="text-biotech-300 font-mono flex items-center gap-1 px-1">
+                                        <Icon name="Eye" size={13} /> ADMIN PREVIEW
+                                    </span>
+                                    <a href="./index.html?admin_preview=dashboard" className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200">
+                                        ห้องเรียน
+                                    </a>
+                                    <a href="./index.html?admin_preview=posttest" className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200">
+                                        Post-test
+                                    </a>
+                                    <a href="./index.html?admin_preview=certificate" className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200">
+                                        ประกาศฯ
+                                    </a>
+                                    <a href="./admin.html" className="px-2.5 py-1 rounded-lg bg-biotech-500 hover:bg-biotech-400 text-slate-950">
+                                        กลับ Admin
+                                    </a>
+                                    <button
+                                        type="button"
+                                        onClick={() => setPreviewBarOpen(false)}
+                                        className="w-6 h-6 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200 flex items-center justify-center"
+                                        title="พับแถบตรวจหน้าจอ"
+                                    >
+                                        <Icon name="X" size={13} />
+                                    </button>
+                                </div>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={() => setPreviewBarOpen(true)}
+                                    className="pointer-events-auto px-3 py-1.5 rounded-full bg-obsidian-900/95 border border-biotech-400/45 text-biotech-300 shadow-xl text-[11px] font-mono font-bold flex items-center gap-1.5 hover:bg-obsidian-800"
+                                >
+                                    <Icon name="Eye" size={13} /> ADMIN PREVIEW
+                                </button>
+                            )}
+                        </div>
+                    )}
                 </div>
             );
         }
