@@ -356,8 +356,6 @@
         }
 
         function getTargetHours(userType, liveHours = 10) {
-            if (userType === 'Onsite' || userType === 'Masterclass') return 10;
-            if (userType === 'Online') return Number(liveHours) || 10;
             return 8;
         }
 
@@ -1063,21 +1061,11 @@
                         const curU = userRef.current;
                         if (!curU) return nextSecs;
 
-                        let nextType = curU.userType;
-                        let upgraded = false;
-                        if (curU.workContext === 'ปฏิบัติงานรับบริจาค/ปลูกถ่ายอวัยวะ' && nextSecs >= 28800 && nextType !== 'Masterclass') {
-                            nextType = 'Masterclass';
-                            upgraded = true;
-                        }
-
-                        const nextProg = calcProgress(nextSecs, nextType, liveConfig.hours);
-                        const nextU = { ...curU, studySeconds: nextSecs, progress: nextProg, userType: nextType };
-                        const shouldSyncCloud = nextSecs % 30 === 0 || upgraded;
+                        const nextProg = calcProgress(nextSecs, curU.userType, liveConfig.hours);
+                        const nextU = { ...curU, studySeconds: nextSecs, progress: nextProg };
+                        const shouldSyncCloud = nextSecs % 30 === 0;
                         persistUser(nextU, shouldSyncCloud);
 
-                        if (upgraded) {
-                            showToast('🎉 สะสมเวลาครบ 8 ชม.! ปลดล็อกสิทธิ์ Masterclass เข้าห้อง AI Skill Lab ได้แล้วค่ะ');
-                        }
                         return nextSecs;
                     });
                 }, 10000);
@@ -1146,7 +1134,8 @@
                     hospital: existing?.hospital || '',
                     customHospital: '',
                     province: existing?.province || '',
-                    userType: existing?.userType || 'เรียนใหม่',
+                    // อ้างอิงสถานะจากเลขที่ใบอนุญาต: หากพบประวัติเดิมตั้งเป็น "เรียนต่อเนื่อง" อัตโนมัติ
+                    userType: existing ? 'เรียนต่อเนื่อง' : 'เรียนใหม่',
                     isPrefilled: Boolean(existing),
                     _existingRecord: existing
                 });
@@ -1201,19 +1190,16 @@
                 if (!verified) return;
 
                 const ex = regData._existingRecord || {};
-                let finalUserType = ex.userType || regData.userType || 'เรียนใหม่';
-                const initSecs = ex.studySeconds ?? ((finalUserType === 'Onsite' || finalUserType === 'Masterclass') ? 36000 : 0);
-
-                if (regData.workContext === 'ปฏิบัติงานรับบริจาค/ปลูกถ่ายอวัยวะ' && initSecs >= 28800) {
-                    finalUserType = 'Masterclass';
-                }
+                const isContinuing = Boolean(regData.isPrefilled || regData.userType === 'เรียนต่อเนื่อง');
+                const finalUserType = isContinuing ? 'เรียนต่อเนื่อง' : 'เรียนใหม่';
+                const initSecs = isContinuing ? (ex.studySeconds ?? 0) : 0;
 
                 const finalHosp = regData.hospital === 'อื่นๆ'
                     ? regData.customHospital
                     : (regData.hospital === 'ศูนย์บริการสาธารณสุข' ? `ศูนย์บริการสาธารณสุข ${regData.customHospital}` : regData.hospital);
 
                 const fullUser = {
-                    ...ex,
+                    ...(isContinuing ? ex : {}),
                     id: regData.license,
                     license: regData.license,
                     name: regData.name.trim(),
@@ -1227,13 +1213,13 @@
                     userType: finalUserType,
                     studySeconds: initSecs,
                     progress: calcProgress(initSecs, finalUserType, liveConfig.hours),
-                    status: ex.status || 'กำลังเรียน',
-                    pretest: ex.pretest || '-',
-                    posttest: ex.posttest || '-',
-                    skillLabPassed: ex.skillLabPassed ?? false,
-                    skillLabHistory: ex.skillLabHistory || [],
-                    lastVideoId: ex.lastVideoId || 1,
-                    liveCheckedIn: ex.liveCheckedIn || false
+                    status: isContinuing ? (ex.status || 'กำลังเรียน') : 'กำลังเรียน',
+                    pretest: isContinuing ? (ex.pretest || '-') : '-',
+                    posttest: isContinuing ? (ex.posttest || '-') : '-',
+                    skillLabPassed: isContinuing ? (ex.skillLabPassed ?? false) : false,
+                    skillLabHistory: isContinuing ? (ex.skillLabHistory || []) : [],
+                    lastVideoId: isContinuing ? (ex.lastVideoId || 1) : 1,
+                    liveCheckedIn: isContinuing ? (ex.liveCheckedIn || false) : false
                 };
 
                 setStudySeconds(initSecs);
@@ -1248,7 +1234,7 @@
                     startQuiz('pretest');
                 } else {
                     setScreen('dashboard');
-                    showToast(`ยินดีต้อนรับกลับมาค่ะ คุณ${fullUser.name}`);
+                    showToast(isContinuing ? `ยินดีต้อนรับกลับมาเรียนต่อค่ะ คุณ${fullUser.name}` : `ยินดีต้อนรับค่ะ คุณ${fullUser.name}`);
                 }
             };
 
@@ -1264,8 +1250,8 @@
                     department: 'กรมการแพทย์',
                     hospital: 'โรงพยาบาลราชวิถี',
                     province: 'กรุงเทพมหานคร',
-                    userType: 'Masterclass',
-                    studySeconds: 36000,
+                    userType: 'เรียนต่อเนื่อง',
+                    studySeconds: 28800,
                     progress: 100,
                     status: 'ผ่าน',
                     pretest: '30/40',
@@ -1596,7 +1582,7 @@
                                         <InputField label="ชื่อ - นามสกุล" required value={regData.name} onChange={e => setRegData(p => ({ ...p, name: e.target.value }))} placeholder="เช่น พว.ใจดี มีเมตตา" />
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                             <InputField label="เลขที่ใบอนุญาต" disabled value={regData.license} />
-                                            <SelectField label="สิทธิ์การเรียน" disabled={regData.isPrefilled} value={regData.userType} options={['เรียนใหม่', 'Online', 'Onsite', 'Masterclass']} onChange={e => setRegData(p => ({ ...p, userType: e.target.value }))} />
+                                            <SelectField label="สิทธิ์การเรียน" disabled={regData.isPrefilled} value={regData.userType} options={['เรียนใหม่', 'เรียนต่อเนื่อง']} onChange={e => setRegData(p => ({ ...p, userType: e.target.value }))} />
                                         </div>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                             <InputField label="อีเมล (สำหรับรับรหัส OTP)" type="email" inputMode="email" required value={regData.email} onChange={e => setRegData(p => ({ ...p, email: e.target.value }))} placeholder="name@hospital.go.th" />
@@ -1906,9 +1892,7 @@
 
             const targetHours = getTargetHours(user.userType, liveConfig.hours);
             const isTimeMet = (user.progress || 0) >= 100 || liveConfig.allowPosttest;
-            const isMasterclass = user.userType === 'Masterclass';
-            const hasDoneLab = Boolean(user.skillLabPassed || (user.skillLabHistory && user.skillLabHistory.length > 0));
-            const canTakePosttest = isMasterclass ? (isTimeMet && hasDoneLab) : isTimeMet;
+            const canTakePosttest = isTimeMet;
             const hasPassedCourse = user.status === 'ผ่าน';
             const activeLesson = lessons.find(l => l.id === currentVideoId) || lessons[0];
             const filteredLessons = lessons.filter(l => l.title.toLowerCase().includes(lessonSearch.trim().toLowerCase()));
@@ -1931,32 +1915,23 @@
                         }
                     }
                 }
-                : (isMasterclass && isTimeMet && !hasDoneLab)
+                : canTakePosttest
                     ? {
-                        badge: 'MASTERCLASS MISSION',
-                        title: 'ภารกิจภาคปฏิบัติ: AI Skill Lab',
-                        desc: 'เข้าฝึกจำลองการเจรจากับครอบครัวผู้ป่วย AI เพื่อเก็บคะแนนและปลดล็อก Post-test',
-                        btn: 'เข้าห้อง AI Skill Lab',
-                        variant: 'amber',
-                        onClick: () => { window.location.href = './aiskilllab.html'; }
+                        badge: 'READY FOR EXAM',
+                        title: 'สะสมเวลาเรียนครบแล้ว พร้อมสอบ Post-test!',
+                        desc: 'ทำแบบทดสอบหลังเรียนให้ผ่านเกณฑ์ 80% เพื่อรับประกาศนียบัตรทันทีในระบบ',
+                        btn: 'เริ่มสอบ Post-test',
+                        variant: 'sky',
+                        onClick: () => startQuiz('posttest')
                     }
-                    : canTakePosttest
-                        ? {
-                            badge: 'READY FOR EXAM',
-                            title: 'สะสมเวลาเรียนครบแล้ว พร้อมสอบ Post-test!',
-                            desc: 'ทำแบบทดสอบหลังเรียนให้ผ่านเกณฑ์ 80% เพื่อรับประกาศนียบัตรทันทีในระบบ',
-                            btn: 'เริ่มสอบ Post-test',
-                            variant: 'sky',
-                            onClick: () => startQuiz('posttest')
-                        }
-                        : {
-                            badge: `MODULE ${String(activeLesson?.id || 1).padStart(2, '0')}`,
-                            title: `เรียนต่อ: ${activeLesson?.title || 'บทเรียนออนไลน์'}`,
-                            desc: `สะสมเวลาเรียนให้ครบ ${targetHours} ชม. เพื่อปลดล็อกขั้นตอนถัดไป`,
-                            btn: 'เปิดบทเรียน',
-                            variant: 'clinical',
-                            onClick: () => setActiveTab('video')
-                        };
+                    : {
+                        badge: `MODULE ${String(activeLesson?.id || 1).padStart(2, '0')}`,
+                        title: `เรียนต่อ: ${activeLesson?.title || 'บทเรียนออนไลน์'}`,
+                        desc: `สะสมเวลาเรียนให้ครบ ${targetHours} ชม. เพื่อปลดล็อกการสอบ Post-test`,
+                        btn: 'เปิดบทเรียน',
+                        variant: 'clinical',
+                        onClick: () => setActiveTab('video')
+                    };
 
             const avgSkillScore = user.skillLabHistory?.length
                 ? Math.round(user.skillLabHistory.reduce((s, r) => s + (r.score || 0), 0) / user.skillLabHistory.length)
@@ -2058,9 +2033,7 @@
                                         label: 'AI Lab',
                                         icon: 'Bot',
                                         customClick: () => {
-                                            if (user.userType === 'Masterclass') window.location.href = './aiskilllab.html';
-                                            else if (user.workContext === 'ปฏิบัติงานรับบริจาค/ปลูกถ่ายอวัยวะ') showToast('กรุณาสะสมเวลาเรียนครบ 8 ชม. เพื่อปลดล็อก Masterclass ค่ะ', 'error');
-                                            else showToast('AI Skill Lab สงวนสิทธิ์เฉพาะผู้ปฏิบัติงานด้านรับบริจาค/ปลูกถ่ายอวัยวะค่ะ', 'error');
+                                            window.location.href = './aiskilllab.html';
                                         }
                                     },
                                     { id: 'leaderboard', label: 'อันดับ', icon: 'Trophy' },
