@@ -18,37 +18,39 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Prompt:wght@500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              display: ['Prompt', 'sans-serif'],
-              sans: ['Sarabun', 'sans-serif'],
-              mono: ['JetBrains Mono', 'monospace']
-            },
-            colors: {
-              clinical: {
-                50: '#ecfdf5',
-                100: '#d1fae5',
-                200: '#a7f3d0',
-                400: '#34d399',
-                500: '#10b981',
-                600: '#059669',
-                700: '#047857',
-                900: '#064e3b'
+      if (window.tailwind) {
+        tailwind.config = {
+          theme: {
+            extend: {
+              fontFamily: {
+                display: ['Prompt', 'sans-serif'],
+                sans: ['Sarabun', 'sans-serif'],
+                mono: ['JetBrains Mono', 'monospace']
               },
-              medical: {
-                50: '#f0f9ff',
-                100: '#e0f2fe',
-                400: '#38bdf8',
-                500: '#0ea5e9',
-                600: '#0284c7',
-                700: '#0369a1'
+              colors: {
+                clinical: {
+                  50: '#ecfdf5',
+                  100: '#d1fae5',
+                  200: '#a7f3d0',
+                  400: '#34d399',
+                  500: '#10b981',
+                  600: '#059669',
+                  700: '#047857',
+                  900: '#064e3b'
+                },
+                medical: {
+                  50: '#f0f9ff',
+                  100: '#e0f2fe',
+                  400: '#38bdf8',
+                  500: '#0ea5e9',
+                  600: '#0284c7',
+                  700: '#0369a1'
+                }
               }
             }
           }
-        }
-      };
+        };
+      }
     </script>
 
     <style>
@@ -132,7 +134,31 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body>
-    <div id="admin-root"></div>
+    <!-- 🌟 หน้าจอโหลดเริ่มต้น ป้องกันหน้าขาวระหว่างรอ React & Babel 🌟 -->
+    <div id="admin-root">
+        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f8fafc;color:#0f172a;font-family:'Prompt','Sarabun',sans-serif;gap:14px;padding:24px;text-align:center;">
+            <div style="width:44px;height:44px;border:4px solid #d1fae5;border-top-color:#059669;border-radius:9999px;animation:adminSpin 0.9s linear infinite;"></div>
+            <div style="font-weight:700;font-size:17px;">กำลังเปิดระบบผู้ดูแล rjcloud.organ Admin Studio...</div>
+            <div style="font-size:12px;color:#64748b;">กำลังเตรียมฐานข้อมูลผู้เรียนและศูนย์ตรวจสอบทุกหน้าจอ</div>
+        </div>
+        <style>@keyframes adminSpin{to{transform:rotate(360deg);}}</style>
+    </div>
+
+    <!-- 🌟 Global Error Guard ป้องกันหน้าขาวหากสคริปต์ภายนอกโหลดไม่สำเร็จ 🌟 -->
+    <script>
+      window.addEventListener('error', function (ev) {
+        const root = document.getElementById('admin-root');
+        if (root && !root.dataset.mounted) {
+          root.innerHTML =
+            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#f8fafc;color:#0f172a;font-family:Sarabun,sans-serif;">' +
+            '<div style="max-width:440px;width:100%;background:#ffffff;border:1px solid #fecdd3;border-radius:24px;padding:24px;text-align:center;box-shadow:0 12px 30px rgba(15,23,42,0.08);">' +
+            '<h2 style="color:#be123c;font-weight:700;margin:0 0 8px;">ไม่สามารถเปิดหน้า Admin ได้ชั่วคราว</h2>' +
+            '<p style="font-size:13px;color:#475569;margin:0 0 16px;">' + String(ev.message || 'Unknown error') + '</p>' +
+            '<button onclick="window.location.reload()" style="padding:12px 24px;border:none;border-radius:14px;background:#059669;color:#ffffff;font-weight:700;cursor:pointer;">โหลดหน้าใหม่</button>' +
+            '</div></div>';
+        }
+      });
+    </script>
 
     <script type="text/babel" data-type="module">
         import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
@@ -157,15 +183,27 @@
         // ============================================================================
         // 1. CONFIGURATION & DEFAULT DATA
         // ============================================================================
-        const CONFIG = window.RJCLOUD_CONFIG || {
+        const DEFAULT_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwuN8MeZhhhomEhpkfXtpoTP341cugDqw1DbQPK_6NSHun2pGZCE0Kfc3eH4YYJ6aWQIg/exec';
+
+        const CONFIG = window.RJCLOUD_CONFIG ? {
+            ...window.RJCLOUD_CONFIG,
+            appsScriptUrl: window.RJCLOUD_CONFIG.appsScriptUrl || DEFAULT_APPS_SCRIPT_URL
+        } : {
             appName: 'rjcloud.organ',
             edition: '2027 Clinical Edition',
             contactEmail: 'rjcloud.organ@gmail.com',
             appId: 'rjcloud-organ-2027',
             adminEmails: ['rjcloud.organ@gmail.com'],
             firebaseConfig: {},
-            appsScriptUrl: ''
+            appsScriptUrl: DEFAULT_APPS_SCRIPT_URL
         };
+
+        const FALLBACK_LESSONS = [
+            { id: 1, title: 'บทนำการรับบริจาคและปลูกถ่ายอวัยวะ (ตัวอย่าง Sandbox)', videoId: '1-sX4LnWRMSjoEQmWee-9GuiQ2XMvkSro', documentUrl: '' }
+        ];
+        const FALLBACK_QUIZ_RAW = [
+            'การทำ Decoupling หมายถึงข้อใด?|แยกการแจ้งข่าวสมองตายออกจากการเจรจาขอรับบริจาค|แยกหมอออกจากพยาบาล|แยกญาติออกจากห้อง|ไม่แจ้งข่าวร้าย|0'
+        ];
 
         const DEFAULT_CERT_TEMPLATE = window.DEFAULT_CERT_TEMPLATE || {
             certPrefix: 'RJC-2027',
@@ -302,7 +340,8 @@
         }
 
         function Icon({ name, size = 20, className = "", strokeWidth = 2 }) {
-            const Comp = LucideIcons[name] || LucideIcons.Activity;
+            const Comp = LucideIcons[name] || LucideIcons.Activity || LucideIcons.ShieldCheck;
+            if (!Comp) return null;
             return <Comp size={size} className={className} strokeWidth={strokeWidth} />;
         }
 
@@ -335,25 +374,41 @@
         }
 
         function normalizeQuestionSets(rawSets) {
-            if (!rawSets) return [parseRawExams(window.QUIZ_QUESTIONS_RAW || [])];
+            if (!rawSets) return [parseRawExams(window.QUIZ_QUESTIONS_RAW || FALLBACK_QUIZ_RAW)];
             if (Array.isArray(rawSets)) return rawSets;
             if (typeof rawSets === 'object') {
                 return Object.keys(rawSets)
                     .sort((a, b) => Number(a) - Number(b))
                     .map(k => (Array.isArray(rawSets[k]) ? rawSets[k] : []));
             }
-            return [[]];
+            return [parseRawExams(FALLBACK_QUIZ_RAW)];
+        }
+
+        function loadImageSafe(url) {
+            return new Promise((resolve) => {
+                if (!url) return resolve(null);
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = () => resolve(img);
+                img.onerror = () => resolve(null);
+                img.src = url;
+            });
         }
 
         /**
-         * วาดตัวอย่างใบประกาศนียบัตรแบบย่อบน Canvas ในหน้า Admin ทันทีที่แก้ข้อความ
+         * วาดตัวอย่างใบประกาศนียบัตรแบบย่อบน Canvas ในหน้า Admin ทันทีที่แก้ข้อความ/โลโก้/ลายเซ็น
          */
-        function drawMiniCertPreview(canvas, tpl) {
+        async function drawMiniCertPreview(canvas, tpl) {
             if (!canvas) return;
             const W = 1200, H = 848;
             canvas.width = W;
             canvas.height = H;
             const ctx = canvas.getContext('2d');
+
+            const [logoImg, sigImg] = await Promise.all([
+                loadImageSafe(tpl.logoUrl),
+                loadImageSafe(tpl.signatureUrl)
+            ]);
 
             const bg = ctx.createLinearGradient(0, 0, W, H);
             bg.addColorStop(0, '#ffffff');
@@ -384,48 +439,62 @@
             ctx.fillStyle = '#059669';
             ctx.fillRect(W / 2 - 140, 36, 280, 10);
 
+            let topY = 128;
+            if (logoImg) {
+                const maxH = 62;
+                const drawW = maxH * (logoImg.width / (logoImg.height || 1));
+                ctx.drawImage(logoImg, W / 2 - drawW / 2, 66, drawW, maxH);
+                topY = 160;
+            }
+
             ctx.textAlign = 'center';
             ctx.fillStyle = '#047857';
             ctx.font = '700 22px "Prompt", sans-serif';
-            ctx.fillText(tpl.orgTitleTH || '', W / 2, 130);
+            ctx.fillText(tpl.orgTitleTH || '', W / 2, topY);
 
             ctx.fillStyle = '#64748b';
             ctx.font = '600 15px "JetBrains Mono", monospace';
-            ctx.fillText(tpl.orgTitleEN || '', W / 2, 162);
+            ctx.fillText(tpl.orgTitleEN || '', W / 2, topY + 30);
 
             ctx.fillStyle = '#0f172a';
             ctx.font = '800 44px "Prompt", sans-serif';
-            ctx.fillText('ประกาศนียบัตร', W / 2, 245);
+            ctx.fillText('ประกาศนียบัตร', W / 2, topY + 110);
 
             ctx.fillStyle = '#475569';
             ctx.font = '500 20px "Sarabun", sans-serif';
-            ctx.fillText(tpl.subtitleTH || '', W / 2, 295);
+            ctx.fillText(tpl.subtitleTH || '', W / 2, topY + 158);
 
             ctx.fillStyle = '#064e3b';
-            ctx.font = '800 46px "Prompt", sans-serif';
-            ctx.fillText('พว.ใจดี มีเมตตา (ชื่อผู้เรียน)', W / 2, 375);
+            ctx.font = '800 44px "Prompt", sans-serif';
+            ctx.fillText('พว.ใจดี มีเมตตา (ชื่อผู้เรียน)', W / 2, topY + 232);
 
             ctx.fillStyle = '#64748b';
             ctx.font = '600 18px "Sarabun", sans-serif';
-            ctx.fillText('โรงพยาบาลราชวิถี • เลขใบอนุญาต 65012345', W / 2, 415);
+            ctx.fillText('โรงพยาบาลราชวิถี • เลขใบอนุญาต 65012345', W / 2, topY + 272);
 
             ctx.fillStyle = '#334155';
             ctx.font = '500 20px "Sarabun", sans-serif';
-            ctx.fillText(tpl.completionTextTH || '', W / 2, 475);
+            ctx.fillText(tpl.completionTextTH || '', W / 2, topY + 328);
 
             ctx.fillStyle = '#0f172a';
-            ctx.font = '700 24px "Prompt", sans-serif';
-            ctx.fillText(tpl.courseTitleTH || '', W / 2, 525);
+            ctx.font = '700 23px "Prompt", sans-serif';
+            ctx.fillText(tpl.courseTitleTH || '', W / 2, topY + 374);
 
             ctx.fillStyle = '#0284c7';
             ctx.font = '600 16px "Prompt", sans-serif';
-            ctx.fillText(tpl.courseTitleEN || '', W / 2, 558);
+            ctx.fillText(tpl.courseTitleEN || '', W / 2, topY + 406);
+
+            if (sigImg) {
+                const sigH = 56;
+                const sigW = sigH * (sigImg.width / (sigImg.height || 1));
+                ctx.drawImage(sigImg, W / 2 - sigW / 2, 632, sigW, sigH);
+            }
 
             ctx.strokeStyle = '#94a3b8';
             ctx.lineWidth = 1.5;
             ctx.beginPath();
-            ctx.moveTo(W / 2 - 150, 690);
-            ctx.lineTo(W / 2 + 150, 690);
+            ctx.moveTo(W / 2 - 150, 692);
+            ctx.lineTo(W / 2 + 150, 692);
             ctx.stroke();
 
             ctx.fillStyle = '#0f172a';
@@ -541,8 +610,16 @@
             const [isLoggingIn, setIsLoggingIn] = useState(false);
 
             // Navigation State
-            const [activeTab, setActiveTab] = useState('users'); // users | cert | sync | live | content | overview
+            const [activeTab, setActiveTab] = useState('users'); // users | cert | live | content | sync | overview
             const [contentSubTab, setContentSubTab] = useState('lessons'); // lessons | quiz
+
+            // Admin Page Inspector Modal State (สำหรับตรวจสอบทุกหน้าจอในระบบได้ทันที)
+            const [inspectorModal, setInspectorModal] = useState({
+                open: false,
+                item: null,
+                viewport: 'desktop', // desktop | mobile
+                reloadKey: 0
+            });
 
             // Core Data States
             const [usersList, setUsersList] = useState(() => (isCloudConfigured ? [] : DEMO_ADMIN_USERS));
@@ -568,8 +645,10 @@
                 autoSyncFromSheet: false
             });
             const [contentConfig, setContentConfig] = useState({
-                lessons: window.INITIAL_LESSONS || [],
-                questionSets: [parseRawExams(window.QUIZ_QUESTIONS_RAW || [])]
+                lessons: (Array.isArray(window.INITIAL_LESSONS) && window.INITIAL_LESSONS.length > 0)
+                    ? window.INITIAL_LESSONS
+                    : FALLBACK_LESSONS,
+                questionSets: [parseRawExams(window.QUIZ_QUESTIONS_RAW || FALLBACK_QUIZ_RAW)]
             });
 
             // UI Controls
@@ -602,6 +681,12 @@
 
             const askConfirm = useCallback(({ title, message, danger = false, confirmText = 'ยืนยัน', onConfirm }) => {
                 setConfirmDialog({ open: true, title, message, danger, confirmText, onConfirm });
+            }, []);
+
+            // ยืนยันว่า Mount สำเร็จ (ปิด Error Guard)
+            useEffect(() => {
+                const el = document.getElementById('admin-root');
+                if (el) el.dataset.mounted = 'true';
             }, []);
 
             // 1. ตรวจสอบสถานะ Firebase Auth (Production Mode)
@@ -1005,6 +1090,52 @@
                 return { total: usersList.length, passed, continuing, avgCsat };
             }, [usersList]);
 
+            // รายการหน้าจอทั้งหมดสำหรับให้แอดมินตรวจสอบได้ครบทุกขั้นตอน
+            const inspectorGroups = useMemo(() => ([
+                {
+                    groupTitle: '1. หน้าแรก & ระบบลงทะเบียน (Auth Wizard 3 ขั้น)',
+                    badge: 'LANDING & REGISTER',
+                    items: [
+                        { id: 'landing', title: 'หน้าแรกผู้เรียน (Landing)', desc: 'หน้าต้อนรับและเส้นทางการเรียนรู้ 5 ขั้นตอน', url: './index.html?admin_preview=landing', icon: 'Home', color: 'bg-clinical-50 text-clinical-600' },
+                        { id: 'auth1', title: 'ลงทะเบียน ขั้นที่ 1/3', desc: 'หน้ากรอกและตรวจสอบเลขที่ใบประกอบวิชาชีพ', url: './index.html?admin_preview=auth1', icon: 'UserCheck', color: 'bg-medical-50 text-medical-600' },
+                        { id: 'auth2', title: 'ลงทะเบียน ขั้นที่ 2/3', desc: 'หน้ายืนยันข้อมูลผู้เรียนและเลือกประเภทการเรียน', url: './index.html?admin_preview=auth2', icon: 'FileText', color: 'bg-medical-50 text-medical-600' },
+                        { id: 'auth3', title: 'ลงทะเบียน ขั้นที่ 3/3 (OTP)', desc: 'หน้ากรอกรหัสยืนยันตัวตน OTP 6 หลัก', url: './index.html?admin_preview=auth3', icon: 'ShieldCheck', color: 'bg-medical-50 text-medical-600' }
+                    ]
+                },
+                {
+                    groupTitle: '2. เส้นทางการเรียนรู้ 5 ขั้นตอน (Pre-test → ประกาศนียบัตร)',
+                    badge: '5-STEP PATHWAY',
+                    items: [
+                        { id: 'pretest', title: 'ขั้นที่ 1: แบบทดสอบก่อนเรียน (Pre-test)', desc: 'ตรวจโจทย์ ตัวเลือก และการจับเวลาทำข้อสอบ', url: './index.html?admin_preview=pretest', icon: 'ClipboardCheck', color: 'bg-sky-50 text-sky-600' },
+                        { id: 'dashboard', title: 'ขั้นที่ 2: ห้องเรียนวิดีโอ (Dashboard)', desc: 'ตรวจหน้าหลักผู้เรียน แถบ 5 ขั้นตอน และวิดีโอบทเรียน', url: './index.html?admin_preview=dashboard', icon: 'MonitorPlay', color: 'bg-clinical-50 text-clinical-600' },
+                        { id: 'live', title: 'ห้องถ่ายทอดสด (Live สด)', desc: 'ตรวจหน้าบรรยายสด ปุ่มเช็คอิน และเอกสารประกอบ', url: './index.html?admin_preview=live', icon: 'Radio', color: 'bg-rose-50 text-rose-600' },
+                        { id: 'aiskilllab', title: 'ขั้นที่ 3: ห้องฝึก AI Skill Lab', desc: 'ตรวจจอโฮโลแกรม วิดีโอ Vimeo และ AI Coach (ไม่ติดล็อก 80%)', url: './aiskilllab.html?admin_preview=1', icon: 'Bot', color: 'bg-violet-50 text-violet-600' },
+                        { id: 'posttest', title: 'ขั้นที่ 4: แบบทดสอบหลังเรียน (Post-test)', desc: 'ตรวจหน้าข้อสอบหลังเรียนและเกณฑ์ผ่าน 80%', url: './index.html?admin_preview=posttest', icon: 'FileCheck2', color: 'bg-amber-50 text-amber-600' },
+                        { id: 'cert_confirm', title: 'ขั้นที่ 5: ยืนยันชื่อ & ประเมิน CSAT', desc: 'ตรวจหน้าให้ดาวความพึงพอใจก่อนออกใบประกาศฯ', url: './index.html?admin_preview=cert_confirm', icon: 'Star', color: 'bg-amber-50 text-amber-600' },
+                        { id: 'certificate', title: 'ขั้นที่ 5: ใบประกาศนียบัตร (PDF/PNG/QR)', desc: 'ตรวจการวาดใบประกาศฯ ตัวจริง ปุ่มดาวน์โหลด PDF และ PNG', url: './index.html?admin_preview=certificate', icon: 'Award', color: 'bg-clinical-50 text-clinical-600' }
+                    ]
+                },
+                {
+                    groupTitle: '3. หน้าบริการเสริม โปรไฟล์ และผู้บริหาร',
+                    badge: 'PORTALS & REPORTS',
+                    items: [
+                        { id: 'leaderboard', title: 'กระดานจัดอันดับ (Leaderboard)', desc: 'ตรวจหน้าแสดงผลคะแนนสูงสุด AI Skill Lab', url: './index.html?admin_preview=leaderboard', icon: 'Trophy', color: 'bg-amber-50 text-amber-600' },
+                        { id: 'profile', title: 'หน้าโปรไฟล์ผู้เรียน (Profile)', desc: 'ตรวจการสรุปคะแนน Pre/Post-test และปุ่มรับประกาศฯ', url: './index.html?admin_preview=profile', icon: 'User', color: 'bg-slate-100 text-slate-700' },
+                        { id: 'verify', title: 'หน้าตรวจสอบ QR ประกาศนียบัตร', desc: 'ทดสอบหน้า verify.html ด้วยรหัสตัวอย่าง RJC-2027-DEMO01', url: './verify.html?code=RJC-2027-DEMO01', icon: 'QrCode', color: 'bg-clinical-50 text-clinical-600' },
+                        { id: 'executive', title: 'แดชบอร์ดผู้บริหาร (Executive AI)', desc: 'ตรวจแผนที่ 13 เขตสุขภาพ สถิติ KPI และ Fah AI', url: './executive.html', icon: 'Globe', color: 'bg-medical-50 text-medical-600' }
+                    ]
+                }
+            ]), []);
+
+            const allInspectorItems = useMemo(
+                () => inspectorGroups.flatMap(g => g.items),
+                [inspectorGroups]
+            );
+
+            const openInspectorPreview = (item) => {
+                setInspectorModal({ open: true, item, viewport: 'desktop', reloadKey: Date.now() });
+            };
+
             // ============================================================================
             // 5. LOGIN GATE (ปลอดภัย ไม่มี Hardcode Password ในโค้ด!)
             // ============================================================================
@@ -1104,7 +1235,7 @@
                 { id: 'live', label: 'Live สด', fullLabel: 'ควบคุม Live สด', icon: 'Radio' },
                 { id: 'content', label: 'บทเรียน', fullLabel: 'บทเรียน & ข้อสอบ', icon: 'BookOpen' },
                 { id: 'sync', label: 'Sync', fullLabel: 'Auto-Sync & Cloud', icon: 'Database' },
-                { id: 'overview', label: 'ภาพรวม', fullLabel: 'ลิงก์ระบบ & สรุป', icon: 'LayoutDashboard' }
+                { id: 'overview', label: 'ตรวจหน้า', fullLabel: 'ตรวจสอบทุกหน้าจอ', icon: 'Eye' }
             ];
 
             return (
@@ -1177,6 +1308,14 @@
                             </div>
 
                             <div className="flex items-center gap-1.5 shrink-0">
+                                <button
+                                    type="button"
+                                    onClick={() => setActiveTab('overview')}
+                                    className="px-2.5 h-9 rounded-xl bg-clinical-50 text-clinical-700 font-bold text-[11px] flex items-center gap-1"
+                                    title="ตรวจสอบทุกหน้าจอ"
+                                >
+                                    <Icon name="Eye" size={15} /> ตรวจหน้า
+                                </button>
                                 <a href="./index.html" className="w-9 h-9 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center" title="หน้าผู้เรียน">
                                     <Icon name="Home" size={17} />
                                 </a>
@@ -1296,6 +1435,26 @@
                                                 <span className="font-mono text-xs font-bold text-clinical-700">{u.progress || 0}%</span>
                                             </div>
 
+                                            <div className="flex flex-wrap items-center gap-1.5 text-[11px] font-mono">
+                                                <span className="px-2 py-0.5 rounded-lg bg-slate-100 text-slate-600 font-bold">
+                                                    Pre: {u.pretest || '-'}
+                                                </span>
+                                                <span className="px-2 py-0.5 rounded-lg bg-clinical-50 text-clinical-700 font-bold">
+                                                    Post: {u.posttest || '-'}
+                                                </span>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleUpdateUser(u, { skillLabPassed: !u.skillLabPassed })}
+                                                    className={`px-2 py-0.5 rounded-lg font-sans font-bold border transition-colors ${
+                                                        u.skillLabPassed || (Array.isArray(u.skillLabHistory) && u.skillLabHistory.length > 0)
+                                                            ? 'bg-violet-50 border-violet-200 text-violet-700'
+                                                            : 'bg-slate-50 border-slate-200 text-slate-500'
+                                                    }`}
+                                                >
+                                                    AI Lab: {u.skillLabPassed || (Array.isArray(u.skillLabHistory) && u.skillLabHistory.length > 0) ? 'ผ่าน ✓' : 'รอฝึก'}
+                                                </button>
+                                            </div>
+
                                             <div className="grid grid-cols-2 gap-2">
                                                 <select
                                                     value={u.userType === 'เรียนต่อเนื่อง' ? 'เรียนต่อเนื่อง' : 'เรียนใหม่'}
@@ -1335,61 +1494,82 @@
                                                     <th className="p-4">ชื่อผู้เรียน / หน่วยงาน</th>
                                                     <th className="p-4">ใบอนุญาต</th>
                                                     <th className="p-4">สิทธิ์การเรียน</th>
-                                                    <th className="p-4">ความคืบหน้า</th>
+                                                    <th className="p-4">ชั่วโมงเรียน / Pre-Post</th>
+                                                    <th className="p-4">AI Skill Lab</th>
                                                     <th className="p-4">สถานะ</th>
                                                     <th className="p-4 text-center">จัดการ</th>
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y divide-slate-100 bg-white/60">
-                                                {filteredUsers.map(u => (
-                                                    <tr key={u.id} className="hover:bg-clinical-50/40 transition-colors">
-                                                        <td className="p-4">
-                                                            <p className="font-bold text-slate-900">{u.name}</p>
-                                                            <p className="text-xs text-slate-500">{u.hospital || '-'}</p>
-                                                        </td>
-                                                        <td className="p-4 font-mono text-xs text-slate-600">{getUserLicense(u)}</td>
-                                                        <td className="p-4">
-                                                            <select
-                                                                value={u.userType === 'เรียนต่อเนื่อง' ? 'เรียนต่อเนื่อง' : 'เรียนใหม่'}
-                                                                onChange={e => handleUpdateUser(u, { userType: e.target.value })}
-                                                                className="px-2.5 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-bold"
-                                                            >
-                                                                <option value="เรียนใหม่">เรียนใหม่</option>
-                                                                <option value="เรียนต่อเนื่อง">เรียนต่อเนื่อง</option>
-                                                            </select>
-                                                        </td>
-                                                        <td className="p-4">
-                                                            <div className="flex items-center gap-2">
-                                                                <div className="w-20 h-2 bg-slate-100 rounded-full overflow-hidden">
-                                                                    <div className="h-full bg-clinical-500" style={{ width: `${u.progress || 0}%` }} />
+                                                {filteredUsers.map(u => {
+                                                    const labDone = Boolean(u.skillLabPassed || (Array.isArray(u.skillLabHistory) && u.skillLabHistory.length > 0));
+                                                    return (
+                                                        <tr key={u.id} className="hover:bg-clinical-50/40 transition-colors">
+                                                            <td className="p-4">
+                                                                <p className="font-bold text-slate-900">{u.name}</p>
+                                                                <p className="text-xs text-slate-500">{u.hospital || '-'}</p>
+                                                            </td>
+                                                            <td className="p-4 font-mono text-xs text-slate-600">{getUserLicense(u)}</td>
+                                                            <td className="p-4">
+                                                                <select
+                                                                    value={u.userType === 'เรียนต่อเนื่อง' ? 'เรียนต่อเนื่อง' : 'เรียนใหม่'}
+                                                                    onChange={e => handleUpdateUser(u, { userType: e.target.value })}
+                                                                    className="px-2.5 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-bold"
+                                                                >
+                                                                    <option value="เรียนใหม่">เรียนใหม่</option>
+                                                                    <option value="เรียนต่อเนื่อง">เรียนต่อเนื่อง</option>
+                                                                </select>
+                                                            </td>
+                                                            <td className="p-4 space-y-1">
+                                                                <div className="flex items-center gap-2">
+                                                                    <div className="w-20 h-2 bg-slate-100 rounded-full overflow-hidden">
+                                                                        <div className="h-full bg-clinical-500" style={{ width: `${u.progress || 0}%` }} />
+                                                                    </div>
+                                                                    <span className="font-mono text-xs font-bold text-slate-700">{u.progress || 0}%</span>
                                                                 </div>
-                                                                <span className="font-mono text-xs font-bold text-slate-600">{u.progress || 0}%</span>
-                                                            </div>
-                                                        </td>
-                                                        <td className="p-4">
-                                                            <select
-                                                                value={u.status || 'กำลังเรียน'}
-                                                                onChange={e => handleUpdateUser(u, { status: e.target.value })}
-                                                                className={`px-2.5 py-1.5 rounded-xl border text-xs font-bold ${
-                                                                    u.status === 'ผ่าน'
-                                                                        ? 'bg-clinical-50 border-clinical-200 text-clinical-700'
-                                                                        : 'bg-amber-50 border-amber-200 text-amber-700'
-                                                                }`}
-                                                            >
-                                                                <option value="กำลังเรียน">กำลังเรียน</option>
-                                                                <option value="ผ่าน">ผ่านเกณฑ์</option>
-                                                                <option value="ไม่ผ่าน">ไม่ผ่าน</option>
-                                                            </select>
-                                                        </td>
-                                                        <td className="p-4 text-center">
-                                                            <button onClick={() => handleDeleteUser(u)} className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors">
-                                                                <Icon name="Trash2" size={17} />
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                ))}
+                                                                <p className="font-mono text-[11px] text-slate-500">
+                                                                    Pre: <b className="text-slate-700">{u.pretest || '-'}</b> • Post: <b className="text-clinical-700">{u.posttest || '-'}</b>
+                                                                </p>
+                                                            </td>
+                                                            <td className="p-4">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handleUpdateUser(u, { skillLabPassed: !labDone })}
+                                                                    title="คลิกเพื่อสลับสถานะการผ่าน AI Skill Lab"
+                                                                    className={`px-2.5 py-1 rounded-xl border text-xs font-bold transition-colors ${
+                                                                        labDone
+                                                                            ? 'bg-violet-50 border-violet-200 text-violet-700 hover:bg-violet-100'
+                                                                            : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100'
+                                                                    }`}
+                                                                >
+                                                                    {labDone ? 'ผ่านแล้ว ✓' : 'รอฝึก'}
+                                                                </button>
+                                                            </td>
+                                                            <td className="p-4">
+                                                                <select
+                                                                    value={u.status || 'กำลังเรียน'}
+                                                                    onChange={e => handleUpdateUser(u, { status: e.target.value })}
+                                                                    className={`px-2.5 py-1.5 rounded-xl border text-xs font-bold ${
+                                                                        u.status === 'ผ่าน'
+                                                                            ? 'bg-clinical-50 border-clinical-200 text-clinical-700'
+                                                                            : 'bg-amber-50 border-amber-200 text-amber-700'
+                                                                    }`}
+                                                                >
+                                                                    <option value="กำลังเรียน">กำลังเรียน</option>
+                                                                    <option value="ผ่าน">ผ่านเกณฑ์</option>
+                                                                    <option value="ไม่ผ่าน">ไม่ผ่าน</option>
+                                                                </select>
+                                                            </td>
+                                                            <td className="p-4 text-center">
+                                                                <button onClick={() => handleDeleteUser(u)} className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors">
+                                                                    <Icon name="Trash2" size={17} />
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })}
                                                 {filteredUsers.length === 0 && (
-                                                    <tr><td colSpan="6" className="p-10 text-center text-slate-400">ไม่พบข้อมูลผู้เรียน</td></tr>
+                                                    <tr><td colSpan="7" className="p-10 text-center text-slate-400">ไม่พบข้อมูลผู้เรียน</td></tr>
                                                 )}
                                             </tbody>
                                         </table>
@@ -1634,34 +1814,41 @@
                                                         next[qIdx] = { ...next[qIdx], question: e.target.value };
                                                         setContentConfig(p => ({ ...p, questionSets: [next] }));
                                                     }}
-                                                    rows={2}
-                                                    className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-bold text-slate-800 outline-none focus:border-clinical-500"
+                                                    rows="2"
+                                                    className="w-full p-3 rounded-xl bg-white border border-slate-200 text-sm font-medium text-slate-800 outline-none focus:border-clinical-500"
+                                                    placeholder="ระบุคำถามข้อสอบ..."
                                                 />
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                                <div className="space-y-2">
                                                     {(q.options || []).map((opt, optIdx) => (
-                                                        <div key={optIdx} className={`flex items-center gap-2 p-2 rounded-xl border ${q.answer === optIdx ? 'bg-clinical-50 border-clinical-400' : 'bg-white border-slate-200'}`}>
+                                                        <div key={optIdx} className="flex items-center gap-2">
                                                             <input
                                                                 type="radio"
-                                                                name={`ans-${qIdx}`}
-                                                                checked={q.answer === optIdx}
+                                                                name={`correct-q-${qIdx}`}
+                                                                checked={Number(q.answer) === optIdx}
                                                                 onChange={() => {
                                                                     const next = [...(contentConfig.questionSets[0] || [])];
                                                                     next[qIdx] = { ...next[qIdx], answer: optIdx };
                                                                     setContentConfig(p => ({ ...p, questionSets: [next] }));
                                                                 }}
-                                                                className="w-4 h-4 accent-clinical-600 shrink-0"
+                                                                className="w-4 h-4 accent-clinical-600 shrink-0 cursor-pointer"
+                                                                title="เลือกเป็นคำตอบที่ถูกต้อง"
                                                             />
                                                             <input
                                                                 type="text"
                                                                 value={opt}
                                                                 onChange={e => {
                                                                     const next = [...(contentConfig.questionSets[0] || [])];
-                                                                    const opts = [...next[qIdx].options];
-                                                                    opts[optIdx] = e.target.value;
-                                                                    next[qIdx] = { ...next[qIdx], options: opts };
+                                                                    const nextOpts = [...(next[qIdx].options || [])];
+                                                                    nextOpts[optIdx] = e.target.value;
+                                                                    next[qIdx] = { ...next[qIdx], options: nextOpts };
                                                                     setContentConfig(p => ({ ...p, questionSets: [next] }));
                                                                 }}
-                                                                className="flex-1 bg-transparent text-xs sm:text-sm outline-none font-medium"
+                                                                className={`flex-1 px-3 py-2 rounded-xl border text-xs sm:text-sm outline-none transition-all ${
+                                                                    Number(q.answer) === optIdx
+                                                                        ? 'bg-clinical-50/70 border-clinical-300 font-bold text-clinical-900'
+                                                                        : 'bg-white border-slate-200 text-slate-700'
+                                                                }`}
+                                                                placeholder={`ตัวเลือกที่ ${optIdx + 1}`}
                                                             />
                                                         </div>
                                                     ))}
@@ -1672,10 +1859,15 @@
                                             type="button"
                                             onClick={() => {
                                                 const next = [...(contentConfig.questionSets[0] || [])];
-                                                next.push({ id: Date.now(), question: 'คำถามใหม่...', options: ['ตัวเลือก ก', 'ตัวเลือก ข', 'ตัวเลือก ค', 'ตัวเลือก ง'], answer: 0 });
+                                                next.push({
+                                                    id: next.length + 1,
+                                                    question: 'คำถามใหม่',
+                                                    options: ['ตัวเลือกที่ 1', 'ตัวเลือกที่ 2', 'ตัวเลือกที่ 3', 'ตัวเลือกที่ 4'],
+                                                    answer: 0
+                                                });
                                                 setContentConfig(p => ({ ...p, questionSets: [next] }));
                                             }}
-                                            className="touch-target w-full py-3 rounded-2xl border-2 border-dashed border-clinical-300 text-clinical-700 hover:bg-clinical-50 font-bold text-sm flex items-center justify-center gap-1.5"
+                                            className="touch-target w-full py-3 rounded-2xl border-2 border-dashed border-medical-300 text-medical-700 hover:bg-medical-50 font-bold text-sm flex items-center justify-center gap-1.5"
                                         >
                                             <Icon name="Plus" size={18} /> เพิ่มข้อสอบใหม่
                                         </button>
@@ -1684,86 +1876,106 @@
                             </div>
                         )}
 
-                        {/* ==================== TAB 5: AUTO-SYNC & CLOUD CONFIG ==================== */}
+                        {/* ==================== TAB 5: AUTO-SYNC & CLOUD ==================== */}
                         {activeTab === 'sync' && (
                             <div className="max-w-3xl space-y-5">
                                 <div>
-                                    <h2 className="font-display text-xl sm:text-2xl font-extrabold text-slate-900">Auto-Sync & การเชื่อมต่อ Cloud</h2>
-                                    <p className="text-xs sm:text-sm text-slate-500">ผูกบัญชีกลาง <b className="text-slate-700">{CONFIG.contactEmail}</b> กับ Google Sheets และ Apps Script</p>
+                                    <span className="px-2.5 py-0.5 rounded-full bg-medical-100 text-medical-700 font-mono text-[10px] font-bold">
+                                        CLOUD & GOOGLE SHEETS AUTO-SYNC
+                                    </span>
+                                    <h2 className="font-display text-xl sm:text-2xl font-extrabold text-slate-900 mt-1">
+                                        เชื่อมต่อ Cloud & ซิงค์ Google Sheets
+                                    </h2>
+                                    <p className="text-xs sm:text-sm text-slate-500">
+                                        ตั้งค่า Web App URL สำหรับส่งอีเมล OTP / AI และซิงค์รายชื่อผู้เรียนอัตโนมัติจาก Google Sheets (CSV)
+                                    </p>
                                 </div>
 
                                 <div className="bento-glass rounded-[1.75rem] p-5 sm:p-7 space-y-5">
-                                    <div className="p-4 rounded-2xl bg-medical-50 border border-medical-200 text-xs text-medical-900 leading-relaxed space-y-1">
-                                        <p className="font-bold">รูปแบบคอลัมน์ Google Sheets (Publish as CSV):</p>
-                                        <p className="font-mono text-[11px]">
-                                            คอลัมน์ B: ชื่อ-สกุล | C: เลขใบอนุญาต | D: อีเมล | E: ตำแหน่ง | F: สังกัด | G: โรงพยาบาล | H: จังหวัด | I: สิทธิ์ (เรียนใหม่/เรียนต่อเนื่อง) | Q: เบอร์โทร
-                                        </p>
-                                    </div>
-
                                     <FieldInput
-                                        label="ลิงก์ Google Sheets (CSV Publish URL)"
-                                        type="url"
-                                        value={systemConfig.masterCsvUrl}
-                                        onChange={e => setSystemConfig(p => ({ ...p, masterCsvUrl: e.target.value }))}
-                                        placeholder="https://docs.google.com/spreadsheets/d/.../pub?output=csv"
-                                    />
-
-                                    <FieldInput
-                                        label="Google Apps Script Web App URL (สำหรับ OTP + Gemini AI)"
-                                        type="url"
+                                        label="Google Apps Script Web App URL (สำหรับส่ง OTP และเรียก Gemini AI)"
                                         value={systemConfig.appsScriptUrl}
                                         onChange={e => setSystemConfig(p => ({ ...p, appsScriptUrl: e.target.value }))}
                                         placeholder="https://script.google.com/macros/s/.../exec"
                                     />
 
-                                    <label className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-200 cursor-pointer">
+                                    <FieldInput
+                                        label="Google Sheets Published CSV URL (สำหรับดึงรายชื่อผู้เรียน)"
+                                        value={systemConfig.masterCsvUrl}
+                                        onChange={e => setSystemConfig(p => ({ ...p, masterCsvUrl: e.target.value }))}
+                                        placeholder="https://docs.google.com/spreadsheets/d/.../pub?output=csv"
+                                    />
+
+                                    <label className="flex items-center justify-between gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-200 cursor-pointer">
                                         <div>
-                                            <p className="text-sm font-bold text-slate-800">เปิดใช้งาน Auto-Sync ทุก 30 วินาที</p>
-                                            <p className="text-xs text-slate-500">ดึงข้อมูลรายชื่อใหม่จาก Sheet อัตโนมัติขณะเปิดหน้านี้ {lastSyncTime && `(ล่าสุด: ${lastSyncTime})`}</p>
+                                            <p className="text-sm font-bold text-slate-800">เปิดซิงค์รายชื่ออัตโนมัติทุก 30 วินาที</p>
+                                            <p className="text-xs text-slate-500">
+                                                ดึงรายชื่อผู้เรียนและอัปเดตสิทธิ์ (เรียนใหม่ / เรียนต่อเนื่อง) จาก CSV อัตโนมัติขณะเปิดหน้า Admin
+                                            </p>
                                         </div>
                                         <input
                                             type="checkbox"
                                             checked={Boolean(systemConfig.autoSyncFromSheet)}
-                                            onChange={e => {
-                                                const val = e.target.checked;
-                                                setSystemConfig(p => ({ ...p, autoSyncFromSheet: val }));
-                                                persistSettings({ autoSyncFromSheet: val });
-                                            }}
-                                            className="w-5 h-5 accent-clinical-600"
+                                            onChange={e => setSystemConfig(p => ({ ...p, autoSyncFromSheet: e.target.checked }))}
+                                            className="w-5 h-5 accent-clinical-600 shrink-0"
                                         />
                                     </label>
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div className="p-4 rounded-2xl bg-medical-50/70 border border-medical-200/70 text-xs text-slate-700 space-y-1.5 leading-relaxed">
+                                        <p className="font-bold text-medical-700 flex items-center gap-1.5">
+                                            <Icon name="Table" size={15} /> โครงสร้างคอลัมน์ CSV ที่รองรับ
+                                        </p>
+                                        <p>
+                                            คอลัมน์ B: ชื่อ-สกุล • C: เลขใบอนุญาต • D: อีเมล • E: ตำแหน่ง • F: สังกัด • G: โรงพยาบาล • H: จังหวัด • I: สิทธิ์ (เรียนใหม่ / เรียนต่อเนื่อง) • Q: เบอร์โทร
+                                        </p>
+                                        {lastSyncTime && (
+                                            <p className="font-mono text-[11px] font-bold text-clinical-700 pt-1">
+                                                ซิงค์ล่าสุดเมื่อ: {lastSyncTime}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                        <button
+                                            type="button"
+                                            onClick={() => persistSettings({
+                                                appsScriptUrl: systemConfig.appsScriptUrl,
+                                                masterCsvUrl: systemConfig.masterCsvUrl,
+                                                autoSyncFromSheet: systemConfig.autoSyncFromSheet
+                                            })}
+                                            className="touch-target py-3.5 px-5 rounded-2xl bg-clinical-600 hover:bg-clinical-700 text-white font-display font-bold text-sm flex items-center justify-center gap-2 shadow-sm"
+                                        >
+                                            <Icon name="Save" size={17} /> บันทึกการตั้งค่า Cloud
+                                        </button>
                                         <button
                                             type="button"
                                             onClick={() => syncFromGoogleSheet(true)}
                                             disabled={isSyncing}
-                                            className="touch-target py-3.5 rounded-2xl bg-medical-50 hover:bg-medical-100 border border-medical-200 text-medical-700 font-bold text-sm flex items-center justify-center gap-2"
+                                            className="touch-target py-3.5 px-5 rounded-2xl bg-medical-600 hover:bg-medical-700 disabled:opacity-60 text-white font-display font-bold text-sm flex items-center justify-center gap-2 shadow-sm"
                                         >
-                                            <Icon name="RefreshCw" size={17} className={isSyncing ? 'animate-spin' : ''} /> ดึงข้อมูลจาก Sheet เดี๋ยวนี้
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => persistSettings({
-                                                masterCsvUrl: systemConfig.masterCsvUrl,
-                                                appsScriptUrl: systemConfig.appsScriptUrl,
-                                                autoSyncFromSheet: systemConfig.autoSyncFromSheet
-                                            })}
-                                            className="touch-target py-3.5 rounded-2xl bg-clinical-600 hover:bg-clinical-700 text-white font-display font-bold text-sm flex items-center justify-center gap-2 shadow-sm"
-                                        >
-                                            <Icon name="Save" size={17} /> บันทึกการตั้งค่าส่วนกลาง
+                                            <Icon name="RefreshCw" size={17} className={isSyncing ? 'animate-spin' : ''} />
+                                            {isSyncing ? 'กำลังซิงค์ข้อมูล...' : 'ซิงค์รายชื่อตอนนี้เลย'}
                                         </button>
                                     </div>
                                 </div>
                             </div>
                         )}
 
-                        {/* ==================== TAB 6: OVERVIEW & QUICK LINKS ==================== */}
+                        {/* ==================== TAB 6: OVERVIEW & PAGE INSPECTOR ==================== */}
                         {activeTab === 'overview' && (
-                            <div className="space-y-5">
-                                <div>
-                                    <h2 className="font-display text-xl sm:text-2xl font-extrabold text-slate-900">ภาพรวมและทางลัดระบบ rjcloud.organ</h2>
-                                    <p className="text-xs sm:text-sm text-slate-500">ตรวจสอบสถานะระบบและเปิดหน้าต่างบริการต่างๆ ได้ในแตะเดียว</p>
+                            <div className="space-y-6">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                    <div>
+                                        <span className="px-2.5 py-0.5 rounded-full bg-clinical-100 text-clinical-700 font-mono text-[10px] font-bold">
+                                            ADMIN PAGE INSPECTOR • BYPASS LOCK MODE
+                                        </span>
+                                        <h2 className="font-display text-xl sm:text-2xl font-extrabold text-slate-900 mt-1">
+                                            ศูนย์ตรวจสอบทุกหน้าจอในระบบ
+                                        </h2>
+                                        <p className="text-xs sm:text-sm text-slate-500">
+                                            คลิก <b>"พรีวิวที่นี่"</b> เพื่อตรวจจอมือถือ/คอมพิวเตอร์ทันที หรือ <b>"เปิดแท็บใหม่"</b> โดยไม่ติดล็อกเงื่อนไขและไม่กระทบข้อมูลผู้เรียนจริง
+                                        </p>
+                                    </div>
                                 </div>
 
                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -1785,28 +1997,144 @@
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                                    {[
-                                        { href: './executive.html', title: 'AI Policy Intelligence', desc: 'แดชบอร์ดผู้บริหาร แผนที่ 13 เขต และ Fah AI', icon: 'Globe', color: 'bg-medical-50 text-medical-600' },
-                                        { href: './verify.html', title: 'QR Verify Portal', desc: 'หน้าสแกนตรวจสอบความถูกต้องประกาศนียบัตร', icon: 'QrCode', color: 'bg-clinical-50 text-clinical-600' },
-                                        { href: './aiskilllab.html', title: 'AI Skill Lab 2027', desc: 'ห้องจำลองสถานการณ์ฝึกเจรจาญาติผู้ป่วย', icon: 'Bot', color: 'bg-violet-50 text-violet-600' },
-                                        { href: './index.html', title: 'หน้าหลักผู้เรียน (Student App)', desc: 'สลับไปดูมุมมองผู้เรียนบนสมาร์ทโฟน', icon: 'Smartphone', color: 'bg-amber-50 text-amber-600' }
-                                    ].map(card => (
-                                        <a key={card.href} href={card.href} target="_blank" rel="noreferrer" className="bento-glass rounded-2xl p-5 flex items-center gap-4 hover:border-clinical-300 transition-all active:scale-[0.99]">
-                                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${card.color}`}>
-                                                <Icon name={card.icon} size={24} />
+                                <div className="space-y-6">
+                                    {inspectorGroups.map(group => (
+                                        <div key={group.badge} className="space-y-3">
+                                            <div className="flex items-center justify-between gap-2">
+                                                <h3 className="font-display font-bold text-sm sm:text-base text-slate-800">{group.groupTitle}</h3>
+                                                <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-500 font-mono text-[10px] font-bold">
+                                                    {group.badge}
+                                                </span>
                                             </div>
-                                            <div className="min-w-0 flex-1">
-                                                <h3 className="font-display font-bold text-base text-slate-900">{card.title}</h3>
-                                                <p className="text-xs text-slate-500 mt-0.5">{card.desc}</p>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                                {group.items.map(item => (
+                                                    <div key={item.id} className="bento-glass rounded-2xl p-4 flex flex-col justify-between gap-3.5 hover:border-clinical-300 transition-all">
+                                                        <div className="flex items-start gap-3">
+                                                            <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 ${item.color}`}>
+                                                                <Icon name={item.icon} size={21} />
+                                                            </div>
+                                                            <div className="min-w-0">
+                                                                <h4 className="font-display font-bold text-sm text-slate-900 leading-snug">{item.title}</h4>
+                                                                <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">{item.desc}</p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="grid grid-cols-2 gap-2 pt-1 border-t border-slate-100">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => openInspectorPreview(item)}
+                                                                className="touch-target py-2 px-3 rounded-xl bg-clinical-600 hover:bg-clinical-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm active:scale-95"
+                                                            >
+                                                                <Icon name="Eye" size={14} /> พรีวิวที่นี่
+                                                            </button>
+                                                            <a
+                                                                href={item.url}
+                                                                target="_blank"
+                                                                rel="noreferrer"
+                                                                className="touch-target py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95"
+                                                            >
+                                                                <Icon name="ExternalLink" size={14} /> แท็บใหม่
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                ))}
                                             </div>
-                                            <Icon name="ExternalLink" size={16} className="text-slate-400 shrink-0" />
-                                        </a>
+                                        </div>
                                     ))}
                                 </div>
                             </div>
                         )}
                     </main>
+
+                    {/* ==================== LIVE PAGE INSPECTOR MODAL (พรีวิวได้ทั้งจอมือถือ & คอมฯ) ==================== */}
+                    {inspectorModal.open && inspectorModal.item && (
+                        <div className="fixed inset-0 z-[105] bg-slate-900/75 backdrop-blur-md flex flex-col p-2 sm:p-4">
+                            <div className="w-full max-w-7xl mx-auto flex-1 flex flex-col bg-white rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden shadow-2xl border border-slate-200">
+                                {/* Top Inspector Toolbar */}
+                                <div className="px-3.5 sm:px-5 py-3 bg-slate-900 text-white flex flex-wrap items-center justify-between gap-2.5 shrink-0">
+                                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                                        <span className="px-2 py-0.5 rounded-md bg-clinical-500/20 border border-clinical-400/40 text-clinical-300 font-mono text-[10px] font-bold shrink-0">
+                                            INSPECTOR
+                                        </span>
+                                        <select
+                                            value={inspectorModal.item.id}
+                                            onChange={e => {
+                                                const next = allInspectorItems.find(x => x.id === e.target.value);
+                                                if (next) setInspectorModal(p => ({ ...p, item: next, reloadKey: Date.now() }));
+                                            }}
+                                            className="max-w-full sm:max-w-xs px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs sm:text-sm font-bold outline-none focus:border-clinical-400"
+                                        >
+                                            {allInspectorItems.map(opt => (
+                                                <option key={opt.id} value={opt.id}>{opt.title}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div className="flex items-center gap-1.5 shrink-0">
+                                        <div className="hidden sm:inline-flex p-0.5 rounded-xl bg-slate-800 border border-slate-700">
+                                            <button
+                                                type="button"
+                                                onClick={() => setInspectorModal(p => ({ ...p, viewport: 'desktop' }))}
+                                                className={`px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 ${inspectorModal.viewport === 'desktop' ? 'bg-clinical-600 text-white' : 'text-slate-300 hover:text-white'}`}
+                                            >
+                                                <Icon name="Monitor" size={14} /> จอคอมฯ
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setInspectorModal(p => ({ ...p, viewport: 'mobile' }))}
+                                                className={`px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 ${inspectorModal.viewport === 'mobile' ? 'bg-clinical-600 text-white' : 'text-slate-300 hover:text-white'}`}
+                                            >
+                                                <Icon name="Smartphone" size={14} /> จอมือถือ
+                                            </button>
+                                        </div>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => setInspectorModal(p => ({ ...p, reloadKey: Date.now() }))}
+                                            className="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center"
+                                            title="รีโหลดหน้าพรีวิว"
+                                        >
+                                            <Icon name="RefreshCw" size={15} />
+                                        </button>
+                                        <a
+                                            href={inspectorModal.item.url}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="px-3 h-9 rounded-xl bg-clinical-600 hover:bg-clinical-500 text-white text-xs font-bold inline-flex items-center gap-1.5"
+                                        >
+                                            <Icon name="ExternalLink" size={14} /> <span className="hidden sm:inline">แท็บใหม่</span>
+                                        </a>
+                                        <button
+                                            type="button"
+                                            onClick={() => setInspectorModal(p => ({ ...p, open: false }))}
+                                            className="w-9 h-9 rounded-xl bg-rose-600 hover:bg-rose-500 text-white flex items-center justify-center"
+                                            title="ปิดหน้าต่างพรีวิว"
+                                        >
+                                            <Icon name="X" size={18} />
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Live Preview Iframe Stage */}
+                                <div className="flex-1 bg-slate-200/85 overflow-auto flex items-center justify-center p-0 sm:p-4">
+                                    <div
+                                        className={`bg-white transition-all duration-300 overflow-hidden shadow-2xl ${
+                                            inspectorModal.viewport === 'mobile'
+                                                ? 'w-[390px] max-w-full h-full max-h-[820px] rounded-[2rem] border-[6px] border-slate-900'
+                                                : 'w-full h-full sm:rounded-2xl border border-slate-300'
+                                        }`}
+                                    >
+                                        <iframe
+                                            key={`${inspectorModal.item.id}-${inspectorModal.reloadKey}`}
+                                            src={inspectorModal.item.url}
+                                            className="w-full h-full border-0 block"
+                                            title={inspectorModal.item.title}
+                                            allow="microphone; camera; autoplay; fullscreen"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Smartphone Bottom Dock (ครบทั้ง 6 เมนู กดง่ายบนมือถือ) */}
                     <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/94 backdrop-blur-2xl border-t border-slate-200/80 px-2 pt-1.5 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] shadow-[0_-8px_30px_rgba(15,23,42,0.08)]">
