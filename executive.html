@@ -259,13 +259,13 @@
             <div style="font-size:12px;color:#94a3b8;">กำลังประมวลผล 13 เขตสุขภาพ, เรดาร์สมรรถนะ 5 แกน และ Fah Executive AI</div>
         </div>
         <style>@keyframes execSpin2030{to{transform:rotate(360deg);}}</style>
-    </div>
-
-    <!-- 🌟 Global Error Guard ป้องกันหน้าขาว/จอดำ 🌟 -->
+    <!-- 🌟 Global Error Guard ป้องกันหน้าขาว/จอดำ (ไม่จับ Error 404 จาก data.js ในโหมด Preview เดี่ยว) 🌟 -->
     <script>
       window.addEventListener('error', function (ev) {
+        const src = String(ev.filename || (ev.target && ev.target.src) || '');
+        if (src.includes('data.js')) return;
         const root = document.getElementById('executive-root');
-        if (root && !root.dataset.mounted) {
+        if (root && !root.dataset.mounted && ev.message) {
           root.innerHTML =
             '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#030712;color:#f8fafc;font-family:Sarabun,sans-serif;">' +
             '<div style="max-width:440px;width:100%;background:#070d1c;border:1px solid rgba(244,63,94,0.4);border-radius:24px;padding:24px;text-align:center;">' +
@@ -760,7 +760,7 @@
                                             : isHub
                                                 ? 'w-6 h-6 bg-gradient-to-br from-aurora-400 to-prism-400 text-void-950 text-[9px]'
                                                 : needsSupport
-                                                    ? 'w-5.5 h-5.5 px-1.5 bg-amber-400 text-void-950 text-[8.5px]'
+                                                    ? 'w-[22px] h-[22px] px-1.5 bg-amber-400 text-void-950 text-[8.5px]'
                                                     : 'w-5 h-5 bg-prism-400 text-void-950 text-[8.5px]'
                                     }`}
                                 >
@@ -784,6 +784,11 @@
         // 5. MAIN EXECUTIVE SPATIAL COMMAND APPLICATION (2030 EDITION)
         // ============================================================================
         function Executive2030App() {
+            const isAdminPreview = useMemo(() => {
+                try { return new URLSearchParams(window.location.search).get('admin_preview') === '1'; }
+                catch (_) { return false; }
+            }, []);
+
             // Adaptive Theme synced across all 2030 pages
             const [theme, setTheme] = useState(() => {
                 try {
@@ -837,40 +842,45 @@
                 if (el) el.dataset.mounted = 'true';
             }, []);
 
-            const stopVoice = useCallback(() => {
-                if (audioRef.current) {
-                    try { audioRef.current.pause(); } catch (_) {}
-                    audioRef.current = null;
-                }
-                if (audioUrlRef.current) {
-                    URL.revokeObjectURL(audioUrlRef.current);
-                    audioUrlRef.current = null;
-                }
-                if ('speechSynthesis' in window) {
-                    try { window.speechSynthesis.cancel(); } catch (_) {}
-                }
-                setIsSpeaking(false);
-            }, []);
-
-            useEffect(() => () => stopVoice(), [stopVoice]);
-
-            // 1. Firebase Real-Time Subscription (Auth First + Strict Path + Error Callback)
+            // 1. Firebase Real-Time Subscription (ป้องกันทับสิทธิ์ Admin ตอนเปิด Preview 2 ชั้น)
             useEffect(() => {
                 if (!isCloudConfigured || !fbAuth || !fbDb) {
                     setIsLoadingCloud(false);
                     return;
                 }
 
+                let active = true;
+                let anonAttempted = false;
                 let unsubUsers = null;
                 let unsubSettings = null;
 
-                signInAnonymously(fbAuth).catch(err => {
-                    console.warn('Anon auth warning:', err);
-                    setIsLoadingCloud(false);
-                });
+                const unsubAuth = onAuthStateChanged(fbAuth, async (fbUser) => {
+                    if (!active) return;
+                    if (!fbUser) {
+                        // ห้ามสร้าง Anonymous Session ในโหมด Admin Preview เพื่อไม่ให้เขียนทับสิทธิ์แอดมิน
+                        if (isAdminPreview) {
+                            setIsLoadingCloud(false);
+                            return;
+                        }
+                        if (!anonAttempted) {
+                            anonAttempted = true;
+                            try {
+                                if (typeof fbAuth.authStateReady === 'function') {
+                                    await fbAuth.authStateReady();
+                                }
+                                if (active && !fbAuth.currentUser) {
+                                    await signInAnonymously(fbAuth);
+                                }
+                            } catch (err) {
+                                console.warn('Anon auth warning:', err);
+                                if (active) setIsLoadingCloud(false);
+                            }
+                        }
+                        return;
+                    }
 
-                const unsubAuth = onAuthStateChanged(fbAuth, (fbUser) => {
-                    if (!fbUser) return;
+                    if (unsubUsers) unsubUsers();
+                    if (unsubSettings) unsubSettings();
 
                     unsubUsers = onSnapshot(
                         collection(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users'),
@@ -899,13 +909,14 @@
                 });
 
                 return () => {
+                    active = false;
                     unsubAuth();
                     if (unsubUsers) unsubUsers();
                     if (unsubSettings) unsubSettings();
                 };
-            }, []);
+            }, [isAdminPreview]);
 
-            // 2. Real-time Analytics Engine: KPI + 13 Regions + 5-Axis Radar + 4-Domain Clinical Weakness
+            // 2. Real-Time Analytics Engine (13 Health Regions + 5-Axis Radar + 4 Clinical Domains)
             const analytics = useMemo(() => {
                 const sourceUsers = useDemoData ? DEMO_USERS_SEED : cloudUsers;
 
@@ -1125,6 +1136,24 @@
                 recRef.current = rec;
                 return () => { try { rec.abort(); } catch (_) {} };
             }, []);
+
+            // หยุดเสียงบรรยายรายงานและคืนหน่วยความจำ ObjectURL อย่างสมบูรณ์
+            const stopVoice = useCallback(() => {
+                if (audioRef.current) {
+                    try { audioRef.current.pause(); } catch (_) {}
+                    audioRef.current = null;
+                }
+                if (audioUrlRef.current) {
+                    URL.revokeObjectURL(audioUrlRef.current);
+                    audioUrlRef.current = null;
+                }
+                if ('speechSynthesis' in window) {
+                    try { window.speechSynthesis.cancel(); } catch (_) {}
+                }
+                setIsSpeaking(false);
+            }, []);
+
+            useEffect(() => () => stopVoice(), [stopVoice]);
 
             // 5. Voice Synthesis (Gemini TTS -> Web Speech Fallback)
             const playPolicyVoice = async (textToSpeak) => {
