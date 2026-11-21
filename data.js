@@ -1,17 +1,20 @@
 // ============================================================================
-// rjcloud.organ — Master Static Data & System Configuration (2030 Edition)
+// rjcloud.organ — Master Static Data & System Configuration (Production 2027)
 // ศูนย์กลางข้อมูล การตั้งค่าธีม และคลังสมรรถนะ AI ผูกบัญชีหลัก: rjcloud.organ@gmail.com
 // ============================================================================
 
 /**
  * 1. การตั้งค่าระบบส่วนกลาง (System Configuration)
- * เชื่อมต่อ Firebase Project (rj-cloud-organ) และ Google Apps Script เรียบร้อยแล้ว
+ * เชื่อมต่อ Firebase Project (rj-cloud-organ) และ Google Apps Script เต็มรูปแบบ
  */
 window.RJCLOUD_CONFIG = {
   appName: "rjcloud.organ",
-  edition: "2030 Spatial Clinical Edition",
+  edition: "2027 Clinical Edition",
   contactEmail: "rjcloud.organ@gmail.com",
   appId: "rjcloud-organ-2027",
+
+  // รูปภาพหลักหน้าแรกผู้เรียน (index.html)
+  heroBannerUrl: "https://res.cloudinary.com/djwclucoz/image/upload/v1795227615/%E0%B8%94%E0%B8%B5%E0%B9%84%E0%B8%8B%E0%B8%99%E0%B9%8C%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%B1%E0%B8%87%E0%B9%84%E0%B8%A1%E0%B9%88%E0%B9%84%E0%B8%94%E0%B9%89%E0%B8%95%E0%B8%B1%E0%B9%89%E0%B8%87%E0%B8%8A%E0%B8%B7%E0%B9%88%E0%B8%AD_geidhl.png",
 
   // รายชื่ออีเมลที่มีสิทธิ์เข้าสู่ระบบหลังบ้าน (admin.html) ผ่าน Firebase Authentication
   adminEmails: [
@@ -25,10 +28,10 @@ window.RJCLOUD_CONFIG = {
     minPosttestPercent: 80    // ขั้นที่ 4 & 5: ทำ Post-test ไม่น้อยกว่า 80% เพื่อรับประกาศนียบัตร
   },
 
-  // ค่าเริ่มต้นโหมดการแสดงผล 2030 (ผู้เรียนสามารถกดสลับ มืด/สว่าง ได้ทุกหน้า)
+  // ค่าเริ่มต้นโหมดการแสดงผล (ผู้เรียนสามารถกดสลับ มืด/สว่าง ได้ทุกหน้า)
   theme: {
-    defaultMode: "dark",              // "dark" (Spatial Dark 2030) | "light" (Frosted Pearl 2030)
-    storageKey: "rjcloud_theme_2030"
+    defaultMode: "dark",              // "dark" (Spatial Dark) | "light" (Frosted Pearl)
+    storageKey: "rjcloud_theme"
   },
 
   // ค่าเชื่อมต่อ Firebase Project: rj-cloud-organ (บัญชี rjcloud.organ@gmail.com)
@@ -48,7 +51,7 @@ window.RJCLOUD_CONFIG = {
 
 /**
  * 2. ต้นแบบประกาศนียบัตรในตัวระบบ (Built-in Certificate Studio Template)
- * สามารถแก้ไขข้อความ โลโก้ และรูปลายเซ็นได้เองจากหน้า admin.html
+ * ออกแบบสไตล์มินิมอลเรียบหรู พื้นขาว ตัดเส้นสายสีทองบาง (แก้ไขข้อความ โลโก้ และลายเซ็นได้จาก admin.html)
  */
 window.DEFAULT_CERT_TEMPLATE = {
   certPrefix: "RJC-2027",
@@ -58,8 +61,8 @@ window.DEFAULT_CERT_TEMPLATE = {
   courseTitleEN: "Organ Donation & Transplantation Clinical Coordination Program",
   subtitleTH: "ขอมอบประกาศนียบัตรฉบับนี้เพื่อแสดงว่า",
   completionTextTH: "ได้ผ่านการอบรมและประเมินผลตามเกณฑ์มาตรฐานหลักสูตรประจำปี 2027",
-  signerName: "นายแพทย์สมชาย ตัวอย่างดี",
-  signerPosition: "ผู้อำนวยการโครงการ rjcloud.organ (ตัวอย่าง — แก้ไขได้ในหน้า Admin)",
+  signerName: "ผู้อำนวยการศูนย์ความเป็นเลิศทางการแพทย์",
+  signerPosition: "ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ",
   hoursText: "ระยะเวลาการเรียนรู้ตามเกณฑ์มาตรฐานวิชาชีพ",
   logoUrl: "",
   signatureUrl: ""
@@ -76,7 +79,7 @@ window.SKILL_LAB_VIDEO = {
 };
 
 /**
- * 4. โครงสร้าง 4 หมวดสมรรถนะคลินิกสำหรับ AI Diagnostic Roadmap & Remediation (2030)
+ * 4. โครงสร้าง 4 หมวดสมรรถนะคลินิกสำหรับ AI Diagnostic Roadmap & Remediation
  */
 window.CLINICAL_DOMAINS = {
   policy_ethics: {
@@ -565,6 +568,25 @@ window.AI_INSIGHT_TEXT = `📊 rjcloud.organ — AI Policy Intelligence Report (
 • ห้องฝึก 3D Holodeck (AI Skill Lab 2030) และ AI Study Companion ช่วยยกระดับทักษะการสื่อสารในห้องรับรองและความแม่นยำทางคลินิกของทีมประสานงานได้ทั่วทั้ง 13 เขตสุขภาพ`;
 
 window.POLICY_SPEECH = `สวัสดีค่ะท่านผู้บริหาร จากการสังเคราะห์ข้อมูลล่าสุดของระบบ อาร์เจคลาวด์ดอทออร์แกน ยุค 2030 พบว่าขณะนี้มีบุคลากรในระบบทั้งหมด {{USERS}} ท่าน สอบผ่านรับประกาศนียบัตรแล้ว {{PASSED}} ท่าน โดยมีคะแนนความพึงพอใจเฉลี่ยอยู่ที่ {{CSAT}} เต็ม 5 ค่ะ ด้านเชิงพื้นที่พบว่า {{MAX_REG_NAME}} มีความตื่นตัวสูงสุด อย่างไรก็ตาม สถานการณ์ผู้ป่วยรออวัยวะระดับชาติยังมีมากกว่าแปดพันราย จึงขอเสนอให้ขยายผลการฝึกอบรมและห้องจำลองสื่อสารสามมิติให้ครอบคลุมทุกเขตสุขภาพค่ะ`;
+
+/**
+ * 10. ต้นแบบรายงานวิเคราะห์เชิงนโยบายสำหรับผู้บริหาร (rjcloud.organ)
+ */
+window.AI_INSIGHT_TEXT = `📊 rjcloud.organ — AI Policy Intelligence Report:
+
+[1] มิติบุคลากร (Workforce Status):
+• บุคลากรในระบบทั้งหมด {{USERS}} ราย | สอบผ่านรับประกาศฯ แล้ว {{PASSED}} ราย
+• คะแนนความพึงพอใจเฉลี่ย (CSAT): {{CSAT}} / 5.0
+
+[2] มิติความเหลื่อมล้ำเชิงพื้นที่ (Geo-Equity):
+• เขตสุขภาพนำร่องสูงสุด: {{MAX_REG_NAME}} ({{MAX_REG_USERS}} ราย)
+• พื้นที่ควรเร่งเสริมศักยภาพ: {{MIN_REG_NAME}} ({{MIN_REG_USERS}} ราย)
+
+[3] มิติวิกฤตระดับชาติ (National Crisis Benchmark):
+• ประเทศไทยมีผู้ป่วยรออวัยวะสะสมกว่า 8,019 ราย
+• ห้องฝึกจำลอง 3 มิติ (AI Skill Lab) และผู้ช่วย AI ช่วยยกระดับทักษะการสื่อสารในห้องรับรองและความแม่นยำทางคลินิกของทีมประสานงานได้ทั่วทั้ง 13 เขตสุขภาพ`;
+
+window.POLICY_SPEECH = `สวัสดีค่ะท่านผู้บริหาร จากการสังเคราะห์ข้อมูลล่าสุดของระบบ อาร์เจคลาวด์ดอทออร์แกน พบว่าขณะนี้มีบุคลากรในระบบทั้งหมด {{USERS}} ท่าน สอบผ่านรับประกาศนียบัตรแล้ว {{PASSED}} ท่าน โดยมีคะแนนความพึงพอใจเฉลี่ยอยู่ที่ {{CSAT}} เต็ม 5 ค่ะ ด้านเชิงพื้นที่พบว่า {{MAX_REG_NAME}} มีความตื่นตัวสูงสุด อย่างไรก็ตาม สถานการณ์ผู้ป่วยรออวัยวะระดับชาติยังมีมากกว่าแปดพันราย จึงขอเสนอให้ขยายผลการฝึกอบรมและห้องจำลองสื่อสารสามมิติให้ครอบคลุมทุกเขตสุขภาพค่ะ`;
 
 /**
  * 11. ฐานความรู้วิชาชีพทางการแพทย์ (Clinical Knowledge Base สำหรับ AI Study Companion & AI Skill Lab)
