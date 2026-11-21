@@ -150,16 +150,16 @@
         transition: background-color 0.28s ease, color 0.28s ease;
       }
 
-      /* ยกระดับขนาดฟอนต์ภาษาไทยส่วนคำอธิบายย่อยให้อ่านสบายตา */
       .text-\[11px\] { font-size: 0.8125rem !important; line-height: 1.5; }
       .text-\[10px\] { font-size: 0.72rem !important; line-height: 1.4; }
       .touch-target { min-height: 46px; touch-action: manipulation; }
+      .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+      .pb-dock-safe { padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px)); }
 
       @media (max-width: 768px) {
         input, select, textarea { font-size: 16px !important; }
       }
 
-      /* Spatial Aura Ambient Backdrop */
       .spatial-aura {
         position: fixed;
         inset: 0;
@@ -182,7 +182,6 @@
         pointer-events: none;
       }
 
-      /* Semantic Spatial Glass Utilities */
       .spatial-card {
         background: var(--glass-bg);
         backdrop-filter: blur(24px) saturate(155%);
@@ -267,7 +266,7 @@
         <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg-page);color:var(--text-main);font-family:'Prompt','Sarabun',sans-serif;gap:14px;padding:24px;text-align:center;">
             <div style="width:48px;height:48px;border:3px solid rgba(34,211,238,0.2);border-top-color:#34d399;border-right-color:#22d3ee;border-radius:9999px;animation:execSpin 0.85s linear infinite;"></div>
             <div style="font-weight:800;font-size:17px;">กำลังเปิดแดชบอร์ดผู้บริหาร...</div>
-            <div style="font-size:12px;color:#94a3b8;">กำลังเชื่อมต่อข้อมูลสด 13 เขตสุขภาพ เรดาร์สมรรถนะ 5 แกน และระบบ AI</div>
+            <div style="font-size:12px;color:#94a3b8;">กำลังเชื่อมต่อสถิติไม่ระบุตัวตน 13 เขตสุขภาพ (PDPA-Safe)</div>
         </div>
         <style>@keyframes execSpin{to{transform:rotate(360deg);}}</style>
     </div>
@@ -299,7 +298,7 @@
         import { getFirestore, collection, doc, onSnapshot } from 'firebase/firestore';
 
         // ============================================================================
-        // 1. CONFIGURATION, 5-AXIS RADAR META & 4 CLINICAL DOMAINS (PRODUCTION 2027)
+        // 1. CONFIGURATION, 5-AXIS RADAR META & 4 CLINICAL DOMAINS (PDPA-SAFE 2027)
         // ============================================================================
         const BUILTIN_CONFIG = {
             appName: 'rjcloud.organ',
@@ -337,7 +336,6 @@
 
         const THEME_KEY = CONFIG.theme?.storageKey || 'rjcloud_theme';
 
-        // 5 แกนสมรรถนะจาก AI Skill Lab (เชื่อมตรงกับ aiskilllab.html)
         const RADAR_AXES = [
             { key: 'setting', labelTH: 'ห้องรับรอง & บทบาท', shortTH: 'ห้องรับรอง', actionTip: 'จัดอบรมการเปิดบทบาทและการเตรียมห้องรับรองส่วนตัวตามหลัก SPIKES' },
             { key: 'empathy', labelTH: 'รับรู้อารมณ์ร่วม', shortTH: 'อารมณ์ร่วม', actionTip: 'เสริม Workshop การสะท้อนอารมณ์สูญเสียและปลอบโยนญาติก่อนให้ข้อมูลคลินิก' },
@@ -346,7 +344,6 @@
             { key: 'dignity', labelTH: 'ไม่เร่งรัด & เกียรติร่าง', shortTH: 'ให้เกียรติร่าง', actionTip: 'เน้นหลัก Decoupling ให้เวลาครอบครัวตัดสินใจและให้ความมั่นใจการตกแต่งร่างประณีต' }
         ];
 
-        // 4 หมวดความรู้คลินิกจาก Pre-test / Post-test (เชื่อมตรงกับ index.html & data.js)
         const CLINICAL_DOMAINS = window.CLINICAL_DOMAINS || {
             policy_ethics: { id: 'policy_ethics', nameTH: 'นโยบาย กฎหมาย และจริยธรรม', shortName: 'กฎหมาย & จริยธรรม', color: '#38bdf8' },
             brain_death_donor: { id: 'brain_death_donor', nameTH: 'วินิจฉัยภาวะสมองตาย & ดูแลผู้บริจาค', shortName: 'สมองตาย & Donor', color: '#34d399' },
@@ -389,7 +386,7 @@
         }
 
         // ============================================================================
-        // 3. ERROR BOUNDARY, HELPERS & ADAPTIVE UI PRIMITIVES
+        // 3. PDPA ZERO-PII SANITIZER, ERROR BOUNDARY & UI PRIMITIVES
         // ============================================================================
         class ExecutiveErrorBoundary extends React.Component {
             constructor(props) {
@@ -472,23 +469,65 @@
             return 'OTHER';
         }
 
-        /**
-         * ดึงคะแนนเรดาร์ 5 แกนของผู้เรียนแต่ละคน (รองรับทั้งรูปแบบ object และ array จาก skillLabHistory)
-         */
-        function extractUserRadar(u) {
-            if (u?.skillLabLatestRadar && typeof u.skillLabLatestRadar === 'object') {
-                return u.skillLabLatestRadar;
+        function extractRadarNumbers(raw) {
+            const direct = raw?.radar || raw?.skillLabLatestRadar;
+            if (direct && typeof direct === 'object' && !Array.isArray(direct)) {
+                const hasAny = RADAR_AXES.some(a => Number(direct[a.key] || 0) > 0);
+                if (hasAny) {
+                    return {
+                        setting: Number(direct.setting || 0),
+                        empathy: Number(direct.empathy || 0),
+                        clarity: Number(direct.clarity || 0),
+                        vocal: Number(direct.vocal || 0),
+                        dignity: Number(direct.dignity || 0)
+                    };
+                }
             }
-            const hist = Array.isArray(u?.skillLabHistory) ? u.skillLabHistory : [];
+            const hist = Array.isArray(raw?.skillLabHistory) ? raw.skillLabHistory : [];
             for (let i = hist.length - 1; i >= 0; i--) {
                 const r = hist[i]?.radar;
                 if (Array.isArray(r) && r.length > 0) {
-                    const map = {};
-                    r.forEach(item => { if (item?.key) map[item.key] = Number(item.value || 0); });
+                    const map = { setting: 0, empathy: 0, clarity: 0, vocal: 0, dignity: 0 };
+                    r.forEach(item => { if (item?.key && map[item.key] !== undefined) map[item.key] = Number(item.value || 0); });
                     return map;
                 }
             }
             return null;
+        }
+
+        /**
+         * PDPA Zero-PII Sanitizer:
+         * ตัดข้อมูลส่วนบุคคลทั้งหมดออกทันที (ไม่เก็บชื่อ-สกุล เลขใบอนุญาต อีเมล เบอร์โทร โรงพยาบาล หรือรหัสประจำตัว)
+         * เหลือเฉพาะฟิลด์สถิติเชิงปริมาณสำหรับการวิเคราะห์ระดับเขตสุขภาพเท่านั้น
+         */
+        function sanitizeToStatsOnly(raw) {
+            if (!raw || typeof raw !== 'object') return null;
+            const radar = extractRadarNumbers(raw);
+            const rawDomains = Array.isArray(raw.domains)
+                ? raw.domains
+                : (Array.isArray(raw?.aiRoadmap?.domains) ? raw.aiRoadmap.domains : []);
+            const domains = rawDomains
+                .filter(d => d && d.id && typeof d.percent === 'number')
+                .map(d => ({ id: String(d.id), percent: Number(d.percent) }));
+
+            const hist = Array.isArray(raw.skillLabHistory) ? raw.skillLabHistory : [];
+            const lastScore = hist.length > 0 ? Number(hist[hist.length - 1]?.score || 0) : 0;
+            const bestLabScore = typeof raw.skillLabBestScore === 'number'
+                ? Number(raw.skillLabBestScore)
+                : (lastScore > 0 ? lastScore : null);
+
+            return {
+                regionId: raw.regionId || resolveRegionId(raw.department),
+                status: raw.status === 'ผ่าน' ? 'ผ่าน' : 'กำลังเรียน',
+                progress: Number(raw.progress || 0),
+                hasLab: Boolean(raw.hasLab || raw.skillLabPassed || hist.length > 0 || radar),
+                skillLabBestScore: bestLabScore,
+                radar,
+                domains,
+                satisfactionScore: (typeof raw.satisfactionScore === 'number' && raw.satisfactionScore > 0)
+                    ? Number(raw.satisfactionScore)
+                    : null
+            };
         }
 
         function pcm16ToWavUrl(base64PCM, sampleRate = 24000) {
@@ -522,20 +561,20 @@
             const { total, regionList, maxRegion, minRegion, avgCsat, csatCount, avgSkillScore, passRate, hasNationalDomains, hasNationalRadar, nationalWeakestDomain, nationalWeakestAxis } = analytics;
 
             if (total.users === 0) {
-                return 'ขณะนี้ฐานข้อมูลจริงยังไม่มีรายชื่อผู้เรียนเข้าสู่ระบบค่ะ เมื่อบุคลากรลงทะเบียน ทำ Pre-test และฝึก AI Skill Lab ระบบ AI จะประมวลผลและวิเคราะห์เชิงนโยบายรายเขตสุขภาพให้แบบ Real-time ทันทีค่ะ';
+                return 'ขณะนี้ยังไม่มีสถิติผู้เรียนในฐานข้อมูลค่ะ เมื่อมีผู้เรียนเข้าสู่ระบบ ตัวเลขสถิติแบบไม่ระบุตัวตนทั้ง 13 เขตสุขภาพจะอัปเดตขึ้นที่นี่อัตโนมัติค่ะ';
             }
 
             if (q.includes('อ่อน') || q.includes('จุดอ่อน') || q.includes('อบรมเสริม') || q.includes('ทักษะ') || q.includes('เรดาร์') || q.includes('skill')) {
                 const domainLine = hasNationalDomains
                     ? `• ระดับประเทศ — หมวดวิชาการที่ควรเสริมที่สุด: "${nationalWeakestDomain.nameTH}" (เฉลี่ย ${nationalWeakestDomain.avg}%)`
-                    : '• ระดับประเทศ — อยู่ระหว่างรอผลประเมิน Pre/Post-test เพื่อจำแนก 4 หมวดคลินิก';
+                    : '• ระดับประเทศ — แสดงข้อมูลสถิติรวมตามเขตสุขภาพ';
                 const axisLine = hasNationalRadar
                     ? `• ระดับประเทศ — แกนสื่อสาร AI Skill Lab ที่ควรเสริมที่สุด: "${nationalWeakestAxis.labelTH}" (เฉลี่ย ${nationalWeakestAxis.avg}/100)`
-                    : '• ระดับประเทศ — อยู่ระหว่างรอผลประเมินจากห้องฝึก AI Skill Lab';
+                    : '• ระดับประเทศ — ผู้ผ่านการฝึก AI Skill Lab รวม ' + total.lab.toLocaleString() + ' ราย';
                 const regLine = activeRegion && activeRegion.hasDomainData
                     ? `\n• เฉพาะ ${activeRegion.name}: ควรจัด Live ทบทวนเรื่อง "${activeRegion.weakestDomain.shortName}" (${activeRegion.weakestDomain.avg}%)`
                     : '';
-                return `วิเคราะห์ช่องว่างสมรรถนะระดับชาติและพื้นที่ (${activeRegion?.name || 'ภาพรวม'}):\n\n${domainLine}\n${axisLine}${regLine}${hasNationalRadar ? `\n\nข้อเสนอแนะเชิงนโยบาย: ${nationalWeakestAxis.actionTip}ค่ะ` : ''}`;
+                return `วิเคราะห์ช่องว่างสมรรถนะจากสถิติไม่ระบุตัวตน (${activeRegion?.name || 'ภาพรวม'}):\n\n${domainLine}\n${axisLine}${regLine}${hasNationalRadar ? `\n\nข้อเสนอแนะเชิงนโยบาย: ${nationalWeakestAxis.actionTip}ค่ะ` : ''}`;
             }
 
             if (q.includes('เขต') || q.includes('พื้นที่') || q.includes('น้อยสุด') || q.includes('มากสุด') || q.includes('เหลื่อมล้ำ')) {
@@ -547,7 +586,7 @@
                 return `ตัวชี้วัดความพึงพอใจและคุณภาพการฝึก:\n• คะแนน CSAT เฉลี่ย: ${avgCsat} / 5.0 (จากผู้ประเมิน ${csatCount.toLocaleString()} ราย)\n• ดัชนี Empathy เฉลี่ยจาก AI Skill Lab: ${avgSkillScore} / 100 คะแนน\n• อัตราสำเร็จหลักสูตร (Post-test ≥ 80%): ${passRate}% ค่ะ`;
             }
 
-            return `สรุปตัวชี้วัดแดชบอร์ดผู้บริหาร rjcloud.organ:\n• บุคลากรในระบบทั้งหมด: ${total.users.toLocaleString()} ราย (สอบผ่านรับประกาศฯ ${total.passed.toLocaleString()} ราย — ${passRate}%)\n• ผ่านการฝึก AI Skill Lab: ${total.lab.toLocaleString()} ราย (Empathy เฉลี่ย ${avgSkillScore}/100)\n• พื้นที่นำร่อง: ${maxRegion.name} (${maxRegion.users} ราย) | พื้นที่เฝ้าระวัง: ${minRegion.name} (${minRegion.users} ราย)\n\nท่ามกลางผู้ป่วยรออวัยวะสะสม 8,019 ราย การติดตามข้อมูลจริงรายเขตจะช่วยให้จัดสรรการอบรมเสริมได้ตรงจุดยิ่งขึ้นค่ะ`;
+            return `สรุปสถิติแดชบอร์ดผู้บริหาร rjcloud.organ (ไม่ระบุตัวตนตามหลัก PDPA):\n• บุคลากรในระบบทั้งหมด: ${total.users.toLocaleString()} ราย (สอบผ่านรับประกาศฯ ${total.passed.toLocaleString()} ราย — ${passRate}%)\n• ผ่านการฝึก AI Skill Lab: ${total.lab.toLocaleString()} ราย (Empathy เฉลี่ย ${avgSkillScore}/100)\n• พื้นที่นำร่อง: ${maxRegion.name} (${maxRegion.users} ราย) | พื้นที่เฝ้าระวัง: ${minRegion.name} (${minRegion.users} ราย)\n\nท่ามกลางผู้ป่วยรออวัยวะสะสม 8,019 ราย การติดตามสถิติรายเขตจะช่วยให้จัดสรรการอบรมเสริมได้ตรงจุดยิ่งขึ้นค่ะ`;
         }
 
         // ============================================================================
@@ -591,7 +630,6 @@
                         return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke={isDark ? 'rgba(148,163,184,0.2)' : 'rgba(15,23,42,0.1)'} strokeWidth="1" />;
                     })}
 
-                    {/* National Benchmark Dashed Polygon */}
                     <polygon
                         points={natPts.map(p => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ')}
                         fill="none"
@@ -601,7 +639,6 @@
                         opacity="0.85"
                     />
 
-                    {/* Selected Region Solid Aurora Polygon */}
                     <polygon
                         points={regPts.map(p => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ')}
                         fill="url(#execRadarFill)"
@@ -661,7 +698,7 @@
                     <div className="absolute top-3.5 left-3.5 z-10 pointer-events-none">
                         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-void-950/75 border border-prism-400/35 text-[10px] font-mono font-bold text-prism-300 backdrop-blur-md">
                             <span className="w-2 h-2 rounded-full bg-aurora-400 animate-pulse" />
-                            13 HEALTH REGIONS • LIVE TELEMETRY
+                            13 HEALTH REGIONS • ANONYMIZED STATS
                         </span>
                     </div>
 
@@ -739,7 +776,7 @@
         }
 
         // ============================================================================
-        // 5. MAIN EXECUTIVE APPLICATION (PRODUCTION 2027 — LIVE FIRESTORE ONLY)
+        // 5. MAIN EXECUTIVE APPLICATION (PDPA ZERO-PII STATISTICS ONLY)
         // ============================================================================
         function ExecutiveApp() {
             const isAdminPreview = useMemo(() => {
@@ -747,7 +784,6 @@
                 catch (_) { return false; }
             }, []);
 
-            // Adaptive Theme synced across all pages
             const [theme, setTheme] = useState(() => {
                 try {
                     const saved = localStorage.getItem(THEME_KEY);
@@ -767,16 +803,16 @@
                 setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
             }, []);
 
-            const [cloudUsers, setCloudUsers] = useState([]);
+            // เก็บเฉพาะอาร์เรย์สถิติที่ตัดข้อมูลส่วนบุคคลออกทั้งหมดแล้ว (Zero-PII)
+            const [telemetryStats, setTelemetryStats] = useState([]);
+            const [fallbackStats, setFallbackStats] = useState([]);
             const [appsScriptUrl, setAppsScriptUrl] = useState(CONFIG.appsScriptUrl || '');
             const [isLoadingCloud, setIsLoadingCloud] = useState(isCloudConfigured);
 
-            // Mobile-first Tabs: overview | regions | ai
             const [mobileTab, setMobileTab] = useState('overview');
-            const [regionViewMode, setRegionViewMode] = useState('map'); // map | list
+            const [regionViewMode, setRegionViewMode] = useState('map');
             const [activeRegionId, setActiveRegionId] = useState('BKK');
 
-            // Executive AI States
             const [messages, setMessages] = useState([]);
             const [chatInput, setChatInput] = useState('');
             const [isAiThinking, setIsAiThinking] = useState(false);
@@ -799,7 +835,7 @@
                 if (el) el.dataset.mounted = 'true';
             }, []);
 
-            // 1. Firebase Real-Time Subscription (ป้องกันทับสิทธิ์ Admin ตอนเปิด Preview 2 ชั้น)
+            // 1. Firebase Real-Time Subscription (ให้ความสำคัญกับคอลเลกชันสถิติไม่ระบุตัวตน executive_telemetry ก่อน)
             useEffect(() => {
                 if (!isCloudConfigured || !fbAuth || !fbDb) {
                     setIsLoadingCloud(false);
@@ -808,7 +844,8 @@
 
                 let active = true;
                 let anonAttempted = false;
-                let unsubUsers = null;
+                let unsubTelemetry = null;
+                let unsubFallback = null;
                 let unsubSettings = null;
 
                 const unsubAuth = onAuthStateChanged(fbAuth, async (fbUser) => {
@@ -835,19 +872,40 @@
                         return;
                     }
 
-                    if (unsubUsers) unsubUsers();
+                    if (unsubTelemetry) unsubTelemetry();
+                    if (unsubFallback) unsubFallback();
                     if (unsubSettings) unsubSettings();
 
-                    unsubUsers = onSnapshot(
-                        collection(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users'),
+                    // แหล่งข้อมูลหลัก: สถิติไม่ระบุตัวตน (Zero-PII)
+                    unsubTelemetry = onSnapshot(
+                        collection(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'executive_telemetry'),
                         (snap) => {
-                            const arr = [];
-                            snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
-                            setCloudUsers(arr);
+                            const cleaned = [];
+                            snap.forEach(d => {
+                                const item = sanitizeToStatsOnly(d.data());
+                                if (item) cleaned.push(item);
+                            });
+                            setTelemetryStats(cleaned);
                             setIsLoadingCloud(false);
                         },
-                        (err) => {
-                            console.warn('Executive users snapshot error:', err);
+                        () => {
+                            setIsLoadingCloud(false);
+                        }
+                    );
+
+                    // แหล่งข้อมูลสำรองช่วงเปลี่ยนผ่าน: กรองผ่าน sanitizeToStatsOnly ทันที ไม่เก็บข้อมูลส่วนบุคคลลง state
+                    unsubFallback = onSnapshot(
+                        collection(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users'),
+                        (snap) => {
+                            const cleaned = [];
+                            snap.forEach(d => {
+                                const item = sanitizeToStatsOnly(d.data());
+                                if (item) cleaned.push(item);
+                            });
+                            setFallbackStats(cleaned);
+                            setIsLoadingCloud(false);
+                        },
+                        () => {
                             setIsLoadingCloud(false);
                         }
                     );
@@ -866,14 +924,21 @@
                 return () => {
                     active = false;
                     unsubAuth();
-                    if (unsubUsers) unsubUsers();
+                    if (unsubTelemetry) unsubTelemetry();
+                    if (unsubFallback) unsubFallback();
                     if (unsubSettings) unsubSettings();
                 };
             }, [isAdminPreview]);
 
-            // 2. Real-Time Analytics Engine (100% ข้อมูลจริงจาก Cloud Firestore)
+            // ใช้ข้อมูลจาก executive_telemetry เป็นหลัก (หากยังว่างช่วงเปลี่ยนผ่านใช้ข้อมูลที่ตัด PII ออกแล้ว)
+            const activeStatsRows = useMemo(
+                () => (telemetryStats.length > 0 ? telemetryStats : fallbackStats),
+                [telemetryStats, fallbackStats]
+            );
+
+            // 2. Real-Time Analytics Engine (เฉพาะข้อมูลสถิติไม่ระบุตัวตน 100%)
             const analytics = useMemo(() => {
-                const sourceUsers = cloudUsers;
+                const sourceRows = activeStatsRows;
 
                 const makeEmptyAccumulator = () => ({
                     radarSum: { setting: 0, empathy: 0, clarity: 0, vocal: 0, dignity: 0 },
@@ -904,16 +969,15 @@
                 let skillScoreSum = 0;
                 let skillScoreCount = 0;
 
-                const accumulateUserMetrics = (acc, u, userRadar) => {
-                    if (userRadar) {
+                const accumulateMetrics = (acc, row) => {
+                    if (row.radar) {
                         RADAR_AXES.forEach(a => {
-                            acc.radarSum[a.key] += Number(userRadar[a.key] || 0);
+                            acc.radarSum[a.key] += Number(row.radar[a.key] || 0);
                         });
                         acc.radarCount += 1;
                     }
-                    const doms = u?.aiRoadmap?.domains;
-                    if (Array.isArray(doms)) {
-                        doms.forEach(d => {
+                    if (Array.isArray(row.domains)) {
+                        row.domains.forEach(d => {
                             if (d?.id && typeof d.percent === 'number' && acc.domainSum[d.id] !== undefined) {
                                 acc.domainSum[d.id] += d.percent;
                                 acc.domainCount[d.id] += 1;
@@ -922,40 +986,34 @@
                     }
                 };
 
-                sourceUsers.forEach(u => {
-                    const isPassed = u.status === 'ผ่าน';
+                sourceRows.forEach(row => {
+                    const isPassed = row.status === 'ผ่าน';
                     const isLearning = !isPassed;
-                    const history = Array.isArray(u.skillLabHistory) ? u.skillLabHistory : [];
-                    const hasLab = Boolean(u.skillLabPassed || history.length > 0 || u.skillLabLatestRadar);
-                    const userRadar = extractUserRadar(u);
 
                     if (isPassed) totalPassed++;
                     if (isLearning) totalLearning++;
-                    if (hasLab) {
+                    if (row.hasLab) {
                         totalLab++;
-                        if (typeof u.skillLabBestScore === 'number') {
-                            skillScoreSum += u.skillLabBestScore;
+                        if (typeof row.skillLabBestScore === 'number' && row.skillLabBestScore > 0) {
+                            skillScoreSum += row.skillLabBestScore;
                             skillScoreCount++;
-                        } else if (history.length > 0) {
-                            const lastS = Number(history[history.length - 1]?.score || 0);
-                            if (lastS > 0) { skillScoreSum += lastS; skillScoreCount++; }
                         }
                     }
 
-                    if (typeof u.satisfactionScore === 'number' && u.satisfactionScore > 0) {
-                        csatSum += u.satisfactionScore;
+                    if (typeof row.satisfactionScore === 'number' && row.satisfactionScore > 0) {
+                        csatSum += row.satisfactionScore;
                         csatCount++;
                     }
 
-                    accumulateUserMetrics(natAcc, u, userRadar);
+                    accumulateMetrics(natAcc, row);
 
-                    const regId = resolveRegionId(u.department);
+                    const regId = row.regionId;
                     if (statsMap[regId]) {
                         statsMap[regId].users += 1;
                         if (isLearning) statsMap[regId].learning += 1;
-                        if (hasLab) statsMap[regId].lab += 1;
+                        if (row.hasLab) statsMap[regId].lab += 1;
                         if (isPassed) statsMap[regId].passed += 1;
-                        accumulateUserMetrics(statsMap[regId].acc, u, userRadar);
+                        accumulateMetrics(statsMap[regId].acc, row);
                     } else {
                         unmappedCount += 1;
                     }
@@ -998,6 +1056,7 @@
                     const avgEmpathy = hasRadarData
                         ? Math.round(RADAR_AXES.reduce((s, a) => s + (radar[a.key] || 0), 0) / RADAR_AXES.length)
                         : 0;
+                    const passPct = r.users > 0 ? Math.round((r.passed / r.users) * 100) : 0;
 
                     return {
                         ...r,
@@ -1007,16 +1066,17 @@
                         hasDomainData,
                         weakestDomain,
                         weakestAxis,
-                        avgEmpathy
+                        avgEmpathy,
+                        passPct
                     };
                 });
 
                 const regionalOnly = regionList.filter(r => r.id !== 'BKK');
                 const sortedByUsers = [...regionalOnly].sort((a, b) => b.users - a.users);
-                const maxRegion = sortedByUsers[0] || { name: 'รอข้อมูล', users: 0, passed: 0 };
+                const maxRegion = sortedByUsers[0] || { name: '-', users: 0, passed: 0 };
                 const minRegion = sortedByUsers[sortedByUsers.length - 1] || maxRegion;
 
-                const totalUsers = sourceUsers.length;
+                const totalUsers = sourceRows.length;
                 const passRate = totalUsers > 0 ? Math.round((totalPassed / totalUsers) * 100) : 0;
                 const avgCsat = csatCount > 0 ? (csatSum / csatCount).toFixed(1) : '0.0';
                 const avgSkillScore = skillScoreCount > 0
@@ -1039,7 +1099,7 @@
                     nationalWeakestDomain,
                     nationalWeakestAxis
                 };
-            }, [cloudUsers]);
+            }, [activeStatsRows]);
 
             const activeRegion = useMemo(
                 () => analytics.regionList.find(r => r.id === activeRegionId) || analytics.regionList[0],
@@ -1049,12 +1109,12 @@
             // 3. Auto-updating Executive Policy Briefing
             const executiveBrief = useMemo(() => {
                 if (analytics.total.users === 0) {
-                    const emptyInsight = `📊 rjcloud.organ — AI Executive Policy Brief (ข้อมูลจริง Real-time):
+                    const emptyInsight = `📊 rjcloud.organ — AI Executive Policy Brief (สถิติไม่ระบุตัวตน PDPA-Safe):
 
-• ระบบเชื่อมต่อฐานข้อมูล Cloud Firestore พร้อมใช้งานเต็มรูปแบบแล้วค่ะ
-• ขณะนี้ยังไม่มีรายชื่อผู้เรียนในฐานข้อมูล (0 ราย)
-• ทันทีที่มีบุคลากรลงทะเบียน ทำแบบทดสอบ และฝึกใน AI Skill Lab รายงานสรุป 13 เขตสุขภาพ เรดาร์สมรรถนะ 5 แกน และจุดอ่อนทางคลินิกจะอัปเดตขึ้นที่นี่อัตโนมัติค่ะ`;
-                    const emptySpeech = 'สวัสดีค่ะท่านผู้บริหาร ระบบแดชบอร์ดผู้บริหาร อาร์เจคลาวด์ดอทออร์แกน เชื่อมต่อฐานข้อมูลจริงเรียบร้อยแล้ว ขณะนี้รอรับข้อมูลผู้เรียนเข้าสู่ระบบค่ะ';
+• ระบบเชื่อมต่อฐานข้อมูลสถิติกลางเรียบร้อยแล้วค่ะ (ไม่มีการนำข้อมูลส่วนบุคคลมาประมวลผล)
+• จำนวนผู้เรียนในฐานข้อมูลสถิติขณะนี้: 0 ราย
+• ทันทีที่มีผู้เรียนเข้าเรียนและประเมินผล สถิติทั้ง 13 เขตสุขภาพจะอัปเดตขึ้นที่นี่อัตโนมัติค่ะ`;
+                    const emptySpeech = 'สวัสดีค่ะท่านผู้บริหาร ระบบแดชบอร์ดผู้บริหาร อาร์เจคลาวด์ดอทออร์แกน พร้อมแสดงผลสถิติแบบไม่ระบุตัวตนตามนโยบายพีดีพีเอแล้วค่ะ';
                     return { insightText: emptyInsight, speechText: emptySpeech };
                 }
 
@@ -1062,7 +1122,7 @@
                     ? `\n\n[2] AI Clinical Gap Alert (หัวข้อที่ควรจัดอบรมเสริมด่วน):${analytics.hasNationalDomains ? `\n• หมวดวิชาการที่อ่อนที่สุด: "${analytics.nationalWeakestDomain.nameTH}" (เฉลี่ย ${analytics.nationalWeakestDomain.avg}%)` : ''}${analytics.hasNationalRadar ? `\n• ทักษะสื่อสาร 5 แกนที่ควรพัฒนาที่สุด: "${analytics.nationalWeakestAxis.labelTH}" (เฉลี่ย ${analytics.nationalWeakestAxis.avg}/100)` : ''}`
                     : '';
 
-                const insightText = `📊 rjcloud.organ — AI Executive Policy Brief:
+                const insightText = `📊 rjcloud.organ — AI Executive Policy Brief (สถิติไม่ระบุตัวตน PDPA-Safe):
 
 [1] ภาพรวมบุคลากรระดับประเทศ:
 • บุคลากรทั้งหมด ${analytics.total.users.toLocaleString()} ราย | สอบผ่าน Post-test ≥80% แล้ว ${analytics.total.passed.toLocaleString()} ราย (${analytics.passRate}%)
@@ -1072,7 +1132,7 @@
 • เขตนำร่องสูงสุด: ${analytics.maxRegion.name} (${analytics.maxRegion.users} ราย)
 • พื้นที่ควรเร่งสนับสนุน: ${analytics.minRegion.name} (${analytics.minRegion.users} ราย)`;
 
-                const speechText = `สวัสดีค่ะท่านผู้บริหาร จากข้อมูลล่าสุดของระบบ อาร์เจคลาวด์ดอทออร์แกน ขณะนี้มีบุคลากรทั้งหมด ${analytics.total.users} ท่าน สอบผ่านรับประกาศนียบัตรแล้ว ${analytics.total.passed} ท่าน คิดเป็นร้อยละ ${analytics.passRate} คะแนนทักษะสื่อสารสามมิติเฉลี่ย ${analytics.avgSkillScore} เต็มร้อย และความพึงพอใจเฉลี่ย ${analytics.avgCsat} เต็มห้าค่ะ`;
+                const speechText = `สวัสดีค่ะท่านผู้บริหาร จากสถิติภาพรวมล่าสุดของระบบ อาร์เจคลาวด์ดอทออร์แกน ขณะนี้มีบุคลากรทั้งหมด ${analytics.total.users} ท่าน สอบผ่านรับประกาศนียบัตรแล้ว ${analytics.total.passed} ท่าน คิดเป็นร้อยละ ${analytics.passRate} คะแนนทักษะสื่อสารสามมิติเฉลี่ย ${analytics.avgSkillScore} เต็มร้อย และความพึงพอใจเฉลี่ย ${analytics.avgCsat} เต็มห้าค่ะ`;
 
                 return { insightText, speechText };
             }, [analytics]);
@@ -1121,7 +1181,7 @@
 
             useEffect(() => () => stopVoice(), [stopVoice]);
 
-            // 5. Voice Synthesis (Gemini TTS -> Web Speech Fallback)
+            // 5. Voice Synthesis
             const playPolicyVoice = async (textToSpeak) => {
                 if (isSpeaking) { stopVoice(); return; }
                 const cleanText = String(textToSpeak || '').replace(/[*#📊•]/g, '').trim();
@@ -1166,7 +1226,7 @@
                 showToast('อุปกรณ์นี้ไม่รองรับการอ่านเสียงอัตโนมัติค่ะ', 'error');
             };
 
-            // 6. Send Question to Executive AI (with full live Firestore JSON)
+            // 6. Send Question to Executive AI (ส่งเฉพาะ JSON สถิติไม่ระบุตัวตน 100%)
             const handleSendQuestion = async (e, presetText = null) => {
                 if (e) e.preventDefault();
                 const userQ = String(presetText ?? chatInput).trim();
@@ -1185,7 +1245,7 @@
 
                 const liveSnapshotJson = JSON.stringify({
                     platform: 'rjcloud.organ Executive Dashboard',
-                    dataMode: 'Live Production Firestore',
+                    privacyMode: 'PDPA Anonymized Statistics Only (Zero PII)',
                     nationalTotals: analytics.total,
                     passRatePercent: analytics.passRate,
                     csatAverageOutOf5: analytics.avgCsat,
@@ -1199,21 +1259,22 @@
                         name: activeRegion.name,
                         users: activeRegion.users,
                         passed: activeRegion.passed,
+                        passPct: activeRegion.passPct,
                         radar5Axis: activeRegion.hasRadarData ? activeRegion.radar : null,
                         weakestClinicalTopic: activeRegion.hasDomainData ? `${activeRegion.weakestDomain.nameTH} (${activeRegion.weakestDomain.avg}%)` : null
                     } : null,
                     allRegions: analytics.regionList.map(r => ({
-                        id: r.id, name: r.name, users: r.users, passed: r.passed, avgEmpathy: r.avgEmpathy
+                        id: r.id, name: r.name, users: r.users, passed: r.passed, lab: r.lab, avgEmpathy: r.avgEmpathy
                     }))
                 });
 
                 const systemInstruction = `คุณคือ "AI วิเคราะห์เชิงนโยบายระดับชาติ" ประจำแพลตฟอร์ม rjcloud.organ
-อ้างอิงจากข้อมูลจริงแบบ Real-time ด้านล่างนี้เท่านั้น ห้ามเดาหรือแต่งตัวเลขเอง:
+อ้างอิงจากข้อมูลสถิติแบบไม่ระบุตัวตน (PDPA Zero-PII) ด้านล่างนี้เท่านั้น ห้ามเดาหรือแต่งตัวเลขเอง:
 ${liveSnapshotJson}
 
 แนวทางการตอบ:
 1. ตอบเป็นภาษาไทยที่สุภาพ คมชัด เชิงกลยุทธ์ และจัดหัวข้อย่อยให้อ่านง่ายบนมือถือ
-2. ชี้เป้าปัญหาได้ลึกถึงระดับ 4 หมวดคลินิก (Pre/Post-test) และ 5 แกนทักษะสื่อสาร (AI Skill Lab) เมื่อมีข้อมูลจริงในระบบ
+2. วิเคราะห์เชิงสถิติรายเขตสุขภาพ 4 หมวดคลินิก และ 5 แกนทักษะสื่อสาร (AI Skill Lab) โดยไม่มีการกล่าวถึงข้อมูลส่วนบุคคล
 3. เชื่อมโยงกับเป้าหมายการลดจำนวนผู้ป่วยรออวัยวะระดับชาติ (8,019 ราย) เมื่อเหมาะสม`;
 
                 let answerText = '';
@@ -1259,7 +1320,7 @@ ${liveSnapshotJson}
             ];
 
             // ============================================================================
-            // 6. RENDER EXECUTIVE DASHBOARD (PRODUCTION 2027)
+            // 6. RENDER EXECUTIVE DASHBOARD (PDPA ZERO-PII)
             // ============================================================================
             return (
                 <div className="min-h-dvh relative flex flex-col pt-safe pb-dock-safe lg:pb-10">
@@ -1283,11 +1344,11 @@ ${liveSnapshotJson}
                                         </span>
                                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-aurora-500/20 text-accent-adaptive text-[9px] font-mono font-bold shrink-0">
                                             <span className="w-1.5 h-1.5 rounded-full bg-aurora-400 animate-pulse" />
-                                            LIVE
+                                            PDPA STATS
                                         </span>
                                     </div>
                                     <p className="text-[10px] font-mono text-muted-adaptive truncate">
-                                        rjcloud.organ • 13 Health Regions & 5-Axis Empathy Intelligence
+                                        rjcloud.organ • สถิติภาพรวม 13 เขตสุขภาพ (ไม่ระบุตัวตน)
                                     </p>
                                 </div>
                             </div>
@@ -1317,14 +1378,14 @@ ${liveSnapshotJson}
                             <div className="spatial-card rounded-[1.75rem] p-5 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
                                 <div>
                                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-aurora-500/15 border border-aurora-400/30 text-accent-adaptive text-[10px] font-mono font-bold mb-2">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-aurora-400 animate-pulse" />
-                                        NATIONAL WORKFORCE TELEMETRY • LIVE CLOUD
+                                        <Icon name="ShieldCheck" size={12} />
+                                        PDPA ANONYMIZED STATISTICS • เฉพาะข้อมูลสถิติ ไม่นำข้อมูลส่วนตัวมาใช้งาน
                                     </span>
                                     <h1 className="font-display text-xl sm:text-2xl md:text-3xl font-extrabold text-primary-adaptive leading-tight">
                                         ศูนย์ข้อมูลผู้บริหารพัฒนาบุคลากรการรับบริจาคอวัยวะ
                                     </h1>
                                     <p className="text-xs sm:text-sm text-secondary-adaptive mt-1">
-                                        เชื่อมโยงผลสอบ 4 หมวดคลินิก (<code className="font-mono text-prism-adaptive">index.html</code>) และเรดาร์สื่อสาร 5 แกน (<code className="font-mono text-accent-adaptive">aiskilllab.html</code>) ครบ 13 เขตสุขภาพ
+                                        แสดงผลเฉพาะตัวเลขสถิติภาพรวม 4 หมวดคลินิก และเรดาร์ทักษะสื่อสาร 5 แกน ครบ 13 เขตสุขภาพโดยไม่ระบุตัวตนผู้เรียน
                                     </p>
                                 </div>
 
@@ -1410,14 +1471,14 @@ ${liveSnapshotJson}
                             </div>
 
                             {/* National AI Weakness Alert Strip */}
-                            <div className="spatial-card rounded-2xl p-4 border-amber-400/35 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                                <div className="flex items-start gap-3">
-                                    <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
-                                        <Icon name="AlertTriangle" size={20} />
-                                    </div>
-                                    <div>
-                                        <p className="font-mono text-[10px] font-bold text-amber-400 uppercase">AI NATIONAL TRAINING GAP DETECTOR</p>
-                                        {analytics.hasNationalDomains || analytics.hasNationalRadar ? (
+                            {(analytics.hasNationalDomains || analytics.hasNationalRadar) && (
+                                <div className="spatial-card rounded-2xl p-4 border-amber-400/35 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                    <div className="flex items-start gap-3">
+                                        <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                                            <Icon name="AlertTriangle" size={20} />
+                                        </div>
+                                        <div>
+                                            <p className="font-mono text-[10px] font-bold text-amber-400 uppercase">AI NATIONAL TRAINING GAP DETECTOR</p>
                                             <p className="text-xs sm:text-sm text-primary-adaptive leading-relaxed mt-0.5">
                                                 ระดับประเทศควรจัดอบรมเสริม
                                                 {analytics.hasNationalDomains && (
@@ -1428,29 +1489,25 @@ ${liveSnapshotJson}
                                                     <>ทักษะ <b>“{analytics.nationalWeakestAxis.labelTH}”</b> (<span className="font-mono text-prism-adaptive font-bold">{analytics.nationalWeakestAxis.avg}/100</span>)</>
                                                 )}
                                             </p>
-                                        ) : (
-                                            <p className="text-xs sm:text-sm text-secondary-adaptive leading-relaxed mt-0.5">
-                                                ระบบพร้อมวิเคราะห์จุดอ่อน 4 หมวดคลินิกและทักษะสื่อสาร 5 แกนทันทีเมื่อมีผลสอบและผลฝึก AI Skill Lab เข้าสู่ฐานข้อมูลค่ะ
-                                            </p>
-                                        )}
+                                        </div>
                                     </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setMobileTab('ai');
+                                            handleSendQuestion(null, 'วิเคราะห์จุดอ่อนระดับประเทศและเสนอแผนจัดอบรมเสริม Live สดสำหรับแต่ละเขตสุขภาพ');
+                                        }}
+                                        className="touch-target px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-void-950 font-display font-extrabold text-xs shrink-0"
+                                    >
+                                        ให้ AI วางแผนอบรมเสริม
+                                    </button>
                                 </div>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setMobileTab('ai');
-                                        handleSendQuestion(null, 'วิเคราะห์จุดอ่อนระดับประเทศและเสนอแผนจัดอบรมเสริม Live สดสำหรับแต่ละเขตสุขภาพ');
-                                    }}
-                                    className="touch-target px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-void-950 font-display font-extrabold text-xs shrink-0"
-                                >
-                                    ให้ AI วางแผนอบรมเสริม
-                                </button>
-                            </div>
+                            )}
                         </section>
 
                         {/* SECTION B: SPATIAL MAP + 5-AXIS RADAR + EXECUTIVE AI */}
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-                            {/* LEFT (7 COLS): 13-REGION MAP + 5-AXIS RADAR + 4-DOMAIN WEAKNESS */}
+                            {/* LEFT (7 COLS): 13-REGION MAP + 5-AXIS RADAR + 4-DOMAIN STATS */}
                             <section className={`lg:col-span-7 ${mobileTab === 'regions' ? 'block' : 'hidden'} lg:block space-y-4`}>
                                 <div className="spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-4">
                                     <div className="flex flex-wrap items-center justify-between gap-2">
@@ -1459,7 +1516,7 @@ ${liveSnapshotJson}
                                                 <Icon name="MapPin" size={18} className="text-accent-adaptive" />
                                                 แผนที่เครือข่าย 13 เขตสุขภาพ
                                             </h2>
-                                            <p className="text-xs text-muted-adaptive">แตะจุดเขตสุขภาพเพื่อดูเรดาร์สมรรถนะ 5 แกนและจุดอ่อนรายเขต</p>
+                                            <p className="text-xs text-muted-adaptive">แตะจุดเขตสุขภาพเพื่อดูสถิติภาพรวมและเรดาร์สมรรถนะ 5 แกนรายเขต</p>
                                         </div>
 
                                         <div className="inline-flex p-1 rounded-xl spatial-soft text-xs font-bold">
@@ -1512,9 +1569,9 @@ ${liveSnapshotJson}
                                                             <span>
                                                                 {r.hasDomainData
                                                                     ? <>จุดควรเสริม: <b className="text-amber-400">{r.weakestDomain.shortName} ({r.weakestDomain.avg}%)</b></>
-                                                                    : 'รอผลประเมินคลินิกในเขตนี้'}
+                                                                    : <>AI Lab <b className="font-mono text-secondary-adaptive">{r.lab}</b> ราย • เรียนอยู่ <b className="font-mono text-secondary-adaptive">{r.learning}</b> ราย</>}
                                                             </span>
-                                                            <span className="font-mono">ผ่าน {r.passed} ราย</span>
+                                                            <span className="font-mono">ผ่าน {r.passed} ราย ({r.passPct}%)</span>
                                                         </div>
                                                         <div className="w-full h-1.5 rounded-full bg-slate-500/20 overflow-hidden">
                                                             <div className="h-full rounded-full bg-gradient-to-r from-aurora-400 to-prism-400" style={{ width: `${Math.min(100, Math.max(0, pct * 2.5))}%` }} />
@@ -1531,10 +1588,9 @@ ${liveSnapshotJson}
                                         </div>
                                     )}
 
-                                    {/* Selected Region Deep Dive: 5-Axis Radar + 4-Domain AI Weakness */}
+                                    {/* Selected Region Deep Dive: 5-Axis Radar + 4-Domain Stats */}
                                     {activeRegion && (
                                         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 pt-2 border-t border-white/10 items-center">
-                                            {/* Left: 5-Axis Competency Radar Comparison */}
                                             <div className="md:col-span-6 spatial-soft rounded-2xl p-4 space-y-2">
                                                 <div className="flex items-center justify-between gap-2">
                                                     <div>
@@ -1562,7 +1618,6 @@ ${liveSnapshotJson}
                                                 </div>
                                             </div>
 
-                                            {/* Right: 4-Domain Clinical Mastery & Targeted Action */}
                                             <div className="md:col-span-6 space-y-3">
                                                 <div className="grid grid-cols-4 gap-1.5 text-center">
                                                     <div className="spatial-soft p-2 rounded-xl">
@@ -1600,17 +1655,17 @@ ${liveSnapshotJson}
                                                     ))}
                                                 </div>
 
-                                                <div className="p-3 rounded-2xl bg-amber-500/15 border border-amber-400/35 text-[11px] text-primary-adaptive leading-relaxed">
+                                                <div className="p-3 rounded-2xl bg-aurora-500/10 border border-aurora-400/30 text-[11px] text-primary-adaptive leading-relaxed">
                                                     {activeRegion.hasDomainData || activeRegion.hasRadarData ? (
                                                         <>
-                                                            <b className="text-amber-400">AI แนะนำสำหรับ {activeRegion.name}:</b>{' '}
+                                                            <b className="text-accent-adaptive">AI แนะนำสำหรับ {activeRegion.name}:</b>{' '}
                                                             {activeRegion.hasDomainData && <>เสริมเรื่อง <b>{activeRegion.weakestDomain.shortName}</b> ({activeRegion.weakestDomain.avg}%)</>}
                                                             {activeRegion.hasDomainData && activeRegion.hasRadarData && ' และ'}
                                                             {activeRegion.hasRadarData && <>ฝึก <b>{activeRegion.weakestAxis.labelTH}</b> ({activeRegion.weakestAxis.avg}/100)</>}
                                                         </>
                                                     ) : (
                                                         <span className="text-secondary-adaptive">
-                                                            <b className="text-amber-400">สถานะ {activeRegion.name}:</b> รอข้อมูลการทำแบบทดสอบและ AI Skill Lab จากบุคลากรในเขตนี้ค่ะ
+                                                            <b className="text-accent-adaptive">สถิติ {activeRegion.name}:</b> บุคลากรทั้งหมด <b className="font-mono">{activeRegion.users}</b> ราย • ผ่านเกณฑ์ <b className="font-mono">{activeRegion.passed}</b> ราย ({activeRegion.passPct}%) • AI Lab <b className="font-mono">{activeRegion.lab}</b> ราย
                                                         </span>
                                                     )}
                                                 </div>
@@ -1634,7 +1689,7 @@ ${liveSnapshotJson}
                                                 </h2>
                                                 <p className="text-[11px] text-accent-adaptive font-semibold flex items-center gap-1.5">
                                                     <span className="w-1.5 h-1.5 rounded-full bg-aurora-400 animate-pulse" />
-                                                    วิเคราะห์สด 13 เขต • เรดาร์ 5 แกน + 4 หมวดคลินิก
+                                                    วิเคราะห์สถิติ 13 เขต • PDPA Zero-PII
                                                 </p>
                                             </div>
                                         </div>
@@ -1653,10 +1708,9 @@ ${liveSnapshotJson}
                                         </button>
                                     </div>
 
-                                    {/* Chat Stream */}
                                     <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-3">
                                         {isLoadingCloud && (
-                                            <div className="text-center py-6 text-xs text-muted-adaptive">กำลังซิงค์ข้อมูลสดจาก Cloud...</div>
+                                            <div className="text-center py-6 text-xs text-muted-adaptive">กำลังซิงค์สถิติไม่ระบุตัวตนจาก Cloud...</div>
                                         )}
 
                                         {messages.map((m) => (
@@ -1675,14 +1729,13 @@ ${liveSnapshotJson}
                                             <div className="flex justify-start">
                                                 <div className="spatial-soft px-4 py-3 rounded-2xl text-xs font-bold text-prism-adaptive flex items-center gap-2">
                                                     <span className="w-2 h-2 rounded-full bg-prism-400 animate-bounce" />
-                                                    AI กำลังวิเคราะห์ข้อมูล 13 เขตและเรดาร์ 5 แกน...
+                                                    AI กำลังวิเคราะห์สถิติ 13 เขตสุขภาพ...
                                                 </div>
                                             </div>
                                         )}
                                         <div ref={chatEndRef} />
                                     </div>
 
-                                    {/* Quick Prompts & Input Dock */}
                                     <div className="p-3 sm:p-4 border-t border-white/10 space-y-2.5 shrink-0">
                                         <div className="flex gap-1.5 overflow-x-auto custom-scrollbar pb-1">
                                             {quickPrompts.map((qp, idx) => (
@@ -1702,7 +1755,7 @@ ${liveSnapshotJson}
                                                 type="text"
                                                 value={chatInput}
                                                 onChange={e => setChatInput(e.target.value)}
-                                                placeholder={isListening ? 'กำลังรับเสียงพูด...' : 'ถามข้อมูลนโยบาย จุดอ่อนรายเขต หรือสถิติ...'}
+                                                placeholder={isListening ? 'กำลังรับเสียงพูด...' : 'ถามข้อมูลสถิติ จุดอ่อนรายเขต หรือนโยบาย...'}
                                                 disabled={isAiThinking}
                                                 className="touch-target spatial-input flex-1 px-4 py-2.5 rounded-2xl text-sm"
                                             />
