@@ -1,23 +1,38 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#f8fafc">
+    <meta name="theme-color" content="#030712">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <title>ตรวจสอบประกาศนียบัตร — rjcloud.organ 2027</title>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Verify Holographic Credential 2030 — rjcloud.organ</title>
 
-    <!-- 🌟 โหลดค่าตั้งต้นและข้อมูลกลางจาก data.js (มี Fallback ในตัวป้องกันหน้าขาว) 🌟 -->
-    <script src="./data.js" onerror="console.warn('data.js not loaded, using built-in defaults')"></script>
+    <!-- 🌟 โหลดค่าตั้งต้นและข้อมูลกลางจาก data.js (มี Built-in Fallback ป้องกันหน้าขาว) 🌟 -->
+    <script src="./data.js" onerror="console.warn('data.js not loaded, using built-in 2030 defaults')"></script>
 
-    <!-- 🌟 Tailwind CSS & Fonts (Prompt + Sarabun + JetBrains Mono) 🌟 -->
+    <!-- 🌟 ซิงค์โหมดมืด/สว่างทันทีจาก localStorage ป้องกันจอกระพริบ 🌟 -->
+    <script>
+      (function () {
+        try {
+          const key = (window.RJCLOUD_CONFIG && window.RJCLOUD_CONFIG.theme && window.RJCLOUD_CONFIG.theme.storageKey) || 'rjcloud_theme_2030';
+          const def = (window.RJCLOUD_CONFIG && window.RJCLOUD_CONFIG.theme && window.RJCLOUD_CONFIG.theme.defaultMode) || 'dark';
+          const saved = localStorage.getItem(key) || def;
+          const mode = saved === 'light' ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', mode);
+          const meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', mode === 'dark' ? '#030712' : '#f8fafc');
+        } catch (_) {}
+      })();
+    </script>
+
+    <!-- 🌟 Tailwind CSS & ฟอนต์มาตรฐานระบบ (Prompt + Sarabun + JetBrains Mono) 🌟 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Prompt:wght@500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- 🌟 ไลบรารีสแกน QR Code ผ่านกล้องมือถือ (html5-qrcode) 🌟 -->
+    <!-- 🌟 ไลบรารีสแกน QR Code ผ่านกล้องสมาร์ทโฟน (html5-qrcode — ฟรี 0 บาท) 🌟 -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
     <script>
@@ -31,22 +46,25 @@
                 mono: ['JetBrains Mono', 'monospace']
               },
               colors: {
-                clinical: {
-                  50: '#ecfdf5',
-                  100: '#d1fae5',
+                void: {
+                  950: '#030712',
+                  900: '#070d1c',
+                  800: '#0d172e',
+                  700: '#162547'
+                },
+                aurora: {
                   200: '#a7f3d0',
+                  300: '#6ee7b7',
                   400: '#34d399',
                   500: '#10b981',
-                  600: '#059669',
-                  700: '#047857',
-                  900: '#064e3b'
+                  600: '#059669'
                 },
-                medical: {
-                  50: '#f0f9ff',
-                  100: '#e0f2fe',
-                  500: '#0ea5e9',
-                  600: '#0284c7',
-                  700: '#0369a1'
+                prism: {
+                  200: '#a5f3fc',
+                  300: '#67e8f9',
+                  400: '#22d3ee',
+                  500: '#06b6d4',
+                  600: '#0284c7'
                 }
               }
             }
@@ -56,17 +74,68 @@
     </script>
 
     <style>
+      /* ============================================================================
+       * 2030 ADAPTIVE DESIGN TOKENS (SPATIAL DARK DEFAULT <-> FROSTED PEARL LIGHT)
+       * ============================================================================ */
+      :root,
+      html[data-theme="dark"] {
+        --bg-page: #030712;
+        --text-main: #f8fafc;
+        --text-secondary: #cbd5e1;
+        --text-muted: #94a3b8;
+        --glass-bg: linear-gradient(135deg, rgba(15, 23, 42, 0.78) 0%, rgba(7, 13, 28, 0.9) 100%);
+        --glass-border: rgba(255, 255, 255, 0.13);
+        --glass-shadow: 0 22px 50px -16px rgba(0, 0, 0, 0.72), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+        --header-bg: rgba(7, 13, 28, 0.85);
+        --surface-soft: rgba(255, 255, 255, 0.045);
+        --surface-soft-hover: rgba(255, 255, 255, 0.09);
+        --surface-border: rgba(255, 255, 255, 0.11);
+        --input-bg: rgba(15, 23, 42, 0.88);
+        --input-border: rgba(148, 163, 184, 0.28);
+        --input-text: #f8fafc;
+        --accent-text: #34d399;
+        --accent-prism: #22d3ee;
+        --grid-line: rgba(148, 163, 184, 0.045);
+        --aura-1: rgba(16, 185, 129, 0.16);
+        --aura-2: rgba(34, 211, 238, 0.14);
+        --aura-3: rgba(99, 102, 241, 0.12);
+      }
+
+      html[data-theme="light"] {
+        --bg-page: #f8fafc;
+        --text-main: #0f172a;
+        --text-secondary: #334155;
+        --text-muted: #64748b;
+        --glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(241, 245, 249, 0.84) 100%);
+        --glass-border: rgba(255, 255, 255, 0.96);
+        --glass-shadow: 0 18px 40px -14px rgba(15, 23, 42, 0.1), 0 2px 6px rgba(15, 23, 42, 0.04);
+        --header-bg: rgba(255, 255, 255, 0.88);
+        --surface-soft: rgba(255, 255, 255, 0.78);
+        --surface-soft-hover: rgba(255, 255, 255, 0.98);
+        --surface-border: rgba(148, 163, 184, 0.28);
+        --input-bg: #ffffff;
+        --input-border: #cbd5e1;
+        --input-text: #0f172a;
+        --accent-text: #059669;
+        --accent-prism: #0284c7;
+        --grid-line: rgba(15, 23, 42, 0.032);
+        --aura-1: rgba(16, 185, 129, 0.16);
+        --aura-2: rgba(14, 165, 233, 0.15);
+        --aura-3: rgba(99, 102, 241, 0.09);
+      }
+
       html {
         -webkit-tap-highlight-color: transparent;
         scroll-behavior: smooth;
       }
       body {
         font-family: 'Sarabun', sans-serif;
-        background-color: #f8fafc;
-        color: #0f172a;
+        background-color: var(--bg-page);
+        color: var(--text-main);
         margin: 0;
         overflow-x: hidden;
         overscroll-behavior-y: none;
+        transition: background-color 0.28s ease, color 0.28s ease;
       }
 
       /* 🌟 Mobile-First 100% Safe Area & Touch Optimization 🌟 */
@@ -80,40 +149,90 @@
         input, select, textarea { font-size: 16px !important; }
       }
 
-      /* 🌟 2027 Pearl Clinical Aura Background (โทนสว่างคู่กับ index.html) 🌟 */
-      .aura-canvas {
+      /* 🌟 Spatial Aura Ambient Backdrop 🌟 */
+      .spatial-aura {
         position: fixed;
         inset: 0;
         z-index: 0;
         background:
-          radial-gradient(circle at 12% 14%, rgba(16, 185, 129, 0.16) 0%, transparent 46%),
-          radial-gradient(circle at 88% 12%, rgba(14, 165, 233, 0.15) 0%, transparent 45%),
-          radial-gradient(circle at 75% 88%, rgba(45, 212, 191, 0.14) 0%, transparent 48%),
-          linear-gradient(180deg, #ffffff 0%, #f8fafc 55%, #f1f5f9 100%);
+          radial-gradient(circle at 12% 14%, var(--aura-1) 0%, transparent 46%),
+          radial-gradient(circle at 88% 12%, var(--aura-2) 0%, transparent 45%),
+          radial-gradient(circle at 70% 88%, var(--aura-3) 0%, transparent 48%);
         pointer-events: none;
       }
-      .aura-grid {
+      .spatial-grid {
         position: fixed;
         inset: 0;
         z-index: 0;
         background-image:
-          linear-gradient(to right, rgba(15, 23, 42, 0.028) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(15, 23, 42, 0.028) 1px, transparent 1px);
-        background-size: 40px 40px;
-        mask-image: radial-gradient(ellipse at center, black 45%, transparent 90%);
+          linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+          linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+        background-size: 42px 42px;
+        mask-image: radial-gradient(ellipse at center, black 45%, transparent 94%);
         pointer-events: none;
       }
 
-      /* 🌟 Bento Glass Card 🌟 */
-      .bento-glass {
-        background: rgba(255, 255, 255, 0.84);
-        backdrop-filter: blur(22px);
-        -webkit-backdrop-filter: blur(22px);
-        border: 1px solid rgba(255, 255, 255, 0.94);
-        box-shadow: 0 12px 32px -10px rgba(15, 23, 42, 0.07), 0 2px 6px rgba(15, 23, 42, 0.03);
+      /* 🌟 Semantic Spatial Glass Utilities 🌟 */
+      .spatial-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(24px) saturate(155%);
+        -webkit-backdrop-filter: blur(24px) saturate(155%);
+        border: 1px solid var(--glass-border);
+        box-shadow: var(--glass-shadow);
+      }
+      .spatial-header {
+        background: var(--header-bg);
+        backdrop-filter: blur(22px) saturate(150%);
+        -webkit-backdrop-filter: blur(22px) saturate(150%);
+        border-bottom: 1px solid var(--surface-border);
+      }
+      .spatial-soft {
+        background: var(--surface-soft);
+        border: 1px solid var(--surface-border);
+      }
+      .spatial-soft:hover {
+        background: var(--surface-soft-hover);
+      }
+      .spatial-input {
+        background: var(--input-bg);
+        border: 1px solid var(--input-border);
+        color: var(--input-text);
+      }
+      .spatial-input:focus {
+        outline: none;
+        border-color: #10b981;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
       }
 
-      /* 🌟 QR Scanner Styling 🌟 */
+      .text-primary-adaptive { color: var(--text-main); }
+      .text-secondary-adaptive { color: var(--text-secondary); }
+      .text-muted-adaptive { color: var(--text-muted); }
+      .text-accent-adaptive { color: var(--accent-text); }
+      .text-prism-adaptive { color: var(--accent-prism); }
+
+      /* 🌟 3D Tilt Holographic Anti-Forgery Credential Foil 🌟 */
+      .holo-wrap {
+        perspective: 1200px;
+      }
+      .holo-surface {
+        transform-style: preserve-3d;
+        transition: transform 0.14s ease-out;
+        will-change: transform;
+      }
+      .holo-foil {
+        pointer-events: none;
+        mix-blend-mode: color-dodge;
+        background: radial-gradient(
+          circle at var(--mx, 50%) var(--my, 50%),
+          rgba(255, 255, 255, 0.42) 0%,
+          rgba(52, 211, 153, 0.25) 24%,
+          rgba(34, 211, 238, 0.2) 48%,
+          rgba(168, 85, 247, 0.15) 70%,
+          transparent 88%
+        );
+      }
+
+      /* 🌟 QR Scanner Styling & Laser Beam 🌟 */
       #qr-reader video {
         width: 100% !important;
         height: 100% !important;
@@ -124,20 +243,39 @@
         display: none !important;
       }
 
-      @keyframes scanLine {
-        0% { transform: translateY(0%); opacity: 0.3; }
+      @keyframes laserScan2030 {
+        0% { top: 8%; opacity: 0.35; }
         50% { opacity: 1; }
-        100% { transform: translateY(100%); opacity: 0.3; }
+        100% { top: 90%; opacity: 0.35; }
       }
-      .scan-beam {
-        animation: scanLine 2.2s ease-in-out infinite alternate;
+      .laser-beam {
+        animation: laserScan2030 2.1s ease-in-out infinite alternate;
       }
 
+      /* 🌟 Clean Official Print Override (Always Crisp Black-on-White) 🌟 */
       @media print {
         .no-print { display: none !important; }
-        .aura-canvas, .aura-grid { display: none !important; }
-        body { background: #ffffff !important; }
-        .bento-glass { box-shadow: none !important; border: 1px solid #cbd5e1 !important; }
+        .spatial-aura, .spatial-grid, .holo-foil { display: none !important; }
+        html, body {
+          background: #ffffff !important;
+          color: #0f172a !important;
+        }
+        .spatial-card, .spatial-soft {
+          background: #ffffff !important;
+          border: 1px solid #cbd5e1 !important;
+          box-shadow: none !important;
+          color: #0f172a !important;
+        }
+        .print-dark-card {
+          background: #f8fafc !important;
+          color: #0f172a !important;
+          border: 2px solid #059669 !important;
+          transform: none !important;
+          box-shadow: none !important;
+        }
+        .print-dark-card * {
+          color: #0f172a !important;
+        }
       }
     </style>
 
@@ -158,27 +296,27 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body>
-    <!-- 🌟 หน้าจอโหลดเริ่มต้น ป้องกันหน้าขาวระหว่างรอ React & Babel 🌟 -->
+    <!-- 🌟 หน้าจอโหลดเริ่มต้น 2030 Verification Portal Boot 🌟 -->
     <div id="verify-root">
-        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f8fafc;color:#0f172a;font-family:'Prompt','Sarabun',sans-serif;gap:14px;padding:24px;text-align:center;">
-            <div style="width:44px;height:44px;border:4px solid #d1fae5;border-top-color:#059669;border-radius:9999px;animation:verifySpin 0.9s linear infinite;"></div>
-            <div style="font-weight:700;font-size:17px;">กำลังเปิดระบบตรวจสอบประกาศนียบัตร rjcloud.organ...</div>
-            <div style="font-size:12px;color:#64748b;">กรุณารอสักครู่ ระบบกำลังเตรียมตัวสแกน QR Code</div>
+        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg-page);color:var(--text-main);font-family:'Prompt','Sarabun',sans-serif;gap:14px;padding:24px;text-align:center;">
+            <div style="width:46px;height:46px;border:3px solid rgba(52,211,153,0.2);border-top-color:#34d399;border-right-color:#22d3ee;border-radius:9999px;animation:verifySpin2030 0.85s linear infinite;"></div>
+            <div style="font-weight:800;font-size:17px;">กำลังเปิดระบบตรวจสอบตราโฮโลแกรม 2030...</div>
+            <div style="font-size:12px;color:#94a3b8;">กำลังเตรียมกล้องสแกนเลเซอร์ QR และฐานข้อมูลรับรองคุณวุฒิ</div>
         </div>
-        <style>@keyframes verifySpin{to{transform:rotate(360deg);}}</style>
+        <style>@keyframes verifySpin2030{to{transform:rotate(360deg);}}</style>
     </div>
 
-    <!-- 🌟 Global Error Guard ป้องกันหน้าขาวหากสคริปต์ภายนอกมีปัญหา 🌟 -->
+    <!-- 🌟 Global Error Guard ป้องกันหน้าขาว/จอดำ 🌟 -->
     <script>
       window.addEventListener('error', function (ev) {
         const root = document.getElementById('verify-root');
         if (root && !root.dataset.mounted) {
           root.innerHTML =
-            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#f8fafc;color:#0f172a;font-family:Sarabun,sans-serif;">' +
-            '<div style="max-width:440px;width:100%;background:#ffffff;border:1px solid #fecdd3;border-radius:24px;padding:24px;text-align:center;box-shadow:0 12px 30px rgba(15,23,42,0.08);">' +
-            '<h2 style="color:#be123c;font-weight:700;margin:0 0 8px;">ไม่สามารถเปิดหน้าตรวจสอบได้ชั่วคราว</h2>' +
-            '<p style="font-size:13px;color:#475569;margin:0 0 16px;">' + String(ev.message || 'Unknown error') + '</p>' +
-            '<button onclick="window.location.reload()" style="padding:12px 24px;border:none;border-radius:14px;background:#059669;color:#ffffff;font-weight:700;cursor:pointer;">โหลดหน้าใหม่</button>' +
+            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#030712;color:#f8fafc;font-family:Sarabun,sans-serif;">' +
+            '<div style="max-width:440px;width:100%;background:#070d1c;border:1px solid rgba(244,63,94,0.4);border-radius:24px;padding:24px;text-align:center;">' +
+            '<h2 style="color:#fda4af;font-weight:700;margin:0 0 8px;">ไม่สามารถเปิดหน้าตรวจสอบได้ชั่วคราว</h2>' +
+            '<p style="font-size:13px;color:#cbd5e1;margin:0 0 16px;">' + String(ev.message || 'Unknown error') + '</p>' +
+            '<button onclick="window.location.reload()" style="padding:12px 24px;border:none;border-radius:14px;background:#10b981;color:#030712;font-weight:700;cursor:pointer;">โหลดหน้าใหม่</button>' +
             '</div></div>';
         }
       });
@@ -193,13 +331,17 @@
         import { getFirestore, doc, getDoc } from 'firebase/firestore';
 
         // ============================================================================
-        // 1. CONFIGURATION & FIREBASE INITIALIZATION
+        // 1. CONFIGURATION & FIREBASE INITIALIZATION (2030 EDITION)
         // ============================================================================
         const BUILTIN_CONFIG = {
             appName: 'rjcloud.organ',
-            edition: '2027 Clinical Edition',
+            edition: '2030 Spatial Clinical Edition',
             contactEmail: 'rjcloud.organ@gmail.com',
             appId: 'rjcloud-organ-2027',
+            theme: {
+                defaultMode: 'dark',
+                storageKey: 'rjcloud_theme_2030'
+            },
             firebaseConfig: {
                 apiKey: 'AIzaSyCpvK0FCVVk9dt0ylHn_VzUStl7540UsbY',
                 authDomain: 'rj-cloud-organ.firebaseapp.com',
@@ -214,10 +356,16 @@
         const CONFIG = {
             ...BUILTIN_CONFIG,
             ...(window.RJCLOUD_CONFIG || {}),
+            theme: {
+                ...BUILTIN_CONFIG.theme,
+                ...(window.RJCLOUD_CONFIG?.theme || {})
+            },
             firebaseConfig: (window.RJCLOUD_CONFIG?.firebaseConfig?.apiKey)
                 ? window.RJCLOUD_CONFIG.firebaseConfig
                 : BUILTIN_CONFIG.firebaseConfig
         };
+
+        const THEME_KEY = CONFIG.theme?.storageKey || 'rjcloud_theme_2030';
 
         const DEFAULT_CERT = window.DEFAULT_CERT_TEMPLATE || {
             certPrefix: 'RJC-2027',
@@ -227,7 +375,7 @@
             signerPosition: 'ผู้อำนวยการโครงการ rjcloud.organ'
         };
 
-        // ข้อมูลตัวอย่างสำหรับทดสอบการตรวจสอบ (รวมรหัสจากโหมด Admin Preview)
+        // ข้อมูลตัวอย่างทดสอบ (รองรับทั้ง DEMO และโหมด Admin Preview)
         const SAMPLE_DEMO_CERTS = {
             'RJC-2027-DEMO01': {
                 code: 'RJC-2027-DEMO01',
@@ -243,6 +391,7 @@
                 signerName: DEFAULT_CERT.signerName,
                 signerPosition: DEFAULT_CERT.signerPosition,
                 posttestScore: '38/40 (95%)',
+                skillLabBestScore: 92,
                 issuedAt: '2027-01-15T09:30:00.000Z',
                 status: 'valid',
                 source: 'demo'
@@ -261,6 +410,7 @@
                 signerName: DEFAULT_CERT.signerName,
                 signerPosition: DEFAULT_CERT.signerPosition,
                 posttestScore: '36/40 (90%)',
+                skillLabBestScore: 90,
                 issuedAt: new Date().toISOString(),
                 status: 'valid',
                 source: 'preview'
@@ -281,31 +431,28 @@
         }
 
         // ============================================================================
-        // 2. ERROR BOUNDARY, HELPERS & UI ATOMS
+        // 2. ERROR BOUNDARY, HELPERS & ADAPTIVE UI PRIMITIVES
         // ============================================================================
         class VerifyErrorBoundary extends React.Component {
             constructor(props) {
                 super(props);
                 this.state = { hasError: false, err: null };
             }
-            static getDerivedStateFromError(err) {
-                return { hasError: true, err };
-            }
-            componentDidCatch(err, info) {
-                console.error('Verify ErrorBoundary:', err, info);
-            }
+            static getDerivedStateFromError(err) { return { hasError: true, err }; }
+            componentDidCatch(err, info) { console.error('Verify 2030 ErrorBoundary:', err, info); }
             render() {
                 if (this.state.hasError) {
                     return (
-                        <div className="min-h-dvh flex items-center justify-center p-6 bg-slate-50">
-                            <div className="max-w-md w-full bg-white rounded-3xl p-6 border border-rose-200 shadow-lg text-center space-y-4">
-                                <h2 className="font-display font-bold text-lg text-rose-700">พบข้อผิดพลาดในการแสดงผล</h2>
-                                <p className="text-xs font-mono bg-rose-50 text-rose-800 p-3 rounded-xl overflow-auto">
+                        <div className="min-h-dvh flex items-center justify-center p-6">
+                            <div className="spatial-card max-w-md w-full rounded-3xl p-6 border-rose-500/40 text-center space-y-4">
+                                <h2 className="font-display font-bold text-lg text-rose-400">พบข้อผิดพลาดในการแสดงผล</h2>
+                                <p className="text-xs font-mono bg-rose-500/10 text-rose-300 p-3 rounded-xl overflow-auto">
                                     {String(this.state.err?.message || this.state.err)}
                                 </p>
                                 <button
+                                    type="button"
                                     onClick={() => window.location.reload()}
-                                    className="touch-target w-full py-3 rounded-2xl bg-clinical-600 text-white font-display font-bold text-sm"
+                                    className="touch-target w-full py-3 rounded-2xl bg-aurora-500 text-void-950 font-display font-bold text-sm"
                                 >
                                     โหลดหน้าใหม่
                                 </button>
@@ -323,16 +470,42 @@
             return <Comp size={size} className={className} strokeWidth={strokeWidth} />;
         }
 
-        /**
-         * แปลงสิทธิ์การเรียนให้เป็นมาตรฐานเดียว (เรียนใหม่ / เรียนต่อเนื่อง)
-         */
+        function ThemeToggleButton({ theme, onToggle }) {
+            const isDark = theme === 'dark';
+            return (
+                <button
+                    type="button"
+                    onClick={onToggle}
+                    title={isDark ? 'สลับเป็นโหมดสว่าง (Frosted Pearl)' : 'สลับเป็นโหมดมืด (Spatial Dark)'}
+                    aria-label="สลับโหมดมืดหรือสว่าง"
+                    className="spatial-soft px-3 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all active:scale-95 text-primary-adaptive shrink-0"
+                >
+                    <Icon name={isDark ? 'Sun' : 'Moon'} size={15} className={isDark ? 'text-amber-300' : 'text-indigo-600'} />
+                    <span className="hidden sm:inline">{isDark ? 'โหมดสว่าง' : 'โหมดมืด'}</span>
+                </button>
+            );
+        }
+
+        function ToastBanner({ toast }) {
+            if (!toast.visible) return null;
+            return (
+                <div className="fixed top-[calc(1rem+env(safe-area-inset-top,0px))] left-1/2 -translate-x-1/2 z-[120] w-[92vw] max-w-md pointer-events-none">
+                    <div className={`px-4 py-3 rounded-2xl shadow-2xl border backdrop-blur-2xl flex items-center gap-2.5 text-xs sm:text-sm font-bold ${
+                        toast.type === 'error'
+                            ? 'bg-rose-950/95 border-rose-400/50 text-rose-100'
+                            : 'bg-emerald-950/95 border-aurora-400/50 text-aurora-100'
+                    }`}>
+                        <Icon name={toast.type === 'error' ? 'AlertCircle' : 'CheckCircle2'} size={17} className="shrink-0" />
+                        <span>{toast.text}</span>
+                    </div>
+                </div>
+            );
+        }
+
         function normalizeUserType(rawType) {
             return String(rawType || '').includes('ต่อเนื่อง') ? 'เรียนต่อเนื่อง' : 'เรียนใหม่';
         }
 
-        /**
-         * แยกสกัดรหัสประกาศนียบัตรออกจากข้อความที่สแกน QR ได้ (รองรับทั้ง URL และรหัสล้วน)
-         */
         function extractCertCode(rawInput) {
             if (!rawInput) return '';
             const trimmed = String(rawInput).trim();
@@ -349,26 +522,16 @@
             return trimmed.toUpperCase();
         }
 
-        /**
-         * แปลงวันที่เป็นรูปแบบภาษาไทย (พ.ศ.)
-         */
         function formatThaiDate(isoStr) {
             try {
                 const date = isoStr ? new Date(isoStr) : new Date();
                 if (isNaN(date.getTime())) return '—';
-                return date.toLocaleDateString('th-TH', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                });
-            } catch {
+                return date.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+            } catch (_) {
                 return '—';
             }
         }
 
-        /**
-         * ซ่อนเลขใบประกอบวิชาชีพบางส่วนเพื่อความปลอดภัยด้าน PDPA (โชว์ 3 ตัวหน้า + 3 ตัวท้าย)
-         */
         function maskLicense(val) {
             const s = String(val || '').trim();
             if (!s) return '—';
@@ -377,8 +540,18 @@
         }
 
         /**
-         * คัดลอกข้อความลงคลิปบอร์ดอย่างปลอดภัยในทุกเบราว์เซอร์และ iFrame
+         * สร้างลายนิ้วมือยืนยันดิจิทัล (Anti-Forgery Fingerprint) จากรหัสประกาศนียบัตรและชื่อผู้ได้รับ
          */
+        function buildDigitalSealHash(code = '', name = '') {
+            const str = `${code}|${name}|RJCLOUD2030`;
+            let h = 2166136261;
+            for (let i = 0; i < str.length; i++) {
+                h ^= str.charCodeAt(i);
+                h = Math.imul(h, 16777619);
+            }
+            return `SEAL-${(h >>> 0).toString(16).toUpperCase().padStart(8, '0')}`;
+        }
+
         function copyTextFallback(text) {
             const el = document.createElement('textarea');
             el.value = text;
@@ -388,18 +561,11 @@
             document.body.appendChild(el);
             el.select();
             let ok = false;
-            try {
-                ok = document.execCommand('copy');
-            } catch (_) {
-                ok = false;
-            }
+            try { ok = document.execCommand('copy'); } catch (_) { ok = false; }
             document.body.removeChild(el);
             return ok;
         }
 
-        /**
-         * ค้นหาใบประกาศนียบัตรที่สร้างบนเครื่องนี้จาก localStorage (สำหรับโหมด Sandbox/Demo)
-         */
         function findLocalCertificate(code) {
             try {
                 const savedCerts = JSON.parse(localStorage.getItem('rjcloud_local_certificates') || '{}');
@@ -411,13 +577,17 @@
                     };
                 }
 
-                const possibleKeys = ['rjcloud_organ_state_v2027', 'rjcloud_user_v2027', 'elearning_app_state'];
+                const possibleKeys = ['rjcloud_organ_state_v2027', 'rjcloud_user_v2027'];
                 for (const key of possibleKeys) {
                     const raw = localStorage.getItem(key);
                     if (!raw) continue;
                     const parsed = JSON.parse(raw);
-                    const u = parsed?.user || parsed?.loggedInUser || parsed;
-                    if (u && (String(u.certificateCode || '').toUpperCase() === code)) {
+                    const u = parsed?.user || parsed;
+                    if (u && String(u.certificateCode || '').toUpperCase() === code) {
+                        const hist = Array.isArray(u.skillLabHistory) ? u.skillLabHistory : [];
+                        const bestLab = typeof u.skillLabBestScore === 'number'
+                            ? u.skillLabBestScore
+                            : (hist.length > 0 ? Math.max(...hist.map(h => h.score || 0)) : null);
                         return {
                             code,
                             name: u.name || 'ผู้สำเร็จการอบรม',
@@ -432,6 +602,7 @@
                             signerName: DEFAULT_CERT.signerName,
                             signerPosition: DEFAULT_CERT.signerPosition,
                             posttestScore: u.posttest || 'ผ่านเกณฑ์ (≥ 80%)',
+                            skillLabBestScore: bestLab,
                             issuedAt: u.certificateIssuedAt || new Date().toISOString(),
                             status: 'valid',
                             source: 'local'
@@ -444,24 +615,181 @@
             return null;
         }
 
-        function ToastBanner({ toast }) {
-            if (!toast.visible) return null;
+        // ============================================================================
+        // 3. 3D INTERACTIVE HOLOGRAPHIC VERIFICATION CARD (2030 ANTI-FORGERY SEAL)
+        // ============================================================================
+        function HolographicVerifiedCard({ record, onShareOrCopy }) {
+            const cardRef = useRef(null);
+            const [tilt, setTilt] = useState({ rx: 0, ry: 0, mx: 50, my: 50 });
+
+            const updateTilt = (clientX, clientY) => {
+                const el = cardRef.current;
+                if (!el) return;
+                const rect = el.getBoundingClientRect();
+                const px = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+                const py = Math.max(0, Math.min(1, (clientY - rect.top) / rect.height));
+                setTilt({
+                    rx: (0.5 - py) * 14,
+                    ry: (px - 0.5) * 16,
+                    mx: Math.round(px * 100),
+                    my: Math.round(py * 100)
+                });
+            };
+
+            // รองรับการเอียงสมาร์ทโฟนผ่าน Gyroscope (ฟรี 0 บาท)
+            useEffect(() => {
+                const onOrient = (e) => {
+                    if (typeof e.beta !== 'number' || typeof e.gamma !== 'number') return;
+                    const rx = Math.max(-10, Math.min(10, (e.beta - 45) * 0.22));
+                    const ry = Math.max(-12, Math.min(12, e.gamma * 0.3));
+                    setTilt({ rx, ry, mx: 50 + ry * 2.5, my: 50 - rx * 2.5 });
+                };
+                window.addEventListener('deviceorientation', onOrient);
+                return () => window.removeEventListener('deviceorientation', onOrient);
+            }, []);
+
+            const sealHash = buildDigitalSealHash(record.code, record.name);
+
             return (
-                <div className="fixed top-[calc(1rem+env(safe-area-inset-top,0px))] left-1/2 -translate-x-1/2 z-[100] w-[92vw] max-w-md pointer-events-none">
-                    <div className={`px-4 py-3 rounded-2xl shadow-xl border backdrop-blur-xl flex items-center gap-2.5 text-sm font-bold ${
-                        toast.type === 'error'
-                            ? 'bg-rose-50/95 border-rose-200 text-rose-700'
-                            : 'bg-clinical-50/95 border-clinical-200 text-clinical-800'
-                    }`}>
-                        <Icon name={toast.type === 'error' ? 'AlertCircle' : 'CheckCircle2'} size={18} className="shrink-0" />
-                        <span>{toast.text}</span>
+                <section className="space-y-4">
+                    {/* Interactive 3D Holographic Seal Header Card */}
+                    <div className="holo-wrap w-full">
+                        <div
+                            ref={cardRef}
+                            onMouseMove={(e) => updateTilt(e.clientX, e.clientY)}
+                            onMouseLeave={() => setTilt({ rx: 0, ry: 0, mx: 50, my: 50 })}
+                            onTouchMove={(e) => { if (e.touches[0]) updateTilt(e.touches[0].clientX, e.touches[0].clientY); }}
+                            onTouchEnd={() => setTilt({ rx: 0, ry: 0, mx: 50, my: 50 })}
+                            style={{
+                                transform: `rotateX(${tilt.rx.toFixed(2)}deg) rotateY(${tilt.ry.toFixed(2)}deg)`,
+                                '--mx': `${tilt.mx}%`,
+                                '--my': `${tilt.my}%`
+                            }}
+                            className="holo-surface print-dark-card relative rounded-[2rem] overflow-hidden border border-aurora-400/50 bg-gradient-to-br from-[#0b1730] via-[#061224] to-[#042429] p-5 sm:p-7 text-white shadow-[0_30px_70px_-15px_rgba(16,185,129,0.34)]"
+                        >
+                            {/* Dynamic Holographic Foil Overlay */}
+                            <div className="absolute inset-0 holo-foil z-20" />
+                            <div
+                                className="absolute inset-0 opacity-20 pointer-events-none"
+                                style={{
+                                    backgroundImage: 'repeating-linear-gradient(125deg, rgba(255,255,255,0.09) 0px, rgba(255,255,255,0.09) 1px, transparent 1px, transparent 10px)'
+                                }}
+                            />
+
+                            <div className="relative z-10 space-y-5">
+                                {/* Top Official Verified Ribbon */}
+                                <div className="flex flex-wrap items-start justify-between gap-3 pb-4 border-b border-white/15">
+                                    <div className="flex items-start gap-3">
+                                        <div className="w-12 h-12 rounded-2xl bg-aurora-500/20 border border-aurora-400/45 text-aurora-300 flex items-center justify-center shrink-0 shadow-lg">
+                                            <Icon name="BadgeCheck" size={28} />
+                                        </div>
+                                        <div>
+                                            <div className="flex flex-wrap items-center gap-1.5">
+                                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-aurora-500/25 border border-aurora-400/45 text-aurora-200 font-mono text-[10px] font-bold">
+                                                    OFFICIAL VERIFIED • VALID
+                                                </span>
+                                                {(record.source === 'demo' || record.source === 'preview') && (
+                                                    <span className="px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-200 font-mono text-[9px] font-bold uppercase">
+                                                        {record.source}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <h2 className="font-display text-xl sm:text-2xl font-extrabold text-white mt-1.5 leading-snug">
+                                                {record.name}
+                                            </h2>
+                                            <p className="text-xs sm:text-sm text-slate-300">
+                                                {record.position} • {record.hospital}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="px-3.5 py-2.5 rounded-2xl bg-void-950/75 border border-aurora-400/35 text-right shrink-0">
+                                        <p className="font-mono text-[9px] text-slate-400 uppercase">POST-TEST RESULT</p>
+                                        <p className="font-mono text-base sm:text-lg font-extrabold text-aurora-300 mt-0.5">
+                                            {record.posttestScore || '≥ 80% PASS'}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Key Anti-Forgery Metrics Strip */}
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+                                    <div className="p-3 rounded-xl bg-white/[0.06] border border-white/10">
+                                        <span className="text-[10px] text-slate-400 block">รหัสประกาศนียบัตร</span>
+                                        <span className="font-mono font-bold text-prism-300 mt-0.5 block truncate">{record.code}</span>
+                                    </div>
+                                    <div className="p-3 rounded-xl bg-white/[0.06] border border-white/10">
+                                        <span className="text-[10px] text-slate-400 block">ใบอนุญาต (PDPA)</span>
+                                        <span className="font-mono font-bold text-white mt-0.5 block">{maskLicense(record.license)}</span>
+                                    </div>
+                                    <div className="p-3 rounded-xl bg-white/[0.06] border border-white/10">
+                                        <span className="text-[10px] text-slate-400 block">3D Skill Lab Empathy</span>
+                                        <span className="font-mono font-bold text-aurora-300 mt-0.5 block">
+                                            {typeof record.skillLabBestScore === 'number' ? `${record.skillLabBestScore}/100` : 'ผ่านการฝึก ✓'}
+                                        </span>
+                                    </div>
+                                    <div className="p-3 rounded-xl bg-white/[0.06] border border-white/10">
+                                        <span className="text-[10px] text-slate-400 block">ประเภทการเรียน</span>
+                                        <span className="font-bold text-white mt-0.5 block">{normalizeUserType(record.userType)}</span>
+                                    </div>
+                                </div>
+
+                                {/* Bottom Holographic Seal Footer */}
+                                <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-white/10 text-[10px] font-mono text-slate-400">
+                                    <span className="flex items-center gap-1.5">
+                                        <Icon name="Fingerprint" size={13} className="text-prism-300" />
+                                        {sealHash} • RJCLOUD.ORGAN 2030
+                                    </span>
+                                    <span className="text-aurora-300 no-print">เลื่อนเมาส์หรือเอียงมือถือเพื่อตรวจแสงโฮโลแกรม ✦</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
+
+                    {/* Full Official Metadata & Action Buttons */}
+                    <div className="spatial-card rounded-[1.75rem] p-5 sm:p-6 space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div className="spatial-soft p-3.5 rounded-2xl">
+                                <p className="text-[11px] font-bold text-muted-adaptive">หลักสูตรที่ผ่านการอบรม</p>
+                                <p className="text-sm font-bold text-primary-adaptive mt-0.5 leading-snug">{record.courseTitleTH}</p>
+                            </div>
+                            <div className="spatial-soft p-3.5 rounded-2xl">
+                                <p className="text-[11px] font-bold text-muted-adaptive">หน่วยงานผู้รับรอง</p>
+                                <p className="text-sm font-bold text-primary-adaptive mt-0.5 leading-snug">{record.orgTitleTH}</p>
+                            </div>
+                            <div className="spatial-soft p-3.5 rounded-2xl">
+                                <p className="text-[11px] font-bold text-muted-adaptive">วันที่ออกประกาศนียบัตร</p>
+                                <p className="text-sm font-bold text-primary-adaptive mt-0.5">{formatThaiDate(record.issuedAt)}</p>
+                            </div>
+                            <div className="spatial-soft p-3.5 rounded-2xl">
+                                <p className="text-[11px] font-bold text-muted-adaptive">ผู้ลงนามรับรอง</p>
+                                <p className="text-sm font-bold text-primary-adaptive mt-0.5">{record.signerName}</p>
+                                <p className="text-[11px] text-muted-adaptive mt-0.5">{record.signerPosition}</p>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1 no-print">
+                            <button
+                                type="button"
+                                onClick={onShareOrCopy}
+                                className="touch-target py-3 px-4 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 hover:from-aurora-300 hover:to-prism-300 text-void-950 font-display font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg active:scale-[0.98]"
+                            >
+                                <Icon name="Share2" size={16} /> แชร์ / คัดลอกลิงก์ยืนยัน
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => window.print()}
+                                className="touch-target spatial-soft py-3 px-4 rounded-2xl text-primary-adaptive font-display font-bold text-sm flex items-center justify-center gap-2 active:scale-[0.98]"
+                            >
+                                <Icon name="Printer" size={16} className="text-prism-adaptive" /> พิมพ์หลักฐานรับรอง (PDF/กระดาษ)
+                            </button>
+                        </div>
+                    </div>
+                </section>
             );
         }
 
         // ============================================================================
-        // 3. CAMERA QR SCANNER MODAL (100% Smartphone Ready)
+        // 4. SPATIAL LASER QR SCANNER MODAL (100% SMARTPHONE READY)
         // ============================================================================
         function QrScannerModal({ isOpen, onClose, onScanSuccess }) {
             const [camError, setCamError] = useState('');
@@ -479,7 +807,7 @@
 
                 const startScanner = async () => {
                     if (!window.Html5Qrcode) {
-                        setCamError('ไม่พบไลบรารีสแกน QR กรุณารีเฟรชหน้าเว็บหรือกรอกรหัสด้วยตนเองค่ะ');
+                        setCamError('ไม่พบไลบรารีสแกน QR กรุณารีเฟรชหน้าเว็บหรือพิมพ์รหัสด้วยตนเองค่ะ');
                         setIsStarting(false);
                         return;
                     }
@@ -492,8 +820,7 @@
                             (decodedText) => {
                                 if (hasScannedRef.current) return;
                                 hasScannedRef.current = true;
-                                const extracted = extractCertCode(decodedText);
-                                onScanSuccess(extracted);
+                                onScanSuccess(extractCertCode(decodedText));
                             },
                             () => {}
                         );
@@ -502,12 +829,12 @@
                         console.warn('QR camera start failed:', err);
                         if (active) {
                             setIsStarting(false);
-                            setCamError('ไม่สามารถเปิดกล้องได้ (กรุณาอนุญาตสิทธิ์กล้องบนเบราว์เซอร์ หรือพิมพ์รหัสประกาศนียบัตรด้านล่างแทนค่ะ)');
+                            setCamError('ไม่สามารถเปิดกล้องได้ กรุณาอนุญาตสิทธิ์กล้องบนเบราว์เซอร์ หรือปิดหน้าต่างเพื่อพิมพ์รหัสประกาศนียบัตรด้านล่างแทนค่ะ');
                         }
                     }
                 };
 
-                const timer = setTimeout(startScanner, 150);
+                const timer = setTimeout(startScanner, 160);
 
                 return () => {
                     active = false;
@@ -526,54 +853,52 @@
             if (!isOpen) return null;
 
             return (
-                <div className="fixed inset-0 z-50 bg-slate-900/75 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
-                    <div className="w-full sm:max-w-md bg-white rounded-t-[2rem] sm:rounded-[2rem] p-5 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] shadow-2xl border border-slate-100">
+                <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
+                    <div className="spatial-card w-full sm:max-w-md rounded-t-[2rem] sm:rounded-[2rem] p-5 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] border-aurora-400/35">
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-2.5">
-                                <div className="w-9 h-9 rounded-xl bg-clinical-50 text-clinical-600 flex items-center justify-center">
-                                    <Icon name="Camera" size={20} />
+                                <div className="w-10 h-10 rounded-xl bg-aurora-500/20 text-accent-adaptive flex items-center justify-center">
+                                    <Icon name="ScanLine" size={20} />
                                 </div>
                                 <div>
-                                    <h3 className="font-display font-bold text-base text-slate-900">สแกน QR ประกาศนียบัตร</h3>
-                                    <p className="text-xs text-slate-500">วาง QR Code ให้อยู่ในกรอบสี่เหลี่ยม</p>
+                                    <h3 className="font-display font-bold text-base text-primary-adaptive">สแกนเลเซอร์ QR ประกาศนียบัตร</h3>
+                                    <p className="text-xs text-muted-adaptive">วาง QR Code มุมขวาล่างใบประกาศฯ ให้อยู่ในกรอบ</p>
                                 </div>
                             </div>
                             <button
                                 type="button"
                                 onClick={onClose}
                                 aria-label="ปิดกล้อง"
-                                className="touch-target w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center active:scale-95"
+                                className="touch-target spatial-soft w-10 h-10 rounded-full text-primary-adaptive flex items-center justify-center active:scale-95"
                             >
                                 <Icon name="X" size={20} />
                             </button>
                         </div>
 
-                        <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-slate-950 border border-slate-200 flex items-center justify-center">
+                        <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-void-950 border border-aurora-400/35 flex items-center justify-center">
                             <div id="qr-reader" className="w-full h-full" />
 
                             {!camError && (
                                 <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
                                     <div className="w-56 h-56 relative">
-                                        <span className="absolute top-0 left-0 w-7 h-7 border-t-4 border-l-4 border-clinical-400 rounded-tl-xl" />
-                                        <span className="absolute top-0 right-0 w-7 h-7 border-t-4 border-r-4 border-clinical-400 rounded-tr-xl" />
-                                        <span className="absolute bottom-0 left-0 w-7 h-7 border-b-4 border-l-4 border-clinical-400 rounded-bl-xl" />
-                                        <span className="absolute bottom-0 right-0 w-7 h-7 border-b-4 border-r-4 border-clinical-400 rounded-br-xl" />
-                                        <div className="absolute inset-x-2 top-0 h-full overflow-hidden">
-                                            <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-clinical-400 to-transparent shadow-[0_0_12px_#34d399] scan-beam" />
-                                        </div>
+                                        <span className="absolute top-0 left-0 w-7 h-7 border-t-4 border-l-4 border-aurora-400 rounded-tl-xl" />
+                                        <span className="absolute top-0 right-0 w-7 h-7 border-t-4 border-r-4 border-aurora-400 rounded-tr-xl" />
+                                        <span className="absolute bottom-0 left-0 w-7 h-7 border-b-4 border-l-4 border-prism-400 rounded-bl-xl" />
+                                        <span className="absolute bottom-0 right-0 w-7 h-7 border-b-4 border-r-4 border-prism-400 rounded-br-xl" />
+                                        <div className="absolute inset-x-2 h-0.5 bg-gradient-to-r from-transparent via-prism-400 to-transparent shadow-[0_0_16px_#22d3ee] laser-beam" />
                                     </div>
                                 </div>
                             )}
 
                             {isStarting && !camError && (
-                                <div className="absolute inset-0 bg-slate-950/80 flex flex-col items-center justify-center text-white gap-3">
-                                    <div className="w-9 h-9 border-4 border-clinical-400 border-t-transparent rounded-full animate-spin" />
+                                <div className="absolute inset-0 bg-void-950/85 flex flex-col items-center justify-center text-white gap-3">
+                                    <div className="w-9 h-9 border-4 border-aurora-400 border-t-transparent rounded-full animate-spin" />
                                     <p className="text-xs font-medium text-slate-300">กำลังเปิดกล้องสมาร์ทโฟน...</p>
                                 </div>
                             )}
 
                             {camError && (
-                                <div className="absolute inset-0 bg-slate-900/95 p-6 flex flex-col items-center justify-center text-center gap-3">
+                                <div className="absolute inset-0 bg-void-950/95 p-6 flex flex-col items-center justify-center text-center gap-3">
                                     <div className="w-12 h-12 rounded-2xl bg-rose-500/20 text-rose-400 flex items-center justify-center">
                                         <Icon name="CameraOff" size={24} />
                                     </div>
@@ -585,9 +910,9 @@
                         <button
                             type="button"
                             onClick={onClose}
-                            className="touch-target w-full mt-4 py-3.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-display font-semibold text-sm transition-colors"
+                            className="touch-target spatial-soft w-full mt-4 py-3.5 rounded-2xl text-primary-adaptive font-display font-bold text-sm"
                         >
-                            ปิดกล้องและพิมพ์รหัสเอง
+                            ปิดกล้องและกรอกรหัสเอง
                         </button>
                     </div>
                 </div>
@@ -595,9 +920,29 @@
         }
 
         // ============================================================================
-        // 4. MAIN VERIFICATION APPLICATION
+        // 5. MAIN 2030 VERIFICATION APPLICATION
         // ============================================================================
-        function VerifyApp() {
+        function Verify2030App() {
+            // Adaptive Theme synced across all 2030 pages
+            const [theme, setTheme] = useState(() => {
+                try {
+                    const saved = localStorage.getItem(THEME_KEY);
+                    if (saved === 'light' || saved === 'dark') return saved;
+                } catch (_) {}
+                return CONFIG.theme?.defaultMode === 'light' ? 'light' : 'dark';
+            });
+
+            useEffect(() => {
+                document.documentElement.setAttribute('data-theme', theme);
+                const meta = document.querySelector('meta[name="theme-color"]');
+                if (meta) meta.setAttribute('content', theme === 'dark' ? '#030712' : '#f8fafc');
+                try { localStorage.setItem(THEME_KEY, theme); } catch (_) {}
+            }, [theme]);
+
+            const toggleTheme = useCallback(() => {
+                setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+            }, []);
+
             const [inputCode, setInputCode] = useState('');
             const [status, setStatus] = useState('idle'); // idle | loading | verified | not_found
             const [record, setRecord] = useState(null);
@@ -606,19 +951,15 @@
             const [toast, setToast] = useState({ visible: false, text: '', type: 'success' });
 
             const showToast = useCallback((text, type = 'success') => {
-                setToast({ visible: true, text, type });
+                setToast({ visible: true, text: String(text), type });
                 setTimeout(() => setToast(p => ({ ...p, visible: false })), 3200);
             }, []);
 
-            // ยืนยันว่า Mount สำเร็จ (ปิด Error Guard)
             useEffect(() => {
                 const el = document.getElementById('verify-root');
                 if (el) el.dataset.mounted = 'true';
             }, []);
 
-            /**
-             * ฟังก์ชันตรวจสอบรหัสประกาศนียบัตร (Demo/Preview -> Cloud Firestore -> Local Cache)
-             */
             const verifyCode = useCallback(async (rawCode) => {
                 const code = extractCertCode(rawCode);
                 if (!code) {
@@ -637,22 +978,21 @@
                     window.history.replaceState({}, '', url.toString());
                 } catch (_) {}
 
-                // 1. ตรวจสอบจากรหัสตัวอย่าง Demo / Admin Preview
+                // 1. ตรวจจากชุดตัวอย่าง Demo / Preview
                 if (SAMPLE_DEMO_CERTS[code]) {
-                    await new Promise(r => setTimeout(r, 300));
+                    await new Promise(r => setTimeout(r, 340));
                     setRecord(SAMPLE_DEMO_CERTS[code]);
                     setStatus('verified');
                     return;
                 }
 
-                // 2. ตรวจสอบจาก Cloud Firestore (Public Read-Only Certificates Collection)
+                // 2. ตรวจจาก Cloud Firestore (Public Read-Only Certificates Collection)
                 if (isCloudConfigured && fbDb) {
                     try {
                         if (fbAuth && !fbAuth.currentUser) {
                             await signInAnonymously(fbAuth).catch(() => {});
                         }
-                        const certRef = doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'certificates', code);
-                        const snap = await getDoc(certRef);
+                        const snap = await getDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'certificates', code));
                         if (snap.exists()) {
                             const data = snap.data();
                             setRecord({
@@ -669,6 +1009,7 @@
                                 signerName: data.signerName || DEFAULT_CERT.signerName,
                                 signerPosition: data.signerPosition || DEFAULT_CERT.signerPosition,
                                 posttestScore: data.posttestScore || data.posttest || 'ผ่านเกณฑ์ (≥ 80%)',
+                                skillLabBestScore: typeof data.skillLabBestScore === 'number' ? data.skillLabBestScore : null,
                                 issuedAt: data.issuedAt || data.certificateIssuedAt || '',
                                 status: data.status || 'valid',
                                 source: 'cloud'
@@ -681,7 +1022,7 @@
                     }
                 }
 
-                // 3. ตรวจสอบจาก Local Cache (สำหรับประกาศนียบัตรที่เพิ่งสร้างบนเครื่องเดียวกัน)
+                // 3. ตรวจจาก Local Cache บนเครื่องเดียวกัน
                 const localHit = findLocalCertificate(code);
                 if (localHit) {
                     setRecord(localHit);
@@ -689,26 +1030,17 @@
                     return;
                 }
 
-                // 4. หากไม่พบข้อมูลใดๆ
-                await new Promise(r => setTimeout(r, 250));
+                // 4. ไม่พบข้อมูล
+                await new Promise(r => setTimeout(r, 260));
                 setStatus('not_found');
             }, [showToast]);
 
-            // ตรวจสอบอัตโนมัติทันทีถ้าเปิดลิงก์มาจาก QR Code (?code=...)
             useEffect(() => {
                 try {
-                    const params = new URLSearchParams(window.location.search);
-                    const initialCode = params.get('code');
-                    if (initialCode) {
-                        verifyCode(initialCode);
-                    }
+                    const initialCode = new URLSearchParams(window.location.search).get('code');
+                    if (initialCode) verifyCode(initialCode);
                 } catch (_) {}
             }, [verifyCode]);
-
-            const handleSubmit = (e) => {
-                e.preventDefault();
-                verifyCode(inputCode);
-            };
 
             const handleScanResult = useCallback((scannedCode) => {
                 setScannerOpen(false);
@@ -739,73 +1071,78 @@
 
             return (
                 <div className="min-h-dvh relative flex flex-col pt-safe pb-safe">
-                    <div className="aura-canvas" />
-                    <div className="aura-grid" />
+                    <div className="spatial-aura" /><div className="spatial-grid" />
 
-                    {/* Top App Header */}
-                    <header className="relative z-20 sticky top-0 backdrop-blur-xl bg-white/85 border-b border-slate-200/70 no-print">
+                    {/* Top Spatial Header */}
+                    <header className="sticky top-0 z-20 spatial-header no-print">
                         <div className="max-w-3xl mx-auto px-4 h-14 md:h-16 flex items-center justify-between gap-2">
-                            <a href="./index.html" className="flex items-center gap-2.5 group">
-                                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-clinical-500 to-teal-600 text-white flex items-center justify-center shadow-sm">
-                                    <Icon name="HeartPulse" size={19} />
+                            <a href="./index.html" className="flex items-center gap-2.5 min-w-0">
+                                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-aurora-400 to-prism-400 text-void-950 flex items-center justify-center shadow-md shrink-0">
+                                    <Icon name="ShieldCheck" size={19} />
                                 </div>
-                                <div>
-                                    <span className="font-display font-extrabold text-base text-slate-900 block leading-none">
-                                        rjcloud<span className="text-clinical-600">.organ</span>
-                                    </span>
-                                    <span className="text-[10px] font-mono font-semibold text-slate-500 uppercase tracking-wider">
-                                        Verify Portal
-                                    </span>
+                                <div className="min-w-0">
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="font-display font-extrabold text-base text-primary-adaptive leading-none truncate">
+                                            rjcloud<span className="text-accent-adaptive">.organ</span>
+                                        </span>
+                                        <span className="px-1.5 py-0.5 rounded bg-aurora-500/20 text-accent-adaptive font-mono text-[9px] font-bold">
+                                            2030
+                                        </span>
+                                    </div>
+                                    <span className="text-[10px] font-mono text-muted-adaptive uppercase">Holographic Verify Portal</span>
                                 </div>
                             </a>
 
-                            <a
-                                href="./index.html"
-                                className="touch-target px-3.5 py-2 rounded-xl bg-slate-100/90 hover:bg-slate-200/80 text-slate-700 font-bold text-xs inline-flex items-center gap-1.5 transition-colors"
-                            >
-                                <Icon name="ArrowLeft" size={15} /> หน้าหลักผู้เรียน
-                            </a>
+                            <div className="flex items-center gap-2 shrink-0">
+                                <ThemeToggleButton theme={theme} onToggle={toggleTheme} />
+                                <a
+                                    href="./index.html"
+                                    className="spatial-soft px-3.5 py-2 rounded-xl text-primary-adaptive font-bold text-xs inline-flex items-center gap-1.5"
+                                >
+                                    <Icon name="ArrowLeft" size={14} /> <span className="hidden sm:inline">หน้าผู้เรียน</span>
+                                </a>
+                            </div>
                         </div>
                     </header>
 
-                    {/* Main Content Container */}
+                    {/* Main Verification Workspace */}
                     <main className="relative z-10 flex-1 w-full max-w-2xl mx-auto px-3.5 sm:px-6 py-6 md:py-10 space-y-5">
-                        {/* Search & Scan Card */}
-                        <section className="bento-glass rounded-[1.75rem] p-5 sm:p-7 no-print">
+                        {/* Search & Laser QR Scan Card */}
+                        <section className="spatial-card rounded-[1.75rem] p-5 sm:p-7 no-print">
                             <div className="flex items-start justify-between gap-3 mb-4">
                                 <div>
-                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-clinical-50 border border-clinical-200/70 text-clinical-700 font-mono text-[10px] font-bold">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-clinical-500" />
-                                        {isCloudConfigured ? 'CLOUD VERIFICATION ACTIVE' : 'SANDBOX & DEMO READY'}
+                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-aurora-500/15 border border-aurora-400/35 text-accent-adaptive font-mono text-[10px] font-bold">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-aurora-400 animate-pulse" />
+                                        {isCloudConfigured ? 'CLOUD ANTI-FORGERY ACTIVE' : 'SANDBOX & DEMO READY'}
                                     </span>
-                                    <h1 className="font-display text-xl sm:text-2xl font-bold text-slate-900 mt-2 leading-tight">
-                                        ตรวจสอบประกาศนียบัตรอิเล็กทรอนิกส์
+                                    <h1 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive mt-2 leading-tight">
+                                        ตรวจสอบประกาศนียบัตรตราโฮโลแกรม 2030
                                     </h1>
-                                    <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                                        สแกน QR Code จากใบประกาศฯ หรือกรอกรหัสอ้างอิงเพื่อยืนยันความถูกต้อง
+                                    <p className="text-xs sm:text-sm text-secondary-adaptive mt-1">
+                                        สแกน QR Code จากใบประกาศนียบัตร หรือกรอกรหัสอ้างอิงเพื่อยืนยันคุณวุฒิแบบ Real-time
                                     </p>
                                 </div>
-                                <div className="w-11 h-11 rounded-2xl bg-clinical-50 text-clinical-600 flex items-center justify-center shrink-0">
-                                    <Icon name="ShieldCheck" size={24} />
+                                <div className="w-11 h-11 rounded-2xl bg-aurora-500/15 text-accent-adaptive flex items-center justify-center shrink-0">
+                                    <Icon name="QrCode" size={23} />
                                 </div>
                             </div>
 
-                            <form onSubmit={handleSubmit} className="space-y-3">
+                            <form onSubmit={(e) => { e.preventDefault(); verifyCode(inputCode); }} className="space-y-3">
                                 <div className="relative">
-                                    <Icon name="Search" size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                                    <Icon name="Search" size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-adaptive" />
                                     <input
                                         type="text"
                                         value={inputCode}
                                         onChange={e => setInputCode(e.target.value)}
                                         placeholder="กรอกรหัส เช่น RJC-2027-XXXXXX"
                                         autoComplete="off"
-                                        className="touch-target w-full pl-11 pr-11 py-3.5 rounded-2xl bg-white border border-slate-200 font-mono text-base font-semibold uppercase tracking-wide text-slate-800 placeholder:font-sans placeholder:normal-case placeholder:tracking-normal placeholder:text-slate-400 focus:outline-none focus:border-clinical-500 focus:ring-4 focus:ring-clinical-500/10"
+                                        className="touch-target spatial-input w-full pl-11 pr-11 py-3.5 rounded-2xl font-mono text-base font-bold uppercase tracking-wide"
                                     />
                                     {inputCode && (
                                         <button
                                             type="button"
                                             onClick={() => { setInputCode(''); setStatus('idle'); setRecord(null); }}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center"
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full text-muted-adaptive hover:text-primary-adaptive flex items-center justify-center"
                                         >
                                             <Icon name="X" size={16} />
                                         </button>
@@ -816,185 +1153,99 @@
                                     <button
                                         type="submit"
                                         disabled={status === 'loading' || !inputCode.trim()}
-                                        className="touch-target w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-clinical-500 to-teal-600 hover:from-clinical-600 hover:to-teal-700 disabled:from-slate-200 disabled:to-slate-200 disabled:text-slate-400 text-white font-display font-semibold text-sm sm:text-base shadow-[0_10px_25px_-5px_rgba(5,150,105,0.35)] flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                                        className="touch-target w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 hover:from-aurora-300 hover:to-prism-300 disabled:opacity-45 text-void-950 font-display font-extrabold text-sm sm:text-base shadow-[0_12px_28px_-6px_rgba(16,185,129,0.4)] flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
                                     >
                                         <Icon name="CheckCircle2" size={18} />
-                                        {status === 'loading' ? 'กำลังตรวจสอบ...' : 'ตรวจสอบรหัส'}
+                                        {status === 'loading' ? 'กำลังตรวจสอบ...' : 'ตรวจสอบรหัสทันที'}
                                     </button>
 
                                     <button
                                         type="button"
                                         onClick={() => setScannerOpen(true)}
-                                        className="touch-target w-full py-3.5 px-5 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 font-display font-semibold text-sm sm:text-base shadow-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                                        className="touch-target spatial-soft w-full py-3.5 px-5 rounded-2xl text-primary-adaptive font-display font-bold text-sm sm:text-base flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
                                     >
-                                        <Icon name="QrCode" size={18} className="text-clinical-600" />
-                                        เปิดกล้องสแกน QR
+                                        <Icon name="ScanLine" size={18} className="text-accent-adaptive" />
+                                        เปิดกล้องสแกน QR เลเซอร์
                                     </button>
                                 </div>
                             </form>
 
-                            {/* Quick Demo Button */}
-                            <div className="mt-4 pt-3.5 border-t border-slate-200/70 flex flex-wrap items-center justify-between gap-2 text-xs">
-                                <span className="text-slate-500">ต้องการทดสอบหน้าตาผลรับรอง?</span>
-                                <button
-                                    type="button"
-                                    onClick={() => verifyCode('RJC-2027-DEMO01')}
-                                    className="font-mono font-bold text-clinical-700 bg-clinical-50 hover:bg-clinical-100 px-3 py-1.5 rounded-xl transition-colors"
-                                >
-                                    ลองรหัสตัวอย่าง: RJC-2027-DEMO01
-                                </button>
+                            {/* Quick Demo Test Codes */}
+                            <div className="mt-4 pt-3.5 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs">
+                                <span className="text-muted-adaptive">ทดสอบดูบัตรรับรองตราโฮโลแกรม 3 มิติ:</span>
+                                <div className="flex flex-wrap gap-1.5">
+                                    <button
+                                        type="button"
+                                        onClick={() => verifyCode('RJC-2027-DEMO01')}
+                                        className="font-mono font-bold text-accent-adaptive bg-aurora-500/15 hover:bg-aurora-500/25 border border-aurora-400/30 px-3 py-1.5 rounded-xl transition-colors"
+                                    >
+                                        RJC-2027-DEMO01
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => verifyCode('RJC-2027-PREVIEW')}
+                                        className="font-mono font-bold text-prism-adaptive bg-prism-500/15 hover:bg-prism-500/25 border border-prism-400/30 px-3 py-1.5 rounded-xl transition-colors"
+                                    >
+                                        RJC-2027-PREVIEW
+                                    </button>
+                                </div>
                             </div>
                         </section>
 
                         {/* Loading State */}
                         {status === 'loading' && (
-                            <div className="bento-glass rounded-[1.75rem] p-10 text-center flex flex-col items-center justify-center gap-3">
-                                <div className="w-11 h-11 border-4 border-clinical-500 border-t-transparent rounded-full animate-spin" />
-                                <p className="font-display font-semibold text-slate-700">กำลังตรวจสอบฐานข้อมูล rjcloud.organ...</p>
-                                <p className="font-mono text-xs text-slate-400">{lastSearched}</p>
+                            <div className="spatial-card rounded-[1.75rem] p-10 text-center flex flex-col items-center justify-center gap-3">
+                                <div className="w-11 h-11 border-4 border-aurora-400 border-t-transparent rounded-full animate-spin" />
+                                <p className="font-display font-bold text-primary-adaptive">กำลังตรวจสอบรหัสรับรองบน Cloud 2030...</p>
+                                <p className="font-mono text-xs text-prism-adaptive">{lastSearched}</p>
                             </div>
                         )}
 
-                        {/* Verified Result Card */}
+                        {/* Verified 3D Holographic Result */}
                         {status === 'verified' && record && (
-                            <section className="bento-glass rounded-[1.75rem] overflow-hidden border-clinical-200/90 shadow-xl">
-                                {/* Top Verified Banner */}
-                                <div className="bg-gradient-to-r from-clinical-600 via-teal-600 to-medical-600 p-5 sm:p-6 text-white">
-                                    <div className="flex items-center justify-between gap-3">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shrink-0">
-                                                <Icon name="BadgeCheck" size={28} />
-                                            </div>
-                                            <div>
-                                                <p className="text-[11px] font-mono uppercase tracking-widest text-clinical-100 font-semibold">
-                                                    OFFICIAL VERIFICATION • VALID
-                                                </p>
-                                                <h2 className="font-display text-lg sm:text-xl font-bold leading-snug">
-                                                    เอกสารได้รับการรับรองความถูกต้อง
-                                                </h2>
-                                            </div>
-                                        </div>
-                                        {(record.source === 'demo' || record.source === 'preview') && (
-                                            <span className="px-2.5 py-1 rounded-full bg-white/20 text-[10px] font-mono font-bold shrink-0 uppercase">
-                                                {record.source}
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* Certificate Holder Details (PDPA Compliant) */}
-                                <div className="p-5 sm:p-7 space-y-5 bg-white/60">
-                                    <div className="text-center pb-5 border-b border-slate-200/80">
-                                        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">ผู้ได้รับประกาศนียบัตร</p>
-                                        <h3 className="font-display text-2xl sm:text-3xl font-extrabold text-slate-900">
-                                            {record.name}
-                                        </h3>
-                                        <p className="text-sm font-semibold text-clinical-700 mt-1">
-                                            {record.position} • {record.hospital}
-                                        </p>
-                                        <div className="inline-flex items-center gap-2 mt-3 px-3.5 py-1.5 rounded-full bg-slate-100 border border-slate-200/80 font-mono text-xs font-bold text-slate-700">
-                                            <Icon name="Hash" size={13} className="text-clinical-600" />
-                                            {record.code}
-                                        </div>
-                                    </div>
-
-                                    {/* Metadata Grid */}
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                        <div className="p-3.5 rounded-2xl bg-white/90 border border-slate-200/70">
-                                            <p className="text-[11px] font-bold text-slate-400">หลักสูตรที่ผ่านการอบรม</p>
-                                            <p className="text-sm font-bold text-slate-800 mt-0.5 leading-snug">{record.courseTitleTH}</p>
-                                        </div>
-                                        <div className="p-3.5 rounded-2xl bg-white/90 border border-slate-200/70">
-                                            <p className="text-[11px] font-bold text-slate-400">หน่วยงานผู้รับรอง</p>
-                                            <p className="text-sm font-bold text-slate-800 mt-0.5 leading-snug">{record.orgTitleTH}</p>
-                                        </div>
-                                        <div className="p-3.5 rounded-2xl bg-white/90 border border-slate-200/70">
-                                            <p className="text-[11px] font-bold text-slate-400">วันที่ออกประกาศนียบัตร</p>
-                                            <p className="text-sm font-bold text-slate-800 mt-0.5">{formatThaiDate(record.issuedAt)}</p>
-                                        </div>
-                                        <div className="p-3.5 rounded-2xl bg-white/90 border border-slate-200/70">
-                                            <p className="text-[11px] font-bold text-slate-400">เลขใบประกอบวิชาชีพ (คุ้มครอง PDPA)</p>
-                                            <p className="font-mono text-sm font-bold text-slate-800 mt-0.5">{maskLicense(record.license)}</p>
-                                        </div>
-                                        <div className="p-3.5 rounded-2xl bg-white/90 border border-slate-200/70">
-                                            <p className="text-[11px] font-bold text-slate-400">ผู้ลงนามรับรอง</p>
-                                            <p className="text-sm font-bold text-slate-800 mt-0.5">{record.signerName}</p>
-                                            <p className="text-[11px] text-slate-500 mt-0.5">{record.signerPosition}</p>
-                                        </div>
-                                        <div className="p-3.5 rounded-2xl bg-clinical-50/70 border border-clinical-200/70">
-                                            <p className="text-[11px] font-bold text-clinical-700">ผลการประเมิน Post-test & ประเภทการเรียน</p>
-                                            <div className="flex flex-wrap items-center gap-1.5 mt-1">
-                                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-clinical-600 text-white text-xs font-bold">
-                                                    <Icon name="Check" size={13} /> {record.posttestScore || 'ผ่านเกณฑ์ ≥ 80%'}
-                                                </span>
-                                                <span className="px-2 py-0.5 rounded-full bg-white border border-clinical-200 text-xs font-bold text-clinical-800">
-                                                    {normalizeUserType(record.userType)}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Action Buttons */}
-                                    <div className="grid grid-cols-2 gap-2.5 pt-2 no-print">
-                                        <button
-                                            type="button"
-                                            onClick={handleShareOrCopy}
-                                            className="touch-target py-3 px-4 rounded-2xl bg-clinical-600 hover:bg-clinical-700 text-white font-display font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm active:scale-[0.98]"
-                                        >
-                                            <Icon name="Share2" size={16} /> แชร์ / คัดลอกลิงก์
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => window.print()}
-                                            className="touch-target py-3 px-4 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-display font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 active:scale-[0.98]"
-                                        >
-                                            <Icon name="Printer" size={16} /> พิมพ์หลักฐานรับรอง
-                                        </button>
-                                    </div>
-                                </div>
-                            </section>
+                            <HolographicVerifiedCard record={record} onShareOrCopy={handleShareOrCopy} />
                         )}
 
                         {/* Not Found State */}
                         {status === 'not_found' && (
-                            <section className="bento-glass rounded-[1.75rem] p-6 sm:p-8 text-center border-rose-200/80">
-                                <div className="w-14 h-14 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center mx-auto mb-3.5">
+                            <section className="spatial-card rounded-[1.75rem] p-6 sm:p-8 text-center border-rose-400/40">
+                                <div className="w-14 h-14 rounded-2xl bg-rose-500/15 text-rose-400 flex items-center justify-center mx-auto mb-3.5">
                                     <Icon name="FileWarning" size={28} />
                                 </div>
-                                <h2 className="font-display text-lg sm:text-xl font-bold text-slate-900">
+                                <h2 className="font-display text-lg sm:text-xl font-extrabold text-primary-adaptive">
                                     ไม่พบข้อมูลประกาศนียบัตรนี้ในระบบ
                                 </h2>
-                                <p className="text-sm text-slate-600 mt-1.5 max-w-md mx-auto leading-relaxed">
-                                    รหัส <span className="font-mono font-bold text-rose-600">{lastSearched}</span> ไม่ตรงกับรายการที่ได้รับการรับรอง กรุณาตรวจสอบตัวอักษรอีกครั้ง หรือติดต่อผู้ดูแลระบบที่{' '}
-                                    <a href={`mailto:${CONFIG.contactEmail}`} className="font-bold text-clinical-700 underline">
+                                <p className="text-sm text-secondary-adaptive mt-1.5 max-w-md mx-auto leading-relaxed">
+                                    รหัส <span className="font-mono font-bold text-rose-400">{lastSearched}</span> ไม่ตรงกับรายการที่ได้รับการรับรอง กรุณาตรวจสอบตัวอักษรอีกครั้ง หรือติดต่อผู้ดูแลระบบที่{' '}
+                                    <a href={`mailto:${CONFIG.contactEmail}`} className="font-bold text-accent-adaptive underline">
                                         {CONFIG.contactEmail}
                                     </a>
                                 </p>
                                 <button
                                     type="button"
                                     onClick={() => setScannerOpen(true)}
-                                    className="touch-target mt-5 px-6 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-display font-semibold text-sm inline-flex items-center gap-2"
+                                    className="touch-target mt-5 px-6 py-3 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-sm inline-flex items-center gap-2"
                                 >
-                                    <Icon name="QrCode" size={17} /> ลองสแกน QR Code ใหม่อีกครั้ง
+                                    <Icon name="ScanLine" size={17} /> ลองสแกน QR Code ใหม่อีกครั้ง
                                 </button>
                             </section>
                         )}
 
-                        {/* Idle Helper Info */}
+                        {/* Idle Helper Features */}
                         {status === 'idle' && (
                             <section className="grid grid-cols-1 sm:grid-cols-3 gap-3 no-print">
                                 {[
-                                    { icon: 'QrCode', title: 'สแกนได้ทันที', desc: 'ใช้กล้องมือถือสแกน QR มุมขวาล่างของใบประกาศนียบัตร' },
-                                    { icon: 'ShieldCheck', title: 'ป้องกันการปลอมแปลง', desc: 'ตรวจสอบรหัสอ้างอิงและผล Post-test ตรงกับฐานข้อมูล rjcloud.organ' },
-                                    { icon: 'Lock', title: 'คุ้มครองข้อมูล PDPA', desc: 'แสดงเฉพาะข้อมูลยืนยันคุณวุฒิ ไม่เปิดเผยอีเมลหรือเบอร์โทรส่วนตัว' }
+                                    { icon: 'ScanLine', title: 'สแกนเลเซอร์ทันที', desc: 'ใช้กล้องมือถือสแกน QR มุมขวาล่างใบประกาศนียบัตรได้ทันทีไม่ต้องลงแอป' },
+                                    { icon: 'Sparkles', title: 'ตราโฮโลแกรม 3 มิติ', desc: 'แสดงบัตรรับรองพร้อมรหัสลายนิ้วมือดิจิทัล ผล Post-test และดัชนี Empathy' },
+                                    { icon: 'Lock', title: 'คุ้มครองข้อมูล PDPA', desc: 'แสดงเฉพาะข้อมูลยืนยันคุณวุฒิ ปกปิดอีเมล เบอร์โทร และเลขใบอนุญาตบางส่วน' }
                                 ].map((item, i) => (
-                                    <div key={i} className="bento-glass rounded-2xl p-4 flex sm:flex-col items-start gap-3 sm:gap-2">
-                                        <div className="w-9 h-9 rounded-xl bg-clinical-50 text-clinical-600 flex items-center justify-center shrink-0">
+                                    <div key={i} className="spatial-card rounded-2xl p-4 flex sm:flex-col items-start gap-3 sm:gap-2">
+                                        <div className="w-9 h-9 rounded-xl bg-aurora-500/15 text-accent-adaptive flex items-center justify-center shrink-0">
                                             <Icon name={item.icon} size={18} />
                                         </div>
                                         <div>
-                                            <h3 className="font-display font-bold text-sm text-slate-800">{item.title}</h3>
-                                            <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{item.desc}</p>
+                                            <h3 className="font-display font-bold text-sm text-primary-adaptive">{item.title}</h3>
+                                            <p className="text-xs text-muted-adaptive mt-0.5 leading-relaxed">{item.desc}</p>
                                         </div>
                                     </div>
                                 ))}
@@ -1002,13 +1253,11 @@
                         )}
                     </main>
 
-                    {/* Footer */}
-                    <footer className="relative z-10 text-center px-4 py-5 text-[11px] text-slate-400 font-medium no-print">
+                    <footer className="relative z-10 text-center px-4 py-5 text-[11px] text-muted-adaptive font-medium no-print">
                         <p>{CONFIG.appName} • {CONFIG.edition}</p>
                         <p className="mt-0.5">ศูนย์ประสานงานและสนับสนุนระบบ: {CONFIG.contactEmail}</p>
                     </footer>
 
-                    {/* Camera Scanner Modal */}
                     <QrScannerModal
                         isOpen={scannerOpen}
                         onClose={() => setScannerOpen(false)}
@@ -1021,7 +1270,7 @@
         }
 
         const root = createRoot(document.getElementById('verify-root'));
-        root.render(<VerifyErrorBoundary><VerifyApp /></VerifyErrorBoundary>);
+        root.render(<VerifyErrorBoundary><Verify2030App /></VerifyErrorBoundary>);
     </script>
 </body>
 </html>
