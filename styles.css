@@ -1,0 +1,440 @@
+/* ============================================================================
+
+rjcloud.organ — Master Adaptive Stylesheet (styles.css)
+
+แยกออกมาจาก index.html ตามแนวทาง Modular Zero-Build เพื่อลดขนาดไฟล์หลัก
+
+และให้เบราว์เซอร์เก็บแคชไฟล์ดีไซน์แยกอิสระ (โหลดเร็วขึ้นและดูแลง่ายขึ้น)
+
+โครงสร้างภายในไฟล์:
+
+Adaptive Design Tokens (Spatial Dark Default <-> Frosted Pearl Light)
+
+Base Typography, Safe Areas & Mobile Touch Targets
+
+Spatial Aura Background & Glassmorphism Surfaces
+
+Scrollbar & Native Form Element Styling
+
+Ambient Light Runner & Audio Equalizer Animations
+
+Individual CNEU Letter Sheet & A4 Print Rules
+
+============================================================================ */
+
+/* ============================================================================
+
+ADAPTIVE DESIGN TOKENS (SPATIAL DARK DEFAULT <-> FROSTED PEARL LIGHT)
+
+============================================================================ */
+:root,
+html[data-theme="dark"] {
+--bg-page: #030712;
+--text-main: #f8fafc;
+--text-secondary: #cbd5e1;
+--text-muted: #94a3b8;
+--glass-bg: linear-gradient(135deg, rgba(15, 23, 42, 0.78) 0%, rgba(7, 13, 28, 0.9) 100%);
+--glass-border: rgba(255, 255, 255, 0.13);
+--glass-shadow: 0 22px 50px -16px rgba(0, 0, 0, 0.72), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+--header-bg: rgba(7, 13, 28, 0.86);
+--dock-bg: rgba(7, 13, 28, 0.95);
+--surface-soft: rgba(255, 255, 255, 0.045);
+--surface-soft-hover: rgba(255, 255, 255, 0.09);
+--surface-border: rgba(255, 255, 255, 0.11);
+--input-bg: rgba(15, 23, 42, 0.88);
+--input-border: rgba(148, 163, 184, 0.28);
+--input-text: #f8fafc;
+--accent-text: #34d399;
+--accent-prism: #22d3ee;
+--grid-line: rgba(148, 163, 184, 0.045);
+--aura-1: rgba(16, 185, 129, 0.16);
+--aura-2: rgba(34, 211, 238, 0.14);
+--aura-3: rgba(99, 102, 241, 0.12);
+}
+
+html[data-theme="light"] {
+--bg-page: #f4f9fb;
+--text-main: #0f172a;
+--text-secondary: #334155;
+--text-muted: #64748b;
+--glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(241, 245, 249, 0.86) 100%);
+--glass-border: rgba(255, 255, 255, 0.96);
+--glass-shadow: 0 18px 40px -14px rgba(15, 23, 42, 0.1), 0 2px 6px rgba(15, 23, 42, 0.04);
+--header-bg: rgba(255, 255, 255, 0.88);
+--dock-bg: rgba(255, 255, 255, 0.96);
+--surface-soft: rgba(255, 255, 255, 0.78);
+--surface-soft-hover: rgba(255, 255, 255, 0.98);
+--surface-border: rgba(148, 163, 184, 0.28);
+--input-bg: #ffffff;
+--input-border: #cbd5e1;
+--input-text: #0f172a;
+--accent-text: #059669;
+--accent-prism: #0284c7;
+--grid-line: rgba(15, 23, 42, 0.032);
+--aura-1: rgba(16, 185, 129, 0.16);
+--aura-2: rgba(14, 165, 233, 0.15);
+--aura-3: rgba(99, 102, 241, 0.09);
+}
+
+/* ============================================================================
+
+BASE TYPOGRAPHY, SAFE AREAS & MOBILE TOUCH TARGETS
+
+============================================================================ */
+html {
+-webkit-tap-highlight-color: transparent;
+scroll-behavior: smooth;
+}
+
+body {
+font-family: 'Sarabun', sans-serif;
+font-size: 16px;
+line-height: 1.65;
+background-color: var(--bg-page);
+color: var(--text-main);
+margin: 0;
+overflow-x: hidden;
+overscroll-behavior-y: none;
+transition: background-color 0.28s ease, color 0.28s ease;
+}
+
+/* ขยายขนาดฟอนต์ย่อยภาษาไทยให้อ่านสบายตาบนสมาร์ทโฟน */
+.text-[11px] {
+font-size: 0.8125rem !important;
+line-height: 1.5;
+}
+
+.text-[10px] {
+font-size: 0.72rem !important;
+line-height: 1.4;
+}
+
+/* ขนาดปุ่มสัมผัสขั้นต่ำตามมาตรฐานสมาร์ทโฟน (46px+) และพื้นที่ปลอดภัย Notch/Home Bar */
+.touch-target {
+min-height: 46px;
+touch-action: manipulation;
+}
+
+.pt-safe {
+padding-top: env(safe-area-inset-top, 0px);
+}
+
+.pb-safe {
+padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.pb-dock-safe {
+padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* ป้องกัน iOS Safari ซูมหน้าจออัตโนมัติเมื่อแตะช่องกรอกข้อมูล */
+@media (max-width: 768px) {
+input,
+select,
+textarea {
+font-size: 16px !important;
+}
+}
+
+/* แอนิเมชันหมุนสำหรับหน้าจอโหลดเริ่มต้น */
+@keyframes appSpin {
+to {
+transform: rotate(360deg);
+}
+}
+
+/* ============================================================================
+
+SPATIAL AURA BACKGROUND & GLASSMORPHISM SURFACES
+
+============================================================================ */
+.spatial-aura {
+position: fixed;
+inset: 0;
+z-index: 0;
+background:
+radial-gradient(circle at 12% 14%, var(--aura-1) 0%, transparent 46%),
+radial-gradient(circle at 88% 12%, var(--aura-2) 0%, transparent 45%),
+radial-gradient(circle at 65% 88%, var(--aura-3) 0%, transparent 48%);
+pointer-events: none;
+}
+
+.spatial-grid {
+position: fixed;
+inset: 0;
+z-index: 0;
+background-image:
+linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+background-size: 42px 42px;
+mask-image: radial-gradient(ellipse at center, black 45%, transparent 94%);
+-webkit-mask-image: radial-gradient(ellipse at center, black 45%, transparent 94%);
+pointer-events: none;
+}
+
+.spatial-card {
+background: var(--glass-bg);
+backdrop-filter: blur(24px) saturate(155%);
+-webkit-backdrop-filter: blur(24px) saturate(155%);
+border: 1px solid var(--glass-border);
+box-shadow: var(--glass-shadow);
+}
+
+.spatial-header {
+background: var(--header-bg);
+backdrop-filter: blur(22px) saturate(150%);
+-webkit-backdrop-filter: blur(22px) saturate(150%);
+border-bottom: 1px solid var(--surface-border);
+}
+
+.spatial-dock {
+background: var(--dock-bg);
+backdrop-filter: blur(24px) saturate(150%);
+-webkit-backdrop-filter: blur(24px) saturate(150%);
+border-top: 1px solid var(--surface-border);
+}
+
+.spatial-soft {
+background: var(--surface-soft);
+border: 1px solid var(--surface-border);
+}
+
+.spatial-soft:hover {
+background: var(--surface-soft-hover);
+}
+
+.spatial-input {
+background: var(--input-bg);
+border: 1px solid var(--input-border);
+color: var(--input-text);
+}
+
+.spatial-input:focus {
+outline: none;
+border-color: #10b981;
+box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
+}
+
+/* คลาสสีตัวอักษรปรับตามธีมมืด/สว่างอัตโนมัติ */
+.text-primary-adaptive {
+color: var(--text-main);
+}
+
+.text-secondary-adaptive {
+color: var(--text-secondary);
+}
+
+.text-muted-adaptive {
+color: var(--text-muted);
+}
+
+.text-accent-adaptive {
+color: var(--accent-text);
+}
+
+.text-prism-adaptive {
+color: var(--accent-prism);
+}
+
+/* ============================================================================
+
+SCROLLBAR & NATIVE FORM ELEMENT STYLING
+
+============================================================================ */
+html[data-theme="dark"] select option {
+background-color: #070d1c;
+color: #f8fafc;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+width: 5px;
+height: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+background: rgba(148, 163, 184, 0.38);
+border-radius: 999px;
+}
+
+/* ============================================================================
+
+AMBIENT LIGHT RUNNER & AUDIO EQUALIZER ANIMATIONS
+
+============================================================================ */
+@keyframes ambientBorderFlow {
+0% {
+background-position: 0% 50%;
+}
+50% {
+background-position: 100% 50%;
+}
+100% {
+background-position: 0% 50%;
+}
+}
+
+@keyframes ambientSweep {
+0% {
+transform: translateX(-115%);
+}
+100% {
+transform: translateX(220%);
+}
+}
+
+@keyframes audioEqPulse {
+0%,
+100% {
+transform: scaleY(0.32);
+opacity: 0.65;
+}
+50% {
+transform: scaleY(1);
+opacity: 1;
+}
+}
+
+.ambient-loading-card {
+position: relative;
+border-color: rgba(34, 211, 238, 0.48) !important;
+box-shadow:
+0 0 0 1px rgba(52, 211, 153, 0.28),
+0 16px 46px -14px rgba(34, 211, 238, 0.34),
+0 0 30px -8px rgba(16, 185, 129, 0.28) !important;
+}
+
+.ambient-playing-card {
+position: relative;
+border-color: rgba(52, 211, 153, 0.5) !important;
+box-shadow:
+0 0 0 1px rgba(52, 211, 153, 0.25),
+0 14px 40px -14px rgba(16, 185, 129, 0.28) !important;
+}
+
+.ambient-ribbon {
+position: absolute;
+top: 0;
+left: 0;
+right: 0;
+height: 3.5px;
+overflow: hidden;
+border-top-left-radius: 1.75rem;
+border-top-right-radius: 1.75rem;
+pointer-events: none;
+z-index: 5;
+}
+
+.ambient-ribbon-loading {
+background: linear-gradient(90deg, #10b981, #22d3ee, #818cf8, #34d399, #22d3ee);
+background-size: 280% 100%;
+animation: ambientBorderFlow 1.7s linear infinite;
+box-shadow: 0 0 16px rgba(34, 211, 238, 0.78);
+}
+
+.ambient-ribbon-playing {
+background: linear-gradient(90deg, rgba(16, 185, 129, 0.18), #34d399, #22d3ee, rgba(16, 185, 129, 0.18));
+background-size: 220% 100%;
+animation: ambientBorderFlow 3s ease-in-out infinite;
+box-shadow: 0 0 12px rgba(52, 211, 153, 0.55);
+}
+
+.ambient-btn-runner {
+position: relative;
+overflow: hidden;
+background: linear-gradient(120deg, #0284c7, #10b981, #6366f1, #22d3ee);
+background-size: 260% 260%;
+animation: ambientBorderFlow 2s ease infinite;
+color: #ffffff !important;
+box-shadow: 0 0 22px -4px rgba(34, 211, 238, 0.65);
+}
+
+.ambient-btn-runner::after {
+content: '';
+position: absolute;
+inset: 0;
+width: 48%;
+background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.42), transparent);
+animation: ambientSweep 1.3s ease-in-out infinite;
+pointer-events: none;
+}
+
+.audio-eq-bar {
+transform-origin: bottom;
+animation: audioEqPulse 0.85s ease-in-out infinite;
+}
+
+/* ============================================================================
+
+INDIVIDUAL CNEU LETTER SHEET & A4 PRINT RULES
+
+============================================================================ */
+.cneu-letter-sheet {
+background: #ffffff;
+color: #0f172a;
+font-family: 'Sarabun', sans-serif;
+width: 100%;
+max-width: 794px;
+box-shadow: 0 24px 60px -16px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(148, 163, 184, 0.25);
+}
+
+.cneu-evidence-table {
+width: 100%;
+border-collapse: collapse;
+font-size: 13px;
+line-height: 1.5;
+}
+
+.cneu-evidence-table th,
+.cneu-evidence-table td {
+border: 1px solid #cbd5e1;
+padding: 8px 10px;
+vertical-align: middle;
+}
+
+.cneu-evidence-table th {
+background-color: #f1f5f9;
+color: #0f172a;
+font-weight: 700;
+}
+
+@media print {
+@page {
+size: A4 portrait;
+margin: 14mm;
+}
+
+.no-print,
+.spatial-aura,
+.spatial-grid {
+display: none !important;
+}
+
+body.printing-cneu-letter {
+background: #ffffff !important;
+color: #0f172a !important;
+}
+
+body.printing-cneu-letter .hide-when-printing-cneu {
+display: none !important;
+}
+
+body.printing-cneu-letter .cneu-print-container {
+max-width: 100% !important;
+padding: 0 !important;
+margin: 0 !important;
+}
+
+body.printing-cneu-letter .cneu-letter-sheet {
+max-width: 100% !important;
+width: 100% !important;
+box-shadow: none !important;
+border: none !important;
+border-radius: 0 !important;
+padding: 0 !important;
+margin: 0 !important;
+}
+}
