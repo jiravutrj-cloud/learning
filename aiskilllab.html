@@ -1646,6 +1646,60 @@
         }
 
         /**
+         * ตัวช่วยแปลงรหัสเขตสุขภาพและสร้างรหัสไม่ระบุตัวตน (PDPA Zero-PII)
+         * ใช้สูตรแฮชเดียวกับ index.html เพื่อให้ข้อมูลสถิติใน executive_telemetry ผสานเป็นระเบียนเดียวกันโดยไม่เก็บข้อมูลส่วนตัว
+         */
+        function resolveRegionId(department = '') {
+            const d = String(department || '').trim();
+            if (d.startsWith('เขตสุขภาพที่')) {
+                const num = d.replace(/[^0-9]/g, '');
+                if (num && Number(num) >= 1 && Number(num) <= 12) return `R${num}`;
+            }
+            if (['กรมการแพทย์', 'สำนักการแพทย์ กรุงเทพฯ', 'สำนักอนามัย กรุงเทพฯ', 'กรุงเทพมหานคร'].some(k => d.includes(k))) {
+                return 'BKK';
+            }
+            return 'OTHER';
+        }
+
+        function buildAnonTelemetryId(rawId = '') {
+            const str = `RJCLOUD_PDPA_ANON|${rawId}|2027`;
+            let h = 2166136261;
+            for (let i = 0; i < str.length; i++) {
+                h ^= str.charCodeAt(i);
+                h = Math.imul(h, 16777619);
+            }
+            return `ANON-${(h >>> 0).toString(16).toUpperCase().padStart(8, '0')}`;
+        }
+
+        async function syncExecutiveTelemetry(u, bestScore, latestRadarMap) {
+            if (!fbDb || !u?.id || String(u.id).startsWith('admin_preview_')) return;
+            try {
+                const anonId = buildAnonTelemetryId(u.id);
+                const domains = Array.isArray(u?.aiRoadmap?.domains)
+                    ? u.aiRoadmap.domains.map(d => ({ id: d.id, percent: Number(d.percent || 0) }))
+                    : [];
+                await setDoc(
+                    doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'executive_telemetry', anonId),
+                    {
+                        regionId: resolveRegionId(u.department),
+                        department: u.department || '',
+                        status: u.status === 'ผ่าน' ? 'ผ่าน' : 'กำลังเรียน',
+                        progress: Number(u.progress || 0),
+                        hasLab: true,
+                        skillLabBestScore: typeof bestScore === 'number' ? bestScore : null,
+                        radar: latestRadarMap || null,
+                        domains,
+                        satisfactionScore: typeof u.satisfactionScore === 'number' ? u.satisfactionScore : null,
+                        updatedAt: new Date().toISOString()
+                    },
+                    { merge: true }
+                );
+            } catch (err) {
+                console.warn('Telemetry sync warning:', err);
+            }
+        }
+
+        /**
          * ประเมินสมรรถนะ 5 มิติ (สำหรับ Radar Chart, 3D Skill Card และหน้าผู้บริหาร)
          */
         function evaluateFiveDimensions(chatLog, mode, silenceBonusCount, vocalCalmAvg) {
@@ -3242,17 +3296,8 @@ Bereaved Relative (Start with [EMOTION]):`;
                             },
                             { merge: true }
                         );
-                        await setDoc(
-                            doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'leaderboard', String(nextUser.id)),
-                            {
-                                name: nextUser.name,
-                                hospital: nextUser.hospital || '-',
-                                score: bestScore,
-                                radar: latestRadarMap,
-                                updatedAt: finalResult.timestamp
-                            },
-                            { merge: true }
-                        );
+                        // ซิงค์เฉพาะสถิติไม่ระบุตัวตนเข้า executive_telemetry (PDPA Zero-PII — ยกเลิกการส่งข้อมูลขึ้น leaderboard)
+                        await syncExecutiveTelemetry(nextUser, bestScore, latestRadarMap);
                     }
                     showToast('บันทึกผลประเมิน AI Skill Lab และปลดล็อก Post-test เรียบร้อยแล้วค่ะ 🎉');
                 } catch (err) {
@@ -3696,6 +3741,15 @@ Bereaved Relative (Start with [EMOTION]):`;
                                 <p className="p-4 rounded-2xl bg-white/[0.04] border border-white/10 text-xs sm:text-sm text-slate-200 leading-relaxed">
                                     {isEn ? (activePersona?.briefingEN || selectedMode.briefingText) : (activePersona?.briefingTH || selectedMode.briefingText)}
                                 </p>
+
+                                <div className="px-3.5 py-2.5 rounded-xl bg-aurora-500/10 border border-aurora-400/30 text-[11px] text-aurora-200 flex items-center gap-2">
+                                    <Icon name="ShieldCheck" size={15} className="text-aurora-300 shrink-0" />
+                                    <span>
+                                        {isEn
+                                            ? 'PDPA Safety: Please do not enter real patient names, HN numbers, or personal identifiers during AI practice.'
+                                            : 'PDPA Safety: กรุณาไม่ระบุชื่อ–สกุล เลข HN หรือข้อมูลที่ระบุตัวตนผู้ป่วยจริงในการฝึกสนทนากับ AI ค่ะ'}
+                                    </span>
+                                </div>
 
                                 <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
                                     <button
