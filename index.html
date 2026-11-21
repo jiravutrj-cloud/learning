@@ -236,9 +236,58 @@
       .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
       .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.38); border-radius: 999px; }
 
+      /* สไตล์กระดาษ A4 สำหรับหนังสือรับรอง CNEU รายบุคคล */
+      .cneu-letter-sheet {
+        background: #ffffff;
+        color: #0f172a;
+        font-family: 'Sarabun', sans-serif;
+        width: 100%;
+        max-width: 794px;
+        box-shadow: 0 24px 60px -16px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(148, 163, 184, 0.25);
+      }
+      .cneu-evidence-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+      .cneu-evidence-table th,
+      .cneu-evidence-table td {
+        border: 1px solid #cbd5e1;
+        padding: 8px 10px;
+        vertical-align: middle;
+      }
+      .cneu-evidence-table th {
+        background-color: #f1f5f9;
+        color: #0f172a;
+        font-weight: 700;
+      }
+
       @media print {
+        @page { size: A4 portrait; margin: 14mm; }
         .no-print { display: none !important; }
         .spatial-aura, .spatial-grid { display: none !important; }
+        body.printing-cneu-letter {
+          background: #ffffff !important;
+          color: #0f172a !important;
+        }
+        body.printing-cneu-letter .hide-when-printing-cneu {
+          display: none !important;
+        }
+        body.printing-cneu-letter .cneu-print-container {
+          max-width: 100% !important;
+          padding: 0 !important;
+          margin: 0 !important;
+        }
+        body.printing-cneu-letter .cneu-letter-sheet {
+          max-width: 100% !important;
+          width: 100% !important;
+          box-shadow: none !important;
+          border: none !important;
+          border-radius: 0 !important;
+          padding: 0 !important;
+          margin: 0 !important;
+        }
       }
     </style>
 
@@ -361,6 +410,23 @@
             hoursText: 'ระยะเวลาการเรียนรู้ตามเกณฑ์มาตรฐานวิชาชีพ',
             logoUrl: '',
             signatureUrl: ''
+        };
+
+        const DEFAULT_CNEU_CONFIG = {
+            logoUrl: '',
+            orgName: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ โรงพยาบาลราชวิถี',
+            courseName: 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ (rjcloud.organ)',
+            activityCode: 'CNEU-2027-0148',
+            batchLabel: 'รุ่นที่ 1 ประจำปีงบประมาณ 2570',
+            cneuCredits: '8.0',
+            dateRange: '1 – 31 มกราคม 2570',
+            criteriaText: 'ยืนยันตัวตน OTP + เรียน ≥ 80% + AI Skill Lab + Post-test ≥ 80%',
+            coordinatorName: 'พว.ผู้ประสานงานโครงการ (ศูนย์รับบริจาคอวัยวะ)',
+            coordinatorContact: 'rjcloud.organ@gmail.com',
+            reporterName: 'พว.ผู้ประสานงานโครงการ (ศูนย์รับบริจาคอวัยวะ)',
+            reporterPosition: 'ผู้ประสานงานโครงการ',
+            approverName: 'ผู้อำนวยการศูนย์ความเป็นเลิศทางการแพทย์',
+            approverPosition: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ'
         };
 
         const CLINICAL_DOMAINS = window.CLINICAL_DOMAINS || {
@@ -610,6 +676,14 @@
             return `${m} น. ${String(s).padStart(2, '0')} วิ`;
         }
 
+        function parsePosttestPercent(userObj) {
+            const m = String(userObj?.posttest || '').match(/(\d+)\s*\/\s*(\d+)/);
+            if (!m) return userObj?.status === 'ผ่าน' ? MIN_POSTTEST_PERCENT : 0;
+            const sc = parseInt(m[1], 10);
+            const tot = parseInt(m[2], 10) || 1;
+            return Math.round((sc / tot) * 100);
+        }
+
         function pcm16ToWavUrl(base64PCM, sampleRate = 24000) {
             const binaryString = window.atob(base64PCM);
             const bytes = new Uint8Array(binaryString.length);
@@ -670,9 +744,9 @@
 
         /**
          * วาดใบประกาศนียบัตรความละเอียดสูงสไตล์ Apple Minimalist
-         * พื้นสีขาวบริสุทธิ์ ตัดกรอบและเส้นสายสีทองเมทัลลิกบางเฉียบ พร้อม QR Code จริง
+         * พื้นสีขาวบริสุทธิ์ ตัดกรอบและเส้นสายสีทองเมทัลลิกบางเฉียบ พร้อม QR Code จริงและรหัส CNEU
          */
-        async function drawMinimalistGoldCertificate(canvas, certData, template) {
+        async function drawMinimalistGoldCertificate(canvas, certData, template, cneuCfg = null) {
             if (!canvas) return;
             const W = 1600, H = 1131;
             canvas.width = W;
@@ -819,6 +893,19 @@
             ctx.fillStyle = '#86868b';
             ctx.font = '500 17px "Sarabun", sans-serif';
             ctx.fillText(`ให้ไว้ ณ วันที่ ${thaiDate}   •   ${template.hoursText || ''}`, W / 2, topY + 516);
+
+            // แสดงรหัสกิจกรรมและหน่วยคะแนน CNEU (ซิงค์อัตโนมัติจากหน้า Admin)
+            const actCode = String(cneuCfg?.activityCode || certData.cneuActivityCode || '').trim();
+            const credits = String(cneuCfg?.cneuCredits || certData.cneuCredits || '').trim();
+            if (actCode || credits) {
+                const cneuLine = [
+                    actCode ? `รหัสกิจกรรม CNEU: ${actCode}` : '',
+                    credits ? `จำนวน ${credits} หน่วยคะแนนการศึกษาต่อเนื่อง (CNEU)` : ''
+                ].filter(Boolean).join('   •   ');
+                ctx.fillStyle = '#a8843b';
+                ctx.font = '600 17px "Prompt", sans-serif';
+                ctx.fillText(cneuLine, W / 2, topY + 556);
+            }
 
             // 9. ส่วนลายเซ็นกึ่งกลาง
             const sigBaseY = H - 188;
@@ -1341,6 +1428,219 @@
             );
         }
 
+        /**
+         * หนังสือรับรองผลการศึกษาต่อเนื่องสาขาพยาบาลศาสตร์ (CNEU) รายบุคคล — A4 แนวตั้งพร้อม QR Code จริง
+         * แสดงเฉพาะข้อมูลของผู้เรียนเจ้าของบัญชี (PDPA-Safe) สำหรับนำไปยื่นสภาการพยาบาลด้วยตนเอง
+         */
+        function IndividualCneuLetterCard({ user, cneuConfig, certTemplate, liveStudyPercent, studySeconds, qrDataUrl, onPrintCneu }) {
+            const [logoErr, setLogoErr] = useState(false);
+
+            useEffect(() => {
+                setLogoErr(false);
+            }, [cneuConfig?.logoUrl]);
+
+            const issuedThaiDate = new Date(user?.certificateIssuedAt || Date.now()).toLocaleDateString('th-TH', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            const postPct = parsePosttestPercent(user);
+            const bestLab = typeof user?.skillLabBestScore === 'number' ? `${user.skillLabBestScore}/100` : 'ผ่านเกณฑ์แล้ว';
+            const verifyUrl = `${window.location.origin}${window.location.pathname.replace(/index\.html$/i, '')}verify.html?code=${encodeURIComponent(user?.certificateCode || '')}`;
+            const hasCustomLogo = Boolean(cneuConfig?.logoUrl?.trim()) && !logoErr;
+
+            return (
+                <div className="space-y-4">
+                    <div className="no-print flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 spatial-card rounded-2xl p-4">
+                        <div className="space-y-0.5">
+                            <p className="font-display font-bold text-sm text-primary-adaptive flex items-center gap-1.5">
+                                <Icon name="FileCheck2" size={16} className="text-accent-adaptive" />
+                                หนังสือรับรองผลการศึกษาต่อเนื่อง (CNEU) รายบุคคล
+                            </p>
+                            <p className="text-xs text-secondary-adaptive">
+                                แสดงเฉพาะข้อมูลของคุณพร้อมเลขใบอนุญาตและ QR Code ตรวจสอบจริง สำหรับนำไปยื่นสภาการพยาบาลด้วยตนเองค่ะ
+                            </p>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={onPrintCneu}
+                            className="touch-target shrink-0 px-5 py-3 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg active:scale-95"
+                        >
+                            <Icon name="Printer" size={16} /> พิมพ์ / บันทึกเป็น PDF (A4)
+                        </button>
+                    </div>
+
+                    <div className="w-full overflow-x-auto custom-scrollbar pb-2 flex justify-center">
+                        <article className="cneu-letter-sheet rounded-2xl p-6 sm:p-10 space-y-5">
+                            {/* หัวหนังสือรับรองทางการ */}
+                            <div className="border-b-2 border-slate-800 pb-4 flex items-start justify-between gap-4">
+                                <div className="flex items-start gap-3.5">
+                                    {hasCustomLogo ? (
+                                        <div className="w-16 h-16 rounded-xl border border-slate-200 bg-white p-1 flex items-center justify-center shrink-0 overflow-hidden">
+                                            <img
+                                                src={cneuConfig.logoUrl.trim()}
+                                                alt="โลโก้หน่วยงาน"
+                                                onError={() => setLogoErr(true)}
+                                                className="w-full h-full object-contain"
+                                            />
+                                        </div>
+                                    ) : (
+                                        <div className="w-14 h-14 rounded-xl border-2 border-emerald-700 bg-emerald-50 flex items-center justify-center shrink-0">
+                                            <svg viewBox="0 0 48 48" className="w-9 h-9" fill="none">
+                                                <circle cx="24" cy="24" r="20" stroke="#047857" strokeWidth="2.2" />
+                                                <path d="M24 14V34M14 24H34" stroke="#047857" strokeWidth="3.2" strokeLinecap="round" />
+                                                <circle cx="24" cy="24" r="5" fill="#d1fae5" stroke="#047857" strokeWidth="1.8" />
+                                            </svg>
+                                        </div>
+                                    )}
+                                    <div className="space-y-0.5">
+                                        <p className="text-[11px] font-bold tracking-wider text-emerald-800 uppercase">
+                                            INDIVIDUAL CNEU VERIFICATION LETTER • สภาการพยาบาล (ศกพ.)
+                                        </p>
+                                        <h2 className="font-display text-lg sm:text-xl font-extrabold text-slate-900 leading-snug">
+                                            หนังสือรับรองการสำเร็จการอบรมและหน่วยคะแนนการศึกษาต่อเนื่อง
+                                        </h2>
+                                        <p className="text-xs sm:text-sm font-semibold text-slate-600">
+                                            {cneuConfig?.orgName || certTemplate?.orgTitleTH}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="text-right shrink-0 border border-emerald-600 rounded-lg px-3 py-2 bg-emerald-50">
+                                    <p className="text-[10px] font-bold text-emerald-800 uppercase">รหัสกิจกรรม CNEU</p>
+                                    <p className="font-mono text-sm sm:text-base font-extrabold text-emerald-900">{cneuConfig?.activityCode || '-'}</p>
+                                    <p className="text-[11px] font-bold text-slate-800 mt-0.5">
+                                        <span className="text-emerald-700">{cneuConfig?.cneuCredits || '8.0'}</span> หน่วยคะแนน
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* ข้อความรับรองรายบุคคล */}
+                            <div className="space-y-3 text-sm text-slate-800 leading-relaxed">
+                                <p>
+                                    หนังสือฉบับนี้ให้ไว้เพื่อรับรองว่าผู้มีรายชื่อดังต่อไปนี้ ได้เข้าร่วมศึกษาและผ่านการประเมินผลครบทุกขั้นตอนตามเกณฑ์มาตรฐานของหลักสูตร <b>{cneuConfig?.courseName || certTemplate?.courseTitleTH}</b> ({cneuConfig?.batchLabel || 'รุ่นที่ 1'}) ระหว่างวันที่ <b>{cneuConfig?.dateRange || '-'}</b> เป็นที่เรียบร้อยแล้ว
+                                </p>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs sm:text-sm">
+                                    <div>
+                                        <span className="text-slate-500 text-xs block">คำนำหน้า ชื่อ - นามสกุล</span>
+                                        <span className="font-display font-bold text-base text-slate-900">{user?.name || '-'}</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-slate-500 text-xs block">เลขที่ใบอนุญาตประกอบวิชาชีพฯ</span>
+                                        <span className="font-mono font-extrabold text-base text-emerald-800 tracking-wide">{user?.license || user?.id || '-'}</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-slate-500 text-xs block">ตำแหน่งวิชาชีพ</span>
+                                        <span className="font-semibold text-slate-900">{user?.position || 'พยาบาลวิชาชีพ'}</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-slate-500 text-xs block">โรงพยาบาล / หน่วยงานต้นสังกัด</span>
+                                        <span className="font-semibold text-slate-900">
+                                            {[user?.hospital || '-', user?.province ? `จ.${user.province}` : '', user?.department || ''].filter(Boolean).join(' • ')}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span className="text-slate-500 text-xs block">เลขที่ประกาศนียบัตรอ้างอิง</span>
+                                        <span className="font-mono font-bold text-slate-900">{user?.certificateCode || '-'}</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-slate-500 text-xs block">วันที่สำเร็จการอบรมและออกเอกสาร</span>
+                                        <span className="font-semibold text-slate-900">{issuedThaiDate}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* ตารางหลักฐานการผ่านเกณฑ์ครบ 5 ขั้นตอน */}
+                            <div className="space-y-2">
+                                <p className="text-xs font-bold text-slate-700 uppercase tracking-wide">
+                                    หลักฐานการผ่านเกณฑ์การประเมินผล (5-Step Verified Learning Record)
+                                </p>
+                                <table className="cneu-evidence-table">
+                                    <thead>
+                                        <tr>
+                                            <th style={{ width: '48px' }}>ขั้นที่</th>
+                                            <th className="text-left">รายการประเมินตามเกณฑ์หลักสูตร</th>
+                                            <th style={{ width: '185px' }}>ผลการประเมิน</th>
+                                            <th style={{ width: '92px' }}>สถานะ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td className="text-center font-mono font-bold">1</td>
+                                            <td>การยืนยันตัวตนด้วยรหัส OTP และแบบทดสอบก่อนเรียน (Pre-test)</td>
+                                            <td className="text-center font-mono font-semibold">{user?.pretest || 'ดำเนินการแล้ว'}</td>
+                                            <td className="text-center font-bold text-emerald-700">ผ่านเกณฑ์ ✓</td>
+                                        </tr>
+                                        <tr>
+                                            <td className="text-center font-mono font-bold">2</td>
+                                            <td>การสะสมเวลาศึกษาบทเรียนออนไลน์ครบตามเกณฑ์ (ไม่น้อยกว่าร้อยละ {MIN_STUDY_PERCENT})</td>
+                                            <td className="text-center font-mono font-semibold">{liveStudyPercent}% ({formatStudyTime(studySeconds)})</td>
+                                            <td className="text-center font-bold text-emerald-700">ผ่านเกณฑ์ ✓</td>
+                                        </tr>
+                                        <tr>
+                                            <td className="text-center font-mono font-bold">3</td>
+                                            <td>การฝึกปฏิบัติทักษะการสื่อสารกับญาติ 3 มิติ (AI Skill Lab)</td>
+                                            <td className="text-center font-mono font-semibold">Empathy {bestLab}</td>
+                                            <td className="text-center font-bold text-emerald-700">ผ่านเกณฑ์ ✓</td>
+                                        </tr>
+                                        <tr>
+                                            <td className="text-center font-mono font-bold">4</td>
+                                            <td>การสอบวัดความรู้หลังเรียน (Post-test เกณฑ์ไม่น้อยกว่าร้อยละ {MIN_POSTTEST_PERCENT})</td>
+                                            <td className="text-center font-mono font-bold text-emerald-800">{user?.posttest || '-'} ({postPct}%)</td>
+                                            <td className="text-center font-bold text-emerald-700">ผ่านเกณฑ์ ✓</td>
+                                        </tr>
+                                        <tr className="bg-emerald-50/70">
+                                            <td className="text-center font-mono font-bold">5</td>
+                                            <td className="font-bold text-emerald-950">การรับรองหน่วยคะแนนการศึกษาต่อเนื่องสาขาพยาบาลศาสตร์ (CNEU)</td>
+                                            <td className="text-center font-mono font-extrabold text-emerald-800">{cneuConfig?.cneuCredits || '8.0'} หน่วยคะแนน</td>
+                                            <td className="text-center font-extrabold text-emerald-800">อนุมัติ ✓</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            {/* ส่วน QR Code ตรวจสอบจริง + ผู้ลงนามรับรอง */}
+                            <div className="pt-4 grid grid-cols-1 sm:grid-cols-12 gap-5 items-end">
+                                <div className="sm:col-span-5 flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-slate-50">
+                                    <div className="w-20 h-20 rounded-lg bg-white border border-slate-300 p-1 flex items-center justify-center shrink-0">
+                                        {qrDataUrl ? (
+                                            <img src={qrDataUrl} alt="QR Code ตรวจสอบเอกสาร" className="w-full h-full object-contain" />
+                                        ) : (
+                                            <span className="font-mono text-[10px] font-bold text-slate-500 text-center">QR VERIFY</span>
+                                        )}
+                                    </div>
+                                    <div className="text-[11px] text-slate-600 leading-snug min-w-0">
+                                        <p className="font-bold text-slate-900">สแกนตรวจสอบเอกสารจริง</p>
+                                        <p className="font-mono text-[10px] text-emerald-800 font-bold mt-0.5 truncate">{user?.certificateCode || '-'}</p>
+                                        <p className="text-[10px] text-slate-500 mt-0.5 break-all">{verifyUrl}</p>
+                                    </div>
+                                </div>
+
+                                <div className="sm:col-span-7 grid grid-cols-2 gap-4 text-center text-xs">
+                                    <div className="space-y-1">
+                                        <p className="text-slate-500">ลงชื่อ .............................................</p>
+                                        <p className="font-bold text-slate-900">( {cneuConfig?.reporterName || 'ผู้ประสานงานโครงการ'} )</p>
+                                        <p className="text-[11px] text-slate-600">{cneuConfig?.reporterPosition || 'ผู้จัดทำรายงาน'}</p>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-slate-500">ลงชื่อ .............................................</p>
+                                        <p className="font-bold text-slate-900">( {cneuConfig?.approverName || certTemplate?.signerName} )</p>
+                                        <p className="text-[11px] text-slate-600">{cneuConfig?.approverPosition || certTemplate?.signerPosition}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="pt-3 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 text-[10px] font-mono text-slate-500">
+                                <span>GENERATED BY RJCLOUD.ORGAN • INDIVIDUAL CNEU CERTIFICATE</span>
+                                <span>ผู้ประสานงาน: {cneuConfig?.coordinatorContact || CONFIG.contactEmail}</span>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            );
+        }
+
         // ============================================================================
         // 5. MAIN LEARNER APPLICATION (PRODUCTION 2027)
         // ============================================================================
@@ -1381,6 +1681,13 @@
                 parseRawExams(window.QUIZ_QUESTIONS_RAW || FALLBACK_QUIZ_RAW)
             ]);
             const [certTemplate, setCertTemplate] = useState(() => ({ ...DEFAULT_CERT_TEMPLATE }));
+            const [cneuConfig, setCneuConfig] = useState(() => {
+                try {
+                    const saved = localStorage.getItem('rjcloud_cneu_config_v2027');
+                    if (saved) return { ...DEFAULT_CNEU_CONFIG, ...JSON.parse(saved) };
+                } catch (_) {}
+                return { ...DEFAULT_CNEU_CONFIG };
+            });
             const [liveConfig, setLiveConfig] = useState({
                 status: 'offline',
                 days: 1,
@@ -1500,6 +1807,8 @@
             const [csatRating, setCsatRating] = useState(5);
             const [csatComment, setCsatComment] = useState('');
             const [isIssuingCert, setIsIssuingCert] = useState(false);
+            const [certDocTab, setCertDocTab] = useState('cert'); // cert | cneu
+            const [certQrDataUrl, setCertQrDataUrl] = useState('');
 
             // 8. UI Feedback States
             const [toast, setToast] = useState({ visible: false, text: '', type: 'success' });
@@ -1663,6 +1972,7 @@
                             const d = snap.data();
                             if (d.liveConfig) setLiveConfig(p => ({ ...p, ...d.liveConfig }));
                             if (d.certTemplate) setCertTemplate(p => ({ ...p, ...d.certTemplate }));
+                            if (d.cneuConfig) setCneuConfig(p => ({ ...p, ...d.cneuConfig }));
                             if (d.appsScriptUrl) setAppsScriptUrl(d.appsScriptUrl);
                         },
                         () => {}
@@ -1741,29 +2051,25 @@
                 let tickCount = 0;
                 const timer = setInterval(() => {
                     if (document.hidden) return;
-                    setStudySeconds(prev => prev + 1);
-                    tickCount += 1;
-                    if (tickCount % 30 === 0) {
-                        saveUserProgress({ lastVideoId: currentLessonId });
-                    }
+                    setStudySeconds(prev => {
+                        const next = prev + 1;
+                        tickCount += 1;
+                        if (tickCount % 15 === 0) {
+                            saveUserProgress({ studySeconds: next, lastVideoId: currentLessonId });
+                        }
+                        return next;
+                    });
                 }, 1000);
-
-                const onVisChange = () => {
-                    if (document.hidden) saveUserProgress({ lastVideoId: currentLessonId });
-                };
-                window.addEventListener('visibilitychange', onVisChange);
-                window.addEventListener('beforeunload', onVisChange);
 
                 return () => {
                     clearInterval(timer);
-                    window.removeEventListener('visibilitychange', onVisChange);
-                    window.removeEventListener('beforeunload', onVisChange);
+                    saveUserProgress({ studySeconds: studySecondsRef.current, lastVideoId: currentLessonId });
                 };
-            }, [screen, activeTab, user, isAdminPreview, currentLessonId, saveUserProgress]);
+            }, [screen, activeTab, user?.id, isAdminPreview, currentLessonId, saveUserProgress]);
 
-            // Render Certificate Canvas when viewing certificate screen
+            // Render Certificate Canvas & QR Code when viewing certificate screen
             useEffect(() => {
-                if (screen === 'certificate' && certCanvasRef.current && user) {
+                if (screen === 'certificate' && certDocTab === 'cert' && certCanvasRef.current && user) {
                     drawMinimalistGoldCertificate(
                         certCanvasRef.current,
                         {
@@ -1771,12 +2077,32 @@
                             name: user.name,
                             hospital: user.hospital,
                             license: user.license || user.id,
-                            issuedAt: user.certificateIssuedAt || new Date().toISOString()
+                            issuedAt: user.certificateIssuedAt || new Date().toISOString(),
+                            cneuActivityCode: cneuConfig.activityCode,
+                            cneuCredits: cneuConfig.cneuCredits
                         },
-                        certTemplate
+                        certTemplate,
+                        cneuConfig
                     );
                 }
-            }, [screen, user, certTemplate]);
+            }, [screen, certDocTab, user, certTemplate, cneuConfig]);
+
+            useEffect(() => {
+                if (screen !== 'certificate' || !user) return;
+                let active = true;
+                const code = user.certificateCode || generateCertCode(certTemplate.certPrefix);
+                const verifyUrl = `${window.location.origin}${window.location.pathname.replace(/index\.html$/i, '')}verify.html?code=${encodeURIComponent(code)}`;
+                if (window.QRCode && typeof window.QRCode.toDataURL === 'function') {
+                    window.QRCode.toDataURL(verifyUrl, {
+                        width: 240,
+                        margin: 1,
+                        color: { dark: '#0f172a', light: '#ffffff' }
+                    })
+                        .then(url => { if (active) setCertQrDataUrl(url); })
+                        .catch(() => {});
+                }
+                return () => { active = false; };
+            }, [screen, user, certTemplate.certPrefix]);
 
             // 11. AUTH WIZARD HANDLERS (PRODUCTION OTP)
             const handleCheckLicense = async (e) => {
@@ -2143,6 +2469,8 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                     signerPosition: certTemplate.signerPosition,
                     posttestScore: nextUser?.posttest || `ผ่านเกณฑ์ (≥ ${MIN_POSTTEST_PERCENT}%)`,
                     skillLabBestScore: typeof nextUser?.skillLabBestScore === 'number' ? nextUser.skillLabBestScore : null,
+                    cneuActivityCode: cneuConfig.activityCode || '',
+                    cneuCredits: cneuConfig.cneuCredits || '',
                     issuedAt,
                     status: 'valid'
                 };
@@ -2190,6 +2518,21 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                 pdf.addImage(imgData, 'PNG', 0, 0, 297, 210);
                 pdf.save(`Certificate_${user?.certificateCode || 'rjcloud'}.pdf`);
                 showToast('ดาวน์โหลดไฟล์ประกาศนียบัตร PDF (A4 แนวนอน) เรียบร้อยแล้วค่ะ');
+            };
+
+            const handlePrintIndividualCneu = () => {
+                setCertDocTab('cneu');
+                showToast('กำลังเปิดหน้าต่างบันทึกหนังสือรับรอง CNEU (เลือก Destination: Save as PDF)', 'info');
+                setTimeout(() => {
+                    document.body.classList.add('printing-cneu-letter');
+                    const cleanup = () => {
+                        document.body.classList.remove('printing-cneu-letter');
+                        window.removeEventListener('afterprint', cleanup);
+                    };
+                    window.addEventListener('afterprint', cleanup);
+                    window.print();
+                    setTimeout(cleanup, 1500);
+                }, 260);
             };
 
             const handleLogout = () => {
@@ -3322,67 +3665,98 @@ ${user.certificateCode ? `5. รหัสประกาศนียบัตร
                         </div>
                     )}
 
-                    {/* ==================== SCREEN 6: CERTIFICATE CONFIRM & CSAT ==================== */}
+                    {/* ==================== SCREEN 6: CONFIRM CERTIFICATE NAME & CSAT ==================== */}
                     {screen === 'cert_confirm' && user && (
                         <div className="relative z-10 flex-1 flex items-center justify-center px-4 py-8">
                             <SpatialCard className="w-full max-w-lg p-6 sm:p-8 space-y-5">
-                                <div className="text-center space-y-1.5">
-                                    <span className="px-3 py-1 rounded-full bg-aurora-500/20 text-accent-adaptive font-mono text-[10px] font-bold">
-                                        STEP 05 • CERTIFICATE & SATISFACTION SURVEY
-                                    </span>
-                                    <h1 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive">
-                                        ยืนยันชื่อบนประกาศนียบัตร & ประเมินความพึงพอใจ
-                                    </h1>
+                                <div className="flex items-center justify-between">
+                                    <button
+                                        type="button"
+                                        onClick={() => setScreen('dashboard')}
+                                        className="spatial-soft px-3 py-2 rounded-xl text-xs font-bold text-primary-adaptive inline-flex items-center gap-1"
+                                    >
+                                        <Icon name="ArrowLeft" size={14} /> กลับห้องเรียน
+                                    </button>
+                                    <span className="font-mono text-xs font-bold text-accent-adaptive">STEP 05 • CERTIFICATE & CNEU</span>
+                                </div>
+
+                                <div className="space-y-1">
+                                    <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive">
+                                        ยืนยันชื่อ-นามสกุลและประเมินความพึงพอใจ
+                                    </h2>
+                                    <p className="text-xs sm:text-sm text-secondary-adaptive">
+                                        กรุณาตรวจสอบตัวสะกดให้ถูกต้อง เพื่อออกใบประกาศนียบัตรและหนังสือรับรองหน่วยคะแนน CNEU ({cneuConfig.cneuCredits || '8.0'} หน่วยคะแนน)
+                                    </p>
                                 </div>
 
                                 <form onSubmit={handleConfirmIssueCertificate} className="space-y-4">
-                                    <FormField label="ชื่อ - นามสกุลที่จะแสดงบนประกาศนียบัตร *" required value={certFormName} onChange={e => setCertFormName(e.target.value)} />
-                                    <FormField label="โรงพยาบาล / หน่วยงาน" value={certFormHosp} onChange={e => setCertFormHosp(e.target.value)} />
+                                    <FormField
+                                        label="คำนำหน้า ชื่อ - นามสกุล (แสดงบนประกาศนียบัตรและใบรับรอง CNEU) *"
+                                        required
+                                        value={certFormName}
+                                        onChange={e => setCertFormName(e.target.value)}
+                                        placeholder="เช่น พว.ใจดี มีเมตตา"
+                                    />
+                                    <FormField
+                                        label="โรงพยาบาล / หน่วยงานต้นสังกัด *"
+                                        required
+                                        value={certFormHosp}
+                                        onChange={e => setCertFormHosp(e.target.value)}
+                                        placeholder="เช่น โรงพยาบาลราชวิถี"
+                                    />
 
-                                    <div className="spatial-soft p-4 rounded-2xl space-y-2.5 text-center">
-                                        <p className="text-xs font-bold text-secondary-adaptive">ระดับความพึงพอใจต่อหลักสูตรและระบบ AI (1–5 ดาว)</p>
-                                        <div className="flex items-center justify-center gap-2">
+                                    <div className="spatial-soft p-4 rounded-2xl space-y-2.5">
+                                        <p className="text-xs font-bold text-primary-adaptive">ประเมินความพึงพอใจต่อหลักสูตรและระบบ AI (CSAT)</p>
+                                        <div className="flex items-center justify-center gap-2 py-1">
                                             {[1, 2, 3, 4, 5].map(star => (
                                                 <button
                                                     key={star}
                                                     type="button"
                                                     onClick={() => setCsatRating(star)}
-                                                    className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all ${
-                                                        star <= csatRating ? 'bg-amber-400/20 text-amber-400 scale-105' : 'spatial-soft text-muted-adaptive'
-                                                    }`}
+                                                    aria-label={`ให้คะแนน ${star} ดาว`}
+                                                    className="p-1.5 transition-transform active:scale-90"
                                                 >
-                                                    <Icon name="Star" size={22} className={star <= csatRating ? 'fill-amber-400' : ''} />
+                                                    <Icon
+                                                        name="Star"
+                                                        size={30}
+                                                        className={star <= csatRating ? 'text-amber-400 fill-amber-400' : 'text-slate-500'}
+                                                    />
                                                 </button>
                                             ))}
                                         </div>
-                                        <input
-                                            type="text"
+                                        <textarea
+                                            rows="2"
                                             value={csatComment}
                                             onChange={e => setCsatComment(e.target.value)}
-                                            placeholder="ข้อเสนอแนะเพิ่มเติม (ไม่บังคับ)"
-                                            className="spatial-input w-full px-3.5 py-2.5 rounded-xl text-xs"
+                                            placeholder="ข้อเสนอแนะเพิ่มเติมสำหรับทีมพัฒนาหลักสูตร (ไม่บังคับ)..."
+                                            className="spatial-input w-full p-3 rounded-xl text-xs sm:text-sm"
                                         />
                                     </div>
 
                                     <button
                                         type="submit"
                                         disabled={isIssuingCert}
-                                        className="touch-target w-full py-3.5 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-sm shadow-xl"
+                                        className="touch-target w-full py-3.5 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg"
                                     >
-                                        {isIssuingCert ? 'กำลังออกประกาศนียบัตร...' : 'ออกประกาศนียบัตรพร้อม QR Code ทันที'}
+                                        <Icon name="Award" size={18} />
+                                        {isIssuingCert ? 'กำลังออกเอกสารและสร้าง QR Code...' : 'ยืนยันและออกประกาศนียบัตร + ใบรับรอง CNEU'}
                                     </button>
                                 </form>
                             </SpatialCard>
                         </div>
                     )}
 
-                    {/* ==================== SCREEN 7: MINIMALIST GOLD CERTIFICATE STUDIO ==================== */}
+                    {/* ==================== SCREEN 7: MINIMALIST GOLD CERTIFICATE & INDIVIDUAL CNEU LETTER ==================== */}
                     {screen === 'certificate' && user && (
-                        <div className="relative z-10 flex-1 w-full max-w-5xl mx-auto px-3.5 sm:px-6 py-6 sm:py-10 space-y-5">
-                            <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div className="cneu-print-container relative z-10 flex-1 w-full max-w-5xl mx-auto px-3.5 sm:px-6 py-6 sm:py-10 space-y-5">
+                            <div className="no-print flex flex-wrap items-center justify-between gap-2">
                                 <div>
-                                    <span className="font-mono text-[10px] font-bold text-amber-400 uppercase">OFFICIAL CERTIFICATE • MINIMALIST GOLD</span>
-                                    <h1 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive">ประกาศนียบัตรอิเล็กทรอนิกส์ของคุณ</h1>
+                                    <span className="font-mono text-[10px] font-bold text-amber-400 uppercase">
+                                        OFFICIAL CREDENTIALS • CERTIFICATE + CNEU ({cneuConfig.cneuCredits || '8.0'} หน่วยคะแนน)
+                                    </span>
+                                    <h1 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive">
+                                        ประกาศนียบัตรและหนังสือรับรอง CNEU ของคุณ
+                                    </h1>
                                 </div>
                                 <button
                                     type="button"
@@ -3393,34 +3767,85 @@ ${user.certificateCode ? `5. รหัสประกาศนียบัตร
                                 </button>
                             </div>
 
-                            <SpatialCard className="p-3 sm:p-6 space-y-4">
-                                <div className="w-full aspect-[1.414/1] rounded-2xl overflow-hidden bg-white border border-amber-500/35 shadow-2xl">
-                                    <canvas ref={certCanvasRef} className="w-full h-full object-contain block" />
+                            {/* แถบสลับเอกสาร 2 ฉบับคู่กัน: 1) ใบประกาศนียบัตร 2) หนังสือรับรอง CNEU รายบุคคล */}
+                            <div className="no-print flex flex-wrap items-center justify-between gap-2.5">
+                                <div className="inline-flex p-1 rounded-2xl spatial-soft">
+                                    <button
+                                        type="button"
+                                        onClick={() => setCertDocTab('cert')}
+                                        className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all ${
+                                            certDocTab === 'cert'
+                                                ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold shadow-sm'
+                                                : 'text-secondary-adaptive'
+                                        }`}
+                                    >
+                                        <Icon name="Award" size={16} /> 1. ใบประกาศนียบัตร (PDF/PNG)
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setCertDocTab('cneu')}
+                                        className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all ${
+                                            certDocTab === 'cneu'
+                                                ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold shadow-sm'
+                                                : 'text-secondary-adaptive'
+                                        }`}
+                                    >
+                                        <Icon name="FileCheck2" size={16} /> 2. หนังสือรับรอง CNEU รายบุคคล
+                                    </button>
                                 </div>
 
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                                    <button
-                                        type="button"
-                                        onClick={handleDownloadCertPDF}
-                                        className="touch-target py-3.5 px-4 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg"
-                                    >
-                                        <Icon name="FileDown" size={18} /> ดาวน์โหลด PDF (A4)
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={handleDownloadCertPNG}
-                                        className="touch-target spatial-soft py-3.5 px-4 rounded-2xl text-primary-adaptive font-display font-bold text-sm flex items-center justify-center gap-2"
-                                    >
-                                        <Icon name="Image" size={18} className="text-accent-adaptive" /> บันทึกภาพ PNG (300 DPI)
-                                    </button>
-                                    <a
-                                        href={`./verify.html?code=${encodeURIComponent(user.certificateCode || '')}`}
-                                        className="touch-target spatial-soft py-3.5 px-4 rounded-2xl text-prism-adaptive font-display font-bold text-sm flex items-center justify-center gap-2"
-                                    >
-                                        <Icon name="QrCode" size={18} /> ตรวจสอบรหัสรับรอง
-                                    </a>
-                                </div>
-                            </SpatialCard>
+                                <span className="px-3 py-1.5 rounded-xl bg-aurora-500/15 border border-aurora-400/35 text-accent-adaptive font-mono text-xs font-bold">
+                                    {cneuConfig.activityCode || 'CNEU'} • {cneuConfig.cneuCredits || '8.0'} หน่วยคะแนน
+                                </span>
+                            </div>
+
+                            {certDocTab === 'cert' ? (
+                                <SpatialCard className="hide-when-printing-cneu p-3 sm:p-6 space-y-4">
+                                    <div className="w-full aspect-[1.414/1] rounded-2xl overflow-hidden bg-white border border-amber-500/35 shadow-2xl">
+                                        <canvas ref={certCanvasRef} className="w-full h-full object-contain block" />
+                                    </div>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+                                        <button
+                                            type="button"
+                                            onClick={handleDownloadCertPDF}
+                                            className="touch-target py-3.5 px-4 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg"
+                                        >
+                                            <Icon name="FileDown" size={17} /> ใบประกาศฯ PDF (A4)
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={handleDownloadCertPNG}
+                                            className="touch-target spatial-soft py-3.5 px-4 rounded-2xl text-primary-adaptive font-display font-bold text-xs sm:text-sm flex items-center justify-center gap-2"
+                                        >
+                                            <Icon name="Image" size={17} className="text-accent-adaptive" /> บันทึกภาพ PNG
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={handlePrintIndividualCneu}
+                                            className="touch-target spatial-soft py-3.5 px-4 rounded-2xl border-aurora-400/45 text-accent-adaptive font-display font-bold text-xs sm:text-sm flex items-center justify-center gap-2"
+                                        >
+                                            <Icon name="FileCheck2" size={17} /> หนังสือรับรอง CNEU (PDF)
+                                        </button>
+                                        <a
+                                            href={`./verify.html?code=${encodeURIComponent(user.certificateCode || '')}`}
+                                            className="touch-target spatial-soft py-3.5 px-4 rounded-2xl text-prism-adaptive font-display font-bold text-xs sm:text-sm flex items-center justify-center gap-2"
+                                        >
+                                            <Icon name="QrCode" size={17} /> ตรวจสอบรหัสรับรอง
+                                        </a>
+                                    </div>
+                                </SpatialCard>
+                            ) : (
+                                <IndividualCneuLetterCard
+                                    user={user}
+                                    cneuConfig={cneuConfig}
+                                    certTemplate={certTemplate}
+                                    liveStudyPercent={liveStudyPercent}
+                                    studySeconds={studySeconds}
+                                    qrDataUrl={certQrDataUrl}
+                                    onPrintCneu={handlePrintIndividualCneu}
+                                />
+                            )}
                         </div>
                     )}
 
