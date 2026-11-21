@@ -1999,6 +1999,7 @@
             const [isAiAnswering, setIsAiAnswering] = useState(false);
             const [audioBriefStatus, setAudioBriefStatus] = useState('idle'); // idle | loading | playing
             const [audioSentenceProgress, setAudioSentenceProgress] = useState({ current: 0, total: 0 });
+            const [audioVoiceSource, setAudioVoiceSource] = useState('ai'); // ai | browser
             const [isAudioCached, setIsAudioCached] = useState(false);
             const [microCheckPicked, setMicroCheckPicked] = useState({});
 
@@ -2035,7 +2036,7 @@
             const audioRef = useRef(null);
             const audioUrlRef = useRef(null);
             const audioSessionIdRef = useRef(0);
-            const audioAbortRef = useRef(null);
+            const audioControllersRef = useRef(new Set());
             const quizAutoTimerRef = useRef(null);
             useEffect(() => { userRef.current = user; }, [user]);
             useEffect(() => { studySecondsRef.current = studySeconds; }, [studySeconds]);
@@ -2113,9 +2114,11 @@
 
             const stopAudioBrief = useCallback(() => {
                 audioSessionIdRef.current += 1;
-                if (audioAbortRef.current) {
-                    try { audioAbortRef.current.abort(); } catch (_) {}
-                    audioAbortRef.current = null;
+                if (audioControllersRef.current && audioControllersRef.current.size > 0) {
+                    audioControllersRef.current.forEach(ctrl => {
+                        try { ctrl.abort(); } catch (_) {}
+                    });
+                    audioControllersRef.current.clear();
                 }
                 if (audioRef.current) {
                     try { audioRef.current.pause(); } catch (_) {}
@@ -2129,6 +2132,7 @@
                     try { window.speechSynthesis.cancel(); } catch (_) {}
                 }
                 setAudioBriefStatus('idle');
+                setAudioVoiceSource('ai');
                 setAudioSentenceProgress({ current: 0, total: 0 });
             }, []);
 
@@ -2603,6 +2607,7 @@
 
                 const sessionId = audioSessionIdRef.current + 1;
                 audioSessionIdRef.current = sessionId;
+                setAudioVoiceSource('ai');
 
                 // ระดับที่ 1: หากบทเรียนมีไฟล์เสียงสำเร็จรูป (audioUrl ใน data.js) เล่นทันทีไม่ต้องรอ AI
                 if (currentLesson?.audioUrl) {
@@ -2631,16 +2636,11 @@
                 const sentences = buildLessonBriefSentences(currentLesson, currentLessonGuide, roleProfile.badgeTH);
                 const lessonKeyPrefix = `L${currentLesson?.id || 1}_${roleProfile.id}`;
 
-                const fetchSentenceBlob = async (idx) => {
-                    const text = sentences[idx];
-                    const cacheKey = `${lessonKeyPrefix}_S${idx}_${text}`;
-                    const cached = await getCachedAudioBlob(cacheKey);
-                    if (cached) return cached;
-                    if (!appsScriptUrl || audioSessionIdRef.current !== sessionId) return null;
-
+                // ขอเสียง AI โดยให้เวลารอ Cold Start ของ Apps Script ที่ประโยคแรก 25 วินาที และลองซ้ำ 1 ครั้งหากสะดุด
+                const requestAiTtsBlob = async (text, timeoutMs) => {
                     const controller = new AbortController();
-                    audioAbortRef.current = controller;
-                    const timeoutId = setTimeout(() => controller.abort(), 9000);
+                    audioControllersRef.current.add(controller);
+                    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
                     try {
                         const res = await fetch(appsScriptUrl, {
                             method: 'POST',
@@ -2650,16 +2650,36 @@
 
                         if (res?.status === 'success' && res.inlineData?.data) {
                             const rate = parseInt(res.inlineData.mimeType?.match(/rate=(\d+)/)?.[1] ?? '24000', 10);
-                            const blob = pcm16ToWavBlob(res.inlineData.data, rate);
-                            await setCachedAudioBlob(cacheKey, blob);
-                            if (idx === 0) setIsAudioCached(true);
-                            return blob;
+                            return pcm16ToWavBlob(res.inlineData.data, rate);
                         }
                     } catch (_) {
                     } finally {
                         clearTimeout(timeoutId);
+                        audioControllersRef.current.delete(controller);
                     }
                     return null;
+                };
+
+                const fetchSentenceBlob = async (idx) => {
+                    const text = sentences[idx];
+                    const cacheKey = `${lessonKeyPrefix}_S${idx}_${text}`;
+                    const cached = await getCachedAudioBlob(cacheKey);
+                    if (cached) return cached;
+                    if (!appsScriptUrl || audioSessionIdRef.current !== sessionId) return null;
+
+                    const primaryTimeout = idx === 0 ? 25000 : 20000;
+                    let blob = await requestAiTtsBlob(text, primaryTimeout);
+
+                    // หากประโยคแรกยังสะดุดชั่วคราว (และผู้ใช้ไม่ได้กดยกเลิก) ให้ลองเชื่อมต่อซ้ำอีก 1 ครั้งก่อนยอมแพ้
+                    if (!blob && idx === 0 && audioSessionIdRef.current === sessionId) {
+                        blob = await requestAiTtsBlob(text, 18000);
+                    }
+
+                    if (blob) {
+                        await setCachedAudioBlob(cacheKey, blob);
+                        if (idx === 0) setIsAudioCached(true);
+                    }
+                    return blob;
                 };
 
                 const wrapTracked = (promise) => {
@@ -2704,25 +2724,35 @@
                 setAudioBriefStatus('loading');
                 setAudioSentenceProgress({ current: 1, total: sentences.length });
 
-                let nextTracker = wrapTracked(fetchSentenceBlob(0));
+                let useBrowserVoiceOnly = !appsScriptUrl;
+                let nextTracker = useBrowserVoiceOnly ? null : wrapTracked(fetchSentenceBlob(0));
 
                 for (let i = 0; i < sentences.length; i++) {
                     if (audioSessionIdRef.current !== sessionId) return;
                     setAudioSentenceProgress({ current: i + 1, total: sentences.length });
-                    if (!nextTracker.done) setAudioBriefStatus('loading');
 
-                    const currentBlob = await nextTracker.promise;
-                    if (audioSessionIdRef.current !== sessionId) return;
+                    let currentBlob = null;
+                    if (!useBrowserVoiceOnly && nextTracker) {
+                        if (!nextTracker.done) setAudioBriefStatus('loading');
+                        currentBlob = await nextTracker.promise;
+                        if (audioSessionIdRef.current !== sessionId) return;
 
-                    // แอบโหลดประโยคถัดไปล่วงหน้าทันทีในระหว่างที่กำลังเปิดเสียงประโยคปัจจุบัน
-                    if (i + 1 < sentences.length) {
-                        nextTracker = wrapTracked(fetchSentenceBlob(i + 1));
+                        // หากประโยคแรกเชื่อม AI ไม่สำเร็จจริง (เช่น ออฟไลน์) ให้ล็อกใช้เสียงเบราว์เซอร์ทั้งบทเพื่อไม่ให้เสียงสลับกลางคัน
+                        if (!currentBlob && i === 0) {
+                            useBrowserVoiceOnly = true;
+                            setAudioVoiceSource('browser');
+                        } else if (i + 1 < sentences.length) {
+                            // แอบโหลดประโยคถัดไปล่วงหน้าทันทีในระหว่างที่กำลังเปิดเสียง AI ประโยคปัจจุบัน
+                            nextTracker = wrapTracked(fetchSentenceBlob(i + 1));
+                        }
                     }
 
                     setAudioBriefStatus('playing');
                     if (currentBlob) {
+                        setAudioVoiceSource('ai');
                         await playWavBlob(currentBlob);
                     } else if ('speechSynthesis' in window) {
+                        setAudioVoiceSource('browser');
                         await speakBrowserFallback(sentences[i]);
                     } else {
                         showToast('อุปกรณ์นี้ไม่รองรับการอ่านเสียงอัตโนมัติค่ะ', 'error');
@@ -3708,8 +3738,12 @@ ${user.certificateCode ? `5. รหัสประกาศนียบัตร
                                                                 audioBriefStatus === 'loading' ? 'bg-prism-400 animate-ping' : 'bg-aurora-400 animate-pulse'
                                                             }`} />
                                                             {audioBriefStatus === 'loading'
-                                                                ? `กำลังสร้างเสียง AI ประโยคที่ ${audioSentenceProgress.current} จาก ${audioSentenceProgress.total} (พร้อมเก็บแคชไว้ฟังซ้ำทันที)...`
-                                                                : `กำลังอ่านสรุปประโยคที่ ${audioSentenceProgress.current} จาก ${audioSentenceProgress.total} — แอบโหลดประโยคถัดไปรอไว้แล้ว`}
+                                                                ? (audioSentenceProgress.current === 1
+                                                                    ? `กำลังปลุกและสร้างเสียง AI ประโยคแรก (1/${audioSentenceProgress.total}) — รอสักครู่ ครั้งถัดไปจะพร้อมเล่นทันทีค่ะ...`
+                                                                    : `กำลังสร้างเสียง AI ประโยคที่ ${audioSentenceProgress.current} จาก ${audioSentenceProgress.total}...`)
+                                                                : (audioVoiceSource === 'browser'
+                                                                    ? `กำลังอ่านสรุปด้วยเสียงสำรองเบราว์เซอร์ (${audioSentenceProgress.current}/${audioSentenceProgress.total})`
+                                                                    : `กำลังอ่านสรุปด้วยเสียง AI (${audioSentenceProgress.current}/${audioSentenceProgress.total}) — แอบโหลดประโยคถัดไปรอไว้แล้ว`)}
                                                         </span>
                                                         <button
                                                             type="button"
