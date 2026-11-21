@@ -1347,16 +1347,23 @@
                     'ชื่อ-สกุล', 'เลขใบประกอบวิชาชีพ', 'อีเมล', 'เบอร์โทร',
                     'ตำแหน่ง', 'ลักษณะงาน', 'สังกัด', 'หน่วยงาน/โรงพยาบาล',
                     'สิทธิ์การเรียน', 'สถานะ', 'Pretest', 'Posttest',
-                    'ความคืบหน้า (%)', 'Empathy Index (AI Lab)', 'ความพึงพอใจ (CSAT)', 'รหัสประกาศนียบัตร'
+                    'ความคืบหน้า (%)', 'Empathy Index (AI Lab)', 'ความพึงพอใจเฉลี่ย (CSAT)',
+                    'CSAT ด้านเนื้อหา', 'CSAT ด้านวิทยากร/สื่อ', 'CSAT ด้านระบบออนไลน์',
+                    'CSAT ด้าน AI Skill Lab', 'CSAT ด้านการนำไปใช้จริง', 'ข้อเสนอแนะผู้เรียน',
+                    'รหัสประกาศนียบัตร'
                 ];
                 const rows = usersList.map(u => {
                     const st = getUserFiveStepStatus(u);
+                    const c = u.satisfactionCriteria || {};
                     return [
                         u.name, getUserLicense(u), u.email, u.phone,
                         u.position, u.workContext, u.department, u.hospital,
                         u.userType === 'เรียนต่อเนื่อง' ? 'เรียนต่อเนื่อง' : 'เรียนใหม่',
                         u.status, u.pretest, u.posttest,
-                        u.progress || 0, st.bestLab ?? '-', u.satisfactionScore || '-', u.certificateCode || '-'
+                        u.progress || 0, st.bestLab ?? '-', u.satisfactionScore || '-',
+                        c.content ?? '-', c.speaker ?? '-', c.platform ?? '-',
+                        c.aiLab ?? '-', c.application ?? '-', u.satisfactionComment || '-',
+                        u.certificateCode || '-'
                     ].map(escapeCsvCell).join(',');
                 });
                 const csvText = '\ufeff' + [headers.map(escapeCsvCell).join(','), ...rows].join('\n');
@@ -1369,7 +1376,7 @@
                 a.click();
                 document.body.removeChild(a);
                 setTimeout(() => URL.revokeObjectURL(url), 1000);
-                showToast('ส่งออกไฟล์ CSV (รองรับภาษาไทยใน Excel) เรียบร้อยแล้วค่ะ');
+                showToast('ส่งออกไฟล์ CSV พร้อมผลประเมิน CNEU 5 ด้านเรียบร้อยแล้วค่ะ');
             };
 
             const handleSaveContent = async () => {
@@ -1433,9 +1440,25 @@
                 const labDone = usersList.filter(u => getUserFiveStepStatus(u).step3Lab).length;
                 const csatUsers = usersList.filter(u => typeof u.satisfactionScore === 'number' && u.satisfactionScore > 0);
                 const avgCsat = csatUsers.length
-                    ? (csatUsers.reduce((s, u) => s + u.satisfactionScore, 0) / csatUsers.length).toFixed(1)
-                    : '0.0';
-                return { total: usersList.length, passed, labDone, avgCsat };
+                    ? (csatUsers.reduce((s, u) => s + u.satisfactionScore, 0) / csatUsers.length).toFixed(2)
+                    : '0.00';
+
+                const criteriaMeta = [
+                    { key: 'content', label: '1. เนื้อหาหลักสูตร' },
+                    { key: 'speaker', label: '2. สื่อและวิทยากร' },
+                    { key: 'platform', label: '3. ระบบออนไลน์' },
+                    { key: 'aiLab', label: '4. AI & Skill Lab' },
+                    { key: 'application', label: '5. การนำไปใช้จริง' }
+                ];
+                const criteriaAvg = criteriaMeta.map(m => {
+                    const rows = usersList.filter(u => typeof u.satisfactionCriteria?.[m.key] === 'number' && u.satisfactionCriteria[m.key] > 0);
+                    const avg = rows.length
+                        ? (rows.reduce((s, u) => s + Number(u.satisfactionCriteria[m.key]), 0) / rows.length).toFixed(2)
+                        : '-';
+                    return { ...m, avg, count: rows.length };
+                });
+
+                return { total: usersList.length, passed, labDone, avgCsat, csatCount: csatUsers.length, criteriaAvg };
             }, [usersList]);
 
             // รายชื่อผู้ผ่านเกณฑ์รับประกาศนียบัตรสำหรับรายงานส่งสภาการพยาบาล (CNEU)
@@ -2833,6 +2856,31 @@
                                     <div className="spatial-card rounded-2xl p-4">
                                         <p className="text-xs font-bold text-muted-adaptive">CSAT เฉลี่ย</p>
                                         <p className="font-mono text-2xl font-extrabold text-amber-400 mt-1">{quickStats.avgCsat}/5</p>
+                                    </div>
+                                </div>
+
+                                {/* สรุปผลประเมินความพึงพอใจรายด้าน 5 มิติ (มาตรฐาน CNEU) */}
+                                <div className="spatial-card rounded-2xl p-4 sm:p-5 space-y-3">
+                                    <div className="flex flex-wrap items-center justify-between gap-2">
+                                        <div>
+                                            <span className="font-mono text-[10px] font-bold text-amber-400 uppercase">CNEU 5-DIMENSION SATISFACTION SUMMARY</span>
+                                            <h3 className="font-display font-bold text-sm sm:text-base text-primary-adaptive">
+                                                สรุปคะแนนประเมินความพึงพอใจรายด้าน ({quickStats.csatCount} ผู้ประเมิน)
+                                            </h3>
+                                        </div>
+                                        <span className="px-3 py-1 rounded-full bg-amber-500/15 text-amber-400 font-mono text-xs font-bold">
+                                            เฉลี่ยรวม {quickStats.avgCsat} / 5.00
+                                        </span>
+                                    </div>
+                                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+                                        {quickStats.criteriaAvg.map(c => (
+                                            <div key={c.key} className="spatial-soft p-3 rounded-xl space-y-1">
+                                                <p className="text-[11px] font-bold text-secondary-adaptive leading-snug">{c.label}</p>
+                                                <p className="font-mono text-lg font-extrabold text-accent-adaptive">
+                                                    {c.avg}<span className="text-[11px] text-muted-adaptive font-normal"> / 5</span>
+                                                </p>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
 
