@@ -6,16 +6,16 @@
     <meta name="theme-color" content="#030712">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Executive Spatial Command 2030 — rjcloud.organ</title>
+    <title>Executive Dashboard — rjcloud.organ</title>
 
-    <!-- 🌟 โหลดค่าตั้งต้นและข้อมูลกลางจาก data.js (มี Built-in Fallback ป้องกันหน้าขาว) 🌟 -->
-    <script src="./data.js" onerror="console.warn('data.js not loaded, using built-in 2030 defaults')"></script>
+    <!-- โหลดค่าตั้งต้นและข้อมูลกลางจาก data.js -->
+    <script src="./data.js" onerror="console.warn('data.js not loaded, using built-in defaults')"></script>
 
-    <!-- 🌟 ซิงค์โหมดมืด/สว่างทันทีจาก localStorage ป้องกันจอกระพริบ 🌟 -->
+    <!-- ซิงค์โหมดมืด/สว่างทันทีจาก localStorage ป้องกันจอกระพริบ -->
     <script>
       (function () {
         try {
-          const key = (window.RJCLOUD_CONFIG && window.RJCLOUD_CONFIG.theme && window.RJCLOUD_CONFIG.theme.storageKey) || 'rjcloud_theme_2030';
+          const key = (window.RJCLOUD_CONFIG && window.RJCLOUD_CONFIG.theme && window.RJCLOUD_CONFIG.theme.storageKey) || 'rjcloud_theme';
           const def = (window.RJCLOUD_CONFIG && window.RJCLOUD_CONFIG.theme && window.RJCLOUD_CONFIG.theme.defaultMode) || 'dark';
           const saved = localStorage.getItem(key) || def;
           const mode = saved === 'light' ? 'light' : 'dark';
@@ -26,7 +26,7 @@
       })();
     </script>
 
-    <!-- 🌟 Tailwind CSS & ฟอนต์มาตรฐานระบบ (Prompt + Sarabun + JetBrains Mono) 🌟 -->
+    <!-- Tailwind CSS & ฟอนต์มาตรฐานระบบ (Prompt + Sarabun + JetBrains Mono) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -72,7 +72,7 @@
 
     <style>
       /* ============================================================================
-       * 2030 ADAPTIVE DESIGN TOKENS (SPATIAL DARK DEFAULT <-> FROSTED PEARL LIGHT)
+       * ADAPTIVE DESIGN TOKENS (SPATIAL DARK DEFAULT <-> FROSTED PEARL LIGHT)
        * ============================================================================ */
       :root,
       html[data-theme="dark"] {
@@ -137,7 +137,7 @@
         transition: background-color 0.28s ease, color 0.28s ease;
       }
 
-      /* 🌟 Mobile-First 100% Safe Area & Touch Optimization 🌟 */
+      /* Mobile-First Safe Area & Touch Optimization */
       .min-h-dvh { min-height: 100vh; min-height: 100dvh; }
       .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
       .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
@@ -148,7 +148,7 @@
         input, select, textarea { font-size: 16px !important; }
       }
 
-      /* 🌟 Spatial Aura Ambient Backdrop 🌟 */
+      /* Spatial Aura Ambient Backdrop */
       .spatial-aura {
         position: fixed;
         inset: 0;
@@ -171,7 +171,7 @@
         pointer-events: none;
       }
 
-      /* 🌟 Semantic Spatial Glass Utilities 🌟 */
+      /* Semantic Spatial Glass Utilities */
       .spatial-card {
         background: var(--glass-bg);
         backdrop-filter: blur(24px) saturate(155%);
@@ -234,7 +234,7 @@
       }
     </style>
 
-    <!-- 🌟 ESM Import Map (React 18, Lucide Icons, Firebase 11) 🌟 -->
+    <!-- ESM Import Map (React 18, Lucide Icons, Firebase 11) -->
     <script type="importmap">
     {
       "imports": {
@@ -251,15 +251,17 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body>
-    <!-- 🌟 หน้าจอโหลดเริ่มต้น Command Center Boot Sequence 🌟 -->
+    <!-- หน้าจอโหลดเริ่มต้น -->
     <div id="executive-root">
         <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg-page);color:var(--text-main);font-family:'Prompt','Sarabun',sans-serif;gap:14px;padding:24px;text-align:center;">
-            <div style="width:48px;height:48px;border:3px solid rgba(34,211,238,0.2);border-top-color:#34d399;border-right-color:#22d3ee;border-radius:9999px;animation:execSpin2030 0.85s linear infinite;"></div>
-            <div style="font-weight:800;font-size:17px;">กำลังเปิดศูนย์บัญชาการผู้บริหาร 2030...</div>
-            <div style="font-size:12px;color:#94a3b8;">กำลังประมวลผล 13 เขตสุขภาพ, เรดาร์สมรรถนะ 5 แกน และ Fah Executive AI</div>
+            <div style="width:48px;height:48px;border:3px solid rgba(34,211,238,0.2);border-top-color:#34d399;border-right-color:#22d3ee;border-radius:9999px;animation:execSpin 0.85s linear infinite;"></div>
+            <div style="font-weight:800;font-size:17px;">กำลังเปิดแดชบอร์ดผู้บริหาร...</div>
+            <div style="font-size:12px;color:#94a3b8;">กำลังเชื่อมต่อข้อมูลสด 13 เขตสุขภาพ เรดาร์สมรรถนะ 5 แกน และระบบ AI</div>
         </div>
-        <style>@keyframes execSpin2030{to{transform:rotate(360deg);}}</style>
-    <!-- 🌟 Global Error Guard ป้องกันหน้าขาว/จอดำ (ไม่จับ Error 404 จาก data.js ในโหมด Preview เดี่ยว) 🌟 -->
+        <style>@keyframes execSpin{to{transform:rotate(360deg);}}</style>
+    </div>
+
+    <!-- Global Error Guard ป้องกันหน้าขาว/จอดำ -->
     <script>
       window.addEventListener('error', function (ev) {
         const src = String(ev.filename || (ev.target && ev.target.src) || '');
@@ -286,16 +288,16 @@
         import { getFirestore, collection, doc, onSnapshot } from 'firebase/firestore';
 
         // ============================================================================
-        // 1. CONFIGURATION, 5-AXIS RADAR META & 4 CLINICAL DOMAINS (2030 EDITION)
+        // 1. CONFIGURATION, 5-AXIS RADAR META & 4 CLINICAL DOMAINS (PRODUCTION 2027)
         // ============================================================================
         const BUILTIN_CONFIG = {
             appName: 'rjcloud.organ',
-            edition: '2030 Spatial Clinical Edition',
+            edition: '2027 Clinical Edition',
             contactEmail: 'rjcloud.organ@gmail.com',
             appId: 'rjcloud-organ-2027',
             theme: {
                 defaultMode: 'dark',
-                storageKey: 'rjcloud_theme_2030'
+                storageKey: 'rjcloud_theme'
             },
             firebaseConfig: {
                 apiKey: 'AIzaSyCpvK0FCVVk9dt0ylHn_VzUStl7540UsbY',
@@ -322,9 +324,9 @@
             appsScriptUrl: window.RJCLOUD_CONFIG?.appsScriptUrl || BUILTIN_CONFIG.appsScriptUrl
         };
 
-        const THEME_KEY = CONFIG.theme?.storageKey || 'rjcloud_theme_2030';
+        const THEME_KEY = CONFIG.theme?.storageKey || 'rjcloud_theme';
 
-        // 5 แกนสมรรถนะจาก AI Skill Lab 2030 (เชื่อมตรงกับ aiskilllab.html)
+        // 5 แกนสมรรถนะจาก AI Skill Lab (เชื่อมตรงกับ aiskilllab.html)
         const RADAR_AXES = [
             { key: 'setting', labelTH: 'ห้องรับรอง & บทบาท', shortTH: 'ห้องรับรอง', actionTip: 'จัดอบรมการเปิดบทบาทและการเตรียมห้องรับรองส่วนตัวตามหลัก SPIKES' },
             { key: 'empathy', labelTH: 'รับรู้อารมณ์ร่วม', shortTH: 'อารมณ์ร่วม', actionTip: 'เสริม Workshop การสะท้อนอารมณ์สูญเสียและปลอบโยนญาติก่อนให้ข้อมูลคลินิก' },
@@ -359,68 +361,6 @@
             { id: 'BKK', name: 'กรุงเทพมหานคร', desc: 'กรมการแพทย์ / สำนักการแพทย์ กทม.', x: 47, y: 55 }
         ];
 
-        // ชุดข้อมูลจำลองที่สะท้อนจุดแข็ง-จุดอ่อน 5 แกน + 4 หมวดคลินิกแตกต่างกันในแต่ละเขต (ใช้เฉพาะสิทธิ์ เรียนใหม่ / เรียนต่อเนื่อง)
-        const DEMO_USERS_SEED = (() => {
-            const seed = [];
-            const regionSpecs = [
-                { dept: 'กรมการแพทย์', total: 68, passed: 56, lab: 40, rBase: [93, 90, 94, 84, 92], dBase: [90, 86, 88, 84] },
-                { dept: 'เขตสุขภาพที่ 1', total: 46, passed: 37, lab: 26, rBase: [90, 88, 86, 80, 91], dBase: [86, 74, 83, 82] },
-                { dept: 'เขตสุขภาพที่ 7', total: 41, passed: 32, lab: 21, rBase: [87, 84, 89, 78, 88], dBase: [85, 81, 72, 79] },
-                { dept: 'เขตสุขภาพที่ 6', total: 35, passed: 27, lab: 18, rBase: [86, 81, 85, 76, 87], dBase: [84, 71, 80, 77] },
-                { dept: 'เขตสุขภาพที่ 9', total: 31, passed: 23, lab: 15, rBase: [85, 86, 82, 79, 89], dBase: [82, 75, 78, 70] },
-                { dept: 'เขตสุขภาพที่ 12', total: 28, passed: 21, lab: 14, rBase: [88, 87, 81, 82, 90], dBase: [83, 69, 81, 84] },
-                { dept: 'เขตสุขภาพที่ 4', total: 24, passed: 18, lab: 11, rBase: [84, 82, 86, 75, 85], dBase: [81, 77, 74, 73] },
-                { dept: 'เขตสุขภาพที่ 11', total: 20, passed: 14, lab: 9,  rBase: [86, 85, 79, 77, 88], dBase: [79, 68, 76, 80] },
-                { dept: 'เขตสุขภาพที่ 2', total: 17, passed: 12, lab: 8,  rBase: [83, 81, 84, 74, 86], dBase: [80, 72, 75, 71] },
-                { dept: 'เขตสุขภาพที่ 8', total: 16, passed: 11, lab: 7,  rBase: [82, 84, 80, 73, 85], dBase: [78, 70, 74, 76] },
-                { dept: 'เขตสุขภาพที่ 5', total: 15, passed: 10, lab: 6,  rBase: [84, 80, 83, 76, 84], dBase: [82, 73, 71, 75] },
-                { dept: 'เขตสุขภาพที่ 10', total: 13, passed: 8,  lab: 5,  rBase: [81, 83, 78, 72, 85], dBase: [76, 66, 73, 72] },
-                { dept: 'เขตสุขภาพที่ 3', total: 10, passed: 6,  lab: 4,  rBase: [80, 79, 82, 71, 83], dBase: [77, 68, 70, 69] },
-                { dept: 'อื่นๆ', total: 8, passed: 6, lab: 3, rBase: [85, 84, 85, 80, 86], dBase: [84, 78, 80, 79] }
-            ];
-
-            let idCounter = 1;
-            const clamp = (n) => Math.max(52, Math.min(98, Math.round(n)));
-            regionSpecs.forEach(({ dept, total, passed, lab, rBase, dBase }) => {
-                for (let i = 0; i < total; i++) {
-                    const isPassed = i < passed;
-                    const hasLab = i < lab;
-                    const jitter = ((i % 5) - 2) * 2;
-                    const radarMap = hasLab ? {
-                        setting: clamp(rBase[0] + jitter),
-                        empathy: clamp(rBase[1] - jitter),
-                        clarity: clamp(rBase[2] + jitter),
-                        vocal: clamp(rBase[3] + (i % 3) * 2 - 2),
-                        dignity: clamp(rBase[4] + jitter)
-                    } : null;
-                    const bestScore = radarMap
-                        ? Math.round((radarMap.setting + radarMap.empathy + radarMap.clarity + radarMap.vocal + radarMap.dignity) / 5)
-                        : null;
-
-                    seed.push({
-                        id: `demo_${idCounter++}`,
-                        department: dept,
-                        status: isPassed ? 'ผ่าน' : 'กำลังเรียน',
-                        userType: i % 2 === 0 ? 'เรียนต่อเนื่อง' : 'เรียนใหม่',
-                        skillLabPassed: hasLab,
-                        skillLabBestScore: bestScore,
-                        skillLabLatestRadar: radarMap,
-                        skillLabHistory: hasLab ? [{ score: bestScore }] : [],
-                        aiRoadmap: {
-                            domains: [
-                                { id: 'policy_ethics', percent: clamp(dBase[0] + jitter) },
-                                { id: 'brain_death_donor', percent: clamp(dBase[1] - jitter) },
-                                { id: 'procurement_transplant', percent: clamp(dBase[2] + jitter) },
-                                { id: 'family_communication', percent: clamp(dBase[3] - jitter) }
-                            ]
-                        },
-                        satisfactionScore: isPassed ? (i % 6 === 0 ? 4 : 5) : null
-                    });
-                }
-            });
-            return seed;
-        })();
-
         // ============================================================================
         // 2. FIREBASE INITIALIZATION
         // ============================================================================
@@ -433,7 +373,7 @@
                 fbAuth = getAuth(fbApp);
                 fbDb = getFirestore(fbApp);
             } catch (err) {
-                console.warn('Firebase init skipped:', err);
+                console.warn('Firebase init warning:', err);
             }
         }
 
@@ -446,7 +386,7 @@
                 this.state = { hasError: false, err: null };
             }
             static getDerivedStateFromError(err) { return { hasError: true, err }; }
-            componentDidCatch(err, info) { console.error('Executive 2030 Error:', err, info); }
+            componentDidCatch(err, info) { console.error('Executive Error:', err, info); }
             render() {
                 if (this.state.hasError) {
                     return (
@@ -568,28 +508,39 @@
 
         function generateLocalExecutiveAnswer(question, analytics, activeRegion) {
             const q = String(question || '').toLowerCase();
-            const { total, regionList, maxRegion, minRegion, avgCsat, csatCount, avgSkillScore, passRate, nationalWeakestDomain, nationalWeakestAxis } = analytics;
+            const { total, regionList, maxRegion, minRegion, avgCsat, csatCount, avgSkillScore, passRate, hasNationalDomains, hasNationalRadar, nationalWeakestDomain, nationalWeakestAxis } = analytics;
+
+            if (total.users === 0) {
+                return 'ขณะนี้ฐานข้อมูลจริงยังไม่มีรายชื่อผู้เรียนเข้าสู่ระบบค่ะ เมื่อบุคลากรลงทะเบียน ทำ Pre-test และฝึก AI Skill Lab ระบบ AI จะประมวลผลและวิเคราะห์เชิงนโยบายรายเขตสุขภาพให้แบบ Real-time ทันทีค่ะ';
+            }
 
             if (q.includes('อ่อน') || q.includes('จุดอ่อน') || q.includes('อบรมเสริม') || q.includes('ทักษะ') || q.includes('เรดาร์') || q.includes('skill')) {
-                const regWeakDom = activeRegion?.weakestDomain;
-                const regWeakAxis = activeRegion?.weakestAxis;
-                return `วิเคราะห์ช่องว่างสมรรถนะระดับชาติและพื้นที่ (${activeRegion?.name || 'ภาพรวม'}):\n\n• ระดับประเทศ — หัวข้อวิชาการที่ผู้เรียนอ่อนที่สุด: "${nationalWeakestDomain.nameTH}" (เฉลี่ย ${nationalWeakestDomain.avg}%)\n• ระดับประเทศ — แกนสื่อสาร AI Skill Lab ที่ควรเสริมที่สุด: "${nationalWeakestAxis.labelTH}" (เฉลี่ย ${nationalWeakestAxis.avg}/100)\n${regWeakDom ? `• เฉพาะ ${activeRegion.name}: ควรจัด Live ทบทวนเรื่อง "${regWeakDom.shortName}" (${regWeakDom.avg}%) และฝึก "${regWeakAxis.labelTH}" (${regWeakAxis.avg}/100)` : ''}\n\nข้อเสนอแนะเชิงนโยบาย: ${nationalWeakestAxis.actionTip}ค่ะ`;
+                const domainLine = hasNationalDomains
+                    ? `• ระดับประเทศ — หมวดวิชาการที่ควรเสริมที่สุด: "${nationalWeakestDomain.nameTH}" (เฉลี่ย ${nationalWeakestDomain.avg}%)`
+                    : '• ระดับประเทศ — อยู่ระหว่างรอผลประเมิน Pre/Post-test เพื่อจำแนก 4 หมวดคลินิก';
+                const axisLine = hasNationalRadar
+                    ? `• ระดับประเทศ — แกนสื่อสาร AI Skill Lab ที่ควรเสริมที่สุด: "${nationalWeakestAxis.labelTH}" (เฉลี่ย ${nationalWeakestAxis.avg}/100)`
+                    : '• ระดับประเทศ — อยู่ระหว่างรอผลประเมินจากห้องฝึก AI Skill Lab';
+                const regLine = activeRegion && activeRegion.hasDomainData
+                    ? `\n• เฉพาะ ${activeRegion.name}: ควรจัด Live ทบทวนเรื่อง "${activeRegion.weakestDomain.shortName}" (${activeRegion.weakestDomain.avg}%)`
+                    : '';
+                return `วิเคราะห์ช่องว่างสมรรถนะระดับชาติและพื้นที่ (${activeRegion?.name || 'ภาพรวม'}):\n\n${domainLine}\n${axisLine}${regLine}${hasNationalRadar ? `\n\nข้อเสนอแนะเชิงนโยบาย: ${nationalWeakestAxis.actionTip}ค่ะ` : ''}`;
             }
 
             if (q.includes('เขต') || q.includes('พื้นที่') || q.includes('น้อยสุด') || q.includes('มากสุด') || q.includes('เหลื่อมล้ำ')) {
                 const bottom3 = [...regionList].filter(r => r.id !== 'BKK').sort((a, b) => a.users - b.users).slice(0, 3);
-                return `ผลการวิเคราะห์ความครอบคลุมเชิงพื้นที่ (Geo-Equity 13 เขตสุขภาพ):\n\n• เขตนำร่องสูงสุด: ${maxRegion.name} (${maxRegion.users} ราย | ผ่าน ${maxRegion.passed} ราย)\n• 3 เขตที่ควรเร่งสนับสนุนเชิงรุก:\n${bottom3.map((r, i) => `  ${i + 1}. ${r.name} (${r.desc}) — ${r.users} ราย (จุดที่ควรเสริม: ${r.weakestDomain.shortName})`).join('\n')}\n\nแนะนำประสานหัวหน้ากลุ่มงานการพยาบาลใน 3 เขตดังกล่าวเพื่อผลักดันการเรียนสะสม ≥80% และเข้าฝึกห้องรับรอง 3 มิติค่ะ`;
+                return `ผลการวิเคราะห์ความครอบคลุมเชิงพื้นที่ (13 เขตสุขภาพ):\n\n• เขตนำร่องสูงสุด: ${maxRegion.name} (${maxRegion.users} ราย | ผ่าน ${maxRegion.passed} ราย)\n• 3 เขตที่ควรเร่งสนับสนุนเชิงรุก:\n${bottom3.map((r, i) => `  ${i + 1}. ${r.name} (${r.desc}) — ${r.users} ราย`).join('\n')}\n\nแนะนำประสานหัวหน้ากลุ่มงานการพยาบาลใน 3 เขตดังกล่าวเพื่อผลักดันการเรียนสะสม ≥80% และเข้าฝึก AI Skill Lab ค่ะ`;
             }
 
             if (q.includes('พึงพอใจ') || q.includes('csat') || q.includes('ดาว') || q.includes('ประเมิน')) {
-                return `ตัวชี้วัดความพึงพอใจและคุณภาพการฝึก 2030:\n• คะแนน CSAT เฉลี่ย: ${avgCsat} / 5.0 (จากผู้ประเมิน ${csatCount.toLocaleString()} ราย)\n• ดัชนี Empathy เฉลี่ยจาก 3D Holodeck: ${avgSkillScore} / 100 คะแนน\n• อัตราสำเร็จหลักสูตร (Post-test ≥ 80%): ${passRate}% ค่ะ`;
+                return `ตัวชี้วัดความพึงพอใจและคุณภาพการฝึก:\n• คะแนน CSAT เฉลี่ย: ${avgCsat} / 5.0 (จากผู้ประเมิน ${csatCount.toLocaleString()} ราย)\n• ดัชนี Empathy เฉลี่ยจาก AI Skill Lab: ${avgSkillScore} / 100 คะแนน\n• อัตราสำเร็จหลักสูตร (Post-test ≥ 80%): ${passRate}% ค่ะ`;
             }
 
-            return `สรุปตัวชี้วัดศูนย์บัญชาการ rjcloud.organ 2030:\n• บุคลากรในระบบทั้งหมด: ${total.users.toLocaleString()} ราย (สอบผ่านรับประกาศฯ ${total.passed.toLocaleString()} ราย — ${passRate}%)\n• ผ่านการฝึก AI Skill Lab 3 มิติ: ${total.lab.toLocaleString()} ราย (Empathy เฉลี่ย ${avgSkillScore}/100)\n• หัวข้อที่ควรเร่งจัดอบรมเสริมระดับประเทศ: "${nationalWeakestDomain.shortName}" (${nationalWeakestDomain.avg}%) และทักษะ "${nationalWeakestAxis.labelTH}" (${nationalWeakestAxis.avg}/100)\n• พื้นที่นำร่อง: ${maxRegion.name} (${maxRegion.users} ราย) | พื้นที่เฝ้าระวัง: ${minRegion.name} (${minRegion.users} ราย)\n\nท่ามกลางผู้ป่วยรออวัยวะสะสม 8,019 ราย การใช้ข้อมูลเรดาร์ 5 แกนจะช่วยให้จัดสรรงบอบรมได้ตรงจุดทุกเขตสุขภาพค่ะ`;
+            return `สรุปตัวชี้วัดแดชบอร์ดผู้บริหาร rjcloud.organ:\n• บุคลากรในระบบทั้งหมด: ${total.users.toLocaleString()} ราย (สอบผ่านรับประกาศฯ ${total.passed.toLocaleString()} ราย — ${passRate}%)\n• ผ่านการฝึก AI Skill Lab: ${total.lab.toLocaleString()} ราย (Empathy เฉลี่ย ${avgSkillScore}/100)\n• พื้นที่นำร่อง: ${maxRegion.name} (${maxRegion.users} ราย) | พื้นที่เฝ้าระวัง: ${minRegion.name} (${minRegion.users} ราย)\n\nท่ามกลางผู้ป่วยรออวัยวะสะสม 8,019 ราย การติดตามข้อมูลจริงรายเขตจะช่วยให้จัดสรรการอบรมเสริมได้ตรงจุดยิ่งขึ้นค่ะ`;
         }
 
         // ============================================================================
-        // 4. 2030 SPATIAL VISUALIZATION COMPONENTS (5-AXIS RADAR + 13-REGION MAP)
+        // 4. VISUALIZATION COMPONENTS (5-AXIS RADAR + 13-REGION MAP)
         // ============================================================================
         function DualComparisonRadarSVG({ regionRadar, nationalRadar, theme }) {
             const isDark = theme === 'dark';
@@ -609,7 +560,7 @@
             return (
                 <svg viewBox={`0 0 ${size} ${size}`} className="w-full max-w-[260px] mx-auto overflow-visible">
                     <defs>
-                        <linearGradient id="execRadarFill2030" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <linearGradient id="execRadarFill" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stopColor="#34d399" stopOpacity="0.48" />
                             <stop offset="100%" stopColor="#22d3ee" stopOpacity="0.22" />
                         </linearGradient>
@@ -642,7 +593,7 @@
                     {/* Selected Region Solid Aurora Polygon */}
                     <polygon
                         points={regPts.map(p => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ')}
-                        fill="url(#execRadarFill2030)"
+                        fill="url(#execRadarFill)"
                         stroke="#10b981"
                         strokeWidth="2.4"
                     />
@@ -687,7 +638,6 @@
         function SpatialThailandNetworkMap({ regions, activeRegion, onSelectRegion }) {
             return (
                 <div className="relative w-full aspect-[4/4.5] sm:aspect-[16/11] lg:aspect-auto lg:h-[460px] rounded-[1.5rem] bg-gradient-to-br from-[#061126] via-[#07152e] to-[#041d24] border border-prism-400/25 overflow-hidden select-none shadow-inner">
-                    {/* Holographic Telemetry Grid */}
                     <div
                         className="absolute inset-0 opacity-75 pointer-events-none"
                         style={{
@@ -700,7 +650,7 @@
                     <div className="absolute top-3.5 left-3.5 z-10 pointer-events-none">
                         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-void-950/75 border border-prism-400/35 text-[10px] font-mono font-bold text-prism-300 backdrop-blur-md">
                             <span className="w-2 h-2 rounded-full bg-aurora-400 animate-pulse" />
-                            13 HEALTH REGIONS • SPATIAL TELEMETRY
+                            13 HEALTH REGIONS • LIVE TELEMETRY
                         </span>
                     </div>
 
@@ -710,7 +660,6 @@
                         </span>
                     </div>
 
-                    {/* Stylized Thailand Map & Neural Hub Connections */}
                     <svg className="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 100 100" preserveAspectRatio="none">
                         <path
                             d="M 22,12 L 36,9 L 44,18 L 58,20 L 79,19 L 87,32 L 87,49 L 76,53 L 64,56 L 62,64 L 54,64 L 48,59 L 41,62 L 37,70 L 36,78 L 44,86 L 47,94 L 38,96 L 31,88 L 26,76 L 28,62 L 26,48 L 22,36 L 19,22 Z"
@@ -734,11 +683,10 @@
                         ))}
                     </svg>
 
-                    {/* Interactive Touch-Friendly Region Nodes */}
                     {regions.map(r => {
                         const isSelected = activeRegion?.id === r.id;
                         const isHub = r.id === 'BKK';
-                        const needsSupport = r.weakestDomain && r.weakestDomain.avg < 72;
+                        const needsSupport = r.hasDomainData && r.weakestDomain && r.weakestDomain.avg < 72;
                         return (
                             <button
                                 key={r.id}
@@ -770,7 +718,6 @@
                         );
                     })}
 
-                    {/* Legend */}
                     <div className="absolute bottom-3 left-3 z-20 flex flex-wrap items-center gap-2.5 px-3 py-1.5 rounded-xl bg-void-950/80 backdrop-blur-md border border-white/15 text-[10px] font-bold text-slate-200">
                         <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-aurora-400" /> ส่วนกลาง / ที่เลือก</span>
                         <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-prism-400" /> ปกติ</span>
@@ -781,15 +728,15 @@
         }
 
         // ============================================================================
-        // 5. MAIN EXECUTIVE SPATIAL COMMAND APPLICATION (2030 EDITION)
+        // 5. MAIN EXECUTIVE APPLICATION (PRODUCTION 2027 — LIVE FIRESTORE ONLY)
         // ============================================================================
-        function Executive2030App() {
+        function ExecutiveApp() {
             const isAdminPreview = useMemo(() => {
                 try { return new URLSearchParams(window.location.search).get('admin_preview') === '1'; }
                 catch (_) { return false; }
             }, []);
 
-            // Adaptive Theme synced across all 2030 pages
+            // Adaptive Theme synced across all pages
             const [theme, setTheme] = useState(() => {
                 try {
                     const saved = localStorage.getItem(THEME_KEY);
@@ -810,7 +757,6 @@
             }, []);
 
             const [cloudUsers, setCloudUsers] = useState([]);
-            const [useDemoData, setUseDemoData] = useState(true);
             const [appsScriptUrl, setAppsScriptUrl] = useState(CONFIG.appsScriptUrl || '');
             const [isLoadingCloud, setIsLoadingCloud] = useState(isCloudConfigured);
 
@@ -819,7 +765,7 @@
             const [regionViewMode, setRegionViewMode] = useState('map'); // map | list
             const [activeRegionId, setActiveRegionId] = useState('BKK');
 
-            // Fah Executive AI States
+            // Executive AI States
             const [messages, setMessages] = useState([]);
             const [chatInput, setChatInput] = useState('');
             const [isAiThinking, setIsAiThinking] = useState(false);
@@ -857,7 +803,6 @@
                 const unsubAuth = onAuthStateChanged(fbAuth, async (fbUser) => {
                     if (!active) return;
                     if (!fbUser) {
-                        // ห้ามสร้าง Anonymous Session ในโหมด Admin Preview เพื่อไม่ให้เขียนทับสิทธิ์แอดมิน
                         if (isAdminPreview) {
                             setIsLoadingCloud(false);
                             return;
@@ -889,7 +834,6 @@
                             snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
                             setCloudUsers(arr);
                             setIsLoadingCloud(false);
-                            if (arr.length > 0) setUseDemoData(false);
                         },
                         (err) => {
                             console.warn('Executive users snapshot error:', err);
@@ -916,9 +860,9 @@
                 };
             }, [isAdminPreview]);
 
-            // 2. Real-Time Analytics Engine (13 Health Regions + 5-Axis Radar + 4 Clinical Domains)
+            // 2. Real-Time Analytics Engine (100% ข้อมูลจริงจาก Cloud Firestore)
             const analytics = useMemo(() => {
-                const sourceUsers = useDemoData ? DEMO_USERS_SEED : cloudUsers;
+                const sourceUsers = cloudUsers;
 
                 const makeEmptyAccumulator = () => ({
                     radarSum: { setting: 0, empathy: 0, clarity: 0, vocal: 0, dignity: 0 },
@@ -952,7 +896,7 @@
                 const accumulateUserMetrics = (acc, u, userRadar) => {
                     if (userRadar) {
                         RADAR_AXES.forEach(a => {
-                            acc.radarSum[a.key] += Number(userRadar[a.key] || 80);
+                            acc.radarSum[a.key] += Number(userRadar[a.key] || 0);
                         });
                         acc.radarCount += 1;
                     }
@@ -1006,48 +950,48 @@
                     }
                 });
 
-                const finalizeRadar = (acc, fallback = 82) => {
+                const finalizeRadar = (acc) => {
                     const out = {};
                     RADAR_AXES.forEach(a => {
-                        out[a.key] = acc.radarCount > 0 ? Math.round(acc.radarSum[a.key] / acc.radarCount) : fallback;
+                        out[a.key] = acc.radarCount > 0 ? Math.round(acc.radarSum[a.key] / acc.radarCount) : 0;
                     });
                     return out;
                 };
 
-                const finalizeDomains = (acc, fallback = 78) => {
+                const finalizeDomains = (acc) => {
                     return DOMAIN_LIST.map(d => ({
                         ...d,
-                        avg: acc.domainCount[d.id] > 0 ? Math.round(acc.domainSum[d.id] / acc.domainCount[d.id]) : fallback
+                        avg: acc.domainCount[d.id] > 0 ? Math.round(acc.domainSum[d.id] / acc.domainCount[d.id]) : 0
                     }));
                 };
 
-                const nationalRadar = finalizeRadar(natAcc, 84);
-                const nationalDomains = finalizeDomains(natAcc, 80);
+                const hasNationalRadar = natAcc.radarCount > 0;
+                const hasNationalDomains = DOMAIN_LIST.some(d => natAcc.domainCount[d.id] > 0);
+                const nationalRadar = finalizeRadar(natAcc);
+                const nationalDomains = finalizeDomains(natAcc);
                 const nationalWeakestDomain = [...nationalDomains].sort((a, b) => a.avg - b.avg)[0];
                 const nationalWeakestAxis = RADAR_AXES
                     .map(a => ({ ...a, avg: nationalRadar[a.key] }))
                     .sort((a, b) => a.avg - b.avg)[0];
 
                 const regionList = Object.values(statsMap).map(r => {
-                    const radar = finalizeRadar(r.acc, 0);
-                    const domains = finalizeDomains(r.acc, 0);
+                    const radar = finalizeRadar(r.acc);
+                    const domains = finalizeDomains(r.acc);
                     const hasRadarData = r.acc.radarCount > 0;
                     const hasDomainData = DOMAIN_LIST.some(d => r.acc.domainCount[d.id] > 0);
-                    const effectiveRadar = hasRadarData ? radar : nationalRadar;
-                    const effectiveDomains = hasDomainData ? domains : nationalDomains;
 
-                    const weakestDomain = [...effectiveDomains].sort((a, b) => a.avg - b.avg)[0];
+                    const weakestDomain = [...domains].sort((a, b) => a.avg - b.avg)[0];
                     const weakestAxis = RADAR_AXES
-                        .map(a => ({ ...a, avg: effectiveRadar[a.key] }))
+                        .map(a => ({ ...a, avg: radar[a.key] }))
                         .sort((a, b) => a.avg - b.avg)[0];
-                    const avgEmpathy = Math.round(
-                        RADAR_AXES.reduce((s, a) => s + (effectiveRadar[a.key] || 0), 0) / RADAR_AXES.length
-                    );
+                    const avgEmpathy = hasRadarData
+                        ? Math.round(RADAR_AXES.reduce((s, a) => s + (radar[a.key] || 0), 0) / RADAR_AXES.length)
+                        : 0;
 
                     return {
                         ...r,
-                        radar: effectiveRadar,
-                        domains: effectiveDomains,
+                        radar,
+                        domains,
                         hasRadarData,
                         hasDomainData,
                         weakestDomain,
@@ -1066,7 +1010,7 @@
                 const avgCsat = csatCount > 0 ? (csatSum / csatCount).toFixed(1) : '0.0';
                 const avgSkillScore = skillScoreCount > 0
                     ? Math.round(skillScoreSum / skillScoreCount)
-                    : Math.round(RADAR_AXES.reduce((s, a) => s + nationalRadar[a.key], 0) / RADAR_AXES.length);
+                    : (hasNationalRadar ? Math.round(RADAR_AXES.reduce((s, a) => s + nationalRadar[a.key], 0) / RADAR_AXES.length) : 0);
 
                 return {
                     total: { users: totalUsers, learning: totalLearning, lab: totalLab, passed: totalPassed, unmapped: unmappedCount },
@@ -1077,12 +1021,14 @@
                     avgCsat,
                     csatCount,
                     avgSkillScore,
+                    hasNationalRadar,
+                    hasNationalDomains,
                     nationalRadar,
                     nationalDomains,
                     nationalWeakestDomain,
                     nationalWeakestAxis
                 };
-            }, [cloudUsers, useDemoData]);
+            }, [cloudUsers]);
 
             const activeRegion = useMemo(
                 () => analytics.regionList.find(r => r.id === activeRegionId) || analytics.regionList[0],
@@ -1091,28 +1037,38 @@
 
             // 3. Auto-updating Executive Policy Briefing
             const executiveBrief = useMemo(() => {
-                const insightText = `📊 rjcloud.organ 2030 — National Spatial Policy Brief:
+                if (analytics.total.users === 0) {
+                    const emptyInsight = `📊 rjcloud.organ — AI Executive Policy Brief (ข้อมูลจริง Real-time):
+
+• ระบบเชื่อมต่อฐานข้อมูล Cloud Firestore พร้อมใช้งานเต็มรูปแบบแล้วค่ะ
+• ขณะนี้ยังไม่มีรายชื่อผู้เรียนในฐานข้อมูล (0 ราย)
+• ทันทีที่มีบุคลากรลงทะเบียน ทำแบบทดสอบ และฝึกใน AI Skill Lab รายงานสรุป 13 เขตสุขภาพ เรดาร์สมรรถนะ 5 แกน และจุดอ่อนทางคลินิกจะอัปเดตขึ้นที่นี่อัตโนมัติค่ะ`;
+                    const emptySpeech = 'สวัสดีค่ะท่านผู้บริหาร ระบบแดชบอร์ดผู้บริหาร อาร์เจคลาวด์ดอทออร์แกน เชื่อมต่อฐานข้อมูลจริงเรียบร้อยแล้ว ขณะนี้รอรับข้อมูลผู้เรียนเข้าสู่ระบบค่ะ';
+                    return { insightText: emptyInsight, speechText: emptySpeech };
+                }
+
+                const gapText = analytics.hasNationalDomains || analytics.hasNationalRadar
+                    ? `\n\n[2] AI Clinical Gap Alert (หัวข้อที่ควรจัดอบรมเสริมด่วน):${analytics.hasNationalDomains ? `\n• หมวดวิชาการที่อ่อนที่สุด: "${analytics.nationalWeakestDomain.nameTH}" (เฉลี่ย ${analytics.nationalWeakestDomain.avg}%)` : ''}${analytics.hasNationalRadar ? `\n• ทักษะสื่อสาร 5 แกนที่ควรพัฒนาที่สุด: "${analytics.nationalWeakestAxis.labelTH}" (เฉลี่ย ${analytics.nationalWeakestAxis.avg}/100)` : ''}`
+                    : '';
+
+                const insightText = `📊 rjcloud.organ — AI Executive Policy Brief:
 
 [1] ภาพรวมบุคลากรระดับประเทศ:
 • บุคลากรทั้งหมด ${analytics.total.users.toLocaleString()} ราย | สอบผ่าน Post-test ≥80% แล้ว ${analytics.total.passed.toLocaleString()} ราย (${analytics.passRate}%)
-• ดัชนี Empathy เฉลี่ย (AI Skill Lab 3D): ${analytics.avgSkillScore}/100 | CSAT เฉลี่ย: ${analytics.avgCsat}/5.0
-
-[2] AI Clinical Gap Alert (หัวข้อที่ควรจัดอบรมเสริมด่วน):
-• หมวดวิชาการที่อ่อนที่สุด: "${analytics.nationalWeakestDomain.nameTH}" (เฉลี่ย ${analytics.nationalWeakestDomain.avg}%)
-• ทักษะสื่อสาร 5 แกนที่ควรพัฒนาที่สุด: "${analytics.nationalWeakestAxis.labelTH}" (เฉลี่ย ${analytics.nationalWeakestAxis.avg}/100)
+• ดัชนี Empathy เฉลี่ย (AI Skill Lab): ${analytics.avgSkillScore}/100 | CSAT เฉลี่ย: ${analytics.avgCsat}/5.0${gapText}
 
 [3] มิติความเหลื่อมล้ำเชิงพื้นที่ (13 เขตสุขภาพ):
 • เขตนำร่องสูงสุด: ${analytics.maxRegion.name} (${analytics.maxRegion.users} ราย)
 • พื้นที่ควรเร่งสนับสนุน: ${analytics.minRegion.name} (${analytics.minRegion.users} ราย)`;
 
-                const speechText = `สวัสดีค่ะท่านผู้บริหาร จากข้อมูลล่าสุดของระบบ อาร์เจคลาวด์ดอทออร์แกน ยุค 2030 ขณะนี้มีบุคลากรทั้งหมด ${analytics.total.users} ท่าน สอบผ่านรับประกาศนียบัตรแล้ว ${analytics.total.passed} ท่าน คิดเป็นร้อยละ ${analytics.passRate} คะแนนทักษะสื่อสารสามมิติเฉลี่ย ${analytics.avgSkillScore} เต็มร้อย และความพึงพอใจเฉลี่ย ${analytics.avgCsat} เต็มห้าค่ะ จากการวิเคราะห์จุดอ่อนเชิงลึกพบว่าหัวข้อที่ควรจัดอบรมเสริมระดับประเทศคือเรื่อง ${analytics.nationalWeakestDomain.shortName} และทักษะด้าน ${analytics.nationalWeakestAxis.labelTH} ค่ะ`;
+                const speechText = `สวัสดีค่ะท่านผู้บริหาร จากข้อมูลล่าสุดของระบบ อาร์เจคลาวด์ดอทออร์แกน ขณะนี้มีบุคลากรทั้งหมด ${analytics.total.users} ท่าน สอบผ่านรับประกาศนียบัตรแล้ว ${analytics.total.passed} ท่าน คิดเป็นร้อยละ ${analytics.passRate} คะแนนทักษะสื่อสารสามมิติเฉลี่ย ${analytics.avgSkillScore} เต็มร้อย และความพึงพอใจเฉลี่ย ${analytics.avgCsat} เต็มห้าค่ะ`;
 
                 return { insightText, speechText };
             }, [analytics]);
 
             useEffect(() => {
                 setMessages(prev => {
-                    const initMsg = { id: 'brief-2030', role: 'ai', text: executiveBrief.insightText };
+                    const initMsg = { id: 'brief-live', role: 'ai', text: executiveBrief.insightText };
                     if (prev.length === 0) return [initMsg];
                     return [initMsg, ...prev.slice(1)];
                 });
@@ -1137,7 +1093,6 @@
                 return () => { try { rec.abort(); } catch (_) {} };
             }, []);
 
-            // หยุดเสียงบรรยายรายงานและคืนหน่วยความจำ ObjectURL อย่างสมบูรณ์
             const stopVoice = useCallback(() => {
                 if (audioRef.current) {
                     try { audioRef.current.pause(); } catch (_) {}
@@ -1200,7 +1155,7 @@
                 showToast('อุปกรณ์นี้ไม่รองรับการอ่านเสียงอัตโนมัติค่ะ', 'error');
             };
 
-            // 6. Send Question to Fah Executive Intelligence 2030 (with full 5-Axis & 4-Domain JSON)
+            // 6. Send Question to Executive AI (with full live Firestore JSON)
             const handleSendQuestion = async (e, presetText = null) => {
                 if (e) e.preventDefault();
                 const userQ = String(presetText ?? chatInput).trim();
@@ -1218,37 +1173,36 @@
                 setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 80);
 
                 const liveSnapshotJson = JSON.stringify({
-                    platform: 'rjcloud.organ 2030 Spatial Command',
-                    dataMode: useDemoData ? 'Demo Simulation' : 'Live Production Firestore',
+                    platform: 'rjcloud.organ Executive Dashboard',
+                    dataMode: 'Live Production Firestore',
                     nationalTotals: analytics.total,
                     passRatePercent: analytics.passRate,
                     csatAverageOutOf5: analytics.avgCsat,
                     csatRespondents: analytics.csatCount,
                     avgEmpathyIndex: analytics.avgSkillScore,
-                    nationalFiveAxisRadar: analytics.nationalRadar,
-                    nationalFourClinicalDomains: analytics.nationalDomains.map(d => ({ name: d.nameTH, avgPercent: d.avg })),
-                    nationalWeakestClinicalTopic: analytics.nationalWeakestDomain.nameTH,
-                    nationalWeakestCommunicationAxis: analytics.nationalWeakestAxis.labelTH,
+                    nationalFiveAxisRadar: analytics.hasNationalRadar ? analytics.nationalRadar : null,
+                    nationalFourClinicalDomains: analytics.hasNationalDomains
+                        ? analytics.nationalDomains.map(d => ({ name: d.nameTH, avgPercent: d.avg }))
+                        : null,
                     selectedRegionFocus: activeRegion ? {
                         name: activeRegion.name,
                         users: activeRegion.users,
                         passed: activeRegion.passed,
-                        radar5Axis: activeRegion.radar,
-                        weakestClinicalTopic: `${activeRegion.weakestDomain.nameTH} (${activeRegion.weakestDomain.avg}%)`,
-                        weakestCommunicationAxis: `${activeRegion.weakestAxis.labelTH} (${activeRegion.weakestAxis.avg}/100)`
+                        radar5Axis: activeRegion.hasRadarData ? activeRegion.radar : null,
+                        weakestClinicalTopic: activeRegion.hasDomainData ? `${activeRegion.weakestDomain.nameTH} (${activeRegion.weakestDomain.avg}%)` : null
                     } : null,
                     allRegions: analytics.regionList.map(r => ({
-                        id: r.id, name: r.name, users: r.users, passed: r.passed, avgEmpathy: r.avgEmpathy, weakestTopic: r.weakestDomain.shortName
+                        id: r.id, name: r.name, users: r.users, passed: r.passed, avgEmpathy: r.avgEmpathy
                     }))
                 });
 
-                const systemInstruction = `คุณคือ "Fah Executive Intelligence 2030" ผู้ช่วยวิเคราะห์ข้อมูลเชิงนโยบายระดับชาติของแพลตฟอร์ม rjcloud.organ
+                const systemInstruction = `คุณคือ "AI วิเคราะห์เชิงนโยบายระดับชาติ" ประจำแพลตฟอร์ม rjcloud.organ
 อ้างอิงจากข้อมูลจริงแบบ Real-time ด้านล่างนี้เท่านั้น ห้ามเดาหรือแต่งตัวเลขเอง:
 ${liveSnapshotJson}
 
 แนวทางการตอบ:
 1. ตอบเป็นภาษาไทยที่สุภาพ คมชัด เชิงกลยุทธ์ และจัดหัวข้อย่อยให้อ่านง่ายบนมือถือ
-2. ชี้เป้าปัญหาได้ลึกถึงระดับ 4 หมวดคลินิก (Pre/Post-test) และ 5 แกนทักษะสื่อสาร (AI Skill Lab 3D)
+2. ชี้เป้าปัญหาได้ลึกถึงระดับ 4 หมวดคลินิก (Pre/Post-test) และ 5 แกนทักษะสื่อสาร (AI Skill Lab) เมื่อมีข้อมูลจริงในระบบ
 3. เชื่อมโยงกับเป้าหมายการลดจำนวนผู้ป่วยรออวัยวะระดับชาติ (8,019 ราย) เมื่อเหมาะสม`;
 
                 let answerText = '';
@@ -1294,13 +1248,13 @@ ${liveSnapshotJson}
             ];
 
             // ============================================================================
-            // 6. RENDER 2030 NATIONAL SPATIAL COMMAND UI
+            // 6. RENDER EXECUTIVE DASHBOARD (PRODUCTION 2027)
             // ============================================================================
             return (
                 <div className="min-h-dvh relative flex flex-col pt-safe pb-dock-safe lg:pb-10">
                     <div className="spatial-aura" /><div className="spatial-grid" />
 
-                    {/* Top Spatial Command Header */}
+                    {/* Top Header */}
                     <header className="sticky top-0 z-30 spatial-header no-print">
                         <div className="max-w-7xl mx-auto px-3.5 sm:px-6 h-14 md:h-16 flex items-center justify-between gap-2">
                             <div className="flex items-center gap-2.5 min-w-0">
@@ -1314,12 +1268,11 @@ ${liveSnapshotJson}
                                 <div className="min-w-0">
                                     <div className="flex items-center gap-1.5">
                                         <span className="font-display font-extrabold text-sm sm:text-base text-primary-adaptive truncate">
-                                            Executive Command <span className="text-accent-adaptive">2030</span>
+                                            Executive <span className="text-accent-adaptive">Dashboard</span>
                                         </span>
-                                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-mono font-bold shrink-0 ${
-                                            useDemoData ? 'bg-amber-500/20 text-amber-400' : 'bg-aurora-500/20 text-accent-adaptive'
-                                        }`}>
-                                            {useDemoData ? 'DEMO' : 'LIVE'}
+                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-aurora-500/20 text-accent-adaptive text-[9px] font-mono font-bold shrink-0">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-aurora-400 animate-pulse" />
+                                            LIVE
                                         </span>
                                     </div>
                                     <p className="text-[10px] font-mono text-muted-adaptive truncate">
@@ -1330,20 +1283,6 @@ ${liveSnapshotJson}
 
                             <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                                 <ThemeToggleButton theme={theme} onToggle={toggleTheme} />
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        if (!isCloudConfigured && useDemoData) {
-                                            showToast('กรุณาเชื่อมต่อ Firebase เพื่อดูข้อมูลจริงค่ะ', 'error');
-                                            return;
-                                        }
-                                        setUseDemoData(v => !v);
-                                    }}
-                                    className="spatial-soft px-2.5 sm:px-3 py-2 rounded-xl text-primary-adaptive font-bold text-[11px] flex items-center gap-1.5"
-                                >
-                                    <Icon name="Database" size={14} className="text-prism-adaptive" />
-                                    <span className="hidden sm:inline">{useDemoData ? 'ข้อมูลตัวอย่าง' : 'ข้อมูลจริง'}</span>
-                                </button>
                                 <button
                                     type="button"
                                     onClick={() => playPolicyVoice(executiveBrief.speechText)}
@@ -1368,10 +1307,10 @@ ${liveSnapshotJson}
                                 <div>
                                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-aurora-500/15 border border-aurora-400/30 text-accent-adaptive text-[10px] font-mono font-bold mb-2">
                                         <span className="w-1.5 h-1.5 rounded-full bg-aurora-400 animate-pulse" />
-                                        NATIONAL WORKFORCE TELEMETRY • 2030
+                                        NATIONAL WORKFORCE TELEMETRY • LIVE CLOUD
                                     </span>
                                     <h1 className="font-display text-xl sm:text-2xl md:text-3xl font-extrabold text-primary-adaptive leading-tight">
-                                        ศูนย์บัญชาการพัฒนาบุคลากรการรับบริจาคอวัยวะ
+                                        ศูนย์ข้อมูลผู้บริหารพัฒนาบุคลากรการรับบริจาคอวัยวะ
                                     </h1>
                                     <p className="text-xs sm:text-sm text-secondary-adaptive mt-1">
                                         เชื่อมโยงผลสอบ 4 หมวดคลินิก (<code className="font-mono text-prism-adaptive">index.html</code>) และเรดาร์สื่อสาร 5 แกน (<code className="font-mono text-accent-adaptive">aiskilllab.html</code>) ครบ 13 เขตสุขภาพ
@@ -1424,7 +1363,7 @@ ${liveSnapshotJson}
 
                                 <div className="spatial-card rounded-[1.5rem] p-4 sm:p-5">
                                     <div className="flex items-center justify-between mb-1.5">
-                                        <span className="text-xs font-bold text-muted-adaptive">Empathy Index (3D Lab)</span>
+                                        <span className="text-xs font-bold text-muted-adaptive">Empathy Index (AI Lab)</span>
                                         <div className="w-8 h-8 rounded-xl bg-violet-500/15 text-violet-400 flex items-center justify-center">
                                             <Icon name="Bot" size={16} />
                                         </div>
@@ -1467,9 +1406,22 @@ ${liveSnapshotJson}
                                     </div>
                                     <div>
                                         <p className="font-mono text-[10px] font-bold text-amber-400 uppercase">AI NATIONAL TRAINING GAP DETECTOR</p>
-                                        <p className="text-xs sm:text-sm text-primary-adaptive leading-relaxed mt-0.5">
-                                            ระดับประเทศควรจัดอบรมเสริมเรื่อง <b>“{analytics.nationalWeakestDomain.nameTH}”</b> (เฉลี่ย <span className="font-mono text-amber-400 font-bold">{analytics.nationalWeakestDomain.avg}%</span>) และทักษะ <b>“{analytics.nationalWeakestAxis.labelTH}”</b> (<span className="font-mono text-prism-adaptive font-bold">{analytics.nationalWeakestAxis.avg}/100</span>)
-                                        </p>
+                                        {analytics.hasNationalDomains || analytics.hasNationalRadar ? (
+                                            <p className="text-xs sm:text-sm text-primary-adaptive leading-relaxed mt-0.5">
+                                                ระดับประเทศควรจัดอบรมเสริม
+                                                {analytics.hasNationalDomains && (
+                                                    <>เรื่อง <b>“{analytics.nationalWeakestDomain.nameTH}”</b> (เฉลี่ย <span className="font-mono text-amber-400 font-bold">{analytics.nationalWeakestDomain.avg}%</span>)</>
+                                                )}
+                                                {analytics.hasNationalDomains && analytics.hasNationalRadar && ' และ'}
+                                                {analytics.hasNationalRadar && (
+                                                    <>ทักษะ <b>“{analytics.nationalWeakestAxis.labelTH}”</b> (<span className="font-mono text-prism-adaptive font-bold">{analytics.nationalWeakestAxis.avg}/100</span>)</>
+                                                )}
+                                            </p>
+                                        ) : (
+                                            <p className="text-xs sm:text-sm text-secondary-adaptive leading-relaxed mt-0.5">
+                                                ระบบพร้อมวิเคราะห์จุดอ่อน 4 หมวดคลินิกและทักษะสื่อสาร 5 แกนทันทีเมื่อมีผลสอบและผลฝึก AI Skill Lab เข้าสู่ฐานข้อมูลค่ะ
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
                                 <button
@@ -1480,12 +1432,12 @@ ${liveSnapshotJson}
                                     }}
                                     className="touch-target px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-void-950 font-display font-extrabold text-xs shrink-0"
                                 >
-                                    ให้ Fah AI วางแผนอบรมเสริม
+                                    ให้ AI วางแผนอบรมเสริม
                                 </button>
                             </div>
                         </section>
 
-                        {/* SECTION B: SPATIAL MAP + 5-AXIS RADAR + FAH AI */}
+                        {/* SECTION B: SPATIAL MAP + 5-AXIS RADAR + EXECUTIVE AI */}
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
                             {/* LEFT (7 COLS): 13-REGION MAP + 5-AXIS RADAR + 4-DOMAIN WEAKNESS */}
                             <section className={`lg:col-span-7 ${mobileTab === 'regions' ? 'block' : 'hidden'} lg:block space-y-4`}>
@@ -1505,7 +1457,7 @@ ${liveSnapshotJson}
                                                 onClick={() => setRegionViewMode('map')}
                                                 className={`px-3 py-1.5 rounded-lg transition-all ${regionViewMode === 'map' ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'text-secondary-adaptive'}`}
                                             >
-                                                แผนที่ 2030
+                                                แผนที่ 13 เขต
                                             </button>
                                             <button
                                                 type="button"
@@ -1546,11 +1498,15 @@ ${liveSnapshotJson}
                                                             </span>
                                                         </div>
                                                         <div className="flex items-center justify-between text-[11px] text-muted-adaptive">
-                                                            <span>จุดควรเสริม: <b className="text-amber-400">{r.weakestDomain.shortName} ({r.weakestDomain.avg}%)</b></span>
+                                                            <span>
+                                                                {r.hasDomainData
+                                                                    ? <>จุดควรเสริม: <b className="text-amber-400">{r.weakestDomain.shortName} ({r.weakestDomain.avg}%)</b></>
+                                                                    : 'รอผลประเมินคลินิกในเขตนี้'}
+                                                            </span>
                                                             <span className="font-mono">ผ่าน {r.passed} ราย</span>
                                                         </div>
                                                         <div className="w-full h-1.5 rounded-full bg-slate-500/20 overflow-hidden">
-                                                            <div className="h-full rounded-full bg-gradient-to-r from-aurora-400 to-prism-400" style={{ width: `${Math.min(100, Math.max(5, pct * 2.5))}%` }} />
+                                                            <div className="h-full rounded-full bg-gradient-to-r from-aurora-400 to-prism-400" style={{ width: `${Math.min(100, Math.max(0, pct * 2.5))}%` }} />
                                                         </div>
                                                     </button>
                                                 );
@@ -1607,7 +1563,7 @@ ${liveSnapshotJson}
                                                         <p className="font-mono text-sm font-extrabold text-amber-400">{activeRegion.learning}</p>
                                                     </div>
                                                     <div className="spatial-soft p-2 rounded-xl">
-                                                        <p className="text-[10px] text-violet-400">3D Lab</p>
+                                                        <p className="text-[10px] text-violet-400">AI Lab</p>
                                                         <p className="font-mono text-sm font-extrabold text-violet-400">{activeRegion.lab}</p>
                                                     </div>
                                                     <div className="spatial-soft p-2 rounded-xl">
@@ -1634,7 +1590,18 @@ ${liveSnapshotJson}
                                                 </div>
 
                                                 <div className="p-3 rounded-2xl bg-amber-500/15 border border-amber-400/35 text-[11px] text-primary-adaptive leading-relaxed">
-                                                    <b className="text-amber-400">AI แนะนำสำหรับ {activeRegion.name}:</b> เสริมเรื่อง <b>{activeRegion.weakestDomain.shortName}</b> ({activeRegion.weakestDomain.avg}%) และฝึก <b>{activeRegion.weakestAxis.labelTH}</b> ({activeRegion.weakestAxis.avg}/100)
+                                                    {activeRegion.hasDomainData || activeRegion.hasRadarData ? (
+                                                        <>
+                                                            <b className="text-amber-400">AI แนะนำสำหรับ {activeRegion.name}:</b>{' '}
+                                                            {activeRegion.hasDomainData && <>เสริมเรื่อง <b>{activeRegion.weakestDomain.shortName}</b> ({activeRegion.weakestDomain.avg}%)</>}
+                                                            {activeRegion.hasDomainData && activeRegion.hasRadarData && ' และ'}
+                                                            {activeRegion.hasRadarData && <>ฝึก <b>{activeRegion.weakestAxis.labelTH}</b> ({activeRegion.weakestAxis.avg}/100)</>}
+                                                        </>
+                                                    ) : (
+                                                        <span className="text-secondary-adaptive">
+                                                            <b className="text-amber-400">สถานะ {activeRegion.name}:</b> รอข้อมูลการทำแบบทดสอบและ AI Skill Lab จากบุคลากรในเขตนี้ค่ะ
+                                                        </span>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
@@ -1642,7 +1609,7 @@ ${liveSnapshotJson}
                                 </div>
                             </section>
 
-                            {/* RIGHT (5 COLS): FAH EXECUTIVE INTELLIGENCE 2030 CHAT */}
+                            {/* RIGHT (5 COLS): EXECUTIVE AI CHAT */}
                             <section className={`lg:col-span-5 ${mobileTab === 'ai' || mobileTab === 'overview' ? 'block' : 'hidden'} lg:block`}>
                                 <div className="spatial-card rounded-[1.75rem] flex flex-col h-[580px] lg:h-[760px] overflow-hidden border-prism-400/25">
                                     <div className="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between gap-2 shrink-0">
@@ -1652,7 +1619,7 @@ ${liveSnapshotJson}
                                             </div>
                                             <div className="min-w-0">
                                                 <h2 className="font-display font-bold text-sm sm:text-base text-primary-adaptive truncate">
-                                                    Fah Executive AI 2030
+                                                    AI วิเคราะห์เชิงนโยบาย
                                                 </h2>
                                                 <p className="text-[11px] text-accent-adaptive font-semibold flex items-center gap-1.5">
                                                     <span className="w-1.5 h-1.5 rounded-full bg-aurora-400 animate-pulse" />
@@ -1697,7 +1664,7 @@ ${liveSnapshotJson}
                                             <div className="flex justify-start">
                                                 <div className="spatial-soft px-4 py-3 rounded-2xl text-xs font-bold text-prism-adaptive flex items-center gap-2">
                                                     <span className="w-2 h-2 rounded-full bg-prism-400 animate-bounce" />
-                                                    Fah AI กำลังวิเคราะห์ข้อมูล 13 เขตและเรดาร์ 5 แกน...
+                                                    AI กำลังวิเคราะห์ข้อมูล 13 เขตและเรดาร์ 5 แกน...
                                                 </div>
                                             </div>
                                         )}
@@ -1761,7 +1728,7 @@ ${liveSnapshotJson}
                             {[
                                 { id: 'overview', label: 'ภาพรวม KPI', icon: 'LayoutDashboard' },
                                 { id: 'regions', label: 'แผนที่ & เรดาร์', icon: 'MapPin' },
-                                { id: 'ai', label: 'ถาม Fah AI', icon: 'Cpu' }
+                                { id: 'ai', label: 'ถาม AI', icon: 'Cpu' }
                             ].map(item => {
                                 const active = mobileTab === item.id;
                                 return (
@@ -1789,7 +1756,7 @@ ${liveSnapshotJson}
         }
 
         const root = createRoot(document.getElementById('executive-root'));
-        root.render(<ExecutiveErrorBoundary><Executive2030App /></ExecutiveErrorBoundary>);
+        root.render(<ExecutiveErrorBoundary><ExecutiveApp /></ExecutiveErrorBoundary>);
     </script>
 </body>
 </html>
