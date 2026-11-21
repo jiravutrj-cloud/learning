@@ -1,5 +1,5 @@
 // ============================================================================
-// rjcloud.organ — Master Static Data & System Configuration (Production 2027)
+// rjcloud.organ — Master Static Data & AI Clinical Knowledge Base (Production 2027)
 // ศูนย์กลางข้อมูล การตั้งค่าธีม และคลังสมรรถนะ AI ผูกบัญชีหลัก: rjcloud.organ@gmail.com
 // ============================================================================
 
@@ -30,7 +30,7 @@ window.RJCLOUD_CONFIG = {
 
   // ค่าเริ่มต้นโหมดการแสดงผล (ผู้เรียนสามารถกดสลับ มืด/สว่าง ได้ทุกหน้า)
   theme: {
-    defaultMode: "dark",              // "dark" (Spatial Dark) | "light" (Frosted Pearl)
+    defaultMode: "dark",      // "dark" (Spatial Dark) | "light" (Frosted Pearl)
     storageKey: "rjcloud_theme"
   },
 
@@ -51,7 +51,7 @@ window.RJCLOUD_CONFIG = {
 
 /**
  * 2. ต้นแบบประกาศนียบัตรในตัวระบบ (Built-in Certificate Studio Template)
- * ออกแบบสไตล์มินิมอลเรียบหรู พื้นขาว ตัดเส้นสายสีทองบาง (แก้ไขข้อความ โลโก้ และลายเซ็นได้จาก admin.html)
+ * สไตล์มินิมอลเรียบหรู พื้นสีขาว ตัดเส้นสายสีทองบางเฉียบ
  */
 window.DEFAULT_CERT_TEMPLATE = {
   certPrefix: "RJC-2027",
@@ -70,7 +70,7 @@ window.DEFAULT_CERT_TEMPLATE = {
 
 /**
  * 3. วิดีโอสถานการณ์จำลองหลักสำหรับห้อง AI Skill Lab (Vimeo #1248608457)
- * บทบาท: ผู้เรียน = ผู้ให้ข้อมูลญาติในห้องรับรอง | AI = ญาติผู้เสียชีวิต
+ * บทบาท: ผู้เรียน = ผู้ให้ข้อมูลญาติ | AI = ญาติผู้เสียชีวิต
  */
 window.SKILL_LAB_VIDEO = {
   vimeoId: "1248608457",
@@ -108,11 +108,11 @@ window.CLINICAL_DOMAINS = {
   },
   family_communication: {
     id: "family_communication",
-    nameTH: "การสื่อสารและให้ข้อมูลญาติในห้องรับรอง",
+    nameTH: "การสื่อสารและให้ข้อมูลญาติผู้เสียชีวิต",
     shortName: "สื่อสารกับญาติ",
     color: "#fbbf24",
     lessonIds: [11],
-    remediationGuide: "ทบทวนหลัก Decoupling (แยกการแจ้งข่าวสมองตายออกจากการขอรับบริจาค), หลัก SPIKES (S = Setting ห้องรับรองส่วนตัว), หลัก B.A.L.I., การตอบคำถามความเชื่ออย่างอ่อนโยน และการดูแลจิตใจญาติ (Bereavement Care)"
+    remediationGuide: "ทบทวนหลัก Decoupling (แยกการแจ้งข่าวสมองตายออกจากการขอรับบริจาค), หลัก SPIKES (S = Setting พื้นที่ที่เป็นส่วนตัว), หลัก B.A.L.I., การตอบคำถามความเชื่ออย่างอ่อนโยน และการดูแลจิตใจญาติ (Bereavement Care)"
   }
 };
 
@@ -163,7 +163,377 @@ window.QUESTION_DOMAIN_MAP = [
 ];
 
 /**
- * 5. ฐานข้อมูลสังกัดและโรงพยาบาลเครือข่ายทั่วประเทศ (Hospital Mapping)
+ * 5. คลังบุคลิกญาติจำลอง 4 สถานการณ์ (Multi-Persona Scenarios) สำหรับ AI Skill Lab
+ */
+window.SKILL_LAB_PERSONAS = [
+  {
+    id: "standard",
+    icon: "HeartPulse",
+    accent: "#38bdf8",
+    titleTH: "1. ญาติสับสนเรื่องภาวะสมองตาย",
+    titleEN: "1. Brain Death & Ventilator Confusion",
+    tagTH: "สถานการณ์มาตรฐาน",
+    tagEN: "Standard Case",
+    descTH: "ญาติเห็นหน้าอกยังขยับและตัวอุ่นจากเครื่องช่วยหายใจ จึงยังทำใจเชื่อไม่ได้ว่าสมองตายถาวร",
+    descEN: "Relative sees chest movement and warmth from ventilator support and struggles to accept brain death.",
+    openingEmotion: "CONFUSED",
+    openingTH: "สวัสดีค่ะ... ขอบคุณที่พาเข้ามานั่งคุยในที่เงียบๆ นะคะ แต่ตอนนี้ใจคอไม่ดีเลย เมื่อกี้เพิ่งไปจับมือตัวก็ยังอุ่น หน้าอกก็ยังขยับอยู่เลย ตกลงอาการของคนที่บ้านเป็นยังไงกันแน่คะ?",
+    openingEN: "Hello... Thank you for bringing me into this quiet space. My heart is racing—I just held their hand and it still felt warm, and their chest is rising. What is really happening?",
+    briefingTH: "แพทย์ยืนยันภาวะสมองตายตามเกณฑ์แล้ว คุณสวมบทบาทเป็นผู้ให้ข้อมูลญาติในพื้นที่ที่เป็นส่วนตัว ญาติกำลังสับสนเพราะยังเห็นสัญญาณชีพจากเครื่องช่วยหายใจ",
+    briefingEN: "Formal brainstem exams confirmed brain death. You are speaking privately with a close relative who is confused by ventilator-supported chest movement.",
+    promptHintTH: "เน้นบทบาทญาติที่สับสนและยังไม่เข้าใจความต่างระหว่างเครื่องช่วยหายใจกับภาวะสมองตายถาวร",
+    promptHintEN: "Focus on a grieving relative confused between ventilator support and irreversible brain death."
+  },
+  {
+    id: "belief",
+    icon: "Sparkles",
+    accent: "#fbbf24",
+    titleTH: "2. ความเชื่อ ศาสนา และพิธีกรรม",
+    titleEN: "2. Cultural Beliefs & Spiritual Concerns",
+    tagTH: "บริบทสังคมไทย",
+    tagEN: "Cultural Context",
+    descTH: "ญาติกังวลว่าหากบริจาคอวัยวะแล้วชาติหน้าอวัยวะจะไม่ครบ หรือกลัวร่างไม่สมบูรณ์ในพิธีกรรมทางศาสนา",
+    descEN: "Relative worries organ donation may affect spiritual completeness or disrupt religious funeral rites.",
+    openingEmotion: "HESITANT",
+    openingTH: "สวัสดีค่ะ... พอคุณหมอแจ้งข่าวร้ายใจมันหวิวไปหมดเลยค่ะ แต่ที่บ้านคุณยายท่านเคร่งเรื่องความเชื่อมาก กลัวว่าถ้ามีการผ่าตัดหรือบริจาคอวัยวะ ร่างเขาจะไม่ครบ 32 ชาติหน้าจะลำบาก แล้วจะทำพิธีทางศาสนาได้ตามปกติไหมคะ?",
+    openingEN: "Hello... After hearing the doctor's news I feel numb. Our elders are very worried—they fear that if organs are donated, the body won't be whole spiritually or won't be ready for our religious ceremony.",
+    briefingTH: "ญาติเริ่มรับทราบภาวะสมองตายแล้ว แต่มีความกังวลลึกๆ เรื่องความเชื่อ “ชาติหน้าอวัยวะไม่ครบ” และพิธีกรรมทางศาสนา คุณต้องรับฟังด้วยความเคารพ ไม่ตำหนิความเชื่อ และให้ข้อมูลเรื่องทานบารมีพร้อมการดูแลตกแต่งร่างอย่างประณีต",
+    briefingEN: "The relative understands the medical loss but holds deep spiritual worries about bodily wholeness and funeral rites. Listen respectfully without dismissing their beliefs.",
+    promptHintTH: "เน้นบทบาทญาติที่กังวลเรื่องความเชื่อ ชาติหน้าอวัยวะไม่ครบ และความสมบูรณ์ของร่างในพิธีกรรมศาสนา หากผู้เรียนรับฟังด้วยความเคารพและอธิบายหลักทานบารมีพร้อมการตกแต่งร่างประณีตจึงค่อยๆ วางใจ",
+    promptHintEN: "Emphasize respectful cultural/spiritual concerns about wholeness and funeral ceremonies; soften only when the learner validates beliefs respectfully and explains dignified care."
+  },
+  {
+    id: "conflict",
+    icon: "Users",
+    accent: "#f43f5e",
+    titleTH: "3. ความขัดแย้งในครอบครัว (2 เสียง)",
+    titleEN: "3. Family Conflict (Two Perspectives)",
+    tagTH: "จริยธรรม & แรงกดดัน",
+    tagEN: "Ethical Dilemma",
+    descTH: "ภรรยาอยากทำตามบัตรแสดงความจำนงของผู้เสียชีวิต แต่คุณแม่คัดค้านอย่างรุนแรง (ฝึกหลัก Autonomy และลดความขัดแย้ง)",
+    descEN: "Spouse wants to honor the donor card, while the mother strongly objects (practice ethical neutrality and family unity).",
+    openingEmotion: "ANGRY",
+    openingTH: "[ภรรยา]: หนูจำได้ว่าพี่เขาเคยทำบัตรบริจาคอวัยวะไว้ค่ะ อยากทำให้เป็นบุญครั้งสุดท้าย... [คุณแม่แทรกเสียงสั่น]: แม่ไม่ยอมนะ! ลูกแม่เจ็บมามากพอแล้ว ใครอย่ามาแตะตัวลูกแม่เด็ดขาด! คุณเจ้าหน้าที่ตกลงจะเอาตามบัตรหรือเอาตามใจแม่คะ?",
+    openingEN: "[Spouse]: He signed a donor card—I want to honor his last wish... [Mother interrupts tearfully]: No! My son has suffered enough! Don't let anyone touch him! Who has the final say here?!",
+    briefingTH: "ในห้องมีทั้งภรรยา (อยากทำตามบัตรแสดงความจำนง) และคุณแม่ (คัดค้านด้วยความเจ็บปวด) หลักจริยธรรมไทยคือไม่ฝืนใจญาติสายตรงเพื่อป้องกันบาดแผลในครอบครัว ให้ประคับประคองความรักของทั้งสองฝ่ายเป็นศูนย์กลาง",
+    briefingEN: "Both spouse (pro-donation) and mother (strongly objecting) are present. Practice compassionate de-escalation, never coerce, and prioritize family unity and emotional safety.",
+    promptHintTH: "สวมบทบาท 2 เสียงในคำตอบเดียว ([ภรรยา] และ [คุณแม่]) ที่เห็นต่างกันอย่างตึงเครียด หากผู้เรียนไม่เข้าข้างฝ่ายใดฝ่ายหนึ่ง ไม่เร่งรัด และยืนยันว่าจะเคารพการตัดสินใจร่วมกันของครอบครัวโดยไม่ฝืนใจ คุณแม่จึงค่อยๆ สงบลง",
+    promptHintEN: "Portray two voices ([Spouse] and [Mother]) in emotional disagreement; de-escalate only when the learner stays neutral, validates both sides' love, and assures zero coercion."
+  },
+  {
+    id: "distrust",
+    icon: "ShieldAlert",
+    accent: "#c084fc",
+    titleTH: "4. ญาติไม่ไว้วางใจระบบและกลัวค่าใช้จ่าย",
+    titleEN: "4. System Distrust & Fairness Concerns",
+    tagTH: "ความโปร่งใส ODC",
+    tagEN: "Transparency",
+    descTH: "ญาติระแวงเรื่องการลัดคิวให้คนรวย การซื้อขายอวัยวะ และกังวลว่าครอบครัวต้องจ่ายค่ารักษาเพิ่ม",
+    descEN: "Relative suspects organ trafficking, queue-jumping for wealthy recipients, or extra hospital bills.",
+    openingEmotion: "ANGRY",
+    openingTH: "ขอถามตรงๆ เลยนะคะ... ที่มาคุยเรื่องนี้เพราะจะเอาอวัยวะไปให้คนรวยที่จ่ายเงินลัดคิวใช่ไหมคะ? แล้วถ้าต้องยืดเครื่องช่วยหายใจรอผ่าตัด ครอบครัวเราต้องมารับผิดชอบค่าใช้จ่ายเพิ่มอีกหรือเปล่าคะ?",
+    openingEN: "Let me ask you bluntly... Are you only bringing this up so wealthy people can buy organs and skip the queue? And will our family be billed for extra ICU hours?",
+    briefingTH: "ญาติมีความระแวงต่อระบบการแพทย์ คุณต้องตั้งสติ ไม่ตอบโต้ด้วยอารมณ์ และอธิบายความโปร่งใสของการจัดสรรผ่านระบบคอมพิวเตอร์ศูนย์รับบริจาคอวัยวะสภากาชาดไทย (ODC) พร้อมความชัดเจนเรื่องสิทธิประโยชน์และไม่มีการซื้อขายเด็ดขาด",
+    briefingEN: "The relative expresses suspicion about fairness, organ selling, and hospital costs. Stay calm, validate their right to ask, and explain transparent ODC computer allocation and zero cost to the donor's family.",
+    promptHintTH: "เน้นบทบาทญาติที่ระแวงเรื่องความโปร่งใส การซื้อขายอวัยวะ และค่าใช้จ่าย หากผู้เรียนตอบอย่างใจเย็น ตรงไปตรงมา อธิบายระบบจัดสรรที่เป็นธรรมของสภากาชาดไทย (ODC) และไม่มีค่าใช้จ่ายกับครอบครัวจึงค่อยๆ คลายความระแวง",
+    promptHintEN: "Play a skeptical relative concerned about fairness and hidden costs; soften when the learner responds calmly with transparent ODC allocation facts."
+  }
+];
+
+/**
+ * 6. ระดับความยากที่ผู้เรียนเลือกได้เอง (User-Friendly: Normal vs Hard)
+ */
+window.SKILL_LAB_DIFFICULTIES = {
+  normal: {
+    id: "normal",
+    labelTH: "Normal (มีตัวช่วยแนะนำ)",
+    labelEN: "Normal (Guided Support)",
+    badge: "NORMAL",
+    descTH: "เหมาะสำหรับฝึกสร้างความมั่นใจ มี AI Coach ชี้นำและแสดงปุ่มแนวทางคำพูดให้เลือกปรับใช้ได้",
+    descEN: "Ideal for building confidence—includes AI Coach whispers and suggested response prompts.",
+    showSuggestions: true,
+    showCoachDefault: true,
+    aiPromptRuleTH: "ระดับ Normal: ตอบสนองอย่างสมจริงและค่อยๆ เปิดใจขึ้นตามขั้นตอนเมื่อผู้เรียนแสดงความเห็นอกเห็นใจและให้ข้อมูลถูกต้อง",
+    aiPromptRuleEN: "Normal Mode: Respond realistically and gradually open up when the learner shows empathy and clear facts."
+  },
+  hard: {
+    id: "hard",
+    labelTH: "Hard (ท้าทายเสมือนจริง)",
+    labelEN: "Hard (Realistic Challenge)",
+    badge: "HARD",
+    descTH: "ซ่อนปุ่มแนวทางคำพูดอัตโนมัติ (คิดและพูดเอง 100%) ญาติมีอารมณ์อ่อนไหวสูงและซักถามเจาะลึกหน้างานจริง",
+    descEN: "Hides suggested replies (100% free response). Relative asks probing clinical/emotional follow-ups.",
+    showSuggestions: false,
+    showCoachDefault: false,
+    aiPromptRuleTH: "ระดับ Hard: แสดงอารมณ์ที่อ่อนไหวและซักถามเจาะลึกมากขึ้น (เช่น ถามย้ำเรื่องหลักฐานการตรวจสมองตาย ระยะเวลา หรือความกังวลซับซ้อน) จะยังไม่ยอมเปิดใจง่ายๆ จนกว่าผู้เรียนจะรับฟังอารมณ์และอธิบายหลักการได้อย่างลึกซึ้งจริงใจ",
+    aiPromptRuleEN: "Hard Mode: Ask sharper emotional and clinical follow-ups; do not shift to CALM easily until the learner demonstrates deep empathy and accurate clinical clarity."
+  }
+};
+
+/**
+ * 7. พจนานุกรมตรวจจับ "คำที่อาจกระทบใจญาติ" และเสนอคำที่นุ่มนวลกว่า (AI Trigger-Word Polisher)
+ */
+window.TRIGGER_PHRASE_DICTIONARY = [
+  {
+    id: "unplug",
+    lang: "th",
+    pattern: /ถอดเครื่อง|ปิดเครื่อง|ดึงสาย|ถอดสาย/,
+    flagged: "ถอดเครื่อง / ปิดเครื่อง",
+    softer: "ยุติการใช้เครื่องพยุงชีพ / ดูแลให้ท่านจากไปอย่างสงบ",
+    reason: "คำว่า 'ถอดเครื่อง' มักทำให้ญาติรู้สึกผิดเหมือนเป็นคนสั่งยุติชีวิตบุคคลอันเป็นที่รัก"
+  },
+  {
+    id: "corpse",
+    lang: "th",
+    pattern: /ศพ|ซาก|คนตาย/,
+    flagged: "ศพ / คนตาย",
+    softer: "ร่างของผู้เสียชีวิต / ท่าน / คุณ...",
+    reason: "การเรียกว่า 'ร่างของผู้เสียชีวิต' หรือเอ่ยชื่ออย่างให้เกียรติช่วยถนอมความรู้สึกของครอบครัว"
+  },
+  {
+    id: "cut_out",
+    lang: "th",
+    pattern: /ผ่าเอา|ควัก|ตัดเอา|ชำแหละ|เอาอวัยวะออก/,
+    flagged: "ผ่าเอา / ควัก / เอาอวัยวะออก",
+    softer: "ดูแลจัดเก็บอวัยวะอย่างประณีตเพื่อส่งต่อชีวิตใหม่",
+    reason: "หลีกเลี่ยงคำที่ก่อให้เกิดภาพความเจ็บปวดหรือความรุนแรงทางสายตาของญาติ"
+  },
+  {
+    id: "hopeless",
+    lang: "th",
+    pattern: /ไม่รอดแล้ว|หมดหวังแล้ว|ตายแล้ว|ไม่มีทางหาย|ทำใจเถอะ/,
+    flagged: "ไม่รอดแล้ว / หมดหวัง / ทำใจเถอะ",
+    softer: "ก้านสมองหยุดทำงานอย่างถาวร / ทีมแพทย์ได้ดูแลอย่างสุดความสามารถแล้ว",
+    reason: "ภาษาที่ตรงไปตรงมาแต่อ่อนโยนช่วยลดแรงกระแทกทางอารมณ์และแสดงความเคารพต่อความสูญเสีย"
+  },
+  {
+    id: "rush",
+    lang: "th",
+    pattern: /รีบตัดสินใจ|ต้องรีบ|เดี๋ยวไม่ทัน|เซ็นเลย|เซ็นตอนนี้/,
+    flagged: "รีบตัดสินใจ / เดี๋ยวไม่ทัน / เซ็นเลย",
+    softer: "ขอให้ครอบครัวค่อยๆ ปรึกษากันอย่างเต็มที่โดยไม่เร่งรัดค่ะ",
+    reason: "การเร่งรัดขัดต่อหลัก Decoupling และ Zero Pressure อาจทำให้ญาติปิดกั้นทันที"
+  },
+  {
+    id: "unplug_en",
+    lang: "en",
+    pattern: /pull the plug|turn off the machine|unplug/i,
+    flagged: "pull the plug / turn off the machine",
+    softer: "withdraw life-sustaining support peacefully",
+    reason: "Harsh phrasing can trigger intense guilt for grieving relatives."
+  },
+  {
+    id: "harvest_en",
+    lang: "en",
+    pattern: /harvest|cut out|corpse|dead body/i,
+    flagged: "harvest / cut out / corpse",
+    softer: "respectfully recover organs / your loved one's body",
+    reason: "Person-centered surgical wording honors the patient's dignity."
+  },
+  {
+    id: "rush_en",
+    lang: "en",
+    pattern: /decide now|hurry up|sign immediately|running out of time/i,
+    flagged: "decide now / hurry up / running out of time",
+    softer: "take all the private time your family needs—there is no rush",
+    reason: "Non-coercive pacing preserves trust and ethical autonomy."
+  }
+];
+
+/**
+ * 8. คลังมินิเคสจำลองคลินิกแบบโต้ตอบ (AI Clinical Case Simulator สำหรับ index.html)
+ */
+window.CLINICAL_CASE_SIMULATIONS = [
+  {
+    id: "case_donor_di",
+    domain: "brain_death_donor",
+    badge: "DONOR MANAGEMENT • ICU",
+    title: "เคสที่ 1: ดูแลผู้บริจาคสมองตายภาวะความดันตกและเบาจืด",
+    patientSummary: "ชายอายุ 34 ปี อุบัติเหตุทางศีรษะ (TBI) คะแนน GCS = 3 แพทย์ประเมินเข้าข่าย Potential Donor",
+    steps: [
+      {
+        vitals: { bp: "74/44 mmHg", hr: "118 /min", uo: "680 mL/hr", na: "154 mEq/L" },
+        situation: "ขณะดูแลใน ICU สัญญาณชีพเริ่มไม่คงที่ ความดันโลหิตลดลงเหลือ 74/44 mmHg และปัสสาวะออกมากผิดปกติ 680 mL/hr (ใสมาก) คุณจะประเมินและจัดการขั้นตอนแรกอย่างไร?",
+        options: [
+          {
+            label: "รีบแจ้งศูนย์รับบริจาคอวัยวะ (ODC) และหยุดสารน้ำทั้งหมดทันทีเพื่อรอดูอาการ",
+            correct: false,
+            outcome: "ความดันโลหิตตกลงอีกเหลือ 60/38 mmHg เสี่ยงไตและหัวใจขาดเลือดเสียหาย! หลัก Donor Management ต้องรักษาสัญญาณชีพให้คงที่ก่อนเสมอค่ะ",
+            nextVitals: { bp: "60/38 mmHg", hr: "132 /min", uo: "720 mL/hr", na: "158 mEq/L" }
+          },
+          {
+            label: "รายงานแพทย์เพื่อรักษาสัญญาณชีพ (Fluid/Vasopressor) และประเมินภาวะเบาจืด (Diabetes Insipidus)",
+            correct: true,
+            outcome: "ยอดเยี่ยมค่ะ! การพยุงความดันโลหิตและตรวจจับภาวะเบาจืดตั้งแต่ต้นช่วยป้องกันไม่ให้อวัยวะขาดเลือดและรักษาสมดุลเกลือแร่ได้ทันท่วงที",
+            nextVitals: { bp: "102/64 mmHg", hr: "96 /min", uo: "520 mL/hr", na: "151 mEq/L" }
+          }
+        ]
+      },
+      {
+        vitals: { bp: "102/64 mmHg", hr: "96 /min", uo: "520 mL/hr", na: "151 mEq/L" },
+        situation: "หลังพยุงความดันดีขึ้น ปัสสาวะยังคงออกมากกว่า 500 mL/hr และค่าโซเดียมในเลือดสูง (Hypernatremia) ยาหลักที่นิยมใช้ควบคุมภาวะเบาจืดในผู้ป่วยสมองตายคือข้อใด?",
+        options: [
+          {
+            label: "Desmopressin (DDAVP) ควบคู่การติดตามปริมาณปัสสาวะและเกลือแร่ใกล้ชิด",
+            correct: true,
+            outcome: "แม่นยำมากค่ะ! DDAVP ช่วยควบคุมภาวะเบาจืด ทำให้ปัสสาวะกลับสู่เกณฑ์ปกติ (100–150 mL/hr) และคงคุณภาพอวัยวะได้ดีเยี่ยม",
+            nextVitals: { bp: "112/70 mmHg", hr: "84 /min", uo: "120 mL/hr", na: "142 mEq/L" }
+          },
+          {
+            label: "ให้ยาขับปัสสาวะ (Furosemide) เพื่อลดบวมสมองเพิ่มเติม",
+            correct: false,
+            outcome: "ไม่เหมาะสมค่ะ เพราะผู้ป่วยกำลังสูญเสียน้ำอย่างรุนแรงจากภาวะเบาจืด การให้ยาขับปัสสาวะจะยิ่งทำให้ความดันตกและโซเดียมพุ่งสูงค่ะ",
+            nextVitals: { bp: "82/50 mmHg", hr: "124 /min", uo: "810 mL/hr", na: "160 mEq/L" }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: "case_brain_death",
+    domain: "brain_death_donor",
+    badge: "BRAIN DEATH • DIAGNOSIS",
+    title: "เคสที่ 2: เกณฑ์วินิจฉัยภาวะสมองตายและ Lazarus Sign",
+    patientSummary: "หญิงอายุ 48 ปี เลือดออกในสมองขนาดใหญ่ GCS = 3 ไม่หายใจเอง พึ่งพาเครื่องช่วยหายใจ",
+    steps: [
+      {
+        vitals: { bp: "114/72 mmHg", hr: "82 /min", temp: "36.8°C", gcs: "E1V1M1 (3)" },
+        situation: "ขณะแพทย์ตรวจยืนยันภาวะสมองตายครั้งแรก ญาติสังเกตเห็นแขนผู้ป่วยขยับกระตุกเล็กน้อยตอนขยับตัวและร้องไห้คิดว่าผู้ป่วยกำลังจะฟื้น สัญญาณนี้คืออะไรและควรอธิบายอย่างไร?",
+        options: [
+          {
+            label: "อธิบายอย่างอ่อนโยนว่าเป็น Lazarus Sign (รีเฟล็กซ์จากไขสันหลัง) ไม่ใช่การฟื้นคืนสติของสมอง",
+            correct: true,
+            outcome: "ถูกต้องและสื่อสารได้ดีมากค่ะ! Lazarus Sign เป็น Spinal Reflex ที่พบได้ในผู้ป่วยสมองตาย การอธิบายอย่างนุ่มนวลช่วยลดความสับสนของครอบครัว",
+            nextVitals: { bp: "112/70 mmHg", hr: "80 /min", temp: "36.8°C", gcs: "E1V1M1 (3)" }
+          },
+          {
+            label: "รีบแจ้งญาติว่าผู้ป่วยกำลังฟื้นตัวและยกเลิกการประเมินภาวะสมองตายทันที",
+            correct: false,
+            outcome: "คลาดเคลื่อนค่ะ การกระตุกของแขนขาเมื่อถูกกระตุ้นอาจเป็นเพียงรีเฟล็กซ์ระดับไขสันหลัง (Spinal Reflex) ต้องอาศัยเกณฑ์การตรวจก้านสมองโดยแพทย์ค่ะ",
+            nextVitals: { bp: "114/72 mmHg", hr: "82 /min", temp: "36.8°C", gcs: "E1V1M1 (3)" }
+          }
+        ]
+      },
+      {
+        vitals: { bp: "112/70 mmHg", hr: "80 /min", temp: "36.8°C", gcs: "E1V1M1 (3)" },
+        situation: "ตามเกณฑ์แพทยสภาในผู้ใหญ่ การรับรองภาวะสมองตายให้ถูกต้องตามกฎหมายต้องดำเนินการตรวจยืนยันอย่างไร?",
+        options: [
+          {
+            label: "ตรวจทางคลินิกอย่างน้อย 2 ครั้ง ห่างกัน ≥ 6 ชม. ร่วมทำ Apnea Test และลงนามรับรองโดยแพทย์ 3 ท่าน (ไม่อยู่ในทีมปลูกถ่าย)",
+            correct: true,
+            outcome: "ครบถ้วน 100% ค่ะ! โดยการตรวจ EEG เป็นทางเลือกเสริมในกรณีที่ไม่สามารถประเมินทางคลินิกบางส่วนได้",
+            nextVitals: { bp: "110/68 mmHg", hr: "78 /min", temp: "36.7°C", gcs: "CONFIRMED" }
+          },
+          {
+            label: "ตรวจเพียง 1 ครั้งโดยแพทย์เวร 1 ท่าน และบังคับทำ EEG ทุกราย",
+            correct: false,
+            outcome: "ไม่ตรงตามเกณฑ์กฎหมายไทยค่ะ ในผู้ใหญ่ต้องตรวจอย่างน้อย 2 ครั้งห่างกัน ≥ 6 ชม. และมีแพทย์ผู้เชี่ยวชาญร่วมรับรองรวม 3 ท่านค่ะ",
+            nextVitals: { bp: "112/70 mmHg", hr: "80 /min", temp: "36.8°C", gcs: "PENDING" }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: "case_procurement_coldchain",
+    domain: "procurement_transplant",
+    badge: "PROCUREMENT & OR • COLD CHAIN",
+    title: "เคสที่ 3: การบรรจุขนส่งอวัยวะและระยะเวลาทอง (Golden Period)",
+    patientSummary: "ครอบครัวตกลงบริจาคหัวใจ ไต 2 ข้าง และดวงตา ทีมผ่าตัดจัดเก็บ (OR) กำลังเตรียมการ",
+    steps: [
+      {
+        vitals: { heartLimit: "≤ 4 ชม.", eyeLimit: "6–8 ชม.", kidneyTemp: "2–4°C", status: "IN OR" },
+        situation: "หลังศัลยแพทย์จัดเก็บไตออกมาเรียบร้อยแล้ว ขั้นตอนการบรรจุและควบคุมอุณหภูมิเพื่อส่งต่อให้ รพ.ผู้รับข้อใดถูกต้องที่สุด?",
+        options: [
+          {
+            label: "ล้างและแช่ในน้ำยาถนอมอวัยวะ (Preservation Solution) บรรจุปลอดเชื้อหลายชั้น คุมอุณหภูมิ 2–4°C ในน้ำแข็งเกล็ดที่กำลังละลาย",
+            correct: true,
+            outcome: "สมบูรณ์แบบค่ะ! อุณหภูมิ 2–4°C ช่วยถนอมเซลล์ไตโดยไม่ทำให้เนื้อเยื่อแข็งตัวเสียหาย และต้องประสานขนส่งหัวใจให้ทันภายใน 4 ชม.",
+            nextVitals: { heartLimit: "≤ 4 ชม.", eyeLimit: "6–8 ชม.", kidneyTemp: "2–4°C ✓", status: "PACKED" }
+          },
+          {
+            label: "แช่ในน้ำแข็งแห้ง (-20°C) เพื่อให้อวัยวะเย็นจัดและเก็บได้นานหลายวัน",
+            correct: false,
+            outcome: "อันตรายต่อเนื้อเยื่อค่ะ! ห้ามใช้น้ำแข็งแห้ง (-20°C) หรือให้ไตสัมผัสน้ำแข็งโดยตรงเด็ดขาดเพราะเซลล์ไตจะถูกทำลายถาวรค่ะ",
+            nextVitals: { heartLimit: "≤ 4 ชม.", eyeLimit: "6–8 ชม.", kidneyTemp: "-20°C ✗", status: "RISK" }
+          }
+        ]
+      },
+      {
+        vitals: { heartLimit: "≤ 4 ชม.", eyeLimit: "6–8 ชม.", kidneyTemp: "2–4°C ✓", status: "POST-OR" },
+        situation: "เมื่อส่งมอบอวัยวะทั้งหมดเรียบร้อยแล้ว ขั้นตอนสุดท้ายที่สำคัญที่สุดในห้องผ่าตัดก่อนส่งมอบร่างคืนแก่ครอบครัวคือข้อใด?",
+        options: [
+          {
+            label: "ดูแลเย็บแผลและตกแต่งร่างผู้บริจาคให้เรียบร้อยสมบูรณ์และสมเกียรติที่สุด พร้อมร่วมแสดงความเคารพ",
+            correct: true,
+            outcome: "งดงามและถูกต้องตามมาตรฐานจริยธรรมสูงสุดค่ะ การดูแลตกแต่งร่างอย่างประณีตคือการให้เกียรติสูงสุดต่อผู้เสียชีวิตและช่วยเยียวยาจิตใจครอบครัวค่ะ",
+            nextVitals: { heartLimit: "SENT ✓", eyeLimit: "SENT ✓", kidneyTemp: "2–4°C ✓", status: "DIGNIFIED ✓" }
+          },
+          {
+            label: "ส่งมอบร่างทันทีโดยไม่ต้องเย็บปิดแผลละเอียดเพื่อประหยัดเวลาห้องผ่าตัด",
+            correct: false,
+            outcome: "ไม่เหมาะสมอย่างยิ่งค่ะ การตกแต่งร่างให้เรียบร้อยสมบูรณ์ที่สุดเป็นหัวใจสำคัญของกระบวนการรับบริจาคอวัยวะค่ะ",
+            nextVitals: { heartLimit: "SENT", eyeLimit: "SENT", kidneyTemp: "2–4°C", status: "REVIEW" }
+          }
+        ]
+      }
+    ]
+  }
+];
+
+/**
+ * 9. โปรไฟล์ปรับมุมมอง AI Tutor ตามตำแหน่งและแผนกจริง (Role-Adaptive AI Tutor)
+ */
+window.ROLE_ADAPTIVE_PROFILES = {
+  donor_team: {
+    id: "donor_team",
+    badgeTH: "มุมมองทีมรับบริจาค / TC",
+    focusSummary: "เน้นการประสานงาน ODC, หลักการสื่อสาร Decoupling & SPIKES, กฎหมาย-จริยธรรม และการติดตาม Conversion Rate",
+    aiPromptAddon: "ผู้เรียนปฏิบัติงานด้านรับบริจาค/ปลูกถ่ายอวัยวะ (TC) โดยตรง ให้เน้นมุมมองการประสานงานทีมสหสาขาวิชาชีพ การสื่อสารกับครอบครัว และความถูกต้องตามเกณฑ์ ODC"
+  },
+  icu_er_or: {
+    id: "icu_er_or",
+    badgeTH: "มุมมอง ICU / ER / OR",
+    focusSummary: "เน้นการคัดกรอง Potential Donor (GCS=3), การรักษาสัญญาณชีพ (DDAVP/ความดัน), Cold Chain 2–4°C และการดูแลตกแต่งร่างในห้องผ่าตัด",
+    aiPromptAddon: "ผู้เรียนปฏิบัติงานหอผู้ป่วยวิกฤต (ICU) ห้องฉุกเฉิน (ER) หรือห้องผ่าตัด (OR) ให้เน้นประเด็นหน้างานคลินิก การเฝ้าระวังสัญญาณชีพ ภาวะเบาจืด และมาตรฐานจัดเก็บ/ขนส่งอวัยวะ"
+  },
+  general: {
+    id: "general",
+    badgeTH: "มุมมองผู้สนใจศึกษาทั่วไป",
+    focusSummary: "อธิบายศัพท์แพทย์และเกณฑ์ทางคลินิกด้วยภาษาที่เข้าใจง่าย พร้อมเชื่อมโยงคุณค่าการต่อชีวิตเพื่อนมนุษย์",
+    aiPromptAddon: "ผู้เรียนไม่ได้ปฏิบัติงานด้านนี้โดยตรง ให้เริ่มต้นอธิบายศัพท์การแพทย์อย่างเข้าใจง่าย กระชับ เป็นมิตร ก่อนเชื่อมโยงสู่มาตรฐานวิชาชีพ"
+  }
+};
+
+/**
+ * 10. คลังการ์ดทบทวนความจำอัจฉริยะ (AI Spaced-Repetition Smart Flashcards)
+ * ผูกกับหมวดคลินิกทั้ง 4 หมวด เพื่อดึงการ์ดตรงจุดอ่อนของผู้เรียนมาทบทวนก่อนสอบ Post-test
+ */
+window.SPACED_FLASHCARDS = [
+  { id: "fc1", domain: "brain_death_donor", front: "เกณฑ์ตรวจยืนยันภาวะสมองตายในผู้ใหญ่ต้องตรวจกี่ครั้ง ห่างกันกี่ชั่วโมง และแพทย์กี่ท่าน?", back: "ตรวจทางคลินิกอย่างน้อย 2 ครั้ง ห่างกันอย่างน้อย 6 ชั่วโมง และลงนามรับรองโดยแพทย์ 3 ท่าน (ที่ไม่เกี่ยวข้องกับทีมปลูกถ่าย) ร่วมกับ Apnea Test" },
+  { id: "fc2", domain: "brain_death_donor", front: "ผู้ป่วยสมองตายมีภาวะเบาจืด (Diabetes Insipidus) ปัสสาวะออกมากผิดปกติ ใช้ยาอะไรคุม?", back: "Desmopressin (DDAVP) ควบคู่การรักษาความดันโลหิตให้คงที่และติดตามเกลือแร่โซเดียมใกล้ชิด" },
+  { id: "fc3", domain: "brain_death_donor", front: "Lazarus Sign ในผู้ป่วยสมองตายคืออะไร? และ EEG จำเป็นทุกรายหรือไม่?", back: "Lazarus Sign คือการขยับแขนขาจากรีเฟล็กซ์ไขสันหลัง (Spinal Reflex) ไม่ใช่การฟื้นคืนสติ • ส่วน EEG เป็นเพียงทางเลือกเสริม ไม่จำเป็นหากผลตรวจคลินิกและ Apnea Test ชัดเจน" },
+  { id: "fc4", domain: "brain_death_donor", front: "ผู้ป่วยสงสัยสมองตายต้องมีคะแนน GCS เท่าไร และอายุ 70 ปีบริจาคอวัยวะได้หรือไม่?", back: "GCS = 3 • อายุ 70 ปีสามารถบริจาคได้ หากการทำงานของอวัยวะยังดีและไม่มีข้อห้ามเด็ดขาด (เช่น HIV, มะเร็งแพร่กระจาย)" },
+  { id: "fc5", domain: "procurement_transplant", front: "จำแม่นตัวเลข Cold Chain: หัวใจ / ดวงตา / อุณหภูมิบรรจุไต", back: "• หัวใจ: ระยะเวลาทองไม่เกิน 4 ชั่วโมง\n• ดวงตา: จัดเก็บภายใน 6–8 ชั่วโมง\n• บรรจุขนส่งไต: 2–4°C (น้ำแข็งเกล็ดที่กำลังละลาย ห้ามใช้น้ำแข็งแห้ง -20°C)" },
+  { id: "fc6", domain: "procurement_transplant", front: "การตรวจใดสำคัญสูงสุดในการปลูกถ่ายไต และขั้นตอนสุดท้ายในห้องผ่าตัดคืออะไร?", back: "• การปลูกถ่ายไตให้ความสำคัญสูงสุดกับ HLA Typing (ความเข้ากันได้ของเนื้อเยื่อ)\n• ขั้นตอนสุดท้ายที่สำคัญที่สุดคือดูแลตกแต่งร่างผู้บริจาคให้เรียบร้อยสมบูรณ์ที่สุด" },
+  { id: "fc7", domain: "family_communication", front: "หลัก Decoupling และตัว S ตัวแรกของ SPIKES Protocol หมายถึงอะไร?", back: "• Decoupling: แยกการแจ้งข่าวภาวะสมองตายออกจากการเจรจาขอรับบริจาคอวัยวะ\n• S (Setting): เตรียมสถานที่ที่เป็นส่วนตัว สงบ และเหมาะสมก่อนพูดคุยกับญาติ" },
+  { id: "fc8", domain: "family_communication", front: "หากผู้เสียชีวิตมีบัตรแสดงความจำนง แต่ญาติสายตรงคัดค้านรุนแรง ต้องทำอย่างไร?", back: "ยุติการจัดเก็บอวัยวะเพื่อเคารพจิตใจครอบครัวและป้องกันความขัดแย้งหรือบาดแผลทางอารมณ์ของญาติ" },
+  { id: "fc9", domain: "policy_ethics", front: "เกณฑ์อายุแสดงความจำนงบริจาคด้วยตนเองตามกฎหมายไทย และจริยธรรมที่สำคัญที่สุดคือ?", back: "• อายุขั้นต่ำ 18 ปีบริบูรณ์\n• จริยธรรมสูงสุดคือ Autonomy (การเคารพสิทธิ์การตัดสินใจของผู้ป่วยและญาติ)" },
+  { id: "fc10", domain: "policy_ethics", front: "ใครเป็นผู้จัดสรรอวัยวะอย่างเป็นธรรม และข้อมูลผู้บริจาค-ผู้รับเปิดเผยได้หรือไม่?", back: "• ระบบคอมพิวเตอร์ของศูนย์รับบริจาคอวัยวะสภากาชาดไทย (ODC)\n• ข้อมูลเป็นความลับตามจริยธรรมวิชาชีพ แจ้งได้เฉพาะภาพรวมว่าอวัยวะได้ช่วยต่อชีวิตผู้ป่วยกี่ราย" }
+];
+
+/**
+ * 11. ตัวเลือกแบบปุ่มกด (Zero-PII Tags) สำหรับโหมดอุ่นเครื่อง 30 วิก่อนพบญาติจริง (PDPA-Safe)
+ */
+window.PRE_APPROACH_TAGS = {
+  ageGroups: ["เด็ก/วัยรุ่น", "วัยทำงาน (20–45 ปี)", "วัยกลางคน (46–65 ปี)", "ผู้สูงอายุ (>65 ปี)"],
+  causes: ["อุบัติเหตุทางศีรษะ (TBI)", "โรคหลอดเลือดสมองแตก/ตีบ", "ภาวะขาดออกซิเจนเฉียบพลัน"],
+  familyMoods: ["ช็อก / ยังไม่ยอมรับ", "โศกเศร้าร้องไห้หนัก", "สับสนเรื่องเครื่องช่วยหายใจ", "ความเห็นในครอบครัวต่างกัน", "สงบและเปิดใจรับฟัง"],
+  concerns: ["กังวลความเชื่อ/พิธีกรรมศาสนา", "กลัวร่างไม่เรียบร้อย", "กังวลค่าใช้จ่าย/ความโปร่งใส", "ไม่แน่ใจความต้องการของผู้เสียชีวิต"]
+};
+
+/**
+ * 12. ฐานข้อมูลสังกัดและโรงพยาบาลเครือข่ายทั่วประเทศ (Hospital Mapping)
  */
 window.HOSPITAL_MAPPING = {
   "เขตสุขภาพที่ 1": [{ name: "รพ.มหาราชนครเชียงใหม่", prov: "เชียงใหม่" }],
@@ -193,7 +563,7 @@ window.HOSPITAL_MAPPING = {
 };
 
 /**
- * 6. รายวิชาและบทเรียนทั้งหมด 20 บท (พร้อมระบุหมวดสมรรถนะสำหรับ AI Roadmap)
+ * 13. รายวิชาและบทเรียนทั้งหมด 20 บท (พร้อมระบุหมวดสมรรถนะสำหรับ AI Roadmap)
  */
 window.INITIAL_LESSONS = [
   { id: 1, domain: "policy_ethics", title: "ยุทธศาสตร์และเป้าหมายการพัฒนาระบบบริการสุขภาพ (Service plan)", videoId: "1-sX4LnWRMSjoEQmWee-9GuiQ2XMvkSro", documentUrl: "https://drive.google.com/file/d/1FrJt9TCbOy5oewg_eMrRG8pW4dNzJHS9/view?usp=sharing" },
@@ -219,7 +589,7 @@ window.INITIAL_LESSONS = [
 ];
 
 /**
- * 7. คลังสรุป 1 นาที (1-Minute Clinical Cheat Sheets) และคำถาม Micro-Check สำหรับ AI Study Companion
+ * 14. คลังสรุป 1 นาที (1-Minute Clinical Cheat Sheets) และคำถาม Micro-Check สำหรับ AI Study Companion
  */
 window.LESSON_AI_GUIDES = {
   1: {
@@ -354,9 +724,9 @@ window.LESSON_AI_GUIDES = {
   },
   11: {
     keyPoints: [
-      "หลัก Setting (SPIKES): เชิญญาติมาพูดคุยในห้องรับรอง/ห้องให้คำปรึกษาที่เป็นส่วนตัว แยกจากห้อง ICU",
+      "หลัก Setting (SPIKES): เชิญญาติมาพูดคุยในพื้นที่ให้คำปรึกษาที่เป็นส่วนตัว แยกจากห้อง ICU",
       "หลัก Decoupling: แยกการแจ้งข่าวภาวะสมองตายออกจากการพูดคุยเรื่องบริจาคอวัยวะอย่างชัดเจน",
-      "หลัก Empathy & Zero Pressure: รับฟังอารมณ์ โค้ชความเงียบ 2.5 วินาที ไม่เร่งรัด และให้ความมั่นใจเรื่องการตกแต่งร่างอย่างประณีต"
+      "หลัก Empathy & Zero Pressure: รับฟังอารมณ์ เว้นความเงียบ 2.5 วินาที ไม่เร่งรัด และให้ความมั่นใจเรื่องการตกแต่งร่างอย่างประณีต"
     ],
     microCheck: {
       q: "หลักการ 'Decoupling' ในบทเรียน Family Approach หมายถึงอะไร?",
@@ -485,7 +855,7 @@ window.LESSON_AI_GUIDES = {
 };
 
 /**
- * 8. คลังข้อสอบมาตรฐาน 40 ข้อ (ตรวจสอบคำสะกดและเฉลยครบทุกข้อแล้ว)
+ * 15. คลังข้อสอบมาตรฐาน 40 ข้อ (ตรวจสอบคำสะกดและเฉลยครบทุกข้อแล้ว)
  * รูปแบบ: "คำถาม|ตัวเลือก 0|ตัวเลือก 1|ตัวเลือก 2|ตัวเลือก 3|ดัชนีคำตอบที่ถูก"
  */
 window.QUIZ_QUESTIONS_RAW = [
@@ -532,7 +902,7 @@ window.QUIZ_QUESTIONS_RAW = [
 ];
 
 /**
- * 9. พิกัดแผนที่ 13 เขตสุขภาพ (สำหรับ executive.html)
+ * 16. พิกัดแผนที่ 13 เขตสุขภาพ (สำหรับ executive.html)
  */
 window.BASE_REGIONS = [
   { id: "R1", name: "เขตสุขภาพที่ 1", desc: "เชียงใหม่และภาคเหนือตอนบน", x: 28, y: 15 },
@@ -551,26 +921,7 @@ window.BASE_REGIONS = [
 ];
 
 /**
- * 10. ต้นแบบรายงานวิเคราะห์เชิงนโยบายสำหรับผู้บริหาร (rjcloud.organ 2030)
- */
-window.AI_INSIGHT_TEXT = `📊 rjcloud.organ — AI Policy Intelligence Report (2030 Edition):
-
-[1] มิติบุคลากร (Workforce Status):
-• บุคลากรในระบบทั้งหมด {{USERS}} ราย | สอบผ่านรับประกาศฯ แล้ว {{PASSED}} ราย
-• คะแนนความพึงพอใจเฉลี่ย (CSAT): {{CSAT}} / 5.0
-
-[2] มิติความเหลื่อมล้ำเชิงพื้นที่ (Geo-Equity):
-• เขตสุขภาพนำร่องสูงสุด: {{MAX_REG_NAME}} ({{MAX_REG_USERS}} ราย)
-• พื้นที่ควรเร่งเสริมศักยภาพ: {{MIN_REG_NAME}} ({{MIN_REG_USERS}} ราย)
-
-[3] มิติวิกฤตระดับชาติ (National Crisis Benchmark):
-• ประเทศไทยมีผู้ป่วยรออวัยวะสะสมกว่า 8,019 ราย
-• ห้องฝึก 3D Holodeck (AI Skill Lab 2030) และ AI Study Companion ช่วยยกระดับทักษะการสื่อสารในห้องรับรองและความแม่นยำทางคลินิกของทีมประสานงานได้ทั่วทั้ง 13 เขตสุขภาพ`;
-
-window.POLICY_SPEECH = `สวัสดีค่ะท่านผู้บริหาร จากการสังเคราะห์ข้อมูลล่าสุดของระบบ อาร์เจคลาวด์ดอทออร์แกน ยุค 2030 พบว่าขณะนี้มีบุคลากรในระบบทั้งหมด {{USERS}} ท่าน สอบผ่านรับประกาศนียบัตรแล้ว {{PASSED}} ท่าน โดยมีคะแนนความพึงพอใจเฉลี่ยอยู่ที่ {{CSAT}} เต็ม 5 ค่ะ ด้านเชิงพื้นที่พบว่า {{MAX_REG_NAME}} มีความตื่นตัวสูงสุด อย่างไรก็ตาม สถานการณ์ผู้ป่วยรออวัยวะระดับชาติยังมีมากกว่าแปดพันราย จึงขอเสนอให้ขยายผลการฝึกอบรมและห้องจำลองสื่อสารสามมิติให้ครอบคลุมทุกเขตสุขภาพค่ะ`;
-
-/**
- * 10. ต้นแบบรายงานวิเคราะห์เชิงนโยบายสำหรับผู้บริหาร (rjcloud.organ)
+ * 17. ต้นแบบรายงานวิเคราะห์เชิงนโยบายสำหรับผู้บริหาร (rjcloud.organ)
  */
 window.AI_INSIGHT_TEXT = `📊 rjcloud.organ — AI Policy Intelligence Report:
 
@@ -584,20 +935,20 @@ window.AI_INSIGHT_TEXT = `📊 rjcloud.organ — AI Policy Intelligence Report:
 
 [3] มิติวิกฤตระดับชาติ (National Crisis Benchmark):
 • ประเทศไทยมีผู้ป่วยรออวัยวะสะสมกว่า 8,019 ราย
-• ห้องฝึกจำลอง 3 มิติ (AI Skill Lab) และผู้ช่วย AI ช่วยยกระดับทักษะการสื่อสารในห้องรับรองและความแม่นยำทางคลินิกของทีมประสานงานได้ทั่วทั้ง 13 เขตสุขภาพ`;
+• ห้องฝึกจำลอง 3 มิติ (AI Skill Lab) และผู้ช่วย AI ช่วยยกระดับทักษะการสื่อสารกับญาติและความแม่นยำทางคลินิกของทีมประสานงานได้ทั่วทั้ง 13 เขตสุขภาพ`;
 
 window.POLICY_SPEECH = `สวัสดีค่ะท่านผู้บริหาร จากการสังเคราะห์ข้อมูลล่าสุดของระบบ อาร์เจคลาวด์ดอทออร์แกน พบว่าขณะนี้มีบุคลากรในระบบทั้งหมด {{USERS}} ท่าน สอบผ่านรับประกาศนียบัตรแล้ว {{PASSED}} ท่าน โดยมีคะแนนความพึงพอใจเฉลี่ยอยู่ที่ {{CSAT}} เต็ม 5 ค่ะ ด้านเชิงพื้นที่พบว่า {{MAX_REG_NAME}} มีความตื่นตัวสูงสุด อย่างไรก็ตาม สถานการณ์ผู้ป่วยรออวัยวะระดับชาติยังมีมากกว่าแปดพันราย จึงขอเสนอให้ขยายผลการฝึกอบรมและห้องจำลองสื่อสารสามมิติให้ครอบคลุมทุกเขตสุขภาพค่ะ`;
 
 /**
- * 11. ฐานความรู้วิชาชีพทางการแพทย์ (Clinical Knowledge Base สำหรับ AI Study Companion & AI Skill Lab)
+ * 18. ฐานความรู้วิชาชีพทางการแพทย์ (Clinical Knowledge Base สำหรับ AI Study Companion & AI Skill Lab)
  */
 window.CLINICAL_KNOWLEDGE_BASE = `ทีมบุคลากรทางการแพทย์ (ทีมสหสาขาวิชาชีพ) ในกระบวนการบริจาคและปลูกถ่ายอวัยวะ แบ่งออกเป็น 3 ทีมหลัก ที่ทำงานสอดประสานกันตลอด 24 ชั่วโมง เพื่อให้การส่งต่ออวัยวะสำเร็จภายในเวลาที่จำกัด
 
 1. ทีมจัดหาและประสานงาน (Donor & Coordination Team)
 พยาบาลผู้ประสานงานการรับบริจาค (Organ Donation Coordinator): หรือเรียกว่า TC
 - ค้นหาผู้ป่วย: คัดกรองและประเมินผู้ป่วยที่มีเกณฑ์ภาวะสมองตายในตึกผู้ป่วยวิกฤต
-- สื่อสารและให้ข้อมูลญาติ: เชิญญาติมายังห้องรับรอง/ห้องให้คำปรึกษาที่เงียบสงบและเป็นส่วนตัว (แยกจากห้อง ICU) เพื่อประคับประคองจิตใจ ให้ข้อมูลอย่างตรงไปตรงมา และเปิดโอกาสให้ครอบครัวตัดสินใจโดยไม่กดดัน
-- ประสานงานระบบ: แจ้งข้อมูลผู้บริจาคไปยัง ศูนย์รับบริจาคอวัยวะสภากาชาดไทย เพื่อจับคู่อวัยวะกับผู้รับ
+- สื่อสารและให้ข้อมูลญาติ: เชิญญาติมายังพื้นที่ให้คำปรึกษาที่เงียบสงบและเป็นส่วนตัว (แยกจากห้อง ICU) เพื่อประคับประคองจิตใจ ให้ข้อมูลอย่างตรงไปตรงมา และเปิดโอกาสให้ครอบครัวตัดสินใจโดยไม่กดดัน
+- ประสานงานระบบ: แจ้งข้อมูลผู้บริจาคไปยัง ศูนย์รับบริจาคอวัยวะสภากาชาดไทย เพื่อจับคู่อวัยวะกับผู้รับอย่างเป็นธรรมและโปร่งใส ไม่มีค่าใช้จ่ายกับครอบครัวผู้บริจาค
 - เก็บตัวอย่าง: เจาะเลือด ตรวจสอบเนื้อเยื่อ และตรวจหาเชื้อติดเชื้อต่าง ๆ
 แพทย์ผู้ประเมินภาวะสมองตาย (Brain Death Diagnosis Physicians):
 - ตรวจวินิจฉัย: แพทย์ผู้เชี่ยวชาญร่วมตรวจร่างกายตามเกณฑ์กฎหมายเพื่อยืนยันภาวะสมองตาย (ไม่เกี่ยวข้องกับทีมปลูกถ่าย)
@@ -613,8 +964,8 @@ window.CLINICAL_KNOWLEDGE_BASE = `ทีมบุคลากรทางกา�
 3. ทีมปลูกถ่ายอวัยวะ (Transplant Team)
 - ศัลยแพทย์ปลูกถ่าย, อายุรแพทย์เฉพาะทาง, วิสัญญีแพทย์, พยาบาลประสานงานการปลูกถ่าย, เภสัชกรคลินิก, นักโภชนาการ และนักสังคมสงเคราะห์ ร่วมดูแลผู้รับอวัยวะต่อเนื่องระยะยาว
 
-หลักการสื่อสารและให้ข้อมูลญาติผู้เสียชีวิตในห้องรับรอง:
-1. การเตรียมสถานที่และบทบาท (Setting & Role): พูดคุยในห้องรับรองหรือห้องให้คำปรึกษาที่เป็นส่วนตัว แยกจากห้อง ICU และแนะนำชื่อ-บทบาทอย่างสุภาพชัดเจน
+หลักการสื่อสารและให้ข้อมูลญาติผู้เสียชีวิต:
+1. การเตรียมสถานที่และบทบาท (Setting & Role): พูดคุยในพื้นที่ให้คำปรึกษาที่เป็นส่วนตัว แยกจากห้อง ICU และแนะนำชื่อ-บทบาทอย่างสุภาพชัดเจน
 2. การรับรู้อารมณ์ร่วม (Emotional Empathy): ยอมรับและสะท้อนความเสียใจ ความช็อก หรือความสับสนของญาติก่อนให้ข้อมูลทางการแพทย์ และใช้จังหวะหยุดเงียบเพื่อเยียวยา (Therapeutic Silence 2.5 วินาที)
 3. การแยกข่าวร้ายออกจากคำขอ (Decoupling) & เช็กความเข้าใจ (Perception Check): อธิบายความแตกต่างระหว่างเครื่องช่วยหายใจกับภาวะสมองตายถาวรให้ชัดเจนก่อนพูดถึงทางเลือกการบริจาค
-4. การไม่เร่งรัดและให้ความมั่นใจเรื่องเกียรติของร่าง (Zero Pressure & Dignity): ให้เวลาครอบครัวปรึกษากันอย่างเต็มที่ และรับรองการดูแลตกแต่งร่างอย่างประณีตที่สุด`;
+4. การไม่เร่งรัดและให้ความมั่นใจเรื่องเกียรติของร่าง (Zero Pressure & Dignity): ให้เวลาครอบครัวปรึกษากันอย่างเต็มที่ เคารพความเชื่อ-ศาสนา และรับรองการดูแลตกแต่งร่างอย่างประณีตที่สุด`;
