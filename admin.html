@@ -42,6 +42,17 @@
                 sans: ['Sarabun', 'sans-serif'],
                 mono: ['JetBrains Mono', 'monospace']
               },
+              fontSize: {
+                xs: ['0.875rem', { lineHeight: '1.5' }],
+                sm: ['1rem', { lineHeight: '1.6' }],
+                base: ['1.125rem', { lineHeight: '1.65' }],
+                lg: ['1.25rem', { lineHeight: '1.55' }],
+                xl: ['1.42rem', { lineHeight: '1.45' }],
+                '2xl': ['1.7rem', { lineHeight: '1.35' }],
+                '3xl': ['2.05rem', { lineHeight: '1.25' }],
+                '4xl': ['2.45rem', { lineHeight: '1.2' }],
+                '5xl': ['3.15rem', { lineHeight: '1.15' }]
+              },
               colors: {
                 void: {
                   950: '#030712',
@@ -133,6 +144,8 @@
       }
       body {
         font-family: 'Sarabun', sans-serif;
+        font-size: 16px;
+        line-height: 1.65;
         background-color: var(--bg-page);
         color: var(--text-main);
         margin: 0;
@@ -141,11 +154,9 @@
         transition: background-color 0.28s ease, color 0.28s ease;
       }
 
-      /* Mobile-First Safe Area & Touch Optimization */
-      .min-h-dvh { min-height: 100vh; min-height: 100dvh; }
-      .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
-      .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
-      .pb-dock-safe { padding-bottom: calc(6.5rem + env(safe-area-inset-bottom, 0px)); }
+      /* ยกระดับขนาดฟอนต์ภาษาไทยส่วนคำอธิบายย่อยให้อ่านสบายตา */
+      .text-\[11px\] { font-size: 0.8125rem !important; line-height: 1.5; }
+      .text-\[10px\] { font-size: 0.72rem !important; line-height: 1.4; }
       .touch-target { min-height: 46px; touch-action: manipulation; }
 
       @media (max-width: 768px) {
@@ -710,15 +721,15 @@
             if (!toast.visible) return null;
             return (
                 <div className="fixed top-[calc(1rem+env(safe-area-inset-top,0px))] left-1/2 -translate-x-1/2 z-[140] w-[92vw] max-w-md pointer-events-none">
-                    <div className={`px-4 py-3 rounded-2xl shadow-2xl border backdrop-blur-2xl flex items-center gap-2.5 text-xs sm:text-sm font-bold ${
+                    <div className={`px-4 py-3 rounded-2xl shadow-2xl border backdrop-blur-2xl flex items-center gap-2.5 text-xs sm:text-sm font-bold text-white ${
                         toast.type === 'error'
-                            ? 'bg-rose-950/95 border-rose-400/50 text-rose-100'
+                            ? 'bg-rose-700/95 border-rose-400/60'
                             : toast.type === 'info'
-                                ? 'bg-sky-950/95 border-prism-400/50 text-prism-100'
-                                : 'bg-emerald-950/95 border-aurora-400/50 text-aurora-100'
+                                ? 'bg-sky-700/95 border-sky-400/60'
+                                : 'bg-emerald-700/95 border-emerald-400/60'
                     }`}>
-                        <Icon name={toast.type === 'error' ? 'AlertCircle' : toast.type === 'info' ? 'Sparkles' : 'CheckCircle2'} size={17} className="shrink-0" />
-                        <span>{toast.text}</span>
+                        <Icon name={toast.type === 'error' ? 'AlertCircle' : toast.type === 'info' ? 'Sparkles' : 'CheckCircle2'} size={17} className="shrink-0 text-white" />
+                        <span className="text-white">{toast.text}</span>
                     </div>
                 </div>
             );
