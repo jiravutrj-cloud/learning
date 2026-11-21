@@ -39,7 +39,7 @@
     },
     {
       id: 'tab_lessons',
-      selectorDesktop: 'header button:nth-child(1)',
+      selectorDesktop: 'header .lg\\:flex button:nth-child(1)',
       selectorMobile: 'nav button:nth-child(1)',
       badge: 'MENU 01 • บทเรียน + AI',
       title: 'บทเรียน 20 บท & AI Study Companion',
@@ -48,7 +48,7 @@
     },
     {
       id: 'tab_cases',
-      selectorDesktop: 'header button:nth-child(2)',
+      selectorDesktop: 'header .lg\\:flex button:nth-child(2)',
       selectorMobile: 'nav button:nth-child(2)',
       badge: 'MENU 02 • เคสคลินิก',
       title: 'มินิเคสจำลองคลินิกแบบโต้ตอบ',
@@ -57,7 +57,7 @@
     },
     {
       id: 'tab_flashcards',
-      selectorDesktop: 'header button:nth-child(3)',
+      selectorDesktop: 'header .lg\\:flex button:nth-child(3)',
       selectorMobile: 'nav button:nth-child(3)',
       badge: 'MENU 03 • FLASHCARDS',
       title: 'การ์ดทบทวนความจำเฉพาะจุดอ่อน',
@@ -66,7 +66,7 @@
     },
     {
       id: 'tab_live',
-      selectorDesktop: 'header button:nth-child(4)',
+      selectorDesktop: 'header .lg\\:flex button:nth-child(4)',
       selectorMobile: 'nav button:nth-child(4)',
       badge: 'MENU 04 • LIVE สด',
       title: 'ห้องถ่ายทอดสด & ยืนยันเข้าเรียน',
@@ -74,22 +74,13 @@
       speech: 'เมนูไลฟ์สด ใช้รับชมการถ่ายทอดสด กดยืนยันการเข้าเรียน และเปิดเอกสารประกอบการบรรยายค่ะ'
     },
     {
-      id: 'tab_leaderboard',
-      selectorDesktop: 'header button:nth-child(5)',
-      selectorMobile: 'nav button:nth-child(5)',
-      badge: 'MENU 05 • จัดอันดับ',
-      title: 'กระดานจัดอันดับทักษะการสื่อสาร',
-      desc: 'ดูอันดับคะแนน Empathy Index จากการฝึกใน AI Skill Lab 3 มิติแบบคุ้มครองข้อมูลส่วนบุคคล (PDPA-Safe) เพื่อสร้างแรงบันดาลใจค่ะ',
-      speech: 'เมนูจัดอันดับ ใช้ดูอันดับคะแนนทักษะการสื่อสารจากห้องฝึกเอไอสกิลแล็บแบบคุ้มครองข้อมูลส่วนบุคคลค่ะ'
-    },
-    {
       id: 'tab_profile',
-      selectorDesktop: 'header button:nth-child(6)',
-      selectorMobile: 'nav button:nth-child(6)',
-      badge: 'MENU 06 • โปรไฟล์ & ออกจากระบบ',
+      selectorDesktop: 'header .lg\\:flex button:nth-child(5)',
+      selectorMobile: 'nav button:nth-child(5)',
+      badge: 'MENU 05 • โปรไฟล์ & ออกจากระบบ',
       title: 'โปรไฟล์ รายงาน Portfolio และปุ่มออกจากระบบ',
-      desc: 'จุดสำคัญที่หลายคนมองหา: รวมข้อมูลส่วนตัว คะแนนทั้งหมด รายงานแนบแฟ้มผลงาน โหมดอุ่นเครื่อง 30 วิ และปุ่ม “ออกจากระบบผู้เรียน” อยู่ที่เมนูนี้ค่ะ',
-      speech: 'และเมนูโปรไฟล์ อยู่ตรงนี้ค่ะ ใช้ดูข้อมูลส่วนตัว คะแนน รายงานแนบแฟ้มผลงาน และที่สำคัญปุ่มออกจากระบบผู้เรียนก็อยู่ในเมนูโปรไฟล์นี้เช่นกันค่ะ'
+      desc: 'จุดสำคัญที่หลายคนมองหา: รวมข้อมูลส่วนตัว คะแนนทั้งหมด โหมดอุ่นเครื่อง 30 วิ และปุ่ม “ออกจากระบบผู้เรียน” อยู่ที่เมนูนี้ค่ะ',
+      speech: 'และเมนูโปรไฟล์ อยู่ตรงนี้ค่ะ ใช้ดูข้อมูลส่วนตัว คะแนน โหมดอุ่นเครื่องสามสิบวินาที และที่สำคัญปุ่มออกจากระบบผู้เรียนก็อยู่ในเมนูโปรไฟล์นี้เช่นกันค่ะ'
     }
   ];
 
