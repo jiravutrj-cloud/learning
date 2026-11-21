@@ -240,6 +240,82 @@
       .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
       .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.38); border-radius: 999px; }
 
+      /* ไฟแอมเบี้ยนวิ่ง (Ambient Light Runner) แสดงสถานะ AI กำลังเตรียมเสียงและกำลังอ่านสรุป */
+      @keyframes ambientBorderFlow {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+      @keyframes ambientSweep {
+        0% { transform: translateX(-115%); }
+        100% { transform: translateX(220%); }
+      }
+      @keyframes audioEqPulse {
+        0%, 100% { transform: scaleY(0.32); opacity: 0.65; }
+        50% { transform: scaleY(1); opacity: 1; }
+      }
+      .ambient-loading-card {
+        position: relative;
+        border-color: rgba(34, 211, 238, 0.48) !important;
+        box-shadow:
+          0 0 0 1px rgba(52, 211, 153, 0.28),
+          0 16px 46px -14px rgba(34, 211, 238, 0.34),
+          0 0 30px -8px rgba(16, 185, 129, 0.28) !important;
+      }
+      .ambient-playing-card {
+        position: relative;
+        border-color: rgba(52, 211, 153, 0.5) !important;
+        box-shadow:
+          0 0 0 1px rgba(52, 211, 153, 0.25),
+          0 14px 40px -14px rgba(16, 185, 129, 0.28) !important;
+      }
+      .ambient-ribbon {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3.5px;
+        overflow: hidden;
+        border-top-left-radius: 1.75rem;
+        border-top-right-radius: 1.75rem;
+        pointer-events: none;
+        z-index: 5;
+      }
+      .ambient-ribbon-loading {
+        background: linear-gradient(90deg, #10b981, #22d3ee, #818cf8, #34d399, #22d3ee);
+        background-size: 280% 100%;
+        animation: ambientBorderFlow 1.7s linear infinite;
+        box-shadow: 0 0 16px rgba(34, 211, 238, 0.78);
+      }
+      .ambient-ribbon-playing {
+        background: linear-gradient(90deg, rgba(16, 185, 129, 0.18), #34d399, #22d3ee, rgba(16, 185, 129, 0.18));
+        background-size: 220% 100%;
+        animation: ambientBorderFlow 3s ease-in-out infinite;
+        box-shadow: 0 0 12px rgba(52, 211, 153, 0.55);
+      }
+      .ambient-btn-runner {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(120deg, #0284c7, #10b981, #6366f1, #22d3ee);
+        background-size: 260% 260%;
+        animation: ambientBorderFlow 2s ease infinite;
+        color: #ffffff !important;
+        box-shadow: 0 0 22px -4px rgba(34, 211, 238, 0.65);
+      }
+      .ambient-btn-runner::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        width: 48%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.42), transparent);
+        animation: ambientSweep 1.3s ease-in-out infinite;
+        pointer-events: none;
+      }
+      .audio-eq-bar {
+        transform-origin: bottom;
+        animation: audioEqPulse 0.85s ease-in-out infinite;
+      }
+
       /* สไตล์กระดาษ A4 สำหรับหนังสือรับรอง CNEU รายบุคคล */
       .cneu-letter-sheet {
         background: #ffffff;
@@ -655,77 +731,82 @@
             return [parseRawExams(FALLBACK_QUIZ_RAW)];
         }
 
-        function resolveRoleProfile(userObj) {
-            const wc = String(userObj?.workContext || '').toLowerCase();
-            const pos = String(userObj?.position || '').toLowerCase();
-            if (wc.includes('รับบริจาค') || wc.includes('ปลูกถ่าย') || wc.includes('tc') || pos.includes('ประสานงาน')) {
+        function resolveRoleProfile(u) {
+            const ctx = String(u?.workContext || u?.position || '').toLowerCase();
+            if (ctx.includes('รับบริจาค') || ctx.includes('ปลูกถ่าย') || ctx.includes('tc')) {
                 return ROLE_ADAPTIVE_PROFILES.donor_team;
             }
-            if (wc.includes('icu') || wc.includes('er') || wc.includes('or') || wc.includes('วิกฤต') || wc.includes('ผ่าตัด') || wc.includes('ฉุกเฉิน')) {
+            if (ctx.includes('icu') || ctx.includes('er') || ctx.includes('or') || ctx.includes('วิกฤต') || ctx.includes('ผ่าตัด') || ctx.includes('ฉุกเฉิน') || ctx.includes('พยาบาล')) {
                 return ROLE_ADAPTIVE_PROFILES.icu_er_or;
             }
             return ROLE_ADAPTIVE_PROFILES.general;
         }
 
+        function getTargetHoursForUser(u, liveCfg) {
+            const baseHours = Math.max(1, Number(liveCfg?.hours || 8));
+            if (u?.userType === 'เรียนต่อเนื่อง') {
+                return Math.max(2, Math.round(baseHours * 0.75));
+            }
+            return baseHours;
+        }
+
+        function formatStudyTime(seconds) {
+            const total = Math.max(0, Math.floor(Number(seconds || 0)));
+            const h = Math.floor(total / 3600);
+            const m = Math.floor((total % 3600) / 60);
+            const s = total % 60;
+            if (h > 0) return `${h} ชม. ${m} น.`;
+            if (m > 0) return `${m} น. ${s} วิ`;
+            return `${s} วินาที`;
+        }
+
+        function parsePosttestPercent(u) {
+            const m = String(u?.posttest || '').match(/(\d+)\s*\/\s*(\d+)/);
+            if (!m) return u?.status === 'ผ่าน' ? MIN_POSTTEST_PERCENT : 0;
+            const score = parseInt(m[1], 10);
+            const total = parseInt(m[2], 10) || 1;
+            return Math.round((score / total) * 100);
+        }
+
         function computeDomainDiagnosis(questions, answers) {
-            const buckets = {};
-            Object.keys(CLINICAL_DOMAINS).forEach(k => {
-                buckets[k] = { correct: 0, total: 0 };
+            const bucket = {};
+            Object.values(CLINICAL_DOMAINS).forEach(d => {
+                bucket[d.id] = { ...d, correct: 0, total: 0 };
             });
 
-            questions.forEach((q, idx) => {
-                const dk = CLINICAL_DOMAINS[q.domain] ? q.domain : 'policy_ethics';
-                buckets[dk].total += 1;
-                if (answers[idx] === q.answer) buckets[dk].correct += 1;
+            (questions || []).forEach((q, idx) => {
+                const domId = bucket[q.domain] ? q.domain : 'policy_ethics';
+                bucket[domId].total += 1;
+                if (answers[idx] === q.answer) bucket[domId].correct += 1;
             });
 
-            const domains = Object.values(CLINICAL_DOMAINS).map(meta => {
-                const b = buckets[meta.id] || { correct: 0, total: 0 };
-                const percent = b.total > 0 ? Math.round((b.correct / b.total) * 100) : 100;
-                return {
-                    ...meta,
-                    correct: b.correct,
-                    total: b.total,
-                    percent
-                };
-            });
+            const domains = Object.values(bucket).map(d => ({
+                ...d,
+                percent: d.total > 0 ? Math.round((d.correct / d.total) * 100) : 100
+            }));
 
-            const sortedWeak = [...domains].sort((a, b) => a.percent - b.percent);
-            const weakDomains = sortedWeak.filter(d => d.percent < 80);
-            const focusDomains = weakDomains.length > 0 ? weakDomains.slice(0, 2) : sortedWeak.slice(0, 1);
-            const recommendedLessonIds = Array.from(new Set(focusDomains.flatMap(d => d.lessonIds || [])));
+            const sorted = [...domains].sort((a, b) => a.percent - b.percent);
+            const weakDomains = sorted.filter(d => d.percent < MIN_POSTTEST_PERCENT);
+            const focusDomains = weakDomains.length > 0 ? weakDomains : sorted.slice(0, 1);
+
+            const recommendedLessonIds = Array.from(
+                new Set(focusDomains.flatMap(d => (Array.isArray(d.lessonIds) ? d.lessonIds : [])))
+            );
 
             const summaryText = weakDomains.length > 0
-                ? `AI แนะนำให้โฟกัสหมวด “${focusDomains.map(d => d.shortName).join('” และ “')}” เป็นพิเศษ เพื่ออุดจุดอ่อนก่อนเข้าฝึก AI Skill Lab และสอบ Post-test ค่ะ`
-                : 'พื้นฐานความรู้คลินิกทั้ง 4 หมวดของคุณยอดเยี่ยมมากค่ะ สามารถทบทวนบทเรียนที่สนใจและเตรียมเข้าฝึก AI Skill Lab 3 มิติได้เลย';
+                ? `AI วิเคราะห์พบว่าคุณควรเน้นทบทวนหมวด “${weakDomains.map(d => d.shortName).join('” และ “')}” เป็นพิเศษ โดยระบบได้ติดดาว ★ แนะนำบทเรียนที่เกี่ยวข้องให้ในห้องเรียนแล้วค่ะ`
+                : 'ยอดเยี่ยมมากค่ะ! คุณมีพื้นฐานความรู้แข็งแรงครบทั้ง 4 หมวดคลินิก สามารถทบทวนบทเรียนและเข้าฝึก AI Skill Lab 3 มิติได้เลยค่ะ';
 
-            return { domains, weakDomains, recommendedLessonIds, summaryText };
+            return {
+                domains,
+                weakDomains,
+                recommendedLessonIds,
+                summaryText,
+                updatedAt: new Date().toISOString()
+            };
         }
 
-        function getTargetHoursForUser(userObj, liveCfg) {
-            const type = String(userObj?.userType || 'เรียนใหม่');
-            if (type.includes('ต่อเนื่อง')) return Math.max(1, Number(liveCfg?.hours || 6));
-            return Math.max(1, Number(liveCfg?.hours || 8));
-        }
-
-        function formatStudyTime(totalSeconds) {
-            const sec = Math.max(0, Math.floor(Number(totalSeconds || 0)));
-            const h = Math.floor(sec / 3600);
-            const m = Math.floor((sec % 3600) / 60);
-            const s = sec % 60;
-            if (h > 0) return `${h} ชม. ${m} น.`;
-            return `${m} น. ${String(s).padStart(2, '0')} วิ`;
-        }
-
-        function parsePosttestPercent(userObj) {
-            const m = String(userObj?.posttest || '').match(/(\d+)\s*\/\s*(\d+)/);
-            if (!m) return userObj?.status === 'ผ่าน' ? MIN_POSTTEST_PERCENT : 0;
-            const sc = parseInt(m[1], 10);
-            const tot = parseInt(m[2], 10) || 1;
-            return Math.round((sc / tot) * 100);
-        }
-
-        function pcm16ToWavUrl(base64PCM, sampleRate = 24000) {
+        function pcm16ToWavBlob(base64PCM, sampleRate = 24000) {
             const binaryString = window.atob(base64PCM);
             const bytes = new Uint8Array(binaryString.length);
             for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
@@ -748,7 +829,84 @@
             writeStr(36, 'data');
             view.setUint32(40, bytes.length, true);
             new Uint8Array(buffer, 44).set(bytes);
-            return URL.createObjectURL(new Blob([buffer], { type: 'audio/wav' }));
+            return new Blob([buffer], { type: 'audio/wav' });
+        }
+
+        function pcm16ToWavUrl(base64PCM, sampleRate = 24000) {
+            return URL.createObjectURL(pcm16ToWavBlob(base64PCM, sampleRate));
+        }
+
+        // แคชไฟล์เสียงสรุปบทเรียนแบบ 2 ชั้น (RAM + IndexedDB ถาวรบนเครื่อง) เพื่อเปิดฟังซ้ำได้ทันที 0.05 วิ
+        const audioMemoryCache = new Map();
+        const AUDIO_IDB_NAME = 'rjcloud_audio_brief_cache_v1';
+        const AUDIO_IDB_STORE = 'clips';
+
+        function openAudioCacheDb() {
+            return new Promise((resolve) => {
+                if (typeof indexedDB === 'undefined') return resolve(null);
+                try {
+                    const req = indexedDB.open(AUDIO_IDB_NAME, 1);
+                    req.onupgradeneeded = () => {
+                        const db = req.result;
+                        if (!db.objectStoreNames.contains(AUDIO_IDB_STORE)) {
+                            db.createObjectStore(AUDIO_IDB_STORE);
+                        }
+                    };
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => resolve(null);
+                } catch (_) {
+                    resolve(null);
+                }
+            });
+        }
+
+        async function getCachedAudioBlob(cacheKey) {
+            if (audioMemoryCache.has(cacheKey)) return audioMemoryCache.get(cacheKey);
+            const db = await openAudioCacheDb();
+            if (!db) return null;
+            return new Promise((resolve) => {
+                try {
+                    const tx = db.transaction(AUDIO_IDB_STORE, 'readonly');
+                    const req = tx.objectStore(AUDIO_IDB_STORE).get(cacheKey);
+                    req.onsuccess = () => {
+                        const blob = req.result || null;
+                        if (blob) audioMemoryCache.set(cacheKey, blob);
+                        resolve(blob);
+                    };
+                    req.onerror = () => resolve(null);
+                } catch (_) {
+                    resolve(null);
+                }
+            });
+        }
+
+        async function setCachedAudioBlob(cacheKey, blob) {
+            if (!blob) return;
+            audioMemoryCache.set(cacheKey, blob);
+            const db = await openAudioCacheDb();
+            if (!db) return;
+            return new Promise((resolve) => {
+                try {
+                    const tx = db.transaction(AUDIO_IDB_STORE, 'readwrite');
+                    tx.objectStore(AUDIO_IDB_STORE).put(blob, cacheKey);
+                    tx.oncomplete = () => resolve();
+                    tx.onerror = () => resolve();
+                } catch (_) {
+                    resolve();
+                }
+            });
+        }
+
+        // แยกข้อความสรุปบทเรียนออกเป็นประโยคย่อย เพื่อสังเคราะห์และเริ่มเล่นประโยคแรกได้เร็วขึ้น 2-3 เท่า
+        function buildLessonBriefSentences(lesson, guide, roleBadge) {
+            const sentences = [
+                `สรุปบทเรียนที่ ${lesson?.id || 1} เรื่อง ${lesson?.title || ''} สำหรับ${roleBadge || 'บุคลากรทางการแพทย์'}ค่ะ`
+            ];
+            (guide?.keyPoints || []).forEach((pt, idx) => {
+                const cleanPt = String(pt || '').trim();
+                if (cleanPt) sentences.push(`ประเด็นที่ ${idx + 1} ${cleanPt}`);
+            });
+            return sentences;
         }
 
         function copyTextFallback(text) {
@@ -1839,7 +1997,9 @@
             const [aiQuestion, setAiQuestion] = useState('');
             const [aiMessages, setAiMessages] = useState([]);
             const [isAiAnswering, setIsAiAnswering] = useState(false);
-            const [isAudioSpeaking, setIsAudioSpeaking] = useState(false);
+            const [audioBriefStatus, setAudioBriefStatus] = useState('idle'); // idle | loading | playing
+            const [audioSentenceProgress, setAudioSentenceProgress] = useState({ current: 0, total: 0 });
+            const [isAudioCached, setIsAudioCached] = useState(false);
             const [microCheckPicked, setMicroCheckPicked] = useState({});
 
             // 7. Certificate & CSAT States (CNEU 5-Dimension Standard)
@@ -1874,6 +2034,8 @@
             const certCanvasRef = useRef(null);
             const audioRef = useRef(null);
             const audioUrlRef = useRef(null);
+            const audioSessionIdRef = useRef(0);
+            const audioAbortRef = useRef(null);
             const quizAutoTimerRef = useRef(null);
             useEffect(() => { userRef.current = user; }, [user]);
             useEffect(() => { studySecondsRef.current = studySeconds; }, [studySeconds]);
@@ -1950,6 +2112,11 @@
             }, []);
 
             const stopAudioBrief = useCallback(() => {
+                audioSessionIdRef.current += 1;
+                if (audioAbortRef.current) {
+                    try { audioAbortRef.current.abort(); } catch (_) {}
+                    audioAbortRef.current = null;
+                }
                 if (audioRef.current) {
                     try { audioRef.current.pause(); } catch (_) {}
                     audioRef.current = null;
@@ -1961,12 +2128,30 @@
                 if ('speechSynthesis' in window) {
                     try { window.speechSynthesis.cancel(); } catch (_) {}
                 }
-                setIsAudioSpeaking(false);
+                setAudioBriefStatus('idle');
+                setAudioSentenceProgress({ current: 0, total: 0 });
             }, []);
 
             useEffect(() => () => stopAudioBrief(), [stopAudioBrief]);
 
-            // Firebase Auth + Live Settings/Content/Leaderboard Subscriptions (ป้องกันทับ Session แอดมินตอน Preview)
+            // ตรวจสอบล่วงหน้าว่าบทเรียนนี้มีไฟล์เสียงสำเร็จรูป (audioUrl) หรือแคชในเครื่องพร้อมเล่นทันทีหรือไม่
+            useEffect(() => {
+                let alive = true;
+                const checkAudioAvailability = async () => {
+                    if (currentLesson?.audioUrl) {
+                        if (alive) setIsAudioCached(true);
+                        return;
+                    }
+                    const sents = buildLessonBriefSentences(currentLesson, currentLessonGuide, roleProfile.badgeTH);
+                    const firstKey = `L${currentLesson?.id || 1}_${roleProfile.id}_S0_${sents[0]}`;
+                    const hit = await getCachedAudioBlob(firstKey);
+                    if (alive) setIsAudioCached(Boolean(hit));
+                };
+                checkAudioAvailability();
+                return () => { alive = false; };
+            }, [currentLesson?.id, currentLesson?.audioUrl, currentLessonGuide, roleProfile.id, roleProfile.badgeTH]);
+
+            // 10. FIREBASE REAL-TIME SYNC (PROTECT ADMIN SESSION DURING PREVIEW)
             useEffect(() => {
                 if (!isCloudConfigured || !fbAuth || !fbDb) return;
                 let active = true;
@@ -2063,26 +2248,35 @@
                 };
             }, [isAdminPreview]);
 
-            // 10. PERSIST USER HELPER
-            const saveUserProgress = useCallback(async (patch = {}) => {
+            // บันทึกความคืบหน้าและชั่วโมงเรียนลง LocalStorage + Cloud Firestore
+            const saveUserProgress = useCallback(async (changes = {}) => {
                 const cur = userRef.current;
                 if (!cur) return null;
-                const nextSec = patch.studySeconds !== undefined ? patch.studySeconds : studySecondsRef.current;
-                const calcProg = Math.min(100, Math.round((nextSec / Math.max(1, targetSeconds)) * 100));
+                const currentSecs = Math.max(Number(cur.studySeconds || 0), Number(studySecondsRef.current || 0));
+                const tHours = getTargetHoursForUser(cur, liveConfig);
+                const computedPct = Math.min(100, Math.round((currentSecs / Math.max(1, tHours * 3600)) * 100));
+                const nextProgress = Math.max(Number(cur.progress || 0), computedPct, Number(changes.progress || 0));
+
                 const nextUser = {
                     ...cur,
-                    ...patch,
-                    studySeconds: nextSec,
-                    progress: Math.max(Number(cur.progress || 0), Number(patch.progress || 0), calcProg)
+                    ...changes,
+                    studySeconds: currentSecs,
+                    progress: nextProgress,
+                    updatedAt: new Date().toISOString()
                 };
+
                 setUser(nextUser);
-                if (isAdminPreview) return nextUser;
+                userRef.current = nextUser;
+
+                if (isAdminPreview || String(nextUser.id || '').startsWith('admin_preview_')) {
+                    return nextUser;
+                }
 
                 try {
                     localStorage.setItem(STORAGE_KEY, JSON.stringify({ user: nextUser }));
                 } catch (_) {}
 
-                if (fbDb && nextUser.id && !String(nextUser.id).startsWith('admin_preview_')) {
+                if (fbDb && nextUser.id) {
                     try {
                         await setDoc(
                             doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', String(nextUser.id)),
@@ -2090,74 +2284,59 @@
                             { merge: true }
                         );
                     } catch (err) {
-                        console.warn('Firestore user sync warning:', err);
+                        console.warn('Firestore save warning:', err);
                     }
                 }
                 return nextUser;
-            }, [isAdminPreview, targetSeconds]);
+            }, [isAdminPreview, liveConfig]);
 
-            // Active Study Timer (นับเฉพาะตอนเปิดจออยู่จริงผ่าน Page Visibility API)
+            // Active Study Timer (นับเวลาเรียนจริงเมื่อเปิดหน้าห้องเรียนบนจอ)
             useEffect(() => {
                 if (screen !== 'dashboard' || !user || isAdminPreview) return;
-                if (activeTab !== 'lessons' && activeTab !== 'live') return;
-
-                let tickCount = 0;
+                let tick = 0;
                 const timer = setInterval(() => {
-                    if (document.hidden) return;
+                    if (document.visibilityState !== 'visible') return;
+                    tick += 1;
                     setStudySeconds(prev => {
                         const next = prev + 1;
-                        tickCount += 1;
-                        if (tickCount % 15 === 0) {
-                            saveUserProgress({ studySeconds: next, lastVideoId: currentLessonId });
-                        }
+                        studySecondsRef.current = next;
                         return next;
                     });
+                    if (tick % 20 === 0) {
+                        saveUserProgress({});
+                    }
                 }, 1000);
+                return () => clearInterval(timer);
+            }, [screen, user?.id, isAdminPreview, saveUserProgress]);
 
-                return () => {
-                    clearInterval(timer);
-                    saveUserProgress({ studySeconds: studySecondsRef.current, lastVideoId: currentLessonId });
-                };
-            }, [screen, activeTab, user?.id, isAdminPreview, currentLessonId, saveUserProgress]);
-
-            // Render Certificate Canvas & QR Code when viewing certificate screen
-            useEffect(() => {
-                if (screen === 'certificate' && certDocTab === 'cert' && certCanvasRef.current && user) {
-                    drawMinimalistGoldCertificate(
-                        certCanvasRef.current,
-                        {
-                            code: user.certificateCode || generateCertCode(certTemplate.certPrefix),
-                            name: user.name,
-                            hospital: user.hospital,
-                            license: user.license || user.id,
-                            issuedAt: user.certificateIssuedAt || new Date().toISOString(),
-                            cneuActivityCode: cneuConfig.activityCode,
-                            cneuCredits: cneuConfig.cneuCredits
-                        },
-                        certTemplate,
-                        cneuConfig
-                    );
-                }
-            }, [screen, certDocTab, user, certTemplate, cneuConfig]);
-
+            // วาดใบประกาศนียบัตรสไตล์มินิมอลสีขาวตัดเส้นทอง + สร้าง QR Code จริงสำหรับหนังสือรับรอง CNEU
             useEffect(() => {
                 if (screen !== 'certificate' || !user) return;
-                let active = true;
-                const code = user.certificateCode || generateCertCode(certTemplate.certPrefix);
-                const verifyUrl = `${window.location.origin}${window.location.pathname.replace(/index\.html$/i, '')}verify.html?code=${encodeURIComponent(code)}`;
+                const certData = {
+                    code: user.certificateCode || 'RJC-2027-DEMO',
+                    name: user.name || 'ผู้สำเร็จการอบรม',
+                    hospital: user.hospital || '',
+                    license: user.license || user.id || '',
+                    issuedAt: user.certificateIssuedAt || new Date().toISOString(),
+                    cneuActivityCode: cneuConfig.activityCode || '',
+                    cneuCredits: cneuConfig.cneuCredits || ''
+                };
+
+                if (certDocTab === 'cert' && certCanvasRef.current) {
+                    drawMinimalistGoldCertificate(certCanvasRef.current, certData, certTemplate, cneuConfig);
+                }
+
+                const verifyUrl = `${window.location.origin}${window.location.pathname.replace(/index\.html$/i, '')}verify.html?code=${encodeURIComponent(certData.code)}`;
                 if (window.QRCode && typeof window.QRCode.toDataURL === 'function') {
                     window.QRCode.toDataURL(verifyUrl, {
                         width: 240,
                         margin: 1,
                         color: { dark: '#0f172a', light: '#ffffff' }
-                    })
-                        .then(url => { if (active) setCertQrDataUrl(url); })
-                        .catch(() => {});
+                    }).then(url => setCertQrDataUrl(url)).catch(() => {});
                 }
-                return () => { active = false; };
-            }, [screen, user, certTemplate.certPrefix]);
+            }, [screen, certDocTab, user, certTemplate, cneuConfig]);
 
-            // 11. AUTH WIZARD HANDLERS (PRODUCTION OTP)
+            // 11. AUTH WIZARD HANDLERS (3 STEPS + EMAIL OTP)
             const handleCheckLicense = async (e) => {
                 e.preventDefault();
                 const cleanLic = authForm.license.trim().replace(/[^a-zA-Z0-9]/g, '');
@@ -2168,8 +2347,10 @@
                 setAuthLoading(true);
                 setExistingCloudRecord(null);
                 try {
-                    if (fbDb && isCloudReady) {
-                        const snap = await getDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', cleanLic));
+                    if (fbDb) {
+                        const snap = await getDoc(
+                            doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', cleanLic)
+                        );
                         if (snap.exists()) {
                             const d = snap.data();
                             setExistingCloudRecord(d);
@@ -2184,12 +2365,12 @@
                                 department: d.department || prev.department,
                                 hospital: d.hospital || prev.hospital,
                                 province: d.province || prev.province,
-                                userType: String(d.userType || '').includes('ต่อเนื่อง') ? 'เรียนต่อเนื่อง' : 'เรียนใหม่'
+                                userType: d.userType === 'เรียนต่อเนื่อง' ? 'เรียนต่อเนื่อง' : 'เรียนใหม่'
                             }));
                             showToast('พบข้อมูลเดิมในระบบแล้ว กรุณาตรวจสอบข้อมูลและยืนยัน OTP ค่ะ');
                         } else {
                             setAuthForm(prev => ({ ...prev, license: cleanLic }));
-                            showToast('ไม่พบข้อมูลเดิม กรุณากรอกข้อมูลเพื่อลงทะเบียนเรียนใหม่ค่ะ', 'info');
+                            showToast('ไม่พบประวัติเดิม กรุณากรอกข้อมูลเพื่อลงทะเบียนใหม่ค่ะ', 'info');
                         }
                     } else {
                         setAuthForm(prev => ({ ...prev, license: cleanLic }));
@@ -2310,143 +2491,248 @@
                         setScreen('dashboard');
                     }
                 } catch (err) {
-                    showToast('ตรวจสอบรหัส OTP ไม่สำเร็จ กรุณาลองใหม่อีกครั้งค่ะ', 'error');
+                    console.warn('OTP verify error:', err);
+                    showToast('เชื่อมต่อระบบยืนยัน OTP ไม่สำเร็จ กรุณาลองใหม่อีกครั้งค่ะ', 'error');
                 } finally {
                     setAuthLoading(false);
                 }
             };
 
-            // 12. PRE-TEST & POST-TEST HANDLERS (AUTO-ADVANCE + BACK NAVIGATION)
-            const handleSelectQuizOption = (qIdx, oIdx) => {
-                setQuizAnswers(prev => ({ ...prev, [qIdx]: oIdx }));
+            // 12. QUIZ ENGINE (AUTO-ADVANCE + BACK/JUMP + AI DIAGNOSTIC ROADMAP + REMEDIATION)
+            const handleGoQuizStep = (targetIdx) => {
+                if (quizAutoTimerRef.current) {
+                    clearTimeout(quizAutoTimerRef.current);
+                    quizAutoTimerRef.current = null;
+                }
+                const maxIdx = Math.max(0, quizQuestions.length - 1);
+                setQuizIndex(Math.max(0, Math.min(maxIdx, targetIdx)));
+            };
+
+            const handleSelectQuizOption = (qIdx, optIdx) => {
+                setQuizAnswers(prev => ({ ...prev, [qIdx]: optIdx }));
                 if (quizAutoTimerRef.current) {
                     clearTimeout(quizAutoTimerRef.current);
                     quizAutoTimerRef.current = null;
                 }
                 if (qIdx < quizQuestions.length - 1) {
                     quizAutoTimerRef.current = setTimeout(() => {
-                        setQuizIndex(curr => (curr === qIdx ? Math.min(quizQuestions.length - 1, qIdx + 1) : curr));
+                        setQuizIndex(prev => (prev === qIdx ? Math.min(quizQuestions.length - 1, qIdx + 1) : prev));
                         quizAutoTimerRef.current = null;
                     }, 180);
                 }
             };
 
-            const handleGoQuizStep = (targetIdx) => {
+            const handleSubmitQuiz = async (quizType) => {
                 if (quizAutoTimerRef.current) {
                     clearTimeout(quizAutoTimerRef.current);
                     quizAutoTimerRef.current = null;
                 }
-                const clamped = Math.max(0, Math.min(Math.max(0, quizQuestions.length - 1), targetIdx));
-                setQuizIndex(clamped);
-            };
-
-            const handleSubmitQuiz = async (mode) => {
-                if (quizAutoTimerRef.current) {
-                    clearTimeout(quizAutoTimerRef.current);
-                    quizAutoTimerRef.current = null;
-                }
-                const firstUnansweredIdx = quizQuestions.findIndex((_, idx) => quizAnswers[idx] === undefined);
-                if (firstUnansweredIdx !== -1) {
-                    const unansweredCount = quizQuestions.filter((_, idx) => quizAnswers[idx] === undefined).length;
-                    setQuizIndex(firstUnansweredIdx);
-                    showToast(`ยังทำข้อสอบไม่ครบ (เหลืออีก ${unansweredCount} ข้อ) พากลับไปข้อที่ ${firstUnansweredIdx + 1} แล้วค่ะ`, 'error');
+                const firstUnanswered = quizQuestions.findIndex((_, i) => quizAnswers[i] === undefined);
+                if (firstUnanswered !== -1) {
+                    setQuizIndex(firstUnanswered);
+                    showToast(`กรุณาตอบคำถามข้อที่ ${firstUnanswered + 1} ให้ครบทุกข้อก่อนส่งนะคะ`, 'error');
                     return;
                 }
 
-                let correct = 0;
+                let correctCount = 0;
                 quizQuestions.forEach((q, idx) => {
-                    if (quizAnswers[idx] === q.answer) correct += 1;
+                    if (quizAnswers[idx] === q.answer) correctCount += 1;
                 });
+
                 const total = Math.max(1, quizQuestions.length);
-                const percent = Math.round((correct / total) * 100);
-                const scoreStr = `${correct}/${total}`;
-                const diagnosis = computeDomainDiagnosis(quizQuestions, quizAnswers);
+                const percent = Math.round((correctCount / total) * 100);
+                const scoreStr = `${correctCount}/${total}`;
                 const passed = percent >= MIN_POSTTEST_PERCENT;
 
-                setQuizScoreSummary({ correct, total, percent, scoreStr, passed });
+                const diagnosis = computeDomainDiagnosis(quizQuestions, quizAnswers);
                 setLastDiagnosis(diagnosis);
+                setQuizScoreSummary({ correctCount, total, percent, scoreStr, passed });
                 setQuizSubmitted(true);
+                setRemediationAiText('');
 
-                if (mode === 'pretest') {
-                    await saveUserProgress({ pretest: scoreStr, aiRoadmap: diagnosis });
-                    showToast('บันทึกผล Pre-test และสร้างแผนการเรียน AI เฉพาะคุณแล้วค่ะ');
-                } else {
+                if (quizType === 'pretest') {
                     await saveUserProgress({
-                        posttest: scoreStr,
-                        status: passed ? 'ผ่าน' : (user?.status === 'ผ่าน' ? 'ผ่าน' : 'กำลังเรียน'),
+                        pretest: scoreStr,
                         aiRoadmap: diagnosis
                     });
+                    showToast(`บันทึกผล Pre-test (${scoreStr}) และสร้างแผนเรียน AI เฉพาะคุณแล้วค่ะ`);
+                    return;
+                }
 
-                    if (passed) {
-                        showToast(`ยินดีด้วยค่ะ! ผ่าน Post-test (${percent}%) ปลดล็อกประกาศนียบัตรแล้วค่ะ 🎉`);
-                    } else {
+                await saveUserProgress({
+                    posttest: scoreStr,
+                    status: passed ? 'ผ่าน' : (user?.status === 'ผ่าน' ? 'ผ่าน' : 'กำลังเรียน'),
+                    aiRoadmap: diagnosis
+                });
+
+                if (passed) {
+                    showToast(`ยินดีด้วยค่ะ! สอบ Post-test ผ่าน ${percent}% ปลดล็อกประกาศนียบัตรแล้ว 🎉`);
+                } else {
+                    showToast(`ได้คะแนน ${percent}% (เกณฑ์ผ่าน ≥ ${MIN_POSTTEST_PERCENT}%) AI กำลังสรุปจุดทบทวนให้ค่ะ`, 'info');
+                    if (appsScriptUrl && diagnosis.weakDomains.length > 0) {
                         setIsRemediationLoading(true);
-                        setRemediationAiText('');
-                        const weakNames = diagnosis.weakDomains.map(d => `${d.nameTH} (${d.percent}%)`).join(', ');
-                        let aiCoachMsg = '';
-                        if (appsScriptUrl) {
-                            try {
-                                const res = await fetch(appsScriptUrl, {
-                                    method: 'POST',
-                                    body: JSON.stringify({
-                                        action: 'callGemini',
-                                        prompt: `ผู้เรียนทำ Post-test ได้ ${scoreStr} (${percent}%) ยังไม่ถึงเกณฑ์ ${MIN_POSTTEST_PERCENT}% โดยมีหมวดที่คะแนนน้อยคือ: ${weakNames} กรุณาสรุปหลักการทางคลินิกที่ควรทบทวนสั้นๆ 3-4 ข้อแบบให้กำลังใจ โดยห้ามเฉลยข้อสอบตรงๆ`,
-                                        systemInstruction: `คุณคือ AI Coach ประจำ rjcloud.organ ${roleProfile.aiPromptAddon}\nฐานความรู้:\n${window.CLINICAL_KNOWLEDGE_BASE || ''}`
-                                    })
-                                }).then(r => r.json());
-                                if (res?.status === 'success' && res.text) aiCoachMsg = res.text;
-                            } catch (_) {}
+                        try {
+                            const weakSummary = diagnosis.weakDomains
+                                .map(d => `- ${d.nameTH} (${d.percent}%): ${d.remediationGuide}`)
+                                .join('\n');
+                            const res = await fetch(appsScriptUrl, {
+                                method: 'POST',
+                                body: JSON.stringify({
+                                    action: 'callGemini',
+                                    prompt: `ผู้เรียนทำ Post-test ได้ ${percent}% (ยังไม่ถึง ${MIN_POSTTEST_PERCENT}%) จุดอ่อนที่พบ:\n${weakSummary}\n\nช่วยสรุปหลักการคลินิกสั้นๆ 3–4 ข้อเพื่อให้ผู้เรียนเข้าใจและสอบผ่านในรอบถัดไป (ห้ามเฉลยตัวเลือกข้อสอบตรงๆ)`,
+                                    systemInstruction: `คุณคือ AI Remediation Coach ประจำ rjcloud.organ อ้างอิงความรู้คลินิกนี้:\n${window.CLINICAL_KNOWLEDGE_BASE || ''}`
+                                })
+                            }).then(r => r.json());
+                            if (res?.status === 'success' && res.text) {
+                                setRemediationAiText(res.text);
+                            }
+                        } catch (_) {
+                        } finally {
+                            setIsRemediationLoading(false);
                         }
-                        setRemediationAiText(aiCoachMsg);
-                        setIsRemediationLoading(false);
                     }
                 }
             };
 
-            // 13. AI STUDY COMPANION (ROLE-ADAPTIVE Q&A + AUDIO BRIEF)
+            // 13. AI STUDY COMPANION (ROLE-ADAPTIVE Q&A + SENTENCE-PIPELINE AUDIO BRIEF + CACHE)
             const handlePlayLessonAudioBrief = async () => {
-                if (isAudioSpeaking) {
+                if (audioBriefStatus !== 'idle') {
                     stopAudioBrief();
                     return;
                 }
-                const speechText = `สรุปบทเรียนที่ ${currentLesson?.id || 1} เรื่อง ${currentLesson?.title || ''} สำหรับ${roleProfile.badgeTH}ค่ะ ` +
-                    (currentLessonGuide.keyPoints || []).map((pt, i) => `ประเด็นที่ ${i + 1} ${pt}`).join(' ');
 
-                setIsAudioSpeaking(true);
-                if (appsScriptUrl) {
+                const sessionId = audioSessionIdRef.current + 1;
+                audioSessionIdRef.current = sessionId;
+
+                // ระดับที่ 1: หากบทเรียนมีไฟล์เสียงสำเร็จรูป (audioUrl ใน data.js) เล่นทันทีไม่ต้องรอ AI
+                if (currentLesson?.audioUrl) {
+                    setAudioBriefStatus('loading');
+                    setAudioSentenceProgress({ current: 1, total: 1 });
+                    try {
+                        const audio = new Audio(currentLesson.audioUrl);
+                        audioRef.current = audio;
+                        audio.onplaying = () => {
+                            if (audioSessionIdRef.current === sessionId) setAudioBriefStatus('playing');
+                        };
+                        audio.onended = () => {
+                            if (audioSessionIdRef.current === sessionId) stopAudioBrief();
+                        };
+                        audio.onerror = () => {
+                            if (audioSessionIdRef.current === sessionId) stopAudioBrief();
+                        };
+                        await audio.play();
+                        return;
+                    } catch (_) {
+                        if (audioSessionIdRef.current !== sessionId) return;
+                    }
+                }
+
+                // ระดับที่ 2 & 3: แบ่งสร้างเสียงทีละประโยค + แอบโหลดประโยคถัดไปล่วงหน้า (Prefetch) + แคชถาวรใน IndexedDB
+                const sentences = buildLessonBriefSentences(currentLesson, currentLessonGuide, roleProfile.badgeTH);
+                const lessonKeyPrefix = `L${currentLesson?.id || 1}_${roleProfile.id}`;
+
+                const fetchSentenceBlob = async (idx) => {
+                    const text = sentences[idx];
+                    const cacheKey = `${lessonKeyPrefix}_S${idx}_${text}`;
+                    const cached = await getCachedAudioBlob(cacheKey);
+                    if (cached) return cached;
+                    if (!appsScriptUrl || audioSessionIdRef.current !== sessionId) return null;
+
+                    const controller = new AbortController();
+                    audioAbortRef.current = controller;
+                    const timeoutId = setTimeout(() => controller.abort(), 9000);
                     try {
                         const res = await fetch(appsScriptUrl, {
                             method: 'POST',
-                            body: JSON.stringify({ action: 'callGeminiTTS', text: speechText, voiceName: 'Aoede' })
+                            body: JSON.stringify({ action: 'callGeminiTTS', text, voiceName: 'Aoede' }),
+                            signal: controller.signal
                         }).then(r => r.json());
+
                         if (res?.status === 'success' && res.inlineData?.data) {
                             const rate = parseInt(res.inlineData.mimeType?.match(/rate=(\d+)/)?.[1] ?? '24000', 10);
-                            const wavUrl = pcm16ToWavUrl(res.inlineData.data, rate);
-                            audioUrlRef.current = wavUrl;
-                            const audio = new Audio(wavUrl);
-                            audioRef.current = audio;
-                            audio.onended = () => stopAudioBrief();
-                            audio.onerror = () => stopAudioBrief();
-                            await audio.play();
-                            return;
+                            const blob = pcm16ToWavBlob(res.inlineData.data, rate);
+                            await setCachedAudioBlob(cacheKey, blob);
+                            if (idx === 0) setIsAudioCached(true);
+                            return blob;
                         }
-                    } catch (_) {}
-                }
+                    } catch (_) {
+                    } finally {
+                        clearTimeout(timeoutId);
+                    }
+                    return null;
+                };
 
-                if ('speechSynthesis' in window) {
+                const wrapTracked = (promise) => {
+                    const tracker = { done: false, promise: null };
+                    tracker.promise = Promise.resolve(promise).then((val) => {
+                        tracker.done = true;
+                        return val;
+                    });
+                    return tracker;
+                };
+
+                const playWavBlob = (blob) => new Promise((resolve) => {
+                    if (audioSessionIdRef.current !== sessionId) return resolve();
+                    if (audioUrlRef.current) {
+                        URL.revokeObjectURL(audioUrlRef.current);
+                        audioUrlRef.current = null;
+                    }
+                    const wavUrl = URL.createObjectURL(blob);
+                    audioUrlRef.current = wavUrl;
+                    const audio = new Audio(wavUrl);
+                    audioRef.current = audio;
+                    audio.onended = () => resolve();
+                    audio.onerror = () => resolve();
+                    audio.play().catch(() => resolve());
+                });
+
+                const speakBrowserFallback = (text) => new Promise((resolve) => {
+                    if (audioSessionIdRef.current !== sessionId || !('speechSynthesis' in window)) return resolve();
                     try {
                         window.speechSynthesis.cancel();
-                        const utter = new SpeechSynthesisUtterance(speechText);
+                        const utter = new SpeechSynthesisUtterance(text);
                         utter.lang = 'th-TH';
                         utter.rate = 1.0;
-                        utter.onend = () => setIsAudioSpeaking(false);
-                        utter.onerror = () => setIsAudioSpeaking(false);
+                        utter.onend = () => resolve();
+                        utter.onerror = () => resolve();
                         window.speechSynthesis.speak(utter);
-                        return;
-                    } catch (_) {}
+                    } catch (_) {
+                        resolve();
+                    }
+                });
+
+                setAudioBriefStatus('loading');
+                setAudioSentenceProgress({ current: 1, total: sentences.length });
+
+                let nextTracker = wrapTracked(fetchSentenceBlob(0));
+
+                for (let i = 0; i < sentences.length; i++) {
+                    if (audioSessionIdRef.current !== sessionId) return;
+                    setAudioSentenceProgress({ current: i + 1, total: sentences.length });
+                    if (!nextTracker.done) setAudioBriefStatus('loading');
+
+                    const currentBlob = await nextTracker.promise;
+                    if (audioSessionIdRef.current !== sessionId) return;
+
+                    // แอบโหลดประโยคถัดไปล่วงหน้าทันทีในระหว่างที่กำลังเปิดเสียงประโยคปัจจุบัน
+                    if (i + 1 < sentences.length) {
+                        nextTracker = wrapTracked(fetchSentenceBlob(i + 1));
+                    }
+
+                    setAudioBriefStatus('playing');
+                    if (currentBlob) {
+                        await playWavBlob(currentBlob);
+                    } else if ('speechSynthesis' in window) {
+                        await speakBrowserFallback(sentences[i]);
+                    } else {
+                        showToast('อุปกรณ์นี้ไม่รองรับการอ่านเสียงอัตโนมัติค่ะ', 'error');
+                        break;
+                    }
                 }
-                setIsAudioSpeaking(false);
-                showToast('อุปกรณ์นี้ไม่รองรับการอ่านเสียงอัตโนมัติค่ะ', 'error');
+
+                if (audioSessionIdRef.current === sessionId) {
+                    stopAudioBrief();
+                }
             };
 
             const handleAskAiCompanion = async (e, presetText = null) => {
@@ -3342,7 +3628,22 @@ ${user.certificateCode ? `5. รหัสประกาศนียบัตร
                                             </SpatialCard>
 
                                             {/* AI Study Companion (1-Min Summary + Audio Brief + Micro-Check + Q&A) */}
-                                            <SpatialCard className="p-4 sm:p-6 space-y-4 border-prism-400/25">
+                                            <SpatialCard className={`p-4 sm:p-6 space-y-4 border-prism-400/25 overflow-hidden transition-all duration-300 ${
+                                                audioBriefStatus === 'loading'
+                                                    ? 'ambient-loading-card'
+                                                    : audioBriefStatus === 'playing'
+                                                        ? 'ambient-playing-card'
+                                                        : ''
+                                            }`}>
+                                                {/* เส้นไฟแอมเบี้ยนวิ่งด้านบนการ์ดเมื่อกำลังเตรียมเสียงหรือกำลังอ่านสรุป */}
+                                                {audioBriefStatus !== 'idle' && (
+                                                    <div className="ambient-ribbon">
+                                                        <div className={`w-full h-full ${
+                                                            audioBriefStatus === 'loading' ? 'ambient-ribbon-loading' : 'ambient-ribbon-playing'
+                                                        }`} />
+                                                    </div>
+                                                )}
+
                                                 <div className="flex flex-wrap items-center justify-between gap-2">
                                                     <div className="flex items-center gap-2.5">
                                                         <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-aurora-400 to-prism-400 text-void-950 flex items-center justify-center shrink-0">
@@ -3359,27 +3660,87 @@ ${user.certificateCode ? `5. รหัสประกาศนียบัตร
                                                     <button
                                                         type="button"
                                                         onClick={handlePlayLessonAudioBrief}
-                                                        className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
-                                                            isAudioSpeaking
-                                                                ? 'bg-rose-500 text-white'
-                                                                : 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold'
+                                                        className={`touch-target px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all active:scale-95 ${
+                                                            audioBriefStatus === 'loading'
+                                                                ? 'ambient-btn-runner font-extrabold'
+                                                                : audioBriefStatus === 'playing'
+                                                                    ? 'bg-rose-600 hover:bg-rose-500 text-white font-extrabold shadow-lg shadow-rose-500/25'
+                                                                    : 'bg-gradient-to-r from-aurora-400 to-prism-400 hover:from-aurora-300 hover:to-prism-300 text-void-950 font-extrabold shadow-md'
                                                         }`}
                                                     >
-                                                        <Icon name={isAudioSpeaking ? 'Square' : 'Headphones'} size={15} />
-                                                        {isAudioSpeaking ? 'หยุดฟังสรุป' : 'ฟังสรุปเสียง 1 นาที'}
+                                                        {audioBriefStatus === 'loading' ? (
+                                                            <>
+                                                                <Icon name="AudioLines" size={15} className="animate-pulse shrink-0" />
+                                                                <span>กำลังเตรียมเสียง ({audioSentenceProgress.current}/{audioSentenceProgress.total})...</span>
+                                                            </>
+                                                        ) : audioBriefStatus === 'playing' ? (
+                                                            <>
+                                                                <span className="flex items-end gap-0.5 h-3.5 shrink-0">
+                                                                    <span className="w-0.5 h-3.5 rounded-full bg-white audio-eq-bar" style={{ animationDelay: '0s' }} />
+                                                                    <span className="w-0.5 h-3.5 rounded-full bg-white audio-eq-bar" style={{ animationDelay: '0.18s' }} />
+                                                                    <span className="w-0.5 h-3.5 rounded-full bg-white audio-eq-bar" style={{ animationDelay: '0.32s' }} />
+                                                                </span>
+                                                                <span>หยุดฟัง ({audioSentenceProgress.current}/{audioSentenceProgress.total})</span>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <Icon name="Headphones" size={15} />
+                                                                <span>ฟังสรุปเสียง 1 นาที</span>
+                                                                {isAudioCached && (
+                                                                    <span className="px-1.5 py-0.5 rounded-md bg-void-950/15 text-[10px] font-mono font-extrabold">
+                                                                        พร้อมทันที
+                                                                    </span>
+                                                                )}
+                                                            </>
+                                                        )}
                                                     </button>
                                                 </div>
+
+                                                {/* แถบสถานะแอมเบี้ยนแจ้งจังหวะเตรียมเสียง / กำลังอ่าน */}
+                                                {audioBriefStatus !== 'idle' && (
+                                                    <div className={`px-3.5 py-2 rounded-xl border text-xs font-semibold flex flex-wrap items-center justify-between gap-2 transition-all ${
+                                                        audioBriefStatus === 'loading'
+                                                            ? 'bg-prism-500/15 border-prism-400/40 text-prism-adaptive'
+                                                            : 'bg-aurora-500/15 border-aurora-400/40 text-accent-adaptive'
+                                                    }`}>
+                                                        <span className="flex items-center gap-2">
+                                                            <span className={`w-2 h-2 rounded-full ${
+                                                                audioBriefStatus === 'loading' ? 'bg-prism-400 animate-ping' : 'bg-aurora-400 animate-pulse'
+                                                            }`} />
+                                                            {audioBriefStatus === 'loading'
+                                                                ? `กำลังสร้างเสียง AI ประโยคที่ ${audioSentenceProgress.current} จาก ${audioSentenceProgress.total} (พร้อมเก็บแคชไว้ฟังซ้ำทันที)...`
+                                                                : `กำลังอ่านสรุปประโยคที่ ${audioSentenceProgress.current} จาก ${audioSentenceProgress.total} — แอบโหลดประโยคถัดไปรอไว้แล้ว`}
+                                                        </span>
+                                                        <button
+                                                            type="button"
+                                                            onClick={stopAudioBrief}
+                                                            className="font-mono text-[11px] font-bold text-rose-400 hover:underline"
+                                                        >
+                                                            ยกเลิก
+                                                        </button>
+                                                    </div>
+                                                )}
 
                                                 {/* 1-Minute Clinical Cheat Sheet */}
                                                 <div className="spatial-soft p-4 rounded-2xl space-y-2">
                                                     <p className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">1-MINUTE CLINICAL CHEAT SHEET</p>
                                                     <ul className="space-y-1.5 text-xs sm:text-sm text-primary-adaptive leading-relaxed">
-                                                        {(currentLessonGuide.keyPoints || []).map((pt, i) => (
-                                                            <li key={i} className="flex items-start gap-2">
-                                                                <span className="text-accent-adaptive font-bold">•</span>
-                                                                <span>{pt}</span>
-                                                            </li>
-                                                        ))}
+                                                        {(currentLessonGuide.keyPoints || []).map((pt, i) => {
+                                                            const isSpokenNow = audioBriefStatus === 'playing' && audioSentenceProgress.current === i + 2;
+                                                            return (
+                                                                <li
+                                                                    key={i}
+                                                                    className={`flex items-start gap-2 rounded-xl transition-all duration-300 ${
+                                                                        isSpokenNow
+                                                                            ? 'px-3 py-2 bg-aurora-500/15 border border-aurora-400/45 shadow-sm'
+                                                                            : 'px-1 py-0.5 border border-transparent'
+                                                                    }`}
+                                                                >
+                                                                    <span className="text-accent-adaptive font-bold">•</span>
+                                                                    <span>{pt}</span>
+                                                                </li>
+                                                            );
+                                                        })}
                                                     </ul>
                                                 </div>
 
