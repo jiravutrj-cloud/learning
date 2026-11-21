@@ -1147,16 +1147,21 @@
             }, [appsScriptUrl]);
 
             const persistUser = useCallback(async (nextUser, syncCloud = false) => {
-                if (!nextUser) return;
                 setUser(nextUser);
-                if (adminPreviewMode || String(nextUser.id).startsWith('admin_preview_')) return;
-
+                if (adminPreviewMode) return;
                 try {
-                    const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...raw, user: nextUser }));
+                    const existing = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...existing, user: nextUser }));
                 } catch (_) {}
 
-                if (syncCloud && isCloudConfigured && fbDb && nextUser.id && !String(nextUser.id).startsWith('demo_')) {
+                if (
+                    syncCloud &&
+                    isCloudConfigured &&
+                    fbDb &&
+                    nextUser?.id &&
+                    !String(nextUser.id).startsWith('demo_') &&
+                    !String(nextUser.id).startsWith('admin_preview_')
+                ) {
                     try {
                         await setDoc(
                             doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', String(nextUser.id)),
@@ -1164,22 +1169,44 @@
                             { merge: true }
                         );
                     } catch (err) {
-                        console.warn('Cloud user persist warning:', err);
+                        console.warn('Cloud user sync warning:', err);
                     }
                 }
             }, [adminPreviewMode]);
 
-            // 1. เชื่อมต่อ Firebase (PDPA-Safe)
+            // 1. เชื่อมต่อ Firebase (PDPA-Safe — ป้องกันทับสิทธิ์ Admin ตอนเปิด Preview 2 ชั้น)
             useEffect(() => {
                 if (!isCloudConfigured || !fbAuth || !fbDb) return;
+                let active = true;
+                let anonAttempted = false;
                 let unsubSettings = null;
                 let unsubContent = null;
                 let unsubLeader = null;
 
-                signInAnonymously(fbAuth).catch(err => console.warn('Anon auth warning:', err));
-
                 const unsubAuth = onAuthStateChanged(fbAuth, async (fbUser) => {
-                    if (!fbUser) return;
+                    if (!active) return;
+                    if (!fbUser) {
+                        // ห้ามสร้าง Anonymous Session ในโหมด Admin Preview เพื่อไม่ให้เขียนทับสิทธิ์แอดมิน
+                        if (adminPreviewMode) return;
+                        if (!anonAttempted) {
+                            anonAttempted = true;
+                            try {
+                                if (typeof fbAuth.authStateReady === 'function') {
+                                    await fbAuth.authStateReady();
+                                }
+                                if (active && !fbAuth.currentUser) {
+                                    await signInAnonymously(fbAuth);
+                                }
+                            } catch (err) {
+                                console.warn('Anon auth warning:', err);
+                            }
+                        }
+                        return;
+                    }
+
+                    if (unsubSettings) unsubSettings();
+                    if (unsubContent) unsubContent();
+                    if (unsubLeader) unsubLeader();
 
                     unsubSettings = onSnapshot(
                         doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_config', 'settings'),
@@ -1236,6 +1263,7 @@
                 });
 
                 return () => {
+                    active = false;
                     unsubAuth();
                     if (unsubSettings) unsubSettings();
                     if (unsubContent) unsubContent();
