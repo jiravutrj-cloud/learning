@@ -289,13 +289,13 @@
             <div style="font-size:12px;color:#94a3b8;">กำลังเตรียมแกนอนุภาคอารมณ์ 3 มิติ, Vocal Bio-Coach และห้องรับรองจำลอง</div>
         </div>
         <style>@keyframes bootSpin{to{transform:rotate(360deg);}}</style>
-    </div>
-
-    <!-- 🌟 Global Error Guard ป้องกันหน้าขาว/จอดำ 🌟 -->
+    <!-- 🌟 Global Error Guard ป้องกันหน้าขาว/จอดำ (ไม่จับ Error 404 จาก data.js ในโหมด Preview เดี่ยว) 🌟 -->
     <script>
       window.addEventListener('error', function (ev) {
+        const src = String(ev.filename || (ev.target && ev.target.src) || '');
+        if (src.includes('data.js')) return;
         const root = document.getElementById('lab-root');
-        if (root && !root.dataset.mounted) {
+        if (root && !root.dataset.mounted && ev.message) {
           root.innerHTML =
             '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#030712;color:#f8fafc;font-family:Sarabun,sans-serif;">' +
             '<div style="max-width:440px;width:100%;background:#070d1c;border:1px solid rgba(244,63,94,0.4);border-radius:24px;padding:24px;text-align:center;">' +
@@ -776,11 +776,11 @@
         // ============================================================================
         function SpatialEmotionalCoreCanvas({ emotionKey, isAiSpeaking, isAiTyping, micLevel, interactive = true }) {
             const mountRef = useRef(null);
-            const stateRef = useRef({ emotionKey, isAiSpeaking, isAiTyping, micLevel });
+            const stateRef = useRef({ emotionKey, isAiSpeaking, isAiTyping, micLevel, interactive });
 
             useEffect(() => {
-                stateRef.current = { emotionKey, isAiSpeaking, isAiTyping, micLevel };
-            }, [emotionKey, isAiSpeaking, isAiTyping, micLevel]);
+                stateRef.current = { emotionKey, isAiSpeaking, isAiTyping, micLevel, interactive };
+            }, [emotionKey, isAiSpeaking, isAiTyping, micLevel, interactive]);
 
             useEffect(() => {
                 const container = mountRef.current;
@@ -789,8 +789,8 @@
                 const THREE = window.THREE;
                 let rafId = null;
 
-                // กรณี WebGL ไม่พร้อมใช้งาน ใช้ Fallback Canvas 2D Particle Cloud แทน
-                if (!THREE) {
+                // ฟังก์ชันสำรอง Canvas 2D กรณี WebGL หรือ Three.js ไม่พร้อมใช้งาน
+                const start2dFallback = () => {
                     const canvas = document.createElement('canvas');
                     canvas.style.width = '100%';
                     canvas.style.height = '100%';
@@ -799,8 +799,8 @@
                     container.appendChild(canvas);
                     const ctx = canvas.getContext('2d');
                     const resize2d = () => {
-                        canvas.width = container.clientWidth || window.innerWidth;
-                        canvas.height = container.clientHeight || window.innerHeight;
+                        canvas.width = Math.max(1, container.clientWidth || window.innerWidth);
+                        canvas.height = Math.max(1, container.clientHeight || window.innerHeight);
                     };
                     resize2d();
                     window.addEventListener('resize', resize2d);
@@ -813,7 +813,8 @@
                         ctx.fillRect(0, 0, canvas.width, canvas.height);
                         const cx = canvas.width / 2;
                         const cy = canvas.height * 0.44;
-                        const r = Math.min(canvas.width, canvas.height) * 0.22;
+                        const pulse = 1 + Math.sin(t * meta.pulseSpeed) * 0.08;
+                        const r = Math.min(canvas.width, canvas.height) * 0.22 * pulse;
                         const grd = ctx.createRadialGradient(cx, cy, 8, cx, cy, r * 1.9);
                         grd.addColorStop(0, meta.hexCss + '88');
                         grd.addColorStop(1, 'transparent');
@@ -828,11 +829,15 @@
                         cancelAnimationFrame(rafId);
                         window.removeEventListener('resize', resize2d);
                     };
+                };
+
+                if (!THREE) {
+                    return start2dFallback();
                 }
 
                 // --- Three.js Scene Setup ---
-                const width = container.clientWidth || window.innerWidth;
-                const height = container.clientHeight || window.innerHeight;
+                const width = Math.max(1, container.clientWidth || window.innerWidth);
+                const height = Math.max(1, container.clientHeight || window.innerHeight);
 
                 const scene = new THREE.Scene();
                 const camera = new THREE.PerspectiveCamera(52, width / height, 0.1, 100);
@@ -843,7 +848,7 @@
                     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
                 } catch (err) {
                     console.warn('WebGL fallback triggered:', err);
-                    return;
+                    return start2dFallback();
                 }
                 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
                 renderer.setSize(width, height);
@@ -984,13 +989,13 @@
                 let curRotX = 0.08, curRotY = 0;
 
                 const onPointerDown = (x, y) => {
-                    if (!interactive) return;
+                    if (!stateRef.current.interactive) return;
                     isDragging = true;
                     lastX = x;
                     lastY = y;
                 };
                 const onPointerMove = (x, y) => {
-                    if (!isDragging || !interactive) return;
+                    if (!isDragging || !stateRef.current.interactive) return;
                     const dx = x - lastX;
                     const dy = y - lastY;
                     lastX = x;
@@ -1020,8 +1025,8 @@
                 // Responsive Resize Handler
                 const handleResize = () => {
                     if (!container) return;
-                    const w = container.clientWidth || window.innerWidth;
-                    const h = container.clientHeight || window.innerHeight;
+                    const w = Math.max(1, container.clientWidth || window.innerWidth);
+                    const h = Math.max(1, container.clientHeight || window.innerHeight);
                     camera.aspect = w / h;
                     camera.position.z = w < 640 ? 7.4 : 6.1;
                     camera.updateProjectionMatrix();
@@ -1154,7 +1159,7 @@
                     particleTex.dispose();
                     renderer.dispose();
                 };
-            }, [interactive]);
+            }, []);
 
             return <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing" />;
         }
@@ -2793,7 +2798,7 @@
 
                     {/* ==================== TOP SPATIAL NAVIGATION BAR ==================== */}
                     <header className="sticky top-0 z-30 pt-safe px-3 sm:px-6 py-2.5 pointer-events-none">
-                        <div className="max-w-7xl mx-auto vision-pill rounded-2xl px-3 sm:px-4 h-13 py-2 flex items-center justify-between gap-2 pointer-events-auto">
+                        <div className="max-w-7xl mx-auto vision-pill rounded-2xl px-3 sm:px-4 min-h-[3.25rem] py-2 flex items-center justify-between gap-2 pointer-events-auto">
                             <div className="flex items-center gap-2.5 min-w-0">
                                 {phase === 'menu' ? (
                                     <a href="./index.html#dashboard" className="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/15 text-slate-200 flex items-center justify-center shrink-0" title="กลับห้องเรียน">
