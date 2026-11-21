@@ -6,16 +6,16 @@
     <meta name="theme-color" content="#030712">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>AI Skill Lab 2030 — Spatial Empathy Holodeck | rjcloud.organ</title>
+    <title>AI Skill Lab — ห้องฝึกสื่อสาร 3 มิติ | rjcloud.organ</title>
 
-    <!-- 🌟 โหลดค่าตั้งต้นส่วนกลางจาก data.js (มี Built-in Fallback ป้องกันหน้าขาว) 🌟 -->
-    <script src="./data.js" onerror="console.warn('data.js not loaded, using built-in 2030 defaults')"></script>
+    <!-- โหลดค่าตั้งต้นส่วนกลางจาก data.js -->
+    <script src="./data.js" onerror="console.warn('data.js not loaded, using built-in defaults')"></script>
 
-    <!-- 🌟 ซิงค์ธีมมืด/สว่างทันทีจาก localStorage (ร่วมกับ index.html ทั้งระบบ) 🌟 -->
+    <!-- ซิงค์ธีมมืด/สว่างทันทีจาก localStorage (ร่วมกับ index.html ทั้งระบบ) -->
     <script>
       (function () {
         try {
-          const key = (window.RJCLOUD_CONFIG && window.RJCLOUD_CONFIG.theme && window.RJCLOUD_CONFIG.theme.storageKey) || 'rjcloud_theme_2030';
+          const key = (window.RJCLOUD_CONFIG && window.RJCLOUD_CONFIG.theme && window.RJCLOUD_CONFIG.theme.storageKey) || 'rjcloud_theme';
           const def = (window.RJCLOUD_CONFIG && window.RJCLOUD_CONFIG.theme && window.RJCLOUD_CONFIG.theme.defaultMode) || 'dark';
           const saved = localStorage.getItem(key) || def;
           const mode = saved === 'light' ? 'light' : 'dark';
@@ -26,10 +26,10 @@
       })();
     </script>
 
-    <!-- 🌟 Three.js r128 สำหรับ 3D Living Emotional Core (0 บาท Open-Source WebGL) 🌟 -->
+    <!-- Three.js r128 สำหรับแกนอนุภาคอารมณ์ 3 มิติ (WebGL) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
-    <!-- 🌟 Tailwind CSS & Fonts (Prompt + Sarabun + JetBrains Mono) 🌟 -->
+    <!-- Tailwind CSS & ฟอนต์มาตรฐานระบบ (Prompt + Sarabun + JetBrains Mono) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -87,7 +87,7 @@
         overscroll-behavior-y: none;
       }
 
-      /* 🌟 Mobile-First Safe Area & Dynamic Viewport 🌟 */
+      /* Mobile-First Safe Area & Dynamic Viewport */
       .h-dvh { height: 100vh; height: 100dvh; }
       .min-h-dvh { min-height: 100vh; min-height: 100dvh; }
       .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
@@ -98,9 +98,9 @@
         input, select, textarea { font-size: 16px !important; }
       }
 
-      /* 🌟 2030 VisionOS Spatial Glass Materials (Dark Default) 🌟 */
+      /* Spatial Glass Materials (Dark Default) */
       .vision-glass {
-        background: linear-gradient(135deg, rgba(15, 23, 42, 0.72) 0%, rgba(7, 13, 28, 0.82) 100%);
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.74) 0%, rgba(7, 13, 28, 0.84) 100%);
         backdrop-filter: blur(28px) saturate(160%);
         -webkit-backdrop-filter: blur(28px) saturate(160%);
         border: 1px solid rgba(255, 255, 255, 0.14);
@@ -111,7 +111,7 @@
       }
 
       .vision-pill {
-        background: rgba(7, 13, 28, 0.68);
+        background: rgba(7, 13, 28, 0.7);
         backdrop-filter: blur(20px) saturate(150%);
         -webkit-backdrop-filter: blur(20px) saturate(150%);
         border: 1px solid rgba(255, 255, 255, 0.13);
@@ -119,7 +119,7 @@
         transition: background 0.25s ease, border-color 0.25s ease;
       }
 
-      /* 🌟 Frosted Pearl Light Adaptation (คงฉาก 3D Core คมชัด พร้อมปรับแผงการ์ดให้อ่านง่ายกลางวัน) 🌟 */
+      /* Frosted Pearl Light Adaptation */
       html[data-theme="light"] .vision-glass:not(.keep-dark),
       html[data-theme="light"] .vision-pill:not(.keep-dark) {
         background: linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(241, 245, 249, 0.9) 100%);
@@ -201,7 +201,7 @@
         color: #ffffff;
       }
 
-      /* 🌟 Deep Spatial Grid Backdrop 🌟 */
+      /* Deep Spatial Grid Backdrop */
       .spatial-grid {
         background-image:
           radial-gradient(circle at 50% 42%, rgba(34, 211, 238, 0.08) 0%, transparent 55%),
@@ -210,7 +210,7 @@
         background-size: 100% 100%, 44px 44px, 44px 44px;
       }
 
-      /* 🌟 Cinema Subtitle Entrance 🌟 */
+      /* Cinema Subtitle Entrance */
       @keyframes subtitleFloatIn {
         0% { opacity: 0; transform: translateY(14px) scale(0.98); filter: blur(4px); }
         100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
@@ -219,7 +219,7 @@
         animation: subtitleFloatIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
       }
 
-      /* 🌟 Holographic 3D Foil Card Sheen 🌟 */
+      /* Holographic 3D Foil Card Sheen */
       .holo-card-wrapper {
         perspective: 1100px;
       }
@@ -241,7 +241,7 @@
         );
       }
 
-      /* 🌟 Audio Bars & Silence Pulse 🌟 */
+      /* Audio Bars */
       @keyframes barDance {
         0%, 100% { transform: scaleY(0.3); opacity: 0.6; }
         50% { transform: scaleY(1); opacity: 1; }
@@ -251,20 +251,12 @@
         animation: barDance 0.8s ease-in-out infinite;
       }
 
-      @keyframes ambientGlow {
-        0%, 100% { opacity: 0.55; transform: scale(1); }
-        50% { opacity: 0.95; transform: scale(1.04); }
-      }
-      .ambient-glow {
-        animation: ambientGlow 4s ease-in-out infinite;
-      }
-
       .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
       .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
       .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.32); border-radius: 999px; }
     </style>
 
-    <!-- 🌟 ESM Import Map (React 18, Lucide Icons, Firebase 11) 🌟 -->
+    <!-- ESM Import Map (React 18, Lucide Icons, Firebase 11) -->
     <script type="importmap">
     {
       "imports": {
@@ -281,15 +273,17 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body>
-    <!-- 🌟 หน้าจอโหลดเริ่มต้น Holodeck Boot Sequence 🌟 -->
+    <!-- หน้าจอโหลดเริ่มต้น -->
     <div id="lab-root">
         <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#030712;color:#f8fafc;font-family:'Prompt','Sarabun',sans-serif;gap:16px;padding:24px;text-align:center;">
             <div style="width:52px;height:52px;border:3px solid rgba(34,211,238,0.18);border-top-color:#34d399;border-right-color:#22d3ee;border-radius:9999px;animation:bootSpin 0.85s linear infinite;"></div>
-            <div style="font-weight:800;font-size:18px;letter-spacing:0.02em;">INITIALIZING SPATIAL HOLODECK 2030...</div>
-            <div style="font-size:12px;color:#94a3b8;">กำลังเตรียมแกนอนุภาคอารมณ์ 3 มิติ, Vocal Bio-Coach และห้องรับรองจำลอง</div>
+            <div style="font-weight:800;font-size:18px;letter-spacing:0.02em;">กำลังเปิดห้องฝึกสื่อสาร AI Skill Lab...</div>
+            <div style="font-size:12px;color:#94a3b8;">กำลังเตรียมแกนอนุภาคอารมณ์ 3 มิติ ระบบวิเคราะห์น้ำเสียง และห้องรับรองจำลอง</div>
         </div>
         <style>@keyframes bootSpin{to{transform:rotate(360deg);}}</style>
-    <!-- 🌟 Global Error Guard ป้องกันหน้าขาว/จอดำ (ไม่จับ Error 404 จาก data.js ในโหมด Preview เดี่ยว) 🌟 -->
+    </div>
+
+    <!-- Global Error Guard ป้องกันหน้าขาว/จอดำ -->
     <script>
       window.addEventListener('error', function (ev) {
         const src = String(ev.filename || (ev.target && ev.target.src) || '');
@@ -299,7 +293,7 @@
           root.innerHTML =
             '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#030712;color:#f8fafc;font-family:Sarabun,sans-serif;">' +
             '<div style="max-width:440px;width:100%;background:#070d1c;border:1px solid rgba(244,63,94,0.4);border-radius:24px;padding:24px;text-align:center;">' +
-            '<h2 style="color:#fda4af;font-weight:700;margin:0 0 8px;">ไม่สามารถเปิด Holodeck 2030 ได้ชั่วคราว</h2>' +
+            '<h2 style="color:#fda4af;font-weight:700;margin:0 0 8px;">ไม่สามารถเปิด AI Skill Lab ได้ชั่วคราว</h2>' +
             '<p style="font-size:13px;color:#cbd5e1;margin:0 0 16px;">' + String(ev.message || 'Unknown error') + '</p>' +
             '<button onclick="window.location.reload()" style="padding:12px 24px;border:none;border-radius:14px;background:#10b981;color:#030712;font-weight:700;cursor:pointer;">โหลดหน้าใหม่</button>' +
             '</div></div>';
@@ -316,17 +310,21 @@
         import { getFirestore, doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 
         // ============================================================================
-        // 1. CONFIGURATION, VIMEO SCENARIO VIDEO & 2030 AFFECTIVE PHYSICS METADATA
+        // 1. CONFIGURATION, VIMEO SCENARIO VIDEO & AFFECTIVE PHYSICS (PRODUCTION 2027)
         // ============================================================================
         const BUILTIN_CONFIG = {
             appName: 'rjcloud.organ',
-            edition: '2030 Spatial Holodeck Edition',
+            edition: '2027 Clinical Edition',
             contactEmail: 'rjcloud.organ@gmail.com',
             appId: 'rjcloud-organ-2027',
             learningRules: {
                 allowedUserTypes: ['เรียนใหม่', 'เรียนต่อเนื่อง'],
                 minStudyPercent: 80,
                 minPosttestPercent: 80
+            },
+            theme: {
+                defaultMode: 'dark',
+                storageKey: 'rjcloud_theme'
             },
             firebaseConfig: {
                 apiKey: 'AIzaSyCpvK0FCVVk9dt0ylHn_VzUStl7540UsbY',
@@ -347,6 +345,10 @@
                 ...BUILTIN_CONFIG.learningRules,
                 ...(window.RJCLOUD_CONFIG?.learningRules || {})
             },
+            theme: {
+                ...BUILTIN_CONFIG.theme,
+                ...(window.RJCLOUD_CONFIG?.theme || {})
+            },
             firebaseConfig: (window.RJCLOUD_CONFIG?.firebaseConfig?.apiKey)
                 ? window.RJCLOUD_CONFIG.firebaseConfig
                 : BUILTIN_CONFIG.firebaseConfig,
@@ -355,7 +357,7 @@
 
         const MIN_STUDY_PERCENT = Number(CONFIG.learningRules?.minStudyPercent || 80);
         const MIN_POSTTEST_PERCENT = Number(CONFIG.learningRules?.minPosttestPercent || 80);
-        const THEME_KEY = CONFIG.theme?.storageKey || 'rjcloud_theme_2030';
+        const THEME_KEY = CONFIG.theme?.storageKey || 'rjcloud_theme';
         const STORAGE_KEY = 'rjcloud_organ_state_v2027';
 
         // วิดีโอสถานการณ์จำลองหลัก Vimeo #1248608457
@@ -364,7 +366,7 @@
         const SCENARIO_VIMEO_EMBED_URL = window.SKILL_LAB_VIDEO?.embedUrl || `https://player.vimeo.com/video/${SCENARIO_VIMEO_ID}?title=0&byline=0&portrait=0&dnt=1`;
 
         /**
-         * พารามิเตอร์ฟิสิกส์อารมณ์สำหรับ 3D Living Emotional Core (Three.js) + Soundscape + Oscilloscope
+         * พารามิเตอร์ฟิสิกส์อารมณ์สำหรับแกนอนุภาค 3 มิติ (Three.js) + Soundscape + Oscilloscope
          */
         const EMOTION_PHYSICS = {
             SHOCK: {
@@ -381,7 +383,7 @@
                 spread: 1.24,
                 trust: 26,
                 tension: 82,
-                droneFreqs: [110, 155.56, 233.08], // tense minor/tritone pad
+                droneFreqs: [110, 155.56, 233.08],
                 icon: 'AlertTriangle'
             },
             ANGRY: {
@@ -398,7 +400,7 @@
                 spread: 1.32,
                 trust: 20,
                 tension: 92,
-                droneFreqs: [103.83, 146.83, 220], // high tension drone
+                droneFreqs: [103.83, 146.83, 220],
                 icon: 'Activity'
             },
             CONFUSED: {
@@ -415,7 +417,7 @@
                 spread: 1.12,
                 trust: 42,
                 tension: 64,
-                droneFreqs: [130.81, 174.61, 246.94], // suspended chord
+                droneFreqs: [130.81, 174.61, 246.94],
                 icon: 'HelpCircle'
             },
             SAD: {
@@ -432,7 +434,7 @@
                 spread: 0.96,
                 trust: 60,
                 tension: 48,
-                droneFreqs: [110, 164.81, 220], // warm open fifth
+                droneFreqs: [110, 164.81, 220],
                 icon: 'CloudRain'
             },
             HESITANT: {
@@ -449,7 +451,7 @@
                 spread: 1.04,
                 trust: 74,
                 tension: 36,
-                droneFreqs: [130.81, 196.0, 293.66], // C-G-D contemplative
+                droneFreqs: [130.81, 196.0, 293.66],
                 icon: 'Scale'
             },
             CALM: {
@@ -466,7 +468,7 @@
                 spread: 1.0,
                 trust: 92,
                 tension: 16,
-                droneFreqs: [130.81, 196.0, 261.63], // serene pure C major harmonic
+                droneFreqs: [130.81, 196.0, 261.63],
                 icon: 'HeartHandshake'
             }
         };
@@ -527,30 +529,30 @@
             ]
         };
 
-        // ด่านฝึกย่อย 3 ขั้น (Calibration Micro-Drill)
+        // ด่านฝึกย่อย 3 ขั้น (Guided Micro-Drill)
         const GUIDED_DRILLS = {
             th: [
                 {
                     id: 'th-d1',
-                    stepTitle: 'CALIBRATION 1/3 • เปิดพื้นที่ปลอดภัยในห้องรับรอง',
+                    stepTitle: 'ด่านที่ 1/3 • เปิดพื้นที่ปลอดภัยในห้องรับรอง',
                     emotion: 'CONFUSED',
                     context: 'คุณเชิญญาติผู้เสียชีวิตมานั่งในห้องรับรองที่เป็นส่วนตัวและเงียบสงบ ญาติกำลังใจสั่นและยังไม่แน่ใจว่าคุณเป็นใคร',
                     relativeLine: 'สวัสดีค่ะ... ขอบคุณที่พาเข้ามานั่งในห้องรับรองนะคะ แต่ตอนนี้ใจคอไม่ดีเลย คุณเป็นใครคะ แล้วอาการของคนที่บ้านตกลงเป็นยังไงบ้างคะ?',
-                    focusTip: 'แนะนำชื่อ-บทบาทของคุณอย่างนุ่มนวล และสะท้อนความกังวลของญาติ (ลองเว้นจังหวะเงียบ 2.5 วินาทีก่อนตอบเพื่อรับโบนัส Therapeutic Silence!)',
+                    focusTip: 'แนะนำชื่อ-บทบาทของคุณอย่างนุ่มนวล และสะท้อนความกังวลของญาติ (ลองเว้นจังหวะเงียบ 2.5 วินาทีก่อนตอบเพื่อรับโบนัส Therapeutic Silence)',
                     masterSample: 'สวัสดีค่ะ ดิฉันชื่อพยาบาลใจดี เป็นพยาบาลผู้ประสานงานดูแลครอบครัวผู้ป่วยค่ะ ขอแสดงความเสียใจกับเหตุการณ์ที่เกิดขึ้นนะคะ ขอบคุณที่เข้ามานั่งคุยกันในห้องรับรองที่เงียบและเป็นส่วนตัวนี้ ดิฉันเข้าใจดีค่ะว่าตอนนี้ครอบครัวกำลังตกใจและเป็นห่วงมาก'
                 },
                 {
                     id: 'th-d2',
-                    stepTitle: 'CALIBRATION 2/3 • รับมือความช็อก & อธิบายภาวะสมองตาย',
+                    stepTitle: 'ด่านที่ 2/3 • รับมือความช็อก & อธิบายภาวะสมองตาย',
                     emotion: 'ANGRY',
                     context: 'ญาติเพิ่งรับทราบคำว่า "สมองตาย" แต่ยังไม่สามารถทำใจยอมรับได้เพราะเพิ่งจับมือแล้วยังอุ่นอยู่',
                     relativeLine: 'จะเป็นสมองตายได้ยังไงคะ! เมื่อกี้เพิ่งไปจับมือ ตัวก็ยังอุ่นอยู่เลย หน้าอกก็ยังขยับ หายใจอยู่แท้ๆ หมอตรวจผิดหรือเปล่าคะ?',
-                    focusTip: 'อย่ารีบโต้แย้ง! รับรู้ความรู้สึกสับสนก่อน แล้วอธิบายความต่างระหว่างเครื่องช่วยหายใจกับภาวะสมองตายถาวร',
+                    focusTip: 'อย่ารีบโต้แย้ง รับรู้ความรู้สึกสับสนก่อน แล้วอธิบายความต่างระหว่างเครื่องช่วยหายใจกับภาวะสมองตายถาวร',
                     masterSample: 'ดิฉันเข้าใจความรู้สึกเลยค่ะ การที่ยังเห็นหน้าอกขยับและสัมผัสได้ว่าตัวอุ่น ทำให้ทำใจเชื่อได้ยากมากจริงๆ ค่ะ แต่ลมหายใจและชีพจรที่เห็นเกิดจากเครื่องช่วยหายใจและยาที่ช่วยพยุงชั่วคราว ซึ่งแพทย์ผู้เชี่ยวชาญได้ตรวจยืนยันตามเกณฑ์แล้วว่าก้านสมองหยุดทำงานอย่างถาวรและไม่สามารถฟื้นกลับมาได้แล้วค่ะ'
                 },
                 {
                     id: 'th-d3',
-                    stepTitle: 'CALIBRATION 3/3 • ไม่เร่งรัด & ให้ความมั่นใจเรื่องเกียรติร่าง',
+                    stepTitle: 'ด่านที่ 3/3 • ไม่เร่งรัด & ให้ความมั่นใจเรื่องเกียรติร่าง',
                     emotion: 'HESITANT',
                     context: 'ญาติเริ่มสงบลงและซึมซับความจริงได้มากขึ้น แต่กังวลเรื่องการดูแลร่างและกลัวถูกกดดัน',
                     relativeLine: 'ถ้าพูดถึงเรื่องการบริจาคอวัยวะ... พวกเรายังสับสนอยู่เลยค่ะ กลัวว่าร่างของเขาจะไม่เรียบร้อย แล้วถ้าเราขอเวลาปรึกษาญาติคนอื่นก่อนจะได้ไหมคะ?',
@@ -561,16 +563,16 @@
             en: [
                 {
                     id: 'en-d1',
-                    stepTitle: 'CALIBRATION 1/3 • Private Room Welcome & Role Clarity',
+                    stepTitle: 'STAGE 1/3 • Private Room Welcome & Role Clarity',
                     emotion: 'CONFUSED',
                     context: 'You invited the relative into a quiet, private consultation room away from the ICU. They are anxious and unsure who you are.',
                     relativeLine: 'Hello... Thank you for bringing me into this quiet room, but I am terrified. Who are you, and what is really happening to my loved one?',
-                    focusTip: 'Warmly introduce your name and clinical role, and validate their distress. Try pausing 2.5 seconds for Therapeutic Silence!',
+                    focusTip: 'Warmly introduce your name and clinical role, and validate their distress. Try pausing 2.5 seconds for Therapeutic Silence.',
                     masterSample: 'Hello, my name is Nurse Joy, and I am a clinical coordinator on the care team. I am truly sorry for what your family is going through. Thank you for coming into this quiet, private room so we can talk gently and clearly.'
                 },
                 {
                     id: 'en-d2',
-                    stepTitle: 'CALIBRATION 2/3 • Validating Disbelief & Brain Death',
+                    stepTitle: 'STAGE 2/3 • Validating Disbelief & Brain Death',
                     emotion: 'ANGRY',
                     context: 'The relative heard "brain death" but cannot accept it because the patient feels warm and the chest is rising.',
                     relativeLine: 'How can you say brain death?! I just held their hand—it is still warm, and the chest is still rising! Could the doctors have made a mistake?',
@@ -579,7 +581,7 @@
                 },
                 {
                     id: 'en-d3',
-                    stepTitle: 'CALIBRATION 3/3 • Non-Coercive Options & Dignity',
+                    stepTitle: 'STAGE 3/3 • Non-Coercive Options & Dignity',
                     emotion: 'HESITANT',
                     context: 'The relative begins absorbing reality yet fears body disfigurement and feeling rushed.',
                     relativeLine: "If we even consider organ donation... I'm scared their body won't look peaceful, and I don't want to be rushed. Can I talk with my family first?",
@@ -602,7 +604,7 @@
                 briefingText: 'บริบทห้องรับรอง: แพทย์ยืนยันภาวะสมองตายตามเกณฑ์แล้ว ขณะนี้คุณเชิญญาติผู้เสียชีวิตมานั่งในห้องรับรองที่เป็นส่วนตัว (แยกจากห้อง ICU) คุณสวมบทบาทเป็นผู้ให้ข้อมูลญาติ และ AI สวมบทบาทเป็นญาติผู้เสียชีวิต',
                 openingLine: 'สวัสดีค่ะ... ขอบคุณที่พาเข้ามานั่งรอในห้องรับรองที่เงียบๆ นะคะ แต่ตอนนี้ใจคอไม่ดีเลย คุณเป็นเจ้าหน้าที่ที่จะมาแจ้งข้อมูลเรื่องคนที่บ้านใช่ไหมคะ?',
                 openingEmotion: 'CONFUSED',
-                systemPrompt: `### บทบาทจำลอง (AI Relative Simulator — Spatial Empathy Holodeck 2030)
+                systemPrompt: `### บทบาทจำลอง (AI Relative Simulator — AI Skill Lab)
 - คุณสวมบทบาทเป็น "ญาติสายตรงของผู้เสียชีวิต" ที่มานั่งพูดคุยกับผู้เรียนใน "ห้องรับรอง / ห้องให้คำปรึกษาที่เป็นส่วนตัว"
 - ผู้เรียนสวมบทบาทเป็น "ผู้ให้ข้อมูลญาติ"
 - ตอบเป็นภาษาไทยอย่างเป็นธรรมชาติ สั้นกระชับ 2–3 ประโยค ห้ามหลุดบทบาท ห้ามพูดเรื่องบริจาคอวัยวะก่อนผู้เรียน
@@ -616,14 +618,14 @@
                 id: 'en',
                 language: 'en',
                 badge: 'ENGLISH • EN',
-                title: 'Consultation Room Holodeck (EN)',
+                title: 'Consultation Room Simulation (EN)',
                 subtitle: 'You: Clinical Communicator  •  AI: Bereaved Relative',
                 relativeName: 'Bereaved Relative (AI)',
                 voiceName: 'Aoede',
                 briefingText: 'Consultation Room Context: Clinical brain stem exams confirmed brain death. You have invited the relative into a quiet, private consultation room away from the ICU. You play the Clinical Communicator and AI plays the Bereaved Relative.',
                 openingLine: 'Hello... Thank you for bringing me into this quiet consultation room. My heart is racing—are you the staff member coming to speak with me about my loved one?',
                 openingEmotion: 'CONFUSED',
-                systemPrompt: `### ROLE (AI Bereaved Relative — Spatial Empathy Holodeck 2030)
+                systemPrompt: `### ROLE (AI Bereaved Relative — AI Skill Lab)
 - You act as a Bereaved Close Relative in a private consultation room away from the ICU.
 - The learner plays the Clinical Communicator. Respond naturally in English (2–3 concise sentences). Never bring up organ donation before the learner does.
 - Gradually shift from shock/confusion toward calm openness when the learner shows empathy and clear facts.
@@ -651,7 +653,7 @@
         }
 
         // ============================================================================
-        // 3. PROCEDURAL AMBIENT SOUNDSCAPE ENGINE (WEB AUDIO API — 0 BAHT)
+        // 3. PROCEDURAL AMBIENT SOUNDSCAPE ENGINE (WEB AUDIO API)
         // ============================================================================
         class AmbientSoundscapeEngine {
             constructor() {
@@ -680,7 +682,6 @@
                     filter.frequency.setValueAtTime(420, ctx.currentTime);
                     filter.Q.setValueAtTime(1.2, ctx.currentTime);
 
-                    // Subtle LFO breathing modulation on filter
                     const lfo = ctx.createOscillator();
                     const lfoGain = ctx.createGain();
                     lfo.frequency.setValueAtTime(0.14, ctx.currentTime);
@@ -741,8 +742,8 @@
                     const osc = this.ctx.createOscillator();
                     const g = this.ctx.createGain();
                     osc.type = 'sine';
-                    osc.frequency.setValueAtTime(523.25, now); // C5 serene chime
-                    osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.35); // E5
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.35);
                     g.gain.setValueAtTime(0.001, now);
                     g.gain.exponentialRampToValueAtTime(0.06, now + 0.06);
                     g.gain.exponentialRampToValueAtTime(0.0001, now + 1.1);
@@ -772,7 +773,7 @@
         }
 
         // ============================================================================
-        // 4. PILLAR 1: 3D LIVING EMOTIONAL CORE (THREE.JS WEBGL 60 FPS + DRAG ORBIT)
+        // 4. 3D LIVING EMOTIONAL CORE (THREE.JS WEBGL 60 FPS + DRAG ORBIT)
         // ============================================================================
         function SpatialEmotionalCoreCanvas({ emotionKey, isAiSpeaking, isAiTyping, micLevel, interactive = true }) {
             const mountRef = useRef(null);
@@ -789,7 +790,6 @@
                 const THREE = window.THREE;
                 let rafId = null;
 
-                // ฟังก์ชันสำรอง Canvas 2D กรณี WebGL หรือ Three.js ไม่พร้อมใช้งาน
                 const start2dFallback = () => {
                     const canvas = document.createElement('canvas');
                     canvas.style.width = '100%';
@@ -831,11 +831,8 @@
                     };
                 };
 
-                if (!THREE) {
-                    return start2dFallback();
-                }
+                if (!THREE) return start2dFallback();
 
-                // --- Three.js Scene Setup ---
                 const width = Math.max(1, container.clientWidth || window.innerWidth);
                 const height = Math.max(1, container.clientHeight || window.innerHeight);
 
@@ -856,7 +853,6 @@
                 container.innerHTML = '';
                 container.appendChild(renderer.domElement);
 
-                // สร้างวงกลมเรืองแสงแบบ Procedural ในหน่วยความจำ (ไม่โหลดรูปจากภายนอก)
                 const createGlowSpriteTexture = () => {
                     const c = document.createElement('canvas');
                     c.width = 64;
@@ -869,15 +865,14 @@
                     grad.addColorStop(1, 'rgba(255,255,255,0)');
                     g.fillStyle = grad;
                     g.fillRect(0, 0, 64, 64);
-                    const tex = new THREE.CanvasTexture(c);
-                    return tex;
+                    return new THREE.CanvasTexture(c);
                 };
                 const particleTex = createGlowSpriteTexture();
 
                 const rootGroup = new THREE.Group();
                 scene.add(rootGroup);
 
-                // 1) แกนอนุภาคพลังงานหลัก 2,400 จุด (Fibonacci Organic Sphere)
+                // 1) แกนอนุภาคพลังงานหลัก 2,400 จุด
                 const PARTICLE_COUNT = 2400;
                 const basePositions = new Float32Array(PARTICLE_COUNT * 3);
                 const positions = new Float32Array(PARTICLE_COUNT * 3);
@@ -924,7 +919,7 @@
                 const particleCloud = new THREE.Points(particleGeo, particleMat);
                 rootGroup.add(particleCloud);
 
-                // 2) แกนผลึกภายใน (Crystalline Geodesic Core)
+                // 2) แกนผลึกภายใน
                 const coreGeo = new THREE.IcosahedronGeometry(0.88, 2);
                 const coreMat = new THREE.MeshBasicMaterial({
                     color: 0x38bdf8,
@@ -960,7 +955,7 @@
                 ring2.rotation.y = Math.PI * 0.2;
                 rootGroup.add(ring2);
 
-                // 4) ฝุ่นดาวรอบห้องรับรอง (Spatial Depth Dust)
+                // 4) ฝุ่นดาวรอบห้องรับรอง
                 const STAR_COUNT = 320;
                 const starPos = new Float32Array(STAR_COUNT * 3);
                 for (let i = 0; i < STAR_COUNT; i++) {
@@ -982,7 +977,7 @@
                 const starField = new THREE.Points(starGeo, starMat);
                 scene.add(starField);
 
-                // --- Interactive Mouse & Touch Drag Camera Orbit ---
+                // Interactive Mouse & Touch Drag Orbit
                 let isDragging = false;
                 let lastX = 0, lastY = 0;
                 let targetRotX = 0.08, targetRotY = 0;
@@ -1007,12 +1002,8 @@
 
                 const handleMouseDown = (e) => onPointerDown(e.clientX, e.clientY);
                 const handleMouseMove = (e) => onPointerMove(e.clientX, e.clientY);
-                const handleTouchStart = (e) => {
-                    if (e.touches[0]) onPointerDown(e.touches[0].clientX, e.touches[0].clientY);
-                };
-                const handleTouchMove = (e) => {
-                    if (e.touches[0]) onPointerMove(e.touches[0].clientX, e.touches[0].clientY);
-                };
+                const handleTouchStart = (e) => { if (e.touches[0]) onPointerDown(e.touches[0].clientX, e.touches[0].clientY); };
+                const handleTouchMove = (e) => { if (e.touches[0]) onPointerMove(e.touches[0].clientX, e.touches[0].clientY); };
 
                 const domEl = renderer.domElement;
                 domEl.addEventListener('mousedown', handleMouseDown);
@@ -1022,7 +1013,6 @@
                 window.addEventListener('touchmove', handleTouchMove, { passive: true });
                 window.addEventListener('touchend', onPointerUp);
 
-                // Responsive Resize Handler
                 const handleResize = () => {
                     if (!container) return;
                     const w = Math.max(1, container.clientWidth || window.innerWidth);
@@ -1035,7 +1025,6 @@
                 handleResize();
                 window.addEventListener('resize', handleResize);
 
-                // Smoothly interpolated emotional physics state
                 const curColor1 = new THREE.Color(0x38bdf8);
                 const curColor2 = new THREE.Color(0x818cf8);
                 const targetColor1 = new THREE.Color();
@@ -1076,7 +1065,6 @@
                     const micBoost = (mic || 0) / 170;
                     const totalEnergy = voiceBoost + micBoost;
 
-                    // Update Particle Cloud Vertices & Colors
                     const posAttr = particleGeo.attributes.position;
                     const colAttr = particleGeo.attributes.color;
                     const breath = 1 + Math.sin(elapsed * curPulse) * 0.045 + totalEnergy * 0.22;
@@ -1105,7 +1093,6 @@
                     posAttr.needsUpdate = true;
                     colAttr.needsUpdate = true;
 
-                    // Core & Orbital Rings animation
                     coreMat.color.copy(curColor1);
                     coreMat.opacity = 0.2 + totalEnergy * 0.35;
                     const coreScale = 0.92 + Math.sin(elapsed * curPulse * 1.2) * 0.06 + totalEnergy * 0.25;
@@ -1120,10 +1107,7 @@
                     ring1.scale.setScalar(1 + totalEnergy * 0.14);
                     ring2.scale.setScalar(1 + totalEnergy * 0.18);
 
-                    // Auto-orbit + user drag smoothing
-                    if (!isDragging) {
-                        targetRotY += dt * curRotSpeed * 0.65;
-                    }
+                    if (!isDragging) targetRotY += dt * curRotSpeed * 0.65;
                     curRotX += (targetRotX - curRotX) * 0.08;
                     curRotY += (targetRotY - curRotY) * 0.08;
                     rootGroup.rotation.x = curRotX;
@@ -1256,20 +1240,20 @@
 [SUGGESTION 2] Seeing warmth and a heartbeat makes this shock even harder. May I gently explain how the ventilator works compared with brain death?`;
                 }
                 return `[CALM] Thank you for speaking so gently and giving me space to breathe in this quiet room. I feel calmer now... What steps come next for our family?
-[COACH_TIP] Strong trust resonance achieved! Reassure unhurried support and tap "Evaluate" to generate your 2030 Holographic Skill Card.
+[COACH_TIP] Strong trust resonance achieved! Reassure unhurried support and tap "Evaluate" to generate your Competency Card.
 [SUGGESTION 1] Right now our priority is supporting your family. Whenever you feel ready, I can explain the next care steps clearly and without any pressure.
 [SUGGESTION 2] There is no hurry at all. Would you like some quiet time together first, or would you like me to walk through the next steps gently?`;
             }
 
             if (msg.match(/บริจาค|อวัยวะ|ต่อชีวิต|บุญ|กุศล/)) {
-                return `[HESITANT] เรื่องบริจาคอวัยวะเหรอคะ... ยอมรับตรงๆ ว่าตอนนี้ยังตกใจและทำใจไม่ทันเลยค่ะ กลัวว่าร่างของเขาจะไม่เรียบร้อย แล้วครอบครัวเราขอเวลาปรึกษากันก่อนได้ไหมคะ?
+                return `[HESITANT] เรื่องบริจาคอวัยวะเหรอคะ... ยอมรับตรงๆ ว่าตอนนี้ยังตกใจและทำใจไม่ทันเลยค่ะ กลัวว่าร่างของเขาจะไม่เรียบร้อย แล้วครอบครัวเราขอเวลาปรึกษาญาติคนอื่นก่อนได้ไหมคะ?
 [COACH_TIP] หลักการ Decoupling & Dignity: ยืนยันว่าไม่เร่งรัด ให้เวลาครอบครัวปรึกษากัน และรับรองการดูแลตกแต่งร่างอย่างประณีตสูงสุดค่ะ
 [SUGGESTION 1] ได้แน่นอนค่ะ ไม่ต้องรีบตัดสินใจเลยนะคะ ทีมศัลยแพทย์จะดูแลผ่าตัดและตกแต่งร่างอย่างประณีตให้เกียรติสูงสุด ดิฉันขอให้เวลาครอบครัวปรึกษากันในห้องรับรองนี้ก่อนค่ะ
 [SUGGESTION 2] เข้าใจความกังวลเลยค่ะ ไม่ว่าจะตัดสินใจอย่างไรทีมจะดูแลอย่างเต็มที่เสมอ ขอเชิญครอบครัวคุยกันตามสบาย หากมีคำถามเพิ่มเติมเรียกดิฉันได้ตลอดนะคะ`;
             }
             if (msg.match(/เครื่องช่วยหายใจ|สมองตาย|ก้านสมอง|ถาวร|หยุดทำงาน/)) {
                 return `[SAD] แสดงว่าที่เห็นหน้าอกขยับและตัวอุ่นอยู่ เป็นเพราะเครื่องช่วยหายใจกับยาใช่ไหมคะ... หมายความว่าเขาจะไม่ฟื้นกลับมาคุยกับพวกเราอีกแล้วจริงๆ เหรอคะ...
-[COACH_TIP] อธิบายชัดเจนดีมากค่ะ! ลองเว้นจังหวะเงียบ 2.5 วินาที (Therapeutic Silence) แล้วค่อยปลอบใจอย่างอ่อนโยนโดยไม่เร่งรัดนะคะ
+[COACH_TIP] อธิบายชัดเจนดีมากค่ะ ลองเว้นจังหวะเงียบ 2.5 วินาที (Therapeutic Silence) แล้วค่อยปลอบใจอย่างอ่อนโยนโดยไม่เร่งรัดนะคะ
 [SUGGESTION 1] ดิฉันเสียใจด้วยจริงๆ ค่ะ ใช่ค่ะ เครื่องช่วยหายใจและยาช่วยพยุงชั่วคราว แต่ก้านสมองหยุดทำงานถาวรแล้ว ขอให้ครอบครัวค่อยๆ ทำใจในห้องรับรองนี้ได้เลยนะคะ ดิฉันอยู่ตรงนี้คอยรับฟังค่ะ
 [SUGGESTION 2] เข้าใจความเจ็บปวดของครอบครัวมากค่ะ ตอนนี้ไม่ต้องรีบอะไรเลยนะคะ หากมีส่วนไหนที่ยังสงสัยเกี่ยวกับผลตรวจ ดิฉันยินดีค่อยๆ อธิบายให้ชัดเจนค่ะ`;
             }
@@ -1280,7 +1264,7 @@
 [SUGGESTION 2] เป็นเรื่องธรรมดามากค่ะที่จะรู้สึกสับสนเมื่อเห็นสัญญาณชีพบนจอ ขออนุญาตค่อยๆ อธิบายความแตกต่างระหว่างการทำงานของเครื่องช่วยหายใจกับภาวะสมองตายนะคะ`;
             }
             return `[CALM] ขอบคุณนะคะที่ค่อยๆ อธิบายด้วยน้ำเสียงที่นุ่มนวลและให้เวลาในห้องรับรองที่เงียบสงบแบบนี้... ตอนนี้ใจนิ่งขึ้นมากแล้วค่ะ ขั้นตอนต่อไปครอบครัวต้องเตรียมตัวยังไงบ้างคะ?
-[COACH_TIP] ยอดเยี่ยมมากค่ะ! สร้างความไว้วางใจได้สูงมาก สามารถสรุปให้เวลาครอบครัวและกดปุ่ม "ประเมินผล" เพื่อรับการ์ดโฮโลแกรม 3 มิติได้เลยค่ะ
+[COACH_TIP] ยอดเยี่ยมมากค่ะ สร้างความไว้วางใจได้สูงมาก สามารถสรุปให้เวลาครอบครัวและกดปุ่ม "ประเมินผล" เพื่อรับการ์ดสมรรถนะได้เลยค่ะ
 [SUGGESTION 1] สิ่งสำคัญที่สุดตอนนี้คือดูแลจิตใจของครอบครัวค่ะ หากพร้อมแล้วดิฉันขออนุญาตอธิบายขั้นตอนการดูแลต่อจากนี้และทางเลือกต่างๆ อย่างตรงไปตรงมา โดยไม่มีการเร่งรัดใดๆ นะคะ
 [SUGGESTION 2] ขอให้ครอบครัวพักหายใจก่อนได้เลยค่ะ ต้องการเวลาอยู่ด้วยกันเงียบๆ สักครู่ หรือให้ดิฉันเล่าขั้นตอนต่อไปให้ฟังก่อนดีคะ`;
         }
@@ -1305,7 +1289,7 @@
         }
 
         /**
-         * ประเมินสมรรถนะ 5 มิติ (สำหรับ Radar Chart, 3D Skill Card และ Executive Dashboard)
+         * ประเมินสมรรถนะ 5 มิติ (สำหรับ Radar Chart, 3D Skill Card และหน้าผู้บริหาร)
          */
         function evaluateFiveDimensions(chatLog, mode, silenceBonusCount, vocalCalmAvg) {
             const isEn = mode.language === 'en';
@@ -1369,7 +1353,7 @@
         }
 
         // ============================================================================
-        // 6. PILLAR 4 & 5 COMPONENTS: RADAR, TIMELINE + TIME-REWIND, 3D HOLO CARD
+        // 6. DEBRIEF VISUALIZATION: 5-AXIS RADAR, TIMELINE + TIME-REWIND, 3D HOLO CARD
         // ============================================================================
         function FiveAxisRadarSVG({ radar, isEn }) {
             const size = 240;
@@ -1389,7 +1373,7 @@
             return (
                 <svg viewBox={`0 0 ${size} ${size}`} className="w-full max-w-[250px] mx-auto overflow-visible">
                     <defs>
-                        <linearGradient id="radarFill2030" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <linearGradient id="radarFillSkillLab" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stopColor="#34d399" stopOpacity="0.52" />
                             <stop offset="100%" stopColor="#22d3ee" stopOpacity="0.28" />
                         </linearGradient>
@@ -1402,7 +1386,7 @@
                         const [x, y] = getPoint(i, 1);
                         return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="rgba(148,163,184,0.2)" strokeWidth="1" />;
                     })}
-                    <polygon points={polyStr} fill="url(#radarFill2030)" stroke="#34d399" strokeWidth="2" />
+                    <polygon points={polyStr} fill="url(#radarFillSkillLab)" stroke="#34d399" strokeWidth="2" />
                     {dataPoints.map(([x, y], i) => (
                         <circle key={i} cx={x} cy={y} r="3.6" fill="#67e8f9" stroke="#030712" strokeWidth="1.5" />
                     ))}
@@ -1410,26 +1394,10 @@
                         const [lx, ly] = getPoint(i, 1.32);
                         return (
                             <g key={item.key}>
-                                <text
-                                    x={lx}
-                                    y={ly - 4}
-                                    textAnchor="middle"
-                                    fill="#cbd5e1"
-                                    fontSize="9.5"
-                                    fontFamily="Sarabun, sans-serif"
-                                    fontWeight="700"
-                                >
+                                <text x={lx} y={ly - 4} textAnchor="middle" fill="#cbd5e1" fontSize="9.5" fontFamily="Sarabun, sans-serif" fontWeight="700">
                                     {isEn ? item.labelEN : item.labelTH}
                                 </text>
-                                <text
-                                    x={lx}
-                                    y={ly + 9}
-                                    textAnchor="middle"
-                                    fill="#6ee7b7"
-                                    fontSize="10"
-                                    fontFamily="JetBrains Mono, monospace"
-                                    fontWeight="700"
-                                >
+                                <text x={lx} y={ly + 9} textAnchor="middle" fill="#6ee7b7" fontSize="10" fontFamily="JetBrains Mono, monospace" fontWeight="700">
                                     {item.value}
                                 </text>
                             </g>
@@ -1457,7 +1425,6 @@
                 });
             };
 
-            // รองรับเอียงมือถือผ่าน Gyroscope (ฟรี 0 บาทบนมือถือ)
             useEffect(() => {
                 const onOrient = (e) => {
                     if (typeof e.beta !== 'number' || typeof e.gamma !== 'number') return;
@@ -1482,19 +1449,21 @@
                             '--mx': `${tilt.mx}%`,
                             '--my': `${tilt.my}%`
                         }}
-                        className="holo-card-surface relative rounded-[2rem] overflow-hidden border border-aurora-400/40 bg-gradient-to-br from-[#0b1730] via-[#071124] to-[#041d22] p-5 sm:p-6 shadow-[0_30px_70px_-15px_rgba(16,185,129,0.28)]"
+                        className="holo-card-surface keep-dark relative rounded-[2rem] overflow-hidden border border-aurora-400/40 bg-gradient-to-br from-[#0b1730] via-[#071124] to-[#041d22] p-5 sm:p-6 shadow-[0_30px_70px_-15px_rgba(16,185,129,0.28)]"
                     >
-                        {/* Dynamic Iridescent Holographic Foil */}
                         <div className="absolute inset-0 holo-foil-overlay" />
-                        <div className="absolute inset-0 opacity-20 pointer-events-none" style={{
-                            backgroundImage: 'repeating-linear-gradient(125deg, rgba(255,255,255,0.08) 0px, rgba(255,255,255,0.08) 1px, transparent 1px, transparent 10px)'
-                        }} />
+                        <div
+                            className="absolute inset-0 opacity-20 pointer-events-none"
+                            style={{
+                                backgroundImage: 'repeating-linear-gradient(125deg, rgba(255,255,255,0.08) 0px, rgba(255,255,255,0.08) 1px, transparent 1px, transparent 10px)'
+                            }}
+                        />
 
                         <div className="relative z-10 space-y-4">
                             <div className="flex items-start justify-between gap-2">
                                 <div>
                                     <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-aurora-500/20 border border-aurora-400/40 text-aurora-200 font-mono text-[10px] font-bold">
-                                        <Icon name="Sparkles" size={11} /> 2030 HOLOGRAPHIC COMPETENCY CARD
+                                        <Icon name="Sparkles" size={11} /> AI SKILL LAB COMPETENCY CARD
                                     </span>
                                     <h3 className="font-display font-extrabold text-lg sm:text-xl text-white mt-1.5">
                                         {evalResult.rank}
@@ -1515,7 +1484,7 @@
 
                             <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-white/10">
                                 <div className="text-[10px] font-mono text-slate-400">
-                                    <span>rjcloud.organ • HOLODECK 2030</span>
+                                    <span>rjcloud.organ • AI SKILL LAB</span>
                                     <span className="block text-prism-300">
                                         {isEn ? 'Tilt card with mouse/finger' : 'เลื่อนเมาส์หรือเอียงมือถือเพื่อชมแสงโฮโลแกรม'}
                                     </span>
@@ -1571,7 +1540,6 @@
                         </div>
                     </div>
 
-                    {/* Interactive Dual-Curve SVG Graph */}
                     <div className="w-full rounded-2xl bg-void-950/70 border border-white/10 p-2 overflow-hidden">
                         <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto block">
                             {[25, 50, 75].map(v => (
@@ -1604,7 +1572,6 @@
                         </svg>
                     </div>
 
-                    {/* Selected Turning Point Inspector + Time-Rewind Button */}
                     <div className="p-4 rounded-2xl bg-white/[0.04] border border-white/10 space-y-3">
                         <div className="flex flex-wrap items-center justify-between gap-2">
                             <span className="font-mono text-xs font-bold text-prism-300">
@@ -1646,7 +1613,7 @@
                                 className="touch-target flex-1 py-2.5 px-4 rounded-xl bg-prism-500/20 hover:bg-prism-500/30 border border-prism-400/40 text-prism-200 font-display font-bold text-xs flex items-center justify-center gap-1.5 transition-colors"
                             >
                                 <Icon name="Volume2" size={15} />
-                                {isEn ? 'Hear Master Coordinator Example' : 'ฟังตัวอย่างเสียง Master Coordinator'}
+                                {isEn ? 'Hear Master Coordinator Phrase' : 'ฟังแนวทางเสียง Master Coordinator'}
                             </button>
                         </div>
                     </div>
@@ -1654,9 +1621,6 @@
             );
         }
 
-        /**
-         * ส่งออกการ์ดสมรรถนะ 2030 เป็นไฟล์ภาพ PNG ความละเอียดสูง (Canvas 2D — 0 บาท)
-         */
         function downloadHolographicCardPng(evalResult, user, isEn) {
             const canvas = document.createElement('canvas');
             const W = 1200, H = 760;
@@ -1671,7 +1635,6 @@
             ctx.fillStyle = bg;
             ctx.fillRect(0, 0, W, H);
 
-            // Aurora glow
             const g1 = ctx.createRadialGradient(260, 180, 20, 260, 180, 420);
             g1.addColorStop(0, 'rgba(16, 185, 129, 0.28)');
             g1.addColorStop(1, 'transparent');
@@ -1684,15 +1647,13 @@
             ctx.fillStyle = g2;
             ctx.fillRect(0, 0, W, H);
 
-            // Outer glowing border
             ctx.strokeStyle = 'rgba(52, 211, 153, 0.55)';
             ctx.lineWidth = 4;
             ctx.strokeRect(28, 28, W - 56, H - 56);
 
-            // Left Text Column
             ctx.fillStyle = '#6ee7b7';
             ctx.font = '700 20px "JetBrains Mono", monospace';
-            ctx.fillText('RJCLOUD.ORGAN • SPATIAL HOLODECK 2030', 76, 98);
+            ctx.fillText('RJCLOUD.ORGAN • AI SKILL LAB', 76, 98);
 
             ctx.fillStyle = '#ffffff';
             ctx.font = '800 46px "Prompt", sans-serif';
@@ -1706,7 +1667,6 @@
             ctx.font = '500 22px "Sarabun", sans-serif';
             ctx.fillText(user?.hospital || 'rjcloud.organ Network', 76, 262);
 
-            // Big Score Box
             ctx.fillStyle = 'rgba(255,255,255,0.06)';
             ctx.fillRect(76, 310, 430, 150);
             ctx.strokeStyle = 'rgba(255,255,255,0.16)';
@@ -1724,7 +1684,6 @@
             ctx.font = '700 28px "JetBrains Mono", monospace';
             ctx.fillText('/100', 228, 434);
 
-            // 5 Dimensions List
             ctx.font = '600 21px "Sarabun", sans-serif';
             evalResult.radar.forEach((r, idx) => {
                 const y = 515 + idx * 38;
@@ -1736,7 +1695,6 @@
                 ctx.font = '600 21px "Sarabun", sans-serif';
             });
 
-            // Right Side: 5-Axis Radar Chart
             const rcx = 860, rcy = 385, maxR = 195;
             const pt = (idx, ratio) => {
                 const a = (Math.PI * 2 * idx) / evalResult.radar.length - Math.PI / 2;
@@ -1785,7 +1743,7 @@
 
             const link = document.createElement('a');
             link.href = canvas.toDataURL('image/png', 1.0);
-            link.download = `Holodeck_2030_SkillCard_${evalResult.totalScore}.png`;
+            link.download = `AI_SkillLab_Card_${evalResult.totalScore}.png`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -1800,18 +1758,18 @@
                 this.state = { hasError: false, err: null };
             }
             static getDerivedStateFromError(err) { return { hasError: true, err }; }
-            componentDidCatch(err, info) { console.error('Holodeck Error:', err, info); }
+            componentDidCatch(err, info) { console.error('AI Skill Lab Error:', err, info); }
             render() {
                 if (this.state.hasError) {
                     return (
                         <div className="min-h-dvh flex items-center justify-center p-6 bg-void-950 text-slate-100">
                             <div className="vision-glass max-w-md w-full rounded-3xl p-6 text-center space-y-4 border-rose-500/40">
-                                <h2 className="font-display font-bold text-lg text-rose-300">Holodeck 2030 พบข้อผิดพลาดชั่วคราว</h2>
+                                <h2 className="font-display font-bold text-lg text-rose-300">AI Skill Lab พบข้อผิดพลาดชั่วคราว</h2>
                                 <p className="text-xs font-mono text-rose-200 bg-void-900 p-3 rounded-xl overflow-auto">
                                     {String(this.state.err?.message || this.state.err)}
                                 </p>
                                 <button onClick={() => window.location.reload()} className="touch-target w-full py-3 rounded-2xl bg-aurora-500 text-void-950 font-display font-bold text-sm">
-                                    รีสตาร์ท Holodeck
+                                    โหลดหน้าใหม่
                                 </button>
                             </div>
                         </div>
@@ -1890,15 +1848,15 @@
         }
 
         // ============================================================================
-        // 8. MAIN APPLICATION: AI SKILL LAB 2030 — SPATIAL EMPATHY HOLODECK
+        // 8. MAIN APPLICATION: AI SKILL LAB (PRODUCTION 2027)
         // ============================================================================
-        function AiSkillLab2030App() {
+        function AiSkillLabApp() {
             const isAdminPreview = useMemo(() => {
                 try { return new URLSearchParams(window.location.search).get('admin_preview') === '1'; }
                 catch (_) { return false; }
             }, []);
 
-            // Adaptive Theme synced with index.html / executive.html / verify.html / admin.html
+            // Adaptive Theme synced across all pages
             const [theme, setTheme] = useState(() => {
                 try {
                     const saved = localStorage.getItem(THEME_KEY);
@@ -1918,12 +1876,13 @@
                 setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
             }, []);
 
+            // โหมดใช้งานจริง: ต้องล็อกอินผู้เรียนจากหน้าหลักก่อน (ยกเว้นโหมด Admin View)
             const [user, setUser] = useState(() => {
                 if (isAdminPreview) {
                     return {
                         id: 'admin_preview_2027',
                         license: 'ADMIN2027',
-                        name: 'พว.ทดสอบ ระบบผู้ดูแล (Admin Preview)',
+                        name: 'ผู้ดูแลระบบ (Admin View)',
                         position: 'พยาบาลวิชาชีพชำนาญการ',
                         hospital: 'รพ.ราชวิถี',
                         pretest: '30/40',
@@ -1932,27 +1891,20 @@
                 }
                 try {
                     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
-                    if (saved?.user) return saved.user;
+                    if (saved?.user && saved.user.id) return saved.user;
                 } catch (_) {}
-                return {
-                    id: 'guest_learner',
-                    license: 'GUEST-2030',
-                    name: 'ผู้เรียน rjcloud.organ',
-                    position: 'พยาบาลผู้ประสานงาน / บุคลากรทางการแพทย์',
-                    hospital: 'เครือข่าย rjcloud.organ'
-                };
+                return null;
             });
 
             const [appsScriptUrl, setAppsScriptUrl] = useState(CONFIG.appsScriptUrl || '');
             const [isCloudReady, setIsCloudReady] = useState(false);
             const [previewBarOpen, setPreviewBarOpen] = useState(false);
 
-            // Holodeck Navigation & Track States
+            // Navigation & Track States
             const [selectedMode, setSelectedMode] = useState(null);
             const [trainingTrack, setTrainingTrack] = useState('full_sim'); // micro_drill | full_sim
             const [phase, setPhase] = useState('menu'); // menu | video_intro | negotiating | evaluating | debrief
             const [drillIndex, setDrillIndex] = useState(0);
-            const [menuPreviewEmotion, setMenuPreviewEmotion] = useState('CALM');
 
             // Spatial HUD Overlays
             const [showTranscriptDrawer, setShowTranscriptDrawer] = useState(false);
@@ -1978,7 +1930,7 @@
             const [micLevel, setMicLevel] = useState(0);
             const [vocalFeedback, setVocalFeedback] = useState('');
             const [vocalSamples, setVocalSamples] = useState([]);
-            const [silenceProgress, setSilenceProgress] = useState(0); // 0..100 for 2.5s therapeutic silence
+            const [silenceProgress, setSilenceProgress] = useState(0);
             const [silenceEarnedThisTurn, setSilenceEarnedThisTurn] = useState(false);
             const [silenceBonusCount, setSilenceBonusCount] = useState(0);
 
@@ -2005,7 +1957,6 @@
                 setTimeout(() => setToast(p => ({ ...p, visible: false })), 3500);
             }, []);
 
-            // Mark mounted (disable global fallback guard)
             useEffect(() => {
                 const el = document.getElementById('lab-root');
                 if (el) el.dataset.mounted = 'true';
@@ -2013,15 +1964,13 @@
                 return () => { soundscapeRef.current?.stop(); };
             }, []);
 
-            // Sync emotion to Ambient Soundscape
             useEffect(() => {
                 if (ambientOn && soundscapeRef.current) {
-                    const targetEmo = phase === 'negotiating' ? relativeEmotion : menuPreviewEmotion;
+                    const targetEmo = phase === 'negotiating' ? relativeEmotion : 'CALM';
                     soundscapeRef.current.updateEmotion(targetEmo);
                 }
-            }, [ambientOn, phase, relativeEmotion, menuPreviewEmotion]);
+            }, [ambientOn, phase, relativeEmotion]);
 
-            // Toggle procedural room soundscape (Web Audio API — 0 บาท)
             const toggleAmbientSound = useCallback(() => {
                 if (!soundscapeRef.current) return;
                 if (ambientOn) {
@@ -2029,12 +1978,12 @@
                     setAmbientOn(false);
                     showToast('ปิดเสียงบรรยากาศห้องรับรองแล้วค่ะ', 'info');
                 } else {
-                    const targetEmo = phase === 'negotiating' ? relativeEmotion : menuPreviewEmotion;
+                    const targetEmo = phase === 'negotiating' ? relativeEmotion : 'CALM';
                     soundscapeRef.current.start(targetEmo);
                     setAmbientOn(true);
-                    showToast('เปิดเสียงบรรยากาศห้องรับรอง 3 มิติ (Ambient Soundscape) แล้วค่ะ', 'info');
+                    showToast('เปิดเสียงบรรยากาศห้องรับรอง 3 มิติแล้วค่ะ', 'info');
                 }
-            }, [ambientOn, phase, relativeEmotion, menuPreviewEmotion, showToast]);
+            }, [ambientOn, phase, relativeEmotion, showToast]);
 
             // Connect Firebase (ป้องกันทับสิทธิ์ Admin ตอนเปิด Preview 2 ชั้น)
             useEffect(() => {
@@ -2046,7 +1995,6 @@
                 const unsubAuth = onAuthStateChanged(fbAuth, async (fbUser) => {
                     if (!active) return;
                     if (!fbUser) {
-                        // ห้ามสร้าง Anonymous Session ในโหมด Admin Preview เพื่อไม่ให้เขียนทับสิทธิ์แอดมิน
                         if (isAdminPreview) return;
                         if (!anonAttempted) {
                             anonAttempted = true;
@@ -2064,7 +2012,7 @@
                     setIsCloudReady(true);
 
                     const cur = userRef.current;
-                    if (!isAdminPreview && cur?.id && !String(cur.id).startsWith('guest_') && !String(cur.id).startsWith('demo_') && !String(cur.id).startsWith('admin_preview_')) {
+                    if (!isAdminPreview && cur?.id && !String(cur.id).startsWith('admin_preview_')) {
                         try {
                             const snap = await getDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', String(cur.id)));
                             if (snap.exists()) {
@@ -2096,7 +2044,6 @@
                 };
             }, [isAdminPreview]);
 
-            // Stop AI voice cleanly
             const stopAiVoice = useCallback(() => {
                 if (audioRef.current) {
                     try { audioRef.current.pause(); } catch (_) {}
@@ -2112,7 +2059,6 @@
                 setIsAiSpeaking(false);
             }, []);
 
-            // Stop Mic + MediaStreamTrack cleanly
             const stopMicCompletely = useCallback(() => {
                 if (vadRafRef.current) { cancelAnimationFrame(vadRafRef.current); vadRafRef.current = null; }
                 if (speechRecRef.current) {
@@ -2141,7 +2087,7 @@
                 if (showTranscriptDrawer) drawerEndRef.current?.scrollIntoView({ behavior: 'smooth' });
             }, [messages, showTranscriptDrawer]);
 
-            // Therapeutic Silence 2.5-Second Healing Pause Tracker
+            // Therapeutic Silence 2.5-Second Tracker
             useEffect(() => {
                 if (silenceTimerRef.current) {
                     clearInterval(silenceTimerRef.current);
@@ -2187,7 +2133,6 @@
                 };
             }, [phase, messages, isAiSpeaking, isAiTyping, isListening, chatInput, silenceEarnedThisTurn, selectedMode, showToast]);
 
-            // Call Google Apps Script Proxy
             const callAppsScript = useCallback(async (payload) => {
                 if (!appsScriptUrl) return { status: 'offline' };
                 try {
@@ -2198,7 +2143,6 @@
                 }
             }, [appsScriptUrl]);
 
-            // Synthesize Voice (Gemini TTS -> Browser Speech Fallback)
             const speakText = useCallback(async (text, mode, onDone = null) => {
                 stopAiVoice();
                 if (!voiceEnabled || !text) {
@@ -2250,7 +2194,6 @@
                 if (onDone) onDone();
             }, [voiceEnabled, appsScriptUrl, callAppsScript, stopAiVoice]);
 
-            // Microphone + Real-Time Vocal Bio-Coach (Web Audio API)
             const toggleMicrophone = async () => {
                 if (isListening) {
                     stopMicCompletely();
@@ -2329,7 +2272,6 @@
                 }
             };
 
-            // Enter Spatial Holodeck Consultation Room
             const enterHolodeck = useCallback((mode, track) => {
                 stopAiVoice();
                 stopMicCompletely();
@@ -2369,9 +2311,9 @@
                 setRelativeEmotion(mode.openingEmotion || 'CONFUSED');
                 setAiCoachTip(isEn
                     ? 'Tip: Try pausing 2.5 seconds after the relative finishes speaking for Therapeutic Silence, then introduce your name and role gently.'
-                    : 'เคล็ดลับ 2030: ลองเว้นจังหวะเงียบ 2.5 วินาทีหลังญาติพูดจบเพื่อรับโบนัส Therapeutic Silence แล้วค่อยแนะนำชื่อ-บทบาทอย่างนุ่มนวลค่ะ');
+                    : 'เคล็ดลับ: ลองเว้นจังหวะเงียบ 2.5 วินาทีหลังญาติพูดจบเพื่อรับโบนัส Therapeutic Silence แล้วค่อยแนะนำชื่อ-บทบาทอย่างนุ่มนวลค่ะ');
                 setMessages([
-                    { id: `sys-${Date.now()}`, sender: 'system', title: isEn ? 'Consultation Room Holodeck' : 'ห้องรับรองจำลอง 3 มิติ', text: mode.briefingText },
+                    { id: `sys-${Date.now()}`, sender: 'system', title: isEn ? 'Consultation Room Simulation' : 'ห้องรับรองจำลอง 3 มิติ', text: mode.briefingText },
                     { id: `ai-open-${Date.now() + 1}`, sender: 'ai', emotion: mode.openingEmotion || 'CONFUSED', speakerName: mode.relativeName, text: mode.openingLine }
                 ]);
                 setSmartSuggestions(isEn ? [
@@ -2396,7 +2338,6 @@
                 }
             };
 
-            // Send Learner Message & Record Affective Timeline Point
             const handleSendMessage = async (e, presetReply = null) => {
                 if (e) e.preventDefault();
                 if (!selectedMode || phase !== 'negotiating' || isAiTyping) return;
@@ -2424,7 +2365,6 @@
                 const nextMessages = [...messages, userMsgObj];
                 setMessages(nextMessages);
 
-                // --- Track A: 3-Stage Calibration Micro-Drill ---
                 if (trainingTrack === 'micro_drill') {
                     const drills = GUIDED_DRILLS[selectedMode.language === 'en' ? 'en' : 'th'];
                     const nextIdx = drillIndex + 1;
@@ -2491,8 +2431,8 @@
                             emotionBeforeTurn: relativeEmotion
                         }]);
                         setAiCoachTip(selectedMode.language === 'en'
-                            ? 'Calibration complete! Tap "Evaluate" at top-right to claim your 2030 Holographic Skill Card.'
-                            : 'ฝึกครบทั้ง 3 ด่านแล้วค่ะ! กดปุ่ม "ประเมินผล" มุมขวาบนเพื่อรับการ์ดโฮโลแกรม 3 มิติและปลดล็อก Post-test ได้เลยค่ะ');
+                            ? 'Calibration complete! Tap "Evaluate" at top-right to claim your Competency Card.'
+                            : 'ฝึกครบทั้ง 3 ด่านแล้วค่ะ กดปุ่ม "ประเมินผล" มุมขวาบนเพื่อรับการ์ดสมรรถนะและปลดล็อก Post-test ได้เลยค่ะ');
                         setMessages([
                             ...nextMessages,
                             { id: `ai-final-${Date.now()}`, sender: 'ai', emotion: 'CALM', speakerName: selectedMode.relativeName, text: closingLine }
@@ -2502,7 +2442,6 @@
                     return;
                 }
 
-                // --- Track B: Full Spatial Holodeck Simulation ---
                 setIsAiTyping(true);
                 const turnCount = nextMessages.filter(m => m.sender === 'user').length;
                 const historyText = nextMessages
@@ -2559,7 +2498,6 @@
                 speakText(parsed.text, selectedMode);
             };
 
-            // Pillar 4: Time-Rewind back to a specific turning point!
             const handleRewindToTurn = (turnIdx) => {
                 const target = timeline[turnIdx];
                 if (!target || !selectedMode) return;
@@ -2576,13 +2514,12 @@
                 setPhase('negotiating');
                 setAiCoachTip(selectedMode.language === 'en'
                     ? `⏪ Time-Rewind active! Try delivering Turn ${turnIdx + 1} again with empathy and clarity.`
-                    : `⏪ ย้อนเวลากลับมาที่จังหวะที่ ${turnIdx + 1} แล้วค่ะ! ลองพูดหรือปรับประโยคใหม่เพื่อดูปฏิกิริยาอารมณ์ของญาติได้เลย`);
+                    : `⏪ ย้อนเวลากลับมาที่จังหวะที่ ${turnIdx + 1} แล้วค่ะ ลองพูดหรือปรับประโยคใหม่เพื่อดูปฏิกิริยาอารมณ์ของญาติได้เลย`);
                 showToast(`ย้อนเวลากลับไปแก้ไข Turn ${turnIdx + 1} เรียบร้อยค่ะ`, 'info');
             };
 
-            // Evaluate & Unlock Step 4 (Post-test)
             const handleEvaluateSession = async () => {
-                if (!selectedMode) return;
+                if (!selectedMode || !user) return;
                 if (messages.filter(m => m.sender === 'user').length === 0) {
                     showToast('กรุณาสื่อสารให้ข้อมูลญาติอย่างน้อย 1 จังหวะก่อนประเมินผลค่ะ', 'error');
                     return;
@@ -2605,7 +2542,7 @@
                         .join('\n');
                     const evalPrompt = selectedMode.language === 'en'
                         ? `Give 3 concise, uplifting coaching bullet points reviewing (1) Clinical accuracy, (2) Emotional resonance, (3) One Master Coordinator phrase.\n\n${transcript}`
-                        : `สรุปข้อเสนอแนะเชิงให้กำลังใจสั้นกระชับ 3 ข้อสำหรับบทสนทนาในห้องรับรองนี้: (1) ความถูกต้องข้อมูลทางการแพทย์ (2) การรับรู้อารมณ์ร่วม (3) ตัวอย่างประโยคระดับ Master Coordinator\n\n${transcript}`;
+                        : `สรุปข้อเสนอแนะเชิงให้กำลังใจสั้นกระชับ 3 ข้อสำหรับบทสนทนาในห้องรับรองนี้: (1) ความถูกต้องข้อมูลทางการแพทย์ (2) การรับรู้อารมณ์ร่วม (3) แนวทางประโยคระดับ Master Coordinator\n\n${transcript}`;
                     const res = await callAppsScript({ action: 'callGemini', prompt: evalPrompt });
                     if (res?.status === 'success' && res.text) aiCoachingNote = res.text;
                 } else {
@@ -2625,7 +2562,7 @@
                 setPhase('debrief');
 
                 if (isAdminPreview) {
-                    showToast('แสดงผลในโหมด Admin Preview (ไม่บันทึกทับข้อมูลผู้เรียนจริง)', 'info');
+                    showToast('แสดงผลในโหมด Admin View (ไม่บันทึกทับข้อมูลผู้เรียนจริง)', 'info');
                     return;
                 }
 
@@ -2659,7 +2596,7 @@
                     const rawSaved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
                     localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...rawSaved, user: nextUser }));
 
-                    if (isCloudReady && fbDb && nextUser.id && !String(nextUser.id).startsWith('guest_') && !String(nextUser.id).startsWith('demo_')) {
+                    if (isCloudReady && fbDb && nextUser.id && !String(nextUser.id).startsWith('admin_preview_')) {
                         await setDoc(
                             doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', String(nextUser.id)),
                             {
@@ -2682,9 +2619,9 @@
                             { merge: true }
                         );
                     }
-                    showToast('บันทึกการ์ดสมรรถนะ 2030 และปลดล็อก Post-test เรียบร้อยแล้วค่ะ 🎉');
+                    showToast('บันทึกผลประเมิน AI Skill Lab และปลดล็อก Post-test เรียบร้อยแล้วค่ะ 🎉');
                 } catch (err) {
-                    console.warn('Save 2030 evaluation warning:', err);
+                    console.warn('Save evaluation warning:', err);
                 }
             };
 
@@ -2692,7 +2629,7 @@
                 if (phase === 'negotiating' && messages.some(m => m.sender === 'user')) {
                     setConfirmDialog({
                         open: true,
-                        title: 'ออกจาก Spatial Holodeck?',
+                        title: 'ออกจากห้องฝึกสื่อสาร AI Skill Lab?',
                         message: 'หากกลับหน้าเมนูตอนนี้ บทสนทนาที่ยังไม่ได้กดประเมินผลจะยังไม่ถูกบันทึกค่ะ',
                         confirmText: 'กลับหน้าเมนู',
                         onConfirm: () => {
@@ -2710,17 +2647,39 @@
                 }
             };
 
-            // Prerequisite Lock (Step 2 >= 80% -> Step 3 AI Skill Lab)
-            const isRealLearner = Boolean(!isAdminPreview && user?.id && !String(user.id).startsWith('guest_') && !String(user.id).startsWith('demo_') && !String(user.id).startsWith('admin_preview_'));
+            // ตรวจสอบสิทธิ์ผู้เรียน (ใช้งานจริงเต็มรูปแบบ: ต้องล็อกอิน + ผ่าน Pre-test + เรียน ≥ 80%)
+            if (!user && !isAdminPreview) {
+                return (
+                    <div className="min-h-dvh relative flex items-center justify-center p-4 bg-void-950 text-slate-100 spatial-grid">
+                        <div className="vision-glass relative z-10 w-full max-w-md rounded-[2rem] p-6 sm:p-8 text-center space-y-5 border-prism-400/35">
+                            <div className="w-16 h-16 rounded-2xl bg-prism-500/15 border border-prism-400/35 text-prism-300 flex items-center justify-center mx-auto">
+                                <Icon name="UserCheck" size={32} />
+                            </div>
+                            <div className="space-y-1.5">
+                                <span className="inline-block px-2.5 py-0.5 rounded-full bg-prism-500/15 text-prism-300 font-mono text-[10px] font-bold">
+                                    AUTHENTICATION REQUIRED
+                                </span>
+                                <h1 className="font-display text-xl sm:text-2xl font-extrabold text-white">กรุณาเข้าสู่ระบบผู้เรียนก่อน</h1>
+                                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                                    ห้องฝึกสื่อสาร <b className="text-white">AI Skill Lab</b> บันทึกคะแนนสมรรถนะและปลดล็อก Post-test ผูกกับบัญชีผู้เรียนของคุณโดยตรง กรุณาเข้าสู่ระบบจากหน้าหลักก่อนค่ะ
+                                </p>
+                            </div>
+                            <a href="./index.html" className="touch-target w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-sm flex items-center justify-center gap-2">
+                                <Icon name="ArrowLeft" size={17} /> ไปหน้าเข้าสู่ระบบผู้เรียน
+                            </a>
+                        </div>
+                    </div>
+                );
+            }
+
             const hasDonePretest = Boolean(user?.pretest && user.pretest !== '-');
             const isStudyHoursMet = (user?.progress || 0) >= MIN_STUDY_PERCENT;
-            const isLabLocked = isRealLearner && (!hasDonePretest || !isStudyHoursMet);
+            const isLabLocked = !isAdminPreview && (!hasDonePretest || !isStudyHoursMet);
 
             const isEn = selectedMode?.language === 'en';
-            const activeEmotionKey = phase === 'negotiating' ? relativeEmotion : menuPreviewEmotion;
+            const activeEmotionKey = phase === 'negotiating' ? relativeEmotion : 'CALM';
             const activeEmotionMeta = EMOTION_PHYSICS[activeEmotionKey] || EMOTION_PHYSICS.CONFUSED;
 
-            // Latest AI & User messages for Cinema Subtitles
             const latestAiMessage = useMemo(() => {
                 for (let i = messages.length - 1; i >= 0; i--) {
                     if (messages[i].sender === 'ai') return messages[i];
@@ -2742,7 +2701,7 @@
 
             const activeCoachGuidance = aiCoachTip
                 || principleStatus.find(p => !p.covered)?.tip
-                || (isEn ? 'All 4 core principles practiced! Tap "Evaluate" to claim your 2030 Card.' : 'ครบทั้ง 4 หลักการแล้วค่ะ! กด "ประเมินผล" เพื่อรับการ์ดโฮโลแกรม 3 มิติได้เลย');
+                || (isEn ? 'All 4 core principles practiced! Tap "Evaluate" to claim your Competency Card.' : 'ครบทั้ง 4 หลักการแล้วค่ะ กด "ประเมินผล" เพื่อรับการ์ดสมรรถนะได้เลย');
 
             if (isLabLocked) {
                 return (
@@ -2755,9 +2714,9 @@
                                 <span className="inline-block px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300 font-mono text-[10px] font-bold">
                                     STEP 2 → 3 • PREREQUISITE LOCKED
                                 </span>
-                                <h1 className="font-display text-xl sm:text-2xl font-extrabold text-white">ยังไม่ปลดล็อก AI Skill Lab 2030</h1>
+                                <h1 className="font-display text-xl sm:text-2xl font-extrabold text-white">ยังไม่ปลดล็อก AI Skill Lab</h1>
                                 <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                                    ผู้เรียนต้องทำ <b className="text-white">Pre-test</b> และสะสมชั่วโมงเรียนไม่น้อยกว่า <b className="text-aurora-300">{MIN_STUDY_PERCENT}%</b> ก่อนเข้าสู่ Spatial Holodeck ค่ะ
+                                    ผู้เรียนต้องทำ <b className="text-white">Pre-test</b> และสะสมชั่วโมงเรียนไม่น้อยกว่า <b className="text-aurora-300">{MIN_STUDY_PERCENT}%</b> ก่อนเข้าฝึกสื่อสารในห้องรับรอง 3 มิติค่ะ
                                 </p>
                             </div>
                             <div className="space-y-2.5 text-left bg-white/[0.04] border border-white/10 rounded-2xl p-4 text-xs">
@@ -2779,11 +2738,11 @@
             }
 
             // ============================================================================
-            // 9. RENDER SPATIAL HOLODECK 2030 VIEWS
+            // 9. RENDER AI SKILL LAB VIEWS
             // ============================================================================
             return (
                 <div className="min-h-dvh relative flex flex-col bg-void-950 text-slate-100 spatial-grid overflow-x-hidden">
-                    {/* 🌟 FULLSCREEN 3D LIVING EMOTIONAL CORE LAYER (THREE.JS WEBGL) 🌟 */}
+                    {/* FULLSCREEN 3D LIVING EMOTIONAL CORE LAYER */}
                     <div className={`fixed inset-0 z-0 transition-opacity duration-700 ${phase === 'video_intro' || phase === 'debrief' ? 'opacity-35 pointer-events-none' : 'opacity-100'}`}>
                         <SpatialEmotionalCoreCanvas
                             emotionKey={activeEmotionKey}
@@ -2792,11 +2751,10 @@
                             micLevel={micLevel}
                             interactive={phase === 'negotiating' || phase === 'menu'}
                         />
-                        {/* Soft vignette so typography always has razor-sharp contrast */}
                         <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-void-950/75 via-transparent to-void-950/90" />
                     </div>
 
-                    {/* ==================== TOP SPATIAL NAVIGATION BAR ==================== */}
+                    {/* TOP SPATIAL NAVIGATION BAR */}
                     <header className="sticky top-0 z-30 pt-safe px-3 sm:px-6 py-2.5 pointer-events-none">
                         <div className="max-w-7xl mx-auto vision-pill rounded-2xl px-3 sm:px-4 min-h-[3.25rem] py-2 flex items-center justify-between gap-2 pointer-events-auto">
                             <div className="flex items-center gap-2.5 min-w-0">
@@ -2805,17 +2763,17 @@
                                         <Icon name="ArrowLeft" size={17} />
                                     </a>
                                 ) : (
-                                    <button type="button" onClick={handleExitToMenu} className="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/15 text-slate-200 flex items-center justify-center shrink-0" title="กลับเมนู Holodeck">
+                                    <button type="button" onClick={handleExitToMenu} className="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/15 text-slate-200 flex items-center justify-center shrink-0" title="กลับเมนู AI Skill Lab">
                                         <Icon name="ArrowLeft" size={17} />
                                     </button>
                                 )}
                                 <div className="min-w-0">
                                     <div className="flex items-center gap-1.5">
                                         <span className="font-display font-extrabold text-sm sm:text-base text-white truncate">
-                                            HOLODECK <span className="text-transparent bg-clip-text bg-gradient-to-r from-aurora-300 to-prism-300">2030</span>
+                                            AI SKILL <span className="text-transparent bg-clip-text bg-gradient-to-r from-aurora-300 to-prism-300">LAB</span>
                                         </span>
                                         <span className="hidden md:inline-block px-2 py-0.5 rounded-full bg-aurora-500/15 border border-aurora-400/30 font-mono text-[10px] font-bold text-aurora-300">
-                                            ZERO-BUDGET SPATIAL AI
+                                            3D EMPATHY SIMULATION
                                         </span>
                                     </div>
                                     <p className="text-[10px] font-mono text-slate-400 truncate">
@@ -2826,7 +2784,6 @@
 
                             <div className="flex items-center gap-1.5 shrink-0">
                                 <ThemeToggleButton theme={theme} onToggle={toggleTheme} />
-                                {/* Ambient Soundscape Toggle */}
                                 <button
                                     type="button"
                                     onClick={toggleAmbientSound}
@@ -2888,42 +2845,22 @@
                         </div>
                     </header>
 
-                    {/* ==================== VIEW 1: 2030 SPATIAL LAUNCHPAD MENU ==================== */}
+                    {/* VIEW 1: LAUNCHPAD MENU */}
                     {phase === 'menu' && (
                         <main className="relative z-10 flex-1 w-full max-w-6xl mx-auto px-3.5 sm:px-6 py-4 sm:py-6 pb-safe flex flex-col justify-between gap-5 pointer-events-none">
-                            {/* Top Hero Floating over Live 3D Particle Core */}
                             <section className="text-center max-w-3xl mx-auto pt-2 sm:pt-4 space-y-3 pointer-events-auto">
                                 <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full vision-pill text-aurora-300 font-mono text-[11px] font-bold">
                                     <span className="w-2 h-2 rounded-full bg-aurora-400 animate-ping" />
-                                    NEXT-GEN 2030 SPATIAL EMPATHY HOLODECK • DRAG 3D CORE
+                                    STEP 3 • SPATIAL EMPATHY CONSULTATION ROOM
                                 </span>
                                 <h1 className="font-display text-2xl sm:text-4xl md:text-5xl font-extrabold text-white leading-tight drop-shadow-xl">
-                                    ห้องรับรองจำลองอารมณ์ 3 มิติ <span className="text-transparent bg-clip-text bg-gradient-to-r from-aurora-300 via-prism-300 to-indigo-300">แห่งปี 2030</span>
+                                    ห้องรับรองจำลองการสื่อสาร <span className="text-transparent bg-clip-text bg-gradient-to-r from-aurora-300 via-prism-300 to-indigo-300">3 มิติ (AI Skill Lab)</span>
                                 </h1>
                                 <p className="text-xs sm:text-sm text-slate-300 max-w-2xl mx-auto leading-relaxed">
-                                    ลากนิ้วหรือเมาส์เพื่อหมุนแกนพลังงานอารมณ์ 3 มิติ • สัมผัส <b className="text-white">Cinema Subtitles</b>, <b className="text-aurora-300">ตัวจับน้ำเสียง & จังหวะเงียบ 2.5 วินาที</b>, <b className="text-amber-300">Time-Rewind ย้อนเวลาแก้ประโยค</b> และ <b className="text-prism-300">การ์ดโฮโลแกรม 3 มิติ 5 มิติทักษะ</b>
+                                    ฝึกให้ข้อมูลญาติผู้เสียชีวิตในห้องรับรองจำลอง พร้อม <b className="text-white">AI Coach ชี้นำหลักการ</b>, <b className="text-aurora-300">ระบบวัดน้ำเสียงและจังหวะเงียบ 2.5 วินาที</b>, <b className="text-amber-300">ย้อนเวลาแก้ประโยค (Time-Rewind)</b> และ <b className="text-prism-300">ประเมินสมรรถนะ 5 มิติ</b>
                                 </p>
-
-                                {/* Interactive Emotion Preview Switcher (Let presenters test the 3D physics immediately!) */}
-                                <div className="flex flex-wrap items-center justify-center gap-1.5 pt-1">
-                                    {Object.entries(EMOTION_PHYSICS).map(([key, meta]) => (
-                                        <button
-                                            key={key}
-                                            type="button"
-                                            onClick={() => setMenuPreviewEmotion(key)}
-                                            className={`px-3 py-1.5 rounded-full text-[11px] font-bold border transition-all ${
-                                                menuPreviewEmotion === key
-                                                    ? `${meta.badge} scale-105 shadow-lg`
-                                                    : 'bg-void-900/60 border-white/10 text-slate-400 hover:text-white'
-                                            }`}
-                                        >
-                                            {meta.labelTH}
-                                        </button>
-                                    ))}
-                                </div>
                             </section>
 
-                            {/* Bottom Glass Launch Dock: Video + Dual Language Entry */}
                             <section className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch pointer-events-auto mt-auto pt-12 sm:pt-20">
                                 {/* Vimeo Scenario Video Card */}
                                 <div className="lg:col-span-5 vision-glass rounded-[1.75rem] p-4 flex flex-col justify-between gap-3">
@@ -2956,7 +2893,7 @@
                                     </div>
                                 </div>
 
-                                {/* Launch Modes (Thai & English Holodeck) */}
+                                {/* Launch Modes */}
                                 <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     {LAB_MODES.map((m) => (
                                         <div key={m.id} className="vision-glass rounded-[1.75rem] p-5 flex flex-col justify-between gap-4 border-t-2" style={{ borderTopColor: m.language === 'en' ? '#c084fc' : '#34d399' }}>
@@ -2972,8 +2909,8 @@
                                                 <h2 className="font-display font-extrabold text-lg text-white leading-snug">{m.title}</h2>
                                                 <p className="text-xs text-slate-300 leading-relaxed">
                                                     {m.language === 'en'
-                                                        ? 'Step into the 3D consultation room with live vocal calmness feedback, 2.5s Therapeutic Silence bonus, Time-Rewind, and 3D Skill Card.'
-                                                        : 'เข้าสู่ห้องรับรอง 3 มิติพร้อม AI Coach ชี้นำหลักการ, จับน้ำเสียงและจังหวะเงียบ 2.5 วินาที, ย้อนเวลาแก้ประโยค และรับการ์ดโฮโลแกรม 3 มิติ'}
+                                                        ? 'Step into the 3D consultation room with live vocal calmness feedback, 2.5s Therapeutic Silence bonus, Time-Rewind, and Competency Card.'
+                                                        : 'เข้าสู่ห้องรับรอง 3 มิติพร้อม AI Coach ชี้นำหลักการ จับน้ำเสียงและจังหวะเงียบ 2.5 วินาที ย้อนเวลาแก้ประโยค และรับการ์ดสมรรถนะ 5 มิติ'}
                                                 </p>
                                             </div>
                                             <div className="space-y-2">
@@ -2983,7 +2920,7 @@
                                                     className="touch-target w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 hover:from-aurora-300 hover:to-prism-300 text-void-950 font-display font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-aurora-500/20 active:scale-[0.98]"
                                                 >
                                                     <Icon name="Compass" size={16} />
-                                                    {m.language === 'en' ? 'Guided 3-Step Holodeck' : 'เริ่มฝึกแบบมี AI Coach ชี้นำ (3 ด่าน)'}
+                                                    {m.language === 'en' ? 'Guided 3-Stage Practice' : 'เริ่มฝึกแบบมี AI Coach ชี้นำ (3 ด่าน)'}
                                                 </button>
                                                 <button
                                                     type="button"
@@ -2991,7 +2928,7 @@
                                                     className="touch-target w-full py-2.5 px-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 text-white font-display font-bold text-xs flex items-center justify-center gap-1.5"
                                                 >
                                                     <Icon name="Play" size={14} className="text-prism-300" />
-                                                    {m.language === 'en' ? 'Full Free-Flow Holodeck' : 'จำลองห้องรับรองเต็มรูปแบบ'}
+                                                    {m.language === 'en' ? 'Full Free-Flow Simulation' : 'จำลองห้องรับรองเต็มรูปแบบ'}
                                                 </button>
                                             </div>
                                         </div>
@@ -3001,7 +2938,7 @@
                         </main>
                     )}
 
-                    {/* ==================== VIEW 2: BRIEFING VIDEO TRANSITION ==================== */}
+                    {/* VIEW 2: BRIEFING VIDEO TRANSITION */}
                     {phase === 'video_intro' && selectedMode && (
                         <main className="relative z-10 flex-1 w-full max-w-4xl mx-auto px-3.5 sm:px-6 py-6 flex flex-col justify-center">
                             <div className="vision-glass rounded-[2rem] p-4 sm:p-7 space-y-5 border-prism-400/30">
@@ -3011,7 +2948,7 @@
                                             STEP 3 BRIEFING • VIMEO #{SCENARIO_VIMEO_ID}
                                         </span>
                                         <h2 className="font-display text-lg sm:text-2xl font-extrabold text-white mt-1">
-                                            {isEn ? 'Watch Scenario Before Entering the 3D Holodeck' : 'รับชมวิดีโอสถานการณ์ก่อนเข้าสู่ห้องรับรอง 3 มิติ'}
+                                            {isEn ? 'Watch Scenario Before Entering the Room' : 'รับชมวิดีโอสถานการณ์ก่อนเข้าสู่ห้องรับรอง 3 มิติ'}
                                         </h2>
                                     </div>
                                     <a href={SCENARIO_VIMEO_SHARE_URL} target="_blank" rel="noreferrer" className="text-xs font-bold text-prism-300 hover:underline inline-flex items-center gap-1">
@@ -3040,14 +2977,14 @@
                                         className="touch-target w-full sm:w-auto px-5 py-3 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 text-white font-display font-bold text-sm flex items-center justify-center gap-2"
                                     >
                                         <Icon name="Compass" size={17} className="text-aurora-300" />
-                                        {isEn ? 'Guided 3-Step Mode' : 'ฝึกแบบมีไกด์ 3 ด่านก่อน'}
+                                        {isEn ? 'Guided 3-Stage Mode' : 'ฝึกแบบมีไกด์ 3 ด่านก่อน'}
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => enterHolodeck(selectedMode, 'full_sim')}
                                         className="touch-target w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 hover:from-aurora-300 hover:to-prism-300 text-void-950 font-display font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 shadow-xl shadow-aurora-500/25"
                                     >
-                                        <span>{isEn ? 'Enter 3D Holodeck Now' : 'เข้าสู่ห้องรับรอง 3 มิติทันที'}</span>
+                                        <span>{isEn ? 'Enter 3D Room Now' : 'เข้าสู่ห้องรับรอง 3 มิติทันที'}</span>
                                         <Icon name="ArrowRight" size={18} />
                                     </button>
                                 </div>
@@ -3055,10 +2992,10 @@
                         </main>
                     )}
 
-                    {/* ==================== VIEW 3: 2030 SPATIAL HOLODECK LIVE STAGE (NO CHATBOX!) ==================== */}
+                    {/* VIEW 3: LIVE 3D CONSULTATION STAGE */}
                     {phase === 'negotiating' && selectedMode && (
                         <main className="relative z-10 flex-1 w-full max-w-5xl mx-auto px-3 sm:px-6 pb-3 flex flex-col justify-between min-h-0 h-[calc(100dvh-4.25rem)] pointer-events-none">
-                            {/* TOP AFFECTIVE TELEMETRY HUD (Trust vs Tension + Emotion + Silence Meter) */}
+                            {/* TOP AFFECTIVE TELEMETRY HUD */}
                             <div className="flex flex-wrap items-center justify-between gap-2 pt-1 pointer-events-auto">
                                 <div className="vision-pill rounded-2xl px-3.5 py-2 flex items-center gap-3">
                                     <span className={`px-2.5 py-0.5 rounded-full border text-[11px] font-bold flex items-center gap-1.5 ${activeEmotionMeta.badge}`}>
@@ -3072,7 +3009,6 @@
                                     </div>
                                 </div>
 
-                                {/* Therapeutic Silence Live Meter Pill */}
                                 <div className="vision-pill rounded-2xl px-3 py-1.5 flex items-center gap-2.5 text-[11px]">
                                     <Icon name="Wind" size={14} className={silenceEarnedThisTurn ? 'text-aurora-300' : 'text-prism-300'} />
                                     <div className="w-24 sm:w-32 space-y-0.5">
@@ -3092,7 +3028,7 @@
                                 </div>
                             </div>
 
-                            {/* CENTER SPACER: Leaves the 3D Living Emotional Core unobstructed & interactive! */}
+                            {/* CENTER SPACER */}
                             <div className="flex-1 flex flex-col items-center justify-center pointer-events-none select-none min-h-[120px]">
                                 {isAiSpeaking && (
                                     <div className="vision-pill rounded-full px-4 py-1.5 flex items-center gap-2 pointer-events-auto">
@@ -3119,9 +3055,8 @@
                                 )}
                             </div>
 
-                            {/* BOTTOM SPATIAL CINEMA SUBTITLES + AI COACH WHISPER + COMMAND DOCK */}
+                            {/* BOTTOM CINEMA SUBTITLES + AI COACH WHISPER + COMMAND DOCK */}
                             <div className="space-y-2.5 pb-safe pointer-events-auto">
-                                {/* Cinema Subtitle Card (Replaces Traditional Chatbox) */}
                                 {latestAiMessage && (
                                     <div key={latestAiMessage.id} className="subtitle-reveal vision-glass rounded-[1.5rem] px-4 sm:px-6 py-3.5 sm:py-4 max-w-3xl mx-auto border-white/15">
                                         <div className="flex items-center justify-between gap-2 mb-1">
@@ -3129,15 +3064,13 @@
                                                 <Icon name="MessageCircleHeart" size={14} />
                                                 {latestAiMessage.speakerName}
                                             </span>
-                                            <div className="flex items-center gap-2">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => speakText(latestAiMessage.text, selectedMode)}
-                                                    className="text-[11px] font-bold text-slate-400 hover:text-prism-300 inline-flex items-center gap-1"
-                                                >
-                                                    <Icon name="Volume2" size={12} /> {isEn ? 'Replay' : 'ฟังซ้ำ'}
-                                                </button>
-                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => speakText(latestAiMessage.text, selectedMode)}
+                                                className="text-[11px] font-bold text-slate-400 hover:text-prism-300 inline-flex items-center gap-1"
+                                            >
+                                                <Icon name="Volume2" size={12} /> {isEn ? 'Replay' : 'ฟังซ้ำ'}
+                                            </button>
                                         </div>
                                         <p className="font-display text-sm sm:text-lg font-semibold text-white leading-relaxed">
                                             “{latestAiMessage.text}”
@@ -3151,7 +3084,6 @@
                                     </div>
                                 )}
 
-                                {/* Collapsible AI Coach Whisper Bar (4 Principles + Live Guidance) */}
                                 {showCoachWhisper ? (
                                     <div className="vision-pill rounded-2xl px-3.5 py-2 max-w-3xl mx-auto border-aurora-400/25 flex items-start justify-between gap-2">
                                         <div className="space-y-1 flex-1 min-w-0">
@@ -3181,7 +3113,6 @@
                                     </div>
                                 )}
 
-                                {/* Vocal Bio-Coach Live Feedback Pill */}
                                 {vocalFeedback && (
                                     <div className="flex justify-center">
                                         <span className="px-3 py-1 rounded-full bg-prism-500/20 border border-prism-400/40 text-prism-200 text-[11px] font-bold flex items-center gap-1.5">
@@ -3190,7 +3121,6 @@
                                     </div>
                                 )}
 
-                                {/* Guided Quick Suggestions */}
                                 {smartSuggestions.length > 0 && (
                                     <div className="flex gap-2 overflow-x-auto custom-scrollbar max-w-3xl mx-auto pb-0.5">
                                         {smartSuggestions.map((sug, idx) => (
@@ -3207,7 +3137,6 @@
                                     </div>
                                 )}
 
-                                {/* Floating Spatial Command Input Dock */}
                                 <form onSubmit={handleSendMessage} className="max-w-3xl mx-auto vision-glass rounded-2xl p-2 flex items-center gap-2 border-white/15">
                                     <button
                                         type="button"
@@ -3254,22 +3183,21 @@
                         </main>
                     )}
 
-                    {/* ==================== VIEW 4: EVALUATING ==================== */}
+                    {/* VIEW 4: EVALUATING */}
                     {phase === 'evaluating' && (
                         <main className="relative z-10 flex-1 flex flex-col items-center justify-center p-6 text-center gap-4">
                             <div className="w-16 h-16 border-4 border-aurora-500/20 border-t-aurora-400 border-r-prism-400 rounded-full animate-spin" />
                             <div>
-                                <h2 className="font-display text-xl sm:text-2xl font-extrabold text-white">กำลังสร้างการ์ดโฮโลแกรม 3 มิติ & กราฟอารมณ์...</h2>
+                                <h2 className="font-display text-xl sm:text-2xl font-extrabold text-white">กำลังสร้างการ์ดสมรรถนะ 5 มิติ & กราฟอารมณ์...</h2>
                                 <p className="text-xs sm:text-sm text-slate-400 mt-1">ประมวลผลสมรรถนะ 5 มิติ + จังหวะความเงียบ + จุดเปลี่ยนสำคัญ</p>
                             </div>
                         </main>
                     )}
 
-                    {/* ==================== VIEW 5: 2030 DEBRIEF (3D SKILL CARD + TIMELINE + TIME-REWIND) ==================== */}
+                    {/* VIEW 5: DEBRIEF (3D SKILL CARD + TIMELINE + TIME-REWIND) */}
                     {phase === 'debrief' && evalResult && selectedMode && (
                         <main className="relative z-10 flex-1 w-full max-w-6xl mx-auto px-3.5 sm:px-6 py-5 sm:py-8 pb-safe space-y-5">
                             <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-                                {/* Left: 3D Interactive Holographic Skill Card */}
                                 <div className="lg:col-span-5 space-y-4">
                                     <HolographicSkillCard
                                         evalResult={evalResult}
@@ -3277,11 +3205,10 @@
                                         isEn={isEn}
                                         onExportPng={() => {
                                             downloadHolographicCardPng(evalResult, user, isEn);
-                                            showToast('บันทึกการ์ดสมรรถนะ 2030 (PNG) เรียบร้อยแล้วค่ะ');
+                                            showToast('บันทึกการ์ดสมรรถนะ (PNG) เรียบร้อยแล้วค่ะ');
                                         }}
                                     />
 
-                                    {/* Step 4 Post-test Unlock Banner */}
                                     <div className="vision-glass rounded-[1.5rem] p-4 border-aurora-400/35 space-y-3">
                                         <div className="flex items-start gap-2.5">
                                             <div className="w-9 h-9 rounded-xl bg-aurora-500/20 text-aurora-300 flex items-center justify-center shrink-0">
@@ -3289,7 +3216,7 @@
                                             </div>
                                             <div>
                                                 <p className="font-display font-bold text-sm text-aurora-200">
-                                                    ผ่านขั้นที่ 3 และปลดล็อก Post-test แล้วค่ะ!
+                                                    ผ่านขั้นที่ 3 และปลดล็อก Post-test แล้วค่ะ
                                                 </p>
                                                 <p className="text-xs text-slate-300 mt-0.5">
                                                     ทำ Post-test ให้ได้ไม่น้อยกว่า {MIN_POSTTEST_PERCENT}% เพื่อรับประกาศนียบัตร (ขั้นที่ 5)
@@ -3305,7 +3232,6 @@
                                     </div>
                                 </div>
 
-                                {/* Right: Emotional Journey Timeline + Time-Rewind + AI Coach Notes */}
                                 <div className="lg:col-span-7 space-y-4">
                                     <EmotionalJourneyTimeline
                                         timeline={timeline}
@@ -3338,7 +3264,7 @@
                                     {evalResult.aiCoachingNote && (
                                         <div className="vision-glass rounded-2xl p-4 sm:p-5 space-y-2 border-aurora-400/25">
                                             <h4 className="font-display font-bold text-sm text-aurora-300 flex items-center gap-1.5">
-                                                <Icon name="Sparkles" size={16} /> บทวิเคราะห์เชิงลึกจาก AI Coach 2030
+                                                <Icon name="Sparkles" size={16} /> บทวิเคราะห์เชิงลึกจาก AI Coach
                                             </h4>
                                             <p className="text-xs sm:text-sm text-slate-200 leading-relaxed whitespace-pre-line">{evalResult.aiCoachingNote}</p>
                                         </div>
@@ -3357,7 +3283,7 @@
                                             onClick={() => { setSelectedMode(null); setPhase('menu'); }}
                                             className="touch-target flex-1 py-3 px-4 rounded-2xl bg-void-800 hover:bg-void-700 border border-white/10 text-slate-200 font-display font-bold text-sm flex items-center justify-center gap-2"
                                         >
-                                            <Icon name="LayoutGrid" size={16} /> {isEn ? 'Holodeck Menu' : 'กลับเมนู Holodeck'}
+                                            <Icon name="LayoutGrid" size={16} /> {isEn ? 'Skill Lab Menu' : 'กลับเมนู AI Skill Lab'}
                                         </button>
                                     </div>
                                 </div>
@@ -3365,7 +3291,7 @@
                         </main>
                     )}
 
-                    {/* ==================== SLIDE-OVER TRANSCRIPT DRAWER ==================== */}
+                    {/* SLIDE-OVER TRANSCRIPT DRAWER */}
                     {showTranscriptDrawer && (
                         <div className="fixed inset-0 z-[110] bg-slate-950/70 backdrop-blur-sm flex justify-end">
                             <div className="w-full max-w-md h-full vision-glass border-l border-white/15 flex flex-col">
@@ -3397,7 +3323,7 @@
                         </div>
                     )}
 
-                    {/* ==================== VIMEO SCENARIO VIDEO MODAL ==================== */}
+                    {/* VIMEO SCENARIO VIDEO MODAL */}
                     {showVideoModal && (
                         <div className="fixed inset-0 z-[115] bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
                             <div className="w-full max-w-3xl vision-glass rounded-[1.75rem] p-4 sm:p-6 space-y-3.5">
@@ -3423,12 +3349,12 @@
                     <ConfirmModal dialog={confirmDialog} onClose={() => setConfirmDialog(p => ({ ...p, open: false }))} />
                     <ToastBanner toast={toast} />
 
-                    {/* Collapsible Admin Preview Badge */}
+                    {/* Collapsible Admin View Badge */}
                     {isAdminPreview && (
                         <div className="fixed top-[calc(4.5rem+env(safe-area-inset-top,0px))] right-3 z-[125] flex flex-col items-end gap-1.5">
                             {previewBarOpen ? (
                                 <div className="vision-pill rounded-2xl p-2 flex flex-wrap items-center gap-1.5 text-[11px] font-bold">
-                                    <span className="text-aurora-300 font-mono px-1">ADMIN PREVIEW</span>
+                                    <span className="text-aurora-300 font-mono px-1">ADMIN VIEW</span>
                                     <a href="./index.html?admin_preview=dashboard" className="px-2.5 py-1 rounded-lg bg-white/10 text-slate-200">ห้องเรียน</a>
                                     <a href="./index.html?admin_preview=posttest" className="px-2.5 py-1 rounded-lg bg-white/10 text-slate-200">Post-test</a>
                                     <a href="./admin.html" className="px-2.5 py-1 rounded-lg bg-aurora-500 text-void-950">กลับ Admin</a>
@@ -3438,7 +3364,7 @@
                                 </div>
                             ) : (
                                 <button type="button" onClick={() => setPreviewBarOpen(true)} className="vision-pill px-3 py-1.5 rounded-full text-aurora-300 text-[10px] font-mono font-bold flex items-center gap-1">
-                                    <Icon name="Eye" size={12} /> ADMIN PREVIEW
+                                    <Icon name="Eye" size={12} /> ADMIN VIEW
                                 </button>
                             )}
                         </div>
@@ -3448,7 +3374,7 @@
         }
 
         const root = createRoot(document.getElementById('lab-root'));
-        root.render(<LabErrorBoundary><AiSkillLab2030App /></LabErrorBoundary>);
+        root.render(<LabErrorBoundary><AiSkillLabApp /></LabErrorBoundary>);
     </script>
 </body>
 </html>
