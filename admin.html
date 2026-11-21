@@ -1,17 +1,32 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#f8fafc">
+    <meta name="theme-color" content="#030712">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <title>Admin Studio — rjcloud.organ 2027</title>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Admin Mission Control 2030 — rjcloud.organ</title>
 
-    <!-- 🌟 โหลดค่าตั้งต้นและข้อมูลกลางจาก data.js (มี Fallback ในตัวหากเปิด Preview เดี่ยว) 🌟 -->
-    <script src="./data.js" onerror="console.warn('data.js not loaded, using sandbox defaults')"></script>
+    <!-- 🌟 โหลดค่าตั้งต้นและข้อมูลกลางจาก data.js (หากเปิด Preview เดี่ยวจะทำงานในโหมด Sandbox อัตโนมัติ) 🌟 -->
+    <script src="./data.js" onerror="console.warn('data.js not loaded, using 2030 sandbox defaults')"></script>
 
-    <!-- 🌟 Tailwind CSS & Fonts (Prompt + Sarabun + JetBrains Mono) 🌟 -->
+    <!-- 🌟 ซิงค์โหมดมืด/สว่างทันทีจาก localStorage ป้องกันจอกระพริบ 🌟 -->
+    <script>
+      (function () {
+        try {
+          const key = (window.RJCLOUD_CONFIG && window.RJCLOUD_CONFIG.theme && window.RJCLOUD_CONFIG.theme.storageKey) || 'rjcloud_theme_2030';
+          const def = (window.RJCLOUD_CONFIG && window.RJCLOUD_CONFIG.theme && window.RJCLOUD_CONFIG.theme.defaultMode) || 'dark';
+          const saved = localStorage.getItem(key) || def;
+          const mode = saved === 'light' ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', mode);
+          const meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', mode === 'dark' ? '#030712' : '#f8fafc');
+        } catch (_) {}
+      })();
+    </script>
+
+    <!-- 🌟 Tailwind CSS & ฟอนต์มาตรฐานระบบ (Prompt + Sarabun + JetBrains Mono) 🌟 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -28,23 +43,25 @@
                 mono: ['JetBrains Mono', 'monospace']
               },
               colors: {
-                clinical: {
-                  50: '#ecfdf5',
-                  100: '#d1fae5',
+                void: {
+                  950: '#030712',
+                  900: '#070d1c',
+                  800: '#0d172e',
+                  700: '#162547'
+                },
+                aurora: {
                   200: '#a7f3d0',
+                  300: '#6ee7b7',
                   400: '#34d399',
                   500: '#10b981',
-                  600: '#059669',
-                  700: '#047857',
-                  900: '#064e3b'
+                  600: '#059669'
                 },
-                medical: {
-                  50: '#f0f9ff',
-                  100: '#e0f2fe',
-                  400: '#38bdf8',
-                  500: '#0ea5e9',
-                  600: '#0284c7',
-                  700: '#0369a1'
+                prism: {
+                  200: '#a5f3fc',
+                  300: '#67e8f9',
+                  400: '#22d3ee',
+                  500: '#06b6d4',
+                  600: '#0284c7'
                 }
               }
             }
@@ -54,17 +71,74 @@
     </script>
 
     <style>
+      /* ============================================================================
+       * 2030 ADAPTIVE DESIGN TOKENS (SPATIAL DARK DEFAULT <-> FROSTED PEARL LIGHT)
+       * ============================================================================ */
+      :root,
+      html[data-theme="dark"] {
+        --bg-page: #030712;
+        --text-main: #f8fafc;
+        --text-secondary: #cbd5e1;
+        --text-muted: #94a3b8;
+        --glass-bg: linear-gradient(135deg, rgba(15, 23, 42, 0.78) 0%, rgba(7, 13, 28, 0.9) 100%);
+        --glass-border: rgba(255, 255, 255, 0.13);
+        --glass-shadow: 0 22px 50px -16px rgba(0, 0, 0, 0.72), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+        --sidebar-bg: rgba(7, 13, 28, 0.88);
+        --header-bg: rgba(7, 13, 28, 0.86);
+        --surface-soft: rgba(255, 255, 255, 0.045);
+        --surface-soft-hover: rgba(255, 255, 255, 0.09);
+        --surface-border: rgba(255, 255, 255, 0.11);
+        --input-bg: rgba(15, 23, 42, 0.88);
+        --input-border: rgba(148, 163, 184, 0.28);
+        --input-text: #f8fafc;
+        --accent-text: #34d399;
+        --accent-prism: #22d3ee;
+        --grid-line: rgba(148, 163, 184, 0.045);
+        --aura-1: rgba(16, 185, 129, 0.15);
+        --aura-2: rgba(34, 211, 238, 0.14);
+        --aura-3: rgba(99, 102, 241, 0.12);
+        --dock-bg: rgba(7, 13, 28, 0.95);
+        --table-head-bg: rgba(15, 23, 42, 0.85);
+      }
+
+      html[data-theme="light"] {
+        --bg-page: #f8fafc;
+        --text-main: #0f172a;
+        --text-secondary: #334155;
+        --text-muted: #64748b;
+        --glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(241, 245, 249, 0.84) 100%);
+        --glass-border: rgba(255, 255, 255, 0.96);
+        --glass-shadow: 0 18px 40px -14px rgba(15, 23, 42, 0.1), 0 2px 6px rgba(15, 23, 42, 0.04);
+        --sidebar-bg: rgba(255, 255, 255, 0.9);
+        --header-bg: rgba(255, 255, 255, 0.88);
+        --surface-soft: rgba(255, 255, 255, 0.78);
+        --surface-soft-hover: rgba(255, 255, 255, 0.98);
+        --surface-border: rgba(148, 163, 184, 0.28);
+        --input-bg: #ffffff;
+        --input-border: #cbd5e1;
+        --input-text: #0f172a;
+        --accent-text: #059669;
+        --accent-prism: #0284c7;
+        --grid-line: rgba(15, 23, 42, 0.032);
+        --aura-1: rgba(16, 185, 129, 0.16);
+        --aura-2: rgba(14, 165, 233, 0.15);
+        --aura-3: rgba(99, 102, 241, 0.09);
+        --dock-bg: rgba(255, 255, 255, 0.96);
+        --table-head-bg: rgba(241, 245, 249, 0.92);
+      }
+
       html {
         -webkit-tap-highlight-color: transparent;
         scroll-behavior: smooth;
       }
       body {
         font-family: 'Sarabun', sans-serif;
-        background-color: #f8fafc;
-        color: #0f172a;
+        background-color: var(--bg-page);
+        color: var(--text-main);
         margin: 0;
         overflow-x: hidden;
         overscroll-behavior-y: none;
+        transition: background-color 0.28s ease, color 0.28s ease;
       }
 
       /* 🌟 Mobile-First 100% Safe Area & Touch Optimization 🌟 */
@@ -72,49 +146,97 @@
       .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
       .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
       .pb-dock-safe { padding-bottom: calc(6.5rem + env(safe-area-inset-bottom, 0px)); }
-      .touch-target { min-height: 48px; touch-action: manipulation; }
+      .touch-target { min-height: 46px; touch-action: manipulation; }
 
-      /* ป้องกัน iOS Safari ซูมหน้าจออัตโนมัติเวลาแตะช่องกรอกข้อมูล */
       @media (max-width: 768px) {
         input, select, textarea { font-size: 16px !important; }
       }
 
-      /* 🌟 2027 Pearl Clinical Aura Background 🌟 */
-      .aura-canvas {
+      /* 🌟 Spatial Aura Ambient Backdrop 🌟 */
+      .spatial-aura {
         position: fixed;
         inset: 0;
         z-index: 0;
         background:
-          radial-gradient(circle at 8% 10%, rgba(16, 185, 129, 0.14) 0%, transparent 45%),
-          radial-gradient(circle at 92% 12%, rgba(14, 165, 233, 0.14) 0%, transparent 45%),
-          radial-gradient(circle at 75% 88%, rgba(45, 212, 191, 0.12) 0%, transparent 48%),
-          linear-gradient(180deg, #ffffff 0%, #f8fafc 55%, #f1f5f9 100%);
+          radial-gradient(circle at 10% 10%, var(--aura-1) 0%, transparent 45%),
+          radial-gradient(circle at 90% 12%, var(--aura-2) 0%, transparent 45%),
+          radial-gradient(circle at 70% 88%, var(--aura-3) 0%, transparent 48%);
         pointer-events: none;
       }
-      .aura-grid {
+      .spatial-grid {
         position: fixed;
         inset: 0;
         z-index: 0;
         background-image:
-          linear-gradient(to right, rgba(15, 23, 42, 0.026) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(15, 23, 42, 0.026) 1px, transparent 1px);
-        background-size: 40px 40px;
-        mask-image: radial-gradient(ellipse at center, black 45%, transparent 92%);
+          linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+          linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+        background-size: 42px 42px;
+        mask-image: radial-gradient(ellipse at center, black 45%, transparent 94%);
         pointer-events: none;
       }
 
-      /* 🌟 Bento Glass Card 🌟 */
-      .bento-glass {
-        background: rgba(255, 255, 255, 0.84);
-        backdrop-filter: blur(22px);
-        -webkit-backdrop-filter: blur(22px);
-        border: 1px solid rgba(255, 255, 255, 0.94);
-        box-shadow: 0 12px 32px -10px rgba(15, 23, 42, 0.07), 0 2px 6px rgba(15, 23, 42, 0.03);
+      /* 🌟 Semantic Spatial Glass Utilities 🌟 */
+      .spatial-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(24px) saturate(155%);
+        -webkit-backdrop-filter: blur(24px) saturate(155%);
+        border: 1px solid var(--glass-border);
+        box-shadow: var(--glass-shadow);
+      }
+      .spatial-sidebar {
+        background: var(--sidebar-bg);
+        backdrop-filter: blur(24px) saturate(155%);
+        -webkit-backdrop-filter: blur(24px) saturate(155%);
+        border-right: 1px solid var(--surface-border);
+      }
+      .spatial-header {
+        background: var(--header-bg);
+        backdrop-filter: blur(22px) saturate(150%);
+        -webkit-backdrop-filter: blur(22px) saturate(150%);
+        border-bottom: 1px solid var(--surface-border);
+      }
+      .spatial-dock {
+        background: var(--dock-bg);
+        backdrop-filter: blur(24px) saturate(150%);
+        -webkit-backdrop-filter: blur(24px) saturate(150%);
+        border-top: 1px solid var(--surface-border);
+      }
+      .spatial-soft {
+        background: var(--surface-soft);
+        border: 1px solid var(--surface-border);
+      }
+      .spatial-soft:hover {
+        background: var(--surface-soft-hover);
+      }
+      .spatial-input {
+        background: var(--input-bg);
+        border: 1px solid var(--input-border);
+        color: var(--input-text);
+      }
+      .spatial-input:focus {
+        outline: none;
+        border-color: #10b981;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
+      }
+      .spatial-thead {
+        background: var(--table-head-bg);
+        border-bottom: 1px solid var(--surface-border);
+      }
+
+      .text-primary-adaptive { color: var(--text-main); }
+      .text-secondary-adaptive { color: var(--text-secondary); }
+      .text-muted-adaptive { color: var(--text-muted); }
+      .text-accent-adaptive { color: var(--accent-text); }
+      .text-prism-adaptive { color: var(--accent-prism); }
+
+      html[data-theme="dark"] select option {
+        background-color: #070d1c;
+        color: #f8fafc;
       }
 
       .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
       .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-      .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.45); border-radius: 999px; }
+      .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.38); border-radius: 999px; }
     </style>
 
     <!-- 🌟 ESM Import Map (React 18, Lucide Icons, Firebase 11) 🌟 -->
@@ -134,27 +256,27 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body>
-    <!-- 🌟 หน้าจอโหลดเริ่มต้น ป้องกันหน้าขาวระหว่างรอ React & Babel 🌟 -->
+    <!-- 🌟 หน้าจอโหลดเริ่มต้น 2030 Admin Mission Control Boot 🌟 -->
     <div id="admin-root">
-        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f8fafc;color:#0f172a;font-family:'Prompt','Sarabun',sans-serif;gap:14px;padding:24px;text-align:center;">
-            <div style="width:44px;height:44px;border:4px solid #d1fae5;border-top-color:#059669;border-radius:9999px;animation:adminSpin 0.9s linear infinite;"></div>
-            <div style="font-weight:700;font-size:17px;">กำลังเปิดระบบผู้ดูแล rjcloud.organ Admin Studio...</div>
-            <div style="font-size:12px;color:#64748b;">กำลังเตรียมฐานข้อมูลผู้เรียนและศูนย์ตรวจสอบทุกหน้าจอ</div>
+        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg-page);color:var(--text-main);font-family:'Prompt','Sarabun',sans-serif;gap:14px;padding:24px;text-align:center;">
+            <div style="width:46px;height:46px;border:3px solid rgba(52,211,153,0.2);border-top-color:#34d399;border-right-color:#22d3ee;border-radius:9999px;animation:adminSpin2030 0.85s linear infinite;"></div>
+            <div style="font-weight:800;font-size:17px;">กำลังเปิดศูนย์บัญชาการ Admin Mission Control 2030...</div>
+            <div style="font-size:12px;color:#94a3b8;">กำลังเตรียมฐานข้อมูลผู้เรียน 5 ขั้นตอน และศูนย์ตรวจสอบทุกหน้าจอ</div>
         </div>
-        <style>@keyframes adminSpin{to{transform:rotate(360deg);}}</style>
+        <style>@keyframes adminSpin2030{to{transform:rotate(360deg);}}</style>
     </div>
 
-    <!-- 🌟 Global Error Guard ป้องกันหน้าขาวหากสคริปต์ภายนอกโหลดไม่สำเร็จ 🌟 -->
+    <!-- 🌟 Global Error Guard ป้องกันหน้าขาว/จอดำ 🌟 -->
     <script>
       window.addEventListener('error', function (ev) {
         const root = document.getElementById('admin-root');
         if (root && !root.dataset.mounted) {
           root.innerHTML =
-            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#f8fafc;color:#0f172a;font-family:Sarabun,sans-serif;">' +
-            '<div style="max-width:440px;width:100%;background:#ffffff;border:1px solid #fecdd3;border-radius:24px;padding:24px;text-align:center;box-shadow:0 12px 30px rgba(15,23,42,0.08);">' +
-            '<h2 style="color:#be123c;font-weight:700;margin:0 0 8px;">ไม่สามารถเปิดหน้า Admin ได้ชั่วคราว</h2>' +
-            '<p style="font-size:13px;color:#475569;margin:0 0 16px;">' + String(ev.message || 'Unknown error') + '</p>' +
-            '<button onclick="window.location.reload()" style="padding:12px 24px;border:none;border-radius:14px;background:#059669;color:#ffffff;font-weight:700;cursor:pointer;">โหลดหน้าใหม่</button>' +
+            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#030712;color:#f8fafc;font-family:Sarabun,sans-serif;">' +
+            '<div style="max-width:440px;width:100%;background:#070d1c;border:1px solid rgba(244,63,94,0.4);border-radius:24px;padding:24px;text-align:center;">' +
+            '<h2 style="color:#fda4af;font-weight:700;margin:0 0 8px;">ไม่สามารถเปิดหน้า Admin ได้ชั่วคราว</h2>' +
+            '<p style="font-size:13px;color:#cbd5e1;margin:0 0 16px;">' + String(ev.message || 'Unknown error') + '</p>' +
+            '<button onclick="window.location.reload()" style="padding:12px 24px;border:none;border-radius:14px;background:#10b981;color:#030712;font-weight:700;cursor:pointer;">โหลดหน้าใหม่</button>' +
             '</div></div>';
         }
       });
@@ -181,25 +303,48 @@
         } from 'firebase/firestore';
 
         // ============================================================================
-        // 1. CONFIGURATION & DEFAULT DATA
+        // 1. CONFIGURATION & DEFAULT DATA (2030 MISSION CONTROL EDITION)
         // ============================================================================
         const DEFAULT_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwuN8MeZhhhomEhpkfXtpoTP341cugDqw1DbQPK_6NSHun2pGZCE0Kfc3eH4YYJ6aWQIg/exec';
 
         const CONFIG = window.RJCLOUD_CONFIG ? {
             ...window.RJCLOUD_CONFIG,
-            appsScriptUrl: window.RJCLOUD_CONFIG.appsScriptUrl || DEFAULT_APPS_SCRIPT_URL
+            appsScriptUrl: window.RJCLOUD_CONFIG.appsScriptUrl || DEFAULT_APPS_SCRIPT_URL,
+            theme: {
+                defaultMode: 'dark',
+                storageKey: 'rjcloud_theme_2030',
+                ...(window.RJCLOUD_CONFIG.theme || {})
+            },
+            learningRules: {
+                minStudyPercent: 80,
+                minPosttestPercent: 80,
+                ...(window.RJCLOUD_CONFIG.learningRules || {})
+            }
         } : {
             appName: 'rjcloud.organ',
-            edition: '2027 Clinical Edition',
+            edition: '2030 Spatial Clinical Edition',
             contactEmail: 'rjcloud.organ@gmail.com',
             appId: 'rjcloud-organ-2027',
             adminEmails: ['rjcloud.organ@gmail.com'],
+            theme: { defaultMode: 'dark', storageKey: 'rjcloud_theme_2030' },
+            learningRules: { minStudyPercent: 80, minPosttestPercent: 80 },
             firebaseConfig: {},
             appsScriptUrl: DEFAULT_APPS_SCRIPT_URL
         };
 
+        const THEME_KEY = CONFIG.theme?.storageKey || 'rjcloud_theme_2030';
+        const MIN_STUDY_PERCENT = Number(CONFIG.learningRules?.minStudyPercent || 80);
+        const MIN_POSTTEST_PERCENT = Number(CONFIG.learningRules?.minPosttestPercent || 80);
+
+        const CLINICAL_DOMAINS = window.CLINICAL_DOMAINS || {
+            policy_ethics: { id: 'policy_ethics', shortName: 'กฎหมาย & จริยธรรม' },
+            brain_death_donor: { id: 'brain_death_donor', shortName: 'สมองตาย & Donor' },
+            procurement_transplant: { id: 'procurement_transplant', shortName: 'จัดเก็บ & ปลูกถ่าย' },
+            family_communication: { id: 'family_communication', shortName: 'สื่อสารกับญาติ' }
+        };
+
         const FALLBACK_LESSONS = [
-            { id: 1, title: 'บทนำการรับบริจาคและปลูกถ่ายอวัยวะ (ตัวอย่าง Sandbox)', videoId: '1-sX4LnWRMSjoEQmWee-9GuiQ2XMvkSro', documentUrl: '' }
+            { id: 1, domain: 'policy_ethics', title: 'บทนำการรับบริจาคและปลูกถ่ายอวัยวะ (ตัวอย่าง Sandbox)', videoId: '1-sX4LnWRMSjoEQmWee-9GuiQ2XMvkSro', documentUrl: '' }
         ];
         const FALLBACK_QUIZ_RAW = [
             'การทำ Decoupling หมายถึงข้อใด?|แยกการแจ้งข่าวสมองตายออกจากการเจรจาขอรับบริจาค|แยกหมอออกจากพยาบาล|แยกญาติออกจากห้อง|ไม่แจ้งข่าวร้าย|0'
@@ -239,8 +384,10 @@
                 pretest: '30/40',
                 posttest: '38/40',
                 skillLabPassed: true,
+                skillLabBestScore: 92,
                 skillLabHistory: [{ score: 92 }],
                 satisfactionScore: 5,
+                certificateClaimed: true,
                 certificateCode: 'RJC-2027-DEMO01'
             },
             {
@@ -256,13 +403,15 @@
                 province: 'เชียงใหม่',
                 userType: 'เรียนต่อเนื่อง',
                 status: 'กำลังเรียน',
-                progress: 85,
-                studySeconds: 24480,
+                progress: 86,
+                studySeconds: 24768,
                 pretest: '26/40',
                 posttest: '-',
-                skillLabPassed: false,
-                skillLabHistory: [],
+                skillLabPassed: true,
+                skillLabBestScore: 86,
+                skillLabHistory: [{ score: 86 }],
                 satisfactionScore: null,
+                certificateClaimed: false,
                 certificateCode: ''
             },
             {
@@ -283,8 +432,10 @@
                 pretest: '32/40',
                 posttest: '-',
                 skillLabPassed: false,
+                skillLabBestScore: null,
                 skillLabHistory: [],
                 satisfactionScore: null,
+                certificateClaimed: false,
                 certificateCode: ''
             }
         ];
@@ -303,31 +454,28 @@
         }
 
         // ============================================================================
-        // 2. ERROR BOUNDARY & HELPERS
+        // 2. ERROR BOUNDARY, HELPERS & 5-STEP TELEMETRY EVALUATOR
         // ============================================================================
         class AdminErrorBoundary extends React.Component {
             constructor(props) {
                 super(props);
                 this.state = { hasError: false, error: null };
             }
-            static getDerivedStateFromError(error) {
-                return { hasError: true, error };
-            }
-            componentDidCatch(error, info) {
-                console.error('Admin ErrorBoundary:', error, info);
-            }
+            static getDerivedStateFromError(error) { return { hasError: true, error }; }
+            componentDidCatch(error, info) { console.error('Admin 2030 ErrorBoundary:', error, info); }
             render() {
                 if (this.state.hasError) {
                     return (
-                        <div className="min-h-dvh flex items-center justify-center p-6 bg-slate-50">
-                            <div className="max-w-md w-full bg-white rounded-3xl p-6 border border-rose-200 shadow-lg text-center space-y-4">
-                                <h2 className="font-display font-bold text-lg text-rose-700">พบข้อผิดพลาดในการแสดงผลหน้า Admin</h2>
-                                <p className="text-xs font-mono bg-rose-50 text-rose-800 p-3 rounded-xl overflow-auto">
+                        <div className="min-h-dvh flex items-center justify-center p-6">
+                            <div className="spatial-card max-w-md w-full rounded-3xl p-6 border-rose-500/40 text-center space-y-4">
+                                <h2 className="font-display font-bold text-lg text-rose-400">พบข้อผิดพลาดในการแสดงผลหน้า Admin</h2>
+                                <p className="text-xs font-mono bg-rose-500/10 text-rose-300 p-3 rounded-xl overflow-auto">
                                     {String(this.state.error?.message || this.state.error)}
                                 </p>
                                 <button
+                                    type="button"
                                     onClick={() => window.location.reload()}
-                                    className="touch-target w-full py-3 rounded-2xl bg-clinical-600 text-white font-display font-bold text-sm"
+                                    className="touch-target w-full py-3 rounded-2xl bg-aurora-500 text-void-950 font-display font-bold text-sm"
                                 >
                                     โหลดหน้าใหม่
                                 </button>
@@ -339,38 +487,42 @@
             }
         }
 
-        function Icon({ name, size = 20, className = "", strokeWidth = 2 }) {
+        function Icon({ name, size = 20, className = '', strokeWidth = 2 }) {
             const Comp = LucideIcons[name] || LucideIcons.Activity || LucideIcons.ShieldCheck;
             if (!Comp) return null;
             return <Comp size={size} className={className} strokeWidth={strokeWidth} />;
         }
 
+        function ThemeToggleButton({ theme, onToggle, compact = false }) {
+            const isDark = theme === 'dark';
+            return (
+                <button
+                    type="button"
+                    onClick={onToggle}
+                    title={isDark ? 'สลับเป็นโหมดสว่าง (Frosted Pearl)' : 'สลับเป็นโหมดมืด (Spatial Dark)'}
+                    aria-label="สลับโหมดมืดหรือสว่าง"
+                    className="spatial-soft px-2.5 sm:px-3 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all active:scale-95 text-primary-adaptive shrink-0"
+                >
+                    <Icon name={isDark ? 'Sun' : 'Moon'} size={15} className={isDark ? 'text-amber-300' : 'text-indigo-600'} />
+                    {!compact && <span className="hidden sm:inline">{isDark ? 'โหมดสว่าง' : 'โหมดมืด'}</span>}
+                </button>
+            );
+        }
+
         function parseRawExams(raw) {
             if (!raw || !Array.isArray(raw)) return [];
+            const domMap = Array.isArray(window.QUESTION_DOMAIN_MAP) ? window.QUESTION_DOMAIN_MAP : [];
             return raw.map((str, idx) => {
                 const parts = String(str).split('|').map(s => s.trim());
                 return {
                     id: idx + 1,
+                    origIdx: idx,
+                    domain: domMap[idx] || 'policy_ethics',
                     question: parts[0] ? parts[0].replace(/^[0-9]+\.\s*/, '') : '',
                     options: parts.slice(1, Math.max(2, parts.length - 1)),
                     answer: parseInt((parts[parts.length - 1] || '0').replace(/[^0-9]/g, ''), 10) || 0
                 };
             });
-        }
-
-        /**
-         * แปลงค่า CSV หนึ่งช่องตามมาตรฐาน RFC-4180 (แก้บั๊กคอลัมน์เลื่อนเมื่อชื่อมีเครื่องหมายจุลภาค)
-         */
-        function escapeCsvCell(val) {
-            const str = val === null || val === undefined ? '' : String(val);
-            return `"${str.replace(/"/g, '""')}"`;
-        }
-
-        /**
-         * อ่านเลขใบประกอบวิชาชีพมาตรฐานเดียว (รองรับทั้งข้อมูลใหม่ license และข้อมูลเก่า licenseId/id)
-         */
-        function getUserLicense(u) {
-            return String(u?.license || u?.licenseId || u?.id || '').trim();
         }
 
         function normalizeQuestionSets(rawSets) {
@@ -384,6 +536,37 @@
             return [parseRawExams(FALLBACK_QUIZ_RAW)];
         }
 
+        function escapeCsvCell(val) {
+            const str = val === null || val === undefined ? '' : String(val);
+            return `"${str.replace(/"/g, '""')}"`;
+        }
+
+        function getUserLicense(u) {
+            return String(u?.license || u?.licenseId || u?.id || '').trim();
+        }
+
+        function parsePosttestPassed(u) {
+            if (u?.status === 'ผ่าน') return true;
+            const m = String(u?.posttest || '').match(/(\d+)\s*\/\s*(\d+)/);
+            if (!m) return false;
+            const score = parseInt(m[1], 10);
+            const total = parseInt(m[2], 10) || 1;
+            return (score / total) >= (MIN_POSTTEST_PERCENT / 100);
+        }
+
+        function getUserFiveStepStatus(u) {
+            const step1Pre = Boolean(u?.pretest && u.pretest !== '-');
+            const step2Hours = Number(u?.progress || 0) >= MIN_STUDY_PERCENT;
+            const step3Lab = Boolean(u?.skillLabPassed || (Array.isArray(u?.skillLabHistory) && u.skillLabHistory.length > 0));
+            const step4Post = parsePosttestPassed(u);
+            const step5Cert = Boolean(u?.certificateClaimed || u?.certificateCode);
+            const hist = Array.isArray(u?.skillLabHistory) ? u.skillLabHistory : [];
+            const bestLab = typeof u?.skillLabBestScore === 'number'
+                ? u.skillLabBestScore
+                : (hist.length > 0 ? Math.max(...hist.map(h => h.score || 0)) : null);
+            return { step1Pre, step2Hours, step3Lab, step4Post, step5Cert, bestLab };
+        }
+
         function loadImageSafe(url) {
             return new Promise((resolve) => {
                 if (!url) return resolve(null);
@@ -395,9 +578,6 @@
             });
         }
 
-        /**
-         * วาดตัวอย่างใบประกาศนียบัตรแบบย่อบน Canvas ในหน้า Admin ทันทีที่แก้ข้อความ/โลโก้/ลายเซ็น
-         */
         async function drawMiniCertPreview(canvas, tpl) {
             if (!canvas) return;
             const W = 1200, H = 848;
@@ -521,20 +701,20 @@
         }
 
         // ============================================================================
-        // 3. SHARED UI COMPONENTS (NO alert() / confirm())
+        // 3. SHARED 2030 UI COMPONENTS (NO alert() / confirm())
         // ============================================================================
         function ToastBanner({ toast }) {
             if (!toast.visible) return null;
             return (
-                <div className="fixed top-[calc(1rem+env(safe-area-inset-top,0px))] left-1/2 -translate-x-1/2 z-[120] w-[92vw] max-w-md pointer-events-none">
-                    <div className={`px-4 py-3 rounded-2xl shadow-xl border backdrop-blur-xl flex items-center gap-2.5 text-sm font-bold ${
+                <div className="fixed top-[calc(1rem+env(safe-area-inset-top,0px))] left-1/2 -translate-x-1/2 z-[140] w-[92vw] max-w-md pointer-events-none">
+                    <div className={`px-4 py-3 rounded-2xl shadow-2xl border backdrop-blur-2xl flex items-center gap-2.5 text-xs sm:text-sm font-bold ${
                         toast.type === 'error'
-                            ? 'bg-rose-50/95 border-rose-200 text-rose-700'
+                            ? 'bg-rose-950/95 border-rose-400/50 text-rose-100'
                             : toast.type === 'info'
-                                ? 'bg-medical-50/95 border-medical-200 text-medical-700'
-                                : 'bg-clinical-50/95 border-clinical-200 text-clinical-800'
+                                ? 'bg-sky-950/95 border-prism-400/50 text-prism-100'
+                                : 'bg-emerald-950/95 border-aurora-400/50 text-aurora-100'
                     }`}>
-                        <Icon name={toast.type === 'error' ? 'AlertCircle' : toast.type === 'info' ? 'Info' : 'CheckCircle2'} size={18} className="shrink-0" />
+                        <Icon name={toast.type === 'error' ? 'AlertCircle' : toast.type === 'info' ? 'Sparkles' : 'CheckCircle2'} size={17} className="shrink-0" />
                         <span>{toast.text}</span>
                     </div>
                 </div>
@@ -544,24 +724,24 @@
         function ConfirmModal({ dialog, onClose }) {
             if (!dialog.open) return null;
             return (
-                <div className="fixed inset-0 z-[110] bg-slate-900/55 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
-                    <div className="w-full sm:max-w-md bg-white rounded-t-[2rem] sm:rounded-[2rem] p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] shadow-2xl border border-slate-100 space-y-4">
+                <div className="fixed inset-0 z-[130] bg-slate-950/75 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
+                    <div className="spatial-card w-full sm:max-w-md rounded-t-[2rem] sm:rounded-[2rem] p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] space-y-4">
                         <div className="flex items-start gap-3.5">
                             <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 ${
-                                dialog.danger ? 'bg-rose-50 text-rose-600' : 'bg-amber-50 text-amber-600'
+                                dialog.danger ? 'bg-rose-500/20 text-rose-400' : 'bg-amber-500/20 text-amber-400'
                             }`}>
                                 <Icon name={dialog.danger ? 'AlertTriangle' : 'HelpCircle'} size={22} />
                             </div>
                             <div>
-                                <h3 className="font-display font-bold text-lg text-slate-900">{dialog.title}</h3>
-                                <p className="text-sm text-slate-600 mt-1 leading-relaxed">{dialog.message}</p>
+                                <h3 className="font-display font-bold text-lg text-primary-adaptive">{dialog.title}</h3>
+                                <p className="text-sm text-secondary-adaptive mt-1 leading-relaxed">{dialog.message}</p>
                             </div>
                         </div>
                         <div className="grid grid-cols-2 gap-2.5 pt-2">
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="touch-target py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-display font-semibold text-sm transition-colors"
+                                className="touch-target spatial-soft py-3 rounded-2xl text-primary-adaptive font-display font-semibold text-sm"
                             >
                                 ยกเลิก
                             </button>
@@ -572,10 +752,10 @@
                                     onClose();
                                     if (fn) fn();
                                 }}
-                                className={`touch-target py-3 rounded-2xl text-white font-display font-semibold text-sm transition-colors ${
+                                className={`touch-target py-3 rounded-2xl font-display font-bold text-sm ${
                                     dialog.danger
-                                        ? 'bg-rose-600 hover:bg-rose-700'
-                                        : 'bg-clinical-600 hover:bg-clinical-700'
+                                        ? 'bg-rose-600 hover:bg-rose-500 text-white'
+                                        : 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950'
                                 }`}
                             >
                                 {dialog.confirmText || 'ยืนยัน'}
@@ -586,25 +766,84 @@
             );
         }
 
-        function FieldInput({ label, className = "", ...props }) {
+        function FieldInput({ label, className = '', ...props }) {
             return (
                 <div className={`w-full ${className}`}>
-                    {label && <label className="block text-xs font-bold text-slate-600 mb-1.5 ml-1">{label}</label>}
+                    {label && <label className="block text-xs font-bold text-secondary-adaptive mb-1.5 ml-1">{label}</label>}
                     <input
-                        className="touch-target w-full px-3.5 py-2.5 rounded-2xl bg-white border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-clinical-500 focus:ring-4 focus:ring-clinical-500/10 text-sm font-medium transition-all"
+                        className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-2xl text-sm font-medium transition-all"
                         {...props}
                     />
                 </div>
             );
         }
 
+        /**
+         * แถบจุดไฟสถานะ 5 ขั้นตอนแบบ Real-time (2030 Mission Control Telemetry)
+         */
+        function FiveStepTelemetryPills({ u, onToggleLab }) {
+            const st = getUserFiveStepStatus(u);
+            const pills = [
+                { key: 'pre', label: 'Pre', done: st.step1Pre, title: `Pre-test: ${u.pretest || '-'}` },
+                { key: 'hr', label: `${u.progress || 0}%`, done: st.step2Hours, title: `เวลาเรียนสะสม (เกณฑ์ ≥${MIN_STUDY_PERCENT}%)` },
+                { key: 'lab', label: st.bestLab ? `Lab ${st.bestLab}` : 'Lab', done: st.step3Lab, clickable: true, title: 'คลิกเพื่อสลับสถานะการผ่าน AI Skill Lab' },
+                { key: 'post', label: 'Post', done: st.step4Post, title: `Post-test: ${u.posttest || '-'}` },
+                { key: 'cert', label: 'Cert', done: st.step5Cert, title: u.certificateCode ? `รหัส: ${u.certificateCode}` : 'ยังไม่ออกใบประกาศฯ' }
+            ];
+            return (
+                <div className="flex flex-wrap items-center gap-1">
+                    {pills.map(p => {
+                        const cls = `px-2 py-1 rounded-lg font-mono text-[10px] font-bold border transition-all inline-flex items-center gap-1 ${
+                            p.done
+                                ? 'bg-aurora-500/20 border-aurora-400/45 text-accent-adaptive'
+                                : 'spatial-soft text-muted-adaptive'
+                        }`;
+                        if (p.clickable && onToggleLab) {
+                            return (
+                                <button key={p.key} type="button" onClick={onToggleLab} title={p.title} className={`${cls} hover:border-violet-400 cursor-pointer`}>
+                                    <span>{p.done ? '✓' : '○'}</span>
+                                    <span>{p.label}</span>
+                                </button>
+                            );
+                        }
+                        return (
+                            <span key={p.key} title={p.title} className={cls}>
+                                <span>{p.done ? '✓' : '○'}</span>
+                                <span>{p.label}</span>
+                            </span>
+                        );
+                    })}
+                </div>
+            );
+        }
+
         // ============================================================================
-        // 4. MAIN ADMIN APPLICATION
+        // 4. MAIN 2030 ADMIN MISSION CONTROL APPLICATION
         // ============================================================================
-        function AdminApp() {
-            // Auth State
+        function Admin2030App() {
+            // Adaptive Theme synced across all 6 files
+            const [theme, setTheme] = useState(() => {
+                try {
+                    const saved = localStorage.getItem(THEME_KEY);
+                    if (saved === 'light' || saved === 'dark') return saved;
+                } catch (_) {}
+                return CONFIG.theme?.defaultMode === 'light' ? 'light' : 'dark';
+            });
+
+            useEffect(() => {
+                document.documentElement.setAttribute('data-theme', theme);
+                const meta = document.querySelector('meta[name="theme-color"]');
+                if (meta) meta.setAttribute('content', theme === 'dark' ? '#030712' : '#f8fafc');
+                try { localStorage.setItem(THEME_KEY, theme); } catch (_) {}
+            }, [theme]);
+
+            const toggleTheme = useCallback(() => {
+                setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+            }, []);
+
+            // Auth State (Secure Firebase Auth on live site, Sandbox on standalone preview)
             const [authChecked, setAuthChecked] = useState(!isCloudConfigured);
-            const [adminSession, setAdminSession] = useState(null); // { email, mode: 'cloud' | 'demo' }
+            const [adminSession, setAdminSession] = useState(null);
             const [loginEmail, setLoginEmail] = useState(CONFIG.contactEmail || 'rjcloud.organ@gmail.com');
             const [loginPassword, setLoginPassword] = useState('');
             const [isLoggingIn, setIsLoggingIn] = useState(false);
@@ -613,11 +852,11 @@
             const [activeTab, setActiveTab] = useState('users'); // users | cert | live | content | sync | overview
             const [contentSubTab, setContentSubTab] = useState('lessons'); // lessons | quiz
 
-            // Admin Page Inspector Modal State (สำหรับตรวจสอบทุกหน้าจอในระบบได้ทันที)
+            // Admin Page Inspector Modal State
             const [inspectorModal, setInspectorModal] = useState({
                 open: false,
                 item: null,
-                viewport: 'desktop', // desktop | mobile
+                viewport: 'desktop',
                 reloadKey: 0
             });
 
@@ -675,7 +914,7 @@
             useEffect(() => { usersListRef.current = usersList; }, [usersList]);
 
             const showToast = useCallback((text, type = 'success') => {
-                setToast({ visible: true, text, type });
+                setToast({ visible: true, text: String(text), type });
                 setTimeout(() => setToast(p => ({ ...p, visible: false })), 3500);
             }, []);
 
@@ -683,13 +922,12 @@
                 setConfirmDialog({ open: true, title, message, danger, confirmText, onConfirm });
             }, []);
 
-            // ยืนยันว่า Mount สำเร็จ (ปิด Error Guard)
             useEffect(() => {
                 const el = document.getElementById('admin-root');
                 if (el) el.dataset.mounted = 'true';
             }, []);
 
-            // 1. ตรวจสอบสถานะ Firebase Auth (Production Mode)
+            // 1. Firebase Auth Verification
             useEffect(() => {
                 if (!isCloudConfigured || !fbAuth) {
                     setAuthChecked(true);
@@ -711,7 +949,7 @@
                 return () => unsub();
             }, []);
 
-            // 2. Real-time Firestore Subscriptions (เมื่อล็อกอินในโหมด Cloud)
+            // 2. Real-time Firestore Subscriptions
             useEffect(() => {
                 if (!adminSession || adminSession.mode !== 'cloud' || !fbDb) return;
 
@@ -762,19 +1000,19 @@
                 };
             }, [adminSession]);
 
-            // 3. วาดตัวอย่างใบประกาศนียบัตรแบบ Real-time เมื่ออยู่ในแท็บ Certificate Studio
+            // 3. Live Certificate Preview
             useEffect(() => {
                 if (activeTab === 'cert' && certCanvasRef.current) {
                     drawMiniCertPreview(certCanvasRef.current, certTemplate);
                 }
             }, [activeTab, certTemplate]);
 
-            // 4. ระบบ Login (Firebase Email/Password จริงเมื่อต่อ Cloud, หรือโหมด Sandbox เมื่อยังไม่ใส่คีย์)
+            // 4. Auth Handlers
             const handleCloudLogin = async (e) => {
                 e.preventDefault();
                 if (!isCloudConfigured || !fbAuth) {
                     setAdminSession({ email: CONFIG.contactEmail, mode: 'demo' });
-                    showToast('เข้าสู่ระบบโหมด Sandbox (ยังไม่เชื่อมต่อ Firebase จริง)', 'info');
+                    showToast('เข้าสู่ระบบโหมด Sandbox 2030 แล้วค่ะ', 'info');
                     return;
                 }
                 const allowed = (CONFIG.adminEmails || [CONFIG.contactEmail]).map(x => x.toLowerCase());
@@ -785,7 +1023,7 @@
                 setIsLoggingIn(true);
                 try {
                     await signInWithEmailAndPassword(fbAuth, loginEmail.trim(), loginPassword);
-                    showToast('เข้าสู่ระบบผู้ดูแล rjcloud.organ สำเร็จค่ะ');
+                    showToast('เข้าสู่ระบบผู้ดูแล rjcloud.organ 2030 สำเร็จค่ะ');
                 } catch (err) {
                     console.error('Admin login error:', err);
                     showToast('อีเมลหรือรหัสผ่านไม่ถูกต้อง กรุณาตรวจสอบใน Firebase Auth ค่ะ', 'error');
@@ -803,7 +1041,7 @@
                 showToast('ออกจากระบบหลังบ้านแล้วค่ะ');
             };
 
-            // 5. Google Sheets CSV Auto-Sync (รองรับเฉพาะสิทธิ์ เรียนใหม่ / เรียนต่อเนื่อง)
+            // 5. Google Sheets CSV Sync
             const syncFromGoogleSheet = useCallback(async (isManual = false) => {
                 if (!systemConfig.masterCsvUrl) {
                     if (isManual) showToast('กรุณาระบุลิงก์ Google Sheets (CSV) ก่อนดึงข้อมูลค่ะ', 'error');
@@ -885,7 +1123,6 @@
                 }
             }, [systemConfig.masterCsvUrl, adminSession?.mode, showToast]);
 
-            // Auto-Sync Timer
             useEffect(() => {
                 if (!adminSession || !systemConfig.autoSyncFromSheet || !systemConfig.masterCsvUrl) return;
                 const timer = setInterval(() => syncFromGoogleSheet(false), 30000);
@@ -996,17 +1233,16 @@
                     'ชื่อ-สกุล', 'เลขใบประกอบวิชาชีพ', 'อีเมล', 'เบอร์โทร',
                     'ตำแหน่ง', 'ลักษณะงาน', 'สังกัด', 'หน่วยงาน/โรงพยาบาล',
                     'สิทธิ์การเรียน', 'สถานะ', 'Pretest', 'Posttest',
-                    'ความคืบหน้า (%)', 'คะแนนเจรจาเฉลี่ย', 'ความพึงพอใจ (CSAT)', 'รหัสประกาศนียบัตร'
+                    'ความคืบหน้า (%)', 'Empathy Index (3D Lab)', 'ความพึงพอใจ (CSAT)', 'รหัสประกาศนียบัตร'
                 ];
                 const rows = usersList.map(u => {
-                    const hist = Array.isArray(u.skillLabHistory) ? u.skillLabHistory : [];
-                    const avgSkill = hist.length > 0 ? Math.round(hist.reduce((s, r) => s + (r.score || 0), 0) / hist.length) : 0;
+                    const st = getUserFiveStepStatus(u);
                     return [
                         u.name, getUserLicense(u), u.email, u.phone,
                         u.position, u.workContext, u.department, u.hospital,
                         u.userType === 'เรียนต่อเนื่อง' ? 'เรียนต่อเนื่อง' : 'เรียนใหม่',
                         u.status, u.pretest, u.posttest,
-                        u.progress || 0, avgSkill, u.satisfactionScore || '-', u.certificateCode || '-'
+                        u.progress || 0, st.bestLab ?? '-', u.satisfactionScore || '-', u.certificateCode || '-'
                     ].map(escapeCsvCell).join(',');
                 });
                 const csvText = '\ufeff' + [headers.map(escapeCsvCell).join(','), ...rows].join('\n');
@@ -1014,7 +1250,7 @@
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `rjcloud_organ_users_${new Date().toISOString().split('T')[0]}.csv`;
+                a.download = `rjcloud_organ_2030_users_${new Date().toISOString().split('T')[0]}.csv`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
@@ -1043,13 +1279,13 @@
             const handleRestoreDefaultContent = () => {
                 askConfirm({
                     title: 'กู้คืนบทเรียนและข้อสอบเริ่มต้น',
-                    message: 'ระบบจะดึง 20 บทเรียน และ 40 ข้อสอบมาตรฐานจาก data.js กลับมาแทนที่ข้อมูลปัจจุบัน ยืนยันหรือไม่?',
+                    message: 'ระบบจะดึง 20 บทเรียน และ 40 ข้อสอบมาตรฐาน (พร้อมหมวดคลินิก AI 2030) จาก data.js กลับมาแทนที่ ยืนยันหรือไม่?',
                     danger: true,
                     confirmText: 'กู้คืนข้อมูล',
                     onConfirm: async () => {
                         const restored = {
-                            lessons: window.INITIAL_LESSONS || [],
-                            questionSets: [parseRawExams(window.QUIZ_QUESTIONS_RAW || [])]
+                            lessons: window.INITIAL_LESSONS || FALLBACK_LESSONS,
+                            questionSets: [parseRawExams(window.QUIZ_QUESTIONS_RAW || FALLBACK_QUIZ_RAW)]
                         };
                         setContentConfig(restored);
                         if (adminSession?.mode === 'cloud' && fbDb) {
@@ -1059,12 +1295,11 @@
                                 { merge: true }
                             );
                         }
-                        showToast('กู้คืนบทเรียนและข้อสอบมาตรฐานเรียบร้อยแล้วค่ะ');
+                        showToast('กู้คืนบทเรียนและข้อสอบมาตรฐาน 2030 เรียบร้อยแล้วค่ะ');
                     }
                 });
             };
 
-            // Filtered Users
             const filteredUsers = useMemo(() => {
                 const q = searchTerm.trim().toLowerCase();
                 return usersList.filter(u => {
@@ -1082,67 +1317,64 @@
 
             const quickStats = useMemo(() => {
                 const passed = usersList.filter(u => u.status === 'ผ่าน').length;
-                const continuing = usersList.filter(u => u.userType === 'เรียนต่อเนื่อง').length;
+                const labDone = usersList.filter(u => getUserFiveStepStatus(u).step3Lab).length;
                 const csatUsers = usersList.filter(u => typeof u.satisfactionScore === 'number' && u.satisfactionScore > 0);
                 const avgCsat = csatUsers.length
                     ? (csatUsers.reduce((s, u) => s + u.satisfactionScore, 0) / csatUsers.length).toFixed(1)
                     : '0.0';
-                return { total: usersList.length, passed, continuing, avgCsat };
+                return { total: usersList.length, passed, labDone, avgCsat };
             }, [usersList]);
 
-            // รายการหน้าจอทั้งหมดสำหรับให้แอดมินตรวจสอบได้ครบทุกขั้นตอน
+            // รายการหน้าจอครบทั้ง 15 หน้าในระบบ 2030 สำหรับ Inspector
             const inspectorGroups = useMemo(() => ([
                 {
                     groupTitle: '1. หน้าแรก & ระบบลงทะเบียน (Auth Wizard 3 ขั้น)',
                     badge: 'LANDING & REGISTER',
                     items: [
-                        { id: 'landing', title: 'หน้าแรกผู้เรียน (Landing)', desc: 'หน้าต้อนรับและเส้นทางการเรียนรู้ 5 ขั้นตอน', url: './index.html?admin_preview=landing', icon: 'Home', color: 'bg-clinical-50 text-clinical-600' },
-                        { id: 'auth1', title: 'ลงทะเบียน ขั้นที่ 1/3', desc: 'หน้ากรอกและตรวจสอบเลขที่ใบประกอบวิชาชีพ', url: './index.html?admin_preview=auth1', icon: 'UserCheck', color: 'bg-medical-50 text-medical-600' },
-                        { id: 'auth2', title: 'ลงทะเบียน ขั้นที่ 2/3', desc: 'หน้ายืนยันข้อมูลผู้เรียนและเลือกประเภทการเรียน', url: './index.html?admin_preview=auth2', icon: 'FileText', color: 'bg-medical-50 text-medical-600' },
-                        { id: 'auth3', title: 'ลงทะเบียน ขั้นที่ 3/3 (OTP)', desc: 'หน้ากรอกรหัสยืนยันตัวตน OTP 6 หลัก', url: './index.html?admin_preview=auth3', icon: 'ShieldCheck', color: 'bg-medical-50 text-medical-600' }
+                        { id: 'landing', title: 'หน้าแรกผู้เรียน 2030 (Landing)', desc: 'หน้าต้อนรับ Spatial OS และเส้นทาง AI 5 ขั้นตอน', url: './index.html?admin_preview=landing', icon: 'Home' },
+                        { id: 'auth1', title: 'ลงทะเบียน ขั้นที่ 1/3', desc: 'หน้ากรอกและตรวจสอบเลขที่ใบประกอบวิชาชีพ', url: './index.html?admin_preview=auth1', icon: 'UserCheck' },
+                        { id: 'auth2', title: 'ลงทะเบียน ขั้นที่ 2/3', desc: 'หน้ายืนยันข้อมูลผู้เรียนและประเภทการเรียน', url: './index.html?admin_preview=auth2', icon: 'FileText' },
+                        { id: 'auth3', title: 'ลงทะเบียน ขั้นที่ 3/3 (OTP)', desc: 'หน้ากรอกรหัสยืนยันตัวตน OTP 6 หลัก', url: './index.html?admin_preview=auth3', icon: 'ShieldCheck' }
                     ]
                 },
                 {
                     groupTitle: '2. เส้นทางการเรียนรู้ 5 ขั้นตอน (Pre-test → ประกาศนียบัตร)',
-                    badge: '5-STEP PATHWAY',
+                    badge: '5-STEP PATHWAY 2030',
                     items: [
-                        { id: 'pretest', title: 'ขั้นที่ 1: แบบทดสอบก่อนเรียน (Pre-test)', desc: 'ตรวจโจทย์ ตัวเลือก และการจับเวลาทำข้อสอบ', url: './index.html?admin_preview=pretest', icon: 'ClipboardCheck', color: 'bg-sky-50 text-sky-600' },
-                        { id: 'dashboard', title: 'ขั้นที่ 2: ห้องเรียนวิดีโอ (Dashboard)', desc: 'ตรวจหน้าหลักผู้เรียน แถบ 5 ขั้นตอน และวิดีโอบทเรียน', url: './index.html?admin_preview=dashboard', icon: 'MonitorPlay', color: 'bg-clinical-50 text-clinical-600' },
-                        { id: 'live', title: 'ห้องถ่ายทอดสด (Live สด)', desc: 'ตรวจหน้าบรรยายสด ปุ่มเช็คอิน และเอกสารประกอบ', url: './index.html?admin_preview=live', icon: 'Radio', color: 'bg-rose-50 text-rose-600' },
-                        { id: 'aiskilllab', title: 'ขั้นที่ 3: ห้องฝึก AI Skill Lab', desc: 'ตรวจจอโฮโลแกรม วิดีโอ Vimeo และ AI Coach (ไม่ติดล็อก 80%)', url: './aiskilllab.html?admin_preview=1', icon: 'Bot', color: 'bg-violet-50 text-violet-600' },
-                        { id: 'posttest', title: 'ขั้นที่ 4: แบบทดสอบหลังเรียน (Post-test)', desc: 'ตรวจหน้าข้อสอบหลังเรียนและเกณฑ์ผ่าน 80%', url: './index.html?admin_preview=posttest', icon: 'FileCheck2', color: 'bg-amber-50 text-amber-600' },
-                        { id: 'cert_confirm', title: 'ขั้นที่ 5: ยืนยันชื่อ & ประเมิน CSAT', desc: 'ตรวจหน้าให้ดาวความพึงพอใจก่อนออกใบประกาศฯ', url: './index.html?admin_preview=cert_confirm', icon: 'Star', color: 'bg-amber-50 text-amber-600' },
-                        { id: 'certificate', title: 'ขั้นที่ 5: ใบประกาศนียบัตร (PDF/PNG/QR)', desc: 'ตรวจการวาดใบประกาศฯ ตัวจริง ปุ่มดาวน์โหลด PDF และ PNG', url: './index.html?admin_preview=certificate', icon: 'Award', color: 'bg-clinical-50 text-clinical-600' }
+                        { id: 'pretest', title: 'ขั้นที่ 1: แบบทดสอบก่อนเรียน (Pre-test)', desc: 'ตรวจโจทย์แยก 4 หมวดคลินิกและ AI Diagnostic Roadmap', url: './index.html?admin_preview=pretest', icon: 'ClipboardCheck' },
+                        { id: 'dashboard', title: 'ขั้นที่ 2: ห้องเรียน + AI Study Companion', desc: 'ตรวจจอวิดีโอ, สรุป 1 นาที, Micro-Check และถาม AI สด', url: './index.html?admin_preview=dashboard', icon: 'MonitorPlay' },
+                        { id: 'live', title: 'ห้องถ่ายทอดสด (Live สด)', desc: 'ตรวจหน้าบรรยายสด ปุ่มเช็คอิน และเอกสารประกอบ', url: './index.html?admin_preview=live', icon: 'Radio' },
+                        { id: 'aiskilllab', title: 'ขั้นที่ 3: AI Skill Lab 3D Holodeck', desc: 'ตรวจแกนอนุภาค 3 มิติ, จับความเงียบ 2.5 วิ และ Time-Rewind', url: './aiskilllab.html?admin_preview=1', icon: 'Bot' },
+                        { id: 'posttest', title: 'ขั้นที่ 4: แบบทดสอบหลังเรียน (Post-test)', desc: 'ตรวจข้อสอบ ≥ 80% และ AI Coach ติวซ่อมจุดพลาด', url: './index.html?admin_preview=posttest', icon: 'FileCheck2' },
+                        { id: 'cert_confirm', title: 'ขั้นที่ 5: ยืนยันชื่อ & ประเมิน CSAT', desc: 'ตรวจหน้าให้ดาวความพึงพอใจก่อนออกใบประกาศฯ', url: './index.html?admin_preview=cert_confirm', icon: 'Star' },
+                        { id: 'certificate', title: 'ขั้นที่ 5: ใบประกาศนียบัตร (PDF/PNG/QR)', desc: 'ตรวจการวาดใบประกาศฯ ตัวจริง ปุ่มดาวน์โหลด PDF และ PNG', url: './index.html?admin_preview=certificate', icon: 'Award' }
                     ]
                 },
                 {
-                    groupTitle: '3. หน้าบริการเสริม โปรไฟล์ และผู้บริหาร',
-                    badge: 'PORTALS & REPORTS',
+                    groupTitle: '3. หน้าบริการเสริม ตราโฮโลแกรม 3 มิติ และผู้บริหาร',
+                    badge: 'PORTALS & COMMAND',
                     items: [
-                        { id: 'leaderboard', title: 'กระดานจัดอันดับ (Leaderboard)', desc: 'ตรวจหน้าแสดงผลคะแนนสูงสุด AI Skill Lab', url: './index.html?admin_preview=leaderboard', icon: 'Trophy', color: 'bg-amber-50 text-amber-600' },
-                        { id: 'profile', title: 'หน้าโปรไฟล์ผู้เรียน (Profile)', desc: 'ตรวจการสรุปคะแนน Pre/Post-test และปุ่มรับประกาศฯ', url: './index.html?admin_preview=profile', icon: 'User', color: 'bg-slate-100 text-slate-700' },
-                        { id: 'verify', title: 'หน้าตรวจสอบ QR ประกาศนียบัตร', desc: 'ทดสอบหน้า verify.html ด้วยรหัสตัวอย่าง RJC-2027-DEMO01', url: './verify.html?code=RJC-2027-DEMO01', icon: 'QrCode', color: 'bg-clinical-50 text-clinical-600' },
-                        { id: 'executive', title: 'แดชบอร์ดผู้บริหาร (Executive AI)', desc: 'ตรวจแผนที่ 13 เขตสุขภาพ สถิติ KPI และ Fah AI', url: './executive.html', icon: 'Globe', color: 'bg-medical-50 text-medical-600' }
+                        { id: 'leaderboard', title: 'กระดานจัดอันดับ (Leaderboard)', desc: 'ตรวจหน้าแสดงผล Empathy Index สูงสุด (PDPA-Safe)', url: './index.html?admin_preview=leaderboard', icon: 'Trophy' },
+                        { id: 'profile', title: 'หน้าโปรไฟล์ผู้เรียน (Profile)', desc: 'ตรวจคะแนน Pre/Post-test, โหมดมืด/สว่าง และปุ่มประกาศฯ', url: './index.html?admin_preview=profile', icon: 'User' },
+                        { id: 'verify', title: 'หน้าตรวจ QR ตราโฮโลแกรม 3 มิติ', desc: 'ทดสอบ verify.html ด้วยรหัส RJC-2027-DEMO01', url: './verify.html?code=RJC-2027-DEMO01', icon: 'QrCode' },
+                        { id: 'executive', title: 'แดชบอร์ดผู้บริหาร 2030 (Executive)', desc: 'ตรวจแผนที่ 13 เขต, เรดาร์ 5 แกน, จุดอ่อนรายเขต และ Fah AI', url: './executive.html', icon: 'Globe' }
                     ]
                 }
             ]), []);
 
-            const allInspectorItems = useMemo(
-                () => inspectorGroups.flatMap(g => g.items),
-                [inspectorGroups]
-            );
+            const allInspectorItems = useMemo(() => inspectorGroups.flatMap(g => g.items), [inspectorGroups]);
 
             const openInspectorPreview = (item) => {
                 setInspectorModal({ open: true, item, viewport: 'desktop', reloadKey: Date.now() });
             };
 
             // ============================================================================
-            // 5. LOGIN GATE (ปลอดภัย ไม่มี Hardcode Password ในโค้ด!)
+            // 5. SECURE LOGIN GATE (FIREBASE AUTH ON LIVE / SANDBOX IN PREVIEW)
             // ============================================================================
             if (!authChecked) {
                 return (
-                    <div className="min-h-dvh flex items-center justify-center bg-slate-50">
-                        <div className="w-10 h-10 border-4 border-clinical-500 border-t-transparent rounded-full animate-spin" />
+                    <div className="min-h-dvh flex items-center justify-center">
+                        <div className="w-10 h-10 border-4 border-aurora-400 border-t-transparent rounded-full animate-spin" />
                     </div>
                 );
             }
@@ -1150,18 +1382,22 @@
             if (!adminSession) {
                 return (
                     <div className="min-h-dvh relative flex items-center justify-center p-4 pt-safe pb-safe">
-                        <div className="aura-canvas" /><div className="aura-grid" />
-                        <div className="bento-glass relative z-10 w-full max-w-md rounded-[2rem] p-6 sm:p-8 space-y-6">
+                        <div className="spatial-aura" /><div className="spatial-grid" />
+                        <div className="spatial-card relative z-10 w-full max-w-md rounded-[2rem] p-6 sm:p-8 space-y-6">
+                            <div className="flex items-center justify-between">
+                                <span className="px-2.5 py-1 rounded-full bg-aurora-500/20 text-accent-adaptive font-mono text-[10px] font-bold">
+                                    MISSION CONTROL • 2030
+                                </span>
+                                <ThemeToggleButton theme={theme} onToggle={toggleTheme} compact />
+                            </div>
+
                             <div className="text-center space-y-2">
-                                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-clinical-500 to-teal-600 text-white flex items-center justify-center mx-auto shadow-lg shadow-clinical-500/25">
+                                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-aurora-400 to-prism-400 text-void-950 flex items-center justify-center mx-auto shadow-lg shadow-aurora-500/25">
                                     <Icon name="ShieldCheck" size={28} />
                                 </div>
-                                <span className="inline-block px-2.5 py-0.5 rounded-full bg-clinical-50 text-clinical-700 font-mono text-[10px] font-bold">
-                                    ADMIN STUDIO • 2027
-                                </span>
-                                <h1 className="font-display text-2xl font-extrabold text-slate-900">rjcloud.organ Backend</h1>
-                                <p className="text-xs text-slate-500">
-                                    ยืนยันตัวตนผู้ดูแลระบบด้วยบัญชี <b className="text-slate-700">{CONFIG.contactEmail}</b>
+                                <h1 className="font-display text-2xl font-extrabold text-primary-adaptive">rjcloud.organ Backend</h1>
+                                <p className="text-xs text-secondary-adaptive">
+                                    ยืนยันตัวตนผู้ดูแลระบบด้วยบัญชี <b className="text-primary-adaptive">{CONFIG.contactEmail}</b>
                                 </p>
                             </div>
 
@@ -1186,37 +1422,37 @@
                                     <button
                                         type="submit"
                                         disabled={isLoggingIn}
-                                        className="touch-target w-full py-3.5 rounded-2xl bg-gradient-to-r from-clinical-500 to-teal-600 hover:from-clinical-600 hover:to-teal-700 text-white font-display font-bold text-base shadow-lg shadow-clinical-500/25 transition-all active:scale-[0.98]"
+                                        className="touch-target w-full py-3.5 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 hover:from-aurora-300 hover:to-prism-300 text-void-950 font-display font-extrabold text-base shadow-lg shadow-aurora-500/25 transition-all active:scale-[0.98]"
                                     >
-                                        {isLoggingIn ? 'กำลังยืนยันตัวตน...' : 'เข้าสู่ระบบหลังบ้าน'}
+                                        {isLoggingIn ? 'กำลังยืนยันตัวตน...' : 'เข้าสู่ศูนย์บัญชาการ 2030'}
                                     </button>
                                 </form>
                             ) : (
                                 <div className="space-y-4">
-                                    <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 leading-relaxed space-y-1.5">
-                                        <p className="font-bold flex items-center gap-1.5">
-                                            <Icon name="Info" size={15} className="text-amber-600 shrink-0" />
-                                            โหมดทดลองใช้งาน (Sandbox Mode)
+                                    <div className="p-4 rounded-2xl bg-amber-500/15 border border-amber-400/35 text-xs text-primary-adaptive leading-relaxed space-y-1.5">
+                                        <p className="font-bold text-amber-400 flex items-center gap-1.5">
+                                            <Icon name="Info" size={15} className="shrink-0" />
+                                            โหมดทดลองใช้งาน (Sandbox Preview)
                                         </p>
-                                        <p>
-                                            ยังไม่ได้เชื่อมต่อไฟล์ <code className="font-mono font-bold">data.js</code> คุณสามารถเข้าสู่ระบบเพื่อทดลองจัดการผู้เรียน ออกแบบใบประกาศฯ และตั้งค่าต่างๆ ได้ทันทีค่ะ (เมื่ออัปโหลดคู่กับ <code className="font-mono font-bold">data.js</code> บน GitHub ระบบจะสลับเป็นล็อกอินด้วยอีเมล <b>{CONFIG.contactEmail}</b> อัตโนมัติ)
+                                        <p className="text-secondary-adaptive">
+                                            ขณะนี้เปิดพรีวิวแบบไฟล์เดี่ยวโดยไม่เชื่อม <code className="font-mono text-prism-adaptive">data.js</code> คุณสามารถกดเข้าชมและทดสอบศูนย์บัญชาการ 2030 ได้ทันที (เมื่อวางคู่กับ <code className="font-mono text-prism-adaptive">data.js</code> บน GitHub จะล็อกอินด้วย Firebase Auth อัตโนมัติ)
                                         </p>
                                     </div>
                                     <button
                                         type="button"
                                         onClick={() => {
                                             setAdminSession({ email: CONFIG.contactEmail, mode: 'demo' });
-                                            showToast('เข้าสู่ระบบหลังบ้าน (โหมด Sandbox) เรียบร้อยค่ะ');
+                                            showToast('เข้าสู่ศูนย์บัญชาการหลังบ้าน 2030 (Sandbox) เรียบร้อยค่ะ');
                                         }}
-                                        className="touch-target w-full py-3.5 rounded-2xl bg-gradient-to-r from-clinical-500 to-teal-600 hover:from-clinical-600 hover:to-teal-700 text-white font-display font-bold text-base shadow-lg shadow-clinical-500/25 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                                        className="touch-target w-full py-3.5 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 hover:from-aurora-300 hover:to-prism-300 text-void-950 font-display font-extrabold text-base shadow-lg shadow-aurora-500/25 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
                                     >
                                         <Icon name="Sparkles" size={18} /> เข้าจัดการระบบหลังบ้าน (Sandbox)
                                     </button>
                                 </div>
                             )}
 
-                            <div className="text-center pt-2 border-t border-slate-100">
-                                <a href="./index.html" className="text-xs font-bold text-slate-500 hover:text-clinical-700 inline-flex items-center gap-1">
+                            <div className="text-center pt-2 border-t border-white/10">
+                                <a href="./index.html" className="text-xs font-bold text-muted-adaptive hover:text-accent-adaptive inline-flex items-center gap-1">
                                     <Icon name="ArrowLeft" size={14} /> กลับหน้าหลักผู้เรียน
                                 </a>
                             </div>
@@ -1227,10 +1463,10 @@
             }
 
             // ============================================================================
-            // 6. MAIN ADMIN WORKSPACE (100% SMARTPHONE-FIRST + DESKTOP SIDEBAR)
+            // 6. MAIN 2030 ADMIN MISSION CONTROL WORKSPACE
             // ============================================================================
             const navItems = [
-                { id: 'users', label: 'ผู้เรียน', fullLabel: 'จัดการสิทธิ์ผู้เรียน', icon: 'Users' },
+                { id: 'users', label: 'ผู้เรียน', fullLabel: 'ผู้เรียน 5 ขั้นตอน', icon: 'Users' },
                 { id: 'cert', label: 'ประกาศฯ', fullLabel: 'ออกแบบประกาศนียบัตร', icon: 'Award' },
                 { id: 'live', label: 'Live สด', fullLabel: 'ควบคุม Live สด', icon: 'Radio' },
                 { id: 'content', label: 'บทเรียน', fullLabel: 'บทเรียน & ข้อสอบ', icon: 'BookOpen' },
@@ -1240,24 +1476,30 @@
 
             return (
                 <div className="min-h-dvh relative flex flex-col lg:flex-row pt-safe">
-                    <div className="aura-canvas" /><div className="aura-grid" />
+                    <div className="spatial-aura" /><div className="spatial-grid" />
 
-                    {/* Desktop Sidebar */}
-                    <aside className="hidden lg:flex w-64 shrink-0 flex-col bg-white/85 backdrop-blur-2xl border-r border-slate-200/80 z-20 sticky top-0 h-screen">
-                        <div className="p-5 border-b border-slate-100">
-                            <div className="flex items-center gap-2.5">
-                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-clinical-500 to-teal-600 text-white flex items-center justify-center shadow-sm">
-                                    <Icon name="ShieldCheck" size={20} />
+                    {/* Desktop Spatial Sidebar */}
+                    <aside className="hidden lg:flex w-64 shrink-0 flex-col spatial-sidebar z-20 sticky top-0 h-screen">
+                        <div className="p-5 border-b border-white/10 space-y-3">
+                            <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-2.5 min-w-0">
+                                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-aurora-400 to-prism-400 text-void-950 flex items-center justify-center shadow-md shrink-0">
+                                        <Icon name="ShieldCheck" size={20} />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <span className="font-display font-extrabold text-base text-primary-adaptive block leading-none truncate">
+                                            rjcloud<span className="text-accent-adaptive">.organ</span>
+                                        </span>
+                                        <span className="text-[10px] font-mono text-muted-adaptive">Mission Control 2030</span>
+                                    </div>
                                 </div>
-                                <div className="min-w-0">
-                                    <span className="font-display font-extrabold text-base text-slate-900 block leading-none">
-                                        rjcloud<span className="text-clinical-600">.organ</span>
-                                    </span>
-                                    <span className="text-[10px] font-mono text-slate-500">Admin Studio 2027</span>
-                                </div>
+                                <ThemeToggleButton theme={theme} onToggle={toggleTheme} compact />
                             </div>
-                            <div className="mt-3 px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200/70 text-[11px] font-mono text-slate-600 truncate">
-                                {adminSession.email}
+                            <div className="spatial-soft px-2.5 py-1.5 rounded-xl flex items-center justify-between gap-1.5 text-[11px] font-mono text-secondary-adaptive">
+                                <span className="truncate">{adminSession.email}</span>
+                                <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold shrink-0 ${adminSession.mode === 'cloud' ? 'bg-aurora-500/20 text-accent-adaptive' : 'bg-amber-500/20 text-amber-400'}`}>
+                                    {adminSession.mode === 'cloud' ? 'LIVE' : 'DEMO'}
+                                </span>
                             </div>
                         </div>
 
@@ -1269,8 +1511,8 @@
                                     onClick={() => setActiveTab(item.id)}
                                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all ${
                                         activeTab === item.id
-                                            ? 'bg-clinical-600 text-white shadow-md shadow-clinical-600/20'
-                                            : 'text-slate-600 hover:bg-slate-100/90 hover:text-slate-900'
+                                            ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold shadow-md'
+                                            : 'text-secondary-adaptive hover:text-primary-adaptive hover:bg-white/[0.06]'
                                     }`}
                                 >
                                     <Icon name={item.icon} size={18} />
@@ -1279,47 +1521,45 @@
                             ))}
                         </nav>
 
-                        <div className="p-3 border-t border-slate-100 space-y-1.5">
-                            <a href="./index.html" className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors">
-                                <Icon name="ExternalLink" size={15} /> ไปหน้าผู้เรียน
+                        <div className="p-3 border-t border-white/10 space-y-1.5">
+                            <a href="./index.html" className="spatial-soft w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-primary-adaptive text-xs font-bold">
+                                <Icon name="ExternalLink" size={15} className="text-prism-adaptive" /> ไปหน้าผู้เรียน
                             </a>
-                            <button onClick={handleAdminLogout} className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold transition-colors">
+                            <button type="button" onClick={handleAdminLogout} className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-400/30 text-rose-400 text-xs font-bold">
                                 <Icon name="LogOut" size={15} /> ออกจากระบบ
                             </button>
                         </div>
                     </aside>
 
-                    {/* Mobile Top Header */}
-                    <header className="lg:hidden sticky top-0 z-30 backdrop-blur-xl bg-white/85 border-b border-slate-200/70">
+                    {/* Mobile Top Spatial Header */}
+                    <header className="lg:hidden sticky top-0 z-30 spatial-header">
                         <div className="px-3.5 h-14 flex items-center justify-between gap-2">
                             <div className="flex items-center gap-2 min-w-0">
-                                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-clinical-500 to-teal-600 text-white flex items-center justify-center shrink-0">
+                                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-aurora-400 to-prism-400 text-void-950 flex items-center justify-center shrink-0">
                                     <Icon name="ShieldCheck" size={17} />
                                 </div>
                                 <div className="min-w-0">
                                     <div className="flex items-center gap-1.5">
-                                        <span className="font-display font-extrabold text-sm text-slate-900 truncate">Admin Studio</span>
-                                        <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-mono font-bold ${adminSession.mode === 'cloud' ? 'bg-clinical-100 text-clinical-700' : 'bg-amber-100 text-amber-800'}`}>
+                                        <span className="font-display font-extrabold text-sm text-primary-adaptive truncate">Admin 2030</span>
+                                        <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-mono font-bold ${adminSession.mode === 'cloud' ? 'bg-aurora-500/20 text-accent-adaptive' : 'bg-amber-500/20 text-amber-400'}`}>
                                             {adminSession.mode === 'cloud' ? 'LIVE' : 'DEMO'}
                                         </span>
                                     </div>
-                                    <span className="text-[10px] font-mono text-slate-500 block truncate">{adminSession.email}</span>
+                                    <span className="text-[10px] font-mono text-muted-adaptive block truncate">{adminSession.email}</span>
                                 </div>
                             </div>
 
                             <div className="flex items-center gap-1.5 shrink-0">
+                                <ThemeToggleButton theme={theme} onToggle={toggleTheme} compact />
                                 <button
                                     type="button"
                                     onClick={() => setActiveTab('overview')}
-                                    className="px-2.5 h-9 rounded-xl bg-clinical-50 text-clinical-700 font-bold text-[11px] flex items-center gap-1"
+                                    className="px-2.5 h-9 rounded-xl bg-aurora-500/20 text-accent-adaptive font-bold text-[11px] flex items-center gap-1"
                                     title="ตรวจสอบทุกหน้าจอ"
                                 >
                                     <Icon name="Eye" size={15} /> ตรวจหน้า
                                 </button>
-                                <a href="./index.html" className="w-9 h-9 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center" title="หน้าผู้เรียน">
-                                    <Icon name="Home" size={17} />
-                                </a>
-                                <button onClick={handleAdminLogout} className="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center" title="ออกจากระบบ">
+                                <button type="button" onClick={handleAdminLogout} className="w-9 h-9 rounded-xl bg-rose-500/15 text-rose-400 flex items-center justify-center" title="ออกจากระบบ">
                                     <Icon name="LogOut" size={17} />
                                 </button>
                             </div>
@@ -1329,33 +1569,35 @@
                     {/* Main Content Area */}
                     <main className="relative z-10 flex-1 w-full max-w-6xl mx-auto px-3.5 sm:px-6 lg:px-8 py-4 md:py-7 pb-dock-safe lg:pb-10">
 
-                        {/* ==================== TAB 1: USERS ==================== */}
+                        {/* ==================== TAB 1: LEARNERS 5-STEP MISSION TELEMETRY ==================== */}
                         {activeTab === 'users' && (
                             <div className="space-y-4">
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <div>
-                                        <h2 className="font-display text-xl sm:text-2xl font-extrabold text-slate-900">จัดการสิทธิ์ผู้เรียน</h2>
-                                        <p className="text-xs sm:text-sm text-slate-500">ทั้งหมด {usersList.length} ราย • สอบผ่านแล้ว {quickStats.passed} ราย</p>
+                                        <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">REAL-TIME 5-STEP LEARNER TELEMETRY</span>
+                                        <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive">จัดการผู้เรียนและสิทธิ์การเรียน</h2>
+                                        <p className="text-xs sm:text-sm text-secondary-adaptive">
+                                            ทั้งหมด <b>{quickStats.total}</b> ราย • ผ่าน 3D Lab <b>{quickStats.labDone}</b> ราย • สอบผ่านรับประกาศฯ <b>{quickStats.passed}</b> ราย
+                                        </p>
                                     </div>
                                     <div className="grid grid-cols-3 sm:flex flex-wrap gap-2">
-                                        <button onClick={() => setShowAddUser(v => !v)} className="touch-target px-3.5 py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-1.5">
-                                            <Icon name="UserPlus" size={15} /> เพิ่มผู้เรียน
+                                        <button type="button" onClick={() => setShowAddUser(v => !v)} className="touch-target spatial-soft px-3.5 py-2.5 rounded-2xl text-primary-adaptive font-bold text-xs flex items-center justify-center gap-1.5">
+                                            <Icon name="UserPlus" size={15} className="text-accent-adaptive" /> เพิ่มผู้เรียน
                                         </button>
-                                        <button onClick={() => syncFromGoogleSheet(true)} disabled={isSyncing} className="touch-target px-3.5 py-2.5 rounded-2xl bg-medical-600 hover:bg-medical-700 text-white font-bold text-xs flex items-center justify-center gap-1.5">
-                                            <Icon name="RefreshCw" size={15} className={isSyncing ? 'animate-spin' : ''} /> ดึงจาก Sheet
+                                        <button type="button" onClick={() => syncFromGoogleSheet(true)} disabled={isSyncing} className="touch-target spatial-soft px-3.5 py-2.5 rounded-2xl text-primary-adaptive font-bold text-xs flex items-center justify-center gap-1.5">
+                                            <Icon name="RefreshCw" size={15} className={`text-prism-adaptive ${isSyncing ? 'animate-spin' : ''}`} /> ดึง Sheet
                                         </button>
-                                        <button onClick={handleExportCSV} className="touch-target px-3.5 py-2.5 rounded-2xl bg-clinical-600 hover:bg-clinical-700 text-white font-bold text-xs flex items-center justify-center gap-1.5">
+                                        <button type="button" onClick={handleExportCSV} className="touch-target px-4 py-2.5 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-md">
                                             <Icon name="Download" size={15} /> ส่งออก CSV
                                         </button>
                                     </div>
                                 </div>
 
-                                {/* Add User Form Drawer */}
                                 {showAddUser && (
-                                    <form onSubmit={handleAddManualUser} className="bento-glass rounded-[1.5rem] p-4 sm:p-5 space-y-3 border-clinical-200">
+                                    <form onSubmit={handleAddManualUser} className="spatial-card rounded-[1.5rem] p-4 sm:p-5 space-y-3 border-aurora-400/35">
                                         <div className="flex items-center justify-between">
-                                            <h3 className="font-display font-bold text-sm text-clinical-700">เพิ่มรายชื่อผู้เรียนด้วยตนเอง</h3>
-                                            <button type="button" onClick={() => setShowAddUser(false)} className="text-slate-400 hover:text-slate-700">
+                                            <h3 className="font-display font-bold text-sm text-accent-adaptive">เพิ่มรายชื่อผู้เรียนด้วยตนเอง</h3>
+                                            <button type="button" onClick={() => setShowAddUser(false)} className="text-muted-adaptive hover:text-primary-adaptive">
                                                 <Icon name="X" size={18} />
                                             </button>
                                         </div>
@@ -1363,8 +1605,8 @@
                                             <FieldInput label="ชื่อ - นามสกุล *" required value={manualForm.name} onChange={e => setManualForm({ ...manualForm, name: e.target.value })} placeholder="พว.ใจดี มีเมตตา" />
                                             <FieldInput label="เลขใบประกอบวิชาชีพ *" required value={manualForm.license} onChange={e => setManualForm({ ...manualForm, license: e.target.value })} placeholder="65012345" />
                                             <div>
-                                                <label className="block text-xs font-bold text-slate-600 mb-1.5 ml-1">ประเภทสิทธิ์</label>
-                                                <select value={manualForm.userType} onChange={e => setManualForm({ ...manualForm, userType: e.target.value })} className="touch-target w-full px-3.5 py-2.5 rounded-2xl bg-white border border-slate-200 text-sm font-medium">
+                                                <label className="block text-xs font-bold text-secondary-adaptive mb-1.5 ml-1">ประเภทสิทธิ์</label>
+                                                <select value={manualForm.userType} onChange={e => setManualForm({ ...manualForm, userType: e.target.value })} className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-2xl text-sm font-medium">
                                                     <option value="เรียนใหม่">เรียนใหม่</option>
                                                     <option value="เรียนต่อเนื่อง">เรียนต่อเนื่อง</option>
                                                 </select>
@@ -1373,22 +1615,22 @@
                                             <FieldInput label="สังกัด / เขตสุขภาพ" value={manualForm.department} onChange={e => setManualForm({ ...manualForm, department: e.target.value })} />
                                             <FieldInput label="อีเมล" type="email" value={manualForm.email} onChange={e => setManualForm({ ...manualForm, email: e.target.value })} />
                                         </div>
-                                        <button type="submit" className="touch-target w-full sm:w-auto px-6 py-2.5 rounded-2xl bg-clinical-600 hover:bg-clinical-700 text-white font-display font-bold text-sm">
+                                        <button type="submit" className="touch-target w-full sm:w-auto px-6 py-2.5 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-sm">
                                             บันทึกผู้เรียนใหม่
                                         </button>
                                     </form>
                                 )}
 
-                                {/* Search & Filter Bar */}
-                                <div className="bento-glass rounded-2xl p-3 flex flex-col sm:flex-row gap-2.5">
+                                {/* Search & Filter */}
+                                <div className="spatial-card rounded-2xl p-3 flex flex-col sm:flex-row gap-2.5">
                                     <div className="relative flex-1">
-                                        <Icon name="Search" size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                                        <Icon name="Search" size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-adaptive" />
                                         <input
                                             type="text"
                                             value={searchTerm}
                                             onChange={e => setSearchTerm(e.target.value)}
                                             placeholder="ค้นหาชื่อ, เลขใบอนุญาต หรือโรงพยาบาล..."
-                                            className="touch-target w-full pl-10 pr-3 py-2 rounded-xl bg-white border border-slate-200 text-sm outline-none focus:border-clinical-500"
+                                            className="touch-target spatial-input w-full pl-10 pr-3 py-2 rounded-xl text-sm"
                                         />
                                     </div>
                                     <div className="flex gap-1.5 overflow-x-auto custom-scrollbar pb-0.5">
@@ -1404,8 +1646,8 @@
                                                 onClick={() => setFilterType(f.k)}
                                                 className={`shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
                                                     filterType === f.k
-                                                        ? 'bg-clinical-600 text-white'
-                                                        : 'bg-white border border-slate-200 text-slate-600'
+                                                        ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold'
+                                                        : 'spatial-soft text-secondary-adaptive'
                                                 }`}
                                             >
                                                 {f.l}
@@ -1414,145 +1656,97 @@
                                     </div>
                                 </div>
 
-                                {/* Mobile Card List */}
+                                {/* Mobile Cards */}
                                 <div className="space-y-3 md:hidden">
-                                    {filteredUsers.map(u => (
-                                        <div key={u.id} className="bento-glass rounded-2xl p-4 space-y-3">
-                                            <div className="flex items-start justify-between gap-2">
-                                                <div className="min-w-0">
-                                                    <h3 className="font-display font-bold text-base text-slate-900 truncate">{u.name}</h3>
-                                                    <p className="text-xs text-slate-500 truncate">{u.hospital || 'ไม่ระบุหน่วยงาน'} • <span className="font-mono">{getUserLicense(u)}</span></p>
+                                    {filteredUsers.map(u => {
+                                        const st = getUserFiveStepStatus(u);
+                                        return (
+                                            <div key={u.id} className="spatial-card rounded-2xl p-4 space-y-3">
+                                                <div className="flex items-start justify-between gap-2">
+                                                    <div className="min-w-0">
+                                                        <h3 className="font-display font-bold text-base text-primary-adaptive truncate">{u.name}</h3>
+                                                        <p className="text-xs text-muted-adaptive truncate">{u.hospital || 'ไม่ระบุหน่วยงาน'} • <span className="font-mono text-prism-adaptive">{getUserLicense(u)}</span></p>
+                                                    </div>
+                                                    <button type="button" onClick={() => handleDeleteUser(u)} className="w-9 h-9 rounded-xl bg-rose-500/15 text-rose-400 flex items-center justify-center shrink-0">
+                                                        <Icon name="Trash2" size={16} />
+                                                    </button>
                                                 </div>
-                                                <button onClick={() => handleDeleteUser(u)} className="w-9 h-9 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center shrink-0">
-                                                    <Icon name="Trash2" size={16} />
-                                                </button>
-                                            </div>
 
-                                            <div className="flex items-center gap-2">
-                                                <div className="flex-1 h-2 rounded-full bg-slate-100 overflow-hidden">
-                                                    <div className="h-full bg-clinical-500 rounded-full" style={{ width: `${u.progress || 0}%` }} />
+                                                <FiveStepTelemetryPills u={u} onToggleLab={() => handleUpdateUser(u, { skillLabPassed: !st.step3Lab })} />
+
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <select
+                                                        value={u.userType === 'เรียนต่อเนื่อง' ? 'เรียนต่อเนื่อง' : 'เรียนใหม่'}
+                                                        onChange={e => handleUpdateUser(u, { userType: e.target.value })}
+                                                        className="touch-target spatial-input px-3 py-2 rounded-xl text-xs font-bold"
+                                                    >
+                                                        <option value="เรียนใหม่">เรียนใหม่</option>
+                                                        <option value="เรียนต่อเนื่อง">เรียนต่อเนื่อง</option>
+                                                    </select>
+                                                    <select
+                                                        value={u.status || 'กำลังเรียน'}
+                                                        onChange={e => handleUpdateUser(u, { status: e.target.value })}
+                                                        className="touch-target spatial-input px-3 py-2 rounded-xl text-xs font-bold"
+                                                    >
+                                                        <option value="กำลังเรียน">กำลังเรียน</option>
+                                                        <option value="ผ่าน">ผ่านเกณฑ์</option>
+                                                        <option value="ไม่ผ่าน">ไม่ผ่าน</option>
+                                                    </select>
                                                 </div>
-                                                <span className="font-mono text-xs font-bold text-clinical-700">{u.progress || 0}%</span>
                                             </div>
-
-                                            <div className="flex flex-wrap items-center gap-1.5 text-[11px] font-mono">
-                                                <span className="px-2 py-0.5 rounded-lg bg-slate-100 text-slate-600 font-bold">
-                                                    Pre: {u.pretest || '-'}
-                                                </span>
-                                                <span className="px-2 py-0.5 rounded-lg bg-clinical-50 text-clinical-700 font-bold">
-                                                    Post: {u.posttest || '-'}
-                                                </span>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleUpdateUser(u, { skillLabPassed: !u.skillLabPassed })}
-                                                    className={`px-2 py-0.5 rounded-lg font-sans font-bold border transition-colors ${
-                                                        u.skillLabPassed || (Array.isArray(u.skillLabHistory) && u.skillLabHistory.length > 0)
-                                                            ? 'bg-violet-50 border-violet-200 text-violet-700'
-                                                            : 'bg-slate-50 border-slate-200 text-slate-500'
-                                                    }`}
-                                                >
-                                                    AI Lab: {u.skillLabPassed || (Array.isArray(u.skillLabHistory) && u.skillLabHistory.length > 0) ? 'ผ่าน ✓' : 'รอฝึก'}
-                                                </button>
-                                            </div>
-
-                                            <div className="grid grid-cols-2 gap-2">
-                                                <select
-                                                    value={u.userType === 'เรียนต่อเนื่อง' ? 'เรียนต่อเนื่อง' : 'เรียนใหม่'}
-                                                    onChange={e => handleUpdateUser(u, { userType: e.target.value })}
-                                                    className="touch-target px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700"
-                                                >
-                                                    <option value="เรียนใหม่">เรียนใหม่</option>
-                                                    <option value="เรียนต่อเนื่อง">เรียนต่อเนื่อง</option>
-                                                </select>
-                                                <select
-                                                    value={u.status || 'กำลังเรียน'}
-                                                    onChange={e => handleUpdateUser(u, { status: e.target.value })}
-                                                    className={`touch-target px-3 py-2 rounded-xl border text-xs font-bold ${
-                                                        u.status === 'ผ่าน'
-                                                            ? 'bg-clinical-50 border-clinical-200 text-clinical-700'
-                                                            : 'bg-amber-50 border-amber-200 text-amber-700'
-                                                    }`}
-                                                >
-                                                    <option value="กำลังเรียน">กำลังเรียน</option>
-                                                    <option value="ผ่าน">ผ่านเกณฑ์</option>
-                                                    <option value="ไม่ผ่าน">ไม่ผ่าน</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                     {filteredUsers.length === 0 && (
-                                        <div className="bento-glass rounded-2xl p-8 text-center text-sm text-slate-400">ไม่พบรายชื่อผู้เรียนที่ค้นหาค่ะ</div>
+                                        <div className="spatial-card rounded-2xl p-8 text-center text-sm text-muted-adaptive">ไม่พบรายชื่อผู้เรียนที่ค้นหาค่ะ</div>
                                     )}
                                 </div>
 
                                 {/* Desktop Data Table */}
-                                <div className="hidden md:block bento-glass rounded-[1.5rem] overflow-hidden">
+                                <div className="hidden md:block spatial-card rounded-[1.5rem] overflow-hidden">
                                     <div className="overflow-x-auto custom-scrollbar">
                                         <table className="w-full text-left text-sm">
-                                            <thead className="bg-slate-50/90 border-b border-slate-200 text-slate-500 text-xs font-bold uppercase">
+                                            <thead className="spatial-thead text-muted-adaptive text-xs font-bold uppercase">
                                                 <tr>
                                                     <th className="p-4">ชื่อผู้เรียน / หน่วยงาน</th>
                                                     <th className="p-4">ใบอนุญาต</th>
                                                     <th className="p-4">สิทธิ์การเรียน</th>
-                                                    <th className="p-4">ชั่วโมงเรียน / Pre-Post</th>
-                                                    <th className="p-4">AI Skill Lab</th>
-                                                    <th className="p-4">สถานะ</th>
+                                                    <th className="p-4">สถานะ 5 ขั้นตอน (Real-time)</th>
+                                                    <th className="p-4">สถานะรวม</th>
                                                     <th className="p-4 text-center">จัดการ</th>
                                                 </tr>
                                             </thead>
-                                            <tbody className="divide-y divide-slate-100 bg-white/60">
+                                            <tbody className="divide-y divide-white/10">
                                                 {filteredUsers.map(u => {
-                                                    const labDone = Boolean(u.skillLabPassed || (Array.isArray(u.skillLabHistory) && u.skillLabHistory.length > 0));
+                                                    const st = getUserFiveStepStatus(u);
                                                     return (
-                                                        <tr key={u.id} className="hover:bg-clinical-50/40 transition-colors">
+                                                        <tr key={u.id} className="hover:bg-white/[0.03] transition-colors">
                                                             <td className="p-4">
-                                                                <p className="font-bold text-slate-900">{u.name}</p>
-                                                                <p className="text-xs text-slate-500">{u.hospital || '-'}</p>
+                                                                <p className="font-bold text-primary-adaptive">{u.name}</p>
+                                                                <p className="text-xs text-muted-adaptive">{u.hospital || '-'}</p>
                                                             </td>
-                                                            <td className="p-4 font-mono text-xs text-slate-600">{getUserLicense(u)}</td>
+                                                            <td className="p-4 font-mono text-xs text-prism-adaptive font-bold">{getUserLicense(u)}</td>
                                                             <td className="p-4">
                                                                 <select
                                                                     value={u.userType === 'เรียนต่อเนื่อง' ? 'เรียนต่อเนื่อง' : 'เรียนใหม่'}
                                                                     onChange={e => handleUpdateUser(u, { userType: e.target.value })}
-                                                                    className="px-2.5 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-bold"
+                                                                    className="spatial-input px-2.5 py-1.5 rounded-xl text-xs font-bold"
                                                                 >
                                                                     <option value="เรียนใหม่">เรียนใหม่</option>
                                                                     <option value="เรียนต่อเนื่อง">เรียนต่อเนื่อง</option>
                                                                 </select>
                                                             </td>
-                                                            <td className="p-4 space-y-1">
-                                                                <div className="flex items-center gap-2">
-                                                                    <div className="w-20 h-2 bg-slate-100 rounded-full overflow-hidden">
-                                                                        <div className="h-full bg-clinical-500" style={{ width: `${u.progress || 0}%` }} />
-                                                                    </div>
-                                                                    <span className="font-mono text-xs font-bold text-slate-700">{u.progress || 0}%</span>
-                                                                </div>
-                                                                <p className="font-mono text-[11px] text-slate-500">
-                                                                    Pre: <b className="text-slate-700">{u.pretest || '-'}</b> • Post: <b className="text-clinical-700">{u.posttest || '-'}</b>
+                                                            <td className="p-4 space-y-1.5">
+                                                                <FiveStepTelemetryPills u={u} onToggleLab={() => handleUpdateUser(u, { skillLabPassed: !st.step3Lab })} />
+                                                                <p className="font-mono text-[10px] text-muted-adaptive">
+                                                                    Pre: <b className="text-secondary-adaptive">{u.pretest || '-'}</b> • Post: <b className="text-accent-adaptive">{u.posttest || '-'}</b>
                                                                 </p>
-                                                            </td>
-                                                            <td className="p-4">
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => handleUpdateUser(u, { skillLabPassed: !labDone })}
-                                                                    title="คลิกเพื่อสลับสถานะการผ่าน AI Skill Lab"
-                                                                    className={`px-2.5 py-1 rounded-xl border text-xs font-bold transition-colors ${
-                                                                        labDone
-                                                                            ? 'bg-violet-50 border-violet-200 text-violet-700 hover:bg-violet-100'
-                                                                            : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100'
-                                                                    }`}
-                                                                >
-                                                                    {labDone ? 'ผ่านแล้ว ✓' : 'รอฝึก'}
-                                                                </button>
                                                             </td>
                                                             <td className="p-4">
                                                                 <select
                                                                     value={u.status || 'กำลังเรียน'}
                                                                     onChange={e => handleUpdateUser(u, { status: e.target.value })}
-                                                                    className={`px-2.5 py-1.5 rounded-xl border text-xs font-bold ${
-                                                                        u.status === 'ผ่าน'
-                                                                            ? 'bg-clinical-50 border-clinical-200 text-clinical-700'
-                                                                            : 'bg-amber-50 border-amber-200 text-amber-700'
+                                                                    className={`spatial-input px-2.5 py-1.5 rounded-xl text-xs font-bold ${
+                                                                        u.status === 'ผ่าน' ? 'border-aurora-400/50 text-accent-adaptive' : ''
                                                                     }`}
                                                                 >
                                                                     <option value="กำลังเรียน">กำลังเรียน</option>
@@ -1561,7 +1755,7 @@
                                                                 </select>
                                                             </td>
                                                             <td className="p-4 text-center">
-                                                                <button onClick={() => handleDeleteUser(u)} className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors">
+                                                                <button type="button" onClick={() => handleDeleteUser(u)} className="p-2 rounded-xl text-muted-adaptive hover:text-rose-400 hover:bg-rose-500/15 transition-colors">
                                                                     <Icon name="Trash2" size={17} />
                                                                 </button>
                                                             </td>
@@ -1569,7 +1763,7 @@
                                                     );
                                                 })}
                                                 {filteredUsers.length === 0 && (
-                                                    <tr><td colSpan="7" className="p-10 text-center text-slate-400">ไม่พบข้อมูลผู้เรียน</td></tr>
+                                                    <tr><td colSpan="6" className="p-10 text-center text-muted-adaptive">ไม่พบข้อมูลผู้เรียน</td></tr>
                                                 )}
                                             </tbody>
                                         </table>
@@ -1578,47 +1772,39 @@
                             </div>
                         )}
 
-                        {/* ==================== TAB 2: CERTIFICATE DESIGNER (NEW 2027) ==================== */}
+                        {/* ==================== TAB 2: CERTIFICATE DESIGNER ==================== */}
                         {activeTab === 'cert' && (
                             <div className="space-y-5">
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <div>
-                                        <span className="px-2.5 py-0.5 rounded-full bg-clinical-100 text-clinical-700 font-mono text-[10px] font-bold">IN-APP CERTIFICATE STUDIO</span>
-                                        <h2 className="font-display text-xl sm:text-2xl font-extrabold text-slate-900 mt-1">ออกแบบประกาศนียบัตรในระบบ</h2>
-                                        <p className="text-xs sm:text-sm text-slate-500">แก้ไขข้อความ โลโก้ และลายเซ็นได้เองทันที โดยไม่ต้องพึ่งสคริปต์ภายนอก</p>
+                                        <span className="px-2.5 py-0.5 rounded-full bg-aurora-500/20 text-accent-adaptive font-mono text-[10px] font-bold">IN-APP CERTIFICATE STUDIO 2030</span>
+                                        <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive mt-1">ออกแบบประกาศนียบัตรในระบบ</h2>
+                                        <p className="text-xs sm:text-sm text-secondary-adaptive">แก้ไขข้อความ โลโก้ และลายเซ็นพร้อมดูตัวอย่างสดทันที</p>
                                     </div>
                                     <div className="flex gap-2">
-                                        <button
-                                            type="button"
-                                            onClick={() => setCertTemplate({ ...DEFAULT_CERT_TEMPLATE })}
-                                            className="touch-target px-4 py-2.5 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold text-xs"
-                                        >
+                                        <button type="button" onClick={() => setCertTemplate({ ...DEFAULT_CERT_TEMPLATE })} className="touch-target spatial-soft px-4 py-2.5 rounded-2xl text-primary-adaptive font-bold text-xs">
                                             คืนค่าเริ่มต้น
                                         </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => persistSettings({ certTemplate })}
-                                            className="touch-target px-5 py-2.5 rounded-2xl bg-clinical-600 hover:bg-clinical-700 text-white font-display font-bold text-xs flex items-center gap-1.5 shadow-sm"
-                                        >
+                                        <button type="button" onClick={() => persistSettings({ certTemplate })} className="touch-target px-5 py-2.5 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-xs flex items-center gap-1.5 shadow-md">
                                             <Icon name="Save" size={16} /> บันทึกและเผยแพร่
                                         </button>
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-                                    <div className="lg:col-span-7 bento-glass rounded-[1.75rem] p-3 sm:p-5 space-y-3">
+                                    <div className="lg:col-span-7 spatial-card rounded-[1.75rem] p-3 sm:p-5 space-y-3">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-xs font-bold text-slate-600 flex items-center gap-1.5">
-                                                <Icon name="Eye" size={15} className="text-clinical-600" /> ตัวอย่างใบประกาศนียบัตร (Live Preview)
+                                            <span className="text-xs font-bold text-secondary-adaptive flex items-center gap-1.5">
+                                                <Icon name="Eye" size={15} className="text-accent-adaptive" /> ตัวอย่างใบประกาศนียบัตร (Live Preview)
                                             </span>
-                                            <span className="font-mono text-[10px] text-slate-400">A4 LANDSCAPE • 300 DPI</span>
+                                            <span className="font-mono text-[10px] text-muted-adaptive">A4 LANDSCAPE • 300 DPI</span>
                                         </div>
-                                        <div className="w-full aspect-[1.414/1] rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-sm">
+                                        <div className="w-full aspect-[1.414/1] rounded-2xl overflow-hidden bg-white border border-aurora-400/35 shadow-xl">
                                             <canvas ref={certCanvasRef} className="w-full h-full object-contain block" />
                                         </div>
                                     </div>
 
-                                    <div className="lg:col-span-5 bento-glass rounded-[1.75rem] p-4 sm:p-6 space-y-3.5">
+                                    <div className="lg:col-span-5 spatial-card rounded-[1.75rem] p-4 sm:p-6 space-y-3.5">
                                         <FieldInput label="รหัสนำหน้าใบประกาศฯ (Prefix)" value={certTemplate.certPrefix} onChange={e => setCertTemplate(p => ({ ...p, certPrefix: e.target.value }))} />
                                         <FieldInput label="ชื่อหน่วยงานหลัก (ไทย)" value={certTemplate.orgTitleTH} onChange={e => setCertTemplate(p => ({ ...p, orgTitleTH: e.target.value }))} />
                                         <FieldInput label="ชื่อหน่วยงาน (อังกฤษ)" value={certTemplate.orgTitleEN} onChange={e => setCertTemplate(p => ({ ...p, orgTitleEN: e.target.value }))} />
@@ -1640,25 +1826,26 @@
                         {activeTab === 'live' && (
                             <div className="max-w-3xl space-y-5">
                                 <div>
-                                    <h2 className="font-display text-xl sm:text-2xl font-extrabold text-slate-900">ระบบควบคุม Live สด & เอกสาร</h2>
-                                    <p className="text-xs sm:text-sm text-slate-500">เปิด/ปิดการถ่ายทอดสดและกำหนดชั่วโมงการอบรมของหลักสูตร</p>
+                                    <span className="font-mono text-[10px] font-bold text-rose-400 uppercase">BROADCAST & HOURS CONTROLLER</span>
+                                    <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive">ระบบควบคุม Live สด & ชั่วโมงอบรม</h2>
+                                    <p className="text-xs sm:text-sm text-secondary-adaptive">เปิด/ปิดการถ่ายทอดสดและกำหนดเป้าหมายชั่วโมงของหลักสูตร</p>
                                 </div>
 
-                                <div className="bento-glass rounded-[1.75rem] p-5 sm:p-7 space-y-5">
+                                <div className="spatial-card rounded-[1.75rem] p-5 sm:p-7 space-y-5">
                                     <div>
-                                        <label className="block text-xs font-bold text-slate-600 mb-2">สถานะการถ่ายทอดสด</label>
+                                        <label className="block text-xs font-bold text-secondary-adaptive mb-2">สถานะการถ่ายทอดสด</label>
                                         <div className="grid grid-cols-3 gap-2">
                                             {[
-                                                { id: 'live', label: '🔴 LIVE สด', activeCls: 'bg-rose-600 text-white border-rose-600' },
-                                                { id: 'paused', label: '⏸️ พักเบรก', activeCls: 'bg-amber-500 text-white border-amber-500' },
-                                                { id: 'offline', label: '⚫ ออฟไลน์', activeCls: 'bg-slate-800 text-white border-slate-800' }
+                                                { id: 'live', label: '🔴 LIVE สด', activeCls: 'bg-rose-600 text-white border-rose-500' },
+                                                { id: 'paused', label: '⏸️ พักเบรก', activeCls: 'bg-amber-500 text-void-950 border-amber-400' },
+                                                { id: 'offline', label: '⚫ ออฟไลน์', activeCls: 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 border-aurora-400' }
                                             ].map(s => (
                                                 <button
                                                     key={s.id}
                                                     type="button"
                                                     onClick={() => setLiveConfig(p => ({ ...p, status: s.id }))}
                                                     className={`touch-target py-3 rounded-2xl border font-bold text-xs sm:text-sm transition-all ${
-                                                        liveConfig.status === s.id ? s.activeCls : 'bg-white border-slate-200 text-slate-600'
+                                                        liveConfig.status === s.id ? s.activeCls : 'spatial-soft text-secondary-adaptive'
                                                     }`}
                                                 >
                                                     {s.label}
@@ -1677,23 +1864,23 @@
                                     <FieldInput label="Embed URL (YouTube / Vimeo / Canva)" value={liveConfig.url} onChange={e => setLiveConfig(p => ({ ...p, url: e.target.value }))} placeholder="https://www.youtube.com/embed/..." />
                                     <FieldInput label="ลิงก์เอกสารประกอบ Live (Google Drive / PDF)" value={liveConfig.documentUrl} onChange={e => setLiveConfig(p => ({ ...p, documentUrl: e.target.value }))} placeholder="https://drive.google.com/..." />
 
-                                    <label className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-200 cursor-pointer">
+                                    <label className="spatial-soft flex items-center justify-between gap-3 p-4 rounded-2xl cursor-pointer">
                                         <div>
-                                            <p className="text-sm font-bold text-slate-800">ปลดล็อก Posttest ทันทีสำหรับทุกคน</p>
-                                            <p className="text-xs text-slate-500">เปิดใช้เฉพาะช่วงท้ายงานอบรมสดที่ต้องการให้ทุกคนเข้าสอบพร้อมกัน</p>
+                                            <p className="text-sm font-bold text-primary-adaptive">ปลดล็อก Post-test ทันทีสำหรับทุกคน</p>
+                                            <p className="text-xs text-muted-adaptive">เปิดใช้เฉพาะช่วงท้ายงานอบรมสดที่ต้องการให้ทุกคนเข้าสอบพร้อมกัน</p>
                                         </div>
                                         <input
                                             type="checkbox"
                                             checked={Boolean(liveConfig.allowPosttest)}
                                             onChange={e => setLiveConfig(p => ({ ...p, allowPosttest: e.target.checked }))}
-                                            className="w-5 h-5 accent-clinical-600"
+                                            className="w-5 h-5 accent-aurora-500 shrink-0"
                                         />
                                     </label>
 
                                     <button
                                         type="button"
                                         onClick={() => persistSettings({ liveConfig })}
-                                        className="touch-target w-full py-3.5 rounded-2xl bg-clinical-600 hover:bg-clinical-700 text-white font-display font-bold text-sm flex items-center justify-center gap-2 shadow-md"
+                                        className="touch-target w-full py-3.5 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg"
                                     >
                                         <Icon name="Save" size={18} /> บันทึกและเผยแพร่สถานะ Live
                                     </button>
@@ -1706,46 +1893,61 @@
                             <div className="space-y-4">
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <div>
-                                        <h2 className="font-display text-xl sm:text-2xl font-extrabold text-slate-900">จัดการบทเรียนและคลังข้อสอบ</h2>
-                                        <p className="text-xs sm:text-sm text-slate-500">บทเรียน {contentConfig.lessons.length} บท • ข้อสอบ {(contentConfig.questionSets[0] || []).length} ข้อ</p>
+                                        <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">CURRICULUM & AI DOMAIN MAPPING</span>
+                                        <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive">จัดการบทเรียนและคลังข้อสอบ</h2>
+                                        <p className="text-xs sm:text-sm text-secondary-adaptive">บทเรียน {contentConfig.lessons.length} บท • ข้อสอบ {(contentConfig.questionSets[0] || []).length} ข้อ</p>
                                     </div>
                                     <div className="flex gap-2">
-                                        <button onClick={handleRestoreDefaultContent} className="touch-target px-4 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center gap-1.5">
+                                        <button type="button" onClick={handleRestoreDefaultContent} className="touch-target px-4 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-void-950 font-display font-extrabold text-xs flex items-center gap-1.5">
                                             <Icon name="RotateCcw" size={15} /> กู้คืนค่าเริ่มต้น
                                         </button>
-                                        <button onClick={handleSaveContent} className="touch-target px-5 py-2.5 rounded-2xl bg-clinical-600 hover:bg-clinical-700 text-white font-display font-bold text-xs flex items-center gap-1.5 shadow-sm">
+                                        <button type="button" onClick={handleSaveContent} className="touch-target px-5 py-2.5 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-xs flex items-center gap-1.5 shadow-md">
                                             <Icon name="UploadCloud" size={16} /> เผยแพร่ขึ้น Cloud
                                         </button>
                                     </div>
                                 </div>
 
-                                <div className="inline-flex p-1 rounded-2xl bg-white/90 border border-slate-200/80">
+                                <div className="inline-flex p-1 rounded-2xl spatial-soft">
                                     <button
                                         type="button"
                                         onClick={() => setContentSubTab('lessons')}
-                                        className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${contentSubTab === 'lessons' ? 'bg-clinical-600 text-white' : 'text-slate-600'}`}
+                                        className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${contentSubTab === 'lessons' ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'text-secondary-adaptive'}`}
                                     >
                                         บทเรียน ({contentConfig.lessons.length})
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => setContentSubTab('quiz')}
-                                        className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${contentSubTab === 'quiz' ? 'bg-clinical-600 text-white' : 'text-slate-600'}`}
+                                        className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${contentSubTab === 'quiz' ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'text-secondary-adaptive'}`}
                                     >
                                         คลังข้อสอบ ({(contentConfig.questionSets[0] || []).length})
                                     </button>
                                 </div>
 
                                 {contentSubTab === 'lessons' ? (
-                                    <div className="bento-glass rounded-[1.75rem] p-4 sm:p-6 space-y-3">
+                                    <div className="spatial-card rounded-[1.75rem] p-4 sm:p-6 space-y-3">
                                         {contentConfig.lessons.map((l, idx) => (
-                                            <div key={l.id} className="p-4 rounded-2xl bg-white/90 border border-slate-200/80 space-y-2.5">
+                                            <div key={l.id} className="spatial-soft p-4 rounded-2xl space-y-2.5">
                                                 <div className="flex items-center justify-between gap-2">
-                                                    <span className="px-2.5 py-1 rounded-lg bg-clinical-50 text-clinical-700 font-mono text-xs font-bold">บทที่ {idx + 1}</span>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="px-2.5 py-1 rounded-lg bg-aurora-500/20 text-accent-adaptive font-mono text-xs font-bold">บทที่ {idx + 1}</span>
+                                                        <select
+                                                            value={l.domain || 'policy_ethics'}
+                                                            onChange={e => setContentConfig(p => ({
+                                                                ...p,
+                                                                lessons: p.lessons.map((x, i) => (i === idx ? { ...x, domain: e.target.value } : x))
+                                                            }))}
+                                                            className="spatial-input px-2.5 py-1 rounded-lg text-[11px] font-bold"
+                                                        >
+                                                            {Object.values(CLINICAL_DOMAINS).map(d => (
+                                                                <option key={d.id} value={d.id}>{d.shortName}</option>
+                                                            ))}
+                                                        </select>
+                                                    </div>
                                                     <button
                                                         type="button"
                                                         onClick={() => setContentConfig(p => ({ ...p, lessons: p.lessons.filter((_, i) => i !== idx) }))}
-                                                        className="text-rose-400 hover:text-rose-600 p-1.5"
+                                                        className="text-rose-400 hover:text-rose-300 p-1.5"
                                                     >
                                                         <Icon name="Trash2" size={16} />
                                                     </button>
@@ -1782,19 +1984,34 @@
                                             type="button"
                                             onClick={() => setContentConfig(p => ({
                                                 ...p,
-                                                lessons: [...p.lessons, { id: p.lessons.length + 1, title: 'บทเรียนใหม่', videoId: '', documentUrl: '' }]
+                                                lessons: [...p.lessons, { id: p.lessons.length + 1, domain: 'policy_ethics', title: 'บทเรียนใหม่', videoId: '', documentUrl: '' }]
                                             }))}
-                                            className="touch-target w-full py-3 rounded-2xl border-2 border-dashed border-clinical-300 text-clinical-700 hover:bg-clinical-50 font-bold text-sm flex items-center justify-center gap-1.5"
+                                            className="touch-target w-full py-3 rounded-2xl border-2 border-dashed border-aurora-400/50 text-accent-adaptive hover:bg-aurora-500/10 font-bold text-sm flex items-center justify-center gap-1.5"
                                         >
                                             <Icon name="Plus" size={18} /> เพิ่มบทเรียนใหม่
                                         </button>
                                     </div>
                                 ) : (
-                                    <div className="bento-glass rounded-[1.75rem] p-4 sm:p-6 space-y-4">
+                                    <div className="spatial-card rounded-[1.75rem] p-4 sm:p-6 space-y-4">
                                         {(contentConfig.questionSets[0] || []).map((q, qIdx) => (
-                                            <div key={q.id || qIdx} className="p-4 rounded-2xl bg-white/90 border border-slate-200/80 space-y-3">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="px-2.5 py-1 rounded-lg bg-medical-50 text-medical-700 font-mono text-xs font-bold">ข้อที่ {qIdx + 1}</span>
+                                            <div key={q.id || qIdx} className="spatial-soft p-4 rounded-2xl space-y-3">
+                                                <div className="flex items-center justify-between gap-2">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="px-2.5 py-1 rounded-lg bg-prism-500/20 text-prism-adaptive font-mono text-xs font-bold">ข้อที่ {qIdx + 1}</span>
+                                                        <select
+                                                            value={q.domain || 'policy_ethics'}
+                                                            onChange={e => {
+                                                                const next = [...(contentConfig.questionSets[0] || [])];
+                                                                next[qIdx] = { ...next[qIdx], domain: e.target.value };
+                                                                setContentConfig(p => ({ ...p, questionSets: [next] }));
+                                                            }}
+                                                            className="spatial-input px-2.5 py-1 rounded-lg text-[11px] font-bold"
+                                                        >
+                                                            {Object.values(CLINICAL_DOMAINS).map(d => (
+                                                                <option key={d.id} value={d.id}>{d.shortName}</option>
+                                                            ))}
+                                                        </select>
+                                                    </div>
                                                     <button
                                                         type="button"
                                                         onClick={() => {
@@ -1802,7 +2019,7 @@
                                                             next.splice(qIdx, 1);
                                                             setContentConfig(p => ({ ...p, questionSets: [next] }));
                                                         }}
-                                                        className="text-rose-400 hover:text-rose-600 p-1.5"
+                                                        className="text-rose-400 hover:text-rose-300 p-1.5"
                                                     >
                                                         <Icon name="Trash2" size={16} />
                                                     </button>
@@ -1815,7 +2032,7 @@
                                                         setContentConfig(p => ({ ...p, questionSets: [next] }));
                                                     }}
                                                     rows="2"
-                                                    className="w-full p-3 rounded-xl bg-white border border-slate-200 text-sm font-medium text-slate-800 outline-none focus:border-clinical-500"
+                                                    className="spatial-input w-full p-3 rounded-xl text-sm font-medium"
                                                     placeholder="ระบุคำถามข้อสอบ..."
                                                 />
                                                 <div className="space-y-2">
@@ -1830,7 +2047,7 @@
                                                                     next[qIdx] = { ...next[qIdx], answer: optIdx };
                                                                     setContentConfig(p => ({ ...p, questionSets: [next] }));
                                                                 }}
-                                                                className="w-4 h-4 accent-clinical-600 shrink-0 cursor-pointer"
+                                                                className="w-4 h-4 accent-aurora-500 shrink-0 cursor-pointer"
                                                                 title="เลือกเป็นคำตอบที่ถูกต้อง"
                                                             />
                                                             <input
@@ -1843,10 +2060,8 @@
                                                                     next[qIdx] = { ...next[qIdx], options: nextOpts };
                                                                     setContentConfig(p => ({ ...p, questionSets: [next] }));
                                                                 }}
-                                                                className={`flex-1 px-3 py-2 rounded-xl border text-xs sm:text-sm outline-none transition-all ${
-                                                                    Number(q.answer) === optIdx
-                                                                        ? 'bg-clinical-50/70 border-clinical-300 font-bold text-clinical-900'
-                                                                        : 'bg-white border-slate-200 text-slate-700'
+                                                                className={`spatial-input flex-1 px-3 py-2 rounded-xl text-xs sm:text-sm ${
+                                                                    Number(q.answer) === optIdx ? 'border-aurora-400 font-bold' : ''
                                                                 }`}
                                                                 placeholder={`ตัวเลือกที่ ${optIdx + 1}`}
                                                             />
@@ -1861,13 +2076,14 @@
                                                 const next = [...(contentConfig.questionSets[0] || [])];
                                                 next.push({
                                                     id: next.length + 1,
+                                                    domain: 'policy_ethics',
                                                     question: 'คำถามใหม่',
                                                     options: ['ตัวเลือกที่ 1', 'ตัวเลือกที่ 2', 'ตัวเลือกที่ 3', 'ตัวเลือกที่ 4'],
                                                     answer: 0
                                                 });
                                                 setContentConfig(p => ({ ...p, questionSets: [next] }));
                                             }}
-                                            className="touch-target w-full py-3 rounded-2xl border-2 border-dashed border-medical-300 text-medical-700 hover:bg-medical-50 font-bold text-sm flex items-center justify-center gap-1.5"
+                                            className="touch-target w-full py-3 rounded-2xl border-2 border-dashed border-prism-400/50 text-prism-adaptive hover:bg-prism-500/10 font-bold text-sm flex items-center justify-center gap-1.5"
                                         >
                                             <Icon name="Plus" size={18} /> เพิ่มข้อสอบใหม่
                                         </button>
@@ -1880,20 +2096,20 @@
                         {activeTab === 'sync' && (
                             <div className="max-w-3xl space-y-5">
                                 <div>
-                                    <span className="px-2.5 py-0.5 rounded-full bg-medical-100 text-medical-700 font-mono text-[10px] font-bold">
+                                    <span className="px-2.5 py-0.5 rounded-full bg-prism-500/20 text-prism-adaptive font-mono text-[10px] font-bold">
                                         CLOUD & GOOGLE SHEETS AUTO-SYNC
                                     </span>
-                                    <h2 className="font-display text-xl sm:text-2xl font-extrabold text-slate-900 mt-1">
+                                    <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive mt-1">
                                         เชื่อมต่อ Cloud & ซิงค์ Google Sheets
                                     </h2>
-                                    <p className="text-xs sm:text-sm text-slate-500">
-                                        ตั้งค่า Web App URL สำหรับส่งอีเมล OTP / AI และซิงค์รายชื่อผู้เรียนอัตโนมัติจาก Google Sheets (CSV)
+                                    <p className="text-xs sm:text-sm text-secondary-adaptive">
+                                        ตั้งค่า Web App URL สำหรับส่งอีเมล OTP / Gemini AI และซิงค์รายชื่อผู้เรียนจาก Google Sheets (CSV)
                                     </p>
                                 </div>
 
-                                <div className="bento-glass rounded-[1.75rem] p-5 sm:p-7 space-y-5">
+                                <div className="spatial-card rounded-[1.75rem] p-5 sm:p-7 space-y-5">
                                     <FieldInput
-                                        label="Google Apps Script Web App URL (สำหรับส่ง OTP และเรียก Gemini AI)"
+                                        label="Google Apps Script Web App URL (OTP + AI Companion + Holodeck + Fah AI)"
                                         value={systemConfig.appsScriptUrl}
                                         onChange={e => setSystemConfig(p => ({ ...p, appsScriptUrl: e.target.value }))}
                                         placeholder="https://script.google.com/macros/s/.../exec"
@@ -1906,10 +2122,10 @@
                                         placeholder="https://docs.google.com/spreadsheets/d/.../pub?output=csv"
                                     />
 
-                                    <label className="flex items-center justify-between gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-200 cursor-pointer">
+                                    <label className="spatial-soft flex items-center justify-between gap-3 p-4 rounded-2xl cursor-pointer">
                                         <div>
-                                            <p className="text-sm font-bold text-slate-800">เปิดซิงค์รายชื่ออัตโนมัติทุก 30 วินาที</p>
-                                            <p className="text-xs text-slate-500">
+                                            <p className="text-sm font-bold text-primary-adaptive">เปิดซิงค์รายชื่ออัตโนมัติทุก 30 วินาที</p>
+                                            <p className="text-xs text-muted-adaptive">
                                                 ดึงรายชื่อผู้เรียนและอัปเดตสิทธิ์ (เรียนใหม่ / เรียนต่อเนื่อง) จาก CSV อัตโนมัติขณะเปิดหน้า Admin
                                             </p>
                                         </div>
@@ -1917,19 +2133,19 @@
                                             type="checkbox"
                                             checked={Boolean(systemConfig.autoSyncFromSheet)}
                                             onChange={e => setSystemConfig(p => ({ ...p, autoSyncFromSheet: e.target.checked }))}
-                                            className="w-5 h-5 accent-clinical-600 shrink-0"
+                                            className="w-5 h-5 accent-aurora-500 shrink-0"
                                         />
                                     </label>
 
-                                    <div className="p-4 rounded-2xl bg-medical-50/70 border border-medical-200/70 text-xs text-slate-700 space-y-1.5 leading-relaxed">
-                                        <p className="font-bold text-medical-700 flex items-center gap-1.5">
+                                    <div className="p-4 rounded-2xl bg-prism-500/15 border border-prism-400/30 text-xs text-secondary-adaptive space-y-1.5 leading-relaxed">
+                                        <p className="font-bold text-prism-adaptive flex items-center gap-1.5">
                                             <Icon name="Table" size={15} /> โครงสร้างคอลัมน์ CSV ที่รองรับ
                                         </p>
                                         <p>
                                             คอลัมน์ B: ชื่อ-สกุล • C: เลขใบอนุญาต • D: อีเมล • E: ตำแหน่ง • F: สังกัด • G: โรงพยาบาล • H: จังหวัด • I: สิทธิ์ (เรียนใหม่ / เรียนต่อเนื่อง) • Q: เบอร์โทร
                                         </p>
                                         {lastSyncTime && (
-                                            <p className="font-mono text-[11px] font-bold text-clinical-700 pt-1">
+                                            <p className="font-mono text-[11px] font-bold text-accent-adaptive pt-1">
                                                 ซิงค์ล่าสุดเมื่อ: {lastSyncTime}
                                             </p>
                                         )}
@@ -1943,7 +2159,7 @@
                                                 masterCsvUrl: systemConfig.masterCsvUrl,
                                                 autoSyncFromSheet: systemConfig.autoSyncFromSheet
                                             })}
-                                            className="touch-target py-3.5 px-5 rounded-2xl bg-clinical-600 hover:bg-clinical-700 text-white font-display font-bold text-sm flex items-center justify-center gap-2 shadow-sm"
+                                            className="touch-target py-3.5 px-5 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg"
                                         >
                                             <Icon name="Save" size={17} /> บันทึกการตั้งค่า Cloud
                                         </button>
@@ -1951,9 +2167,9 @@
                                             type="button"
                                             onClick={() => syncFromGoogleSheet(true)}
                                             disabled={isSyncing}
-                                            className="touch-target py-3.5 px-5 rounded-2xl bg-medical-600 hover:bg-medical-700 disabled:opacity-60 text-white font-display font-bold text-sm flex items-center justify-center gap-2 shadow-sm"
+                                            className="touch-target spatial-soft py-3.5 px-5 rounded-2xl disabled:opacity-60 text-primary-adaptive font-display font-bold text-sm flex items-center justify-center gap-2"
                                         >
-                                            <Icon name="RefreshCw" size={17} className={isSyncing ? 'animate-spin' : ''} />
+                                            <Icon name="RefreshCw" size={17} className={`text-prism-adaptive ${isSyncing ? 'animate-spin' : ''}`} />
                                             {isSyncing ? 'กำลังซิงค์ข้อมูล...' : 'ซิงค์รายชื่อตอนนี้เลย'}
                                         </button>
                                     </div>
@@ -1961,39 +2177,37 @@
                             </div>
                         )}
 
-                        {/* ==================== TAB 6: OVERVIEW & PAGE INSPECTOR ==================== */}
+                        {/* ==================== TAB 6: 2030 PAGE INSPECTOR (15 SCREENS) ==================== */}
                         {activeTab === 'overview' && (
                             <div className="space-y-6">
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                                    <div>
-                                        <span className="px-2.5 py-0.5 rounded-full bg-clinical-100 text-clinical-700 font-mono text-[10px] font-bold">
-                                            ADMIN PAGE INSPECTOR • BYPASS LOCK MODE
-                                        </span>
-                                        <h2 className="font-display text-xl sm:text-2xl font-extrabold text-slate-900 mt-1">
-                                            ศูนย์ตรวจสอบทุกหน้าจอในระบบ
-                                        </h2>
-                                        <p className="text-xs sm:text-sm text-slate-500">
-                                            คลิก <b>"พรีวิวที่นี่"</b> เพื่อตรวจจอมือถือ/คอมพิวเตอร์ทันที หรือ <b>"เปิดแท็บใหม่"</b> โดยไม่ติดล็อกเงื่อนไขและไม่กระทบข้อมูลผู้เรียนจริง
-                                        </p>
-                                    </div>
+                                <div>
+                                    <span className="px-2.5 py-0.5 rounded-full bg-aurora-500/20 text-accent-adaptive font-mono text-[10px] font-bold">
+                                        ADMIN PAGE INSPECTOR 2030 • BYPASS LOCK MODE
+                                    </span>
+                                    <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive mt-1">
+                                        ศูนย์ตรวจสอบทุกหน้าจอในระบบ (ครบทั้ง 15 หน้า)
+                                    </h2>
+                                    <p className="text-xs sm:text-sm text-secondary-adaptive">
+                                        คลิก <b>“พรีวิวที่นี่”</b> เพื่อตรวจจอมือถือ/คอมพิวเตอร์ทันที หรือ <b>“แท็บใหม่”</b> โดยไม่ติดล็อกเงื่อนไขและไม่บันทึกทับข้อมูลผู้เรียนจริง
+                                    </p>
                                 </div>
 
                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                                    <div className="bento-glass rounded-2xl p-4">
-                                        <p className="text-xs font-bold text-slate-500">ผู้เรียนทั้งหมด</p>
-                                        <p className="font-mono text-2xl font-extrabold text-slate-900 mt-1">{quickStats.total}</p>
+                                    <div className="spatial-card rounded-2xl p-4">
+                                        <p className="text-xs font-bold text-muted-adaptive">ผู้เรียนทั้งหมด</p>
+                                        <p className="font-mono text-2xl font-extrabold text-primary-adaptive mt-1">{quickStats.total}</p>
                                     </div>
-                                    <div className="bento-glass rounded-2xl p-4">
-                                        <p className="text-xs font-bold text-slate-500">สอบผ่านแล้ว</p>
-                                        <p className="font-mono text-2xl font-extrabold text-clinical-700 mt-1">{quickStats.passed}</p>
+                                    <div className="spatial-card rounded-2xl p-4">
+                                        <p className="text-xs font-bold text-muted-adaptive">สอบผ่านรับประกาศฯ</p>
+                                        <p className="font-mono text-2xl font-extrabold text-accent-adaptive mt-1">{quickStats.passed}</p>
                                     </div>
-                                    <div className="bento-glass rounded-2xl p-4">
-                                        <p className="text-xs font-bold text-slate-500">เรียนต่อเนื่อง</p>
-                                        <p className="font-mono text-2xl font-extrabold text-violet-700 mt-1">{quickStats.continuing}</p>
+                                    <div className="spatial-card rounded-2xl p-4">
+                                        <p className="text-xs font-bold text-muted-adaptive">ผ่าน 3D Skill Lab</p>
+                                        <p className="font-mono text-2xl font-extrabold text-violet-400 mt-1">{quickStats.labDone}</p>
                                     </div>
-                                    <div className="bento-glass rounded-2xl p-4">
-                                        <p className="text-xs font-bold text-slate-500">CSAT เฉลี่ย</p>
-                                        <p className="font-mono text-2xl font-extrabold text-amber-600 mt-1">{quickStats.avgCsat}/5</p>
+                                    <div className="spatial-card rounded-2xl p-4">
+                                        <p className="text-xs font-bold text-muted-adaptive">CSAT เฉลี่ย</p>
+                                        <p className="font-mono text-2xl font-extrabold text-amber-400 mt-1">{quickStats.avgCsat}/5</p>
                                     </div>
                                 </div>
 
@@ -2001,28 +2215,28 @@
                                     {inspectorGroups.map(group => (
                                         <div key={group.badge} className="space-y-3">
                                             <div className="flex items-center justify-between gap-2">
-                                                <h3 className="font-display font-bold text-sm sm:text-base text-slate-800">{group.groupTitle}</h3>
-                                                <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-500 font-mono text-[10px] font-bold">
+                                                <h3 className="font-display font-bold text-sm sm:text-base text-primary-adaptive">{group.groupTitle}</h3>
+                                                <span className="px-2.5 py-0.5 rounded-full spatial-soft text-prism-adaptive font-mono text-[10px] font-bold">
                                                     {group.badge}
                                                 </span>
                                             </div>
                                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                                                 {group.items.map(item => (
-                                                    <div key={item.id} className="bento-glass rounded-2xl p-4 flex flex-col justify-between gap-3.5 hover:border-clinical-300 transition-all">
+                                                    <div key={item.id} className="spatial-card rounded-2xl p-4 flex flex-col justify-between gap-3.5 hover:border-aurora-400/50 transition-all">
                                                         <div className="flex items-start gap-3">
-                                                            <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 ${item.color}`}>
+                                                            <div className="w-11 h-11 rounded-2xl bg-aurora-500/15 text-accent-adaptive flex items-center justify-center shrink-0">
                                                                 <Icon name={item.icon} size={21} />
                                                             </div>
                                                             <div className="min-w-0">
-                                                                <h4 className="font-display font-bold text-sm text-slate-900 leading-snug">{item.title}</h4>
-                                                                <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">{item.desc}</p>
+                                                                <h4 className="font-display font-bold text-sm text-primary-adaptive leading-snug">{item.title}</h4>
+                                                                <p className="text-[11px] text-muted-adaptive mt-0.5 leading-relaxed">{item.desc}</p>
                                                             </div>
                                                         </div>
-                                                        <div className="grid grid-cols-2 gap-2 pt-1 border-t border-slate-100">
+                                                        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/10">
                                                             <button
                                                                 type="button"
                                                                 onClick={() => openInspectorPreview(item)}
-                                                                className="touch-target py-2 px-3 rounded-xl bg-clinical-600 hover:bg-clinical-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm active:scale-95"
+                                                                className="touch-target py-2 px-3 rounded-xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-xs flex items-center justify-center gap-1.5 active:scale-95"
                                                             >
                                                                 <Icon name="Eye" size={14} /> พรีวิวที่นี่
                                                             </button>
@@ -2030,9 +2244,9 @@
                                                                 href={item.url}
                                                                 target="_blank"
                                                                 rel="noreferrer"
-                                                                className="touch-target py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95"
+                                                                className="touch-target spatial-soft py-2 px-3 rounded-xl text-primary-adaptive font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95"
                                                             >
-                                                                <Icon name="ExternalLink" size={14} /> แท็บใหม่
+                                                                <Icon name="ExternalLink" size={14} className="text-prism-adaptive" /> แท็บใหม่
                                                             </a>
                                                         </div>
                                                     </div>
@@ -2045,15 +2259,14 @@
                         )}
                     </main>
 
-                    {/* ==================== LIVE PAGE INSPECTOR MODAL (พรีวิวได้ทั้งจอมือถือ & คอมฯ) ==================== */}
+                    {/* ==================== LIVE PAGE INSPECTOR MODAL (DESKTOP / MOBILE 390px) ==================== */}
                     {inspectorModal.open && inspectorModal.item && (
-                        <div className="fixed inset-0 z-[105] bg-slate-900/75 backdrop-blur-md flex flex-col p-2 sm:p-4">
-                            <div className="w-full max-w-7xl mx-auto flex-1 flex flex-col bg-white rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden shadow-2xl border border-slate-200">
-                                {/* Top Inspector Toolbar */}
-                                <div className="px-3.5 sm:px-5 py-3 bg-slate-900 text-white flex flex-wrap items-center justify-between gap-2.5 shrink-0">
+                        <div className="fixed inset-0 z-[105] bg-slate-950/80 backdrop-blur-md flex flex-col p-2 sm:p-4">
+                            <div className="w-full max-w-7xl mx-auto flex-1 flex flex-col bg-void-900 rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden shadow-2xl border border-white/15">
+                                <div className="px-3.5 sm:px-5 py-3 bg-void-950 text-white flex flex-wrap items-center justify-between gap-2.5 shrink-0 border-b border-white/10">
                                     <div className="flex items-center gap-2 min-w-0 flex-1">
-                                        <span className="px-2 py-0.5 rounded-md bg-clinical-500/20 border border-clinical-400/40 text-clinical-300 font-mono text-[10px] font-bold shrink-0">
-                                            INSPECTOR
+                                        <span className="px-2 py-0.5 rounded-md bg-aurora-500/20 border border-aurora-400/40 text-aurora-300 font-mono text-[10px] font-bold shrink-0">
+                                            INSPECTOR 2030
                                         </span>
                                         <select
                                             value={inspectorModal.item.id}
@@ -2061,7 +2274,7 @@
                                                 const next = allInspectorItems.find(x => x.id === e.target.value);
                                                 if (next) setInspectorModal(p => ({ ...p, item: next, reloadKey: Date.now() }));
                                             }}
-                                            className="max-w-full sm:max-w-xs px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs sm:text-sm font-bold outline-none focus:border-clinical-400"
+                                            className="max-w-full sm:max-w-xs px-3 py-1.5 rounded-xl bg-void-800 border border-white/15 text-white text-xs sm:text-sm font-bold outline-none focus:border-aurora-400"
                                         >
                                             {allInspectorItems.map(opt => (
                                                 <option key={opt.id} value={opt.id}>{opt.title}</option>
@@ -2070,27 +2283,27 @@
                                     </div>
 
                                     <div className="flex items-center gap-1.5 shrink-0">
-                                        <div className="hidden sm:inline-flex p-0.5 rounded-xl bg-slate-800 border border-slate-700">
+                                        <div className="hidden sm:inline-flex p-0.5 rounded-xl bg-void-800 border border-white/15">
                                             <button
                                                 type="button"
                                                 onClick={() => setInspectorModal(p => ({ ...p, viewport: 'desktop' }))}
-                                                className={`px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 ${inspectorModal.viewport === 'desktop' ? 'bg-clinical-600 text-white' : 'text-slate-300 hover:text-white'}`}
+                                                className={`px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 ${inspectorModal.viewport === 'desktop' ? 'bg-aurora-400 text-void-950' : 'text-slate-300 hover:text-white'}`}
                                             >
                                                 <Icon name="Monitor" size={14} /> จอคอมฯ
                                             </button>
                                             <button
                                                 type="button"
                                                 onClick={() => setInspectorModal(p => ({ ...p, viewport: 'mobile' }))}
-                                                className={`px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 ${inspectorModal.viewport === 'mobile' ? 'bg-clinical-600 text-white' : 'text-slate-300 hover:text-white'}`}
+                                                className={`px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 ${inspectorModal.viewport === 'mobile' ? 'bg-aurora-400 text-void-950' : 'text-slate-300 hover:text-white'}`}
                                             >
-                                                <Icon name="Smartphone" size={14} /> จอมือถือ
+                                                <Icon name="Smartphone" size={14} /> มือถือ
                                             </button>
                                         </div>
 
                                         <button
                                             type="button"
                                             onClick={() => setInspectorModal(p => ({ ...p, reloadKey: Date.now() }))}
-                                            className="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center"
+                                            className="w-9 h-9 rounded-xl bg-void-800 hover:bg-void-700 text-slate-200 flex items-center justify-center"
                                             title="รีโหลดหน้าพรีวิว"
                                         >
                                             <Icon name="RefreshCw" size={15} />
@@ -2099,7 +2312,7 @@
                                             href={inspectorModal.item.url}
                                             target="_blank"
                                             rel="noreferrer"
-                                            className="px-3 h-9 rounded-xl bg-clinical-600 hover:bg-clinical-500 text-white text-xs font-bold inline-flex items-center gap-1.5"
+                                            className="px-3 h-9 rounded-xl bg-aurora-400 hover:bg-aurora-300 text-void-950 text-xs font-extrabold inline-flex items-center gap-1.5"
                                         >
                                             <Icon name="ExternalLink" size={14} /> <span className="hidden sm:inline">แท็บใหม่</span>
                                         </a>
@@ -2114,13 +2327,12 @@
                                     </div>
                                 </div>
 
-                                {/* Live Preview Iframe Stage */}
-                                <div className="flex-1 bg-slate-200/85 overflow-auto flex items-center justify-center p-0 sm:p-4">
+                                <div className="flex-1 bg-void-950/90 overflow-auto flex items-center justify-center p-0 sm:p-4">
                                     <div
-                                        className={`bg-white transition-all duration-300 overflow-hidden shadow-2xl ${
+                                        className={`bg-void-950 transition-all duration-300 overflow-hidden shadow-2xl ${
                                             inspectorModal.viewport === 'mobile'
-                                                ? 'w-[390px] max-w-full h-full max-h-[820px] rounded-[2rem] border-[6px] border-slate-900'
-                                                : 'w-full h-full sm:rounded-2xl border border-slate-300'
+                                                ? 'w-[390px] max-w-full h-full max-h-[820px] rounded-[2rem] border-[6px] border-slate-700'
+                                                : 'w-full h-full sm:rounded-2xl border border-white/15'
                                         }`}
                                     >
                                         <iframe
@@ -2136,8 +2348,8 @@
                         </div>
                     )}
 
-                    {/* Smartphone Bottom Dock (ครบทั้ง 6 เมนู กดง่ายบนมือถือ) */}
-                    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/94 backdrop-blur-2xl border-t border-slate-200/80 px-2 pt-1.5 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] shadow-[0_-8px_30px_rgba(15,23,42,0.08)]">
+                    {/* Smartphone Bottom Spatial Dock (ครบทั้ง 6 เมนู) */}
+                    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 spatial-dock px-2 pt-1.5 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))]">
                         <div className="grid grid-cols-6 gap-1 max-w-xl mx-auto">
                             {navItems.map(item => {
                                 const active = activeTab === item.id;
@@ -2147,7 +2359,9 @@
                                         type="button"
                                         onClick={() => { setActiveTab(item.id); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                                         className={`touch-target flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-xl text-[10px] font-bold transition-all active:scale-95 ${
-                                            active ? 'bg-clinical-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
+                                            active
+                                                ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 shadow-sm'
+                                                : 'text-secondary-adaptive'
                                         }`}
                                     >
                                         <Icon name={item.icon} size={17} />
@@ -2165,7 +2379,7 @@
         }
 
         const root = createRoot(document.getElementById('admin-root'));
-        root.render(<AdminErrorBoundary><AdminApp /></AdminErrorBoundary>);
+        root.render(<AdminErrorBoundary><Admin2030App /></AdminErrorBoundary>);
     </script>
 </body>
 </html>
