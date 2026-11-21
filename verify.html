@@ -304,13 +304,13 @@
             <div style="font-size:12px;color:#94a3b8;">กำลังเตรียมกล้องสแกนเลเซอร์ QR และฐานข้อมูลรับรองคุณวุฒิ</div>
         </div>
         <style>@keyframes verifySpin2030{to{transform:rotate(360deg);}}</style>
-    </div>
-
-    <!-- 🌟 Global Error Guard ป้องกันหน้าขาว/จอดำ 🌟 -->
+    <!-- 🌟 Global Error Guard ป้องกันหน้าขาว/จอดำ (ไม่จับ Error 404 จาก data.js ในโหมด Preview เดี่ยว) 🌟 -->
     <script>
       window.addEventListener('error', function (ev) {
+        const src = String(ev.filename || (ev.target && ev.target.src) || '');
+        if (src.includes('data.js')) return;
         const root = document.getElementById('verify-root');
-        if (root && !root.dataset.mounted) {
+        if (root && !root.dataset.mounted && ev.message) {
           root.innerHTML =
             '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#030712;color:#f8fafc;font-family:Sarabun,sans-serif;">' +
             '<div style="max-width:440px;width:100%;background:#070d1c;border:1px solid rgba(244,63,94,0.4);border-radius:24px;padding:24px;text-align:center;">' +
@@ -323,7 +323,7 @@
     </script>
 
     <script type="text/babel" data-type="module">
-        import React, { useState, useEffect, useRef, useCallback } from 'react';
+        import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
         import { createRoot } from 'react-dom/client';
         import * as LucideIcons from 'lucide-react';
         import { initializeApp, getApps, getApp } from 'firebase/app';
@@ -923,6 +923,11 @@
         // 5. MAIN 2030 VERIFICATION APPLICATION
         // ============================================================================
         function Verify2030App() {
+            const isAdminPreview = useMemo(() => {
+                try { return new URLSearchParams(window.location.search).get('admin_preview') === '1'; }
+                catch (_) { return false; }
+            }, []);
+
             // Adaptive Theme synced across all 2030 pages
             const [theme, setTheme] = useState(() => {
                 try {
@@ -986,11 +991,16 @@
                     return;
                 }
 
-                // 2. ตรวจจาก Cloud Firestore (Public Read-Only Certificates Collection)
+                // 2. ตรวจจาก Cloud Firestore (Public Read-Only — ป้องกันทับสิทธิ์ Admin 2 ชั้น)
                 if (isCloudConfigured && fbDb) {
                     try {
-                        if (fbAuth && !fbAuth.currentUser) {
-                            await signInAnonymously(fbAuth).catch(() => {});
+                        if (fbAuth && !isAdminPreview) {
+                            if (typeof fbAuth.authStateReady === 'function') {
+                                await fbAuth.authStateReady().catch(() => {});
+                            }
+                            if (!fbAuth.currentUser) {
+                                await signInAnonymously(fbAuth).catch(() => {});
+                            }
                         }
                         const snap = await getDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'certificates', code));
                         if (snap.exists()) {
@@ -1033,7 +1043,7 @@
                 // 4. ไม่พบข้อมูล
                 await new Promise(r => setTimeout(r, 260));
                 setStatus('not_found');
-            }, [showToast]);
+            }, [showToast, isAdminPreview]);
 
             useEffect(() => {
                 try {
