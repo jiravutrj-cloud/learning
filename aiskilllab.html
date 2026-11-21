@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -10,6 +10,21 @@
 
     <!-- 🌟 โหลดค่าตั้งต้นส่วนกลางจาก data.js (มี Built-in Fallback ป้องกันหน้าขาว) 🌟 -->
     <script src="./data.js" onerror="console.warn('data.js not loaded, using built-in 2030 defaults')"></script>
+
+    <!-- 🌟 ซิงค์ธีมมืด/สว่างทันทีจาก localStorage (ร่วมกับ index.html ทั้งระบบ) 🌟 -->
+    <script>
+      (function () {
+        try {
+          const key = (window.RJCLOUD_CONFIG && window.RJCLOUD_CONFIG.theme && window.RJCLOUD_CONFIG.theme.storageKey) || 'rjcloud_theme_2030';
+          const def = (window.RJCLOUD_CONFIG && window.RJCLOUD_CONFIG.theme && window.RJCLOUD_CONFIG.theme.defaultMode) || 'dark';
+          const saved = localStorage.getItem(key) || def;
+          const mode = saved === 'light' ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', mode);
+          const meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', mode === 'dark' ? '#030712' : '#f8fafc');
+        } catch (_) {}
+      })();
+    </script>
 
     <!-- 🌟 Three.js r128 สำหรับ 3D Living Emotional Core (0 บาท Open-Source WebGL) 🌟 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -83,7 +98,7 @@
         input, select, textarea { font-size: 16px !important; }
       }
 
-      /* 🌟 2030 VisionOS Spatial Glass Materials 🌟 */
+      /* 🌟 2030 VisionOS Spatial Glass Materials (Dark Default) 🌟 */
       .vision-glass {
         background: linear-gradient(135deg, rgba(15, 23, 42, 0.72) 0%, rgba(7, 13, 28, 0.82) 100%);
         backdrop-filter: blur(28px) saturate(160%);
@@ -92,6 +107,7 @@
         box-shadow:
           0 24px 60px -16px rgba(0, 0, 0, 0.72),
           inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        transition: background 0.25s ease, border-color 0.25s ease;
       }
 
       .vision-pill {
@@ -100,6 +116,89 @@
         -webkit-backdrop-filter: blur(20px) saturate(150%);
         border: 1px solid rgba(255, 255, 255, 0.13);
         box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.65);
+        transition: background 0.25s ease, border-color 0.25s ease;
+      }
+
+      /* 🌟 Frosted Pearl Light Adaptation (คงฉาก 3D Core คมชัด พร้อมปรับแผงการ์ดให้อ่านง่ายกลางวัน) 🌟 */
+      html[data-theme="light"] .vision-glass:not(.keep-dark),
+      html[data-theme="light"] .vision-pill:not(.keep-dark) {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(241, 245, 249, 0.9) 100%);
+        border-color: rgba(15, 23, 42, 0.14);
+        box-shadow: 0 18px 42px -14px rgba(15, 23, 42, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+        color: #0f172a;
+      }
+      html[data-theme="light"] .vision-glass:not(.keep-dark) .text-white,
+      html[data-theme="light"] .vision-glass:not(.keep-dark) .text-slate-100,
+      html[data-theme="light"] .vision-pill:not(.keep-dark) .text-white,
+      html[data-theme="light"] .vision-pill:not(.keep-dark) .text-slate-100 {
+        color: #0f172a;
+      }
+      html[data-theme="light"] .vision-glass:not(.keep-dark) .text-slate-200,
+      html[data-theme="light"] .vision-pill:not(.keep-dark) .text-slate-200 {
+        color: #1e293b;
+      }
+      html[data-theme="light"] .vision-glass:not(.keep-dark) .text-slate-300,
+      html[data-theme="light"] .vision-pill:not(.keep-dark) .text-slate-300 {
+        color: #334155;
+      }
+      html[data-theme="light"] .vision-glass:not(.keep-dark) .text-slate-400,
+      html[data-theme="light"] .vision-pill:not(.keep-dark) .text-slate-400 {
+        color: #475569;
+      }
+      html[data-theme="light"] .vision-glass:not(.keep-dark) .text-aurora-200,
+      html[data-theme="light"] .vision-glass:not(.keep-dark) .text-aurora-300,
+      html[data-theme="light"] .vision-pill:not(.keep-dark) .text-aurora-200,
+      html[data-theme="light"] .vision-pill:not(.keep-dark) .text-aurora-300 {
+        color: #047857;
+      }
+      html[data-theme="light"] .vision-glass:not(.keep-dark) .text-prism-200,
+      html[data-theme="light"] .vision-glass:not(.keep-dark) .text-prism-300,
+      html[data-theme="light"] .vision-pill:not(.keep-dark) .text-prism-200,
+      html[data-theme="light"] .vision-pill:not(.keep-dark) .text-prism-300 {
+        color: #0369a1;
+      }
+      html[data-theme="light"] .vision-glass:not(.keep-dark) .text-amber-200,
+      html[data-theme="light"] .vision-glass:not(.keep-dark) .text-amber-300,
+      html[data-theme="light"] .vision-pill:not(.keep-dark) .text-amber-200,
+      html[data-theme="light"] .vision-pill:not(.keep-dark) .text-amber-300 {
+        color: #b45309;
+      }
+      html[data-theme="light"] .vision-glass:not(.keep-dark) .text-rose-200,
+      html[data-theme="light"] .vision-glass:not(.keep-dark) .text-rose-300,
+      html[data-theme="light"] .vision-pill:not(.keep-dark) .text-rose-200,
+      html[data-theme="light"] .vision-pill:not(.keep-dark) .text-rose-300 {
+        color: #be123c;
+      }
+      html[data-theme="light"] .vision-glass:not(.keep-dark) .text-purple-200,
+      html[data-theme="light"] .vision-glass:not(.keep-dark) .text-purple-300,
+      html[data-theme="light"] .vision-pill:not(.keep-dark) .text-purple-200,
+      html[data-theme="light"] .vision-pill:not(.keep-dark) .text-purple-300 {
+        color: #7e22ce;
+      }
+      html[data-theme="light"] .vision-glass:not(.keep-dark) .text-indigo-200,
+      html[data-theme="light"] .vision-glass:not(.keep-dark) .text-indigo-300,
+      html[data-theme="light"] .vision-pill:not(.keep-dark) .text-indigo-200,
+      html[data-theme="light"] .vision-pill:not(.keep-dark) .text-indigo-300 {
+        color: #4338ca;
+      }
+      html[data-theme="light"] .vision-glass:not(.keep-dark) .bg-white\/5,
+      html[data-theme="light"] .vision-glass:not(.keep-dark) .bg-white\/10,
+      html[data-theme="light"] .vision-glass:not(.keep-dark) .bg-white\/\[0\.04\],
+      html[data-theme="light"] .vision-pill:not(.keep-dark) .bg-white\/5,
+      html[data-theme="light"] .vision-pill:not(.keep-dark) .bg-white\/10 {
+        background-color: rgba(15, 23, 42, 0.06);
+      }
+      html[data-theme="light"] .vision-glass:not(.keep-dark) .border-white\/10,
+      html[data-theme="light"] .vision-glass:not(.keep-dark) .border-white\/15,
+      html[data-theme="light"] .vision-pill:not(.keep-dark) .border-white\/10 {
+        border-color: rgba(15, 23, 42, 0.12);
+      }
+      html[data-theme="light"] .vision-glass:not(.keep-dark) .bg-void-900\/90,
+      html[data-theme="light"] .vision-glass:not(.keep-dark) .bg-void-800\/90 {
+        background-color: rgba(15, 23, 42, 0.05);
+      }
+      html[data-theme="light"] .vision-glass:not(.keep-dark) .bg-rose-500.text-white {
+        color: #ffffff;
       }
 
       /* 🌟 Deep Spatial Grid Backdrop 🌟 */
@@ -256,6 +355,7 @@
 
         const MIN_STUDY_PERCENT = Number(CONFIG.learningRules?.minStudyPercent || 80);
         const MIN_POSTTEST_PERCENT = Number(CONFIG.learningRules?.minPosttestPercent || 80);
+        const THEME_KEY = CONFIG.theme?.storageKey || 'rjcloud_theme_2030';
         const STORAGE_KEY = 'rjcloud_organ_state_v2027';
 
         // วิดีโอสถานการณ์จำลองหลัก Vimeo #1248608457
@@ -1769,6 +1869,21 @@
             );
         }
 
+        function ThemeToggleButton({ theme, onToggle }) {
+            const isDark = theme === 'dark';
+            return (
+                <button
+                    type="button"
+                    onClick={onToggle}
+                    title={isDark ? 'สลับเป็นโหมดสว่าง (Frosted Pearl)' : 'สลับเป็นโหมดมืด (Spatial Dark)'}
+                    aria-label="สลับโหมดมืดหรือสว่าง"
+                    className="w-9 h-9 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 flex items-center justify-center transition-all active:scale-95 shrink-0"
+                >
+                    <Icon name={isDark ? 'Sun' : 'Moon'} size={16} className={isDark ? 'text-amber-300' : 'text-indigo-600'} />
+                </button>
+            );
+        }
+
         // ============================================================================
         // 8. MAIN APPLICATION: AI SKILL LAB 2030 — SPATIAL EMPATHY HOLODECK
         // ============================================================================
@@ -1776,6 +1891,26 @@
             const isAdminPreview = useMemo(() => {
                 try { return new URLSearchParams(window.location.search).get('admin_preview') === '1'; }
                 catch (_) { return false; }
+            }, []);
+
+            // Adaptive Theme synced with index.html / executive.html / verify.html / admin.html
+            const [theme, setTheme] = useState(() => {
+                try {
+                    const saved = localStorage.getItem(THEME_KEY);
+                    if (saved === 'light' || saved === 'dark') return saved;
+                } catch (_) {}
+                return CONFIG.theme?.defaultMode === 'light' ? 'light' : 'dark';
+            });
+
+            useEffect(() => {
+                document.documentElement.setAttribute('data-theme', theme);
+                const meta = document.querySelector('meta[name="theme-color"]');
+                if (meta) meta.setAttribute('content', theme === 'dark' ? '#030712' : '#f8fafc');
+                try { localStorage.setItem(THEME_KEY, theme); } catch (_) {}
+            }, [theme]);
+
+            const toggleTheme = useCallback(() => {
+                setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
             }, []);
 
             const [user, setUser] = useState(() => {
@@ -2478,9 +2613,17 @@
                         timestamp: finalResult.timestamp
                     };
                     const nextHistory = [...(Array.isArray(user.skillLabHistory) ? user.skillLabHistory : []), historyItem];
+                    const bestScore = Math.max(...nextHistory.map(h => h.score || 0));
+                    const latestRadarMap = (finalResult.radar || []).reduce((acc, item) => {
+                        acc[item.key] = item.value;
+                        return acc;
+                    }, { setting: 80, empathy: 80, clarity: 80, vocal: 80, dignity: 80 });
+
                     const nextUser = {
                         ...user,
                         skillLabPassed: Boolean(user.skillLabPassed || finalResult.passed),
+                        skillLabBestScore: bestScore,
+                        skillLabLatestRadar: latestRadarMap,
                         skillLabHistory: nextHistory
                     };
                     setUser(nextUser);
@@ -2490,13 +2633,23 @@
                     if (isCloudReady && fbDb && nextUser.id && !String(nextUser.id).startsWith('guest_') && !String(nextUser.id).startsWith('demo_')) {
                         await setDoc(
                             doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', String(nextUser.id)),
-                            { skillLabPassed: nextUser.skillLabPassed, skillLabHistory: nextHistory },
+                            {
+                                skillLabPassed: nextUser.skillLabPassed,
+                                skillLabBestScore: bestScore,
+                                skillLabLatestRadar: latestRadarMap,
+                                skillLabHistory: nextHistory
+                            },
                             { merge: true }
                         );
-                        const bestScore = Math.max(...nextHistory.map(h => h.score || 0));
                         await setDoc(
                             doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'leaderboard', String(nextUser.id)),
-                            { name: nextUser.name, hospital: nextUser.hospital || '-', score: bestScore, updatedAt: finalResult.timestamp },
+                            {
+                                name: nextUser.name,
+                                hospital: nextUser.hospital || '-',
+                                score: bestScore,
+                                radar: latestRadarMap,
+                                updatedAt: finalResult.timestamp
+                            },
                             { merge: true }
                         );
                     }
@@ -2643,6 +2796,7 @@
                             </div>
 
                             <div className="flex items-center gap-1.5 shrink-0">
+                                <ThemeToggleButton theme={theme} onToggle={toggleTheme} />
                                 {/* Ambient Soundscape Toggle */}
                                 <button
                                     type="button"
