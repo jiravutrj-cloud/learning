@@ -8,9 +8,13 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>rjcloud.organ — แพลตฟอร์มการเรียนรู้การรับบริจาคและปลูกถ่ายอวัยวะ 2027</title>
 
-    <!-- โหลดคลังข้อมูลกลางและฐานความรู้ AI จาก data.js -->
+    <!-- 1. โหลดไฟล์สไตล์กลางแยกอิสระ (แนวทางที่ 1 — ไฟล์ที่ 1/4) -->
+    <link rel="stylesheet" href="./styles.css">
+
+    <!-- 2. โหลดคลังข้อมูลและเอ็นจินแยกโมดูลตามลำดับการพึ่งพา (Zero-Build Modular) -->
     <script src="./data.js" onerror="console.warn('data.js not loaded, using built-in defaults')"></script>
-    <!-- โหลดระบบผู้ช่วย AI โต้ตอบเต็มรูปแบบ (AI Welcome, Tour ไฟแอมเบี้ยน, Smart Resume 20 บท, Floating Co-Pilot) -->
+    <script src="./learning-core.js" onerror="console.warn('learning-core.js not loaded, using fallback core')"></script>
+    <script src="./cert-engine.js" onerror="console.warn('cert-engine.js not loaded, using fallback cert engine')"></script>
     <script src="./ai-interactive.js" onerror="console.warn('ai-interactive.js not loaded')"></script>
 
     <!-- ซิงค์โหมดมืด/สว่างทันทีจาก localStorage ป้องกันจอกระพริบ -->
@@ -28,7 +32,7 @@
       })();
     </script>
 
-    <!-- Tailwind CSS, jsPDF, QRCode Generator & ฟอนต์มาตรฐานระบบ -->
+    <!-- 3. CDN ภายนอก: Tailwind CSS, jsPDF, QRCode Generator & ฟอนต์มาตรฐานระบบ -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" onerror="console.warn('jsPDF CDN unavailable')"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" onerror="console.warn('Primary QR CDN unavailable')"></script>
@@ -94,290 +98,6 @@
       }
     </script>
 
-    <style>
-      /* ============================================================================
-       * ADAPTIVE DESIGN TOKENS (SPATIAL DARK DEFAULT <-> FROSTED PEARL LIGHT)
-       * ============================================================================ */
-      :root,
-      html[data-theme="dark"] {
-        --bg-page: #030712;
-        --text-main: #f8fafc;
-        --text-secondary: #cbd5e1;
-        --text-muted: #94a3b8;
-        --glass-bg: linear-gradient(135deg, rgba(15, 23, 42, 0.78) 0%, rgba(7, 13, 28, 0.9) 100%);
-        --glass-border: rgba(255, 255, 255, 0.13);
-        --glass-shadow: 0 22px 50px -16px rgba(0, 0, 0, 0.72), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-        --header-bg: rgba(7, 13, 28, 0.86);
-        --dock-bg: rgba(7, 13, 28, 0.95);
-        --surface-soft: rgba(255, 255, 255, 0.045);
-        --surface-soft-hover: rgba(255, 255, 255, 0.09);
-        --surface-border: rgba(255, 255, 255, 0.11);
-        --input-bg: rgba(15, 23, 42, 0.88);
-        --input-border: rgba(148, 163, 184, 0.28);
-        --input-text: #f8fafc;
-        --accent-text: #34d399;
-        --accent-prism: #22d3ee;
-        --grid-line: rgba(148, 163, 184, 0.045);
-        --aura-1: rgba(16, 185, 129, 0.16);
-        --aura-2: rgba(34, 211, 238, 0.14);
-        --aura-3: rgba(99, 102, 241, 0.12);
-      }
-
-      html[data-theme="light"] {
-        --bg-page: #f4f9fb;
-        --text-main: #0f172a;
-        --text-secondary: #334155;
-        --text-muted: #64748b;
-        --glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(241, 245, 249, 0.86) 100%);
-        --glass-border: rgba(255, 255, 255, 0.96);
-        --glass-shadow: 0 18px 40px -14px rgba(15, 23, 42, 0.1), 0 2px 6px rgba(15, 23, 42, 0.04);
-        --header-bg: rgba(255, 255, 255, 0.88);
-        --dock-bg: rgba(255, 255, 255, 0.96);
-        --surface-soft: rgba(255, 255, 255, 0.78);
-        --surface-soft-hover: rgba(255, 255, 255, 0.98);
-        --surface-border: rgba(148, 163, 184, 0.28);
-        --input-bg: #ffffff;
-        --input-border: #cbd5e1;
-        --input-text: #0f172a;
-        --accent-text: #059669;
-        --accent-prism: #0284c7;
-        --grid-line: rgba(15, 23, 42, 0.032);
-        --aura-1: rgba(16, 185, 129, 0.16);
-        --aura-2: rgba(14, 165, 233, 0.15);
-        --aura-3: rgba(99, 102, 241, 0.09);
-      }
-
-      html {
-        -webkit-tap-highlight-color: transparent;
-        scroll-behavior: smooth;
-      }
-      body {
-        font-family: 'Sarabun', sans-serif;
-        font-size: 16px;
-        line-height: 1.65;
-        background-color: var(--bg-page);
-        color: var(--text-main);
-        margin: 0;
-        overflow-x: hidden;
-        overscroll-behavior-y: none;
-        transition: background-color 0.28s ease, color 0.28s ease;
-      }
-
-      .text-\[11px\] { font-size: 0.8125rem !important; line-height: 1.5; }
-      .text-\[10px\] { font-size: 0.72rem !important; line-height: 1.4; }
-      .touch-target { min-height: 46px; touch-action: manipulation; }
-      .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
-      .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
-      .pb-dock-safe { padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px)); }
-
-      @media (max-width: 768px) {
-        input, select, textarea { font-size: 16px !important; }
-      }
-
-      .spatial-aura {
-        position: fixed;
-        inset: 0;
-        z-index: 0;
-        background:
-          radial-gradient(circle at 12% 14%, var(--aura-1) 0%, transparent 46%),
-          radial-gradient(circle at 88% 12%, var(--aura-2) 0%, transparent 45%),
-          radial-gradient(circle at 65% 88%, var(--aura-3) 0%, transparent 48%);
-        pointer-events: none;
-      }
-      .spatial-grid {
-        position: fixed;
-        inset: 0;
-        z-index: 0;
-        background-image:
-          linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
-          linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
-        background-size: 42px 42px;
-        mask-image: radial-gradient(ellipse at center, black 45%, transparent 94%);
-        pointer-events: none;
-      }
-
-      .spatial-card {
-        background: var(--glass-bg);
-        backdrop-filter: blur(24px) saturate(155%);
-        -webkit-backdrop-filter: blur(24px) saturate(155%);
-        border: 1px solid var(--glass-border);
-        box-shadow: var(--glass-shadow);
-      }
-      .spatial-header {
-        background: var(--header-bg);
-        backdrop-filter: blur(22px) saturate(150%);
-        -webkit-backdrop-filter: blur(22px) saturate(150%);
-        border-bottom: 1px solid var(--surface-border);
-      }
-      .spatial-dock {
-        background: var(--dock-bg);
-        backdrop-filter: blur(24px) saturate(150%);
-        -webkit-backdrop-filter: blur(24px) saturate(150%);
-        border-top: 1px solid var(--surface-border);
-      }
-      .spatial-soft {
-        background: var(--surface-soft);
-        border: 1px solid var(--surface-border);
-      }
-      .spatial-soft:hover {
-        background: var(--surface-soft-hover);
-      }
-      .spatial-input {
-        background: var(--input-bg);
-        border: 1px solid var(--input-border);
-        color: var(--input-text);
-      }
-      .spatial-input:focus {
-        outline: none;
-        border-color: #10b981;
-        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
-      }
-
-      .text-primary-adaptive { color: var(--text-main); }
-      .text-secondary-adaptive { color: var(--text-secondary); }
-      .text-muted-adaptive { color: var(--text-muted); }
-      .text-accent-adaptive { color: var(--accent-text); }
-      .text-prism-adaptive { color: var(--accent-prism); }
-
-      html[data-theme="dark"] select option {
-        background-color: #070d1c;
-        color: #f8fafc;
-      }
-
-      .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
-      .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-      .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.38); border-radius: 999px; }
-
-      /* ไฟแอมเบี้ยนวิ่ง (Ambient Light Runner) */
-      @keyframes ambientBorderFlow {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-      }
-      @keyframes ambientSweep {
-        0% { transform: translateX(-115%); }
-        100% { transform: translateX(220%); }
-      }
-      @keyframes audioEqPulse {
-        0%, 100% { transform: scaleY(0.32); opacity: 0.65; }
-        50% { transform: scaleY(1); opacity: 1; }
-      }
-      .ambient-loading-card {
-        position: relative;
-        border-color: rgba(34, 211, 238, 0.48) !important;
-        box-shadow:
-          0 0 0 1px rgba(52, 211, 153, 0.28),
-          0 16px 46px -14px rgba(34, 211, 238, 0.34),
-          0 0 30px -8px rgba(16, 185, 129, 0.28) !important;
-      }
-      .ambient-playing-card {
-        position: relative;
-        border-color: rgba(52, 211, 153, 0.5) !important;
-        box-shadow:
-          0 0 0 1px rgba(52, 211, 153, 0.25),
-          0 14px 40px -14px rgba(16, 185, 129, 0.28) !important;
-      }
-      .ambient-ribbon {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 3.5px;
-        overflow: hidden;
-        border-top-left-radius: 1.75rem;
-        border-top-right-radius: 1.75rem;
-        pointer-events: none;
-        z-index: 5;
-      }
-      .ambient-ribbon-loading {
-        background: linear-gradient(90deg, #10b981, #22d3ee, #818cf8, #34d399, #22d3ee);
-        background-size: 280% 100%;
-        animation: ambientBorderFlow 1.7s linear infinite;
-        box-shadow: 0 0 16px rgba(34, 211, 238, 0.78);
-      }
-      .ambient-ribbon-playing {
-        background: linear-gradient(90deg, rgba(16, 185, 129, 0.18), #34d399, #22d3ee, rgba(16, 185, 129, 0.18));
-        background-size: 220% 100%;
-        animation: ambientBorderFlow 3s ease-in-out infinite;
-        box-shadow: 0 0 12px rgba(52, 211, 153, 0.55);
-      }
-      .ambient-btn-runner {
-        position: relative;
-        overflow: hidden;
-        background: linear-gradient(120deg, #0284c7, #10b981, #6366f1, #22d3ee);
-        background-size: 260% 260%;
-        animation: ambientBorderFlow 2s ease infinite;
-        color: #ffffff !important;
-        box-shadow: 0 0 22px -4px rgba(34, 211, 238, 0.65);
-      }
-      .ambient-btn-runner::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        width: 48%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.42), transparent);
-        animation: ambientSweep 1.3s ease-in-out infinite;
-        pointer-events: none;
-      }
-      .audio-eq-bar {
-        transform-origin: bottom;
-        animation: audioEqPulse 0.85s ease-in-out infinite;
-      }
-
-      /* กระดาษ A4 สำหรับหนังสือรับรอง CNEU รายบุคคล */
-      .cneu-letter-sheet {
-        background: #ffffff;
-        color: #0f172a;
-        font-family: 'Sarabun', sans-serif;
-        width: 100%;
-        max-width: 794px;
-        box-shadow: 0 24px 60px -16px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(148, 163, 184, 0.25);
-      }
-      .cneu-evidence-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 13px;
-        line-height: 1.5;
-      }
-      .cneu-evidence-table th,
-      .cneu-evidence-table td {
-        border: 1px solid #cbd5e1;
-        padding: 8px 10px;
-        vertical-align: middle;
-      }
-      .cneu-evidence-table th {
-        background-color: #f1f5f9;
-        color: #0f172a;
-        font-weight: 700;
-      }
-
-      @media print {
-        @page { size: A4 portrait; margin: 14mm; }
-        .no-print, .spatial-aura, .spatial-grid { display: none !important; }
-        body.printing-cneu-letter {
-          background: #ffffff !important;
-          color: #0f172a !important;
-        }
-        body.printing-cneu-letter .hide-when-printing-cneu {
-          display: none !important;
-        }
-        body.printing-cneu-letter .cneu-print-container {
-          max-width: 100% !important;
-          padding: 0 !important;
-          margin: 0 !important;
-        }
-        body.printing-cneu-letter .cneu-letter-sheet {
-          max-width: 100% !important;
-          width: 100% !important;
-          box-shadow: none !important;
-          border: none !important;
-          border-radius: 0 !important;
-          padding: 0 !important;
-          margin: 0 !important;
-        }
-      }
-    </style>
-
     <!-- ESM Import Map (React 18, Lucide Icons, Firebase 11) -->
     <script type="importmap">
     {
@@ -397,19 +117,18 @@
 <body>
     <!-- หน้าจอโหลดเริ่มต้น -->
     <div id="root">
-        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg-page);color:var(--text-main);font-family:'Prompt','Sarabun',sans-serif;gap:14px;padding:24px;text-align:center;">
+        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg-page,#030712);color:var(--text-main,#f8fafc);font-family:'Prompt','Sarabun',sans-serif;gap:14px;padding:24px;text-align:center;">
             <div style="width:46px;height:46px;border:3px solid rgba(52,211,153,0.2);border-top-color:#34d399;border-right-color:#22d3ee;border-radius:9999px;animation:appSpin 0.85s linear infinite;"></div>
             <div style="font-weight:800;font-size:17px;">กำลังเปิดแพลตฟอร์มการเรียนรู้ rjcloud.organ...</div>
-            <div style="font-size:12px;color:#94a3b8;">กำลังเตรียมห้องเรียน 20 บท ระบบผู้ช่วย AI และฐานข้อมูลกลาง</div>
+            <div style="font-size:12px;color:#94a3b8;">กำลังโหลดโมดูลห้องเรียน 20 บท ระบบผู้ช่วย AI และฐานข้อมูลกลาง</div>
         </div>
-        <style>@keyframes appSpin{to{transform:rotate(360deg);}}</style>
     </div>
 
     <!-- Global Error Guard ป้องกันหน้าขาว/จอดำ -->
     <script>
       window.addEventListener('error', function (ev) {
         const src = String(ev.filename || (ev.target && ev.target.src) || '');
-        if (src.includes('data.js') || src.includes('ai-interactive.js') || src.includes('jspdf') || src.includes('qrcode')) return;
+        if (/data\.js|learning-core\.js|cert-engine\.js|ai-interactive\.js|styles\.css|jspdf|qrcode/i.test(src)) return;
         const root = document.getElementById('root');
         if (root && !root.dataset.mounted && ev.message) {
           root.innerHTML =
@@ -432,267 +151,83 @@
         import { getFirestore, doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 
         // ============================================================================
-        // 1. MASTER CONFIGURATION, BUILT-IN DEFAULTS & FIREBASE INITIALIZATION
+        // 1. MODULE BINDING (เชื่อมต่อ learning-core.js + cert-engine.js + Firebase)
         // ============================================================================
-        const BUILTIN_CONFIG = {
-            appName: 'rjcloud.organ',
-            edition: '2027 Clinical Edition',
-            contactEmail: 'rjcloud.organ@gmail.com',
-            appId: 'rjcloud-organ-2027',
-            heroBannerUrl: 'https://res.cloudinary.com/djwclucoz/image/upload/v1795227615/%E0%B8%94%E0%B8%B5%E0%B9%84%E0%B8%8B%E0%B8%99%E0%B9%8C%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%B1%E0%B8%87%E0%B9%84%E0%B8%A1%E0%B9%88%E0%B9%84%E0%B8%94%E0%B9%89%E0%B8%95%E0%B8%B1%E0%B9%89%E0%B8%87%E0%B8%8A%E0%B8%B7%E0%B9%88%E0%B8%AD_geidhl.png',
-            learningRules: {
-                allowedUserTypes: ['เรียนใหม่', 'เรียนต่อเนื่อง'],
-                minStudyPercent: 80,
-                minPosttestPercent: 80
-            },
-            theme: {
-                defaultMode: 'dark',
-                storageKey: 'rjcloud_theme'
-            },
-            firebaseConfig: {
-                apiKey: 'AIzaSyCpvK0FCVVk9dt0ylHn_VzUStl7540UsbY',
-                authDomain: 'rj-cloud-organ.firebaseapp.com',
-                projectId: 'rj-cloud-organ',
-                storageBucket: 'rj-cloud-organ.firebasestorage.app',
-                messagingSenderId: '1030088973707',
-                appId: '1:1030088973707:web:8104bb1d90ac6a58f8e38e',
-                measurementId: 'G-X5YLDTC6V4'
-            },
-            appsScriptUrl: 'https://script.google.com/macros/s/AKfycbwuN8MeZhhhomEhpkfXtpoTP341cugDqw1DbQPK_6NSHun2pGZCE0Kfc3eH4YYJ6aWQIg/exec'
-        };
+        const CORE = window.RJCLOUD_CORE || {};
+        const CERT = window.RJCLOUD_CERT || {};
 
-        const CONFIG = {
-            ...BUILTIN_CONFIG,
-            ...(window.RJCLOUD_CONFIG || {}),
-            learningRules: {
-                ...BUILTIN_CONFIG.learningRules,
-                ...(window.RJCLOUD_CONFIG?.learningRules || {})
-            },
-            theme: {
-                ...BUILTIN_CONFIG.theme,
-                ...(window.RJCLOUD_CONFIG?.theme || {})
-            },
-            firebaseConfig: (window.RJCLOUD_CONFIG?.firebaseConfig?.apiKey)
-                ? window.RJCLOUD_CONFIG.firebaseConfig
-                : BUILTIN_CONFIG.firebaseConfig,
-            appsScriptUrl: window.RJCLOUD_CONFIG?.appsScriptUrl || BUILTIN_CONFIG.appsScriptUrl
-        };
+        // รวมค่าตั้งต้นจาก learning-core.js (พร้อมค่าสำรองระดับปลอดภัยหากเปิดไฟล์เดี่ยว)
+        const CONFIG = typeof CORE.getResolvedConfig === 'function'
+            ? CORE.getResolvedConfig()
+            : {
+                appName: 'rjcloud.organ',
+                edition: '2027 Clinical Edition',
+                contactEmail: 'rjcloud.organ@gmail.com',
+                appId: 'rjcloud-organ-2027',
+                heroBannerUrl: 'https://res.cloudinary.com/djwclucoz/image/upload/v1795227615/%E0%B8%94%E0%B8%B5%E0%B9%84%E0%B8%8B%E0%B8%99%E0%B9%8C%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%B1%E0%B8%87%E0%B9%84%E0%B8%A1%E0%B9%88%E0%B9%84%E0%B8%94%E0%B9%89%E0%B8%95%E0%B8%B1%E0%B9%89%E0%B8%87%E0%B8%8A%E0%B8%B7%E0%B9%88%E0%B8%AD_geidhl.png',
+                learningRules: { minStudyPercent: 80, minPosttestPercent: 80 },
+                theme: { defaultMode: 'dark', storageKey: 'rjcloud_theme' },
+                firebaseConfig: window.RJCLOUD_CONFIG?.firebaseConfig || {},
+                appsScriptUrl: window.RJCLOUD_CONFIG?.appsScriptUrl || ''
+            };
 
         const STORAGE_KEY = 'rjcloud_organ_state_v2027';
         const THEME_KEY = CONFIG.theme?.storageKey || 'rjcloud_theme';
         const MIN_STUDY_PERCENT = Number(CONFIG.learningRules?.minStudyPercent || 80);
         const MIN_POSTTEST_PERCENT = Number(CONFIG.learningRules?.minPosttestPercent || 80);
-        const HERO_BANNER_URL = CONFIG.heroBannerUrl || BUILTIN_CONFIG.heroBannerUrl;
+        const HERO_BANNER_URL = CONFIG.heroBannerUrl || '';
 
-        const DEFAULT_CERT_TEMPLATE = window.DEFAULT_CERT_TEMPLATE || {
+        const DEFAULT_CERT_TEMPLATE = CORE.DEFAULT_CERT_TEMPLATE || window.DEFAULT_CERT_TEMPLATE || {
             certPrefix: 'RJC-2027',
             orgTitleTH: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ',
-            orgTitleEN: 'rjcloud.organ • Clinical Organ Donation & Transplantation Network',
             courseTitleTH: 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ',
-            courseTitleEN: 'Organ Donation & Transplantation Clinical Coordination Program',
-            subtitleTH: 'ขอมอบประกาศนียบัตรฉบับนี้เพื่อแสดงว่า',
-            completionTextTH: 'ได้ผ่านการอบรมและประเมินผลตามเกณฑ์มาตรฐานหลักสูตรประจำปี 2027',
             signerName: 'ผู้อำนวยการศูนย์ความเป็นเลิศทางการแพทย์',
-            signerPosition: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ',
-            hoursText: 'ระยะเวลาการเรียนรู้ตามเกณฑ์มาตรฐานวิชาชีพ',
-            logoUrl: '',
-            signatureUrl: ''
+            signerPosition: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ'
         };
-
-        const DEFAULT_CNEU_CONFIG = {
-            logoUrl: '',
+        const DEFAULT_CNEU_CONFIG = CORE.DEFAULT_CNEU_CONFIG || {
             orgName: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ โรงพยาบาลราชวิถี',
             courseName: 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ (rjcloud.organ)',
             activityCode: 'CNEU-2027-0148',
             batchLabel: 'รุ่นที่ 1 ประจำปีงบประมาณ 2570',
             cneuCredits: '8.0',
-            dateRange: '1 – 31 มกราคม 2570',
-            criteriaText: 'ยืนยันตัวตน OTP + เรียน ≥ 80% + AI Skill Lab + Post-test ≥ 80%',
-            coordinatorName: 'พว.ผู้ประสานงานโครงการ (ศูนย์รับบริจาคอวัยวะ)',
-            coordinatorContact: 'rjcloud.organ@gmail.com',
-            reporterName: 'พว.ผู้ประสานงานโครงการ (ศูนย์รับบริจาคอวัยวะ)',
-            reporterPosition: 'ผู้ประสานงานโครงการ',
             approverName: 'ผู้อำนวยการศูนย์ความเป็นเลิศทางการแพทย์',
             approverPosition: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ'
         };
-
-        const CLINICAL_DOMAINS = window.CLINICAL_DOMAINS || {
-            policy_ethics: {
-                id: 'policy_ethics',
-                nameTH: 'นโยบาย กฎหมาย และจริยธรรมวิชาชีพ',
-                shortName: 'กฎหมาย & จริยธรรม',
-                color: '#38bdf8',
-                lessonIds: [1, 3, 4, 7, 8],
-                remediationGuide: 'ทบทวนเป้าหมาย Service Plan, เกณฑ์อายุ 18 ปี, บทบาท ODC สภากาชาดไทย และหลักจริยธรรม Autonomy'
-            },
-            brain_death_donor: {
-                id: 'brain_death_donor',
-                nameTH: 'การวินิจฉัยภาวะสมองตายและการดูแลผู้บริจาค',
-                shortName: 'สมองตาย & Donor',
-                color: '#34d399',
-                lessonIds: [5, 9, 12, 13],
-                remediationGuide: 'ทบทวน GCS=3, การตรวจคลินิก 2 ครั้งห่างกัน ≥ 6 ชม. โดยแพทย์ 3 ท่าน, Apnea Test, Lazarus Sign และ DDAVP คุมเบาจืด'
-            },
-            procurement_transplant: {
-                id: 'procurement_transplant',
-                nameTH: 'การจัดเก็บ ขนส่ง และดูแลผู้ป่วยปลูกถ่ายอวัยวะ',
-                shortName: 'จัดเก็บ & ปลูกถ่าย',
-                color: '#a78bfa',
-                lessonIds: [2, 6, 10, 14, 15, 16, 17, 18, 19, 20],
-                remediationGuide: 'ทบทวนระยะเวลาทองหัวใจ ≤ 4 ชม., ดวงตา 6–8 ชม., บรรจุไต 2–4°C, HLA Typing และการตกแต่งร่างให้เรียบร้อยที่สุด'
-            },
-            family_communication: {
-                id: 'family_communication',
-                nameTH: 'การสื่อสารและให้ข้อมูลญาติผู้เสียชีวิต',
-                shortName: 'สื่อสารกับญาติ',
-                color: '#fbbf24',
-                lessonIds: [11],
-                remediationGuide: 'ทบทวนหลัก Decoupling, SPIKES (S = Setting พื้นที่ส่วนตัว), B.A.L.I., การตอบคำถามความเชื่อ และ Bereavement Care'
-            }
-        };
-
-        const HOSPITAL_MAPPING = window.HOSPITAL_MAPPING || {
+        const CLINICAL_DOMAINS = CORE.CLINICAL_DOMAINS || window.CLINICAL_DOMAINS || {};
+        const HOSPITAL_MAPPING = CORE.HOSPITAL_MAPPING || window.HOSPITAL_MAPPING || {
             'กรมการแพทย์': [{ name: 'รพ.ราชวิถี', prov: 'กรุงเทพมหานคร' }],
-            'เขตสุขภาพที่ 1': [{ name: 'รพ.มหาราชนครเชียงใหม่', prov: 'เชียงใหม่' }],
-            'เขตสุขภาพที่ 7': [{ name: 'รพ.ขอนแก่น', prov: 'ขอนแก่น' }],
             'อื่นๆ': [{ name: 'อื่นๆ', prov: '' }]
         };
-
-        const FALLBACK_LESSONS = [
-            { id: 1, domain: 'policy_ethics', title: 'ยุทธศาสตร์และเป้าหมายการพัฒนาระบบบริการสุขภาพ (Service plan)', videoId: '1-sX4LnWRMSjoEQmWee-9GuiQ2XMvkSro', documentUrl: '' }
-        ];
-
-        const FALLBACK_QUIZ_RAW = [
-            'เป้าหมายหลักของ Service Plan สาขาการรับบริจาคและปลูกถ่ายอวัยวะคือข้อใด?|ลดค่าใช้จ่ายในการดูแลผู้ป่วยวิกฤต|เพิ่มจำนวนผู้บริจาคอวัยวะสมองตายและผู้ได้รับการปลูกถ่ายอวัยวะให้เพียงพอ|ลดภาระงานของบุคลากรทางการแพทย์ในห้อง ICU|สร้างศูนย์ปลูกถ่ายอวัยวะในทุกชุมชน|1',
-            'การบรรจุไตเพื่อขนส่ง (Kidney Packaging) ต้องรักษาอุณหภูมิให้อยู่ในช่วงใด?|แช่แข็งในน้ำแข็งแห้ง (-20 องศาเซลเซียส)|อุณหภูมิห้อง (25 องศาเซลเซียส)|2-4 องศาเซลเซียส (แช่ในน้ำแข็งเกล็ดที่กำลังละลาย)|แช่ในน้ำอุ่น (37 องศาเซลเซียส)|2',
-            'การทำ Decoupling หมายถึงการแยกเรื่องใดออกจากเรื่องใด?|แยกการทำงานของหัวใจออกจากปอด|แยกหมอออกจากพยาบาล|แยกการแจ้งข่าวสมองตาย ออกจากการเจรจาขอรับบริจาคอวัยวะ|แยกญาติผู้ชายออกจากญาติผู้หญิง|2',
-            'ยาตัวใดมักถูกใช้เพื่อควบคุมภาวะเบาจืด (Diabetes Insipidus) ในผู้ป่วยสมองตาย?|Epinephrine|Desmopressin (DDAVP)|Insulin|Dopamine|1'
-        ];
-
-        const ROLE_ADAPTIVE_PROFILES = window.ROLE_ADAPTIVE_PROFILES || {
-            donor_team: {
-                id: 'donor_team',
-                badgeTH: 'มุมมองทีมรับบริจาค / TC',
-                focusSummary: 'เน้นการประสานงาน ODC, หลักสื่อสาร Decoupling & SPIKES, กฎหมาย-จริยธรรม และการดูแลครอบครัวผู้บริจาค',
-                aiPromptAddon: 'ผู้เรียนปฏิบัติงานด้านรับบริจาค/ปลูกถ่ายอวัยวะ (TC) โดยตรง ให้เน้นมุมมองการประสานงานทีม การสื่อสารกับครอบครัว และความถูกต้องตามเกณฑ์ ODC'
-            },
-            icu_er_or: {
-                id: 'icu_er_or',
-                badgeTH: 'มุมมอง ICU / ER / OR',
-                focusSummary: 'เน้นคัดกรอง Potential Donor (GCS=3), รักษาสัญญาณชีพ (DDAVP), Cold Chain 2–4°C และการตกแต่งร่างใน OR',
-                aiPromptAddon: 'ผู้เรียนปฏิบัติงานหอผู้ป่วยวิกฤต (ICU) ห้องฉุกเฉิน (ER) หรือห้องผ่าตัด (OR) ให้เน้นประเด็นหน้างานคลินิก สัญญาณชีพ ภาวะเบาจืด และมาตรฐานจัดเก็บ/ขนส่ง'
-            },
-            general: {
-                id: 'general',
-                badgeTH: 'มุมมองผู้สนใจศึกษาทั่วไป',
-                focusSummary: 'อธิบายศัพท์การแพทย์และเกณฑ์ทางคลินิกด้วยภาษาเข้าใจง่าย พร้อมเชื่อมโยงคุณค่าการต่อชีวิตเพื่อนมนุษย์',
-                aiPromptAddon: 'ผู้เรียนไม่ได้ปฏิบัติงานด้านนี้โดยตรง ให้เริ่มต้นอธิบายศัพท์การแพทย์อย่างเข้าใจง่าย กระชับ เป็นมิตร ก่อนเชื่อมโยงสู่มาตรฐานวิชาชีพ'
-            }
+        const CLINICAL_CASE_SIMULATIONS = CORE.CLINICAL_CASE_SIMULATIONS || window.CLINICAL_CASE_SIMULATIONS || [];
+        const SPACED_FLASHCARDS = CORE.SPACED_FLASHCARDS || window.SPACED_FLASHCARDS || [];
+        const PRE_APPROACH_TAGS = CORE.PRE_APPROACH_TAGS || window.PRE_APPROACH_TAGS || {
+            familyMoods: ['ช็อก / ยังไม่ยอมรับ', 'โศกเศร้าร้องไห้หนัก', 'สับสนเรื่องเครื่องช่วยหายใจ'],
+            concerns: ['กังวลความเชื่อ/พิธีกรรมศาสนา', 'กลัวร่างไม่เรียบร้อย', 'กังวลค่าใช้จ่าย/ความโปร่งใส']
         };
+        const CSAT_RATING_LABELS = CORE.CSAT_RATING_LABELS || { 1: 'น้อยที่สุด (1)', 2: 'น้อย (2)', 3: 'ปานกลาง (3)', 4: 'มาก (4)', 5: 'มากที่สุด (5)' };
+        const CNEU_EVAL_CRITERIA = CORE.CNEU_EVAL_CRITERIA || [];
 
-        const CLINICAL_CASE_SIMULATIONS = (Array.isArray(window.CLINICAL_CASE_SIMULATIONS) && window.CLINICAL_CASE_SIMULATIONS.length > 0)
-            ? window.CLINICAL_CASE_SIMULATIONS
-            : [
-                {
-                    id: 'case_donor_di',
-                    domain: 'brain_death_donor',
-                    badge: 'DONOR MANAGEMENT • ICU',
-                    title: 'เคสที่ 1: ดูแลผู้บริจาคสมองตายภาวะความดันตกและเบาจืด',
-                    patientSummary: 'ชายอายุ 34 ปี อุบัติเหตุทางศีรษะ (TBI) คะแนน GCS = 3 แพทย์ประเมินเข้าข่าย Potential Donor',
-                    steps: [
-                        {
-                            vitals: { bp: '74/44 mmHg', hr: '118 /min', uo: '680 mL/hr', na: '154 mEq/L' },
-                            situation: 'ขณะดูแลใน ICU ความดันโลหิตลดลงเหลือ 74/44 mmHg และปัสสาวะออกมากผิดปกติ 680 mL/hr คุณจะจัดการขั้นตอนแรกอย่างไร?',
-                            options: [
-                                {
-                                    label: 'รีบแจ้งศูนย์ ODC และหยุดสารน้ำทั้งหมดทันทีเพื่อรอดูอาการ',
-                                    correct: false,
-                                    outcome: 'ความดันตกลงอีก! หลัก Donor Management ต้องรักษาสัญญาณชีพให้คงที่ก่อนเสมอค่ะ',
-                                    nextVitals: { bp: '60/38 mmHg', hr: '132 /min', uo: '720 mL/hr', na: '158 mEq/L' }
-                                },
-                                {
-                                    label: 'รายงานแพทย์เพื่อพยุงความดันโลหิต (Fluid/Vasopressor) และประเมินภาวะเบาจืด (DI)',
-                                    correct: true,
-                                    outcome: 'ยอดเยี่ยมค่ะ! การพยุงความดันและตรวจจับภาวะเบาจืดตั้งแต่ต้นช่วยรักษาคุณภาพอวัยวะได้ทันท่วงที',
-                                    nextVitals: { bp: '102/64 mmHg', hr: '96 /min', uo: '520 mL/hr', na: '151 mEq/L' }
-                                }
-                            ]
-                        },
-                        {
-                            vitals: { bp: '102/64 mmHg', hr: '96 /min', uo: '520 mL/hr', na: '151 mEq/L' },
-                            situation: 'ปัสสาวะยังคงออก > 500 mL/hr และค่าโซเดียมสูง ยาหลักที่นิยมใช้ควบคุมภาวะเบาจืดในผู้ป่วยสมองตายคือข้อใด?',
-                            options: [
-                                {
-                                    label: 'Desmopressin (DDAVP) ควบคู่การติดตามปริมาณปัสสาวะและเกลือแร่ใกล้ชิด',
-                                    correct: true,
-                                    outcome: 'แม่นยำมากค่ะ! DDAVP ช่วยควบคุมภาวะเบาจืด ทำให้ปัสสาวะกลับสู่เกณฑ์ปกติและคงคุณภาพอวัยวะได้ดีเยี่ยม',
-                                    nextVitals: { bp: '112/70 mmHg', hr: '84 /min', uo: '120 mL/hr', na: '142 mEq/L' }
-                                },
-                                {
-                                    label: 'ให้ยาขับปัสสาวะ (Furosemide) เพื่อลดบวมสมองเพิ่มเติม',
-                                    correct: false,
-                                    outcome: 'ไม่เหมาะสมค่ะ จะยิ่งทำให้ผู้ป่วยสูญเสียน้ำรุนแรงและความดันตกมากขึ้นค่ะ',
-                                    nextVitals: { bp: '82/50 mmHg', hr: '124 /min', uo: '810 mL/hr', na: '160 mEq/L' }
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ];
+        // ตัวเชื่อมฟังก์ชันหลักจาก learning-core.js และ cert-engine.js
+        const parseRawExams = (raw) => (CORE.parseRawExams ? CORE.parseRawExams(raw) : []);
+        const normalizeQuestionSets = (raw) => (CORE.normalizeQuestionSets ? CORE.normalizeQuestionSets(raw) : [[]]);
+        const computeDomainDiagnosis = (qs, ans) => (
+            CORE.computeDomainDiagnosis
+                ? CORE.computeDomainDiagnosis(qs, ans, MIN_POSTTEST_PERCENT)
+                : { domains: [], weakDomains: [], recommendedLessonIds: [], summaryText: '' }
+        );
+        const parsePosttestPercent = (u) => (CORE.parsePosttestPercent ? CORE.parsePosttestPercent(u, MIN_POSTTEST_PERCENT) : 0);
+        const resolveRoleProfile = (u) => (
+            CORE.resolveRoleProfile
+                ? CORE.resolveRoleProfile(u)
+                : { badgeTH: 'ผู้เรียน rjcloud.organ', aiPromptAddon: '' }
+        );
+        const getTargetHoursForUser = (u, cfg) => (CORE.getTargetHoursForUser ? CORE.getTargetHoursForUser(u, cfg) : 8);
+        const formatStudyTime = (sec) => (CORE.formatStudyTime ? CORE.formatStudyTime(sec) : `${Math.floor(sec / 60)} น.`);
+        const formatThaiDate = (iso) => (CORE.formatThaiDate ? CORE.formatThaiDate(iso) : '-');
+        const maskEmail = (v) => (CORE.maskEmail ? CORE.maskEmail(v) : '••••••');
+        const maskPhone = (v) => (CORE.maskPhone ? CORE.maskPhone(v) : '••••••');
 
-        const SPACED_FLASHCARDS = (Array.isArray(window.SPACED_FLASHCARDS) && window.SPACED_FLASHCARDS.length > 0)
-            ? window.SPACED_FLASHCARDS
-            : [
-                { id: 'fc1', domain: 'brain_death_donor', front: 'เกณฑ์ตรวจยืนยันภาวะสมองตายในผู้ใหญ่ต้องตรวจกี่ครั้ง ห่างกันกี่ชั่วโมง และแพทย์กี่ท่าน?', back: 'ตรวจทางคลินิกอย่างน้อย 2 ครั้ง ห่างกันอย่างน้อย 6 ชั่วโมง และลงนามรับรองโดยแพทย์ 3 ท่าน (ไม่อยู่ในทีมปลูกถ่าย) ร่วมกับ Apnea Test' },
-                { id: 'fc2', domain: 'brain_death_donor', front: 'ผู้ป่วยสมองตายมีภาวะเบาจืด (Diabetes Insipidus) ใช้ยาอะไรคุม?', back: 'Desmopressin (DDAVP) ควบคู่การรักษาความดันโลหิตให้คงที่และติดตามเกลือแร่โซเดียม' },
-                { id: 'fc3', domain: 'procurement_transplant', front: 'ตัวเลข Cold Chain สำคัญ: หัวใจ / ดวงตา / อุณหภูมิบรรจุไต', back: '• หัวใจ: ≤ 4 ชม.\n• ดวงตา: 6–8 ชม.\n• บรรจุขนส่งไต: 2–4°C (น้ำแข็งเกล็ดที่กำลังละลาย ห้ามใช้น้ำแข็งแห้ง -20°C)' },
-                { id: 'fc4', domain: 'family_communication', front: 'หลัก Decoupling และ SPIKES ตัว S ตัวแรก หมายถึงอะไร?', back: '• Decoupling: แยกการแจ้งข่าวสมองตายออกจากการขอรับบริจาคอวัยวะ\n• S (Setting): เตรียมสถานที่ที่เป็นส่วนตัว สงบ และเหมาะสมก่อนพูดคุย' },
-                { id: 'fc5', domain: 'policy_ethics', front: 'เกณฑ์อายุแสดงความจำนงบริจาคด้วยตนเอง และจริยธรรมสูงสุดคือ?', back: '• อายุขั้นต่ำ 18 ปีบริบูรณ์\n• จริยธรรมสูงสุดคือ Autonomy (การเคารพสิทธิ์การตัดสินใจของผู้ป่วยและญาติ)' }
-            ];
-
-        const PRE_APPROACH_TAGS = window.PRE_APPROACH_TAGS || {
-            ageGroups: ['เด็ก/วัยรุ่น', 'วัยทำงาน (20–45 ปี)', 'วัยกลางคน (46–65 ปี)', 'ผู้สูงอายุ (>65 ปี)'],
-            causes: ['อุบัติเหตุทางศีรษะ (TBI)', 'โรคหลอดเลือดสมองแตก/ตีบ', 'ภาวะขาดออกซิเจนเฉียบพลัน'],
-            familyMoods: ['ช็อก / ยังไม่ยอมรับ', 'โศกเศร้าร้องไห้หนัก', 'สับสนเรื่องเครื่องช่วยหายใจ', 'ความเห็นในครอบครัวต่างกัน', 'สงบและเปิดใจรับฟัง'],
-            concerns: ['กังวลความเชื่อ/พิธีกรรมศาสนา', 'กลัวร่างไม่เรียบร้อย', 'กังวลค่าใช้จ่าย/ความโปร่งใส', 'ไม่แน่ใจความต้องการของผู้เสียชีวิต']
-        };
-
-        const CSAT_RATING_LABELS = {
-            1: 'น้อยที่สุด (1)',
-            2: 'น้อย (2)',
-            3: 'ปานกลาง (3)',
-            4: 'มาก (4)',
-            5: 'มากที่สุด (5)'
-        };
-
-        const CNEU_EVAL_CRITERIA = [
-            {
-                key: 'content',
-                title: '1. ความทันสมัย ความถูกต้อง และประโยชน์ของเนื้อหาหลักสูตร',
-                desc: 'ครอบคลุมเกณฑ์วินิจฉัยภาวะสมองตาย Donor Management และการจัดเก็บอวัยวะ'
-            },
-            {
-                key: 'speaker',
-                title: '2. คุณภาพสื่อวิดีโอ เอกสารประกอบ และการถ่ายทอดของวิทยากร',
-                desc: 'ความชัดเจนในการอธิบายและลำดับขั้นตอนการเรียนรู้ 20 บทเรียน'
-            },
-            {
-                key: 'platform',
-                title: '3. ความสะดวกและความเสถียรของระบบเรียนออนไลน์ (rjcloud.organ)',
-                desc: 'การลงทะเบียน OTP, การทำแบบทดสอบ และการใช้งานผ่านมือถือ/คอมพิวเตอร์'
-            },
-            {
-                key: 'aiLab',
-                title: '4. ประโยชน์ของระบบผู้ช่วย AI และห้องฝึกสื่อสาร 3 มิติ (AI Skill Lab)',
-                desc: 'AI Study Companion สรุปบทเรียน และห้องฝึกสื่อสารกับญาติผู้เสียชีวิต'
-            },
-            {
-                key: 'application',
-                title: '5. ความมั่นใจในการนำความรู้และทักษะไปประยุกต์ใช้ในงานจริง',
-                desc: 'สามารถนำไปปรับใช้ดูแลผู้ป่วยและสื่อสารกับครอบครัวในหน่วยงานได้จริง'
-            }
-        ];
-
+        // เชื่อมต่อ Firebase (Cloud Firestore & Anonymous Auth)
         let fbApp = null, fbAuth = null, fbDb = null;
         const isCloudConfigured = Boolean(CONFIG.firebaseConfig?.apiKey && CONFIG.firebaseConfig?.projectId);
 
@@ -706,146 +241,16 @@
             }
         }
 
-        // ============================================================================
-        // 2. PURE HELPERS (EXAMS, PDPA MASKING, ZERO-PII TELEMETRY, AUDIO, QR, CERT)
-        // ============================================================================
-        function parseRawExams(raw) {
-            if (!Array.isArray(raw)) return [];
-            const domMap = Array.isArray(window.QUESTION_DOMAIN_MAP) ? window.QUESTION_DOMAIN_MAP : [];
-            const fallbackDoms = ['policy_ethics', 'procurement_transplant', 'family_communication', 'brain_death_donor'];
-            return raw.map((str, idx) => {
-                const parts = String(str).split('|').map(s => s.trim());
-                return {
-                    id: idx + 1,
-                    origIdx: idx,
-                    domain: domMap[idx] || fallbackDoms[idx % fallbackDoms.length],
-                    question: parts[0] ? parts[0].replace(/^[0-9]+\.\s*/, '') : '',
-                    options: parts.slice(1, Math.max(2, parts.length - 1)),
-                    answer: parseInt((parts[parts.length - 1] || '0').replace(/[^0-9]/g, ''), 10) || 0
-                };
-            });
-        }
-
-        function normalizeQuestionSets(rawSets) {
-            if (!rawSets) return [parseRawExams(window.QUIZ_QUESTIONS_RAW || FALLBACK_QUIZ_RAW)];
-            if (Array.isArray(rawSets)) return rawSets;
-            if (typeof rawSets === 'object') {
-                return Object.keys(rawSets)
-                    .sort((a, b) => Number(a) - Number(b))
-                    .map(k => (Array.isArray(rawSets[k]) ? rawSets[k] : []));
-            }
-            return [parseRawExams(FALLBACK_QUIZ_RAW)];
-        }
-
-        function resolveRoleProfile(u) {
-            const ctx = String(u?.workContext || u?.position || '').toLowerCase();
-            if (ctx.includes('รับบริจาค') || ctx.includes('ปลูกถ่าย') || ctx.includes('tc')) {
-                return ROLE_ADAPTIVE_PROFILES.donor_team;
-            }
-            if (ctx.includes('icu') || ctx.includes('er') || ctx.includes('or') || ctx.includes('วิกฤต') || ctx.includes('ผ่าตัด') || ctx.includes('ฉุกเฉิน') || ctx.includes('พยาบาล')) {
-                return ROLE_ADAPTIVE_PROFILES.icu_er_or;
-            }
-            return ROLE_ADAPTIVE_PROFILES.general;
-        }
-
-        function getTargetHoursForUser(u, liveCfg) {
-            const baseHours = Math.max(1, Number(liveCfg?.hours || 8));
-            if (u?.userType === 'เรียนต่อเนื่อง') {
-                return Math.max(2, Math.round(baseHours * 0.75));
-            }
-            return baseHours;
-        }
-
-        function formatStudyTime(seconds) {
-            const total = Math.max(0, Math.floor(Number(seconds || 0)));
-            const h = Math.floor(total / 3600);
-            const m = Math.floor((total % 3600) / 60);
-            const s = total % 60;
-            if (h > 0) return `${h} ชม. ${m} น.`;
-            if (m > 0) return `${m} น. ${s} วิ`;
-            return `${s} วินาที`;
-        }
-
-        function formatThaiDate(isoStr) {
-            try {
-                const d = isoStr ? new Date(isoStr) : new Date();
-                if (isNaN(d.getTime())) return '-';
-                return d.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
-            } catch (_) {
-                return '-';
-            }
-        }
-
-        function parsePosttestPercent(u) {
-            const m = String(u?.posttest || '').match(/(\d+)\s*\/\s*(\d+)/);
-            if (!m) return u?.status === 'ผ่าน' ? MIN_POSTTEST_PERCENT : 0;
-            const score = parseInt(m[1], 10);
-            const total = parseInt(m[2], 10) || 1;
-            return Math.round((score / total) * 100);
-        }
-
-        /**
-         * ปกปิดข้อมูลติดต่อบางส่วนตามหลัก PDPA (Pre-OTP Masking)
-         */
-        function maskEmail(email = '') {
-            const clean = String(email || '').trim();
-            if (!clean || !clean.includes('@')) return clean ? '••••••' : '';
-            const [local, domain] = clean.split('@');
-            const head = local.slice(0, Math.min(2, local.length));
-            return `${head}••••@${domain}`;
-        }
-
-        function maskPhone(phone = '') {
-            const digits = String(phone || '').replace(/[^0-9]/g, '');
-            if (!digits) return '';
-            if (digits.length <= 5) return '•••••';
-            return `${digits.slice(0, 3)}••••${digits.slice(-3)}`;
-        }
-
-        function resolveRegionId(department = '') {
-            const d = String(department || '').trim();
-            if (d.startsWith('เขตสุขภาพที่')) {
-                const num = d.replace(/[^0-9]/g, '');
-                if (num && Number(num) >= 1 && Number(num) <= 12) return `R${num}`;
-            }
-            if (['กรมการแพทย์', 'สำนักการแพทย์ กรุงเทพฯ', 'สำนักอนามัย กรุงเทพฯ', 'กรุงเทพมหานคร'].some(k => d.includes(k))) {
-                return 'BKK';
-            }
-            return 'OTHER';
-        }
-
-        function buildAnonTelemetryId(rawId = '') {
-            const str = `RJCLOUD_PDPA_ANON|${rawId}|2027`;
-            let h = 2166136261;
-            for (let i = 0; i < str.length; i++) {
-                h ^= str.charCodeAt(i);
-                h = Math.imul(h, 16777619);
-            }
-            return `ANON-${(h >>> 0).toString(16).toUpperCase().padStart(8, '0')}`;
-        }
-
         /**
          * ซิงค์เฉพาะสถิติไม่ระบุตัวตนเข้า executive_telemetry (Zero-PII 100% สำหรับหน้า executive.html)
          */
         async function syncExecutiveTelemetry(u) {
             if (!fbDb || !u?.id || String(u.id).startsWith('admin_preview_')) return;
+            if (!CORE.buildAnonTelemetryId || !CORE.buildExecutiveTelemetryPayload) return;
             try {
-                const anonId = buildAnonTelemetryId(u.id);
-                const domains = Array.isArray(u?.aiRoadmap?.domains)
-                    ? u.aiRoadmap.domains.map(d => ({ id: d.id, percent: Number(d.percent || 0) }))
-                    : [];
-                const payload = {
-                    regionId: resolveRegionId(u.department),
-                    department: u.department || '',
-                    status: u.status === 'ผ่าน' ? 'ผ่าน' : 'กำลังเรียน',
-                    progress: Number(u.progress || 0),
-                    hasLab: Boolean(u.skillLabPassed || (Array.isArray(u.skillLabHistory) && u.skillLabHistory.length > 0)),
-                    skillLabBestScore: typeof u.skillLabBestScore === 'number' ? u.skillLabBestScore : null,
-                    radar: u.skillLabLatestRadar || null,
-                    domains,
-                    satisfactionScore: typeof u.satisfactionScore === 'number' ? u.satisfactionScore : null,
-                    updatedAt: new Date().toISOString()
-                };
+                const anonId = CORE.buildAnonTelemetryId(u.id);
+                const payload = CORE.buildExecutiveTelemetryPayload(u);
+                if (!payload) return;
                 await setDoc(
                     doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'executive_telemetry', anonId),
                     payload,
@@ -856,344 +261,8 @@
             }
         }
 
-        function computeDomainDiagnosis(questions, answers) {
-            const bucket = {};
-            Object.values(CLINICAL_DOMAINS).forEach(d => {
-                bucket[d.id] = { ...d, correct: 0, total: 0 };
-            });
-
-            (questions || []).forEach((q, idx) => {
-                const domId = bucket[q.domain] ? q.domain : 'policy_ethics';
-                bucket[domId].total += 1;
-                if (answers[idx] === q.answer) bucket[domId].correct += 1;
-            });
-
-            const domains = Object.values(bucket).map(d => ({
-                ...d,
-                percent: d.total > 0 ? Math.round((d.correct / d.total) * 100) : 100
-            }));
-
-            const sorted = [...domains].sort((a, b) => a.percent - b.percent);
-            const weakDomains = sorted.filter(d => d.percent < MIN_POSTTEST_PERCENT);
-            const focusDomains = weakDomains.length > 0 ? weakDomains : sorted.slice(0, 1);
-            const recommendedLessonIds = Array.from(
-                new Set(focusDomains.flatMap(d => (Array.isArray(d.lessonIds) ? d.lessonIds : [])))
-            );
-
-            const summaryText = weakDomains.length > 0
-                ? `AI วิเคราะห์พบว่าคุณควรเน้นทบทวนหมวด “${weakDomains.map(d => d.shortName).join('” และ “')}” เป็นพิเศษ โดยระบบได้ติดดาว ★ แนะนำบทเรียนที่เกี่ยวข้องให้ในห้องเรียนแล้วค่ะ`
-                : 'ยอดเยี่ยมมากค่ะ! คุณมีพื้นฐานความรู้แข็งแรงครบทั้ง 4 หมวดคลินิก สามารถทบทวนบทเรียนและเข้าฝึก AI Skill Lab 3 มิติได้เลยค่ะ';
-
-            return {
-                domains,
-                weakDomains,
-                recommendedLessonIds,
-                summaryText,
-                updatedAt: new Date().toISOString()
-            };
-        }
-
-        function pcm16ToWavBlob(base64PCM, sampleRate = 24000) {
-            const binaryString = window.atob(base64PCM);
-            const bytes = new Uint8Array(binaryString.length);
-            for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
-            const buffer = new ArrayBuffer(44 + bytes.length);
-            const view = new DataView(buffer);
-            const writeStr = (offset, str) => {
-                for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
-            };
-            writeStr(0, 'RIFF');
-            view.setUint32(4, 36 + bytes.length, true);
-            writeStr(8, 'WAVE');
-            writeStr(12, 'fmt ');
-            view.setUint32(16, 16, true);
-            view.setUint16(20, 1, true);
-            view.setUint16(22, 1, true);
-            view.setUint32(24, sampleRate, true);
-            view.setUint32(28, sampleRate * 2, true);
-            view.setUint16(32, 2, true);
-            view.setUint16(34, 16, true);
-            writeStr(36, 'data');
-            view.setUint32(40, bytes.length, true);
-            new Uint8Array(buffer, 44).set(bytes);
-            return new Blob([buffer], { type: 'audio/wav' });
-        }
-
-        function loadImageSafe(url) {
-            return new Promise((resolve) => {
-                if (!url) return resolve(null);
-                const img = new Image();
-                img.crossOrigin = 'anonymous';
-                img.onload = () => resolve(img);
-                img.onerror = () => resolve(null);
-                img.src = url;
-            });
-        }
-
-        /**
-         * วาด QR Code จริงลงบน Canvas โดยตรงด้วย qrcode-generator (ป้องกันช่องขาวว่าง 100%)
-         */
-        async function drawRealQrOnCanvas(ctx, urlText, x, y, size, darkColor = '#1d1d1f') {
-            try {
-                if (typeof window.qrcode === 'function') {
-                    const qr = window.qrcode(0, 'M');
-                    qr.addData(urlText);
-                    qr.make();
-                    const count = qr.getModuleCount();
-                    const cell = size / count;
-                    ctx.fillStyle = darkColor;
-                    for (let r = 0; r < count; r++) {
-                        for (let c = 0; c < count; c++) {
-                            if (qr.isDark(r, c)) {
-                                ctx.fillRect(x + c * cell, y + r * cell, Math.ceil(cell), Math.ceil(cell));
-                            }
-                        }
-                    }
-                    return true;
-                }
-            } catch (_) {}
-
-            const fallbackUrl = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=1&data=${encodeURIComponent(urlText)}`;
-            const qrImg = await loadImageSafe(fallbackUrl);
-            if (qrImg) {
-                ctx.drawImage(qrImg, x, y, size, size);
-                return true;
-            }
-            return false;
-        }
-
-        /**
-         * วาดใบประกาศนียบัตรสไตล์มินิมอลเรียบหรู (Apple Minimalist — พื้นสีขาวตัดเส้นทองบาง + QR Code จริง)
-         */
-        async function drawMinimalistCertificate(canvas, tpl, userObj, verifyUrl) {
-            if (!canvas) return;
-            const W = 1600, H = 1131;
-            canvas.width = W;
-            canvas.height = H;
-            const ctx = canvas.getContext('2d');
-
-            const [logoImg, sigImg] = await Promise.all([
-                loadImageSafe(tpl.logoUrl),
-                loadImageSafe(tpl.signatureUrl)
-            ]);
-
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, W, H);
-
-            // Double Hairline Gold Frame
-            const goldGrad = ctx.createLinearGradient(0, 0, W, H);
-            goldGrad.addColorStop(0, '#b89242');
-            goldGrad.addColorStop(0.35, '#e2c785');
-            goldGrad.addColorStop(0.7, '#c5a059');
-            goldGrad.addColorStop(1, '#a67f32');
-            ctx.strokeStyle = goldGrad;
-            ctx.lineWidth = 2.4;
-            ctx.strokeRect(42, 42, W - 84, H - 84);
-            ctx.strokeStyle = 'rgba(197, 160, 89, 0.42)';
-            ctx.lineWidth = 1.2;
-            ctx.strokeRect(58, 58, W - 116, H - 116);
-
-            // Corner Accents
-            const cLen = 36, inset = 74;
-            ctx.strokeStyle = '#c5a059';
-            ctx.lineWidth = 2;
-            [
-                [inset, inset, 1, 1],
-                [W - inset, inset, -1, 1],
-                [inset, H - inset, 1, -1],
-                [W - inset, H - inset, -1, -1]
-            ].forEach(([cx, cy, dx, dy]) => {
-                ctx.beginPath();
-                ctx.moveTo(cx + dx * cLen, cy);
-                ctx.lineTo(cx, cy);
-                ctx.lineTo(cx, cy + dy * cLen);
-                ctx.stroke();
-            });
-
-            let topY = 148;
-            if (logoImg) {
-                const maxH = 74;
-                const drawW = maxH * (logoImg.width / (logoImg.height || 1));
-                ctx.drawImage(logoImg, W / 2 - drawW / 2, 82, drawW, maxH);
-                topY = 192;
-            } else {
-                const barGrad = ctx.createLinearGradient(W / 2 - 58, 0, W / 2 + 58, 0);
-                barGrad.addColorStop(0, 'rgba(197, 160, 89, 0.15)');
-                barGrad.addColorStop(0.5, '#c5a059');
-                barGrad.addColorStop(1, 'rgba(197, 160, 89, 0.15)');
-                ctx.fillStyle = barGrad;
-                ctx.fillRect(W / 2 - 58, 98, 116, 2.4);
-            }
-
-            ctx.textAlign = 'center';
-            ctx.fillStyle = '#1d1d1f';
-            ctx.font = '600 22px "Prompt", sans-serif';
-            ctx.fillText(tpl.orgTitleTH || DEFAULT_CERT_TEMPLATE.orgTitleTH, W / 2, topY);
-
-            ctx.fillStyle = '#86868b';
-            ctx.font = '500 15px "JetBrains Mono", monospace';
-            ctx.fillText(tpl.orgTitleEN || DEFAULT_CERT_TEMPLATE.orgTitleEN, W / 2, topY + 32);
-
-            ctx.fillStyle = '#a8843b';
-            ctx.font = '600 16px "JetBrains Mono", monospace';
-            ctx.fillText('C E R T I F I C A T E   O F   C O M P L E T I O N', W / 2, topY + 86);
-
-            ctx.fillStyle = '#1d1d1f';
-            ctx.font = '700 54px "Prompt", sans-serif';
-            ctx.fillText('ประกาศนียบัตร', W / 2, topY + 150);
-
-            ctx.fillStyle = '#6e6e73';
-            ctx.font = '500 22px "Sarabun", sans-serif';
-            ctx.fillText(tpl.subtitleTH || DEFAULT_CERT_TEMPLATE.subtitleTH, W / 2, topY + 196);
-
-            ctx.fillStyle = '#1d1d1f';
-            ctx.font = '700 56px "Prompt", sans-serif';
-            ctx.fillText(userObj.name || 'ผู้สำเร็จการอบรม', W / 2, topY + 272);
-
-            if (userObj.nameEN) {
-                ctx.fillStyle = '#424245';
-                ctx.font = '600 24px "Prompt", sans-serif';
-                ctx.fillText(userObj.nameEN, W / 2, topY + 308);
-            }
-
-            const ruleY = userObj.nameEN ? topY + 324 : topY + 294;
-            const nameRule = ctx.createLinearGradient(W / 2 - 170, 0, W / 2 + 170, 0);
-            nameRule.addColorStop(0, 'rgba(197, 160, 89, 0)');
-            nameRule.addColorStop(0.25, '#c5a059');
-            nameRule.addColorStop(0.75, '#e2c785');
-            nameRule.addColorStop(1, 'rgba(197, 160, 89, 0)');
-            ctx.fillStyle = nameRule;
-            ctx.fillRect(W / 2 - 170, ruleY, 340, 2);
-
-            ctx.fillStyle = '#6e6e73';
-            ctx.font = '500 21px "Sarabun", sans-serif';
-            const orgMeta = [userObj.hospital || '', userObj.license ? `เลขที่ใบอนุญาต ${userObj.license}` : ''].filter(Boolean).join('   •   ');
-            ctx.fillText(orgMeta, W / 2, ruleY + 38);
-
-            ctx.fillStyle = '#424245';
-            ctx.font = '500 23px "Sarabun", sans-serif';
-            ctx.fillText(tpl.completionTextTH || DEFAULT_CERT_TEMPLATE.completionTextTH, W / 2, ruleY + 92);
-
-            ctx.fillStyle = '#1d1d1f';
-            ctx.font = '700 28px "Prompt", sans-serif';
-            ctx.fillText(tpl.courseTitleTH || DEFAULT_CERT_TEMPLATE.courseTitleTH, W / 2, ruleY + 142);
-
-            ctx.fillStyle = '#a8843b';
-            ctx.font = '500 18px "Prompt", sans-serif';
-            ctx.fillText(tpl.courseTitleEN || DEFAULT_CERT_TEMPLATE.courseTitleEN, W / 2, ruleY + 178);
-
-            ctx.fillStyle = '#6e6e73';
-            ctx.font = '500 18px "Sarabun", sans-serif';
-            ctx.fillText(`ให้ไว้ ณ วันที่ ${formatThaiDate(userObj.certificateIssuedAt)}`, W / 2, ruleY + 216);
-
-            // Signature
-            const sigBaseY = H - 186;
-            if (sigImg) {
-                const sigH = 68;
-                const sigW = sigH * (sigImg.width / (sigImg.height || 1));
-                ctx.drawImage(sigImg, W / 2 - sigW / 2, sigBaseY - 76, sigW, sigH);
-            }
-            ctx.strokeStyle = '#c5a059';
-            ctx.lineWidth = 1.6;
-            ctx.beginPath();
-            ctx.moveTo(W / 2 - 160, sigBaseY);
-            ctx.lineTo(W / 2 + 160, sigBaseY);
-            ctx.stroke();
-
-            ctx.fillStyle = '#1d1d1f';
-            ctx.font = '600 23px "Prompt", sans-serif';
-            ctx.fillText(tpl.signerName || DEFAULT_CERT_TEMPLATE.signerName, W / 2, sigBaseY + 38);
-
-            ctx.fillStyle = '#6e6e73';
-            ctx.font = '500 18px "Sarabun", sans-serif';
-            ctx.fillText(tpl.signerPosition || DEFAULT_CERT_TEMPLATE.signerPosition, W / 2, sigBaseY + 68);
-
-            // Certificate Reference (Bottom Left)
-            ctx.fillStyle = '#c5a059';
-            ctx.fillRect(98, H - 174, 2.5, 62);
-            ctx.textAlign = 'left';
-            ctx.fillStyle = '#a8843b';
-            ctx.font = '600 13px "JetBrains Mono", monospace';
-            ctx.fillText('CERTIFICATE NO.', 114, H - 158);
-            ctx.fillStyle = '#1d1d1f';
-            ctx.font = '700 18px "JetBrains Mono", monospace';
-            ctx.fillText(userObj.certificateCode || `${tpl.certPrefix || 'RJC-2027'}-DEMO01`, 114, H - 134);
-            ctx.fillStyle = '#86868b';
-            ctx.font = '500 15px "Sarabun", sans-serif';
-            ctx.fillText('ตรวจสอบความถูกต้องผ่าน QR Code ที่ rjcloud.organ', 114, H - 110);
-
-            // Real QR Code (Bottom Right)
-            const qrSize = 136;
-            const qrX = W - 102 - qrSize;
-            const qrY = H - 122 - qrSize;
-            ctx.fillStyle = '#ffffff';
-            ctx.strokeStyle = 'rgba(197, 160, 89, 0.65)';
-            ctx.lineWidth = 1.6;
-            ctx.fillRect(qrX - 10, qrY - 10, qrSize + 20, qrSize + 20);
-            ctx.strokeRect(qrX - 10, qrY - 10, qrSize + 20, qrSize + 20);
-
-            await drawRealQrOnCanvas(ctx, verifyUrl, qrX, qrY, qrSize, '#1d1d1f');
-
-            ctx.textAlign = 'center';
-            ctx.fillStyle = '#a8843b';
-            ctx.font = '600 12px "JetBrains Mono", monospace';
-            ctx.fillText('SCAN TO VERIFY', qrX + qrSize / 2, qrY + qrSize + 28);
-            ctx.textAlign = 'left';
-        }
-
-        // IndexedDB Cache สำหรับเสียง AI สรุปบทเรียน
-        const AUDIO_DB_NAME = 'rjcloud_lesson_audio_cache_v1';
-        const AUDIO_STORE_NAME = 'clips';
-        let audioDbPromise = null;
-
-        function openAudioCacheDb() {
-            if (audioDbPromise) return audioDbPromise;
-            audioDbPromise = new Promise((resolve) => {
-                if (typeof indexedDB === 'undefined') return resolve(null);
-                try {
-                    const req = indexedDB.open(AUDIO_DB_NAME, 1);
-                    req.onupgradeneeded = () => {
-                        const db = req.result;
-                        if (!db.objectStoreNames.contains(AUDIO_STORE_NAME)) db.createObjectStore(AUDIO_STORE_NAME);
-                    };
-                    req.onsuccess = () => resolve(req.result);
-                    req.onerror = () => resolve(null);
-                } catch (_) {
-                    resolve(null);
-                }
-            });
-            return audioDbPromise;
-        }
-
-        async function getCachedAudio(key) {
-            const db = await openAudioCacheDb();
-            if (!db) return null;
-            return new Promise((resolve) => {
-                try {
-                    const tx = db.transaction(AUDIO_STORE_NAME, 'readonly');
-                    const req = tx.objectStore(AUDIO_STORE_NAME).get(key);
-                    req.onsuccess = () => resolve(req.result || null);
-                    req.onerror = () => resolve(null);
-                } catch (_) { resolve(null); }
-            });
-        }
-
-        async function setCachedAudio(key, blob) {
-            if (!blob) return;
-            const db = await openAudioCacheDb();
-            if (!db) return;
-            return new Promise((resolve) => {
-                try {
-                    const tx = db.transaction(AUDIO_STORE_NAME, 'readwrite');
-                    tx.objectStore(AUDIO_STORE_NAME).put(blob, key);
-                    tx.oncomplete = () => resolve();
-                    tx.onerror = () => resolve();
-                } catch (_) { resolve(); }
-            });
-        }
-
         // ============================================================================
-        // 3. SHARED UI PRIMITIVES (ERROR BOUNDARY, ICONS, MODALS, QR CANVAS)
+        // 2. SHARED UI PRIMITIVES (ERROR BOUNDARY, ICONS, MODALS, QR CANVAS)
         // ============================================================================
         class AppErrorBoundary extends React.Component {
             constructor(props) {
@@ -1346,21 +415,21 @@
             const ref = useRef(null);
             useEffect(() => {
                 const canvas = ref.current;
-                if (!canvas || !value) return;
+                if (!canvas || !value || !CERT.drawRealQrOnCanvas) return;
                 canvas.width = size;
                 canvas.height = size;
                 const ctx = canvas.getContext('2d');
                 ctx.fillStyle = '#ffffff';
                 ctx.fillRect(0, 0, size, size);
-                drawRealQrOnCanvas(ctx, value, 4, 4, size - 8, '#0f172a');
+                CERT.drawRealQrOnCanvas(ctx, value, 4, 4, size - 8, '#0f172a');
             }, [value, size]);
             return <canvas ref={ref} width={size} height={size} className="block rounded-lg border border-slate-300 bg-white" />;
         }
 
         // ============================================================================
-        // 4. AI STUDY COMPANION (CHEAT SHEET + SENTENCE TTS + MICRO-CHECK + Q&A)
+        // 3. AI STUDY COMPANION (CHEAT SHEET + SENTENCE TTS + MICRO-CHECK + Q&A)
         // ============================================================================
-        function AiStudyCompanion({ lesson, user, appsScriptUrl, onToast }) {
+        function AiStudyCompanion({ lesson, user, appsScriptUrl }) {
             const roleProfile = useMemo(() => resolveRoleProfile(user), [user]);
             const guide = (window.LESSON_AI_GUIDES && window.LESSON_AI_GUIDES[lesson?.id]) || {
                 keyPoints: [
@@ -1407,9 +476,9 @@
             }, [lesson?.id, stopAudio]);
 
             const fetchTtsSentence = async (text, cacheKey) => {
-                const cached = await getCachedAudio(cacheKey);
+                const cached = CORE.getCachedAudio ? await CORE.getCachedAudio(cacheKey) : null;
                 if (cached) return cached;
-                if (!appsScriptUrl) return null;
+                if (!appsScriptUrl || !CORE.pcm16ToWavBlob) return null;
                 const ctrl = new AbortController();
                 abortSetRef.current.add(ctrl);
                 const timer = setTimeout(() => ctrl.abort(), 20000);
@@ -1421,8 +490,8 @@
                     }).then(r => r.json());
                     if (res?.status === 'success' && res.inlineData?.data) {
                         const rate = parseInt(res.inlineData.mimeType?.match(/rate=(\d+)/)?.[1] ?? '24000', 10);
-                        const blob = pcm16ToWavBlob(res.inlineData.data, rate);
-                        await setCachedAudio(cacheKey, blob);
+                        const blob = CORE.pcm16ToWavBlob(res.inlineData.data, rate);
+                        if (CORE.setCachedAudio) await CORE.setCachedAudio(cacheKey, blob);
                         return blob;
                     }
                 } catch (_) {
@@ -1446,10 +515,9 @@
                 const sid = ++ttsSessionRef.current;
                 let browserOnly = !appsScriptUrl;
 
-                const wrap = (p) => Promise.resolve(p);
                 let nextPromise = browserOnly
                     ? null
-                    : wrap(fetchTtsSentence(sentences[0], `lesson_${lesson?.id}_0_${sentences[0]}`));
+                    : Promise.resolve(fetchTtsSentence(sentences[0], `lesson_${lesson?.id}_0_${sentences[0]}`));
 
                 for (let i = 0; i < sentences.length; i++) {
                     if (ttsSessionRef.current !== sid) return;
@@ -1463,7 +531,9 @@
                         if (!blob && i === 0) {
                             browserOnly = true;
                         } else if (i + 1 < sentences.length) {
-                            nextPromise = wrap(fetchTtsSentence(sentences[i + 1], `lesson_${lesson?.id}_${i + 1}_${sentences[i + 1]}`));
+                            nextPromise = Promise.resolve(
+                                fetchTtsSentence(sentences[i + 1], `lesson_${lesson?.id}_${i + 1}_${sentences[i + 1]}`)
+                            );
                         }
                     }
 
@@ -1578,7 +648,6 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                         </button>
                     </div>
 
-                    {/* 1-Minute Clinical Cheat Sheet */}
                     <ul className="space-y-1.5 text-xs sm:text-sm text-secondary-adaptive bg-aurora-500/5 border border-aurora-400/20 rounded-2xl p-3.5">
                         {(guide.keyPoints || []).map((pt, idx) => (
                             <li key={idx} className="flex items-start gap-2 leading-relaxed">
@@ -1588,7 +657,6 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                         ))}
                     </ul>
 
-                    {/* Micro-Check Quiz */}
                     {guide.microCheck && (
                         <div className="spatial-soft rounded-2xl p-3.5 space-y-2.5">
                             <p className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">MICRO-CHECK ท้ายบท (กันง่วง)</p>
@@ -1625,7 +693,6 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                         </div>
                     )}
 
-                    {/* Contextual Q&A with PDPA Patient-Privacy Guardrail */}
                     <div className="space-y-2.5">
                         {qaHistory.length > 0 && (
                             <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar pr-1">
@@ -1669,7 +736,7 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
         }
 
         // ============================================================================
-        // 5. CLINICAL CASE SIMULATOR, SPACED FLASHCARDS & PRE-APPROACH WARM-UP
+        // 4. CLINICAL CASE SIMULATOR & SPACED FLASHCARDS DECK
         // ============================================================================
         function ClinicalCaseSimulator() {
             const [caseIdx, setCaseIdx] = useState(0);
@@ -1677,6 +744,7 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
             const [pickedOpt, setPickedOpt] = useState(null);
 
             const curCase = CLINICAL_CASE_SIMULATIONS[caseIdx] || CLINICAL_CASE_SIMULATIONS[0];
+            if (!curCase) return null;
             const curStep = curCase.steps[stepIdx] || curCase.steps[0];
             const activeVitals = pickedOpt?.nextVitals || curStep.vitals || {};
 
@@ -1787,7 +855,8 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
             const [mastered, setMastered] = useState({});
 
             const card = orderedCards[idx] || orderedCards[0];
-            const dom = CLINICAL_DOMAINS[card?.domain] || CLINICAL_DOMAINS.policy_ethics;
+            if (!card) return null;
+            const dom = CLINICAL_DOMAINS[card.domain] || { shortName: 'คลินิก', color: '#38bdf8' };
 
             return (
                 <div className="max-w-2xl mx-auto space-y-4">
@@ -1845,7 +914,7 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
         }
 
         // ============================================================================
-        // 6. QUIZ ENGINE (PRE-TEST + POST-TEST + AI REMEDIATION COACH)
+        // 5. QUIZ ENGINE (PRE-TEST + POST-TEST + AI REMEDIATION COACH)
         // ============================================================================
         function QuizEngine({ mode, questions, onComplete, onBack }) {
             const [answers, setAnswers] = useState({});
@@ -1890,9 +959,8 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                                         : `เกือบผ่านแล้วค่ะ (เกณฑ์ ≥ ${MIN_POSTTEST_PERCENT}%) ลองทบทวนจุดที่ AI วิเคราะห์ด้านล่างโดยไม่ต้องกังวล แล้วกดสอบใหม่อีกครั้งนะคะ`}
                             </p>
 
-                            {/* 4-Domain Diagnostic Breakdown */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left pt-2">
-                                {submitted.diagnosis.domains.map(d => (
+                                {(submitted.diagnosis.domains || []).map(d => (
                                     <div key={d.id} className="spatial-soft p-3.5 rounded-2xl space-y-1.5">
                                         <div className="flex justify-between text-xs font-bold">
                                             <span className="text-primary-adaptive">{d.shortName}</span>
@@ -1995,7 +1063,7 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
         }
 
         // ============================================================================
-        // 7. INDIVIDUAL CNEU VERIFICATION LETTER (A4 PRINTABLE WITH REAL QR CODE)
+        // 6. INDIVIDUAL CNEU VERIFICATION LETTER (A4 PRINTABLE WITH REAL QR CODE)
         // ============================================================================
         function IndividualCneuLetter({ user, cneuConfig, verifyUrl, onPrint }) {
             const postPct = parsePosttestPercent(user);
@@ -2087,7 +1155,7 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
         }
 
         // ============================================================================
-        // 8. MAIN APPLICATION (LANDING -> AUTH 3-STEP PDPA -> 5-STEP DASHBOARD)
+        // 7. MAIN APPLICATION (LANDING -> AUTH 3-STEP PDPA -> 5-STEP DASHBOARD)
         // ============================================================================
         function App() {
             const adminPreviewParam = useMemo(() => {
@@ -2096,7 +1164,7 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
             }, []);
             const isAdminPreview = Boolean(adminPreviewParam);
 
-            // Adaptive Theme
+            // Adaptive Theme synced across all pages
             const [theme, setTheme] = useState(() => {
                 try {
                     const saved = localStorage.getItem(THEME_KEY);
@@ -2117,14 +1185,13 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
             }, []);
 
             // Cloud & Dynamic Config States
-            const [cloudReady, setCloudReady] = useState(!isCloudConfigured);
             const [appsScriptUrl, setAppsScriptUrl] = useState(CONFIG.appsScriptUrl || '');
             const [lessons, setLessons] = useState(() => (
                 Array.isArray(window.INITIAL_LESSONS) && window.INITIAL_LESSONS.length > 0
                     ? window.INITIAL_LESSONS
-                    : FALLBACK_LESSONS
+                    : (CORE.FALLBACK_LESSONS || [])
             ));
-            const [questions, setQuestions] = useState(() => parseRawExams(window.QUIZ_QUESTIONS_RAW || FALLBACK_QUIZ_RAW));
+            const [questions, setQuestions] = useState(() => parseRawExams(window.QUIZ_QUESTIONS_RAW || CORE.FALLBACK_QUIZ_RAW || []));
             const [certTemplate, setCertTemplate] = useState(DEFAULT_CERT_TEMPLATE);
             const [cneuConfig, setCneuConfig] = useState(DEFAULT_CNEU_CONFIG);
             const [liveConfig, setLiveConfig] = useState({
@@ -2246,8 +1313,6 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
 
             // Pre-Approach 30s Warm-up (Zero-PII Tags)
             const [warmupTags, setWarmupTags] = useState({
-                ageGroup: PRE_APPROACH_TAGS.ageGroups[1],
-                cause: PRE_APPROACH_TAGS.causes[0],
                 mood: PRE_APPROACH_TAGS.familyMoods[0],
                 concern: PRE_APPROACH_TAGS.concerns[0]
             });
@@ -2273,10 +1338,7 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
 
             // Firebase Auth + Real-time Settings & Content Sync
             useEffect(() => {
-                if (!isCloudConfigured || !fbAuth || !fbDb) {
-                    setCloudReady(true);
-                    return;
-                }
+                if (!isCloudConfigured || !fbAuth || !fbDb) return;
                 let active = true;
                 let anonAttempted = false;
                 let unsubSettings = null;
@@ -2285,18 +1347,16 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                 const unsubAuth = onAuthStateChanged(fbAuth, async (fbUser) => {
                     if (!active) return;
                     if (!fbUser) {
-                        if (isAdminPreview) { setCloudReady(true); return; }
+                        if (isAdminPreview) return;
                         if (!anonAttempted) {
                             anonAttempted = true;
                             try {
                                 if (typeof fbAuth.authStateReady === 'function') await fbAuth.authStateReady();
                                 if (active && !fbAuth.currentUser) await signInAnonymously(fbAuth);
                             } catch (_) {}
-                            if (active) setCloudReady(true);
                         }
                         return;
                     }
-                    setCloudReady(true);
 
                     if (unsubSettings) unsubSettings();
                     unsubSettings = onSnapshot(
@@ -2423,25 +1483,21 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                 }
             }, [user, screen, activeTab, lessons, currentLessonId, studySeconds, liveStudyPercent, targetSeconds, appsScriptUrl, isAdminPreview, hasDonePretest, toggleTheme, showToast, saveUserProgress]);
 
-            // Render Certificate Canvas when viewing certificate screen
-            const verifyUrl = useMemo(() => {
-                const code = user?.certificateCode || `${certTemplate.certPrefix || 'RJC-2027'}-DEMO01`;
-                try {
-                    const base = window.location.href.split('?')[0].split('#')[0].replace(/index\.html$/i, '');
-                    return `${base}verify.html?code=${encodeURIComponent(code)}`;
-                } catch (_) {
-                    return `https://learn.coerj.com/verify.html?code=${encodeURIComponent(code)}`;
-                }
-            }, [user?.certificateCode, certTemplate.certPrefix]);
+            // Render Certificate Canvas via cert-engine.js
+            const verifyUrl = useMemo(() => (
+                CERT.buildVerifyUrl
+                    ? CERT.buildVerifyUrl(user?.certificateCode, certTemplate.certPrefix)
+                    : `https://learn.coerj.com/verify.html?code=${encodeURIComponent(user?.certificateCode || 'RJC-2027-DEMO01')}`
+            ), [user?.certificateCode, certTemplate.certPrefix]);
 
             useEffect(() => {
-                if (screen === 'certificate' && certViewTab === 'certificate' && certCanvasRef.current && user) {
-                    drawMinimalistCertificate(certCanvasRef.current, certTemplate, user, verifyUrl);
+                if (screen === 'certificate' && certViewTab === 'certificate' && certCanvasRef.current && user && CERT.drawMinimalistCertificate) {
+                    CERT.drawMinimalistCertificate(certCanvasRef.current, certTemplate, user, verifyUrl);
                 }
             }, [screen, certViewTab, certTemplate, user, verifyUrl]);
 
             // ========================================================================
-            // 9. AUTH HANDLERS (PRE-OTP PDPA MASKING + PDPA CONSENT CHECKBOX)
+            // 8. AUTH HANDLERS (PRE-OTP PDPA MASKING + PDPA CONSENT CHECKBOX)
             // ========================================================================
             const handleCheckLicense = async (e) => {
                 e.preventDefault();
@@ -2463,7 +1519,7 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                     }
                     if (found) {
                         setExistingUserPreOtp(found);
-                        // Pre-OTP PDPA Protection: ไม่นำอีเมลและเบอร์โทรดิบมาแสดงในช่อง Input ก่อนยืนยัน OTP
+                        // Pre-OTP PDPA Protection: ไม่นำอีเมลและเบอร์โทรดิบมาแสดงก่อนยืนยัน OTP
                         setRegForm(prev => ({
                             ...prev,
                             license: cleanLic,
@@ -2589,7 +1645,7 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
             };
 
             // ========================================================================
-            // 10. STEP 5: ISSUE CERTIFICATE & INDIVIDUAL CNEU RECORD
+            // 9. STEP 5: ISSUE CERTIFICATE & INDIVIDUAL CNEU RECORD (via cert-engine.js)
             // ========================================================================
             const handleIssueCertificate = async (e) => {
                 e.preventDefault();
@@ -2617,27 +1673,19 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                     cneuCredits: cneuConfig.cneuCredits
                 });
 
-                const certPublicPayload = {
-                    code,
-                    name: finalName,
-                    nameEN: certForm.nameEN.trim(),
-                    license: updated?.license || user.license || user.id,
-                    position: user.position || 'พยาบาลวิชาชีพ',
-                    hospital: finalHosp,
-                    department: user.department || '',
-                    province: user.province || '',
-                    userType: user.userType || 'เรียนใหม่',
-                    courseTitleTH: certTemplate.courseTitleTH || DEFAULT_CERT_TEMPLATE.courseTitleTH,
-                    orgTitleTH: certTemplate.orgTitleTH || DEFAULT_CERT_TEMPLATE.orgTitleTH,
-                    signerName: certTemplate.signerName || DEFAULT_CERT_TEMPLATE.signerName,
-                    signerPosition: certTemplate.signerPosition || DEFAULT_CERT_TEMPLATE.signerPosition,
-                    posttestScore: user.posttest || 'ผ่านเกณฑ์ (≥ 80%)',
-                    skillLabBestScore: typeof user.skillLabBestScore === 'number' ? user.skillLabBestScore : null,
-                    cneuActivityCode: cneuConfig.activityCode || '',
-                    cneuCredits: cneuConfig.cneuCredits || '',
-                    issuedAt,
-                    status: 'valid'
-                };
+                const certPublicPayload = CERT.buildPublicCertPayload
+                    ? CERT.buildPublicCertPayload({
+                        code,
+                        finalName,
+                        nameEN: certForm.nameEN.trim(),
+                        finalHospital: finalHosp,
+                        license: updated?.license || user.license || user.id,
+                        user,
+                        certTemplate,
+                        cneuConfig,
+                        issuedAt
+                    })
+                    : { code, name: finalName, hospital: finalHosp, issuedAt, status: 'valid' };
 
                 try {
                     const localMap = JSON.parse(localStorage.getItem('rjcloud_local_certificates') || '{}');
@@ -2663,40 +1711,25 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
             };
 
             const handleDownloadCertPng = () => {
-                if (!certCanvasRef.current) return;
-                const a = document.createElement('a');
-                a.href = certCanvasRef.current.toDataURL('image/png', 1.0);
-                a.download = `Certificate_${user?.certificateCode || 'rjcloud'}.png`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                showToast('ดาวน์โหลดไฟล์ประกาศนียบัตร (PNG) เรียบร้อยแล้วค่ะ');
+                if (CERT.downloadCanvasAsPng && CERT.downloadCanvasAsPng(certCanvasRef.current, user?.certificateCode)) {
+                    showToast('ดาวน์โหลดไฟล์ประกาศนียบัตร (PNG) เรียบร้อยแล้วค่ะ');
+                }
             };
 
             const handleDownloadCertPdf = () => {
-                if (!certCanvasRef.current) return;
-                try {
-                    const jsPDFCtor = window.jspdf?.jsPDF;
-                    if (!jsPDFCtor) {
-                        handleDownloadCertPng();
-                        return;
-                    }
-                    const pdf = new jsPDFCtor({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-                    const imgData = certCanvasRef.current.toDataURL('image/png', 1.0);
-                    pdf.addImage(imgData, 'PNG', 0, 0, 297, 210);
-                    pdf.save(`Certificate_${user?.certificateCode || 'rjcloud'}.pdf`);
-                    showToast('ดาวน์โหลดประกาศนียบัตร (PDF) เรียบร้อยแล้วค่ะ');
-                } catch (_) {
-                    handleDownloadCertPng();
+                if (!CERT.downloadCanvasAsPdf) return;
+                const res = CERT.downloadCanvasAsPdf(certCanvasRef.current, user?.certificateCode);
+                if (res?.ok) {
+                    showToast(res.format === 'pdf' ? 'ดาวน์โหลดประกาศนียบัตร (PDF) เรียบร้อยแล้วค่ะ' : 'ดาวน์โหลดประกาศนียบัตร (PNG) เรียบร้อยแล้วค่ะ');
                 }
             };
 
             const handlePrintCneuLetter = () => {
-                document.body.classList.add('printing-cneu-letter');
-                setTimeout(() => {
+                if (CERT.printIndividualCneuLetter) {
+                    CERT.printIndividualCneuLetter();
+                } else {
                     window.print();
-                    setTimeout(() => document.body.classList.remove('printing-cneu-letter'), 500);
-                }, 150);
+                }
             };
 
             const handleLogout = () => {
@@ -2726,13 +1759,13 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
             );
 
             // ========================================================================
-            // 11. RENDER SCREENS
+            // 10. RENDER SCREENS (คงดีไซน์เดิม 100% ครบทุกหน้าจอ)
             // ========================================================================
             return (
                 <div className="min-h-dvh relative flex flex-col pt-safe">
                     <div className="spatial-aura" /><div className="spatial-grid" />
 
-                    {/* ==================== SCREEN 1: LANDING PAGE (คงดีไซน์เดิมตามภาพหน้าจอ 100%) ==================== */}
+                    {/* ==================== SCREEN 1: LANDING PAGE ==================== */}
                     {screen === 'landing' && (
                         <div className="relative z-10 flex-1 flex flex-col">
                             <header className="w-full max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-2">
@@ -2764,9 +1797,8 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                             </header>
 
                             <main className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10 flex flex-col items-center justify-center text-center space-y-7">
-                                {/* Hero Hospital Emblem Card */}
                                 <div className="bg-white rounded-[2rem] p-5 sm:p-7 shadow-2xl border border-slate-200/80 max-w-sm w-full flex flex-col items-center justify-center">
-                                    {!heroImgFailed ? (
+                                    {!heroImgFailed && HERO_BANNER_URL ? (
                                         <img
                                             src={HERO_BANNER_URL}
                                             alt="Rajavithi Hospital Organ Transplantation Cloud"
@@ -2782,7 +1814,6 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                                     )}
                                 </div>
 
-                                {/* Headline & Subtitle */}
                                 <div className="space-y-3 max-w-2xl">
                                     <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-primary-adaptive leading-tight">
                                         ยกระดับทักษะการรับบริจาคและปลูกถ่ายอวัยวะ{' '}
@@ -2795,7 +1826,6 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                                     </p>
                                 </div>
 
-                                {/* Primary Action Button */}
                                 <button
                                     type="button"
                                     onClick={() => { setAuthStep(1); setScreen('auth'); }}
@@ -2805,7 +1835,6 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                                     <Icon name="ArrowRight" size={18} />
                                 </button>
 
-                                {/* 5-Step AI-Guided Pathway Card */}
                                 <section className="spatial-card w-full rounded-[2rem] p-5 sm:p-7 space-y-4">
                                     <p className="font-mono text-[11px] font-bold text-prism-adaptive uppercase tracking-wider">
                                         5-STEP AI-GUIDED PATHWAY สู่ประกาศนียบัตรอิเล็กทรอนิกส์
@@ -2855,7 +1884,6 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                                     <span className="font-mono text-xs font-bold text-accent-adaptive">STEP {authStep} / 3</span>
                                 </div>
 
-                                {/* Step 1: License Check */}
                                 {authStep === 1 && (
                                     <form onSubmit={handleCheckLicense} className="space-y-4">
                                         <div className="space-y-1">
@@ -2875,7 +1903,6 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                                             />
                                         </div>
 
-                                        {/* กล่องแจ้งเตือน PDPA ตั้งแต่ขั้นแรก */}
                                         <div className="p-3.5 rounded-2xl bg-aurora-500/10 border border-aurora-400/35 flex items-start gap-2.5 text-xs">
                                             <Icon name="ShieldCheck" size={18} className="text-accent-adaptive shrink-0 mt-0.5" />
                                             <div className="space-y-1">
@@ -2896,7 +1923,6 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                                     </form>
                                 )}
 
-                                {/* Step 2: Profile Confirm + Masked Existing Contact + PDPA Consent */}
                                 {authStep === 2 && (
                                     <form onSubmit={handleRequestOtp} className="space-y-4">
                                         <div>
@@ -2993,7 +2019,6 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                                                 </select>
                                             </div>
 
-                                            {/* Pre-OTP Masked Contact Block (PDPA Safe) */}
                                             {existingUserPreOtp && existingUserPreOtp.email && !editContactOverride ? (
                                                 <div className="sm:col-span-2 spatial-soft p-3.5 rounded-2xl space-y-2 border-prism-400/35">
                                                     <div className="flex items-center justify-between gap-2">
@@ -3040,7 +2065,6 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                                             )}
                                         </div>
 
-                                        {/* กล่อง PDPA Consent ตามข้อความที่กำหนด */}
                                         <div className="p-4 rounded-2xl bg-aurora-500/10 border border-aurora-400/40 space-y-2.5">
                                             <div className="flex items-center justify-between gap-2">
                                                 <span className="text-xs font-bold text-accent-adaptive flex items-center gap-1.5">
@@ -3077,7 +2101,6 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                                     </form>
                                 )}
 
-                                {/* Step 3: Verify OTP */}
                                 {authStep === 3 && (
                                     <form onSubmit={handleVerifyOtp} className="space-y-4 text-center">
                                         <div className="w-14 h-14 rounded-2xl bg-aurora-500/20 text-accent-adaptive flex items-center justify-center mx-auto">
@@ -3148,7 +2171,6 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                     {/* ==================== SCREEN 5: MAIN LEARNING DASHBOARD (5 TABS — NO LEADERBOARD) ==================== */}
                     {screen === 'dashboard' && user && (
                         <div className="relative z-10 flex-1 flex flex-col pb-dock-safe lg:pb-10">
-                            {/* Top Spatial Header */}
                             <header className="sticky top-0 z-30 spatial-header no-print">
                                 <div className="max-w-7xl mx-auto px-3.5 sm:px-6 h-14 md:h-16 flex items-center justify-between gap-2">
                                     <div className="flex items-center gap-2.5 min-w-0">
@@ -3165,7 +2187,6 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                                         </div>
                                     </div>
 
-                                    {/* Desktop 5-Tab Nav (NO Leaderboard) */}
                                     <div className="hidden lg:flex items-center gap-1">
                                         {[
                                             { id: 'lessons', label: 'บทเรียน + AI', icon: 'MonitorPlay' },
@@ -3197,7 +2218,6 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                             </header>
 
                             <main className="flex-1 w-full max-w-7xl mx-auto px-3.5 sm:px-6 pt-4 space-y-5">
-                                {/* 5-Step Progress Strip */}
                                 <div className="spatial-card rounded-[1.75rem] p-4 grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs">
                                     <button type="button" onClick={() => setScreen('pretest')} className={`text-left p-3 rounded-2xl border transition-all ${hasDonePretest ? 'bg-aurora-500/15 border-aurora-400/40' : 'spatial-soft'}`}>
                                         <span className="font-mono text-[10px] font-bold text-prism-adaptive block">STEP 01</span>
@@ -3260,7 +2280,6 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                                     </button>
                                 </div>
 
-                                {/* TAB 1: LESSONS + AI STUDY COMPANION */}
                                 {activeTab === 'lessons' && currentLesson && (
                                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
                                         <div className="lg:col-span-8 space-y-4">
@@ -3307,11 +2326,9 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                                                 lesson={currentLesson}
                                                 user={user}
                                                 appsScriptUrl={appsScriptUrl}
-                                                onToast={showToast}
                                             />
                                         </div>
 
-                                        {/* Right Playlist (20 Lessons) */}
                                         <div className="lg:col-span-4 spatial-card rounded-[1.75rem] p-4 space-y-3">
                                             <div className="flex items-center justify-between">
                                                 <h3 className="font-display font-bold text-sm text-primary-adaptive">รายการบทเรียน ({lessons.length} บท)</h3>
@@ -3352,13 +2369,10 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                                     </div>
                                 )}
 
-                                {/* TAB 2: CLINICAL CASES */}
                                 {activeTab === 'clinical_cases' && <ClinicalCaseSimulator />}
 
-                                {/* TAB 3: FLASHCARDS */}
                                 {activeTab === 'flashcards' && <SpacedFlashcardsDeck aiRoadmap={user.aiRoadmap} />}
 
-                                {/* TAB 4: LIVE STREAM */}
                                 {activeTab === 'live' && (
                                     <div className="max-w-4xl mx-auto spatial-card rounded-[1.75rem] p-5 sm:p-6 space-y-4">
                                         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -3390,7 +2404,6 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                                     </div>
                                 )}
 
-                                {/* TAB 5: PROFILE + ZERO-PII WARM-UP + LOGOUT */}
                                 {activeTab === 'profile' && (
                                     <div className="max-w-4xl mx-auto space-y-5">
                                         <div className="spatial-card rounded-[1.75rem] p-5 sm:p-6 space-y-4">
@@ -3446,7 +2459,6 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                                             )}
                                         </div>
 
-                                        {/* Zero-PII 30s Pre-Approach Warm-up */}
                                         <div className="spatial-card rounded-[1.75rem] p-5 sm:p-6 space-y-4">
                                             <div>
                                                 <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">ZERO-PII PRE-APPROACH WARM-UP (30 วิ ก่อนพบญาติจริง)</span>
@@ -3484,7 +2496,6 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                                 )}
                             </main>
 
-                            {/* Mobile Bottom Spatial Dock (5 Tabs — NO Leaderboard) */}
                             <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 spatial-dock px-2 pt-1.5 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] no-print">
                                 <div className="grid grid-cols-5 gap-1 max-w-lg mx-auto">
                                     {[
@@ -3547,7 +2558,6 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                                     </div>
                                 </div>
 
-                                {/* 5-Dimension CNEU Evaluation */}
                                 <div className="spatial-soft rounded-2xl p-4 space-y-3">
                                     <p className="font-display font-bold text-sm text-primary-adaptive">แบบประเมินความพึงพอใจรายด้าน (มาตรฐาน CNEU)</p>
                                     {CNEU_EVAL_CRITERIA.map(item => (
