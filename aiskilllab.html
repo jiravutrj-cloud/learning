@@ -45,6 +45,17 @@
                 sans: ['Sarabun', 'sans-serif'],
                 mono: ['JetBrains Mono', 'monospace']
               },
+              fontSize: {
+                xs: ['0.875rem', { lineHeight: '1.5' }],
+                sm: ['1rem', { lineHeight: '1.6' }],
+                base: ['1.125rem', { lineHeight: '1.65' }],
+                lg: ['1.25rem', { lineHeight: '1.55' }],
+                xl: ['1.42rem', { lineHeight: '1.45' }],
+                '2xl': ['1.7rem', { lineHeight: '1.35' }],
+                '3xl': ['2.05rem', { lineHeight: '1.25' }],
+                '4xl': ['2.45rem', { lineHeight: '1.2' }],
+                '5xl': ['3.15rem', { lineHeight: '1.15' }]
+              },
               colors: {
                 void: {
                   950: '#030712',
@@ -80,6 +91,8 @@
       }
       body {
         font-family: 'Sarabun', sans-serif;
+        font-size: 16px;
+        line-height: 1.65;
         background-color: #030712;
         color: #f8fafc;
         margin: 0;
@@ -87,12 +100,12 @@
         overscroll-behavior-y: none;
       }
 
-      /* Mobile-First Safe Area & Dynamic Viewport */
-      .h-dvh { height: 100vh; height: 100dvh; }
-      .min-h-dvh { min-height: 100vh; min-height: 100dvh; }
+      /* ยกระดับขนาดฟอนต์ภาษาไทยส่วนคำอธิบายย่อยให้อ่านสบายตา */
+      .text-\[11px\] { font-size: 0.8125rem !important; line-height: 1.5; }
+      .text-\[10px\] { font-size: 0.72rem !important; line-height: 1.4; }
+      .touch-target { min-height: 46px; touch-action: manipulation; }
       .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
       .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
-      .touch-target { min-height: 46px; touch-action: manipulation; }
 
       @media (max-width: 768px) {
         input, select, textarea { font-size: 16px !important; }
@@ -223,7 +236,29 @@
         animation: subtitleFloatIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
       }
 
-      /* Holographic 3D Foil Card Sheen */
+      /* Style 2: Floating Cinema Subtitle (ไร้กรอบ + ม่านเงา Soft Radial Scrim + เงา 3 ชั้น) */
+      .cinema-floating-scrim {
+        background: radial-gradient(
+          ellipse 88% 96% at 50% 50%,
+          rgba(3, 7, 18, 0.68) 0%,
+          rgba(3, 7, 18, 0.36) 58%,
+          rgba(3, 7, 18, 0) 100%
+        );
+      }
+      .cinema-text-shadow {
+        text-shadow:
+          0 2px 16px rgba(0, 0, 0, 0.94),
+          0 1px 3px rgba(0, 0, 0, 0.96),
+          0 0 28px rgba(3, 7, 18, 0.88);
+      }
+      .holo-stage-pill {
+        background: rgba(5, 11, 24, 0.52);
+        backdrop-filter: blur(18px) saturate(155%);
+        -webkit-backdrop-filter: blur(18px) saturate(155%);
+        border: 1px solid rgba(255, 255, 255, 0.13);
+        box-shadow: 0 14px 36px -14px rgba(0, 0, 0, 0.68), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+        color: #f8fafc;
+      }
       .holo-card-wrapper {
         perspective: 1100px;
       }
@@ -2276,15 +2311,15 @@
             if (!toast.visible) return null;
             return (
                 <div className="fixed top-[calc(1rem+env(safe-area-inset-top,0px))] left-1/2 -translate-x-1/2 z-[140] w-[92vw] max-w-md pointer-events-none">
-                    <div className={`px-4 py-3 rounded-2xl shadow-2xl border backdrop-blur-2xl flex items-center gap-2.5 text-xs sm:text-sm font-bold ${
+                    <div className={`px-4 py-3 rounded-2xl shadow-2xl border backdrop-blur-2xl flex items-center gap-2.5 text-xs sm:text-sm font-bold text-white ${
                         toast.type === 'error'
-                            ? 'bg-rose-950/95 border-rose-400/45 text-rose-100'
+                            ? 'bg-rose-700/95 border-rose-400/60'
                             : toast.type === 'info'
-                                ? 'bg-sky-950/95 border-prism-400/45 text-prism-100'
-                                : 'bg-emerald-950/95 border-aurora-400/45 text-aurora-100'
+                                ? 'bg-sky-700/95 border-sky-400/60'
+                                : 'bg-emerald-700/95 border-emerald-400/60'
                     }`}>
-                        <Icon name={toast.type === 'error' ? 'AlertCircle' : toast.type === 'info' ? 'Sparkles' : 'CheckCircle2'} size={17} className="shrink-0" />
-                        <span>{toast.text}</span>
+                        <Icon name={toast.type === 'error' ? 'AlertCircle' : toast.type === 'info' ? 'Sparkles' : 'CheckCircle2'} size={17} className="shrink-0 text-white" />
+                        <span className="text-white">{toast.text}</span>
                     </div>
                 </div>
             );
@@ -2414,6 +2449,7 @@
             const [showTranscriptDrawer, setShowTranscriptDrawer] = useState(false);
             const [showVideoModal, setShowVideoModal] = useState(false);
             const [showCoachWhisper, setShowCoachWhisper] = useState(true);
+            const [showSuggestionsPanel, setShowSuggestionsPanel] = useState(true);
             const [ambientOn, setAmbientOn] = useState(false);
 
             // Conversation, Affective Telemetry & Timeline States
@@ -3664,33 +3700,33 @@ Bereaved Relative (Start with [EMOTION]):`;
                                 <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
                                     <button
                                         type="button"
-                                        onClick={() => enterHolodeck(selectedMode, 'micro_drill', activePersona, activeDifficulty)}
-                                        className="touch-target w-full sm:w-auto px-5 py-3 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 text-white font-display font-bold text-sm flex items-center justify-center gap-2"
+                                        onClick={() => setPhase('menu')}
+                                        className="touch-target w-full sm:w-auto px-5 py-3 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 text-slate-200 font-display font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5"
                                     >
-                                        <Icon name="Compass" size={17} className="text-aurora-300" />
-                                        {isEn ? 'Guided 3-Stage Mode' : 'ฝึกแบบมีไกด์ 3 ด่านก่อน'}
+                                        <Icon name="ArrowLeft" size={16} />
+                                        {isEn ? 'Back to Menu' : 'ย้อนกลับเลือกเคส'}
                                     </button>
                                     <button
                                         type="button"
-                                        onClick={() => enterHolodeck(selectedMode, 'full_sim', activePersona, activeDifficulty)}
-                                        className="touch-target w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 hover:from-aurora-300 hover:to-prism-300 text-void-950 font-display font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 shadow-xl shadow-aurora-500/25"
+                                        onClick={() => enterHolodeck(selectedMode, trainingTrack, activePersona, activeDifficulty)}
+                                        className="touch-target w-full sm:flex-1 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 hover:from-aurora-300 hover:to-prism-300 text-void-950 font-display font-extrabold text-sm flex items-center justify-center gap-2 shadow-xl shadow-aurora-500/25 active:scale-[0.98]"
                                     >
-                                        <span>{isEn ? 'Enter 3D Simulation Now' : 'เข้าสู่ห้องฝึกจำลอง 3 มิติทันที'}</span>
-                                        <Icon name="ArrowRight" size={18} />
+                                        <Icon name="Sparkles" size={17} />
+                                        {isEn ? 'Enter 3D Simulation Now →' : 'เข้าสู่ห้องฝึกสื่อสาร 3 มิติทันที →'}
                                     </button>
                                 </div>
                             </div>
                         </main>
                     )}
 
-                    {/* VIEW 3: LIVE 3D CONSULTATION STAGE */}
+                    {/* VIEW 3: LIVE 3D CONSULTATION STAGE (STYLE 2: FLOATING CINEMA SUBTITLE) */}
                     {phase === 'negotiating' && selectedMode && (
                         <main className="relative z-10 flex-1 w-full max-w-5xl mx-auto px-3 sm:px-6 pb-3 flex flex-col justify-between min-h-0 h-[calc(100dvh-4.25rem)] pointer-events-none">
-                            {/* TOP AFFECTIVE TELEMETRY HUD */}
+                            {/* TOP AFFECTIVE TELEMETRY HUD (TRANSLUCENT DARK OVER 3D HOLOGRAM) */}
                             <div className="flex flex-wrap items-center justify-between gap-2 pt-1 pointer-events-auto">
-                                <div className="vision-pill rounded-2xl px-3.5 py-2 flex flex-wrap items-center gap-2.5">
+                                <div className="holo-stage-pill rounded-2xl px-3.5 py-2 flex flex-wrap items-center gap-2.5">
                                     <span className={`px-2.5 py-0.5 rounded-full border text-[11px] font-bold flex items-center gap-1.5 ${activeEmotionMeta.badge}`}>
-                                        <Icon name={activeEmotionMeta.icon} size={13} />
+                                        <Icon name={activeEmotionMeta.icon} size={14} />
                                         {isEn ? activeEmotionMeta.labelEN : activeEmotionMeta.labelTH}
                                     </span>
                                     <span className={`px-2 py-0.5 rounded-full font-mono text-[10px] font-bold border ${
@@ -3700,23 +3736,23 @@ Bereaved Relative (Start with [EMOTION]):`;
                                     }`}>
                                         {activeDifficulty.badge}
                                     </span>
-                                    <div className="hidden sm:flex items-center gap-2.5 font-mono text-[11px]">
+                                    <div className="hidden sm:flex items-center gap-2.5 font-mono text-xs">
                                         <span className="text-aurora-300 font-bold">TRUST {activeEmotionMeta.trust}%</span>
-                                        <span className="text-slate-600">|</span>
+                                        <span className="text-slate-500">|</span>
                                         <span className="text-rose-300 font-bold">TENSION {activeEmotionMeta.tension}%</span>
                                     </div>
                                 </div>
 
-                                <div className="vision-pill rounded-2xl px-3 py-1.5 flex items-center gap-2.5 text-[11px]">
-                                    <Icon name="Wind" size={14} className={silenceEarnedThisTurn ? 'text-aurora-300' : 'text-prism-300'} />
-                                    <div className="w-24 sm:w-32 space-y-0.5">
-                                        <div className="flex justify-between font-mono text-[9px] font-bold">
-                                            <span className={silenceEarnedThisTurn ? 'text-aurora-300' : 'text-slate-300'}>
+                                <div className="holo-stage-pill rounded-2xl px-3.5 py-2 flex items-center gap-2.5 text-xs">
+                                    <Icon name="Wind" size={15} className={silenceEarnedThisTurn ? 'text-aurora-300' : 'text-prism-300'} />
+                                    <div className="w-28 sm:w-36 space-y-1">
+                                        <div className="flex justify-between font-mono text-[10px] font-bold">
+                                            <span className={silenceEarnedThisTurn ? 'text-aurora-300' : 'text-slate-200'}>
                                                 {silenceEarnedThisTurn ? 'SILENCE HELD ✓' : 'SILENCE 2.5s'}
                                             </span>
                                             <span className="text-prism-300">×{silenceBonusCount}</span>
                                         </div>
-                                        <div className="w-full h-1 rounded-full bg-white/10 overflow-hidden">
+                                        <div className="w-full h-1.5 rounded-full bg-white/15 overflow-hidden">
                                             <div
                                                 className="h-full rounded-full bg-gradient-to-r from-prism-400 to-aurora-400 transition-all duration-100"
                                                 style={{ width: `${silenceEarnedThisTurn ? 100 : silenceProgress}%` }}
@@ -3727,55 +3763,58 @@ Bereaved Relative (Start with [EMOTION]):`;
                             </div>
 
                             {/* CENTER SPACER */}
-                            <div className="flex-1 flex flex-col items-center justify-center pointer-events-none select-none min-h-[120px]">
+                            <div className="flex-1 flex flex-col items-center justify-center pointer-events-none select-none min-h-[110px]">
                                 {isAiSpeaking && (
-                                    <div className="vision-pill rounded-full px-4 py-1.5 flex items-center gap-2 pointer-events-auto">
-                                        <div className="flex items-end gap-1 h-3.5">
+                                    <div className="holo-stage-pill rounded-full px-4 py-1.5 flex items-center gap-2.5 pointer-events-auto">
+                                        <div className="flex items-end gap-1 h-4">
                                             {[0.05, 0.2, 0.1, 0.3, 0.15].map((d, idx) => (
-                                                <span key={idx} className="w-1 h-3.5 rounded-full bg-aurora-400 bar-dance" style={{ animationDelay: `${d}s` }} />
+                                                <span key={idx} className="w-1 h-4 rounded-full bg-aurora-400 bar-dance" style={{ animationDelay: `${d}s` }} />
                                             ))}
                                         </div>
-                                        <span className="font-mono text-[10px] font-bold text-aurora-200 tracking-wider">
+                                        <span className="font-mono text-[11px] font-bold text-aurora-200 tracking-wide">
                                             {isEn ? 'RELATIVE SPEAKING...' : 'ญาติกำลังพูด...'}
                                         </span>
-                                        <button type="button" onClick={stopAiVoice} className="text-[10px] font-bold text-rose-300 hover:underline ml-1">
+                                        <button type="button" onClick={stopAiVoice} className="text-[11px] font-bold text-rose-300 hover:text-rose-200 pl-1.5 border-l border-white/15">
                                             หยุด
                                         </button>
                                     </div>
                                 )}
                                 {isAiTyping && (
-                                    <div className="vision-pill rounded-full px-4 py-1.5 flex items-center gap-2">
+                                    <div className="holo-stage-pill rounded-full px-4 py-1.5 flex items-center gap-2">
                                         <span className="w-2 h-2 rounded-full bg-prism-400 animate-ping" />
-                                        <span className="font-mono text-[10px] font-bold text-prism-200">
+                                        <span className="font-mono text-[11px] font-bold text-prism-200">
                                             {isEn ? 'PROCESSING EMOTIONAL RESPONSE...' : 'ญาติกำลังรับฟังและประมวลผลอารมณ์...'}
                                         </span>
                                     </div>
                                 )}
                             </div>
 
-                            {/* BOTTOM CINEMA SUBTITLES + AI COACH WHISPER + TRIGGER POLISHER + COMMAND DOCK */}
+                            {/* BOTTOM STYLE 2: FLOATING CINEMA SUBTITLE + TRANSLUCENT COACH & COMMAND DOCK */}
                             <div className="space-y-2.5 pb-safe pointer-events-auto">
                                 {latestAiMessage && (
-                                    <div key={latestAiMessage.id} className="subtitle-reveal vision-glass rounded-[1.5rem] px-4 sm:px-6 py-3.5 sm:py-4 max-w-3xl mx-auto border-white/15">
-                                        <div className="flex items-center justify-between gap-2 mb-1">
-                                            <span className={`text-[11px] font-bold flex items-center gap-1.5 ${activeEmotionMeta.accentText}`}>
+                                    <div key={latestAiMessage.id} className="subtitle-reveal cinema-floating-scrim rounded-[2rem] px-5 sm:px-8 py-4 sm:py-6 max-w-3xl mx-auto text-center space-y-2.5">
+                                        <div className="inline-flex flex-wrap items-center justify-center gap-2 px-3.5 py-1 rounded-full bg-black/50 border border-white/15 text-xs font-bold backdrop-blur-md">
+                                            <span className={`inline-flex items-center gap-1.5 ${activeEmotionMeta.accentText}`}>
                                                 <Icon name="MessageCircleHeart" size={14} />
                                                 {latestAiMessage.speakerName}
                                             </span>
+                                            <span className="text-slate-500">•</span>
                                             <button
                                                 type="button"
                                                 onClick={() => speakText(latestAiMessage.text, selectedMode)}
-                                                className="text-[11px] font-bold text-slate-400 hover:text-prism-300 inline-flex items-center gap-1"
+                                                className="text-slate-200 hover:text-white inline-flex items-center gap-1"
                                             >
-                                                <Icon name="Volume2" size={12} /> {isEn ? 'Replay' : 'ฟังซ้ำ'}
+                                                <Icon name="Volume2" size={13} /> {isEn ? 'Replay' : 'ฟังซ้ำ'}
                                             </button>
                                         </div>
-                                        <p className="font-display text-sm sm:text-lg font-semibold text-white leading-relaxed">
+
+                                        <p className="font-display text-lg sm:text-xl md:text-2xl font-semibold text-white leading-relaxed cinema-text-shadow">
                                             “{latestAiMessage.text}”
                                         </p>
+
                                         {latestUserMessage && (
-                                            <p className="mt-2 pt-2 border-t border-white/10 text-[11px] text-slate-400 truncate">
-                                                <span className="text-aurora-300 font-bold">{isEn ? 'Last reply: ' : 'คำพูดล่าสุดของคุณ: '}</span>
+                                            <p className="text-xs text-slate-300/90 truncate max-w-2xl mx-auto cinema-text-shadow">
+                                                <span className="text-aurora-300 font-bold">{isEn ? 'Your last reply: ' : 'คำพูดล่าสุดของคุณ: '}</span>
                                                 {latestUserMessage.text}
                                             </p>
                                         )}
@@ -3783,30 +3822,41 @@ Bereaved Relative (Start with [EMOTION]):`;
                                 )}
 
                                 {showCoachWhisper ? (
-                                    <div className="vision-pill rounded-2xl px-3.5 py-2 max-w-3xl mx-auto border-aurora-400/25 flex items-start justify-between gap-2">
-                                        <div className="space-y-1 flex-1 min-w-0">
+                                    <div className="holo-stage-pill rounded-2xl px-4 py-2.5 max-w-3xl mx-auto border-aurora-400/25 flex items-start justify-between gap-2.5">
+                                        <div className="space-y-1.5 flex-1 min-w-0">
                                             <div className="flex flex-wrap items-center gap-1.5">
                                                 <span className="text-[10px] font-mono font-bold text-aurora-300 flex items-center gap-1">
-                                                    <Icon name="Compass" size={12} /> AI COACH WHISPER
+                                                    <Icon name="Compass" size={13} /> AI COACH WHISPER
                                                 </span>
                                                 {principleStatus.map(p => (
-                                                    <span key={p.id} className={`px-1.5 py-0.5 rounded text-[9px] font-bold border ${
-                                                        p.covered ? 'bg-aurora-500/20 border-aurora-400/40 text-aurora-200' : 'bg-white/5 border-white/10 text-slate-400'
+                                                    <span key={p.id} className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                                                        p.covered ? 'bg-aurora-500/20 border-aurora-400/45 text-aurora-200' : 'bg-white/[0.05] border-white/10 text-slate-300'
                                                     }`}>
                                                         {p.covered ? '✓ ' : '○ '}{p.label}
                                                     </span>
                                                 ))}
                                             </div>
-                                            <p className="text-[11px] sm:text-xs text-slate-200 leading-snug">{activeCoachGuidance}</p>
+                                            <p className="text-xs text-slate-100 leading-relaxed">{activeCoachGuidance}</p>
                                         </div>
-                                        <button type="button" onClick={() => setShowCoachWhisper(false)} className="text-slate-400 hover:text-white p-0.5 shrink-0">
-                                            <Icon name="X" size={14} />
-                                        </button>
+                                        <div className="flex items-center gap-1.5 shrink-0">
+                                            {activeDifficulty.showSuggestions && smartSuggestions.length > 0 && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowSuggestionsPanel(v => !v)}
+                                                    className="px-2.5 py-1 rounded-xl bg-white/10 hover:bg-white/15 text-prism-200 text-[11px] font-bold"
+                                                >
+                                                    {showSuggestionsPanel ? (isEn ? 'Hide' : 'ซ่อนแนวทาง') : (isEn ? 'Ideas' : 'ดูแนวทาง')}
+                                                </button>
+                                            )}
+                                            <button type="button" onClick={() => setShowCoachWhisper(false)} className="text-slate-300 hover:text-white p-1">
+                                                <Icon name="X" size={15} />
+                                            </button>
+                                        </div>
                                     </div>
                                 ) : (
                                     <div className="flex justify-center">
-                                        <button type="button" onClick={() => setShowCoachWhisper(true)} className="vision-pill px-3 py-1 rounded-full text-[10px] font-bold text-aurora-300 flex items-center gap-1">
-                                            <Icon name="Compass" size={12} />
+                                        <button type="button" onClick={() => setShowCoachWhisper(true)} className="holo-stage-pill px-3.5 py-1.5 rounded-full text-xs font-bold text-aurora-300 flex items-center gap-1.5">
+                                            <Icon name="Compass" size={13} />
                                             {difficulty === 'hard'
                                                 ? (isEn ? 'Hard Mode Active • Tap for Hint' : 'โหมด Hard (คิดเอง 100%) • แตะเพื่อดูคำใบ้ AI Coach')
                                                 : (isEn ? 'Open AI Coach Whisper' : 'เปิด AI Coach ชี้นำหลักการ')}
@@ -3816,20 +3866,20 @@ Bereaved Relative (Start with [EMOTION]):`;
 
                                 {vocalFeedback && (
                                     <div className="flex justify-center">
-                                        <span className="px-3 py-1 rounded-full bg-prism-500/20 border border-prism-400/40 text-prism-200 text-[11px] font-bold flex items-center gap-1.5">
-                                            <Icon name="Activity" size={13} /> {vocalFeedback}
+                                        <span className="px-3.5 py-1 rounded-full bg-prism-500/20 border border-prism-400/45 text-prism-200 text-xs font-bold flex items-center gap-1.5">
+                                            <Icon name="Activity" size={14} /> {vocalFeedback}
                                         </span>
                                     </div>
                                 )}
 
                                 {/* REAL-TIME AI TRIGGER-WORD & PHRASING POLISHER */}
                                 {liveTriggerHits.length > 0 && (
-                                    <div className="max-w-3xl mx-auto vision-pill rounded-2xl px-3.5 py-2.5 border-amber-400/50 bg-amber-500/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                                        <div className="text-[11px] sm:text-xs leading-snug">
+                                    <div className="max-w-3xl mx-auto holo-stage-pill rounded-2xl px-4 py-2.5 border-amber-400/55 bg-amber-500/15 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                        <div className="text-xs leading-relaxed">
                                             <span className="font-bold text-amber-300 inline-flex items-center gap-1">
-                                                <Icon name="Wand2" size={13} /> AI แนะนำคำถนอมใจ:
+                                                <Icon name="Wand2" size={14} /> AI แนะนำคำถนอมใจ:
                                             </span>{' '}
-                                            <span className="text-slate-200">
+                                            <span className="text-slate-100">
                                                 พบคำว่า <b className="text-rose-300">“{liveTriggerHits[0].matchedWord}”</b> → ลองเปลี่ยนเป็น{' '}
                                                 <b className="text-aurora-300">“{liveTriggerHits[0].softer}”</b>
                                             </span>
@@ -3837,30 +3887,35 @@ Bereaved Relative (Start with [EMOTION]):`;
                                         <button
                                             type="button"
                                             onClick={() => handleApplySoftPolish(liveTriggerHits[0])}
-                                            className="px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-void-950 font-display font-extrabold text-[11px] shrink-0"
+                                            className="px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-void-950 font-display font-extrabold text-xs shrink-0"
                                         >
                                             ปรับคำให้นุ่มนวล
                                         </button>
                                     </div>
                                 )}
 
-                                {activeDifficulty.showSuggestions && smartSuggestions.length > 0 && (
-                                    <div className="flex gap-2 overflow-x-auto custom-scrollbar max-w-3xl mx-auto pb-0.5">
+                                {/* CLEAN 2-COLUMN TRANSLUCENT SUGGESTIONS (NO CLIPPED TEXT) */}
+                                {activeDifficulty.showSuggestions && showSuggestionsPanel && smartSuggestions.length > 0 && (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-3xl mx-auto">
                                         {smartSuggestions.map((sug, idx) => (
                                             <button
                                                 key={idx}
                                                 type="button"
                                                 onClick={() => handleSendMessage(null, sug)}
-                                                className="shrink-0 max-w-[82vw] sm:max-w-sm text-left px-3.5 py-2 rounded-xl vision-pill hover:border-aurora-400/50 text-[11px] text-slate-200 line-clamp-2 transition-all"
+                                                className="text-left px-4 py-2.5 rounded-2xl holo-stage-pill hover:border-aurora-400/60 transition-all group"
                                             >
-                                                <span className="text-aurora-300 font-bold mr-1">แนวทาง {idx + 1}:</span>
-                                                {sug}
+                                                <span className="text-[10px] font-mono font-bold text-aurora-300 block mb-0.5">
+                                                    {isEn ? `Suggestion ${idx + 1} (Tap to send)` : `แนวทาง ${idx + 1} (แตะเพื่อใช้)`}
+                                                </span>
+                                                <p className="text-xs text-slate-100 leading-relaxed line-clamp-2 group-hover:text-white">
+                                                    {sug}
+                                                </p>
                                             </button>
                                         ))}
                                     </div>
                                 )}
 
-                                <form onSubmit={handleSendMessage} className="max-w-3xl mx-auto vision-glass rounded-2xl p-2 flex items-center gap-2 border-white/15">
+                                <form onSubmit={handleSendMessage} className="max-w-3xl mx-auto holo-stage-pill rounded-2xl p-2 flex items-center gap-2 border-white/15">
                                     <button
                                         type="button"
                                         onClick={toggleMicrophone}
@@ -3868,10 +3923,10 @@ Bereaved Relative (Start with [EMOTION]):`;
                                         className={`touch-target w-11 h-11 rounded-xl flex items-center justify-center shrink-0 relative transition-all ${
                                             isListening
                                                 ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/40'
-                                                : 'bg-white/10 hover:bg-white/15 text-aurora-300 border border-white/10'
+                                                : 'bg-aurora-500/20 hover:bg-aurora-500/30 text-aurora-300 border border-aurora-400/35'
                                         }`}
                                     >
-                                        <Icon name={isListening ? 'MicOff' : 'Mic'} size={19} />
+                                        <Icon name={isListening ? 'MicOff' : 'Mic'} size={20} />
                                         {isListening && (
                                             <span
                                                 className="absolute inset-0 rounded-xl border-2 border-rose-300 pointer-events-none"
@@ -3890,7 +3945,7 @@ Bereaved Relative (Start with [EMOTION]):`;
                                                 ? (isEn ? 'Listening & analyzing vocal calmness...' : 'กำลังรับเสียงพูดและวิเคราะห์ความนุ่มนวล...')
                                                 : (isEn ? 'Speak via mic or type to the relative...' : 'กดไมค์พูดจริง หรือพิมพ์สื่อสารกับญาติผู้เสียชีวิต...')
                                         }
-                                        className="touch-target flex-1 bg-transparent px-2 text-sm text-white placeholder-slate-400 focus:outline-none"
+                                        className="touch-target flex-1 bg-transparent px-2 text-sm sm:text-base text-white placeholder-slate-300/75 focus:outline-none"
                                     />
 
                                     <button
@@ -3899,7 +3954,7 @@ Bereaved Relative (Start with [EMOTION]):`;
                                         aria-label="ส่งคำพูด"
                                         className="touch-target w-11 h-11 rounded-xl bg-gradient-to-r from-aurora-400 to-prism-400 hover:from-aurora-300 hover:to-prism-300 disabled:from-slate-800 disabled:to-slate-800 disabled:text-slate-500 text-void-950 flex items-center justify-center shrink-0 shadow-md transition-all"
                                     >
-                                        <Icon name="Send" size={18} />
+                                        <Icon name="Send" size={19} />
                                     </button>
                                 </form>
                             </div>
