@@ -1356,13 +1356,20 @@
                     items: [
                         { id: 'leaderboard', title: 'กระดานจัดอันดับ (Leaderboard)', desc: 'ตรวจหน้าแสดงผล Empathy Index สูงสุด (PDPA-Safe)', url: './index.html?admin_preview=leaderboard', icon: 'Trophy' },
                         { id: 'profile', title: 'หน้าโปรไฟล์ผู้เรียน (Profile)', desc: 'ตรวจคะแนน Pre/Post-test, โหมดมืด/สว่าง และปุ่มประกาศฯ', url: './index.html?admin_preview=profile', icon: 'User' },
-                        { id: 'verify', title: 'หน้าตรวจ QR ตราโฮโลแกรม 3 มิติ', desc: 'ทดสอบ verify.html ด้วยรหัส RJC-2027-DEMO01', url: './verify.html?code=RJC-2027-DEMO01', icon: 'QrCode' },
-                        { id: 'executive', title: 'แดชบอร์ดผู้บริหาร 2030 (Executive)', desc: 'ตรวจแผนที่ 13 เขต, เรดาร์ 5 แกน, จุดอ่อนรายเขต และ Fah AI', url: './executive.html', icon: 'Globe' }
+                        { id: 'verify', title: 'หน้าตรวจ QR ตราโฮโลแกรม 3 มิติ', desc: 'ทดสอบ verify.html ด้วยรหัส RJC-2027-DEMO01', url: './verify.html?code=RJC-2027-DEMO01&admin_preview=1', icon: 'QrCode' },
+                        { id: 'executive', title: 'แดชบอร์ดผู้บริหาร 2030 (Executive)', desc: 'ตรวจแผนที่ 13 เขต, เรดาร์ 5 แกน, จุดอ่อนรายเขต และ Fah AI', url: './executive.html?admin_preview=1', icon: 'Globe' }
                     ]
                 }
             ]), []);
 
             const allInspectorItems = useMemo(() => inspectorGroups.flatMap(g => g.items), [inspectorGroups]);
+
+            // แนบพารามิเตอร์ล้างแคช (_v) เพื่อให้หน้าต่างพรีวิวโหลดไฟล์เวอร์ชันล่าสุดเสมอ
+            const buildInspectorUrl = (rawUrl, reloadKey) => {
+                if (!rawUrl) return '';
+                const sep = rawUrl.includes('?') ? '&' : '?';
+                return `${rawUrl}${sep}_v=${reloadKey}`;
+            };
 
             const openInspectorPreview = (item) => {
                 setInspectorModal({ open: true, item, viewport: 'desktop', reloadKey: Date.now() });
@@ -2337,7 +2344,7 @@
                                     >
                                         <iframe
                                             key={`${inspectorModal.item.id}-${inspectorModal.reloadKey}`}
-                                            src={inspectorModal.item.url}
+                                            src={buildInspectorUrl(inspectorModal.item.url, inspectorModal.reloadKey)}
                                             className="w-full h-full border-0 block"
                                             title={inspectorModal.item.title}
                                             allow="microphone; camera; autoplay; fullscreen"
