@@ -6,16 +6,16 @@
     <meta name="theme-color" content="#030712">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>rjcloud.organ 2030 — Spatial Clinical e-Learning Platform</title>
+    <title>rjcloud.organ — ระบบการเรียนรู้ออนไลน์การรับบริจาคและปลูกถ่ายอวัยวะ</title>
 
-    <!-- 🌟 โหลดฐานข้อมูลกลางและคลังความรู้ AI 2030 จาก data.js (มี Built-in Fallback ป้องกันหน้าขาว) 🌟 -->
-    <script src="./data.js" onerror="console.warn('data.js not loaded, using built-in 2030 defaults')"></script>
+    <!-- โหลดฐานข้อมูลกลางและคลังความรู้ AI จาก data.js -->
+    <script src="./data.js" onerror="console.warn('data.js not loaded, using built-in defaults')"></script>
 
-    <!-- 🌟 ตั้งค่าธีมเริ่มต้นทันทีจาก localStorage ป้องกันจอกระพริบ 🌟 -->
+    <!-- ตั้งค่าธีมเริ่มต้นทันทีจาก localStorage ป้องกันจอกระพริบ -->
     <script>
       (function () {
         try {
-          const key = (window.RJCLOUD_CONFIG && window.RJCLOUD_CONFIG.theme && window.RJCLOUD_CONFIG.theme.storageKey) || 'rjcloud_theme_2030';
+          const key = (window.RJCLOUD_CONFIG && window.RJCLOUD_CONFIG.theme && window.RJCLOUD_CONFIG.theme.storageKey) || 'rjcloud_theme';
           const def = (window.RJCLOUD_CONFIG && window.RJCLOUD_CONFIG.theme && window.RJCLOUD_CONFIG.theme.defaultMode) || 'dark';
           const saved = localStorage.getItem(key) || def;
           const mode = saved === 'light' ? 'light' : 'dark';
@@ -26,13 +26,13 @@
       })();
     </script>
 
-    <!-- 🌟 Tailwind CSS & ฟอนต์มาตรฐาน (Prompt + Sarabun + JetBrains Mono) 🌟 -->
+    <!-- Tailwind CSS & ฟอนต์มาตรฐาน (Prompt + Sarabun + JetBrains Mono) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Prompt:wght@500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- 🌟 ไลบรารีสร้างประกาศนียบัตร PDF & QR Code ในตัว (Built-in Certificate Studio) 🌟 -->
+    <!-- ไลบรารีสร้างประกาศนียบัตร PDF & QR Code ในตัว (Built-in Certificate Studio) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
@@ -81,7 +81,7 @@
 
     <style>
       /* ============================================================================
-       * 2030 ADAPTIVE DESIGN TOKENS (SPATIAL DARK DEFAULT <-> FROSTED PEARL LIGHT)
+       * ADAPTIVE DESIGN TOKENS (SPATIAL DARK DEFAULT <-> FROSTED PEARL LIGHT)
        * ============================================================================ */
       :root,
       html[data-theme="dark"] {
@@ -146,7 +146,7 @@
         transition: background-color 0.28s ease, color 0.28s ease;
       }
 
-      /* 🌟 Mobile-First 100% Safe Area & Touch Optimization 🌟 */
+      /* Mobile-First Safe Area & Touch Optimization */
       .min-h-dvh { min-height: 100vh; min-height: 100dvh; }
       .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
       .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
@@ -157,7 +157,7 @@
         input, select, textarea { font-size: 16px !important; }
       }
 
-      /* 🌟 Spatial Aura Ambient Backdrop 🌟 */
+      /* Spatial Aura Ambient Backdrop */
       .spatial-aura {
         position: fixed;
         inset: 0;
@@ -180,7 +180,7 @@
         pointer-events: none;
       }
 
-      /* 🌟 Semantic Spatial Glass Utilities 🌟 */
+      /* Semantic Spatial Glass Utilities */
       .spatial-card {
         background: var(--glass-bg);
         backdrop-filter: blur(24px) saturate(155%);
@@ -223,7 +223,6 @@
       .text-accent-adaptive { color: var(--accent-text); }
       .text-prism-adaptive { color: var(--accent-prism); }
 
-      /* Select option dark contrast fix */
       html[data-theme="dark"] select option {
         background-color: #070d1c;
         color: #f8fafc;
@@ -234,7 +233,7 @@
       .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.35); border-radius: 999px; }
     </style>
 
-    <!-- 🌟 ESM Import Map (React 18, Lucide Icons, Firebase 11) 🌟 -->
+    <!-- ESM Import Map (React 18, Lucide Icons, Firebase 11) -->
     <script type="importmap">
     {
       "imports": {
@@ -251,21 +250,23 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body>
-    <!-- 🌟 หน้าจอโหลดเริ่มต้น ป้องกันหน้าขาวระหว่างคอมไพล์ React 🌟 -->
+    <!-- หน้าจอโหลดเริ่มต้น ป้องกันหน้าขาวระหว่างคอมไพล์ React -->
     <div id="root">
         <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg-page);color:var(--text-main);font-family:'Prompt','Sarabun',sans-serif;gap:14px;padding:24px;text-align:center;">
-            <div style="width:46px;height:46px;border:3px solid rgba(52,211,153,0.2);border-top-color:#10b981;border-right-color:#22d3ee;border-radius:9999px;animation:rjSpin2030 0.85s linear infinite;"></div>
-            <div style="font-weight:700;font-size:17px;">กำลังเปิดระบบ rjcloud.organ 2030...</div>
-            <div style="font-size:12px;color:#94a3b8;">กำลังเตรียม Spatial Classroom & AI Study Companion</div>
+            <div style="width:46px;height:46px;border:3px solid rgba(52,211,153,0.2);border-top-color:#10b981;border-right-color:#22d3ee;border-radius:9999px;animation:rjSpin 0.85s linear infinite;"></div>
+            <div style="font-weight:700;font-size:17px;">กำลังเปิดระบบ rjcloud.organ...</div>
+            <div style="font-size:12px;color:#94a3b8;">กำลังเตรียมห้องเรียนออนไลน์และระบบผู้ช่วย AI</div>
         </div>
-        <style>@keyframes rjSpin2030{to{transform:rotate(360deg);}}</style>
+        <style>@keyframes rjSpin{to{transform:rotate(360deg);}}</style>
     </div>
 
-    <!-- 🌟 Global Error Guard ป้องกันหน้าขาวหากสคริปต์ภายนอกขัดข้อง 🌟 -->
+    <!-- Global Error Guard ป้องกันหน้าขาวหากสคริปต์ขัดข้อง (ไม่จับ 404 จาก data.js ตอนเปิด Preview เดี่ยว) -->
     <script>
       window.addEventListener('error', function (ev) {
+        const src = String(ev.filename || (ev.target && ev.target.src) || '');
+        if (src.includes('data.js')) return;
         const root = document.getElementById('root');
-        if (root && !root.dataset.mounted) {
+        if (root && !root.dataset.mounted && ev.message) {
           root.innerHTML =
             '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#030712;color:#f8fafc;font-family:Sarabun,sans-serif;">' +
             '<div style="max-width:440px;width:100%;background:#070d1c;border:1px solid rgba(244,63,94,0.4);border-radius:24px;padding:24px;text-align:center;">' +
@@ -293,13 +294,16 @@
         } from 'firebase/firestore';
 
         // ============================================================================
-        // 1. CONFIGURATION, LEARNING RULES & AI CLINICAL DOMAINS (2030 EDITION)
+        // 1. CONFIGURATION, LEARNING RULES & AI CLINICAL DOMAINS (PRODUCTION 2027)
         // ============================================================================
+        const DEFAULT_HERO_BANNER = 'https://res.cloudinary.com/djwclucoz/image/upload/v1795227615/%E0%B8%94%E0%B8%B5%E0%B9%84%E0%B8%8B%E0%B8%99%E0%B9%8C%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%B1%E0%B8%87%E0%B9%84%E0%B8%A1%E0%B9%88%E0%B9%84%E0%B8%94%E0%B9%89%E0%B8%95%E0%B8%B1%E0%B9%89%E0%B8%87%E0%B8%8A%E0%B8%B7%E0%B9%88%E0%B8%AD_geidhl.png';
+
         const BUILTIN_CONFIG = {
             appName: 'rjcloud.organ',
-            edition: '2030 Spatial Clinical Edition',
+            edition: '2027 Clinical Edition',
             contactEmail: 'rjcloud.organ@gmail.com',
             appId: 'rjcloud-organ-2027',
+            heroBannerUrl: DEFAULT_HERO_BANNER,
             learningRules: {
                 allowedUserTypes: ['เรียนใหม่', 'เรียนต่อเนื่อง'],
                 minStudyPercent: 80,
@@ -307,7 +311,7 @@
             },
             theme: {
                 defaultMode: 'dark',
-                storageKey: 'rjcloud_theme_2030'
+                storageKey: 'rjcloud_theme'
             },
             firebaseConfig: {
                 apiKey: 'AIzaSyCpvK0FCVVk9dt0ylHn_VzUStl7540UsbY',
@@ -324,6 +328,7 @@
         const CONFIG = {
             ...BUILTIN_CONFIG,
             ...(window.RJCLOUD_CONFIG || {}),
+            heroBannerUrl: window.RJCLOUD_CONFIG?.heroBannerUrl || DEFAULT_HERO_BANNER,
             learningRules: {
                 ...BUILTIN_CONFIG.learningRules,
                 ...(window.RJCLOUD_CONFIG?.learningRules || {})
@@ -340,7 +345,7 @@
 
         const MIN_STUDY_PERCENT = Number(CONFIG.learningRules?.minStudyPercent || 80);
         const MIN_POSTTEST_PERCENT = Number(CONFIG.learningRules?.minPosttestPercent || 80);
-        const THEME_KEY = CONFIG.theme?.storageKey || 'rjcloud_theme_2030';
+        const THEME_KEY = CONFIG.theme?.storageKey || 'rjcloud_theme';
         const STORAGE_KEY = 'rjcloud_organ_state_v2027';
         const LOCAL_CERTS_KEY = 'rjcloud_local_certificates';
 
@@ -352,8 +357,8 @@
             courseTitleEN: 'Organ Donation & Transplantation Clinical Coordination Program',
             subtitleTH: 'ขอมอบประกาศนียบัตรฉบับนี้เพื่อแสดงว่า',
             completionTextTH: 'ได้ผ่านการอบรมและประเมินผลตามเกณฑ์มาตรฐานหลักสูตรประจำปี 2027',
-            signerName: 'นายแพทย์สมชาย ตัวอย่างดี',
-            signerPosition: 'ผู้อำนวยการโครงการ rjcloud.organ',
+            signerName: 'ผู้อำนวยการศูนย์ความเป็นเลิศทางการแพทย์',
+            signerPosition: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ',
             hoursText: 'ระยะเวลาการเรียนรู้ตามเกณฑ์มาตรฐานวิชาชีพ',
             logoUrl: '',
             signatureUrl: ''
@@ -428,7 +433,7 @@
         }
 
         // ============================================================================
-        // 3. HELPERS, AI DIAGNOSTIC ENGINE & CERTIFICATE RENDERER
+        // 3. HELPERS, AI DIAGNOSTIC ENGINE & APPLE-STYLE CERTIFICATE RENDERER
         // ============================================================================
         function Icon({ name, size = 20, className = '', strokeWidth = 2 }) {
             const Comp = LucideIcons[name] || LucideIcons.HeartPulse || LucideIcons.Activity;
@@ -491,8 +496,7 @@
         }
 
         /**
-         * AI Diagnostic Engine (งบ 0 บาท รันทันทีบนเบราว์เซอร์)
-         * วิเคราะห์ผลการสอบแยกตาม 4 หมวดสมรรถนะคลินิก และจัดลำดับบทเรียนแนะนำเฉพาะบุคคล
+         * AI Diagnostic Engine — วิเคราะห์ผลการสอบแยกตาม 4 หมวดสมรรถนะคลินิก
          */
         function analyzeExamDiagnostics(questions, answers) {
             const buckets = {};
@@ -513,7 +517,6 @@
                 percent: b.total > 0 ? Math.round((b.correct / b.total) * 100) : 100
             }));
 
-            // เรียงหมวดที่คะแนนน้อยที่สุดขึ้นก่อนเพื่อแนะนำให้โฟกัส
             const sortedWeakFirst = [...domainResults].sort((a, b) => a.percent - b.percent);
             const weakDomains = sortedWeakFirst.filter(d => d.percent < 80);
             const focusDomains = weakDomains.length > 0 ? weakDomains.slice(0, 2) : sortedWeakFirst.slice(0, 1);
@@ -523,7 +526,7 @@
             ).slice(0, 6);
 
             const summaryText = weakDomains.length === 0
-                ? 'พื้นฐานความรู้ทั้ง 4 หมวดอยู่ในเกณฑ์ยอดเยี่ยม! แนะนำทบทวนบทเรียนสำคัญและเข้าฝึกสื่อสารในห้องรับรอง AI Skill Lab 2030 ค่ะ'
+                ? 'พื้นฐานความรู้ทั้ง 4 หมวดอยู่ในเกณฑ์ยอดเยี่ยม! แนะนำทบทวนบทเรียนสำคัญและเข้าฝึกสื่อสารในห้องรับรอง AI Skill Lab ค่ะ'
                 : `AI แนะนำให้โฟกัสหมวด "${focusDomains.map(d => d.shortName).join('" และ "')}" เป็นพิเศษ เพื่อยกระดับความมั่นใจก่อนเข้าฝึก AI Skill Lab และสอบ Post-test ค่ะ`;
 
             return {
@@ -537,7 +540,7 @@
         }
 
         /**
-         * ระบบตอบคำถาม AI Study Companion สำรองอัจฉริยะบนเครื่อง (ทำงานเมื่อ Offline หรือ Apps Script หน่วง)
+         * ระบบตอบคำถาม AI Study Companion สำรองบนเครื่องเมื่อเครือข่ายขัดข้อง
          */
         function generateOfflineStudyAnswer(question, lesson) {
             const q = String(question || '').toLowerCase();
@@ -629,7 +632,7 @@
                         text: urlText,
                         width: size,
                         height: size,
-                        colorDark: '#064e3b',
+                        colorDark: '#1d1d1f',
                         colorLight: '#ffffff',
                         correctLevel: window.QRCode.CorrectLevel.M
                     });
@@ -658,7 +661,8 @@
         }
 
         /**
-         * วาดประกาศนียบัตรอิเล็กทรอนิกส์ความละเอียดสูง (A4 Landscape 2000x1414) พร้อมพิมพ์และฝัง QR ตรวจสอบได้จริง
+         * วาดประกาศนียบัตรอิเล็กทรอนิกส์สไตล์มินิมอลเรียบหรู (Apple Minimalist — A4 Landscape 2000x1414)
+         * พื้นสีขาวบริสุทธิ์ ตัดเส้นสายสีทองเมทัลลิกแบบบางเฉียบ พร้อม QR Code ตรวจสอบความถูกต้องได้จริง
          */
         async function renderFullCertificateCanvas(canvas, user, tpl, verifyUrl) {
             if (!canvas || !user) return;
@@ -667,35 +671,42 @@
             canvas.height = H;
             const ctx = canvas.getContext('2d');
 
-            const bg = ctx.createLinearGradient(0, 0, W, H);
-            bg.addColorStop(0, '#ffffff');
-            bg.addColorStop(0.55, '#f8fafc');
-            bg.addColorStop(1, '#ecfdf5');
-            ctx.fillStyle = bg;
+            // 1. พื้นหลังสีขาวบริสุทธิ์สไตล์มินิมอล
+            ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, W, H);
 
-            const g1 = ctx.createRadialGradient(240, 200, 20, 240, 200, 560);
-            g1.addColorStop(0, 'rgba(16, 185, 129, 0.16)');
-            g1.addColorStop(1, 'rgba(16, 185, 129, 0)');
-            ctx.fillStyle = g1;
-            ctx.fillRect(0, 0, W, H);
+            // 2. เส้นกรอบสีทองเมทัลลิกแบบบางเฉียบ (Double Hairline Gold Frame)
+            const goldFrameGrad = ctx.createLinearGradient(0, 0, W, H);
+            goldFrameGrad.addColorStop(0, '#b89242');
+            goldFrameGrad.addColorStop(0.35, '#e2c785');
+            goldFrameGrad.addColorStop(0.7, '#c5a059');
+            goldFrameGrad.addColorStop(1, '#a67f32');
 
-            const g2 = ctx.createRadialGradient(W - 240, H - 200, 20, W - 240, H - 200, 580);
-            g2.addColorStop(0, 'rgba(14, 165, 233, 0.14)');
-            g2.addColorStop(1, 'rgba(14, 165, 233, 0)');
-            ctx.fillStyle = g2;
-            ctx.fillRect(0, 0, W, H);
+            ctx.strokeStyle = goldFrameGrad;
+            ctx.lineWidth = 2.4;
+            ctx.strokeRect(54, 54, W - 108, H - 108);
 
-            ctx.strokeStyle = '#059669';
-            ctx.lineWidth = 8;
-            ctx.strokeRect(56, 56, W - 112, H - 112);
+            ctx.strokeStyle = 'rgba(197, 160, 89, 0.42)';
+            ctx.lineWidth = 1.1;
+            ctx.strokeRect(72, 72, W - 144, H - 144);
 
-            ctx.strokeStyle = '#cbd5e1';
-            ctx.lineWidth = 2.5;
-            ctx.strokeRect(76, 76, W - 152, H - 152);
-
-            ctx.fillStyle = '#059669';
-            ctx.fillRect(W / 2 - 230, 56, 460, 14);
+            // 3. เส้นมุมเรขาคณิตสีทองบางเฉียบทั้ง 4 มุม (Precision Corner Hairlines)
+            const cornerLen = 46;
+            const inset = 92;
+            ctx.strokeStyle = '#c5a059';
+            ctx.lineWidth = 2;
+            [
+                [inset, inset, 1, 1],
+                [W - inset, inset, -1, 1],
+                [inset, H - inset, 1, -1],
+                [W - inset, H - inset, -1, -1]
+            ].forEach(([cx, cy, dx, dy]) => {
+                ctx.beginPath();
+                ctx.moveTo(cx + dx * cornerLen, cy);
+                ctx.lineTo(cx, cy);
+                ctx.lineTo(cx, cy + dy * cornerLen);
+                ctx.stroke();
+            });
 
             const [logoImg, sigImg, qrCanvas] = await Promise.all([
                 loadImageSafe(tpl.logoUrl),
@@ -703,116 +714,157 @@
                 createQrCanvas(verifyUrl, 220)
             ]);
 
-            let topY = 175;
+            // 4. แถบเส้นทองบางด้านบน หรือ โลโก้หน่วยงาน
+            let topY = 176;
             if (logoImg) {
-                const maxH = 105;
+                const maxH = 88;
                 const drawW = maxH * (logoImg.width / (logoImg.height || 1));
-                ctx.drawImage(logoImg, W / 2 - drawW / 2, 100, drawW, maxH);
-                topY = 248;
+                ctx.drawImage(logoImg, W / 2 - drawW / 2, 102, drawW, maxH);
+                topY = 236;
+            } else {
+                const barGrad = ctx.createLinearGradient(W / 2 - 70, 0, W / 2 + 70, 0);
+                barGrad.addColorStop(0, 'rgba(197, 160, 89, 0.15)');
+                barGrad.addColorStop(0.5, '#c5a059');
+                barGrad.addColorStop(1, 'rgba(197, 160, 89, 0.15)');
+                ctx.fillStyle = barGrad;
+                ctx.fillRect(W / 2 - 70, 120, 140, 2.5);
             }
 
             ctx.textAlign = 'center';
-            ctx.fillStyle = '#047857';
-            ctx.font = '700 34px "Prompt", sans-serif';
+
+            // 5. ชื่อหน่วยงาน (ไทย / อังกฤษ)
+            ctx.fillStyle = '#1d1d1f';
+            ctx.font = '600 28px "Prompt", sans-serif';
             ctx.fillText(tpl.orgTitleTH || DEFAULT_CERT_TEMPLATE.orgTitleTH, W / 2, topY);
 
-            ctx.fillStyle = '#64748b';
-            ctx.font = '600 22px "JetBrains Mono", monospace';
-            ctx.fillText(tpl.orgTitleEN || DEFAULT_CERT_TEMPLATE.orgTitleEN, W / 2, topY + 46);
+            ctx.fillStyle = '#86868b';
+            ctx.font = '500 18px "JetBrains Mono", monospace';
+            ctx.fillText(tpl.orgTitleEN || DEFAULT_CERT_TEMPLATE.orgTitleEN, W / 2, topY + 38);
 
-            ctx.fillStyle = '#0f172a';
-            ctx.font = '800 72px "Prompt", sans-serif';
-            ctx.fillText('ประกาศนียบัตร', W / 2, topY + 165);
+            // 6. หัวข้อประกาศนียบัตรสไตล์มินิมอล
+            ctx.fillStyle = '#a8843b';
+            ctx.font = '600 20px "JetBrains Mono", monospace';
+            ctx.fillText('C E R T I F I C A T E   O F   C O M P L E T I O N', W / 2, topY + 108);
 
-            ctx.fillStyle = '#475569';
-            ctx.font = '500 32px "Sarabun", sans-serif';
-            ctx.fillText(tpl.subtitleTH || DEFAULT_CERT_TEMPLATE.subtitleTH, W / 2, topY + 235);
+            ctx.fillStyle = '#1d1d1f';
+            ctx.font = '700 68px "Prompt", sans-serif';
+            ctx.fillText('ประกาศนียบัตร', W / 2, topY + 186);
 
-            ctx.fillStyle = '#064e3b';
-            ctx.font = '800 74px "Prompt", sans-serif';
-            ctx.fillText(user.name || 'ผู้สำเร็จการอบรม', W / 2, topY + 345);
+            ctx.fillStyle = '#6e6e73';
+            ctx.font = '500 29px "Sarabun", sans-serif';
+            ctx.fillText(tpl.subtitleTH || DEFAULT_CERT_TEMPLATE.subtitleTH, W / 2, topY + 248);
+
+            // 7. ชื่อผู้ได้รับประกาศนียบัตร + เส้นทองบางคั่นด้านล่าง
+            ctx.fillStyle = '#1d1d1f';
+            ctx.font = '700 70px "Prompt", sans-serif';
+            ctx.fillText(user.name || 'ผู้สำเร็จการอบรม', W / 2, topY + 346);
+
+            const nameRuleGrad = ctx.createLinearGradient(W / 2 - 210, 0, W / 2 + 210, 0);
+            nameRuleGrad.addColorStop(0, 'rgba(197, 160, 89, 0)');
+            nameRuleGrad.addColorStop(0.25, '#c5a059');
+            nameRuleGrad.addColorStop(0.75, '#e2c785');
+            nameRuleGrad.addColorStop(1, 'rgba(197, 160, 89, 0)');
+            ctx.fillStyle = nameRuleGrad;
+            ctx.fillRect(W / 2 - 210, topY + 372, 420, 1.8);
 
             const subMeta = [
                 user.hospital || 'เครือข่าย rjcloud.organ',
                 user.license ? `เลขที่ใบอนุญาต ${user.license}` : ''
-            ].filter(Boolean).join('  •  ');
+            ].filter(Boolean).join('   •   ');
 
-            ctx.fillStyle = '#64748b';
-            ctx.font = '600 28px "Sarabun", sans-serif';
-            ctx.fillText(subMeta, W / 2, topY + 408);
+            ctx.fillStyle = '#6e6e73';
+            ctx.font = '500 26px "Sarabun", sans-serif';
+            ctx.fillText(subMeta, W / 2, topY + 420);
 
-            ctx.fillStyle = '#334155';
-            ctx.font = '500 31px "Sarabun", sans-serif';
-            ctx.fillText(tpl.completionTextTH || DEFAULT_CERT_TEMPLATE.completionTextTH, W / 2, topY + 492);
+            // 8. ข้อความรับรองและชื่อหลักสูตร
+            ctx.fillStyle = '#424245';
+            ctx.font = '500 28px "Sarabun", sans-serif';
+            ctx.fillText(tpl.completionTextTH || DEFAULT_CERT_TEMPLATE.completionTextTH, W / 2, topY + 490);
 
-            ctx.fillStyle = '#0f172a';
-            ctx.font = '700 38px "Prompt", sans-serif';
-            ctx.fillText(tpl.courseTitleTH || DEFAULT_CERT_TEMPLATE.courseTitleTH, W / 2, topY + 562);
+            ctx.fillStyle = '#1d1d1f';
+            ctx.font = '700 35px "Prompt", sans-serif';
+            ctx.fillText(tpl.courseTitleTH || DEFAULT_CERT_TEMPLATE.courseTitleTH, W / 2, topY + 550);
 
-            ctx.fillStyle = '#0284c7';
-            ctx.font = '600 24px "Prompt", sans-serif';
-            ctx.fillText(tpl.courseTitleEN || DEFAULT_CERT_TEMPLATE.courseTitleEN, W / 2, topY + 610);
+            ctx.fillStyle = '#a8843b';
+            ctx.font = '500 22px "Prompt", sans-serif';
+            ctx.fillText(tpl.courseTitleEN || DEFAULT_CERT_TEMPLATE.courseTitleEN, W / 2, topY + 594);
 
             const postInfo = parsePosttestScore(user.posttest);
             const scoreLine = postInfo.total > 0
-                ? `ผลประเมิน Post-test: ${user.posttest} (${postInfo.percent}%) • วันที่ออกประกาศนียบัตร ${formatThaiDate(user.certificateIssuedAt)}`
+                ? `ผลประเมิน Post-test: ${user.posttest} (${postInfo.percent}%)  •  วันที่ออกประกาศนียบัตร ${formatThaiDate(user.certificateIssuedAt)}`
                 : `วันที่ออกประกาศนียบัตร ${formatThaiDate(user.certificateIssuedAt)}`;
 
-            ctx.fillStyle = '#047857';
-            ctx.font = '600 25px "Sarabun", sans-serif';
-            ctx.fillText(scoreLine, W / 2, topY + 670);
+            ctx.fillStyle = '#6e6e73';
+            ctx.font = '600 23px "Sarabun", sans-serif';
+            ctx.fillText(scoreLine, W / 2, topY + 648);
 
-            const sigBaseY = H - 250;
+            // 9. ส่วนลายเซ็นกึ่งกลาง (เส้นทองบาง)
+            const sigBaseY = H - 236;
             if (sigImg) {
-                const sigH = 92;
+                const sigH = 84;
                 const sigW = sigH * (sigImg.width / (sigImg.height || 1));
-                ctx.drawImage(sigImg, W / 2 - sigW / 2, sigBaseY - 96, sigW, sigH);
+                ctx.drawImage(sigImg, W / 2 - sigW / 2, sigBaseY - 92, sigW, sigH);
             }
 
-            ctx.strokeStyle = '#94a3b8';
-            ctx.lineWidth = 2.5;
+            ctx.strokeStyle = '#c5a059';
+            ctx.lineWidth = 1.5;
             ctx.beginPath();
-            ctx.moveTo(W / 2 - 240, sigBaseY);
-            ctx.lineTo(W / 2 + 240, sigBaseY);
+            ctx.moveTo(W / 2 - 200, sigBaseY);
+            ctx.lineTo(W / 2 + 200, sigBaseY);
             ctx.stroke();
 
-            ctx.fillStyle = '#0f172a';
-            ctx.font = '700 30px "Prompt", sans-serif';
-            ctx.fillText(tpl.signerName || DEFAULT_CERT_TEMPLATE.signerName, W / 2, sigBaseY + 48);
+            ctx.fillStyle = '#1d1d1f';
+            ctx.font = '600 28px "Prompt", sans-serif';
+            ctx.fillText(tpl.signerName || DEFAULT_CERT_TEMPLATE.signerName, W / 2, sigBaseY + 46);
 
-            ctx.fillStyle = '#64748b';
-            ctx.font = '500 24px "Sarabun", sans-serif';
-            ctx.fillText(tpl.signerPosition || DEFAULT_CERT_TEMPLATE.signerPosition, W / 2, sigBaseY + 86);
+            ctx.fillStyle = '#6e6e73';
+            ctx.font = '500 22px "Sarabun", sans-serif';
+            ctx.fillText(tpl.signerPosition || DEFAULT_CERT_TEMPLATE.signerPosition, W / 2, sigBaseY + 82);
+
+            // 10. รหัสอ้างอิงมุมซ้ายล่าง (ตัดเส้นทองบางแนวตั้ง)
+            ctx.fillStyle = '#c5a059';
+            ctx.fillRect(122, H - 216, 2.5, 76);
 
             ctx.textAlign = 'left';
-            ctx.fillStyle = '#475569';
-            ctx.font = '700 22px "JetBrains Mono", monospace';
-            ctx.fillText(`CERTIFICATE NO: ${user.certificateCode || 'RJC-2027-VERIFIED'}`, 120, H - 150);
-            ctx.fillStyle = '#94a3b8';
-            ctx.font = '500 20px "Sarabun", sans-serif';
-            ctx.fillText('ตรวจสอบความถูกต้องผ่าน QR Code ที่ rjcloud.organ', 120, H - 114);
+            ctx.fillStyle = '#a8843b';
+            ctx.font = '600 16px "JetBrains Mono", monospace';
+            ctx.fillText('CERTIFICATE NO.', 142, H - 196);
 
-            const qrBoxSize = 210;
-            const qrX = W - 120 - qrBoxSize;
-            const qrY = H - 115 - qrBoxSize;
+            ctx.fillStyle = '#1d1d1f';
+            ctx.font = '700 22px "JetBrains Mono", monospace';
+            ctx.fillText(user.certificateCode || 'RJC-2027-VERIFIED', 142, H - 166);
+
+            ctx.fillStyle = '#86868b';
+            ctx.font = '500 18px "Sarabun", sans-serif';
+            ctx.fillText('ตรวจสอบความถูกต้องผ่าน QR Code ที่ rjcloud.organ', 142, H - 138);
+
+            // 11. กล่อง QR Code มุมขวาล่าง (กรอบเส้นทองบางมินิมอล)
+            const qrBoxSize = 176;
+            const qrX = W - 126 - qrBoxSize;
+            const qrY = H - 152 - qrBoxSize;
             ctx.fillStyle = '#ffffff';
-            ctx.strokeStyle = '#cbd5e1';
-            ctx.lineWidth = 3;
-            ctx.fillRect(qrX - 14, qrY - 14, qrBoxSize + 28, qrBoxSize + 28);
-            ctx.strokeRect(qrX - 14, qrY - 14, qrBoxSize + 28, qrBoxSize + 28);
+            ctx.strokeStyle = 'rgba(197, 160, 89, 0.65)';
+            ctx.lineWidth = 1.6;
+            ctx.fillRect(qrX - 12, qrY - 12, qrBoxSize + 24, qrBoxSize + 24);
+            ctx.strokeRect(qrX - 12, qrY - 12, qrBoxSize + 24, qrBoxSize + 24);
 
             if (qrCanvas) {
                 ctx.drawImage(qrCanvas, qrX, qrY, qrBoxSize, qrBoxSize);
             } else {
                 ctx.textAlign = 'center';
-                ctx.fillStyle = '#059669';
-                ctx.font = '700 22px "JetBrains Mono", monospace';
+                ctx.fillStyle = '#a8843b';
+                ctx.font = '600 18px "JetBrains Mono", monospace';
                 ctx.fillText('QR VERIFY', qrX + qrBoxSize / 2, qrY + qrBoxSize / 2);
             }
+
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#a8843b';
+            ctx.font = '600 14px "JetBrains Mono", monospace';
+            ctx.fillText('SCAN TO VERIFY', qrX + qrBoxSize / 2, qrY + qrBoxSize + 34);
         }
 
         // ============================================================================
-        // 4. ERROR BOUNDARY & ADAPTIVE 2030 UI PRIMITIVES (NO alert() / confirm())
+        // 4. ERROR BOUNDARY & ADAPTIVE UI PRIMITIVES (NO alert() / confirm())
         // ============================================================================
         class AppErrorBoundary extends React.Component {
             constructor(props) {
@@ -820,12 +872,12 @@
                 this.state = { hasError: false, err: null };
             }
             static getDerivedStateFromError(err) { return { hasError: true, err }; }
-            componentDidCatch(err, info) { console.error('App ErrorBoundary:', err, info); }
+            componentDidCatch(err, info) { console.error('Learner App Error:', err, info); }
             render() {
                 if (this.state.hasError) {
                     return (
                         <div className="min-h-dvh flex items-center justify-center p-6">
-                            <div className="spatial-card max-w-md w-full rounded-3xl p-6 text-center space-y-4 border-rose-500/40">
+                            <div className="spatial-card max-w-md w-full rounded-3xl p-6 border-rose-500/40 text-center space-y-4">
                                 <h2 className="font-display font-bold text-lg text-rose-400">พบข้อผิดพลาดในการแสดงผล</h2>
                                 <p className="text-xs font-mono bg-rose-500/10 text-rose-300 p-3 rounded-xl overflow-auto">
                                     {String(this.state.err?.message || this.state.err)}
@@ -846,7 +898,11 @@
         }
 
         function SpatialCard({ children, className = '' }) {
-            return <div className={`spatial-card rounded-[1.75rem] ${className}`}>{children}</div>;
+            return (
+                <div className={`spatial-card rounded-[1.75rem] ${className}`}>
+                    {children}
+                </div>
+            );
         }
 
         function ThemeToggleButton({ theme, onToggle, compact = false }) {
@@ -857,11 +913,39 @@
                     onClick={onToggle}
                     title={isDark ? 'สลับเป็นโหมดสว่าง (Frosted Pearl)' : 'สลับเป็นโหมดมืด (Spatial Dark)'}
                     aria-label="สลับโหมดมืดหรือสว่าง"
-                    className="spatial-soft px-3 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all active:scale-95 text-primary-adaptive shrink-0"
+                    className="spatial-soft px-2.5 sm:px-3 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all active:scale-95 text-primary-adaptive shrink-0"
                 >
                     <Icon name={isDark ? 'Sun' : 'Moon'} size={15} className={isDark ? 'text-amber-300' : 'text-indigo-600'} />
                     {!compact && <span className="hidden sm:inline">{isDark ? 'โหมดสว่าง' : 'โหมดมืด'}</span>}
                 </button>
+            );
+        }
+
+        function FormField({ label, className = '', ...props }) {
+            return (
+                <div className={`w-full ${className}`}>
+                    {label && <label className="block text-xs font-bold text-secondary-adaptive mb-1.5 ml-1">{label}</label>}
+                    <input
+                        className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-2xl text-sm font-medium transition-all disabled:opacity-60"
+                        {...props}
+                    />
+                </div>
+            );
+        }
+
+        function FormSelect({ label, options = [], className = '', ...props }) {
+            return (
+                <div className={`w-full ${className}`}>
+                    {label && <label className="block text-xs font-bold text-secondary-adaptive mb-1.5 ml-1">{label}</label>}
+                    <select
+                        className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-2xl text-sm font-medium transition-all"
+                        {...props}
+                    >
+                        {options.map(opt => (
+                            <option key={opt} value={opt}>{opt}</option>
+                        ))}
+                    </select>
+                </div>
             );
         }
 
@@ -886,7 +970,7 @@
         function ConfirmModal({ dialog, onClose }) {
             if (!dialog.open) return null;
             return (
-                <div className="fixed inset-0 z-[135] bg-slate-950/75 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
+                <div className="fixed inset-0 z-[130] bg-slate-950/75 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
                     <div className="spatial-card w-full sm:max-w-md rounded-t-[2rem] sm:rounded-[2rem] p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] space-y-4">
                         <div className="flex items-start gap-3.5">
                             <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 ${
@@ -928,38 +1012,8 @@
             );
         }
 
-        function FormField({ label, ...props }) {
-            return (
-                <div className="w-full">
-                    {label && <label className="block text-xs font-bold text-secondary-adaptive mb-1.5 ml-1">{label}</label>}
-                    <input
-                        className="touch-target spatial-input w-full px-4 py-3 rounded-2xl text-sm font-medium transition-all disabled:opacity-55"
-                        {...props}
-                    />
-                </div>
-            );
-        }
-
-        function FormSelect({ label, options, ...props }) {
-            return (
-                <div className="w-full">
-                    {label && <label className="block text-xs font-bold text-secondary-adaptive mb-1.5 ml-1">{label}</label>}
-                    <select
-                        className="touch-target spatial-input w-full px-4 py-3 rounded-2xl text-sm font-medium transition-all"
-                        {...props}
-                    >
-                        {options.map((opt) => (
-                            <option key={opt.value ?? opt} value={opt.value ?? opt}>
-                                {opt.label ?? opt}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-            );
-        }
-
         // ============================================================================
-        // 5. MAIN LEARNER APPLICATION (2030 SPATIAL OS + AI STUDY COMPANION)
+        // 5. MAIN LEARNER APPLICATION (PRODUCTION 2027 + AI STUDY COMPANION)
         // ============================================================================
         function App() {
             const initialAdminPreview = useMemo(() => {
@@ -967,7 +1021,7 @@
                 catch (_) { return ''; }
             }, []);
 
-            // Adaptive Theme State (default: Spatial Dark 2030, user switchable anytime)
+            // Adaptive Theme State (default: Spatial Dark, user switchable anytime)
             const [theme, setTheme] = useState(() => {
                 try {
                     const saved = localStorage.getItem(THEME_KEY);
@@ -1058,7 +1112,7 @@
             const [currentLessonId, setCurrentLessonId] = useState(() => user?.lastVideoId || INITIAL_LESSONS[0]?.id || 1);
             const [studySeconds, setStudySeconds] = useState(() => Number(user?.studySeconds || 0));
 
-            // 5. Quiz & AI Diagnostic / Remediation States (2030)
+            // 5. Quiz & AI Diagnostic / Remediation States
             const [quiz, setQuiz] = useState({
                 type: 'pretest',
                 questions: [],
@@ -1072,7 +1126,7 @@
             const [aiRemediationNote, setAiRemediationNote] = useState('');
             const [isFetchingAiNote, setIsFetchingAiNote] = useState(false);
 
-            // 6. AI Study Companion Panel States (beside video theater)
+            // 6. AI Study Companion Panel States
             const [companionTab, setCompanionTab] = useState('cheat'); // cheat | check | ask
             const [microCheckPick, setMicroCheckPick] = useState({});  // { [lessonId]: optionIdx }
             const [aiChatInput, setAiChatInput] = useState('');
@@ -1159,7 +1213,6 @@
                     isCloudConfigured &&
                     fbDb &&
                     nextUser?.id &&
-                    !String(nextUser.id).startsWith('demo_') &&
                     !String(nextUser.id).startsWith('admin_preview_')
                 ) {
                     try {
@@ -1243,7 +1296,7 @@
                     );
 
                     const curU = userRef.current;
-                    if (!adminPreviewMode && curU?.id && !String(curU.id).startsWith('demo_') && !String(curU.id).startsWith('admin_preview_')) {
+                    if (!adminPreviewMode && curU?.id && !String(curU.id).startsWith('admin_preview_')) {
                         try {
                             const uSnap = await getDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', String(curU.id)));
                             if (uSnap.exists()) {
@@ -1346,12 +1399,12 @@
                 return () => clearInterval(timer);
             }, [screen, quiz.finished]);
 
-            // 4. วาดใบประกาศนียบัตรลง Canvas
+            // 4. วาดใบประกาศนียบัตรลง Canvas (Apple Minimalist White & Thin Gold)
             useEffect(() => {
                 if (screen !== 'certificate' || !user || !certCanvasRef.current) return;
                 let active = true;
                 setIsRenderingCert(true);
-                const verifyUrl = `${window.location.origin}${window.location.pathname.replace(/index\.html$/i, '')}verify.html?code=${encodeURIComponent(user.certificateCode || 'RJC-2027-DEMO01')}`;
+                const verifyUrl = `${window.location.origin}${window.location.pathname.replace(/index\.html$/i, '')}verify.html?code=${encodeURIComponent(user.certificateCode || 'RJC-2027-VERIFIED')}`;
                 renderFullCertificateCanvas(certCanvasRef.current, user, certTemplate, verifyUrl)
                     .finally(() => { if (active) setIsRenderingCert(false); });
                 return () => { active = false; };
@@ -1528,42 +1581,8 @@
                 }
             };
 
-            const handleStartDemoLearner = () => {
-                const demoUser = {
-                    id: 'demo_learner_2027',
-                    license: 'DEMO2027',
-                    name: 'พว.ทดลอง เรียนรู้ (Demo 2030)',
-                    email: 'demo@rjcloud.organ',
-                    phone: '0800000000',
-                    position: 'พยาบาลวิชาชีพ',
-                    workContext: 'ปฏิบัติงานรับบริจาค/ปลูกถ่ายอวัยวะ',
-                    department: 'กรมการแพทย์',
-                    hospital: 'รพ.ราชวิถี',
-                    province: 'กรุงเทพมหานคร',
-                    userType: 'เรียนใหม่',
-                    status: 'กำลังเรียน',
-                    pretest: '-',
-                    posttest: '-',
-                    studySeconds: 0,
-                    progress: 0,
-                    lastVideoId: lessons[0]?.id || 1,
-                    skillLabPassed: false,
-                    skillLabHistory: [],
-                    liveCheckedIn: false,
-                    certificateClaimed: false,
-                    certificateCode: '',
-                    aiRoadmap: null
-                };
-                setStudySeconds(0);
-                setCurrentLessonId(demoUser.lastVideoId);
-                setLastDiagnosis(null);
-                persistUser(demoUser, false);
-                showToast('เข้าสู่โหมดทดลองเรียน 2030 (เริ่มต้นที่ขั้นที่ 1: Pre-test)', 'info');
-                startQuiz('pretest');
-            };
-
             // ============================================================================
-            // 7. QUIZ HANDLERS + AI DIAGNOSTIC ROADMAP & REMEDIATION COACH (2030)
+            // 7. QUIZ HANDLERS + AI DIAGNOSTIC ROADMAP & REMEDIATION COACH
             // ============================================================================
             const startQuiz = useCallback((type) => {
                 const rawSet = questionSets[0] || parseRawExams(INITIAL_QUIZ_RAW);
@@ -1590,7 +1609,7 @@
                     window.history.replaceState({}, '', nextUrl.toString());
                 } catch (_) {}
 
-                const sampleRoadmap = {
+                const previewRoadmap = {
                     domains: [
                         { ...CLINICAL_DOMAINS.policy_ethics, correct: 8, total: 9, percent: 89 },
                         { ...CLINICAL_DOMAINS.brain_death_donor, correct: 9, total: 14, percent: 64 },
@@ -1606,7 +1625,7 @@
                 const makePreviewUser = (overrides = {}) => ({
                     id: 'admin_preview_2027',
                     license: 'ADMIN2027',
-                    name: 'พว.ทดสอบ ระบบผู้ดูแล (Admin Preview)',
+                    name: 'ผู้ดูแลระบบ (Admin View)',
                     email: 'rjcloud.organ@gmail.com',
                     phone: '0812345678',
                     position: 'พยาบาลวิชาชีพชำนาญการ (ICU)',
@@ -1626,9 +1645,9 @@
                     skillLabHistory: [{ score: 92, infoScore: 94, empathyScore: 90, passed: true }],
                     liveCheckedIn: false,
                     certificateClaimed: true,
-                    certificateCode: 'RJC-2027-PREVIEW',
+                    certificateCode: 'RJC-2027-ADMIN',
                     certificateIssuedAt: new Date().toISOString(),
-                    aiRoadmap: sampleRoadmap,
+                    aiRoadmap: previewRoadmap,
                     ...overrides
                 });
 
@@ -1637,7 +1656,7 @@
                     setLicenseInput('65012345');
                     setExistingUserData(null);
                     setProfileForm({
-                        name: 'พว.ทดสอบ ระบบผู้ดูแล',
+                        name: 'ผู้ดูแลระบบ (Admin View)',
                         license: '65012345',
                         userType: 'เรียนต่อเนื่อง',
                         email: 'rjcloud.organ@gmail.com',
@@ -1674,7 +1693,7 @@
                 const u = makePreviewUser();
                 setUser(u);
                 setStudySeconds(u.studySeconds);
-                setLastDiagnosis(sampleRoadmap);
+                setLastDiagnosis(previewRoadmap);
                 setCurrentLessonId(u.lastVideoId);
                 setActiveTab(['live', 'leaderboard', 'profile'].includes(target) ? target : 'video');
                 setScreen('dashboard');
@@ -1697,7 +1716,7 @@
                 const isPre = quizState.type === 'pretest';
                 const passed = (score / total) >= (MIN_POSTTEST_PERCENT / 100);
 
-                // วิเคราะห์จุดแข็ง-จุดอ่อน 4 หมวดทันที (AI Diagnostic Engine — 0 บาท)
+                // วิเคราะห์จุดแข็ง-จุดอ่อน 4 หมวดทันที
                 const diagnosis = analyzeExamDiagnostics(quizState.questions, quizState.answers);
                 setLastDiagnosis(diagnosis);
 
@@ -1727,7 +1746,6 @@
                     setScreen('cert_confirm');
                 } else {
                     setScreen('quiz_fail');
-                    // เรียก AI Remediation Coach อธิบายหลักการทบทวนแบบไม่เฉลยข้อสอบตรงๆ
                     setIsFetchingAiNote(true);
                     const weakNames = (diagnosis.focusDomains || []).map(d => `${d.nameTH} (${d.percent}%)`).join(', ');
                     const guides = (diagnosis.focusDomains || []).map(d => `- ${d.nameTH}: ${d.remediationGuide}`).join('\n');
@@ -1735,7 +1753,7 @@
                     const aiRes = await callAppsScript({
                         action: 'callGemini',
                         prompt: remPrompt,
-                        systemInstruction: 'คุณคือ AI Clinical Remediation Coach ของ rjcloud.organ 2030 ตอบเป็นภาษาไทยกระชับ อ่อนโยน ถูกต้องตามหลักการแพทย์ และห้ามเฉลยข้อสอบตรงๆ'
+                        systemInstruction: 'คุณคือ AI Clinical Remediation Coach ของ rjcloud.organ ตอบเป็นภาษาไทยกระชับ อ่อนโยน ถูกต้องตามหลักการแพทย์ และห้ามเฉลยข้อสอบตรงๆ'
                     });
                     if (aiRes?.status === 'success' && aiRes.text) {
                         setAiRemediationNote(aiRes.text);
@@ -1776,7 +1794,7 @@
                     : '';
                 const knowledge = window.CLINICAL_KNOWLEDGE_BASE || '';
 
-                const sysPrompt = `คุณคือ "AI Study Companion 2030" ประจำแพลตฟอร์ม rjcloud.organ
+                const sysPrompt = `คุณคือ "AI Study Companion" ประจำแพลตฟอร์ม rjcloud.organ
 ผู้เรียนกำลังศึกษาบทเรียนที่ ${activeLesson?.id}: "${activeLesson?.title}"
 ${lessonContext}
 
@@ -1788,20 +1806,17 @@ ${knowledge}
 2. ยึดตามหลักการแพทย์และจริยธรรมการรับบริจาคอวัยวะของไทยอย่างแม่นยำ
 3. หากผู้เรียนถามขอเฉลยข้อสอบ ให้ปฏิเสธอย่างสุภาพและอธิบายหลักการทางคลินิกแทน`;
 
-                let answer = '';
-                const res = await callAppsScript({
+                const aiRes = await callAppsScript({
                     action: 'callGemini',
                     prompt: qText,
                     systemInstruction: sysPrompt
                 });
-                if (res?.status === 'success' && res.text) {
-                    answer = res.text;
-                } else {
-                    await new Promise(r => setTimeout(r, 380));
-                    answer = generateOfflineStudyAnswer(qText, activeLesson);
-                }
 
-                setAiChatHistory(prev => [...prev, { id: `a-${Date.now() + 1}`, role: 'ai', text: answer }]);
+                const replyText = (aiRes?.status === 'success' && aiRes.text)
+                    ? aiRes.text
+                    : generateOfflineStudyAnswer(qText, activeLesson);
+
+                setAiChatHistory(prev => [...prev, { id: `a-${Date.now()}`, role: 'ai', text: replyText }]);
                 setIsAiChatLoading(false);
             };
 
@@ -1888,7 +1903,7 @@ ${knowledge}
                         localStorage.setItem(LOCAL_CERTS_KEY, JSON.stringify(localCerts));
                     } catch (_) {}
 
-                    if (isCloudConfigured && fbDb && !String(nextUser.id).startsWith('demo_')) {
+                    if (isCloudConfigured && fbDb) {
                         try {
                             await setDoc(
                                 doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'certificates', certCode),
@@ -1903,7 +1918,7 @@ ${knowledge}
 
                 setIsBusy(false);
                 setScreen('certificate');
-                showToast(adminPreviewMode ? 'แสดงตัวอย่างใบประกาศนียบัตร (Admin Preview)' : 'ออกประกาศนียบัตรอิเล็กทรอนิกส์เรียบร้อยแล้วค่ะ 🎉');
+                showToast(adminPreviewMode ? 'แสดงหน้าประกาศนียบัตร (Admin View)' : 'ออกประกาศนียบัตรอิเล็กทรอนิกส์เรียบร้อยแล้วค่ะ 🎉');
             };
 
             const handleDownloadPng = () => {
@@ -1950,7 +1965,7 @@ ${knowledge}
             };
 
             // ============================================================================
-            // 10. ADMIN PREVIEW BAR & RENDER SCREENS
+            // 10. ADMIN VIEW BAR & RENDER SCREENS
             // ============================================================================
             const renderAdminPreviewBar = () => {
                 if (!adminPreviewMode) return null;
@@ -1960,7 +1975,7 @@ ${knowledge}
                     { id: 'auth2', label: 'ลงทะเบียน 2' },
                     { id: 'auth3', label: 'OTP 3' },
                     { id: 'pretest', label: 'Pre-test' },
-                    { id: 'dashboard', label: 'ห้องเรียน 2030' },
+                    { id: 'dashboard', label: 'ห้องเรียน' },
                     { id: 'live', label: 'Live' },
                     { id: 'posttest', label: 'Post-test' },
                     { id: 'cert_confirm', label: 'CSAT' },
@@ -1972,11 +1987,11 @@ ${knowledge}
                             <div className="pointer-events-auto w-full sm:w-auto max-w-3xl bg-void-900/95 text-white backdrop-blur-xl border border-aurora-400/40 rounded-2xl p-2.5 shadow-2xl space-y-2">
                                 <div className="flex items-center justify-between gap-2 px-1">
                                     <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-aurora-300">
-                                        <Icon name="Eye" size={14} /> ADMIN PREVIEW 2030
+                                        <Icon name="Eye" size={14} /> ADMIN VIEW
                                     </div>
                                     <div className="flex items-center gap-1.5">
                                         <a href="./aiskilllab.html?admin_preview=1" className="px-2.5 py-1 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-[11px] font-bold">
-                                            Holodeck 3D
+                                            AI Skill Lab
                                         </a>
                                         <a href="./admin.html" className="px-2.5 py-1 rounded-lg bg-aurora-500 hover:bg-aurora-400 text-void-950 text-[11px] font-bold">
                                             กลับ Admin
@@ -2020,7 +2035,7 @@ ${knowledge}
                 );
             };
 
-            // --- SCREEN 1: LANDING (2030 SPATIAL HERO) ---
+            // --- SCREEN 1: LANDING (PRODUCTION 2027) ---
             if (screen === 'landing') {
                 return (
                     <div className="min-h-dvh relative flex flex-col pt-safe pb-safe">
@@ -2036,11 +2051,8 @@ ${knowledge}
                                         <span className="font-display font-extrabold text-lg text-primary-adaptive leading-none">
                                             rjcloud<span className="text-accent-adaptive">.organ</span>
                                         </span>
-                                        <span className="px-1.5 py-0.5 rounded bg-aurora-500/20 text-accent-adaptive font-mono text-[9px] font-bold">
-                                            2030
-                                        </span>
                                     </div>
-                                    <span className="text-[10px] font-mono text-muted-adaptive">Spatial Clinical Ecosystem</span>
+                                    <span className="text-[10px] font-mono text-muted-adaptive">Clinical Organ Donation Platform</span>
                                 </div>
                             </div>
                             <div className="flex items-center gap-2">
@@ -2056,43 +2068,43 @@ ${knowledge}
                             </div>
                         </header>
 
-                        <main className="relative z-10 flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-8 md:py-12 flex flex-col justify-center gap-7">
-                            <div className="text-center space-y-4 max-w-3xl mx-auto">
-                                <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full spatial-soft text-accent-adaptive font-mono text-[11px] font-bold">
-                                    <span className="w-2 h-2 rounded-full bg-aurora-400 animate-pulse" />
-                                    SPATIAL CLINICAL OS 2030 • AI-POWERED LEARNING
-                                </span>
-                                <h1 className="font-display text-3xl sm:text-5xl font-extrabold text-primary-adaptive leading-tight">
+                        <main className="relative z-10 flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-6 md:py-10 flex flex-col justify-center gap-7">
+                            <div className="text-center space-y-5 max-w-3xl mx-auto">
+                                {/* รูปภาพหลักหน้าแรกผู้เรียน */}
+                                <div className="w-full max-w-2xl mx-auto">
+                                    <div className="spatial-card rounded-[2rem] p-2 sm:p-3 overflow-hidden shadow-2xl">
+                                        <img
+                                            src={CONFIG.heroBannerUrl}
+                                            alt="ยกระดับทักษะการรับบริจาคและปลูกถ่ายอวัยวะ สู่มาตรฐานปี 2027"
+                                            className="w-full h-auto max-h-[340px] object-contain rounded-[1.45rem] mx-auto block"
+                                        />
+                                    </div>
+                                </div>
+
+                                <h1 className="font-display text-2xl sm:text-4xl md:text-5xl font-extrabold text-primary-adaptive leading-tight">
                                     ยกระดับทักษะการรับบริจาคและปลูกถ่ายอวัยวะ{' '}
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-aurora-400 via-prism-400 to-indigo-400">
-                                        สู่มาตรฐานปี 2030
+                                        สู่มาตรฐานปี 2027
                                     </span>
                                 </h1>
+
                                 <p className="text-sm sm:text-base text-secondary-adaptive leading-relaxed max-w-2xl mx-auto">
-                                    ผสาน <b className="text-primary-adaptive">AI Study Companion</b> วิเคราะห์จุดอ่อนและติวส่วนตัวตลอด 20 บทเรียน, ฝึกสื่อสารกับญาติใน <b className="text-accent-adaptive">3D Holodeck</b> และออกประกาศนียบัตรพร้อม QR Code ทันทีเมื่อผ่านเกณฑ์
+                                    ผสาน <b className="text-primary-adaptive">AI Study Companion</b> วิเคราะห์จุดอ่อนและช่วยทบทวนตลอด 20 บทเรียน, ฝึกสื่อสารกับญาติใน <b className="text-accent-adaptive">AI Skill Lab 3 มิติ</b> และออกประกาศนียบัตรพร้อม QR Code ทันทีเมื่อผ่านเกณฑ์
                                 </p>
 
-                                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                                <div className="flex items-center justify-center pt-1">
                                     <button
                                         type="button"
                                         onClick={() => { setAuthStep(1); setScreen('auth'); }}
-                                        className="touch-target w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 hover:from-aurora-300 hover:to-prism-300 text-void-950 font-display font-extrabold text-base shadow-[0_14px_34px_-8px_rgba(16,185,129,0.45)] flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                                        className="touch-target w-full sm:w-auto px-10 py-4 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 hover:from-aurora-300 hover:to-prism-300 text-void-950 font-display font-extrabold text-base shadow-[0_14px_34px_-8px_rgba(16,185,129,0.45)] flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
                                     >
                                         <span>เข้าสู่ระบบ / ลงทะเบียนเรียน</span>
                                         <Icon name="ArrowRight" size={19} />
                                     </button>
-                                    <button
-                                        type="button"
-                                        onClick={handleStartDemoLearner}
-                                        className="touch-target spatial-soft w-full sm:w-auto px-6 py-4 rounded-2xl text-primary-adaptive font-display font-bold text-sm flex items-center justify-center gap-2 active:scale-[0.98]"
-                                    >
-                                        <Icon name="Sparkles" size={17} className="text-accent-adaptive" />
-                                        <span>ทดลองเรียนโฉม 2030 (Demo)</span>
-                                    </button>
                                 </div>
                             </div>
 
-                            {/* 5-Step Spatial Pathway Preview */}
+                            {/* 5-Step Learning Pathway */}
                             <SpatialCard className="p-5 sm:p-6">
                                 <p className="text-xs font-mono font-bold text-prism-adaptive uppercase tracking-wider mb-3.5 text-center">
                                     5-STEP AI-GUIDED PATHWAY สู่ประกาศนียบัตรอิเล็กทรอนิกส์
@@ -2101,9 +2113,9 @@ ${knowledge}
                                     {[
                                         { step: '01', title: 'Pre-test + AI Map', desc: 'วิเคราะห์จุดอ่อน 4 หมวดจัดแผนเรียนเฉพาะคุณ', icon: 'ClipboardCheck' },
                                         { step: '02', title: `เรียน ≥ ${MIN_STUDY_PERCENT}% + AI`, desc: '20 บทพร้อม AI สรุป 1 นาที & ถาม-ตอบสด', icon: 'MonitorPlay' },
-                                        { step: '03', title: '3D Holodeck Lab', desc: 'ฝึกคุยกับญาติ 3 มิติ จับความเงียบ 2.5 วิ', icon: 'Bot' },
-                                        { step: '04', title: `Post-test ≥ ${MIN_POSTTEST_PERCENT}%`, desc: 'สอบหลังเรียนพร้อม AI โค้ชติวซ่อมจุดพลาด', icon: 'FileCheck2' },
-                                        { step: '05', title: 'Holo-Cert ทันที', desc: 'รับ PDF / PNG พร้อม QR ยืนยันคุณวุฒิ', icon: 'Award' }
+                                        { step: '03', title: 'AI Skill Lab 3D', desc: 'ฝึกสื่อสารกับญาติ 3 มิติ จับความเงียบ 2.5 วิ', icon: 'Bot' },
+                                        { step: '04', title: `Post-test ≥ ${MIN_POSTTEST_PERCENT}%`, desc: 'สอบหลังเรียนพร้อม AI ช่วยทบทวนจุดพลาด', icon: 'FileCheck2' },
+                                        { step: '05', title: 'ประกาศนียบัตร', desc: 'รับ PDF / PNG พร้อม QR ยืนยันคุณวุฒิทันที', icon: 'Award' }
                                     ].map(item => (
                                         <div key={item.step} className="spatial-soft p-3.5 rounded-2xl flex sm:flex-col items-center sm:text-center gap-3 sm:gap-2">
                                             <div className="w-10 h-10 rounded-xl bg-aurora-500/15 text-accent-adaptive flex items-center justify-center shrink-0">
@@ -2130,7 +2142,7 @@ ${knowledge}
                             >
                                 <Icon name="Settings" size={18} />
                             </button>
-                            <p className="text-right font-medium">{CONFIG.appName} 2030 • {CONFIG.contactEmail}</p>
+                            <p className="text-right font-medium">{CONFIG.appName} • {CONFIG.contactEmail}</p>
                         </footer>
 
                         <ToastBanner toast={toast} />
@@ -2334,7 +2346,7 @@ ${knowledge}
                                         disabled={isBusy || otpInput.length !== 6}
                                         className="touch-target w-full py-3.5 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 hover:from-aurora-300 hover:to-prism-300 disabled:opacity-45 text-void-950 font-display font-extrabold text-base shadow-lg shadow-aurora-500/25"
                                     >
-                                        {isBusy ? 'กำลังยืนยัน...' : 'ยืนยันเข้าสู่ห้องเรียน 2030'}
+                                        {isBusy ? 'กำลังยืนยัน...' : 'ยืนยันเข้าสู่ห้องเรียน'}
                                     </button>
                                 </form>
                             )}
@@ -2470,7 +2482,7 @@ ${knowledge}
                 );
             }
 
-            // --- SCREEN 4: PRE-TEST RESULT + AI DIAGNOSTIC ROADMAP (2030) ---
+            // --- SCREEN 4: PRE-TEST RESULT + AI DIAGNOSTIC ROADMAP ---
             if (screen === 'quiz_result') {
                 const totalQ = quiz.questions.length || 1;
                 const pct = Math.round((quiz.score / totalQ) * 100);
@@ -2501,7 +2513,6 @@ ${knowledge}
                                 </div>
                             </div>
 
-                            {/* 4-Domain AI Mastery Diagnosis */}
                             {diag?.domains && (
                                 <div className="space-y-2.5">
                                     <p className="text-xs font-bold text-secondary-adaptive flex items-center gap-1.5">
@@ -2522,7 +2533,7 @@ ${knowledge}
                                         </div>
                                     ))}
                                     <div className="p-3.5 rounded-2xl bg-aurora-500/15 border border-aurora-400/30 text-xs text-primary-adaptive leading-relaxed">
-                                        <b>คำแนะนำจาก AI Coach:</b> {diag.summaryText}
+                                        <b>คำแนะนำจาก AI:</b> {diag.summaryText}
                                     </div>
                                 </div>
                             )}
@@ -2564,11 +2575,10 @@ ${knowledge}
                                 </div>
                                 <h2 className="font-display text-2xl font-extrabold text-primary-adaptive">ยังไม่ถึงเกณฑ์ {MIN_POSTTEST_PERCENT}%</h2>
                                 <p className="text-xs sm:text-sm text-secondary-adaptive">
-                                    คะแนนครั้งนี้ <b className="font-mono text-rose-400">{quiz.score}/{totalQ} ({pct}%)</b> — AI โค้ชสรุปหลักการที่ควรทบทวนให้ด้านล่างค่ะ (ไม่เฉลยข้อสอบ)
+                                    คะแนนครั้งนี้ <b className="font-mono text-rose-400">{quiz.score}/{totalQ} ({pct}%)</b> — AI สรุปหลักการที่ควรทบทวนให้ด้านล่างค่ะ (ไม่เฉลยข้อสอบ)
                                 </p>
                             </div>
 
-                            {/* AI Remediation Principles */}
                             <div className="space-y-2.5">
                                 <p className="text-xs font-mono font-bold text-prism-adaptive flex items-center gap-1.5">
                                     <Icon name="Sparkles" size={14} /> AI REMEDIATION COACH (จุดที่ควรทบทวนก่อนสอบใหม่)
@@ -2660,7 +2670,7 @@ ${knowledge}
                                 <FormField label="หน่วยงาน / โรงพยาบาล *" required value={certFormHosp} onChange={e => setCertFormHosp(e.target.value)} />
 
                                 <div className="spatial-soft p-4 rounded-2xl text-center space-y-2.5 border-amber-400/30">
-                                    <p className="text-xs font-bold text-amber-400">ประเมินความพึงพอใจต่อหลักสูตร 2030 (CSAT)</p>
+                                    <p className="text-xs font-bold text-amber-400">ประเมินความพึงพอใจต่อหลักสูตร (CSAT)</p>
                                     <div className="flex items-center justify-center gap-2">
                                         {[1, 2, 3, 4, 5].map(star => (
                                             <button key={star} type="button" onClick={() => setCsatRating(star)} className="p-1 transition-transform active:scale-90">
@@ -2693,7 +2703,7 @@ ${knowledge}
                 );
             }
 
-            // --- SCREEN 7: BUILT-IN CERTIFICATE STUDIO ---
+            // --- SCREEN 7: BUILT-IN CERTIFICATE STUDIO (APPLE MINIMALIST WHITE & GOLD) ---
             if (screen === 'certificate') {
                 return (
                     <div className="min-h-dvh relative flex flex-col pt-safe pb-safe">
@@ -2719,11 +2729,11 @@ ${knowledge}
                                 <div className="text-center space-y-1">
                                     <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive">ประกาศนียบัตรอิเล็กทรอนิกส์ของคุณ</h2>
                                     <p className="text-xs sm:text-sm text-secondary-adaptive">
-                                        อ้างอิงผลประเมิน Post-test: <b className="text-accent-adaptive">{user?.posttest} ({posttestInfo.percent}%)</b> • รองรับการสแกน QR ตราโฮโลแกรมตรวจสอบได้จริง
+                                        อ้างอิงผลประเมิน Post-test: <b className="text-accent-adaptive">{user?.posttest} ({posttestInfo.percent}%)</b> • รองรับการสแกน QR Code ตรวจสอบความถูกต้องได้ทันที
                                     </p>
                                 </div>
 
-                                <div className="relative w-full aspect-[1.414/1] rounded-2xl overflow-hidden bg-white border border-aurora-400/35 shadow-2xl">
+                                <div className="relative w-full aspect-[1.414/1] rounded-2xl overflow-hidden bg-white border border-amber-500/35 shadow-2xl">
                                     <canvas ref={certCanvasRef} className="w-full h-full object-contain block" />
                                     {isRenderingCert && (
                                         <div className="absolute inset-0 bg-void-950/70 flex items-center justify-center text-sm font-bold text-aurora-300">
@@ -2753,7 +2763,7 @@ ${knowledge}
                                         rel="noreferrer"
                                         className="touch-target spatial-soft py-3.5 px-4 rounded-2xl text-primary-adaptive font-display font-bold text-sm flex items-center justify-center gap-2"
                                     >
-                                        <Icon name="QrCode" size={18} className="text-accent-adaptive" /> ทดสอบลิงก์ QR
+                                        <Icon name="QrCode" size={18} className="text-accent-adaptive" /> ตรวจสอบลิงก์ QR
                                     </a>
                                 </div>
                             </SpatialCard>
@@ -2764,7 +2774,7 @@ ${knowledge}
                 );
             }
 
-            // --- SCREEN 8: 2030 SPATIAL LEARNER DASHBOARD ---
+            // --- SCREEN 8: LEARNER DASHBOARD ---
             const tabs = [
                 { id: 'video', label: 'บทเรียน', icon: 'MonitorPlay' },
                 { id: 'live', label: 'Live สด', icon: 'Radio' },
@@ -2788,9 +2798,6 @@ ${knowledge}
                                     <div className="flex items-center gap-1.5">
                                         <span className="font-display font-extrabold text-sm sm:text-base text-primary-adaptive leading-none truncate">
                                             rjcloud<span className="text-accent-adaptive">.organ</span>
-                                        </span>
-                                        <span className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-aurora-500/20 text-accent-adaptive font-mono text-[9px] font-bold">
-                                            2030
                                         </span>
                                     </div>
                                     <span className="text-[11px] text-muted-adaptive block truncate">{user?.name} • {user?.userType}</span>
@@ -2822,12 +2829,12 @@ ${knowledge}
                                         href={adminPreviewMode ? './aiskilllab.html?admin_preview=1' : './aiskilllab.html'}
                                         className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-violet-500 to-indigo-500 hover:from-violet-400 hover:to-indigo-400 text-white font-display font-bold text-xs flex items-center gap-1.5 shadow-md active:scale-95"
                                     >
-                                        <Icon name="Bot" size={15} /> Holodeck 3D
+                                        <Icon name="Bot" size={15} /> AI Skill Lab
                                     </a>
                                 ) : (
                                     <button
                                         type="button"
-                                        onClick={() => showToast(`สะสมชั่วโมงเรียนให้ถึง ${MIN_STUDY_PERCENT}% ก่อนเพื่อปลดล็อก AI Skill Lab 2030 (ตอนนี้ ${studyPercent}%)`, 'info')}
+                                        onClick={() => showToast(`สะสมชั่วโมงเรียนให้ถึง ${MIN_STUDY_PERCENT}% ก่อนเพื่อปลดล็อก AI Skill Lab (ตอนนี้ ${studyPercent}%)`, 'info')}
                                         className="spatial-soft px-3 py-2 rounded-xl text-muted-adaptive font-bold text-xs flex items-center gap-1.5"
                                     >
                                         <Icon name="Lock" size={14} /> Lab ({studyPercent}%/{MIN_STUDY_PERCENT}%)
@@ -2869,7 +2876,7 @@ ${knowledge}
                                 {[
                                     { n: '1', label: 'Pre-test', done: hasDonePretest },
                                     { n: '2', label: `เรียน ≥${MIN_STUDY_PERCENT}%`, done: isStudyRequirementMet },
-                                    { n: '3', label: 'Holodeck', done: hasPassedSkillLab },
+                                    { n: '3', label: 'AI Lab', done: hasPassedSkillLab },
                                     { n: '4', label: `Post ≥${MIN_POSTTEST_PERCENT}%`, done: posttestInfo.passed },
                                     { n: '5', label: 'ประกาศฯ', done: Boolean(user?.certificateClaimed) }
                                 ].map(st => (
@@ -2938,7 +2945,7 @@ ${knowledge}
                                         </h2>
                                     </SpatialCard>
 
-                                    {/* 🌟 AI STUDY COMPANION 2030 (1-Min Summary + Micro-Check + Clinical Q&A) 🌟 */}
+                                    {/* AI STUDY COMPANION (1-Min Summary + Micro-Check + Clinical Q&A) */}
                                     <SpatialCard className="p-4 sm:p-5 space-y-4 border-aurora-400/25">
                                         <div className="flex flex-wrap items-center justify-between gap-2">
                                             <div className="flex items-center gap-2.5">
@@ -2946,7 +2953,7 @@ ${knowledge}
                                                     <Icon name="Sparkles" size={18} />
                                                 </div>
                                                 <div>
-                                                    <h3 className="font-display font-bold text-sm sm:text-base text-primary-adaptive">AI Study Companion 2030</h3>
+                                                    <h3 className="font-display font-bold text-sm sm:text-base text-primary-adaptive">AI Study Companion</h3>
                                                     <p className="text-[11px] text-muted-adaptive">ผู้ช่วยสรุปคลินิก เช็กความเข้าใจ และตอบคำถามประจำบทเรียนที่ {activeLesson?.id}</p>
                                                 </div>
                                             </div>
@@ -2988,11 +2995,11 @@ ${knowledge}
                                                         type="button"
                                                         onClick={() => {
                                                             setCompanionTab('ask');
-                                                            handleAskAiCompanion(null, `ช่วยยกตัวอย่างกรณีศึกษาหน้างานจริงที่เชื่อมโยงกับบทที่ ${activeLesson?.id}: ${activeLesson?.title}`);
+                                                            handleAskAiCompanion(null, `ช่วยยกกรณีศึกษาหน้างานจริงที่เชื่อมโยงกับบทที่ ${activeLesson?.id}: ${activeLesson?.title}`);
                                                         }}
                                                         className="px-3.5 py-1.5 rounded-xl bg-prism-500/15 hover:bg-prism-500/25 text-prism-adaptive text-xs font-bold flex items-center gap-1.5"
                                                     >
-                                                        <Icon name="Wand2" size={14} /> ให้ AI ยกตัวอย่างเคสหน้างานจริง
+                                                        <Icon name="Wand2" size={14} /> ให้ AI อธิบายเคสหน้างานจริง
                                                     </button>
                                                 </div>
                                             </div>
@@ -3084,7 +3091,7 @@ ${knowledge}
                                                     {isAiChatLoading && (
                                                         <div className="text-xs text-prism-adaptive flex items-center gap-2 px-2">
                                                             <span className="w-2 h-2 rounded-full bg-prism-400 animate-bounce" />
-                                                            AI Study Companion กำลังค้นคว้าฐานความรู้คลินิก...
+                                                            AI กำลังค้นคว้าฐานความรู้คลินิก...
                                                         </div>
                                                     )}
                                                 </div>
@@ -3110,15 +3117,15 @@ ${knowledge}
                                         )}
                                     </SpatialCard>
 
-                                    {/* Next Step Action Cards (Step 3 Holodeck & Step 4 Post-test) */}
+                                    {/* Next Step Action Cards (Step 3 AI Skill Lab & Step 4 Post-test) */}
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                         <SpatialCard className="p-4 flex flex-col justify-between gap-3 border-violet-400/30">
                                             <div>
                                                 <span className="font-mono text-[10px] font-bold text-violet-400">STEP 3 • SPATIAL PRACTICE</span>
-                                                <h3 className="font-display font-bold text-base text-primary-adaptive mt-0.5">AI Skill Lab 2030 Holodeck</h3>
+                                                <h3 className="font-display font-bold text-base text-primary-adaptive mt-0.5">AI Skill Lab (ห้องฝึก 3 มิติ)</h3>
                                                 <p className="text-xs text-secondary-adaptive mt-0.5">
                                                     {canEnterSkillLab
-                                                        ? 'ปลดล็อกแล้ว! เข้าฝึกให้ข้อมูลญาติในห้องรับรอง 3 มิติพร้อมรับการ์ดโฮโลแกรม'
+                                                        ? 'ปลดล็อกแล้ว! เข้าฝึกให้ข้อมูลญาติในห้องรับรอง 3 มิติพร้อมรับการ์ดประเมินผล'
                                                         : `สะสมเวลาเรียนให้ถึง ${MIN_STUDY_PERCENT}% เพื่อปลดล็อก (ปัจจุบัน ${studyPercent}%)`}
                                                 </p>
                                             </div>
@@ -3127,7 +3134,7 @@ ${knowledge}
                                                     href={adminPreviewMode ? './aiskilllab.html?admin_preview=1' : './aiskilllab.html'}
                                                     className="touch-target w-full py-2.5 rounded-xl bg-gradient-to-r from-violet-500 to-indigo-500 hover:from-violet-400 hover:to-indigo-400 text-white font-display font-bold text-xs flex items-center justify-center gap-1.5"
                                                 >
-                                                    <Icon name="Bot" size={16} /> เข้าฝึก AI Skill Lab 2030 เลย
+                                                    <Icon name="Bot" size={16} /> เข้าฝึก AI Skill Lab เลย
                                                 </a>
                                             ) : (
                                                 <button disabled className="touch-target spatial-soft w-full py-2.5 rounded-xl text-muted-adaptive font-bold text-xs flex items-center justify-center gap-1.5 opacity-70">
@@ -3288,7 +3295,7 @@ ${knowledge}
                             <SpatialCard className="p-4 sm:p-6 max-w-3xl mx-auto space-y-4">
                                 <div>
                                     <h2 className="font-display text-xl font-extrabold text-primary-adaptive flex items-center gap-2">
-                                        <Icon name="Trophy" size={22} className="text-amber-400" /> กระดานจัดอันดับ AI Skill Lab 2030
+                                        <Icon name="Trophy" size={22} className="text-amber-400" /> กระดานจัดอันดับ AI Skill Lab
                                     </h2>
                                     <p className="text-xs text-muted-adaptive">แสดงเฉพาะชื่อ หน่วยงาน และคะแนนดัชนี Empathy สูงสุด (คุ้มครองข้อมูล PDPA)</p>
                                 </div>
@@ -3311,7 +3318,7 @@ ${knowledge}
                                         </div>
                                     ))}
                                     {leaderboard.length === 0 && (
-                                        <div className="p-8 text-center text-sm text-muted-adaptive">ยังไม่มีคะแนนในกระดานจัดอันดับ มาเป็นคนแรกที่ฝึกใน AI Skill Lab 2030 กันค่ะ!</div>
+                                        <div className="p-8 text-center text-sm text-muted-adaptive">ยังไม่มีคะแนนในกระดานจัดอันดับ มาเป็นคนแรกที่ฝึกใน AI Skill Lab กันค่ะ!</div>
                                     )}
                                 </div>
                             </SpatialCard>
@@ -3354,7 +3361,7 @@ ${knowledge}
                                         <p className="font-mono text-lg font-extrabold text-primary-adaptive mt-0.5">{studyPercent}%</p>
                                     </div>
                                     <div className="spatial-soft p-3.5 rounded-2xl">
-                                        <p className="text-[11px] font-bold text-muted-adaptive">AI Skill Lab 2030</p>
+                                        <p className="text-[11px] font-bold text-muted-adaptive">AI Skill Lab</p>
                                         <p className="font-display text-base font-extrabold text-violet-400 mt-0.5">
                                             {hasPassedSkillLab ? 'ผ่านแล้ว ✓' : 'ยังไม่ผ่าน'}
                                         </p>
@@ -3365,7 +3372,7 @@ ${knowledge}
                                     <div>
                                         <p className="text-xs font-bold text-primary-adaptive">โหมดการแสดงผล (Theme Preference)</p>
                                         <p className="text-[11px] text-muted-adaptive">
-                                            กำลังใช้งาน: {theme === 'dark' ? 'Spatial Dark 2030 (สบายตา)' : 'Frosted Pearl 2030 (โหมดสว่าง)'}
+                                            กำลังใช้งาน: {theme === 'dark' ? 'โหมดมืด (สบายตา)' : 'โหมดสว่าง (Frosted Pearl)'}
                                         </p>
                                     </div>
                                     <ThemeToggleButton theme={theme} onToggle={toggleTheme} />
