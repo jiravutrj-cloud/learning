@@ -1,6 +1,6 @@
 // ============================================================================
-// rjcloud.organ — Master Static Data & System Configuration (2027 Edition)
-// ศูนย์กลางข้อมูลและการตั้งค่าทั้งหมด ผูกบัญชีหลัก: rjcloud.organ@gmail.com
+// rjcloud.organ — Master Static Data & System Configuration (2030 Edition)
+// ศูนย์กลางข้อมูล การตั้งค่าธีม และคลังสมรรถนะ AI ผูกบัญชีหลัก: rjcloud.organ@gmail.com
 // ============================================================================
 
 /**
@@ -9,7 +9,7 @@
  */
 window.RJCLOUD_CONFIG = {
   appName: "rjcloud.organ",
-  edition: "2027 Clinical Edition",
+  edition: "2030 Spatial Clinical Edition",
   contactEmail: "rjcloud.organ@gmail.com",
   appId: "rjcloud-organ-2027",
 
@@ -23,6 +23,12 @@ window.RJCLOUD_CONFIG = {
     allowedUserTypes: ["เรียนใหม่", "เรียนต่อเนื่อง"],
     minStudyPercent: 80,      // ขั้นที่ 2: สะสมชั่วโมงเรียนไม่น้อยกว่า 80% จึงปลดล็อก AI Skill Lab
     minPosttestPercent: 80    // ขั้นที่ 4 & 5: ทำ Post-test ไม่น้อยกว่า 80% เพื่อรับประกาศนียบัตร
+  },
+
+  // ค่าเริ่มต้นโหมดการแสดงผล 2030 (ผู้เรียนสามารถกดสลับ มืด/สว่าง ได้ทุกหน้า)
+  theme: {
+    defaultMode: "dark",              // "dark" (Spatial Dark 2030) | "light" (Frosted Pearl 2030)
+    storageKey: "rjcloud_theme_2030"
   },
 
   // ค่าเชื่อมต่อ Firebase Project: rj-cloud-organ (บัญชี rjcloud.organ@gmail.com)
@@ -42,7 +48,7 @@ window.RJCLOUD_CONFIG = {
 
 /**
  * 2. ต้นแบบประกาศนียบัตรในตัวระบบ (Built-in Certificate Studio Template)
- * ค่าเริ่มต้นตัวอย่าง — สามารถแก้ไขข้อความ โลโก้ และรูปลายเซ็นได้เองจากหน้า admin.html
+ * สามารถแก้ไขข้อความ โลโก้ และรูปลายเซ็นได้เองจากหน้า admin.html
  */
 window.DEFAULT_CERT_TEMPLATE = {
   certPrefix: "RJC-2027",
@@ -55,8 +61,8 @@ window.DEFAULT_CERT_TEMPLATE = {
   signerName: "นายแพทย์สมชาย ตัวอย่างดี",
   signerPosition: "ผู้อำนวยการโครงการ rjcloud.organ (ตัวอย่าง — แก้ไขได้ในหน้า Admin)",
   hoursText: "ระยะเวลาการเรียนรู้ตามเกณฑ์มาตรฐานวิชาชีพ",
-  logoUrl: "",      // วางลิงก์ไฟล์โลโก้ PNG พื้นหลังโปร่งใส (แนะนำรองรับ CORS)
-  signatureUrl: ""  // วางลิงก์ไฟล์ลายเซ็น PNG พื้นหลังโปร่งใส (แนะนำรองรับ CORS)
+  logoUrl: "",
+  signatureUrl: ""
 };
 
 /**
@@ -70,7 +76,91 @@ window.SKILL_LAB_VIDEO = {
 };
 
 /**
- * 4. ฐานข้อมูลสังกัดและโรงพยาบาลเครือข่ายทั่วประเทศ (Hospital Mapping)
+ * 4. โครงสร้าง 4 หมวดสมรรถนะคลินิกสำหรับ AI Diagnostic Roadmap & Remediation (2030)
+ */
+window.CLINICAL_DOMAINS = {
+  policy_ethics: {
+    id: "policy_ethics",
+    nameTH: "นโยบาย กฎหมาย และจริยธรรมวิชาชีพ",
+    shortName: "กฎหมาย & จริยธรรม",
+    color: "#38bdf8",
+    lessonIds: [1, 3, 4, 7, 8],
+    remediationGuide: "ทบทวนเป้าหมาย Service Plan, เกณฑ์อายุแสดงความจำนง (18 ปี), บทบาทจัดสรรอวัยวะของ ODC สภากาชาดไทย, การรักษาความลับผู้บริจาค-ผู้รับ และหลักจริยธรรม Autonomy (การเคารพการตัดสินใจ)"
+  },
+  brain_death_donor: {
+    id: "brain_death_donor",
+    nameTH: "การวินิจฉัยภาวะสมองตายและการดูแลผู้บริจาค",
+    shortName: "สมองตาย & Donor",
+    color: "#34d399",
+    lessonIds: [5, 9, 12, 13],
+    remediationGuide: "ทบทวนเกณฑ์ GCS=3, การตรวจทางคลินิก 2 ครั้งห่างกันอย่างน้อย 6 ชม. โดยแพทย์ 3 ท่าน, Apnea Test, สัญญาณรีเฟล็กซ์ไขสันหลัง (Lazarus Sign), การรักษาความดันโลหิต และการให้ DDAVP คุมภาวะเบาจืด (DI)"
+  },
+  procurement_transplant: {
+    id: "procurement_transplant",
+    nameTH: "การจัดเก็บ ขนส่ง และดูแลผู้ป่วยปลูกถ่ายอวัยวะ",
+    shortName: "จัดเก็บ & ปลูกถ่าย",
+    color: "#a78bfa",
+    lessonIds: [2, 6, 10, 14, 15, 16, 17, 18, 19, 20],
+    remediationGuide: "ทบทวนระยะเวลาทองของหัวใจ (ไม่เกิน 4 ชม.), การจัดเก็บดวงตา (6-8 ชม.), อุณหภูมิบรรจุไต (2-4 องศาเซลเซียส), น้ำยาถนอมอวัยวะ, HLA Typing และการตกแต่งร่างผู้บริจาคให้เรียบร้อยที่สุด"
+  },
+  family_communication: {
+    id: "family_communication",
+    nameTH: "การสื่อสารและให้ข้อมูลญาติในห้องรับรอง",
+    shortName: "สื่อสารกับญาติ",
+    color: "#fbbf24",
+    lessonIds: [11],
+    remediationGuide: "ทบทวนหลัก Decoupling (แยกการแจ้งข่าวสมองตายออกจากการขอรับบริจาค), หลัก SPIKES (S = Setting ห้องรับรองส่วนตัว), หลัก B.A.L.I., การตอบคำถามความเชื่ออย่างอ่อนโยน และการดูแลจิตใจญาติ (Bereavement Care)"
+  }
+};
+
+/**
+ * ตัวจับคู่ข้อสอบมาตรฐานทั้ง 40 ข้อ (ดัชนี 0-39) เข้ากับ 4 หมวดสมรรถนะคลินิก
+ */
+window.QUESTION_DOMAIN_MAP = [
+  "policy_ethics",          // 1. Service Plan
+  "procurement_transplant", // 2. Eye procurement 6-8 ชม.
+  "procurement_transplant", // 3. ประโยชน์การปลูกถ่ายไต
+  "procurement_transplant", // 4. บรรจุไต 2-4 องศา
+  "family_communication",   // 5. Decoupling
+  "brain_death_donor",      // 6. Apnea Test
+  "policy_ethics",          // 7. อายุขั้นต่ำ 18 ปี
+  "procurement_transplant", // 8. อวัยวะที่ปลูกถ่ายไม่ได้ (สมอง)
+  "brain_death_donor",      // 9. สาเหตุสมองตาย TBI
+  "family_communication",   // 10. ความเชื่อชาติหน้าไม่ครบ
+  "procurement_transplant", // 11. Golden Period หัวใจ <= 4 ชม.
+  "brain_death_donor",      // 12. ข้อห้ามเด็ดขาด vs ความดันสูง
+  "brain_death_donor",      // 13. Clinical Test 2 ครั้งห่าง 6 ชม.
+  "brain_death_donor",      // 14. แพทย์ลงนามรับรอง 3 ท่าน
+  "policy_ethics",          // 15. บทบาทศูนย์ ODC สภากาชาดไทย
+  "procurement_transplant", // 16. เนื้อเยื่อเก็บได้นานสุด (ลิ้นหัวใจแช่แข็ง)
+  "policy_ethics",          // 17. The Rule of Rescue
+  "policy_ethics",          // 18. หน้าที่ของ TC
+  "procurement_transplant", // 19. HLA Typing ไต
+  "brain_death_donor",      // 20. Potential Donor รักษาสัญญาณชีพก่อน
+  "brain_death_donor",      // 21. ยาคุมเบาจืด Desmopressin (DDAVP)
+  "brain_death_donor",      // 22. ภาวะความดันต่ำในผู้ป่วยสมองตาย
+  "family_communication",   // 23. หลัก B.A.L.I. ตัว L
+  "family_communication",   // 24. มีบัตรจำนงแต่ญาติคัดค้านรุนแรง
+  "brain_death_donor",      // 25. Lazarus Sign รีเฟล็กซ์ไขสันหลัง
+  "policy_ethics",          // 26. ศูนย์ดวงตาสภากาชาดไทย
+  "brain_death_donor",      // 27. DCD
+  "brain_death_donor",      // 28. GCS = 3
+  "procurement_transplant", // 29. ขั้นตอนสุดท้ายตกแต่งศพให้เรียบร้อย
+  "family_communication",   // 30. Bereavement Care
+  "brain_death_donor",      // 31. Antibiotics ในผู้ป่วยสมองตาย
+  "procurement_transplant", // 32. ไขกระดูกไม่ใช่จากสมองตาย
+  "brain_death_donor",      // 33. อายุ 70 ปีสมองตายบริจาคได้หากอวัยวะดี
+  "family_communication",   // 34. SPIKES ตัว S ตัวแรก (Setting)
+  "brain_death_donor",      // 35. EEG เป็นทางเลือกเสริม
+  "procurement_transplant", // 36. ล้างและแช่ Preservation Solution อุณหภูมิต่ำ
+  "policy_ethics",          // 37. ระบบจัดสรรอวัยวะอย่างเป็นธรรมของ ODC
+  "policy_ethics",          // 38. ความลับผู้บริจาคและผู้รับ
+  "brain_death_donor",      // 39. ECMO พยุงอวัยวะรอจัดเก็บ
+  "policy_ethics"           // 40. จริยธรรม Autonomy
+];
+
+/**
+ * 5. ฐานข้อมูลสังกัดและโรงพยาบาลเครือข่ายทั่วประเทศ (Hospital Mapping)
  */
 window.HOSPITAL_MAPPING = {
   "เขตสุขภาพที่ 1": [{ name: "รพ.มหาราชนครเชียงใหม่", prov: "เชียงใหม่" }],
@@ -100,33 +190,299 @@ window.HOSPITAL_MAPPING = {
 };
 
 /**
- * 5. รายวิชาและบทเรียนทั้งหมด 20 บท (Initial Lessons)
+ * 6. รายวิชาและบทเรียนทั้งหมด 20 บท (พร้อมระบุหมวดสมรรถนะสำหรับ AI Roadmap)
  */
 window.INITIAL_LESSONS = [
-  { id: 1, title: "ยุทธศาสตร์และเป้าหมายการพัฒนาระบบบริการสุขภาพ (Service plan)", videoId: "1-sX4LnWRMSjoEQmWee-9GuiQ2XMvkSro", documentUrl: "https://drive.google.com/file/d/1FrJt9TCbOy5oewg_eMrRG8pW4dNzJHS9/view?usp=sharing" },
-  { id: 2, title: "แนวทางการประเมินผู้เสียชีวิตเพื่อบริจาคดวงตาและการประสานงานฯ", videoId: "15QOjyhd0hoxpSSO0tZ7Fj4qFaZByiAzT", documentUrl: "https://drive.google.com/file/d/1iJbKaj0VwcsH0AzdyUqrt2jsTjEyhfSg/view?usp=sharing" },
-  { id: 3, title: "จริยธรรม กฎหมายที่เกี่ยวข้องกับการรับบริจาคอวัยวะ และบทบาทของศูนย์ฯ", videoId: "1L5pFZh85OPDz7lWwJCBKlFDXxkTZSxt_", documentUrl: "https://drive.google.com/file/d/1PtfxrqDZrNpX_NDQBGyCqqfZsPnMRg6e/view?usp=sharing" },
-  { id: 4, title: "ความสำคัญของการบริจาคและปลูกถ่ายอวัยวะ และบทบาทของบุคลากรฯ", videoId: "14hnZ80UE0KvCmW2oHE2zBTx8uBCg4rIB", documentUrl: "https://drive.google.com/file/d/1HXXlSqONQ3eq7E1Os0C8OtbZcSGbG6a5/view?usp=sharing" },
-  { id: 5, title: "การประสานงานเมื่อมีผู้บริจาคอวัยวะสมองตาย และหลักเกณฑ์การจัดสรรอวัยวะ", videoId: "1wkE2CCaRgxlzHmho1ijK49SE028vNqcV", documentUrl: "https://drive.google.com/file/d/1w4xefABcn2GRTQevhpvYuybD2kLozlA6/view?usp=sharing" },
-  { id: 6, title: "การเตรียมผู้ป่วยเพื่อเข้ารับการปลูกถ่ายไต และการดูแลหลังปลูกถ่ายไต", videoId: "1pu1O3swHMtTzBXjF3rG_NzfIgjYfgnLm", documentUrl: "https://drive.google.com/file/d/1u_xSPv95dvxXw85QsSx7FYYsKonJbJjj/view?usp=sharing" },
-  { id: 7, title: "การจัดกิจกรรมส่งเสริมและประชาสัมพันธ์ชีวิตใหม่หลังการปลูกถ่ายอวัยวะ", videoId: "1Sc-2Z_MOD85kvWBduEEWbPiGxw1zeTec", documentUrl: "https://drive.google.com/file/d/1RSPtCHRe38si6P75CCA_85djfwJhUrdE/view?usp=sharing" },
-  { id: 8, title: "กลุ่มงานการพยาบาลรับบริจาค ปลูกถ่ายอวัยวะและเนื้อเยื่อ สธ.", videoId: "1vc4b07Ooas4cozJK5cnweIl2KeeKvHbk", documentUrl: "https://drive.google.com/file/d/1WUO677apoQJeJKboj0iOZmrTIybd4_hM/view?usp=sharing" },
-  { id: 9, title: "Identification of Potential Organ Donors and Assessment", videoId: "1TRLOGabpI66ZUEPybGyrpHTN5dNlYP-f", documentUrl: "https://drive.google.com/file/d/14-GXQS4-KHEUraOt8Ey2cGVkhxN12Ump/view?usp=sharing" },
-  { id: 10, title: "Organ Packaging and Transportation สำหรับ รพ Donor", videoId: "1POFnLm_G2BuXWgOojDRpotM5YhBxcCnk", documentUrl: "https://drive.google.com/file/d/1VQk-wMxYRbphaBDkCnOkapwgVdTGShbV/view?usp=sharing" },
-  { id: 11, title: "Family Approach", videoId: "1GpfjRpbDnilV22iL52ZyOyUcRs9MUVbu", documentUrl: "https://drive.google.com/file/d/1aRjlUNctesyliehy5KXLW7VwmGPW2R4h/view?usp=sharing" },
-  { id: 12, title: "Brain Death Diagnosis", videoId: "136Gl3ocDivGYU764t7t9Qvpn_iTJTfs4", documentUrl: "https://drive.google.com/file/d/1TMceKfI3azgRVRo-GtSDluTzq1lhe8-U/view?usp=sharing" },
-  { id: 13, title: "Donor Management", videoId: "1YPyTis-9VzJLPhUvwMp1IC_xs7TLIao0", documentUrl: "https://drive.google.com/file/d/1OeZIm6x3lg_-dFTUPgd9LiombnRrPrQh/view?usp=sharing" },
-  { id: 14, title: "Organ Procurement", videoId: "12lOd6KsekmV0PDbdLVr2wYsz-gNnovHK", documentUrl: "https://drive.google.com/file/d/1e-PwnXUCVScRLg5bmXRjOMSC0dIeDv5r/view?usp=sharing" },
-  { id: 15, title: "การปฏิบัติตัวหลังผ่าตัด", videoId: "1k2bsL3ZT7dG85c63fC7SPCAQlrkWVzHC", documentUrl: "" },
-  { id: 16, title: "ภาพรวมการปลูกถ่ายไต", videoId: "1U5W7QGZm4CQaKIwiwR3mE3FgSeKA3JxS", documentUrl: "" },
-  { id: 17, title: "การปฏิบัติตัวหลังปลูกถ่าย (ยา)", videoId: "1v1QN-Qq1zHRtEYyKt1iJ6XrSfSfy7zuM", documentUrl: "" },
-  { id: 18, title: "โภชนาการอาหาร", videoId: "1Ekf354d86SJ43JRkqAAEH9D-XB9725Dr", documentUrl: "" },
-  { id: 19, title: "ขั้นตอนการเข้ารับบริการคลินิกปลูกถ่ายไต", videoId: "1Om2A00CDS8seta7eiz47-gbXExzzU4RU", documentUrl: "" },
-  { id: 20, title: "ขั้นตอนการดูแลผู้ป่วยปลูกถ่ายไตในระยะต่างๆ", videoId: "15qb9D-gNqw-cEJoLozRY2DW1Dc6huB0e", documentUrl: "" }
+  { id: 1, domain: "policy_ethics", title: "ยุทธศาสตร์และเป้าหมายการพัฒนาระบบบริการสุขภาพ (Service plan)", videoId: "1-sX4LnWRMSjoEQmWee-9GuiQ2XMvkSro", documentUrl: "https://drive.google.com/file/d/1FrJt9TCbOy5oewg_eMrRG8pW4dNzJHS9/view?usp=sharing" },
+  { id: 2, domain: "procurement_transplant", title: "แนวทางการประเมินผู้เสียชีวิตเพื่อบริจาคดวงตาและการประสานงานฯ", videoId: "15QOjyhd0hoxpSSO0tZ7Fj4qFaZByiAzT", documentUrl: "https://drive.google.com/file/d/1iJbKaj0VwcsH0AzdyUqrt2jsTjEyhfSg/view?usp=sharing" },
+  { id: 3, domain: "policy_ethics", title: "จริยธรรม กฎหมายที่เกี่ยวข้องกับการรับบริจาคอวัยวะ และบทบาทของศูนย์ฯ", videoId: "1L5pFZh85OPDz7lWwJCBKlFDXxkTZSxt_", documentUrl: "https://drive.google.com/file/d/1PtfxrqDZrNpX_NDQBGyCqqfZsPnMRg6e/view?usp=sharing" },
+  { id: 4, domain: "policy_ethics", title: "ความสำคัญของการบริจาคและปลูกถ่ายอวัยวะ และบทบาทของบุคลากรฯ", videoId: "14hnZ80UE0KvCmW2oHE2zBTx8uBCg4rIB", documentUrl: "https://drive.google.com/file/d/1HXXlSqONQ3eq7E1Os0C8OtbZcSGbG6a5/view?usp=sharing" },
+  { id: 5, domain: "brain_death_donor", title: "การประสานงานเมื่อมีผู้บริจาคอวัยวะสมองตาย และหลักเกณฑ์การจัดสรรอวัยวะ", videoId: "1wkE2CCaRgxlzHmho1ijK49SE028vNqcV", documentUrl: "https://drive.google.com/file/d/1w4xefABcn2GRTQevhpvYuybD2kLozlA6/view?usp=sharing" },
+  { id: 6, domain: "procurement_transplant", title: "การเตรียมผู้ป่วยเพื่อเข้ารับการปลูกถ่ายไต และการดูแลหลังปลูกถ่ายไต", videoId: "1pu1O3swHMtTzBXjF3rG_NzfIgjYfgnLm", documentUrl: "https://drive.google.com/file/d/1u_xSPv95dvxXw85QsSx7FYYsKonJbJjj/view?usp=sharing" },
+  { id: 7, domain: "policy_ethics", title: "การจัดกิจกรรมส่งเสริมและประชาสัมพันธ์ชีวิตใหม่หลังการปลูกถ่ายอวัยวะ", videoId: "1Sc-2Z_MOD85kvWBduEEWbPiGxw1zeTec", documentUrl: "https://drive.google.com/file/d/1RSPtCHRe38si6P75CCA_85djfwJhUrdE/view?usp=sharing" },
+  { id: 8, domain: "policy_ethics", title: "กลุ่มงานการพยาบาลรับบริจาค ปลูกถ่ายอวัยวะและเนื้อเยื่อ สธ.", videoId: "1vc4b07Ooas4cozJK5cnweIl2KeeKvHbk", documentUrl: "https://drive.google.com/file/d/1WUO677apoQJeJKboj0iOZmrTIybd4_hM/view?usp=sharing" },
+  { id: 9, domain: "brain_death_donor", title: "Identification of Potential Organ Donors and Assessment", videoId: "1TRLOGabpI66ZUEPybGyrpHTN5dNlYP-f", documentUrl: "https://drive.google.com/file/d/14-GXQS4-KHEUraOt8Ey2cGVkhxN12Ump/view?usp=sharing" },
+  { id: 10, domain: "procurement_transplant", title: "Organ Packaging and Transportation สำหรับ รพ Donor", videoId: "1POFnLm_G2BuXWgOojDRpotM5YhBxcCnk", documentUrl: "https://drive.google.com/file/d/1VQk-wMxYRbphaBDkCnOkapwgVdTGShbV/view?usp=sharing" },
+  { id: 11, domain: "family_communication", title: "Family Approach", videoId: "1GpfjRpbDnilV22iL52ZyOyUcRs9MUVbu", documentUrl: "https://drive.google.com/file/d/1aRjlUNctesyliehy5KXLW7VwmGPW2R4h/view?usp=sharing" },
+  { id: 12, domain: "brain_death_donor", title: "Brain Death Diagnosis", videoId: "136Gl3ocDivGYU764t7t9Qvpn_iTJTfs4", documentUrl: "https://drive.google.com/file/d/1TMceKfI3azgRVRo-GtSDluTzq1lhe8-U/view?usp=sharing" },
+  { id: 13, domain: "brain_death_donor", title: "Donor Management", videoId: "1YPyTis-9VzJLPhUvwMp1IC_xs7TLIao0", documentUrl: "https://drive.google.com/file/d/1OeZIm6x3lg_-dFTUPgd9LiombnRrPrQh/view?usp=sharing" },
+  { id: 14, domain: "procurement_transplant", title: "Organ Procurement", videoId: "12lOd6KsekmV0PDbdLVr2wYsz-gNnovHK", documentUrl: "https://drive.google.com/file/d/1e-PwnXUCVScRLg5bmXRjOMSC0dIeDv5r/view?usp=sharing" },
+  { id: 15, domain: "procurement_transplant", title: "การปฏิบัติตัวหลังผ่าตัด", videoId: "1k2bsL3ZT7dG85c63fC7SPCAQlrkWVzHC", documentUrl: "" },
+  { id: 16, domain: "procurement_transplant", title: "ภาพรวมการปลูกถ่ายไต", videoId: "1U5W7QGZm4CQaKIwiwR3mE3FgSeKA3JxS", documentUrl: "" },
+  { id: 17, domain: "procurement_transplant", title: "การปฏิบัติตัวหลังปลูกถ่าย (ยา)", videoId: "1v1QN-Qq1zHRtEYyKt1iJ6XrSfSfy7zuM", documentUrl: "" },
+  { id: 18, domain: "procurement_transplant", title: "โภชนาการอาหาร", videoId: "1Ekf354d86SJ43JRkqAAEH9D-XB9725Dr", documentUrl: "" },
+  { id: 19, domain: "procurement_transplant", title: "ขั้นตอนการเข้ารับบริการคลินิกปลูกถ่ายไต", videoId: "1Om2A00CDS8seta7eiz47-gbXExzzU4RU", documentUrl: "" },
+  { id: 20, domain: "procurement_transplant", title: "ขั้นตอนการดูแลผู้ป่วยปลูกถ่ายไตในระยะต่างๆ", videoId: "15qb9D-gNqw-cEJoLozRY2DW1Dc6huB0e", documentUrl: "" }
 ];
 
 /**
- * 6. คลังข้อสอบมาตรฐาน 40 ข้อ (ตรวจสอบคำสะกดและเฉลยครบทุกข้อแล้ว)
+ * 7. คลังสรุป 1 นาที (1-Minute Clinical Cheat Sheets) และคำถาม Micro-Check สำหรับ AI Study Companion
+ */
+window.LESSON_AI_GUIDES = {
+  1: {
+    keyPoints: [
+      "เป้าหมาย Service Plan: เพิ่มจำนวนผู้บริจาคอวัยวะสมองตายและผู้ได้รับการปลูกถ่ายอวัยวะให้เพียงพอต่อผู้รอคอยกว่า 8,019 ราย",
+      "สร้างเครือข่าย รพ.ผู้บริจาค (Donor Hospital) เชื่อมโยงกับศูนย์รับบริจาคอวัยวะสภากาชาดไทย (ODC) ครบทุกเขตสุขภาพ",
+      "เน้นการพัฒนาศักยภาพพยาบาลผู้ประสานงาน (TC) และระบบค้นหา Potential Donor เชิงรุก"
+    ],
+    microCheck: {
+      q: "หัวใจสำคัญของ Service Plan สาขาการรับบริจาคและปลูกถ่ายอวัยวะคือข้อใด?",
+      options: ["เพิ่มผู้บริจาคสมองตายและผู้ได้รับการปลูกถ่ายให้เพียงพอ", "ลดจำนวนเตียง ICU ทั่วประเทศ"],
+      answer: 0,
+      explain: "ถูกต้องค่ะ เป้าหมายหลักคือเพิ่มโอกาสการรอดชีวิตของผู้ป่วยรออวัยวะผ่านเครือข่าย Donor Hospital ทั่วประเทศ"
+    }
+  },
+  2: {
+    keyPoints: [
+      "การจัดเก็บดวงตาควรทำให้แล้วเสร็จภายใน 6–8 ชั่วโมงหลังเสียชีวิต (หากประคบเย็นดูแลอย่างเหมาะสมอาจยืดได้)",
+      "ประสานงานผ่านศูนย์ดวงตาสภากาชาดไทย โดยต้องปิดเปลือกตาและประคบเย็นป้องกันกระจกตาแห้ง",
+      "ผู้บริจาคที่เสียชีวิตจากหัวใจหยุดเต้นก็สามารถบริจาคดวงตาได้หากไม่มีข้อห้ามทางการแพทย์"
+    ],
+    microCheck: {
+      q: "ระยะเวลาที่เหมาะสมที่สุดในการจัดเก็บดวงตาหลังผู้ป่วยเสียชีวิตคือภายในกี่ชั่วโมง?",
+      options: ["ภายใน 6–8 ชั่วโมง", "ภายใน 48 ชั่วโมง"],
+      answer: 0,
+      explain: "แม่นยำค่ะ ควรจัดเก็บภายใน 6–8 ชั่วโมง เพื่อรักษาคุณภาพของกระจกตาให้สมบูรณ์ที่สุด"
+    }
+  },
+  3: {
+    keyPoints: [
+      "จริยธรรมสูงสุดคือ Autonomy (เคารพสิทธิ์และการตัดสินใจของผู้ป่วยและญาติ)",
+      "เกณฑ์อายุแสดงความจำนงบริจาคด้วยตนเองตามกฎหมายไทยคือ 18 ปีบริบูรณ์",
+      "ข้อมูลผู้บริจาคและผู้รับต้องรักษาเป็นความลับตามจริยธรรมวิชาชีพ แจ้งได้เฉพาะภาพรวมการช่วยเหลือ"
+    ],
+    microCheck: {
+      q: "หากผู้เสียชีวิตมีบัตรแสดงความจำนง แต่ญาติสายตรงคัดค้านอย่างรุนแรง แนวปฏิบัติที่เหมาะสมคือ?",
+      options: ["ยุติการจัดเก็บเพื่อเคารพจิตใจและหลีกเลี่ยงความขัดแย้งกับครอบครัว", "ดำเนินการผ่าตัดทันทีโดยอ้างบัตรจำนง"],
+      answer: 0,
+      explain: "ถูกต้องค่ะ ในทางปฏิบัติและจริยธรรมจะยึดความยินยอมของครอบครัวเพื่อไม่ให้เกิดบาดแผลทางจิตใจ"
+    }
+  },
+  4: {
+    keyPoints: [
+      "ผู้บริจาคสมองตาย 1 รายสามารถช่วยต่อชีวิตผู้ป่วยระยะสุดท้ายได้สูงสุดถึง 8 ชีวิต (หัวใจ ปอด ตับ ไต ตับอ่อน และเนื้อเยื่อ)",
+      "ทีมสหสาขาวิชาชีพทำงานร่วมกัน 3 ทีม: ทีมจัดหา/ประสานงาน, ทีมผ่าตัดจัดเก็บ และทีมปลูกถ่าย",
+      "พยาบาลผู้ประสานงาน (TC) ไม่ได้ทำหน้าที่ผ่าตัดจัดเก็บ แต่เป็นแกนกลางเชื่อมทีมดูแลและประคับประคองญาติ"
+    ],
+    microCheck: {
+      q: "ข้อใดไม่ใช่หน้าที่ของพยาบาลผู้ประสานงาน (Transplant Coordinator)?",
+      options: ["ทำการผ่าตัดจัดเก็บอวัยวะในห้องผ่าตัด", "ประสานงานกับ ODC และสื่อสารกับญาติผู้เสียชีวิต"],
+      answer: 0,
+      explain: "ใช่เลยค่ะ การผ่าตัดเป็นหน้าที่ของศัลยแพทย์จัดเก็บอวัยวะ (Procurement Surgeon)"
+    }
+  },
+  5: {
+    keyPoints: [
+      "ศูนย์รับบริจาคอวัยวะสภากาชาดไทย (ODC) ใช้ระบบคอมพิวเตอร์จัดสรรอวัยวะอย่างเป็นธรรมและโปร่งใส",
+      "ประสานผลตรวจเลือด หมู่เลือด HLA Typing และการคัดกรองโรคติดเชื้ออย่างรัดกุม",
+      "Rule of Rescue ให้ความสำคัญกับผู้ป่วยวิกฤตเร่งด่วนตามเกณฑ์การแพทย์"
+    ],
+    microCheck: {
+      q: "หน่วยงานใดเป็นผู้จัดสรรอวัยวะให้โรงพยาบาลเครือข่ายอย่างเป็นธรรมตามระบบคอมพิวเตอร์?",
+      options: ["ศูนย์รับบริจาคอวัยวะสภากาชาดไทย (ODC)", "แพทย์ผู้ผ่าตัดจัดเก็บเป็นผู้เลือกเอง"],
+      answer: 0,
+      explain: "ถูกต้องค่ะ ODC เป็นศูนย์กลางจัดสรรตามเกณฑ์ความเข้ากันได้และความเร่งด่วนอย่างโปร่งใส"
+    }
+  },
+  6: {
+    keyPoints: [
+      "การปลูกถ่ายไตช่วยให้คุณภาพชีวิตและอัตรารอดชีวิตดีกว่าการฟอกเลือดระยะยาว",
+      "การตรวจความเข้ากันได้ของเนื้อเยื่อ (HLA Typing) และ Crossmatch มีความสำคัญสูงสุดในการปลูกถ่ายไต",
+      "หลังปลูกถ่ายต้องรับประทานยากดภูมิคุ้มกันอย่างเคร่งครัดและเฝ้าระวังภาวะสลัดไต"
+    ],
+    microCheck: {
+      q: "การตรวจใดมีความสำคัญสูงสุดก่อนการปลูกถ่ายไตเพื่อลดความเสี่ยงการสลัดอวัยวะ?",
+      options: ["HLA Typing และ Crossmatch", "ตรวจคลื่นไฟฟ้าสมอง (EEG)"],
+      answer: 0,
+      explain: "เยี่ยมมากค่ะ HLA Typing ช่วยยืนยันความเข้ากันได้ของเนื้อเยื่อระหว่างผู้บริจาคและผู้รับ"
+    }
+  },
+  7: {
+    keyPoints: [
+      "การสื่อสารสาธารณะช่วยลดความเข้าใจผิดเรื่องความเชื่อและสร้างทัศนคติเชิงบวกต่อการบริจาคอวัยวะ",
+      "การเชิดชูเกียรติครอบครัวผู้บริจาคช่วยเยียวยาใจญาติและสร้างแรงบันดาลใจในชุมชน",
+      "เน้นการสื่อสารเชิงคุณค่า 'การให้ชีวิตใหม่คือทานบารมีอันยิ่งใหญ่'"
+    ],
+    microCheck: {
+      q: "หัวใจของการประชาสัมพันธ์การบริจาคอวัยวะในชุมชนคือข้อใด?",
+      options: ["ให้ข้อมูลที่ถูกต้องและเชิดชูคุณค่าของการต่อชีวิตเพื่อนมนุษย์", "เร่งรัดให้ประชาชนลงทะเบียนทุกคนโดยไม่อธิบายรายละเอียด"],
+      answer: 0,
+      explain: "ถูกต้องค่ะ ความเข้าใจที่ถูกต้องและความสมัครใจคือรากฐานสำคัญของระบบบริจาคอวัยวะ"
+    }
+  },
+  8: {
+    keyPoints: [
+      "กลุ่มงานการพยาบาลรับบริจาคฯ วางระบบมาตรฐานการคัดกรองผู้ป่วยวิกฤตและการส่งต่อข้อมูลในสังกัด สธ.",
+      "พัฒนาสมรรถนะพยาบาล ICU / ER / OR ให้ตรวจจับ Potential Donor ได้เร็วขึ้น",
+      "ติดตามตัวชี้วัด Conversion Rate และความพึงพอใจของครอบครัวผู้บริจาค"
+    ],
+    microCheck: {
+      q: "หน่วยใดในโรงพยาบาลที่มีบทบาทสำคัญในการตรวจพบ Potential Donor ตั้งแต่ระยะเริ่มต้น?",
+      options: ["ทีม ICU และห้องฉุกเฉิน (ER)", "แผนกเวชระเบียนเท่านั้น"],
+      answer: 0,
+      explain: "ถูกต้องค่ะ การคัดกรองตั้งแต่ ER และ ICU ช่วยให้รักษาสัญญาณชีพและคุณภาพอวัยวะได้ทันท่วงที"
+    }
+  },
+  9: {
+    keyPoints: [
+      "Potential Donor มักเกิดจากอุบัติเหตุทางศีรษะ (TBI) หรือหลอดเลือดสมองแตกที่มี GCS = 3",
+      "ข้อห้ามเด็ดขาด (Absolute Contraindication): ติดเชื้อ HIV, มะเร็งแพร่กระจาย, ไม่ทราบสาเหตุการเสียชีวิต",
+      "อายุมาก (เช่น 70 ปี) หรือความดันโลหิตสูงไม่ใช่ข้อห้ามเด็ดขาด หากการทำงานของอวัยวะยังอยู่ในเกณฑ์ดี"
+    ],
+    microCheck: {
+      q: "ผู้ป่วยสมองตายอายุ 70 ปี ที่การทำงานของอวัยวะยังดีและไม่มีข้อห้าม สามารถบริจาคอวัยวะได้หรือไม่?",
+      options: ["ได้ หากประเมินแล้วอวัยวะยังทำงานดีและไม่มีข้อห้าม", "ไม่ได้เด็ดขาดเพราะอายุเกิน 60 ปี"],
+      answer: 0,
+      explain: "ถูกต้องค่ะ เกณฑ์พิจารณาดูจากคุณภาพการทำงานของอวัยวะแต่ละชนิด ไม่ได้ตัดสิทธิ์จากอายุเพียงอย่างเดียว"
+    }
+  },
+  10: {
+    keyPoints: [
+      "การบรรจุไตเพื่อขนส่ง (Kidney Packaging) ต้องควบคุมอุณหภูมิที่ 2–4 องศาเซลเซียส (แช่ในน้ำแข็งเกล็ดที่กำลังละลาย)",
+      "ห้ามใช้ก้อนน้ำแข็งแห้ง (-20°C) หรือปล่อยให้อวัยวะสัมผัสน้ำแข็งโดยตรงเพราะเนื้อเยื่อจะเสียหาย",
+      "บรรจุแบบปลอดเชื้อหลายชั้นพร้อมล้างและแช่ด้วยน้ำยาถนอมอวัยวะ (Preservation Solution) และติดฉลากตรวจสอบชัดเจน"
+    ],
+    microCheck: {
+      q: "อุณหภูมิมาตรฐานในการบรรจุและขนส่งไต (Kidney Packaging) คือช่วงใด?",
+      options: ["2–4 องศาเซลเซียส", "-20 องศาเซลเซียส (น้ำแข็งแห้ง)"],
+      answer: 0,
+      explain: "แม่นยำค่ะ อุณหภูมิ 2–4°C ในน้ำแข็งเกล็ดที่กำลังละลายช่วยถนอมเซลล์ไตโดยไม่ทำให้เนื้อเยื่อแข็งตัวเสียหาย"
+    }
+  },
+  11: {
+    keyPoints: [
+      "หลัก Setting (SPIKES): เชิญญาติมาพูดคุยในห้องรับรอง/ห้องให้คำปรึกษาที่เป็นส่วนตัว แยกจากห้อง ICU",
+      "หลัก Decoupling: แยกการแจ้งข่าวภาวะสมองตายออกจากการพูดคุยเรื่องบริจาคอวัยวะอย่างชัดเจน",
+      "หลัก Empathy & Zero Pressure: รับฟังอารมณ์ โค้ชความเงียบ 2.5 วินาที ไม่เร่งรัด และให้ความมั่นใจเรื่องการตกแต่งร่างอย่างประณีต"
+    ],
+    microCheck: {
+      q: "หลักการ 'Decoupling' ในบทเรียน Family Approach หมายถึงอะไร?",
+      options: ["แยกการแจ้งข่าวภาวะสมองตายออกจากการเจรจาขอรับบริจาคอวัยวะ", "แยกแพทย์ออกจากพยาบาลขณะพูดคุย"],
+      answer: 0,
+      explain: "ยอดเยี่ยมค่ะ การทำ Decoupling ช่วยให้ญาติซึมซับความจริงได้ก่อนโดยไม่รู้สึกว่าถูกเร่งรัด"
+    }
+  },
+  12: {
+    keyPoints: [
+      "ผู้ป่วยสงสัยภาวะสมองตายต้องมีคะแนน GCS = 3 และตัดสาเหตุที่แก้ไขได้ออกก่อน (เช่น ยากดประสาท, อุณหภูมิกายต่ำ)",
+      "ตรวจยืนยันทางคลินิกอย่างน้อย 2 ครั้ง ห่างกันอย่างน้อย 6 ชั่วโมง (ในผู้ใหญ่) และรับรองโดยแพทย์ 3 ท่านที่ไม่เกี่ยวข้องกับทีมปลูกถ่าย",
+      "Apnea Test พิสูจน์ว่าศูนย์ควบคุมการหายใจที่ก้านสมองหยุดทำงานถาวร • Lazarus Sign เป็นเพียงรีเฟล็กซ์ไขสันหลัง • EEG เป็นทางเลือกเสริม"
+    ],
+    microCheck: {
+      q: "การทำ Apnea Test มีวัตถุประสงค์หลักเพื่อพิสูจน์สิ่งใด?",
+      options: ["ศูนย์ควบคุมการหายใจที่ก้านสมองสูญเสียการทำงานอย่างถาวร", "ดูว่าผู้ป่วยจะฟื้นคืนสติหรือไม่"],
+      answer: 0,
+      explain: "ถูกต้องค่ะ Apnea Test เป็นขั้นตอนหัวใจสำคัญในการยืนยันภาวะสมองตายตามเกณฑ์แพทยสภา"
+    }
+  },
+  13: {
+    keyPoints: [
+      "เมื่อพบ Potential Donor ขั้นแรกต้องรักษาสัญญาณชีพให้คงที่ (Donor Management) เพื่อป้องกันอวัยวะขาดเลือด",
+      "ภาวะที่พบบ่อย: ความดันโลหิตต่ำ (Hypotension) และภาวะเบาจืด (Diabetes Insipidus — ปัสสาวะออกมากผิดปกติ)",
+      "ยาหลักคุมภาวะเบาจืดคือ Desmopressin (DDAVP) • ใช้ยาปฏิชีวนะป้องกันการติดเชื้อ • ในบางรายอาจใช้ ECMO พยุงอวัยวะรอจัดเก็บ"
+    ],
+    microCheck: {
+      q: "ยาใดนิยมใช้ควบคุมภาวะเบาจืด (Diabetes Insipidus) ในผู้ป่วยสมองตาย?",
+      options: ["Desmopressin (DDAVP)", "Epinephrine"],
+      answer: 0,
+      explain: "แม่นยำค่ะ DDAVP ช่วยควบคุมปริมาณปัสสาวะและสมดุลเกลือแร่ไม่ให้ผู้บริจาคขาดน้ำรุนแรง"
+    }
+  },
+  14: {
+    keyPoints: [
+      "ระยะเวลาทอง (Cold Ischemic Golden Period): หัวใจไม่เกิน 4 ชั่วโมง ต้องประสานเวลาห้องผ่าตัดและขนส่งอย่างแม่นยำ",
+      "หลังนำอวัยวะออกต้องล้างและแช่ด้วยน้ำยาถนอมอวัยวะ (Preservation Solution) ทันทีที่อุณหภูมิต่ำ",
+      "ขั้นตอนสุดท้ายที่สำคัญที่สุด: ดูแลตกแต่งร่างผู้บริจาคให้เรียบร้อยสมบูรณ์ที่สุดเพื่อแสดงความเคารพสูงสุดต่อผู้เสียชีวิตและครอบครัว"
+    ],
+    microCheck: {
+      q: "ระยะเวลาทอง (Golden Period) ในการนำหัวใจไปปลูกถ่ายให้ผู้รับคือไม่เกินกี่ชั่วโมง?",
+      options: ["ไม่เกิน 4 ชั่วโมง", "ไม่เกิน 24 ชั่วโมง"],
+      answer: 0,
+      explain: "ถูกต้องค่ะ หัวใจทนภาวะขาดเลือดได้สั้นที่สุด จึงต้องวางแผนขนส่งและผ่าตัดภายใน 4 ชั่วโมง"
+    }
+  },
+  15: {
+    keyPoints: [
+      "หลังผ่าตัดปลูกถ่ายไตต้องเฝ้าระวังปริมาณปัสสาวะ สัญญาณชีพ แผลผ่าตัด และการติดเชื้ออย่างใกล้ชิด",
+      "แยกพื้นที่ดูแลสะอาด ปฏิบัติตามหลักการป้องกันการติดเชื้อเพราะผู้ป่วยได้รับยากดภูมิคุ้มกันขนาดสูง",
+      "สังเกตอาการเตือนภาวะสลัดไตเฉียบพลัน: ปัสสาวะออกน้อยลง ปวดตึงบริเวณไตใหม่ ไข้ หรือน้ำหนักขึ้นเร็ว"
+    ],
+    microCheck: {
+      q: "อาการใดต่อไปนี้เป็นสัญญาณเตือนสำคัญที่ต้องรีบแจ้งทีมแพทย์หลังผ่าตัดปลูกถ่ายไต?",
+      options: ["มีไข้ ปัสสาวะออกน้อยลง หรือปวดตึงบริเวณแผลปลูกถ่าย", "รับประทานอาหารได้ตามปกติและปัสสาวะใสดี"],
+      answer: 0,
+      explain: "ถูกต้องค่ะ อาการเหล่านี้อาจบ่งชี้ภาวะติดเชื้อหรือภาวะสลัดไตที่ต้องประเมินทันที"
+    }
+  },
+  16: {
+    keyPoints: [
+      "การปลูกถ่ายไตมี 2 แหล่งหลัก: จากผู้บริจาคที่มีชีวิต (Living Donor) และผู้บริจาคสมองตาย (Deceased Donor)",
+      "ผู้ป่วยที่ได้รับการปลูกถ่ายไตจะมีอิสระในการใช้ชีวิตมากกว่าการฟอกเลือดและลดภาระค่าใช้จ่ายระยะยาว",
+      "ต้องเตรียมความพร้อมทั้งร่างกาย จิตใจ และระบบสนับสนุนจากครอบครัวก่อนขึ้นทะเบียนรอรับไต"
+    ],
+    microCheck: {
+      q: "ข้อดีเด่นชัดของการปลูกถ่ายไตเมื่อเทียบกับการฟอกเลือดระยะยาวคืออะไร?",
+      options: ["คุณภาพชีวิตดีขึ้น อัตรารอดชีวิตสูง และลดค่าใช้จ่ายระยะยาว", "ไม่ต้องรับประทานยาใดๆ อีกตลอดชีวิต"],
+      answer: 0,
+      explain: "ถูกต้องค่ะ แม้ต้องกินยากดภูมิต่อเนื่องแต่คุณภาพชีวิตและอัตรารอดชีวิตดีกว่าการฟอกเลือดมาก"
+    }
+  },
+  17: {
+    keyPoints: [
+      "ยากดภูมิคุ้มกันต้องรับประทานตรงเวลาทุกวัน ห้ามหยุดยาหรือปรับขนาดยาเองเด็ดขาด",
+      "หลีกเลี่ยงสมุนไพร อาหารเสริม หรือยาแก้ปวดกลุ่ม NSAIDs ที่อาจตีกับยากดภูมิหรือทำลายไตใหม่",
+      "มาตรวจระดับยากดภูมิในเลือด (Drug Level) ตามนัดสม่ำเสมอเพื่อให้ระดับยาอยู่ในช่วงปลอดภัย"
+    ],
+    microCheck: {
+      q: "หลักสำคัญที่สุดในการรับประทานยากดภูมิคุ้มกันหลังปลูกถ่ายไตคือข้อใด?",
+      options: ["กินตรงเวลาสม่ำเสมอทุกวัน ห้ามหยุดหรือปรับขนาดยาเอง", "หยุดยาได้ทันทีเมื่อรู้สึกแข็งแรงดี"],
+      answer: 0,
+      explain: "แม่นยำค่ะ การหยุดยาเองเป็นสาเหตุสำคัญที่ทำให้เกิดภาวะสลัดไตและสูญเสียไตใหม่"
+    }
+  },
+  18: {
+    keyPoints: [
+      "รับประทานอาหารปรุงสุกใหม่ สะอาด หลีกเลี่ยงของดิบ กึ่งสุกกึ่งดิบ และอาหารหมักดองเพื่อลดเสี่ยงติดเชื้อ",
+      "หลีกเลี่ยงผลไม้ที่มีผลต่อระดับยากดภูมิ (เช่น เกรปฟรุต/ส้มโอในบางสูตรยา) และคุมเค็ม หวาน มัน",
+      "ดื่มน้ำสะอาดให้เพียงพอตามคำแนะนำแพทย์เพื่อช่วยการทำงานของไตใหม่"
+    ],
+    microCheck: {
+      q: "เหตุใดผู้ป่วยหลังปลูกถ่ายไตจึงต้องหลีกเลี่ยงอาหารสุกๆ ดิบๆ และของหมักดอง?",
+      options: ["ภูมิคุ้มกันถูกกดอยู่ จึงเสี่ยงติดเชื้อในทางเดินอาหารรุนแรง", "ทำให้น้ำหนักลดเร็วเกินไป"],
+      answer: 0,
+      explain: "ถูกต้องค่ะ ความสะอาดและอาหารปรุงสุกใหม่ช่วยป้องกันการติดเชื้อฉวยโอกาสได้ดีที่สุด"
+    }
+  },
+  19: {
+    keyPoints: [
+      "ขั้นตอนเข้ารับบริการคลินิกปลูกถ่ายไต: ส่งตัวประเมินสิทธิ์ ตรวจคัดกรองสุขภาพ ตรวจเนื้อเยื่อ และขึ้นทะเบียน ODC",
+      "เตรียมเอกสารสำคัญ ผลเลือด และประวัติการฟอกเลือดให้ครบถ้วนทุกครั้งที่มาตรวจติดตาม",
+      "แจ้งเบอร์โทรศัพท์ที่ติดต่อได้ตลอด 24 ชั่วโมง กรณีมีอวัยวะเข้ากันได้จากศูนย์รับบริจาค"
+    ],
+    microCheck: {
+      q: "สิ่งสำคัญที่ผู้ป่วยรอรับไตต้องอัปเดตกับคลินิกปลูกถ่ายไตเสมอคืออะไร?",
+      options: ["เบอร์โทรศัพท์ที่ติดต่อได้ 24 ชม. และผลตรวจเลือดติดตามสม่ำเสมอ", "ไม่ต้องมาตรวจจนกว่าจะถึงวันผ่าตัด"],
+      answer: 0,
+      explain: "ถูกต้องค่ะ เมื่อมีไตที่เข้ากันได้ ทีมต้องสามารถติดต่อผู้ป่วยได้ทันทีภายในเวลาจำกัด"
+    }
+  },
+  20: {
+    keyPoints: [
+      "การดูแลระยะแรก (0–3 เดือน): นัดถี่ที่สุดเพื่อปรับระดับยากดภูมิและเฝ้าระวังการติดเชื้อ/สลัดไต",
+      "การดูแลระยะกลาง-ยาว: คุมความดันโลหิต เบาหวาน ไขมัน ตรวจคัดกรองมะเร็ง และฉีดวัคซีนที่เหมาะสม (งดวัคซีนเชื้อเป็น)",
+      "ส่งเสริมการดูแลตนเองอย่างยั่งยืนเพื่อให้ไตใหม่ทำงานได้ยาวนานที่สุด"
+    ],
+    microCheck: {
+      q: "ผู้ป่วยหลังปลูกถ่ายไตระยะยาวควรระวังเรื่องวัคซีนอย่างไร?",
+      options: ["หลีกเลี่ยงวัคซีนชนิดเชื้อเป็น (Live Vaccine) และปรึกษาแพทย์ก่อนฉีด", "ฉีดวัคซีนได้ทุกชนิดโดยไม่ต้องแจ้งแพทย์"],
+      answer: 0,
+      explain: "ถูกต้องค่ะ ผู้ได้รับยากดภูมิคุ้มกันต้องหลีกเลี่ยงวัคซีนเชื้อเป็นเพื่อป้องกันการติดเชื้อจากวัคซีน"
+    }
+  }
+};
+
+/**
+ * 8. คลังข้อสอบมาตรฐาน 40 ข้อ (ตรวจสอบคำสะกดและเฉลยครบทุกข้อแล้ว)
  * รูปแบบ: "คำถาม|ตัวเลือก 0|ตัวเลือก 1|ตัวเลือก 2|ตัวเลือก 3|ดัชนีคำตอบที่ถูก"
  */
 window.QUIZ_QUESTIONS_RAW = [
@@ -173,7 +529,7 @@ window.QUIZ_QUESTIONS_RAW = [
 ];
 
 /**
- * 7. พิกัดแผนที่ 13 เขตสุขภาพ (สำหรับ executive.html)
+ * 9. พิกัดแผนที่ 13 เขตสุขภาพ (สำหรับ executive.html)
  */
 window.BASE_REGIONS = [
   { id: "R1", name: "เขตสุขภาพที่ 1", desc: "เชียงใหม่และภาคเหนือตอนบน", x: 28, y: 15 },
@@ -192,9 +548,9 @@ window.BASE_REGIONS = [
 ];
 
 /**
- * 8. ต้นแบบรายงานวิเคราะห์เชิงนโยบายสำหรับผู้บริหาร (rjcloud.organ 2027)
+ * 10. ต้นแบบรายงานวิเคราะห์เชิงนโยบายสำหรับผู้บริหาร (rjcloud.organ 2030)
  */
-window.AI_INSIGHT_TEXT = `📊 rjcloud.organ — AI Policy Intelligence Report (2027):
+window.AI_INSIGHT_TEXT = `📊 rjcloud.organ — AI Policy Intelligence Report (2030 Edition):
 
 [1] มิติบุคลากร (Workforce Status):
 • บุคลากรในระบบทั้งหมด {{USERS}} ราย | สอบผ่านรับประกาศฯ แล้ว {{PASSED}} ราย
@@ -206,12 +562,12 @@ window.AI_INSIGHT_TEXT = `📊 rjcloud.organ — AI Policy Intelligence Report (
 
 [3] มิติวิกฤตระดับชาติ (National Crisis Benchmark):
 • ประเทศไทยมีผู้ป่วยรออวัยวะสะสมกว่า 8,019 ราย
-• ทักษะสำคัญคือการสื่อสารและให้ข้อมูลญาติผู้เสียชีวิตในห้องรับรองที่เป็นส่วนตัว ระบบ rjcloud.organ และห้องฝึก AI Skill Lab จึงช่วยยกระดับความพร้อมของทีมประสานงานได้ทั่วประเทศ`;
+• ห้องฝึก 3D Holodeck (AI Skill Lab 2030) และ AI Study Companion ช่วยยกระดับทักษะการสื่อสารในห้องรับรองและความแม่นยำทางคลินิกของทีมประสานงานได้ทั่วทั้ง 13 เขตสุขภาพ`;
 
-window.POLICY_SPEECH = `สวัสดีค่ะท่านผู้บริหาร จากการสังเคราะห์ข้อมูลล่าสุดของระบบ อาร์เจคลาวด์ดอทออร์แกน พบว่าขณะนี้มีบุคลากรในระบบทั้งหมด {{USERS}} ท่าน สอบผ่านรับประกาศนียบัตรแล้ว {{PASSED}} ท่าน โดยมีคะแนนความพึงพอใจเฉลี่ยอยู่ที่ {{CSAT}} เต็ม 5 ค่ะ ด้านเชิงพื้นที่พบว่า {{MAX_REG_NAME}} มีความตื่นตัวสูงสุด อย่างไรก็ตาม สถานการณ์ผู้ป่วยรออวัยวะระดับชาติยังมีมากกว่าแปดพันราย จึงขอเสนอให้ขยายผลการฝึกอบรมและการใช้ห้องจำลองสื่อสารกับญาติเอไอให้ครอบคลุมทุกเขตสุขภาพค่ะ`;
+window.POLICY_SPEECH = `สวัสดีค่ะท่านผู้บริหาร จากการสังเคราะห์ข้อมูลล่าสุดของระบบ อาร์เจคลาวด์ดอทออร์แกน ยุค 2030 พบว่าขณะนี้มีบุคลากรในระบบทั้งหมด {{USERS}} ท่าน สอบผ่านรับประกาศนียบัตรแล้ว {{PASSED}} ท่าน โดยมีคะแนนความพึงพอใจเฉลี่ยอยู่ที่ {{CSAT}} เต็ม 5 ค่ะ ด้านเชิงพื้นที่พบว่า {{MAX_REG_NAME}} มีความตื่นตัวสูงสุด อย่างไรก็ตาม สถานการณ์ผู้ป่วยรออวัยวะระดับชาติยังมีมากกว่าแปดพันราย จึงขอเสนอให้ขยายผลการฝึกอบรมและห้องจำลองสื่อสารสามมิติให้ครอบคลุมทุกเขตสุขภาพค่ะ`;
 
 /**
- * 9. ฐานความรู้วิชาชีพทางการแพทย์ (Clinical Knowledge Base สำหรับ AI Skill Lab)
+ * 11. ฐานความรู้วิชาชีพทางการแพทย์ (Clinical Knowledge Base สำหรับ AI Study Companion & AI Skill Lab)
  */
 window.CLINICAL_KNOWLEDGE_BASE = `ทีมบุคลากรทางการแพทย์ (ทีมสหสาขาวิชาชีพ) ในกระบวนการบริจาคและปลูกถ่ายอวัยวะ แบ่งออกเป็น 3 ทีมหลัก ที่ทำงานสอดประสานกันตลอด 24 ชั่วโมง เพื่อให้การส่งต่ออวัยวะสำเร็จภายในเวลาที่จำกัด
 
@@ -225,18 +581,18 @@ window.CLINICAL_KNOWLEDGE_BASE = `ทีมบุคลากรทางกา�
 - ตรวจวินิจฉัย: แพทย์ผู้เชี่ยวชาญร่วมตรวจร่างกายตามเกณฑ์กฎหมายเพื่อยืนยันภาวะสมองตาย (ไม่เกี่ยวข้องกับทีมปลูกถ่าย)
 - เซ็นใบรับรอง: ออกเอกสารยืนยันการเสียชีวิตของผู้บริจาคอย่างถูกต้องทางกฎหมาย
 ทีมวิกฤตบำบัด (ICU Team - แพทย์และพยาบาล):
-- รักษาสัญญาณชีพ: ควบคุมความดันโลหิต ออกซิเจน และสารน้ำให้คงที่เพื่อไม่ให้อวัยวะเสียหาย
+- รักษาสัญญาณชีพ: ควบคุมความดันโลหิต ออกซิเจน และสารน้ำให้คงที่เพื่อไม่ให้อวัยวะเสียหาย (คุมเบาจืดด้วย DDAVP)
 
 2. ทีมผ่าตัดนำอวัยวะออก (Procurement Team)
 ศัลยแพทย์จัดเก็บอวัยวะ (Procurement Surgeon) และพยาบาลห้องผ่าตัด (OR Nurse):
 - ผ่าตัดจัดเก็บอวัยวะอย่างประณีต ดูแลตกแต่งร่างผู้เสียชีวิตให้เรียบร้อยสมบูรณ์ที่สุดเพื่อแสดงความเคารพสูงสุด
-- ล้างและแช่ด้วยน้ำยาถนอมอวัยวะ (Preservation Solution) บรรจุในภาชนะควบคุมอุณหภูมิความเย็นปลอดเชื้อ
+- ล้างและแช่ด้วยน้ำยาถนอมอวัยวะ (Preservation Solution) บรรจุในภาชนะควบคุมอุณหภูมิความเย็นปลอดเชื้อ (ไต 2-4°C, หัวใจไม่เกิน 4 ชม., ดวงตา 6-8 ชม.)
 
 3. ทีมปลูกถ่ายอวัยวะ (Transplant Team)
 - ศัลยแพทย์ปลูกถ่าย, อายุรแพทย์เฉพาะทาง, วิสัญญีแพทย์, พยาบาลประสานงานการปลูกถ่าย, เภสัชกรคลินิก, นักโภชนาการ และนักสังคมสงเคราะห์ ร่วมดูแลผู้รับอวัยวะต่อเนื่องระยะยาว
 
 หลักการสื่อสารและให้ข้อมูลญาติผู้เสียชีวิตในห้องรับรอง:
 1. การเตรียมสถานที่และบทบาท (Setting & Role): พูดคุยในห้องรับรองหรือห้องให้คำปรึกษาที่เป็นส่วนตัว แยกจากห้อง ICU และแนะนำชื่อ-บทบาทอย่างสุภาพชัดเจน
-2. การรับรู้อารมณ์ร่วม (Emotional Empathy): ยอมรับและสะท้อนความเสียใจ ความช็อก หรือความสับสนของญาติก่อนให้ข้อมูลทางการแพทย์
+2. การรับรู้อารมณ์ร่วม (Emotional Empathy): ยอมรับและสะท้อนความเสียใจ ความช็อก หรือความสับสนของญาติก่อนให้ข้อมูลทางการแพทย์ และใช้จังหวะหยุดเงียบเพื่อเยียวยา (Therapeutic Silence 2.5 วินาที)
 3. การแยกข่าวร้ายออกจากคำขอ (Decoupling) & เช็กความเข้าใจ (Perception Check): อธิบายความแตกต่างระหว่างเครื่องช่วยหายใจกับภาวะสมองตายถาวรให้ชัดเจนก่อนพูดถึงทางเลือกการบริจาค
 4. การไม่เร่งรัดและให้ความมั่นใจเรื่องเกียรติของร่าง (Zero Pressure & Dignity): ให้เวลาครอบครัวปรึกษากันอย่างเต็มที่ และรับรองการดูแลตกแต่งร่างอย่างประณีตที่สุด`;
