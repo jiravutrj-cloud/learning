@@ -157,6 +157,10 @@
       /* ยกระดับขนาดฟอนต์ภาษาไทยส่วนคำอธิบายย่อยให้อ่านสบายตา */
       .text-\[11px\] { font-size: 0.8125rem !important; line-height: 1.5; }
       .text-\[10px\] { font-size: 0.72rem !important; line-height: 1.4; }
+      .touch-target { min-height: 46px; touch-action: manipulation; }
+      .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+      .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+      .pb-dock-safe { padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px)); }
 
       @media (max-width: 768px) {
         input, select, textarea { font-size: 16px !important; }
@@ -569,6 +573,43 @@
             familyMoods: ['ช็อก / ยังไม่ยอมรับ', 'โศกเศร้าร้องไห้หนัก', 'สับสนเรื่องเครื่องช่วยหายใจ', 'ความเห็นในครอบครัวต่างกัน', 'สงบและเปิดใจรับฟัง'],
             concerns: ['กังวลความเชื่อ/พิธีกรรมศาสนา', 'กลัวร่างไม่เรียบร้อย', 'กังวลค่าใช้จ่าย/ความโปร่งใส', 'ไม่แน่ใจความต้องการของผู้เสียชีวิต']
         };
+
+        // มาตรฐานระดับคะแนนและ 5 มิติการประเมินความพึงพอใจสำหรับรายงาน CNEU สภาการพยาบาล
+        const CSAT_RATING_LABELS = {
+            1: 'น้อยที่สุด (1)',
+            2: 'น้อย (2)',
+            3: 'ปานกลาง (3)',
+            4: 'มาก (4)',
+            5: 'มากที่สุด (5)'
+        };
+
+        const CNEU_EVAL_CRITERIA = [
+            {
+                key: 'content',
+                title: '1. ความทันสมัย ความถูกต้อง และประโยชน์ของเนื้อหาหลักสูตร',
+                desc: 'ครอบคลุมเกณฑ์วินิจฉัยภาวะสมองตาย Donor Management และการจัดเก็บอวัยวะ'
+            },
+            {
+                key: 'speaker',
+                title: '2. คุณภาพสื่อวิดีโอ เอกสารประกอบ และการถ่ายทอดของวิทยากร',
+                desc: 'ความชัดเจนในการอธิบายและลำดับขั้นตอนการเรียนรู้ 20 บทเรียน'
+            },
+            {
+                key: 'platform',
+                title: '3. ความสะดวกและความเสถียรของระบบเรียนออนไลน์ (rjcloud.organ)',
+                desc: 'การลงทะเบียน OTP, การทำแบบทดสอบ และการใช้งานผ่านมือถือ/คอมพิวเตอร์'
+            },
+            {
+                key: 'aiLab',
+                title: '4. ประโยชน์ของระบบผู้ช่วย AI และห้องฝึกสื่อสาร 3 มิติ (AI Skill Lab)',
+                desc: 'AI Study Companion สรุปบทเรียน และห้องฝึกสื่อสารกับญาติผู้เสียชีวิต'
+            },
+            {
+                key: 'application',
+                title: '5. ความมั่นใจในการนำความรู้และทักษะไปประยุกต์ใช้ในงานจริง',
+                desc: 'สามารถนำไปปรับใช้ดูแลผู้ป่วยและสื่อสารกับครอบครัวในหน่วยงานได้จริง'
+            }
+        ];
 
         let fbApp = null, fbAuth = null, fbDb = null;
         const isCloudConfigured = Boolean(CONFIG.firebaseConfig?.apiKey && CONFIG.firebaseConfig?.projectId);
@@ -1794,21 +1835,33 @@
             const [remediationAiText, setRemediationAiText] = useState('');
             const [isRemediationLoading, setIsRemediationLoading] = useState(false);
 
-            // 6. AI Study Companion Panel States
+            // 6. AI Study Companion & Audio Brief States
             const [aiQuestion, setAiQuestion] = useState('');
             const [aiMessages, setAiMessages] = useState([]);
             const [isAiAnswering, setIsAiAnswering] = useState(false);
-            const [microCheckPicked, setMicroCheckPicked] = useState({});
             const [isAudioSpeaking, setIsAudioSpeaking] = useState(false);
+            const [microCheckPicked, setMicroCheckPicked] = useState({});
 
-            // 7. Certificate & CSAT States
+            // 7. Certificate & CSAT States (CNEU 5-Dimension Standard)
             const [certFormName, setCertFormName] = useState(() => user?.name || '');
             const [certFormHosp, setCertFormHosp] = useState(() => user?.hospital || '');
-            const [csatRating, setCsatRating] = useState(5);
+            const [csatCriteria, setCsatCriteria] = useState({
+                content: 5,
+                speaker: 5,
+                platform: 5,
+                aiLab: 5,
+                application: 5
+            });
             const [csatComment, setCsatComment] = useState('');
             const [isIssuingCert, setIsIssuingCert] = useState(false);
             const [certDocTab, setCertDocTab] = useState('cert'); // cert | cneu
             const [certQrDataUrl, setCertQrDataUrl] = useState('');
+
+            const csatAverageScore = useMemo(() => {
+                const vals = Object.values(csatCriteria);
+                const sum = vals.reduce((a, b) => a + Number(b || 0), 0);
+                return Number((sum / Math.max(1, vals.length)).toFixed(2));
+            }, [csatCriteria]);
 
             // 8. UI Feedback States
             const [toast, setToast] = useState({ visible: false, text: '', type: 'success' });
@@ -2446,7 +2499,8 @@ ${window.CLINICAL_KNOWLEDGE_BASE || ''}
                 const nextUser = await saveUserProgress({
                     name: certFormName.trim(),
                     hospital: certFormHosp.trim() || user?.hospital || '',
-                    satisfactionScore: csatRating,
+                    satisfactionScore: csatAverageScore,
+                    satisfactionCriteria: csatCriteria,
                     satisfactionComment: csatComment.trim(),
                     certificateClaimed: true,
                     certificateCode: code,
@@ -3628,14 +3682,14 @@ ${user.certificateCode ? `5. รหัสประกาศนียบัตร
                                             </SpatialCard>
                                         </div>
 
-                                        {/* PDPA-Safe Pre-Approach Warm-up */}
+                                        {/* PDPA-Safe Pre-Approach 30s Warm-up */}
                                         <PreApproachWarmupCard appsScriptUrl={appsScriptUrl} onToast={showToast} />
                                     </div>
                                 )}
                             </main>
 
-                            {/* Mobile Bottom Spatial Dock */}
-                            <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 spatial-dock px-2 pt-1.5 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] no-print">
+                            {/* Smartphone Bottom Spatial Dock */}
+                            <nav className="no-print lg:hidden fixed bottom-0 left-0 right-0 z-40 spatial-dock px-2 pt-1.5 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))]">
                                 <div className="grid grid-cols-6 gap-1 max-w-xl mx-auto">
                                     {[
                                         { id: 'lessons', label: 'บทเรียน', icon: 'MonitorPlay' },
@@ -3651,8 +3705,10 @@ ${user.certificateCode ? `5. รหัสประกาศนียบัตร
                                                 key={t.id}
                                                 type="button"
                                                 onClick={() => { setActiveTab(t.id); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                                                className={`touch-target flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-xl text-[10px] font-bold transition-all ${
-                                                    active ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950' : 'text-secondary-adaptive'
+                                                className={`touch-target flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-xl text-[10px] font-bold transition-all active:scale-95 ${
+                                                    active
+                                                        ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 shadow-sm'
+                                                        : 'text-secondary-adaptive'
                                                 }`}
                                             >
                                                 <Icon name={t.icon} size={17} />
@@ -3665,11 +3721,11 @@ ${user.certificateCode ? `5. รหัสประกาศนียบัตร
                         </div>
                     )}
 
-                    {/* ==================== SCREEN 6: CONFIRM CERTIFICATE NAME & CSAT ==================== */}
+                    {/* ==================== SCREEN 6: CONFIRM CERTIFICATE NAME & 5-DIMENSION CNEU CSAT ==================== */}
                     {screen === 'cert_confirm' && user && (
-                        <div className="relative z-10 flex-1 flex items-center justify-center px-4 py-8">
-                            <SpatialCard className="w-full max-w-lg p-6 sm:p-8 space-y-5">
-                                <div className="flex items-center justify-between">
+                        <div className="relative z-10 flex-1 flex items-center justify-center px-3.5 sm:px-6 py-6 sm:py-8">
+                            <SpatialCard className="w-full max-w-2xl p-5 sm:p-8 space-y-5">
+                                <div className="flex items-center justify-between gap-2">
                                     <button
                                         type="button"
                                         onClick={() => setScreen('dashboard')}
@@ -3677,7 +3733,7 @@ ${user.certificateCode ? `5. รหัสประกาศนียบัตร
                                     >
                                         <Icon name="ArrowLeft" size={14} /> กลับห้องเรียน
                                     </button>
-                                    <span className="font-mono text-xs font-bold text-accent-adaptive">STEP 05 • CERTIFICATE & CNEU</span>
+                                    <span className="font-mono text-xs font-bold text-accent-adaptive">STEP 05 • CERTIFICATE &amp; CNEU</span>
                                 </div>
 
                                 <div className="space-y-1">
@@ -3690,53 +3746,91 @@ ${user.certificateCode ? `5. รหัสประกาศนียบัตร
                                 </div>
 
                                 <form onSubmit={handleConfirmIssueCertificate} className="space-y-4">
-                                    <FormField
-                                        label="คำนำหน้า ชื่อ - นามสกุล (แสดงบนประกาศนียบัตรและใบรับรอง CNEU) *"
-                                        required
-                                        value={certFormName}
-                                        onChange={e => setCertFormName(e.target.value)}
-                                        placeholder="เช่น พว.ใจดี มีเมตตา"
-                                    />
-                                    <FormField
-                                        label="โรงพยาบาล / หน่วยงานต้นสังกัด *"
-                                        required
-                                        value={certFormHosp}
-                                        onChange={e => setCertFormHosp(e.target.value)}
-                                        placeholder="เช่น โรงพยาบาลราชวิถี"
-                                    />
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <FormField
+                                            label="คำนำหน้า ชื่อ - นามสกุล (แสดงบนเอกสาร) *"
+                                            required
+                                            value={certFormName}
+                                            onChange={e => setCertFormName(e.target.value)}
+                                            placeholder="เช่น พว.ใจดี มีเมตตา"
+                                        />
+                                        <FormField
+                                            label="โรงพยาบาล / หน่วยงานต้นสังกัด *"
+                                            required
+                                            value={certFormHosp}
+                                            onChange={e => setCertFormHosp(e.target.value)}
+                                            placeholder="เช่น โรงพยาบาลราชวิถี"
+                                        />
+                                    </div>
 
-                                    <div className="spatial-soft p-4 rounded-2xl space-y-2.5">
-                                        <p className="text-xs font-bold text-primary-adaptive">ประเมินความพึงพอใจต่อหลักสูตรและระบบ AI (CSAT)</p>
-                                        <div className="flex items-center justify-center gap-2 py-1">
-                                            {[1, 2, 3, 4, 5].map(star => (
-                                                <button
-                                                    key={star}
-                                                    type="button"
-                                                    onClick={() => setCsatRating(star)}
-                                                    aria-label={`ให้คะแนน ${star} ดาว`}
-                                                    className="p-1.5 transition-transform active:scale-90"
-                                                >
-                                                    <Icon
-                                                        name="Star"
-                                                        size={30}
-                                                        className={star <= csatRating ? 'text-amber-400 fill-amber-400' : 'text-slate-500'}
-                                                    />
-                                                </button>
-                                            ))}
+                                    {/* แบบประเมินความพึงพอใจรายด้าน 5 มิติตามมาตรฐาน CNEU สภาการพยาบาล */}
+                                    <div className="spatial-soft p-4 sm:p-5 rounded-2xl space-y-4">
+                                        <div className="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-white/10">
+                                            <div>
+                                                <p className="font-display font-bold text-sm text-primary-adaptive">
+                                                    แบบประเมินความพึงพอใจรายด้าน (มาตรฐาน CNEU)
+                                                </p>
+                                                <p className="text-xs text-muted-adaptive">
+                                                    1 = น้อยที่สุด • 2 = น้อย • 3 = ปานกลาง • 4 = มาก • 5 = มากที่สุด
+                                                </p>
+                                            </div>
+                                            <div className="px-3 py-1.5 rounded-xl bg-aurora-500/15 border border-aurora-400/35 text-right shrink-0">
+                                                <span className="text-[10px] font-mono text-muted-adaptive block">คะแนนเฉลี่ยรวม</span>
+                                                <span className="font-mono text-base font-extrabold text-accent-adaptive">
+                                                    {csatAverageScore.toFixed(2)} / 5.00
+                                                </span>
+                                            </div>
                                         </div>
+
+                                        <div className="space-y-2.5">
+                                            {CNEU_EVAL_CRITERIA.map(item => {
+                                                const currentVal = csatCriteria[item.key] || 5;
+                                                return (
+                                                    <div key={item.key} className="p-3.5 rounded-xl spatial-soft flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                                                        <div className="space-y-0.5 flex-1">
+                                                            <p className="text-xs sm:text-sm font-bold text-primary-adaptive leading-snug">{item.title}</p>
+                                                            <p className="text-xs text-muted-adaptive leading-snug">{item.desc}</p>
+                                                        </div>
+                                                        <div className="flex items-center justify-between sm:flex-col sm:items-end gap-1 shrink-0">
+                                                            <div className="flex items-center gap-1">
+                                                                {[1, 2, 3, 4, 5].map(star => (
+                                                                    <button
+                                                                        key={star}
+                                                                        type="button"
+                                                                        onClick={() => setCsatCriteria(p => ({ ...p, [item.key]: star }))}
+                                                                        aria-label={`${item.title} ให้คะแนน ${star} ดาว`}
+                                                                        className="p-1 transition-transform active:scale-90 hover:scale-110"
+                                                                    >
+                                                                        <Icon
+                                                                            name="Star"
+                                                                            size={24}
+                                                                            className={star <= currentVal ? 'text-amber-400 fill-amber-400' : 'text-slate-500/70'}
+                                                                        />
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                            <span className="font-mono text-[11px] font-bold text-amber-400">
+                                                                {CSAT_RATING_LABELS[currentVal]}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+
                                         <textarea
-                                            rows="2"
+                                            rows="3"
                                             value={csatComment}
                                             onChange={e => setCsatComment(e.target.value)}
-                                            placeholder="ข้อเสนอแนะเพิ่มเติมสำหรับทีมพัฒนาหลักสูตร (ไม่บังคับ)..."
-                                            className="spatial-input w-full p-3 rounded-xl text-xs sm:text-sm"
+                                            placeholder="ข้อเสนอแนะเพิ่มเติม หรือหัวข้อที่อยากให้จัดอบรมในรุ่นถัดไป (ไม่บังคับ)..."
+                                            className="spatial-input w-full p-3.5 rounded-xl text-xs sm:text-sm"
                                         />
                                     </div>
 
                                     <button
                                         type="submit"
                                         disabled={isIssuingCert}
-                                        className="touch-target w-full py-3.5 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg"
+                                        className="touch-target w-full py-3.5 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 hover:from-aurora-300 hover:to-prism-300 text-void-950 font-display font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg active:scale-[0.98]"
                                     >
                                         <Icon name="Award" size={18} />
                                         {isIssuingCert ? 'กำลังออกเอกสารและสร้าง QR Code...' : 'ยืนยันและออกประกาศนียบัตร + ใบรับรอง CNEU'}
@@ -3858,6 +3952,7 @@ ${user.certificateCode ? `5. รหัสประกาศนียบัตร
                                     <button type="button" onClick={() => setScreen('landing')} className="px-2 py-1 rounded-lg spatial-soft">หน้าแรก</button>
                                     <button type="button" onClick={() => { setQuizSubmitted(false); setScreen('pretest'); }} className="px-2 py-1 rounded-lg spatial-soft">Pre-test</button>
                                     <button type="button" onClick={() => setScreen('dashboard')} className="px-2 py-1 rounded-lg spatial-soft">ห้องเรียน</button>
+                                    <button type="button" onClick={() => setScreen('cert_confirm')} className="px-2 py-1 rounded-lg spatial-soft">ประเมิน 5 ด้าน</button>
                                     <button type="button" onClick={() => setScreen('certificate')} className="px-2 py-1 rounded-lg spatial-soft">ประกาศฯ</button>
                                     <a href="./admin.html" className="px-2.5 py-1 rounded-lg bg-aurora-500 text-void-950">กลับ Admin</a>
                                     <button type="button" onClick={() => setPreviewBarOpen(false)} className="w-6 h-6 rounded-lg spatial-soft flex items-center justify-center">
