@@ -2010,30 +2010,52 @@
 
             // Sync emotion to Ambient Soundscape
             useEffect(() => {
-                if (ambientOn) {
-                    soundscapeRef.current?.updateEmotion(phase === 'negotiating' ? relativeEmotion : menuPreviewEmotion);
+                if (ambientOn && soundscapeRef.current) {
+                    const targetEmo = phase === 'negotiating' ? relativeEmotion : menuPreviewEmotion;
+                    soundscapeRef.current.updateEmotion(targetEmo);
                 }
-            }, [ambientOn, relativeEmotion, menuPreviewEmotion, phase]);
+            }, [ambientOn, phase, relativeEmotion, menuPreviewEmotion]);
 
-            const toggleAmbientSound = () => {
+            // Toggle procedural room soundscape (Web Audio API — 0 บาท)
+            const toggleAmbientSound = useCallback(() => {
+                if (!soundscapeRef.current) return;
                 if (ambientOn) {
-                    soundscapeRef.current?.stop();
+                    soundscapeRef.current.stop();
                     setAmbientOn(false);
+                    showToast('ปิดเสียงบรรยากาศห้องรับรองแล้วค่ะ', 'info');
                 } else {
-                    soundscapeRef.current?.start(phase === 'negotiating' ? relativeEmotion : menuPreviewEmotion);
+                    const targetEmo = phase === 'negotiating' ? relativeEmotion : menuPreviewEmotion;
+                    soundscapeRef.current.start(targetEmo);
                     setAmbientOn(true);
-                    showToast('เปิดเสียงบรรยากาศห้องรับรอง Spatial Soundscape แล้วค่ะ', 'info');
+                    showToast('เปิดเสียงบรรยากาศห้องรับรอง 3 มิติ (Ambient Soundscape) แล้วค่ะ', 'info');
                 }
-            };
+            }, [ambientOn, phase, relativeEmotion, menuPreviewEmotion, showToast]);
 
-            // Connect Firebase (Sync Apps Script URL & Learner Progress)
+            // Connect Firebase (ป้องกันทับสิทธิ์ Admin ตอนเปิด Preview 2 ชั้น)
             useEffect(() => {
                 if (!isCloudConfigured || !fbAuth || !fbDb) return;
+                let active = true;
+                let anonAttempted = false;
                 let unsubSettings = null;
-                signInAnonymously(fbAuth).catch(() => {});
 
                 const unsubAuth = onAuthStateChanged(fbAuth, async (fbUser) => {
-                    if (!fbUser) return;
+                    if (!active) return;
+                    if (!fbUser) {
+                        // ห้ามสร้าง Anonymous Session ในโหมด Admin Preview เพื่อไม่ให้เขียนทับสิทธิ์แอดมิน
+                        if (isAdminPreview) return;
+                        if (!anonAttempted) {
+                            anonAttempted = true;
+                            try {
+                                if (typeof fbAuth.authStateReady === 'function') {
+                                    await fbAuth.authStateReady();
+                                }
+                                if (active && !fbAuth.currentUser) {
+                                    await signInAnonymously(fbAuth);
+                                }
+                            } catch (_) {}
+                        }
+                        return;
+                    }
                     setIsCloudReady(true);
 
                     const cur = userRef.current;
@@ -2050,6 +2072,7 @@
                         } catch (_) {}
                     }
 
+                    if (unsubSettings) unsubSettings();
                     unsubSettings = onSnapshot(
                         doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_config', 'settings'),
                         (snap) => {
@@ -2062,6 +2085,7 @@
                 });
 
                 return () => {
+                    active = false;
                     unsubAuth();
                     if (unsubSettings) unsubSettings();
                 };
