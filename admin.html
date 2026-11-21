@@ -248,6 +248,42 @@
       .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
       .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
       .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.38); border-radius: 999px; }
+
+      /* สไตล์กระดาษ A4 และตารางรายงานส่งสภาการพยาบาล (CNEU) */
+      .a4-sheet {
+        background: #ffffff;
+        color: #0f172a;
+        font-family: 'Sarabun', sans-serif;
+        box-shadow: 0 24px 60px -16px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(148, 163, 184, 0.25);
+        transition: max-width 0.25s ease;
+      }
+      .a4-landscape { width: 100%; max-width: 1122px; min-height: 794px; }
+      .a4-portrait { width: 100%; max-width: 794px; min-height: 1122px; }
+      .official-table { width: 100%; border-collapse: collapse; font-size: 13px; line-height: 1.45; }
+      .official-table th, .official-table td { border: 1px solid #cbd5e1; padding: 7px 8px; vertical-align: middle; }
+      .official-table thead th { background-color: #f1f5f9; color: #0f172a; font-weight: 700; text-align: center; }
+      .official-table tbody tr:nth-child(even) { background-color: #f8fafc; }
+
+      @media print {
+        html, body { background: #ffffff !important; color: #0f172a !important; }
+        .no-print, .spatial-aura, .spatial-grid { display: none !important; }
+        .print-main-reset {
+          max-width: 100% !important;
+          padding: 0 !important;
+          margin: 0 !important;
+        }
+        .a4-sheet {
+          max-width: 100% !important;
+          width: 100% !important;
+          min-height: auto !important;
+          box-shadow: none !important;
+          border-radius: 0 !important;
+          padding: 0 !important;
+          margin: 0 !important;
+        }
+        .official-table thead { display: table-header-group; }
+        .official-table tr, .signature-block { page-break-inside: avoid; break-inside: avoid; }
+      }
     </style>
 
     <!-- ESM Import Map (React 18, Lucide Icons, Firebase 11) -->
@@ -395,6 +431,23 @@
             signatureUrl: ''
         };
 
+        const DEFAULT_CNEU_CONFIG = {
+            logoUrl: '',
+            orgName: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ โรงพยาบาลราชวิถี',
+            courseName: 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ (rjcloud.organ)',
+            activityCode: 'CNEU-2027-0148',
+            batchLabel: 'รุ่นที่ 1 ประจำปีงบประมาณ 2570',
+            cneuCredits: '8.0',
+            dateRange: '1 – 31 มกราคม 2570',
+            criteriaText: 'ยืนยันตัวตน OTP + เรียน ≥ 80% + AI Skill Lab + Post-test ≥ 80%',
+            coordinatorName: 'พว.ผู้ประสานงานโครงการ (ศูนย์รับบริจาคอวัยวะ)',
+            coordinatorContact: 'rjcloud.organ@gmail.com',
+            reporterName: 'พว.ผู้ประสานงานโครงการ (ศูนย์รับบริจาคอวัยวะ)',
+            reporterPosition: 'ผู้ประสานงานโครงการ',
+            approverName: 'ผู้อำนวยการศูนย์ความเป็นเลิศทางการแพทย์',
+            approverPosition: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ'
+        };
+
         let fbApp = null, fbAuth = null, fbDb = null;
         const isCloudConfigured = Boolean(CONFIG.firebaseConfig?.apiKey && CONFIG.firebaseConfig?.projectId);
 
@@ -507,6 +560,37 @@
             const score = parseInt(m[1], 10);
             const total = parseInt(m[2], 10) || 1;
             return (score / total) >= (MIN_POSTTEST_PERCENT / 100);
+        }
+
+        function parsePosttestPercent(u) {
+            const m = String(u?.posttest || '').match(/(\d+)\s*\/\s*(\d+)/);
+            if (!m) return u?.status === 'ผ่าน' ? MIN_POSTTEST_PERCENT : 0;
+            const score = parseInt(m[1], 10);
+            const total = parseInt(m[2], 10) || 1;
+            return Math.round((score / total) * 100);
+        }
+
+        function formatStudyHoursShort(seconds) {
+            const sec = Math.max(0, Math.floor(Number(seconds || 0)));
+            const h = Math.floor(sec / 3600);
+            const m = Math.floor((sec % 3600) / 60);
+            if (h > 0) return `${h} ชม. ${m} น.`;
+            return `${m} น.`;
+        }
+
+        function formatThaiShortDate(isoStr) {
+            if (!isoStr) return '-';
+            try {
+                const d = new Date(isoStr);
+                if (isNaN(d.getTime())) return '-';
+                return d.toLocaleDateString('th-TH', { day: '2-digit', month: 'short', year: '2-digit' });
+            } catch (_) {
+                return '-';
+            }
+        }
+
+        function formatThaiFullDate(dateObj = new Date()) {
+            return dateObj.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' });
         }
 
         function getUserFiveStepStatus(u) {
@@ -865,6 +949,7 @@
             // Navigation State
             const [activeTab, setActiveTab] = useState('users'); // users | cert | live | content | sync | overview
             const [contentSubTab, setContentSubTab] = useState('lessons'); // lessons | quiz
+            const [certSubTab, setCertSubTab] = useState('designer'); // designer | cneu
 
             // Admin Page Inspector Modal State
             const [inspectorModal, setInspectorModal] = useState({
@@ -883,6 +968,18 @@
                 } catch (_) {}
                 return { ...DEFAULT_CERT_TEMPLATE };
             });
+            const [cneuConfig, setCneuConfig] = useState(() => {
+                try {
+                    const saved = localStorage.getItem('rjcloud_cneu_config_v2027');
+                    if (saved) return { ...DEFAULT_CNEU_CONFIG, ...JSON.parse(saved) };
+                } catch (_) {}
+                return { ...DEFAULT_CNEU_CONFIG };
+            });
+            const [cneuOrientation, setCneuOrientation] = useState('landscape'); // landscape | portrait
+            const [cneuFilterType, setCneuFilterType] = useState('ALL'); // ALL | เรียนใหม่ | เรียนต่อเนื่อง
+            const [cneuIncludeScores, setCneuIncludeScores] = useState(true);
+            const [cneuShowEditor, setCneuShowEditor] = useState(false);
+            const [cneuLogoError, setCneuLogoError] = useState(false);
             const [liveConfig, setLiveConfig] = useState({
                 status: 'offline',
                 days: 1,
@@ -984,6 +1081,7 @@
                         const data = docSnap.data();
                         if (data.liveConfig) setLiveConfig(prev => ({ ...prev, ...data.liveConfig }));
                         if (data.certTemplate) setCertTemplate(prev => ({ ...prev, ...data.certTemplate }));
+                        if (data.cneuConfig) setCneuConfig(prev => ({ ...prev, ...data.cneuConfig }));
                         setSystemConfig(prev => ({
                             ...prev,
                             appsScriptUrl: data.appsScriptUrl ?? prev.appsScriptUrl,
@@ -1016,10 +1114,25 @@
 
             // 3. Live Certificate Preview (Apple Minimalist White & Thin Gold)
             useEffect(() => {
-                if (activeTab === 'cert' && certCanvasRef.current) {
+                if (activeTab === 'cert' && certSubTab === 'designer' && certCanvasRef.current) {
                     drawMiniCertPreview(certCanvasRef.current, certTemplate);
                 }
-            }, [activeTab, certTemplate]);
+            }, [activeTab, certSubTab, certTemplate]);
+
+            // รีเซ็ตสถานะโหลดโลโก้ CNEU เมื่อเปลี่ยนลิงก์ และตั้งค่าขนาดกระดาษพิมพ์ @page อัตโนมัติ
+            useEffect(() => {
+                setCneuLogoError(false);
+            }, [cneuConfig.logoUrl]);
+
+            useEffect(() => {
+                let styleEl = document.getElementById('dynamic-cneu-print-page');
+                if (!styleEl) {
+                    styleEl = document.createElement('style');
+                    styleEl.id = 'dynamic-cneu-print-page';
+                    document.head.appendChild(styleEl);
+                }
+                styleEl.textContent = `@page { size: A4 ${cneuOrientation}; margin: 12mm 10mm; }`;
+            }, [cneuOrientation]);
 
             // 4. Auth Handlers
             const handleCloudLogin = async (e) => {
@@ -1151,6 +1264,9 @@
                     }
                     if (partial.certTemplate) {
                         localStorage.setItem('rjcloud_cert_template_v2027', JSON.stringify(partial.certTemplate));
+                    }
+                    if (partial.cneuConfig) {
+                        localStorage.setItem('rjcloud_cneu_config_v2027', JSON.stringify(partial.cneuConfig));
                     }
                     showToast('บันทึกการตั้งค่าขึ้นระบบ Cloud เรียบร้อยแล้วค่ะ');
                 } catch (err) {
@@ -1322,6 +1438,67 @@
                 return { total: usersList.length, passed, labDone, avgCsat };
             }, [usersList]);
 
+            // รายชื่อผู้ผ่านเกณฑ์รับประกาศนียบัตรสำหรับรายงานส่งสภาการพยาบาล (CNEU)
+            const cneuAllCertified = useMemo(() => {
+                return usersList
+                    .filter(u => u.status === 'ผ่าน' || Boolean(u.certificateCode || u.certificateClaimed))
+                    .sort((a, b) => String(b.certificateIssuedAt || '').localeCompare(String(a.certificateIssuedAt || '')));
+            }, [usersList]);
+
+            const cneuFilteredUsers = useMemo(() => {
+                if (cneuFilterType === 'ALL') return cneuAllCertified;
+                return cneuAllCertified.filter(u => {
+                    const t = u.userType === 'เรียนต่อเนื่อง' ? 'เรียนต่อเนื่อง' : 'เรียนใหม่';
+                    return t === cneuFilterType;
+                });
+            }, [cneuAllCertified, cneuFilterType]);
+
+            const cneuStats = useMemo(() => {
+                const total = cneuFilteredUsers.length;
+                const hospitalCount = new Set(cneuFilteredUsers.map(u => u.hospital).filter(Boolean)).size;
+                const avgPost = total > 0
+                    ? Math.round(cneuFilteredUsers.reduce((s, u) => s + parsePosttestPercent(u), 0) / total)
+                    : 0;
+                const creditsNum = parseFloat(cneuConfig.cneuCredits) || 0;
+                const totalCredits = (total * creditsNum).toFixed(1);
+                return { total, hospitalCount, avgPost, totalCredits };
+            }, [cneuFilteredUsers, cneuConfig.cneuCredits]);
+
+            const handlePrintCneuPdf = () => {
+                showToast('กำลังเปิดหน้าต่างบันทึก PDF (เลือก Destination: Save as PDF)', 'info');
+                setTimeout(() => window.print(), 220);
+            };
+
+            const handleExportTnmcCsv = () => {
+                const headers = [
+                    'ลำดับ', 'เลขที่ใบอนุญาตประกอบวิชาชีพ', 'คำนำหน้า ชื่อ-นามสกุล',
+                    'หน่วยงาน/โรงพยาบาล', 'จังหวัด', 'รหัสกิจกรรม CNEU',
+                    'หน่วยคะแนน CNEU', 'เลขที่ประกาศนียบัตร', 'วันที่สำเร็จการอบรม'
+                ];
+                const rows = cneuFilteredUsers.map((u, idx) => [
+                    idx + 1,
+                    getUserLicense(u),
+                    u.name || '-',
+                    u.hospital || '-',
+                    u.province || '-',
+                    cneuConfig.activityCode || '-',
+                    cneuConfig.cneuCredits || '0',
+                    u.certificateCode || '-',
+                    formatThaiShortDate(u.certificateIssuedAt)
+                ].map(escapeCsvCell).join(','));
+                const csv = '\ufeff' + [headers.map(escapeCsvCell).join(','), ...rows].join('\n');
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `CNEU_TNMC_${cneuConfig.activityCode || 'Report'}_${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+                showToast('ส่งออกไฟล์ CSV สำหรับอัปโหลดเข้าระบบสภาการพยาบาลเรียบร้อยค่ะ');
+            };
+
             // รายการหน้าจอครบทั้ง 15 หน้าสำหรับ Admin Page Inspector
             const inspectorGroups = useMemo(() => ([
                 {
@@ -1458,7 +1635,7 @@
                     <div className="spatial-aura" /><div className="spatial-grid" />
 
                     {/* Desktop Spatial Sidebar */}
-                    <aside className="hidden lg:flex w-64 shrink-0 flex-col spatial-sidebar z-20 sticky top-0 h-screen">
+                    <aside className="no-print hidden lg:flex w-64 shrink-0 flex-col spatial-sidebar z-20 sticky top-0 h-screen">
                         <div className="p-5 border-b border-white/10 space-y-3">
                             <div className="flex items-center justify-between gap-2">
                                 <div className="flex items-center gap-2.5 min-w-0">
@@ -1511,7 +1688,7 @@
                     </aside>
 
                     {/* Mobile Top Spatial Header */}
-                    <header className="lg:hidden sticky top-0 z-30 spatial-header">
+                    <header className="no-print lg:hidden sticky top-0 z-30 spatial-header">
                         <div className="px-3.5 h-14 flex items-center justify-between gap-2">
                             <div className="flex items-center gap-2 min-w-0">
                                 <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-aurora-400 to-prism-400 text-void-950 flex items-center justify-center shrink-0">
@@ -1546,7 +1723,7 @@
                     </header>
 
                     {/* Main Content Area */}
-                    <main className="relative z-10 flex-1 w-full max-w-6xl mx-auto px-3.5 sm:px-6 lg:px-8 py-4 md:py-7 pb-dock-safe lg:pb-10">
+                    <main className="print-main-reset relative z-10 flex-1 w-full max-w-6xl mx-auto px-3.5 sm:px-6 lg:px-8 py-4 md:py-7 pb-dock-safe lg:pb-10">
 
                         {/* ==================== TAB 1: LEARNERS 5-STEP MISSION TELEMETRY ==================== */}
                         {activeTab === 'users' && (
@@ -1559,12 +1736,19 @@
                                             ทั้งหมด <b>{quickStats.total}</b> ราย • ผ่าน AI Lab <b>{quickStats.labDone}</b> ราย • สอบผ่านรับประกาศฯ <b>{quickStats.passed}</b> ราย
                                         </p>
                                     </div>
-                                    <div className="grid grid-cols-3 sm:flex flex-wrap gap-2">
+                                    <div className="grid grid-cols-2 sm:flex flex-wrap gap-2">
                                         <button type="button" onClick={() => setShowAddUser(v => !v)} className="touch-target spatial-soft px-3.5 py-2.5 rounded-2xl text-primary-adaptive font-bold text-xs flex items-center justify-center gap-1.5">
                                             <Icon name="UserPlus" size={15} className="text-accent-adaptive" /> เพิ่มผู้เรียน
                                         </button>
                                         <button type="button" onClick={() => syncFromGoogleSheet(true)} disabled={isSyncing} className="touch-target spatial-soft px-3.5 py-2.5 rounded-2xl text-primary-adaptive font-bold text-xs flex items-center justify-center gap-1.5">
                                             <Icon name="RefreshCw" size={15} className={`text-prism-adaptive ${isSyncing ? 'animate-spin' : ''}`} /> ดึง Sheet
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => { setActiveTab('cert'); setCertSubTab('cneu'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                                            className="touch-target spatial-soft px-3.5 py-2.5 rounded-2xl text-accent-adaptive border-aurora-400/40 font-display font-bold text-xs flex items-center justify-center gap-1.5"
+                                        >
+                                            <Icon name="FileCheck2" size={15} /> รายงาน CNEU (PDF)
                                         </button>
                                         <button type="button" onClick={handleExportCSV} className="touch-target px-4 py-2.5 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-md">
                                             <Icon name="Download" size={15} /> ส่งออก CSV
@@ -1572,36 +1756,48 @@
                                     </div>
                                 </div>
 
+                                {/* ฟอร์มเพิ่มผู้เรียนด้วยตนเอง */}
                                 {showAddUser && (
-                                    <form onSubmit={handleAddManualUser} className="spatial-card rounded-[1.5rem] p-4 sm:p-5 space-y-3 border-aurora-400/35">
+                                    <form onSubmit={handleAddManualUser} className="spatial-card rounded-[1.75rem] p-4 sm:p-6 space-y-4 border-aurora-400/35">
                                         <div className="flex items-center justify-between">
-                                            <h3 className="font-display font-bold text-sm text-accent-adaptive">เพิ่มรายชื่อผู้เรียนด้วยตนเอง</h3>
-                                            <button type="button" onClick={() => setShowAddUser(false)} className="text-muted-adaptive hover:text-primary-adaptive">
+                                            <h3 className="font-display font-bold text-sm sm:text-base text-primary-adaptive flex items-center gap-2">
+                                                <Icon name="UserPlus" size={17} className="text-accent-adaptive" /> เพิ่มรายชื่อผู้เรียนใหม่เข้าสู่ระบบ
+                                            </h3>
+                                            <button type="button" onClick={() => setShowAddUser(false)} className="text-muted-adaptive hover:text-primary-adaptive p-1">
                                                 <Icon name="X" size={18} />
                                             </button>
                                         </div>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                                            <FieldInput label="ชื่อ - นามสกุล *" required value={manualForm.name} onChange={e => setManualForm({ ...manualForm, name: e.target.value })} placeholder="ระบุคำนำหน้า ชื่อ และนามสกุล" />
-                                            <FieldInput label="เลขใบประกอบวิชาชีพ *" required value={manualForm.license} onChange={e => setManualForm({ ...manualForm, license: e.target.value })} placeholder="ระบุเลขที่ใบอนุญาต" />
+                                            <FieldInput label="ชื่อ - นามสกุล *" required value={manualForm.name} onChange={e => setManualForm(p => ({ ...p, name: e.target.value }))} placeholder="เช่น พว.ใจดี มีเมตตา" />
+                                            <FieldInput label="เลขใบประกอบวิชาชีพ *" required value={manualForm.license} onChange={e => setManualForm(p => ({ ...p, license: e.target.value }))} placeholder="เช่น 6501234567" />
                                             <div>
-                                                <label className="block text-xs font-bold text-secondary-adaptive mb-1.5 ml-1">ประเภทสิทธิ์</label>
-                                                <select value={manualForm.userType} onChange={e => setManualForm({ ...manualForm, userType: e.target.value })} className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-2xl text-sm font-medium">
+                                                <label className="block text-xs font-bold text-secondary-adaptive mb-1.5 ml-1">สิทธิ์การเรียน</label>
+                                                <select
+                                                    value={manualForm.userType}
+                                                    onChange={e => setManualForm(p => ({ ...p, userType: e.target.value }))}
+                                                    className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-2xl text-sm font-medium"
+                                                >
                                                     <option value="เรียนใหม่">เรียนใหม่</option>
                                                     <option value="เรียนต่อเนื่อง">เรียนต่อเนื่อง</option>
                                                 </select>
                                             </div>
-                                            <FieldInput label="โรงพยาบาล" value={manualForm.hospital} onChange={e => setManualForm({ ...manualForm, hospital: e.target.value })} />
-                                            <FieldInput label="สังกัด / เขตสุขภาพ" value={manualForm.department} onChange={e => setManualForm({ ...manualForm, department: e.target.value })} />
-                                            <FieldInput label="อีเมล" type="email" value={manualForm.email} onChange={e => setManualForm({ ...manualForm, email: e.target.value })} />
+                                            <FieldInput label="โรงพยาบาล / หน่วยงาน" value={manualForm.hospital} onChange={e => setManualForm(p => ({ ...p, hospital: e.target.value }))} />
+                                            <FieldInput label="สังกัด / เขตสุขภาพ" value={manualForm.department} onChange={e => setManualForm(p => ({ ...p, department: e.target.value }))} />
+                                            <FieldInput label="อีเมล" type="email" value={manualForm.email} onChange={e => setManualForm(p => ({ ...p, email: e.target.value }))} placeholder="name@hospital.go.th" />
                                         </div>
-                                        <button type="submit" className="touch-target w-full sm:w-auto px-6 py-2.5 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-sm">
-                                            บันทึกผู้เรียนใหม่
-                                        </button>
+                                        <div className="flex justify-end gap-2">
+                                            <button type="button" onClick={() => setShowAddUser(false)} className="touch-target spatial-soft px-4 py-2.5 rounded-2xl text-xs font-bold text-secondary-adaptive">
+                                                ยกเลิก
+                                            </button>
+                                            <button type="submit" className="touch-target px-5 py-2.5 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-xs">
+                                                บันทึกผู้เรียนเข้า Cloud
+                                            </button>
+                                        </div>
                                     </form>
                                 )}
 
-                                {/* Search & Filter */}
-                                <div className="spatial-card rounded-2xl p-3 flex flex-col sm:flex-row gap-2.5">
+                                {/* ช่องค้นหาและตัวกรองผู้เรียน */}
+                                <div className="spatial-card rounded-[1.5rem] p-3.5 sm:p-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                                     <div className="relative flex-1">
                                         <Icon name="Search" size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-adaptive" />
                                         <input
@@ -1609,104 +1805,59 @@
                                             value={searchTerm}
                                             onChange={e => setSearchTerm(e.target.value)}
                                             placeholder="ค้นหาชื่อ, เลขใบอนุญาต หรือโรงพยาบาล..."
-                                            className="touch-target spatial-input w-full pl-10 pr-3 py-2 rounded-xl text-sm"
+                                            className="touch-target spatial-input w-full pl-10 pr-4 py-2.5 rounded-2xl text-sm"
                                         />
                                     </div>
                                     <div className="flex gap-1.5 overflow-x-auto custom-scrollbar pb-0.5">
                                         {[
-                                            { k: 'ALL', l: 'ทั้งหมด' },
-                                            { k: 'เรียนใหม่', l: 'เรียนใหม่' },
-                                            { k: 'เรียนต่อเนื่อง', l: 'เรียนต่อเนื่อง' },
-                                            { k: 'PASSED', l: 'สอบผ่านแล้ว' }
+                                            { id: 'ALL', label: `ทั้งหมด (${usersList.length})` },
+                                            { id: 'เรียนใหม่', label: 'เรียนใหม่' },
+                                            { id: 'เรียนต่อเนื่อง', label: 'เรียนต่อเนื่อง' },
+                                            { id: 'PASSED', label: `ผ่าน (${quickStats.passed})` }
                                         ].map(f => (
                                             <button
-                                                key={f.k}
+                                                key={f.id}
                                                 type="button"
-                                                onClick={() => setFilterType(f.k)}
-                                                className={`shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
-                                                    filterType === f.k
+                                                onClick={() => setFilterType(f.id)}
+                                                className={`shrink-0 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
+                                                    filterType === f.id
                                                         ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold'
                                                         : 'spatial-soft text-secondary-adaptive'
                                                 }`}
                                             >
-                                                {f.l}
+                                                {f.label}
                                             </button>
                                         ))}
                                     </div>
                                 </div>
 
-                                {/* Mobile Cards */}
-                                <div className="space-y-3 md:hidden">
-                                    {filteredUsers.map(u => {
-                                        const st = getUserFiveStepStatus(u);
-                                        return (
-                                            <div key={u.id} className="spatial-card rounded-2xl p-4 space-y-3">
-                                                <div className="flex items-start justify-between gap-2">
-                                                    <div className="min-w-0">
-                                                        <h3 className="font-display font-bold text-base text-primary-adaptive truncate">{u.name}</h3>
-                                                        <p className="text-xs text-muted-adaptive truncate">{u.hospital || 'ไม่ระบุหน่วยงาน'} • <span className="font-mono text-prism-adaptive">{getUserLicense(u)}</span></p>
-                                                    </div>
-                                                    <button type="button" onClick={() => handleDeleteUser(u)} className="w-9 h-9 rounded-xl bg-rose-500/15 text-rose-400 flex items-center justify-center shrink-0">
-                                                        <Icon name="Trash2" size={16} />
-                                                    </button>
-                                                </div>
-
-                                                <FiveStepTelemetryPills u={u} onToggleLab={() => handleUpdateUser(u, { skillLabPassed: !st.step3Lab })} />
-
-                                                <div className="grid grid-cols-2 gap-2">
-                                                    <select
-                                                        value={u.userType === 'เรียนต่อเนื่อง' ? 'เรียนต่อเนื่อง' : 'เรียนใหม่'}
-                                                        onChange={e => handleUpdateUser(u, { userType: e.target.value })}
-                                                        className="touch-target spatial-input px-3 py-2 rounded-xl text-xs font-bold"
-                                                    >
-                                                        <option value="เรียนใหม่">เรียนใหม่</option>
-                                                        <option value="เรียนต่อเนื่อง">เรียนต่อเนื่อง</option>
-                                                    </select>
-                                                    <select
-                                                        value={u.status || 'กำลังเรียน'}
-                                                        onChange={e => handleUpdateUser(u, { status: e.target.value })}
-                                                        className="touch-target spatial-input px-3 py-2 rounded-xl text-xs font-bold"
-                                                    >
-                                                        <option value="กำลังเรียน">กำลังเรียน</option>
-                                                        <option value="ผ่าน">ผ่านเกณฑ์</option>
-                                                        <option value="ไม่ผ่าน">ไม่ผ่าน</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                    {filteredUsers.length === 0 && (
-                                        <div className="spatial-card rounded-2xl p-8 text-center text-sm text-muted-adaptive">
-                                            {usersList.length === 0 ? 'ยังไม่มีรายชื่อผู้เรียนในฐานข้อมูล Cloud Firestore' : 'ไม่พบรายชื่อผู้เรียนที่ค้นหาค่ะ'}
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Desktop Data Table */}
-                                <div className="hidden md:block spatial-card rounded-[1.5rem] overflow-hidden">
-                                    <div className="overflow-x-auto custom-scrollbar">
-                                        <table className="w-full text-left text-sm">
-                                            <thead className="spatial-thead text-muted-adaptive text-xs font-bold uppercase">
+                                {/* รายชื่อผู้เรียนแบบการ์ด (มือถือ) & ตาราง (คอมพิวเตอร์) */}
+                                <div className="spatial-card rounded-[1.75rem] overflow-hidden">
+                                    {/* Desktop Table */}
+                                    <div className="hidden md:block overflow-x-auto custom-scrollbar">
+                                        <table className="w-full text-left border-collapse">
+                                            <thead className="spatial-thead text-[11px] font-mono uppercase text-muted-adaptive">
                                                 <tr>
-                                                    <th className="p-4">ชื่อผู้เรียน / หน่วยงาน</th>
-                                                    <th className="p-4">ใบอนุญาต</th>
-                                                    <th className="p-4">สิทธิ์การเรียน</th>
-                                                    <th className="p-4">สถานะ 5 ขั้นตอน (Real-time)</th>
-                                                    <th className="p-4">สถานะรวม</th>
-                                                    <th className="p-4 text-center">จัดการ</th>
+                                                    <th className="py-3.5 px-4">ผู้เรียน / หน่วยงาน</th>
+                                                    <th className="py-3.5 px-3">สิทธิ์การเรียน</th>
+                                                    <th className="py-3.5 px-3">ความคืบหน้า 5 ขั้นตอน</th>
+                                                    <th className="py-3.5 px-3">Pre / Post</th>
+                                                    <th className="py-3.5 px-4 text-right">จัดการ</th>
                                                 </tr>
                                             </thead>
-                                            <tbody className="divide-y divide-white/10">
+                                            <tbody className="divide-y divide-white/10 text-xs">
                                                 {filteredUsers.map(u => {
+                                                    const lic = getUserLicense(u);
                                                     const st = getUserFiveStepStatus(u);
                                                     return (
-                                                        <tr key={u.id} className="hover:bg-white/[0.03] transition-colors">
-                                                            <td className="p-4">
-                                                                <p className="font-bold text-primary-adaptive">{u.name}</p>
-                                                                <p className="text-xs text-muted-adaptive">{u.hospital || '-'}</p>
+                                                        <tr key={u.id || lic} className="hover:bg-white/[0.03] transition-colors">
+                                                            <td className="py-3.5 px-4">
+                                                                <p className="font-display font-bold text-sm text-primary-adaptive">{u.name || 'ไม่ระบุชื่อ'}</p>
+                                                                <p className="text-[11px] text-muted-adaptive">
+                                                                    <span className="font-mono text-prism-adaptive">{lic}</span> • {u.hospital || '-'}
+                                                                </p>
                                                             </td>
-                                                            <td className="p-4 font-mono text-xs text-prism-adaptive font-bold">{getUserLicense(u)}</td>
-                                                            <td className="p-4">
+                                                            <td className="py-3.5 px-3">
                                                                 <select
                                                                     value={u.userType === 'เรียนต่อเนื่อง' ? 'เรียนต่อเนื่อง' : 'เรียนใหม่'}
                                                                     onChange={e => handleUpdateUser(u, { userType: e.target.value })}
@@ -1716,94 +1867,583 @@
                                                                     <option value="เรียนต่อเนื่อง">เรียนต่อเนื่อง</option>
                                                                 </select>
                                                             </td>
-                                                            <td className="p-4 space-y-1.5">
-                                                                <FiveStepTelemetryPills u={u} onToggleLab={() => handleUpdateUser(u, { skillLabPassed: !st.step3Lab })} />
-                                                                <p className="font-mono text-[10px] text-muted-adaptive">
-                                                                    Pre: <b className="text-secondary-adaptive">{u.pretest || '-'}</b> • Post: <b className="text-accent-adaptive">{u.posttest || '-'}</b>
-                                                                </p>
+                                                            <td className="py-3.5 px-3">
+                                                                <FiveStepTelemetryPills
+                                                                    u={u}
+                                                                    onToggleLab={() => handleUpdateUser(u, { skillLabPassed: !st.step3Lab })}
+                                                                />
                                                             </td>
-                                                            <td className="p-4">
-                                                                <select
-                                                                    value={u.status || 'กำลังเรียน'}
-                                                                    onChange={e => handleUpdateUser(u, { status: e.target.value })}
-                                                                    className={`spatial-input px-2.5 py-1.5 rounded-xl text-xs font-bold ${
-                                                                        u.status === 'ผ่าน' ? 'border-aurora-400/50 text-accent-adaptive' : ''
-                                                                    }`}
-                                                                >
-                                                                    <option value="กำลังเรียน">กำลังเรียน</option>
-                                                                    <option value="ผ่าน">ผ่านเกณฑ์</option>
-                                                                    <option value="ไม่ผ่าน">ไม่ผ่าน</option>
-                                                                </select>
+                                                            <td className="py-3.5 px-3 font-mono font-bold text-secondary-adaptive">
+                                                                <span>{u.pretest || '-'}</span>
+                                                                <span className="mx-1 text-muted-adaptive">/</span>
+                                                                <span className={st.step4Post ? 'text-accent-adaptive' : ''}>{u.posttest || '-'}</span>
                                                             </td>
-                                                            <td className="p-4 text-center">
-                                                                <button type="button" onClick={() => handleDeleteUser(u)} className="p-2 rounded-xl text-muted-adaptive hover:text-rose-400 hover:bg-rose-500/15 transition-colors">
-                                                                    <Icon name="Trash2" size={17} />
-                                                                </button>
+                                                            <td className="py-3.5 px-4 text-right">
+                                                                <div className="inline-flex items-center gap-1.5">
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => handleUpdateUser(u, { status: u.status === 'ผ่าน' ? 'กำลังเรียน' : 'ผ่าน' })}
+                                                                        className={`px-2.5 py-1.5 rounded-xl font-bold text-[11px] border ${
+                                                                            u.status === 'ผ่าน'
+                                                                                ? 'bg-aurora-500/20 border-aurora-400/40 text-accent-adaptive'
+                                                                                : 'spatial-soft text-secondary-adaptive'
+                                                                        }`}
+                                                                    >
+                                                                        {u.status === 'ผ่าน' ? 'ผ่านแล้ว ✓' : 'กำลังเรียน'}
+                                                                    </button>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => handleDeleteUser(u)}
+                                                                        className="p-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-400"
+                                                                        title="ลบผู้เรียน"
+                                                                    >
+                                                                        <Icon name="Trash2" size={14} />
+                                                                    </button>
+                                                                </div>
                                                             </td>
                                                         </tr>
                                                     );
                                                 })}
                                                 {filteredUsers.length === 0 && (
                                                     <tr>
-                                                        <td colSpan="6" className="p-10 text-center text-muted-adaptive">
-                                                            {usersList.length === 0 ? 'ยังไม่มีข้อมูลผู้เรียนในฐานข้อมูล Cloud Firestore' : 'ไม่พบข้อมูลผู้เรียนที่ค้นหา'}
+                                                        <td colSpan="5" className="py-10 text-center text-sm text-muted-adaptive">
+                                                            ไม่พบรายชื่อผู้เรียนตามเงื่อนไขที่ค้นหาค่ะ
                                                         </td>
                                                     </tr>
                                                 )}
                                             </tbody>
                                         </table>
                                     </div>
+
+                                    {/* Mobile Cards */}
+                                    <div className="md:hidden divide-y divide-white/10">
+                                        {filteredUsers.map(u => {
+                                            const lic = getUserLicense(u);
+                                            const st = getUserFiveStepStatus(u);
+                                            return (
+                                                <div key={u.id || lic} className="p-4 space-y-3">
+                                                    <div className="flex items-start justify-between gap-2">
+                                                        <div className="min-w-0">
+                                                            <p className="font-display font-bold text-sm text-primary-adaptive truncate">{u.name || 'ไม่ระบุชื่อ'}</p>
+                                                            <p className="text-xs text-muted-adaptive truncate">
+                                                                <span className="font-mono text-prism-adaptive">{lic}</span> • {u.hospital || '-'}
+                                                            </p>
+                                                        </div>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleDeleteUser(u)}
+                                                            className="p-2 rounded-xl bg-rose-500/15 text-rose-400 shrink-0"
+                                                        >
+                                                            <Icon name="Trash2" size={14} />
+                                                        </button>
+                                                    </div>
+                                                    <FiveStepTelemetryPills
+                                                        u={u}
+                                                        onToggleLab={() => handleUpdateUser(u, { skillLabPassed: !st.step3Lab })}
+                                                    />
+                                                    <div className="flex items-center justify-between gap-2 pt-1">
+                                                        <select
+                                                            value={u.userType === 'เรียนต่อเนื่อง' ? 'เรียนต่อเนื่อง' : 'เรียนใหม่'}
+                                                            onChange={e => handleUpdateUser(u, { userType: e.target.value })}
+                                                            className="spatial-input px-2.5 py-1.5 rounded-xl text-xs font-bold"
+                                                        >
+                                                            <option value="เรียนใหม่">เรียนใหม่</option>
+                                                            <option value="เรียนต่อเนื่อง">เรียนต่อเนื่อง</option>
+                                                        </select>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleUpdateUser(u, { status: u.status === 'ผ่าน' ? 'กำลังเรียน' : 'ผ่าน' })}
+                                                            className={`px-3 py-1.5 rounded-xl font-bold text-xs border ${
+                                                                u.status === 'ผ่าน'
+                                                                    ? 'bg-aurora-500/20 border-aurora-400/40 text-accent-adaptive'
+                                                                    : 'spatial-soft text-secondary-adaptive'
+                                                            }`}
+                                                        >
+                                                            {u.status === 'ผ่าน' ? 'ผ่านแล้ว ✓' : 'กำลังเรียน'}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                        {filteredUsers.length === 0 && (
+                                            <p className="py-10 text-center text-sm text-muted-adaptive">ไม่พบรายชื่อผู้เรียนตามเงื่อนไขที่ค้นหาค่ะ</p>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         )}
 
-                        {/* ==================== TAB 2: CERTIFICATE DESIGNER (APPLE MINIMALIST) ==================== */}
+                        {/* ==================== TAB 2: CERTIFICATE DESIGNER & CNEU REPORT STUDIO ==================== */}
                         {activeTab === 'cert' && (
                             <div className="space-y-5">
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                                    <div>
-                                        <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 font-mono text-[10px] font-bold">IN-APP CERTIFICATE STUDIO • MINIMALIST GOLD</span>
-                                        <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive mt-1">ออกแบบประกาศนียบัตรในระบบ</h2>
-                                        <p className="text-xs sm:text-sm text-secondary-adaptive">พื้นสีขาวบริสุทธิ์ ตัดเส้นสายสีทองบางเรียบหรู แก้ไขข้อความ โลโก้ และลายเซ็นได้ทันที</p>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <button type="button" onClick={() => setCertTemplate({ ...DEFAULT_CERT_TEMPLATE })} className="touch-target spatial-soft px-4 py-2.5 rounded-2xl text-primary-adaptive font-bold text-xs">
-                                            คืนค่าเริ่มต้น
+                                {/* Sub-tab Switcher: ออกแบบใบประกาศฯ vs รายงานส่งสภาฯ (CNEU) */}
+                                <div className="no-print flex flex-wrap items-center justify-between gap-3">
+                                    <div className="inline-flex p-1 rounded-2xl spatial-soft">
+                                        <button
+                                            type="button"
+                                            onClick={() => setCertSubTab('designer')}
+                                            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
+                                                certSubTab === 'designer'
+                                                    ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold'
+                                                    : 'text-secondary-adaptive'
+                                            }`}
+                                        >
+                                            <Icon name="Award" size={15} /> ออกแบบใบประกาศนียบัตร
                                         </button>
-                                        <button type="button" onClick={() => persistSettings({ certTemplate })} className="touch-target px-5 py-2.5 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-xs flex items-center gap-1.5 shadow-md">
-                                            <Icon name="Save" size={16} /> บันทึกและเผยแพร่
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-                                    <div className="lg:col-span-7 spatial-card rounded-[1.75rem] p-3 sm:p-5 space-y-3">
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-xs font-bold text-secondary-adaptive flex items-center gap-1.5">
-                                                <Icon name="Eye" size={15} className="text-amber-400" /> พรีวิวรูปแบบใบประกาศนียบัตร (Live Preview)
+                                        <button
+                                            type="button"
+                                            onClick={() => setCertSubTab('cneu')}
+                                            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
+                                                certSubTab === 'cneu'
+                                                    ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold'
+                                                    : 'text-secondary-adaptive'
+                                            }`}
+                                        >
+                                            <Icon name="FileCheck2" size={15} /> รายงานส่งสภาฯ (CNEU PDF)
+                                            <span className={`px-1.5 py-0.5 rounded-full font-mono text-[10px] ${
+                                                certSubTab === 'cneu' ? 'bg-void-950/20 text-void-950' : 'bg-aurora-500/20 text-accent-adaptive'
+                                            }`}>
+                                                {cneuAllCertified.length}
                                             </span>
-                                            <span className="font-mono text-[10px] text-muted-adaptive">A4 LANDSCAPE • 300 DPI</span>
-                                        </div>
-                                        <div className="w-full aspect-[1.414/1] rounded-2xl overflow-hidden bg-white border border-amber-500/35 shadow-xl">
-                                            <canvas ref={certCanvasRef} className="w-full h-full object-contain block" />
-                                        </div>
-                                    </div>
-
-                                    <div className="lg:col-span-5 spatial-card rounded-[1.75rem] p-4 sm:p-6 space-y-3.5">
-                                        <FieldInput label="รหัสนำหน้าใบประกาศฯ (Prefix)" value={certTemplate.certPrefix} onChange={e => setCertTemplate(p => ({ ...p, certPrefix: e.target.value }))} />
-                                        <FieldInput label="ชื่อหน่วยงานหลัก (ไทย)" value={certTemplate.orgTitleTH} onChange={e => setCertTemplate(p => ({ ...p, orgTitleTH: e.target.value }))} />
-                                        <FieldInput label="ชื่อหน่วยงาน (อังกฤษ)" value={certTemplate.orgTitleEN} onChange={e => setCertTemplate(p => ({ ...p, orgTitleEN: e.target.value }))} />
-                                        <FieldInput label="ชื่อหลักสูตร (ไทย)" value={certTemplate.courseTitleTH} onChange={e => setCertTemplate(p => ({ ...p, courseTitleTH: e.target.value }))} />
-                                        <FieldInput label="ชื่อหลักสูตร (อังกฤษ)" value={certTemplate.courseTitleEN} onChange={e => setCertTemplate(p => ({ ...p, courseTitleEN: e.target.value }))} />
-                                        <FieldInput label="ข้อความรับรองการผ่านหลักสูตร" value={certTemplate.completionTextTH} onChange={e => setCertTemplate(p => ({ ...p, completionTextTH: e.target.value }))} />
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                            <FieldInput label="ชื่อผู้ลงนาม" value={certTemplate.signerName} onChange={e => setCertTemplate(p => ({ ...p, signerName: e.target.value }))} />
-                                            <FieldInput label="ตำแหน่งผู้ลงนาม" value={certTemplate.signerPosition} onChange={e => setCertTemplate(p => ({ ...p, signerPosition: e.target.value }))} />
-                                        </div>
-                                        <FieldInput label="ลิงก์โลโก้ PNG โปร่งใส (ไม่บังคับ)" value={certTemplate.logoUrl} onChange={e => setCertTemplate(p => ({ ...p, logoUrl: e.target.value }))} placeholder="https://.../logo.png" />
-                                        <FieldInput label="ลิงก์ลายเซ็น PNG โปร่งใส (ไม่บังคับ)" value={certTemplate.signatureUrl} onChange={e => setCertTemplate(p => ({ ...p, signatureUrl: e.target.value }))} placeholder="https://.../signature.png" />
+                                        </button>
                                     </div>
                                 </div>
+
+                                {certSubTab === 'designer' ? (
+                                    <div className="space-y-5">
+                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                            <div>
+                                                <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 font-mono text-[10px] font-bold">IN-APP CERTIFICATE STUDIO • MINIMALIST GOLD</span>
+                                                <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive mt-1">ออกแบบประกาศนียบัตรในระบบ</h2>
+                                                <p className="text-xs sm:text-sm text-secondary-adaptive">พื้นสีขาวบริสุทธิ์ ตัดเส้นสายสีทองบางเรียบหรู แก้ไขข้อความ โลโก้ และลายเซ็นได้ทันที</p>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <button type="button" onClick={() => setCertTemplate({ ...DEFAULT_CERT_TEMPLATE })} className="touch-target spatial-soft px-4 py-2.5 rounded-2xl text-primary-adaptive font-bold text-xs">
+                                                    คืนค่าเริ่มต้น
+                                                </button>
+                                                <button type="button" onClick={() => persistSettings({ certTemplate })} className="touch-target px-5 py-2.5 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-xs flex items-center gap-1.5 shadow-md">
+                                                    <Icon name="Save" size={16} /> บันทึกและเผยแพร่
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+                                            <div className="lg:col-span-7 spatial-card rounded-[1.75rem] p-3 sm:p-5 space-y-3">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-xs font-bold text-secondary-adaptive flex items-center gap-1.5">
+                                                        <Icon name="Eye" size={15} className="text-amber-400" /> พรีวิวรูปแบบใบประกาศนียบัตร (Live Preview)
+                                                    </span>
+                                                    <span className="font-mono text-[10px] text-muted-adaptive">A4 LANDSCAPE • 300 DPI</span>
+                                                </div>
+                                                <div className="w-full aspect-[1.414/1] rounded-2xl overflow-hidden bg-white border border-amber-500/35 shadow-xl">
+                                                    <canvas ref={certCanvasRef} className="w-full h-full object-contain block" />
+                                                </div>
+                                            </div>
+
+                                            <div className="lg:col-span-5 spatial-card rounded-[1.75rem] p-4 sm:p-6 space-y-3.5">
+                                                <FieldInput label="รหัสนำหน้าใบประกาศฯ (Prefix)" value={certTemplate.certPrefix} onChange={e => setCertTemplate(p => ({ ...p, certPrefix: e.target.value }))} />
+                                                <FieldInput label="ชื่อหน่วยงานหลัก (ไทย)" value={certTemplate.orgTitleTH} onChange={e => setCertTemplate(p => ({ ...p, orgTitleTH: e.target.value }))} />
+                                                <FieldInput label="ชื่อหน่วยงาน (อังกฤษ)" value={certTemplate.orgTitleEN} onChange={e => setCertTemplate(p => ({ ...p, orgTitleEN: e.target.value }))} />
+                                                <FieldInput label="ชื่อหลักสูตร (ไทย)" value={certTemplate.courseTitleTH} onChange={e => setCertTemplate(p => ({ ...p, courseTitleTH: e.target.value }))} />
+                                                <FieldInput label="ชื่อหลักสูตร (อังกฤษ)" value={certTemplate.courseTitleEN} onChange={e => setCertTemplate(p => ({ ...p, courseTitleEN: e.target.value }))} />
+                                                <FieldInput label="ข้อความรับรองการผ่านหลักสูตร" value={certTemplate.completionTextTH} onChange={e => setCertTemplate(p => ({ ...p, completionTextTH: e.target.value }))} />
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                    <FieldInput label="ชื่อผู้ลงนาม" value={certTemplate.signerName} onChange={e => setCertTemplate(p => ({ ...p, signerName: e.target.value }))} />
+                                                    <FieldInput label="ตำแหน่งผู้ลงนาม" value={certTemplate.signerPosition} onChange={e => setCertTemplate(p => ({ ...p, signerPosition: e.target.value }))} />
+                                                </div>
+                                                <FieldInput label="ลิงก์โลโก้ PNG โปร่งใส (ไม่บังคับ)" value={certTemplate.logoUrl} onChange={e => setCertTemplate(p => ({ ...p, logoUrl: e.target.value }))} placeholder="https://.../logo.png" />
+                                                <FieldInput label="ลิงก์ลายเซ็น PNG โปร่งใส (ไม่บังคับ)" value={certTemplate.signatureUrl} onChange={e => setCertTemplate(p => ({ ...p, signatureUrl: e.target.value }))} placeholder="https://.../signature.png" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    /* ==================== SUB-TAB: OFFICIAL CNEU PDF SUBMISSION REPORT ==================== */
+                                    <div className="space-y-4">
+                                        {/* Control Panel (NO PRINT) */}
+                                        <div className="no-print spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3.5">
+                                            <div className="flex flex-wrap items-center justify-between gap-2.5">
+                                                <div>
+                                                    <span className="px-2.5 py-0.5 rounded-full bg-aurora-500/20 text-accent-adaptive font-mono text-[10px] font-bold">
+                                                        OFFICIAL CNEU SUBMISSION • ซิงค์ข้อมูลผู้เรียนจริง + ซิงค์ถึงผู้เรียนทุกคน
+                                                    </span>
+                                                    <h2 className="font-display text-lg sm:text-xl font-extrabold text-primary-adaptive mt-1">
+                                                        รายงาน PDF ส่งสภาการพยาบาล (หน่วยคะแนน CNEU)
+                                                    </h2>
+                                                </div>
+
+                                                <div className="flex flex-wrap items-center gap-2">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setCneuShowEditor(v => !v)}
+                                                        className={`touch-target px-3.5 py-2 rounded-xl border font-display font-bold text-xs flex items-center gap-1.5 transition-all ${
+                                                            cneuShowEditor
+                                                                ? 'bg-aurora-500/20 border-aurora-400/50 text-accent-adaptive'
+                                                                : 'spatial-soft text-primary-adaptive'
+                                                        }`}
+                                                    >
+                                                        <Icon name={cneuShowEditor ? 'ChevronUp' : 'SlidersHorizontal'} size={14} />
+                                                        {cneuShowEditor ? 'ซ่อนแผงแก้ไขหัว-ท้าย' : 'แก้ไขหัว-ท้าย & โลโก้'}
+                                                    </button>
+
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => persistSettings({ cneuConfig })}
+                                                        className="touch-target spatial-soft px-3.5 py-2 rounded-xl text-accent-adaptive font-display font-bold text-xs flex items-center gap-1.5"
+                                                    >
+                                                        <Icon name="Save" size={14} /> บันทึกขึ้น Cloud
+                                                    </button>
+
+                                                    <div className="inline-flex p-0.5 rounded-xl spatial-soft text-xs font-bold">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setCneuOrientation('landscape')}
+                                                            className={`px-2.5 py-1.5 rounded-lg flex items-center gap-1 ${
+                                                                cneuOrientation === 'landscape' ? 'bg-prism-400 text-void-950 font-extrabold' : 'text-secondary-adaptive'
+                                                            }`}
+                                                        >
+                                                            <Icon name="RectangleHorizontal" size={14} /> แนวนอน
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setCneuOrientation('portrait')}
+                                                            className={`px-2.5 py-1.5 rounded-lg flex items-center gap-1 ${
+                                                                cneuOrientation === 'portrait' ? 'bg-prism-400 text-void-950 font-extrabold' : 'text-secondary-adaptive'
+                                                            }`}
+                                                        >
+                                                            <Icon name="RectangleVertical" size={14} /> แนวตั้ง
+                                                        </button>
+                                                    </div>
+
+                                                    <button
+                                                        type="button"
+                                                        onClick={handleExportTnmcCsv}
+                                                        className="touch-target spatial-soft px-3.5 py-2 rounded-xl text-primary-adaptive font-display font-bold text-xs flex items-center gap-1.5"
+                                                    >
+                                                        <Icon name="FileSpreadsheet" size={15} className="text-accent-adaptive" /> CSV แนบคู่
+                                                    </button>
+
+                                                    <button
+                                                        type="button"
+                                                        onClick={handlePrintCneuPdf}
+                                                        className="touch-target px-4 py-2 rounded-xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-xs flex items-center gap-1.5 shadow-md active:scale-95"
+                                                    >
+                                                        <Icon name="Printer" size={15} /> พิมพ์ / บันทึก PDF
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            {/* แถบตั้งค่าด่วน + ระบบกรองประเภท (เก็บไว้ตรวจสอบ ไม่แสดงในกระดาษ) */}
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-3 border-t border-white/10 text-xs">
+                                                <FieldInput
+                                                    label="รหัสกิจกรรม CNEU"
+                                                    value={cneuConfig.activityCode}
+                                                    onChange={e => setCneuConfig(p => ({ ...p, activityCode: e.target.value }))}
+                                                />
+                                                <FieldInput
+                                                    label="หน่วยคะแนน (CNEU)"
+                                                    value={cneuConfig.cneuCredits}
+                                                    onChange={e => setCneuConfig(p => ({ ...p, cneuCredits: e.target.value }))}
+                                                />
+                                                <div>
+                                                    <label className="block text-xs font-bold text-amber-400 mb-1.5 ml-1">กรองประเภทผู้เรียน (สำหรับตรวจสอบ)</label>
+                                                    <select
+                                                        value={cneuFilterType}
+                                                        onChange={e => setCneuFilterType(e.target.value)}
+                                                        className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-2xl text-xs font-bold border-amber-400/40"
+                                                    >
+                                                        <option value="ALL">ทั้งหมด ({cneuAllCertified.length} ราย)</option>
+                                                        <option value="เรียนใหม่">เฉพาะ เรียนใหม่ ({cneuAllCertified.filter(u => u.userType !== 'เรียนต่อเนื่อง').length} ราย)</option>
+                                                        <option value="เรียนต่อเนื่อง">เฉพาะ เรียนต่อเนื่อง ({cneuAllCertified.filter(u => u.userType === 'เรียนต่อเนื่อง').length} ราย)</option>
+                                                    </select>
+                                                </div>
+                                                <div className="flex items-end">
+                                                    <label className="touch-target spatial-soft w-full px-3.5 py-2.5 rounded-2xl flex items-center justify-between gap-2 cursor-pointer">
+                                                        <span className="text-xs font-bold text-primary-adaptive">แสดงคอลัมน์ผลสอบ</span>
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={cneuIncludeScores}
+                                                            onChange={e => setCneuIncludeScores(e.target.checked)}
+                                                            className="w-4 h-4 accent-aurora-500"
+                                                        />
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            {/* แผงแก้ไขหัวเอกสาร ลิงก์โลโก้ และผู้ลงนามท้ายเอกสาร */}
+                                            {cneuShowEditor && (
+                                                <div className="pt-3 border-t border-white/10 space-y-3">
+                                                    <div className="spatial-soft p-3.5 rounded-2xl space-y-2.5">
+                                                        <p className="font-mono text-[10px] font-bold text-prism-adaptive uppercase flex items-center gap-1.5">
+                                                            <Icon name="FileEdit" size={13} /> 1. โลโก้และข้อมูลหัวเอกสาร (หน่วยงานผู้จัด → ผู้ประสานงาน)
+                                                        </p>
+                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                                            <FieldInput
+                                                                label="ลิงก์โลโก้หน่วยงาน (PNG / JPG — เว้นว่างใช้ตราเริ่มต้น)"
+                                                                value={cneuConfig.logoUrl}
+                                                                onChange={e => setCneuConfig(p => ({ ...p, logoUrl: e.target.value }))}
+                                                                placeholder="https://.../logo.png"
+                                                            />
+                                                            <FieldInput
+                                                                label="หน่วยงานผู้จัด"
+                                                                value={cneuConfig.orgName}
+                                                                onChange={e => setCneuConfig(p => ({ ...p, orgName: e.target.value }))}
+                                                            />
+                                                            <FieldInput
+                                                                label="ชื่อหลักสูตร"
+                                                                value={cneuConfig.courseName}
+                                                                onChange={e => setCneuConfig(p => ({ ...p, courseName: e.target.value }))}
+                                                            />
+                                                            <FieldInput
+                                                                label="รุ่นที่ / รอบอบรม"
+                                                                value={cneuConfig.batchLabel}
+                                                                onChange={e => setCneuConfig(p => ({ ...p, batchLabel: e.target.value }))}
+                                                            />
+                                                            <FieldInput
+                                                                label="ช่วงวันที่ดำเนินการ"
+                                                                value={cneuConfig.dateRange}
+                                                                onChange={e => setCneuConfig(p => ({ ...p, dateRange: e.target.value }))}
+                                                            />
+                                                            <FieldInput
+                                                                label="เกณฑ์การผ่านหลักสูตร"
+                                                                value={cneuConfig.criteriaText}
+                                                                onChange={e => setCneuConfig(p => ({ ...p, criteriaText: e.target.value }))}
+                                                            />
+                                                            <FieldInput
+                                                                label="ชื่อผู้ประสานงาน (หัวเอกสาร)"
+                                                                value={cneuConfig.coordinatorName}
+                                                                onChange={e => setCneuConfig(p => ({ ...p, coordinatorName: e.target.value }))}
+                                                            />
+                                                            <FieldInput
+                                                                label="อีเมล / โทรศัพท์ผู้ประสานงาน"
+                                                                value={cneuConfig.coordinatorContact}
+                                                                onChange={e => setCneuConfig(p => ({ ...p, coordinatorContact: e.target.value }))}
+                                                            />
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="spatial-soft p-3.5 rounded-2xl space-y-2.5">
+                                                        <p className="font-mono text-[10px] font-bold text-accent-adaptive uppercase flex items-center gap-1.5">
+                                                            <Icon name="PenTool" size={13} /> 2. ข้อมูลลงนามท้ายเอกสาร (ผู้จัดทำรายงาน & ผู้รับรองความถูกต้อง)
+                                                        </p>
+                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                                            <FieldInput
+                                                                label="ชื่อผู้จัดทำรายงาน"
+                                                                value={cneuConfig.reporterName}
+                                                                onChange={e => setCneuConfig(p => ({ ...p, reporterName: e.target.value }))}
+                                                            />
+                                                            <FieldInput
+                                                                label="ตำแหน่งผู้จัดทำรายงาน"
+                                                                value={cneuConfig.reporterPosition}
+                                                                onChange={e => setCneuConfig(p => ({ ...p, reporterPosition: e.target.value }))}
+                                                            />
+                                                            <FieldInput
+                                                                label="ชื่อผู้รับรองความถูกต้อง"
+                                                                value={cneuConfig.approverName}
+                                                                onChange={e => setCneuConfig(p => ({ ...p, approverName: e.target.value }))}
+                                                            />
+                                                            <FieldInput
+                                                                label="ตำแหน่งผู้รับรองความถูกต้อง"
+                                                                value={cneuConfig.approverPosition}
+                                                                onChange={e => setCneuConfig(p => ({ ...p, approverPosition: e.target.value }))}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* A4 Official Paper Document Preview */}
+                                        <div className="w-full overflow-x-auto custom-scrollbar pb-4 flex justify-center">
+                                            <article className={`a4-sheet rounded-xl p-6 sm:p-10 space-y-5 ${cneuOrientation === 'landscape' ? 'a4-landscape' : 'a4-portrait'}`}>
+                                                {/* Header */}
+                                                <div className="border-b-2 border-slate-800 pb-4 flex items-start justify-between gap-4">
+                                                    <div className="flex items-start gap-3.5">
+                                                        {Boolean(cneuConfig.logoUrl?.trim()) && !cneuLogoError ? (
+                                                            <div className="w-16 h-16 rounded-xl border border-slate-200 bg-white p-1 flex items-center justify-center shrink-0 overflow-hidden">
+                                                                <img
+                                                                    src={cneuConfig.logoUrl.trim()}
+                                                                    alt="โลโก้หน่วยงาน"
+                                                                    onError={() => setCneuLogoError(true)}
+                                                                    className="w-full h-full object-contain"
+                                                                />
+                                                            </div>
+                                                        ) : (
+                                                            <div className="w-14 h-14 rounded-xl border-2 border-emerald-700 bg-emerald-50 flex items-center justify-center shrink-0">
+                                                                <svg viewBox="0 0 48 48" className="w-9 h-9" fill="none">
+                                                                    <circle cx="24" cy="24" r="20" stroke="#047857" strokeWidth="2.2" />
+                                                                    <path d="M24 14V34M14 24H34" stroke="#047857" strokeWidth="3.2" strokeLinecap="round" />
+                                                                    <circle cx="24" cy="24" r="5" fill="#d1fae5" stroke="#047857" strokeWidth="1.8" />
+                                                                </svg>
+                                                            </div>
+                                                        )}
+                                                        <div className="space-y-0.5">
+                                                            <p className="text-[11px] font-bold tracking-wider text-emerald-800 uppercase">
+                                                                OFFICIAL CNEU SUBMISSION REPORT • สภาการพยาบาล (ศกพ.)
+                                                            </p>
+                                                            <h1 className="font-display text-lg sm:text-xl font-extrabold text-slate-900 leading-snug">
+                                                                บัญชีรายชื่อผู้สำเร็จการอบรมและได้รับประกาศนียบัตร
+                                                            </h1>
+                                                            <p className="text-sm font-bold text-slate-700">
+                                                                เพื่อขอรับรองและบันทึกหน่วยคะแนนการศึกษาต่อเนื่องสาขาพยาบาลศาสตร์ (CNEU)
+                                                            </p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="text-right shrink-0 border border-slate-300 rounded-lg px-3 py-2 bg-slate-50">
+                                                        <p className="text-[10px] font-bold text-slate-500 uppercase">รหัสกิจกรรม CNEU</p>
+                                                        <p className="font-mono text-base font-extrabold text-emerald-800">{cneuConfig.activityCode || '-'}</p>
+                                                        <p className="text-[11px] font-bold text-slate-700 mt-0.5">
+                                                            จำนวน <span className="text-emerald-700">{cneuConfig.cneuCredits}</span> หน่วยคะแนน
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                {/* Metadata Grid */}
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-xs sm:text-[13px] bg-slate-50 border border-slate-200 rounded-lg p-3.5">
+                                                    <div className="flex gap-2">
+                                                        <span className="font-bold text-slate-600 shrink-0">หน่วยงานผู้จัด:</span>
+                                                        <span className="text-slate-900 font-semibold">{cneuConfig.orgName}</span>
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        <span className="font-bold text-slate-600 shrink-0">รุ่นที่ / รอบอบรม:</span>
+                                                        <span className="text-slate-900 font-semibold">{cneuConfig.batchLabel}</span>
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        <span className="font-bold text-slate-600 shrink-0">ชื่อหลักสูตร:</span>
+                                                        <span className="text-slate-900 font-semibold">{cneuConfig.courseName}</span>
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        <span className="font-bold text-slate-600 shrink-0">ช่วงวันที่ดำเนินการ:</span>
+                                                        <span className="text-slate-900 font-semibold">{cneuConfig.dateRange}</span>
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        <span className="font-bold text-slate-600 shrink-0">เกณฑ์การผ่านหลักสูตร:</span>
+                                                        <span className="text-slate-900">{cneuConfig.criteriaText}</span>
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        <span className="font-bold text-slate-600 shrink-0">ผู้ประสานงาน:</span>
+                                                        <span className="text-slate-900">
+                                                            {cneuConfig.coordinatorName}{cneuConfig.coordinatorContact ? ` (${cneuConfig.coordinatorContact})` : ''}
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                {/* Summary Strip (ไม่มีหัวข้อประเภท) */}
+                                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
+                                                    <div className="border border-slate-300 rounded-lg py-2 px-2.5 bg-white">
+                                                        <p className="text-[11px] font-bold text-slate-500">ผู้ผ่านเกณฑ์ทั้งหมด</p>
+                                                        <p className="font-mono text-lg font-extrabold text-slate-900">{cneuStats.total} <span className="text-xs font-sans font-semibold">ราย</span></p>
+                                                    </div>
+                                                    <div className="border border-slate-300 rounded-lg py-2 px-2.5 bg-white">
+                                                        <p className="text-[11px] font-bold text-slate-500">หน่วยงาน / โรงพยาบาล</p>
+                                                        <p className="font-mono text-lg font-extrabold text-sky-700">{cneuStats.hospitalCount} <span className="text-xs font-sans font-semibold">แห่ง</span></p>
+                                                    </div>
+                                                    <div className="border border-slate-300 rounded-lg py-2 px-2.5 bg-white">
+                                                        <p className="text-[11px] font-bold text-slate-500">คะแนน Post-test เฉลี่ย</p>
+                                                        <p className="font-mono text-lg font-extrabold text-emerald-700">{cneuStats.avgPost}%</p>
+                                                    </div>
+                                                    <div className="border border-emerald-600 rounded-lg py-2 px-2.5 bg-emerald-50">
+                                                        <p className="text-[11px] font-bold text-emerald-800">หน่วยคะแนนรวมยื่นขอ</p>
+                                                        <p className="font-mono text-lg font-extrabold text-emerald-800">{cneuStats.totalCredits} <span className="text-[11px] font-mono">CNEU</span></p>
+                                                    </div>
+                                                </div>
+
+                                                {/* Official Table */}
+                                                <div className="overflow-x-auto">
+                                                    <table className="official-table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th style={{ width: '42px' }}>ลำดับ</th>
+                                                                <th style={{ width: '122px' }}>เลขที่ใบอนุญาตฯ<br /><span className="font-normal text-[10px] text-slate-500">(10 หลัก)</span></th>
+                                                                <th>คำนำหน้า ชื่อ - นามสกุล</th>
+                                                                <th>หน่วยงาน / โรงพยาบาล (จังหวัด)</th>
+                                                                {cneuIncludeScores && (
+                                                                    <th style={{ width: cneuOrientation === 'landscape' ? '155px' : '118px' }}>
+                                                                        หลักฐานผ่านเกณฑ์<br />
+                                                                        <span className="font-normal text-[10px] text-slate-500">เวลาเรียน • Post • AI Lab</span>
+                                                                    </th>
+                                                                )}
+                                                                <th style={{ width: '138px' }}>เลขที่ประกาศนียบัตร<br /><span className="font-normal text-[10px] text-slate-500">วันที่ออกใบรับรอง</span></th>
+                                                                <th style={{ width: '62px' }}>CNEU</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {cneuFilteredUsers.map((u, idx) => {
+                                                                const st = getUserFiveStepStatus(u);
+                                                                const postPct = parsePosttestPercent(u);
+                                                                return (
+                                                                    <tr key={u.id || idx}>
+                                                                        <td className="text-center font-mono font-bold text-slate-700">{idx + 1}</td>
+                                                                        <td className="text-center font-mono font-bold text-slate-900 tracking-wide">{getUserLicense(u)}</td>
+                                                                        <td>
+                                                                            <div className="font-bold text-slate-900">{u.name || '-'}</div>
+                                                                            <div className="text-[11px] text-slate-500">{u.position || 'พยาบาลวิชาชีพ'}</div>
+                                                                        </td>
+                                                                        <td>
+                                                                            <div className="font-semibold text-slate-800">{u.hospital || '-'}</div>
+                                                                            <div className="text-[11px] text-slate-500">
+                                                                                {[u.province ? `จ.${u.province}` : '', u.department || ''].filter(Boolean).join(' • ') || '-'}
+                                                                            </div>
+                                                                        </td>
+                                                                        {cneuIncludeScores && (
+                                                                            <td className="text-center">
+                                                                                <div className="font-mono text-[11px] font-bold text-emerald-800">
+                                                                                    {u.progress || 0}% • {u.posttest || '-'} ({postPct}%)
+                                                                                </div>
+                                                                                <div className="text-[10px] text-slate-500 font-mono">
+                                                                                    {formatStudyHoursShort(u.studySeconds)} • Lab {st.bestLab !== null ? `${st.bestLab}/100` : (st.step3Lab ? 'ผ่าน' : '-')}
+                                                                                </div>
+                                                                            </td>
+                                                                        )}
+                                                                        <td className="text-center">
+                                                                            <div className="font-mono text-[11px] font-bold text-slate-900">{u.certificateCode || '-'}</div>
+                                                                            <div className="text-[10px] text-slate-500">{formatThaiShortDate(u.certificateIssuedAt)}</div>
+                                                                        </td>
+                                                                        <td className="text-center font-mono font-extrabold text-emerald-800">
+                                                                            {cneuConfig.cneuCredits}
+                                                                        </td>
+                                                                    </tr>
+                                                                );
+                                                            })}
+                                                            {cneuFilteredUsers.length === 0 && (
+                                                                <tr>
+                                                                    <td colSpan={cneuIncludeScores ? 7 : 6} className="text-center py-8 text-slate-500">
+                                                                        ยังไม่มีรายชื่อผู้ผ่านเกณฑ์รับประกาศนียบัตรในเงื่อนไขที่เลือกค่ะ
+                                                                    </td>
+                                                                </tr>
+                                                            )}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+
+                                                {/* Signature Block */}
+                                                <div className="signature-block pt-2 space-y-5">
+                                                    <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-700 leading-relaxed">
+                                                        <b>คำรับรองความถูกต้องของข้อมูล:</b> ข้าพเจ้าขอรับรองว่ารายชื่อผู้สำเร็จการอบรมจำนวน <b>{cneuStats.total} ราย</b> ข้างต้น เป็นผู้ผ่านการยืนยันตัวตนด้วยรหัส OTP ศึกษาบทเรียนครบตามเกณฑ์เวลาไม่น้อยกว่าร้อยละ 80 ผ่านการฝึกปฏิบัติการสื่อสารใน AI Skill Lab และสอบวัดผลหลังเรียน (Post-test) ได้คะแนนไม่น้อยกว่าร้อยละ 80 ถูกต้องตรงตามฐานข้อมูลระบบ <span className="font-mono font-bold">rjcloud.organ</span> โดยสามารถตรวจสอบรหัสประกาศนียบัตรย้อนกลับได้ทุกรายการผ่าน <span className="font-mono">verify.html</span>
+                                                    </div>
+
+                                                    <div className="grid grid-cols-2 gap-8 pt-4 text-center text-xs sm:text-[13px]">
+                                                        <div className="space-y-1.5">
+                                                            <p className="text-slate-600">ลงชื่อ ........................................................................ ผู้จัดทำรายงาน</p>
+                                                            <p className="font-bold text-slate-900">( {cneuConfig.reporterName} )</p>
+                                                            <p className="text-slate-600 text-[12px]">{cneuConfig.reporterPosition} • วันที่ {formatThaiFullDate()}</p>
+                                                        </div>
+                                                        <div className="space-y-1.5">
+                                                            <p className="text-slate-600">ลงชื่อ ........................................................................ ผู้รับรองความถูกต้อง</p>
+                                                            <p className="font-bold text-slate-900">( {cneuConfig.approverName} )</p>
+                                                            <p className="text-slate-600 text-[12px]">{cneuConfig.approverPosition}</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="pt-3 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 text-[10px] font-mono text-slate-500">
+                                                        <span>GENERATED BY RJCLOUD.ORGAN ADMIN MISSION CONTROL • OFFICIAL CNEU SUBMISSION</span>
+                                                        <span>พิมพ์รายงานเมื่อ: {new Date().toLocaleString('th-TH')}</span>
+                                                    </div>
+                                                </div>
+                                            </article>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
 
@@ -2334,7 +2974,7 @@
                     )}
 
                     {/* Smartphone Bottom Spatial Dock (ครบทั้ง 6 เมนู) */}
-                    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 spatial-dock px-2 pt-1.5 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))]">
+                    <nav className="no-print lg:hidden fixed bottom-0 left-0 right-0 z-40 spatial-dock px-2 pt-1.5 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))]">
                         <div className="grid grid-cols-6 gap-1 max-w-xl mx-auto">
                             {navItems.map(item => {
                                 const active = activeTab === item.id;
