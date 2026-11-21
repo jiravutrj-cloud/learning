@@ -10,8 +10,8 @@
 
     <!-- โหลดคลังข้อมูลกลางและฐานความรู้ AI จาก data.js -->
     <script src="./data.js" onerror="console.warn('data.js not loaded, using built-in defaults')"></script>
-
-    <!-- ซิงค์โหมดมืด/สว่างทันทีจาก localStorage ป้องกันจอกระพริบ -->
+    <!-- โหลดระบบผู้ช่วย AI โต้ตอบเต็มรูปแบบ (AI Welcome, Tour ไฟแอมเบี้ยน, Smart Resume 20 บท, Floating Co-Pilot) -->
+    <script src="./ai-interactive.js" onerror="console.warn('ai-interactive.js not loaded')"></script>
     <script>
       (function () {
         try {
@@ -2313,17 +2313,67 @@
                 return () => clearInterval(timer);
             }, [screen, user?.id, isAdminPreview, saveUserProgress]);
 
-            // วาดใบประกาศนียบัตรสไตล์มินิมอลสีขาวตัดเส้นทอง + สร้าง QR Code จริงสำหรับหนังสือรับรอง CNEU
+            // เชื่อมต่อตัวส่งสถานะ (Bridge) เข้ากับไฟล์เสริม ai-interactive.js
+            useEffect(() => {
+                if (!window.RJCLOUD_AI_INTERACTIVE || typeof window.RJCLOUD_AI_INTERACTIVE.registerBridge !== 'function') {
+                    return;
+                }
+                window.RJCLOUD_AI_INTERACTIVE.registerBridge({
+                    user,
+                    screen,
+                    activeTab,
+                    lessons,
+                    currentLessonId,
+                    studySeconds,
+                    liveStudyPercent,
+                    targetSeconds,
+                    appsScriptUrl,
+                    isAdminPreview,
+                    hasDonePretest,
+                    selectLesson: (lessonId) => {
+                        const idNum = Number(lessonId);
+                        if (!idNum) return;
+                        stopAudioBrief();
+                        setCurrentLessonId(idNum);
+                        saveUserProgress({ lastVideoId: idNum });
+                    },
+                    setActiveTab: (tabId) => {
+                        if (!tabId) return;
+                        setActiveTab(tabId);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    },
+                    toggleTheme,
+                    toast: showToast
+                });
+            }, [
+                user,
+                screen,
+                activeTab,
+                lessons,
+                currentLessonId,
+                studySeconds,
+                liveStudyPercent,
+                targetSeconds,
+                appsScriptUrl,
+                isAdminPreview,
+                hasDonePretest,
+                stopAudioBrief,
+                saveUserProgress,
+                toggleTheme,
+                showToast
+            ]);
+
+            // วาดใบประกาศนียบัตรลง Canvas และสร้าง QR Code สำหรับหนังสือรับรอง CNEU รายบุคคล
             useEffect(() => {
                 if (screen !== 'certificate' || !user) return;
                 const certData = {
-                    code: user.certificateCode || 'RJC-2027-DEMO',
+                    code: user.certificateCode || generateCertCode(certTemplate.certPrefix),
                     name: user.name || 'ผู้สำเร็จการอบรม',
-                    hospital: user.hospital || '',
                     license: user.license || user.id || '',
+                    hospital: user.hospital || '',
                     issuedAt: user.certificateIssuedAt || new Date().toISOString(),
-                    cneuActivityCode: cneuConfig.activityCode || '',
-                    cneuCredits: cneuConfig.cneuCredits || ''
+                    cneuActivityCode: cneuConfig?.activityCode || '',
+                    cneuCredits: cneuConfig?.cneuCredits || ''
                 };
 
                 if (certDocTab === 'cert' && certCanvasRef.current) {
@@ -2340,21 +2390,19 @@
                 }
             }, [screen, certDocTab, user, certTemplate, cneuConfig]);
 
-            // 11. AUTH WIZARD HANDLERS (3 STEPS + EMAIL OTP)
+            // 11. AUTH WIZARD HANDLERS (CHECK LICENSE -> REQUEST OTP -> VERIFY OTP)
             const handleCheckLicense = async (e) => {
                 e.preventDefault();
                 const cleanLic = authForm.license.trim().replace(/[^a-zA-Z0-9]/g, '');
-                if (!cleanLic || cleanLic.length < 4) {
-                    showToast('กรุณากรอกเลขที่ใบประกอบวิชาชีพหรือรหัสบุคลากรให้ถูกต้องค่ะ', 'error');
+                if (!cleanLic) {
+                    showToast('กรุณากรอกเลขที่ใบประกอบวิชาชีพหรือรหัสบุคลากรค่ะ', 'error');
                     return;
                 }
                 setAuthLoading(true);
                 setExistingCloudRecord(null);
                 try {
                     if (fbDb) {
-                        const snap = await getDoc(
-                            doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', cleanLic)
-                        );
+                        const snap = await getDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', cleanLic));
                         if (snap.exists()) {
                             const d = snap.data();
                             setExistingCloudRecord(d);
