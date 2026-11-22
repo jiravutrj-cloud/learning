@@ -158,6 +158,9 @@
       .text-\[11px\] { font-size: 0.8125rem !important; line-height: 1.5; }
       .text-\[10px\] { font-size: 0.72rem !important; line-height: 1.4; }
       .touch-target { min-height: 46px; touch-action: manipulation; }
+      .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+      .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+      .pb-dock-safe { padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px)); }
 
       @media (max-width: 768px) {
         input, select, textarea { font-size: 16px !important; }
@@ -1522,7 +1525,7 @@
                 showToast('ส่งออกไฟล์ CSV สำหรับอัปโหลดเข้าระบบสภาการพยาบาลเรียบร้อยค่ะ');
             };
 
-            // รายการหน้าจอครบทั้ง 15 หน้าสำหรับ Admin Page Inspector
+            // รายการหน้าจอครบทั้ง 14 หน้าสำหรับ Admin Page Inspector (ตัด Leaderboard ออกตามหลัก PDPA)
             const inspectorGroups = useMemo(() => ([
                 {
                     groupTitle: '1. หน้าแรก & ระบบลงทะเบียน (Auth Wizard 3 ขั้น)',
@@ -2739,15 +2742,15 @@
                             </div>
                         )}
 
-                        {/* ==================== TAB 6: PAGE INSPECTOR (14 SCREENS) ==================== */}
-                        {activeTab === 'overview' && (
-                            <div className="space-y-6">
+                        {/* ==================== TAB 5: CLOUD & GOOGLE SHEETS AUTO-SYNC ==================== */}
+                        {activeTab === 'sync' && (
+                            <div className="max-w-3xl space-y-5">
                                 <div>
-                                    <span className="px-2.5 py-0.5 rounded-full bg-aurora-500/20 text-accent-adaptive font-mono text-[10px] font-bold">
-                                        ADMIN PAGE INSPECTOR • BYPASS LOCK MODE
+                                    <span className="px-2.5 py-0.5 rounded-full bg-prism-500/20 text-prism-adaptive font-mono text-[10px] font-bold">
+                                        CLOUD &amp; GOOGLE SHEETS AUTO-SYNC
                                     </span>
                                     <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive mt-1">
-                                        ศูนย์ตรวจสอบทุกหน้าจอในระบบ (ครบทั้ง 14 หน้า)
+                                        ระบบเชื่อมต่อ Cloud &amp; Auto-Sync
                                     </h2>
                                     <p className="text-xs sm:text-sm text-secondary-adaptive">
                                         ตั้งค่า Web App URL สำหรับส่งอีเมล OTP / Gemini AI และซิงค์รายชื่อผู้เรียนจาก Google Sheets (CSV)
@@ -2824,7 +2827,7 @@
                             </div>
                         )}
 
-                        {/* ==================== TAB 6: PAGE INSPECTOR (15 SCREENS) ==================== */}
+                        {/* ==================== TAB 6: PAGE INSPECTOR (14 SCREENS) ==================== */}
                         {activeTab === 'overview' && (
                             <div className="space-y-6">
                                 <div>
@@ -2832,7 +2835,7 @@
                                         ADMIN PAGE INSPECTOR • BYPASS LOCK MODE
                                     </span>
                                     <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive mt-1">
-                                        ศูนย์ตรวจสอบทุกหน้าจอในระบบ (ครบทั้ง 15 หน้า)
+                                        ศูนย์ตรวจสอบทุกหน้าจอในระบบ (ครบทั้ง 14 หน้า)
                                     </h2>
                                     <p className="text-xs sm:text-sm text-secondary-adaptive">
                                         คลิก <b>“พรีวิวที่นี่”</b> เพื่อตรวจจอมือถือ/คอมพิวเตอร์ทันที หรือ <b>“แท็บใหม่”</b> โดยไม่ติดล็อกเงื่อนไขและไม่บันทึกทับข้อมูลผู้เรียนจริง
