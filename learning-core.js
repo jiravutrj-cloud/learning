@@ -1,6 +1,6 @@
 /* ============================================================================
  * rjcloud.organ — Core Learning, AI Diagnosis, PDPA & Audio Engine (learning-core.js)
- * แยกออกมาจาก index.html ตามแนวทาง Modular Zero-Build (ไฟล์ที่ 2/4)
+ * แยกออกมาจาก index.html ตามแนวทาง Modular Zero-Build (ไฟล์ที่ 3/6 สะอาดพร้อมใช้งาน)
  *
  * โครงสร้างภายในไฟล์ (เผยแพร่ผ่าน window.RJCLOUD_CORE):
  * 1. Configuration & Built-in Fallback Defaults (รองรับการทำงานแม้โหลด data.js ไม่สำเร็จ)
@@ -141,9 +141,9 @@
   };
 
   const HOSPITAL_MAPPING = global.HOSPITAL_MAPPING || {
-    กรมการแพทย์: [{ name: 'รพ.ราชวิถี', prov: 'กรุงเทพมหานคร' }],
-    เขตสุขภาพที่_1: [{ name: 'รพ.มหาราชนครเชียงใหม่', prov: 'เชียงใหม่' }],
-    อื่นๆ: [{ name: 'อื่นๆ', prov: '' }]
+    'กรมการแพทย์': [{ name: 'รพ.ราชวิถี', prov: 'กรุงเทพมหานคร' }],
+    'เขตสุขภาพที่ 1': [{ name: 'รพ.มหาราชนครเชียงใหม่', prov: 'เชียงใหม่' }],
+    'อื่นๆ': [{ name: 'อื่นๆ', prov: '' }]
   };
 
   const FALLBACK_LESSONS = [
