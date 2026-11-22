@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#030712">
+    <meta name="theme-color" content="#020612">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Admin Mission Control — rjcloud.organ</title>
+    <title>Admin Mission Control — rjcloud.organ 2.0</title>
 
-    <!-- โหลดค่าตั้งต้นและข้อมูลกลางจาก data.js -->
+    <!-- โหลดไฟล์สไตล์ธีม rjcloud.organ 2.0 และโมดูลกลาง -->
+    <link rel="stylesheet" href="./styles.css">
     <script src="./data.js" onerror="console.warn('data.js not loaded, using built-in production config')"></script>
+    <script src="./learning-core.js" onerror="console.warn('learning-core.js not loaded, using built-in defaults')"></script>
 
     <!-- ซิงค์โหมดมืด/สว่างทันทีจาก localStorage ป้องกันจอกระพริบ -->
     <script>
@@ -21,16 +23,16 @@
           const mode = saved === 'light' ? 'light' : 'dark';
           document.documentElement.setAttribute('data-theme', mode);
           const meta = document.querySelector('meta[name="theme-color"]');
-          if (meta) meta.setAttribute('content', mode === 'dark' ? '#030712' : '#f8fafc');
+          if (meta) meta.setAttribute('content', mode === 'dark' ? '#020612' : '#edf6fd');
         } catch (_) {}
       })();
     </script>
 
-    <!-- Tailwind CSS & ฟอนต์มาตรฐานระบบ (Prompt + Sarabun + JetBrains Mono) -->
+    <!-- Tailwind CSS & ฟอนต์สไตล์ Apple (System SF Pro + Anuphan / Prompt / Sarabun / JetBrains Mono) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Prompt:wght@500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Prompt:wght@500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <script>
       if (window.tailwind) {
@@ -38,9 +40,9 @@
           theme: {
             extend: {
               fontFamily: {
-                display: ['Prompt', 'sans-serif'],
-                sans: ['Sarabun', 'sans-serif'],
-                mono: ['JetBrains Mono', 'monospace']
+                display: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Anuphan', 'Prompt', 'sans-serif'],
+                sans: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'Anuphan', 'Sarabun', 'sans-serif'],
+                mono: ['SF Mono', 'ui-monospace', 'JetBrains Mono', 'monospace']
               },
               fontSize: {
                 xs: ['0.875rem', { lineHeight: '1.5' }],
@@ -55,10 +57,10 @@
               },
               colors: {
                 void: {
-                  950: '#030712',
-                  900: '#070d1c',
-                  800: '#0d172e',
-                  700: '#162547'
+                  950: '#020612',
+                  900: '#061229',
+                  800: '#0c1f42',
+                  700: '#153263'
                 },
                 aurora: {
                   200: '#a7f3d0',
@@ -68,10 +70,10 @@
                   600: '#059669'
                 },
                 prism: {
-                  200: '#a5f3fc',
-                  300: '#67e8f9',
-                  400: '#22d3ee',
-                  500: '#06b6d4',
+                  200: '#bae6fd',
+                  300: '#7dd3fc',
+                  400: '#38bdf8',
+                  500: '#0ea5e9',
                   600: '#0284c7'
                 }
               }
@@ -83,59 +85,59 @@
 
     <style>
       /* ============================================================================
-       * ADAPTIVE DESIGN TOKENS (SPATIAL DARK DEFAULT <-> FROSTED PEARL LIGHT)
+       * RJCLOUD.ORGAN 2.0 DESIGN TOKENS (ATMOSPHERIC DARK <-> ICY PEARL LIGHT)
        * ============================================================================ */
       :root,
       html[data-theme="dark"] {
-        --bg-page: #030712;
+        --bg-page: #020612;
         --text-main: #f8fafc;
-        --text-secondary: #cbd5e1;
-        --text-muted: #94a3b8;
-        --glass-bg: linear-gradient(135deg, rgba(15, 23, 42, 0.78) 0%, rgba(7, 13, 28, 0.9) 100%);
-        --glass-border: rgba(255, 255, 255, 0.13);
-        --glass-shadow: 0 22px 50px -16px rgba(0, 0, 0, 0.72), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-        --sidebar-bg: rgba(7, 13, 28, 0.88);
-        --header-bg: rgba(7, 13, 28, 0.86);
-        --surface-soft: rgba(255, 255, 255, 0.045);
-        --surface-soft-hover: rgba(255, 255, 255, 0.09);
-        --surface-border: rgba(255, 255, 255, 0.11);
-        --input-bg: rgba(15, 23, 42, 0.88);
-        --input-border: rgba(148, 163, 184, 0.28);
+        --text-secondary: #dbeafe;
+        --text-muted: #93b4d8;
+        --glass-bg: linear-gradient(145deg, rgba(16, 40, 86, 0.54) 0%, rgba(5, 16, 40, 0.82) 100%);
+        --glass-border: rgba(186, 230, 253, 0.24);
+        --glass-shadow: 0 24px 54px -18px rgba(0, 8, 28, 0.78), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+        --sidebar-bg: rgba(4, 12, 30, 0.88);
+        --header-bg: rgba(4, 12, 30, 0.82);
+        --surface-soft: rgba(147, 197, 253, 0.08);
+        --surface-soft-hover: rgba(147, 197, 253, 0.16);
+        --surface-border: rgba(186, 230, 253, 0.18);
+        --input-bg: rgba(6, 18, 44, 0.82);
+        --input-border: rgba(147, 197, 253, 0.3);
         --input-text: #f8fafc;
-        --accent-text: #34d399;
-        --accent-prism: #22d3ee;
-        --grid-line: rgba(148, 163, 184, 0.045);
-        --aura-1: rgba(16, 185, 129, 0.15);
-        --aura-2: rgba(34, 211, 238, 0.14);
-        --aura-3: rgba(99, 102, 241, 0.12);
-        --dock-bg: rgba(7, 13, 28, 0.95);
-        --table-head-bg: rgba(15, 23, 42, 0.85);
+        --accent-text: #6ee7b7;
+        --accent-prism: #67e8f9;
+        --grid-line: rgba(147, 197, 253, 0.055);
+        --aura-1: rgba(22, 92, 196, 0.34);
+        --aura-2: rgba(56, 189, 248, 0.22);
+        --aura-3: rgba(168, 85, 247, 0.16);
+        --dock-bg: rgba(4, 12, 30, 0.94);
+        --table-head-bg: rgba(6, 18, 44, 0.86);
       }
 
       html[data-theme="light"] {
-        --bg-page: #f8fafc;
-        --text-main: #0f172a;
-        --text-secondary: #334155;
-        --text-muted: #64748b;
-        --glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(241, 245, 249, 0.84) 100%);
+        --bg-page: #edf6fd;
+        --text-main: #0c1b33;
+        --text-secondary: #284366;
+        --text-muted: #5a7496;
+        --glass-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.9) 0%, rgba(232, 244, 253, 0.82) 100%);
         --glass-border: rgba(255, 255, 255, 0.96);
-        --glass-shadow: 0 18px 40px -14px rgba(15, 23, 42, 0.1), 0 2px 6px rgba(15, 23, 42, 0.04);
-        --sidebar-bg: rgba(255, 255, 255, 0.9);
-        --header-bg: rgba(255, 255, 255, 0.88);
-        --surface-soft: rgba(255, 255, 255, 0.78);
+        --glass-shadow: 0 18px 42px -14px rgba(15, 58, 125, 0.14);
+        --sidebar-bg: rgba(244, 250, 255, 0.92);
+        --header-bg: rgba(244, 250, 255, 0.88);
+        --surface-soft: rgba(255, 255, 255, 0.76);
         --surface-soft-hover: rgba(255, 255, 255, 0.98);
-        --surface-border: rgba(148, 163, 184, 0.28);
-        --input-bg: #ffffff;
-        --input-border: #cbd5e1;
-        --input-text: #0f172a;
-        --accent-text: #059669;
-        --accent-prism: #0284c7;
-        --grid-line: rgba(15, 23, 42, 0.032);
-        --aura-1: rgba(16, 185, 129, 0.16);
-        --aura-2: rgba(14, 165, 233, 0.15);
-        --aura-3: rgba(99, 102, 241, 0.09);
-        --dock-bg: rgba(255, 255, 255, 0.96);
-        --table-head-bg: rgba(241, 245, 249, 0.92);
+        --surface-border: rgba(125, 175, 226, 0.32);
+        --input-bg: rgba(255, 255, 255, 0.95);
+        --input-border: rgba(148, 184, 222, 0.65);
+        --input-text: #0c1b33;
+        --accent-text: #047857;
+        --accent-prism: #0369a1;
+        --grid-line: rgba(22, 92, 196, 0.04);
+        --aura-1: rgba(75, 152, 232, 0.24);
+        --aura-2: rgba(169, 214, 247, 0.36);
+        --aura-3: rgba(192, 132, 252, 0.14);
+        --dock-bg: rgba(244, 250, 255, 0.95);
+        --table-head-bg: rgba(224, 240, 253, 0.85);
       }
 
       html {
@@ -143,7 +145,7 @@
         scroll-behavior: smooth;
       }
       body {
-        font-family: 'Sarabun', sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Anuphan', 'Sarabun', sans-serif;
         font-size: 16px;
         line-height: 1.65;
         background-color: var(--bg-page);
@@ -151,6 +153,7 @@
         margin: 0;
         overflow-x: hidden;
         overscroll-behavior-y: none;
+        -webkit-font-smoothing: antialiased;
         transition: background-color 0.28s ease, color 0.28s ease;
       }
 
@@ -166,15 +169,15 @@
         input, select, textarea { font-size: 16px !important; }
       }
 
-      /* Spatial Aura Ambient Backdrop */
+      /* Atmospheric Horizon Ambient Backdrop */
       .spatial-aura {
         position: fixed;
         inset: 0;
         z-index: 0;
         background:
-          radial-gradient(circle at 10% 10%, var(--aura-1) 0%, transparent 45%),
-          radial-gradient(circle at 90% 12%, var(--aura-2) 0%, transparent 45%),
-          radial-gradient(circle at 70% 88%, var(--aura-3) 0%, transparent 48%);
+          radial-gradient(ellipse 90% 55% at 50% 108%, var(--aura-1) 0%, transparent 66%),
+          radial-gradient(circle at 86% 14%, var(--aura-2) 0%, transparent 48%),
+          radial-gradient(circle at 14% 28%, var(--aura-3) 0%, transparent 46%);
         pointer-events: none;
       }
       .spatial-grid {
@@ -184,35 +187,35 @@
         background-image:
           linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
           linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
-        background-size: 42px 42px;
-        mask-image: radial-gradient(ellipse at center, black 45%, transparent 94%);
+        background-size: 44px 44px;
+        mask-image: radial-gradient(ellipse at center, black 42%, transparent 94%);
         pointer-events: none;
       }
 
       /* Semantic Spatial Glass Utilities */
       .spatial-card {
         background: var(--glass-bg);
-        backdrop-filter: blur(24px) saturate(155%);
-        -webkit-backdrop-filter: blur(24px) saturate(155%);
+        backdrop-filter: blur(22px) saturate(165%);
+        -webkit-backdrop-filter: blur(22px) saturate(165%);
         border: 1px solid var(--glass-border);
         box-shadow: var(--glass-shadow);
       }
       .spatial-sidebar {
         background: var(--sidebar-bg);
-        backdrop-filter: blur(24px) saturate(155%);
-        -webkit-backdrop-filter: blur(24px) saturate(155%);
+        backdrop-filter: blur(24px) saturate(160%);
+        -webkit-backdrop-filter: blur(24px) saturate(160%);
         border-right: 1px solid var(--surface-border);
       }
       .spatial-header {
         background: var(--header-bg);
-        backdrop-filter: blur(22px) saturate(150%);
-        -webkit-backdrop-filter: blur(22px) saturate(150%);
+        backdrop-filter: blur(22px) saturate(160%);
+        -webkit-backdrop-filter: blur(22px) saturate(160%);
         border-bottom: 1px solid var(--surface-border);
       }
       .spatial-dock {
         background: var(--dock-bg);
-        backdrop-filter: blur(24px) saturate(150%);
-        -webkit-backdrop-filter: blur(24px) saturate(150%);
+        backdrop-filter: blur(24px) saturate(160%);
+        -webkit-backdrop-filter: blur(24px) saturate(160%);
         border-top: 1px solid var(--surface-border);
       }
       .spatial-soft {
@@ -229,13 +232,23 @@
       }
       .spatial-input:focus {
         outline: none;
-        border-color: #10b981;
-        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
+        border-color: #38bdf8;
+        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.22);
       }
       .spatial-thead {
         background: var(--table-head-bg);
         border-bottom: 1px solid var(--surface-border);
       }
+
+      /* ปุ่มแคปซูลพาสเทล rjcloud.organ 2.0 */
+      .rjc2-pill-btn {
+        background: linear-gradient(95deg, #d7fbe6 0%, #c6f3f9 48%, #b3c8ff 100%);
+        color: #050b16 !important;
+        box-shadow: 0 10px 28px -6px rgba(134, 239, 172, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.72) inset;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .rjc2-pill-btn:hover { transform: translateY(-1px) scale(1.015); }
+      .rjc2-pill-btn:active { transform: scale(0.98); }
 
       .text-primary-adaptive { color: var(--text-main); }
       .text-secondary-adaptive { color: var(--text-secondary); }
@@ -244,13 +257,13 @@
       .text-prism-adaptive { color: var(--accent-prism); }
 
       html[data-theme="dark"] select option {
-        background-color: #070d1c;
+        background-color: #061229;
         color: #f8fafc;
       }
 
       .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
       .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-      .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.38); border-radius: 999px; }
+      .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(147, 197, 253, 0.38); border-radius: 999px; }
 
       /* สไตล์กระดาษ A4 และตารางรายงานส่งสภาการพยาบาล (CNEU) */
       .a4-sheet {
@@ -308,27 +321,27 @@
 <body>
     <!-- หน้าจอโหลดเริ่มต้น -->
     <div id="admin-root">
-        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg-page);color:var(--text-main);font-family:'Prompt','Sarabun',sans-serif;gap:14px;padding:24px;text-align:center;">
-            <div style="width:46px;height:46px;border:3px solid rgba(52,211,153,0.2);border-top-color:#34d399;border-right-color:#22d3ee;border-radius:9999px;animation:adminSpin 0.85s linear infinite;"></div>
+        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#020612;color:#f8fafc;font-family:-apple-system,'Anuphan','Prompt',sans-serif;gap:14px;padding:24px;text-align:center;">
+            <div style="width:46px;height:46px;border:3px solid rgba(56,189,248,0.22);border-top-color:#6ee7b7;border-right-color:#38bdf8;border-radius:9999px;animation:adminSpin 0.85s linear infinite;"></div>
             <div style="font-weight:800;font-size:17px;">กำลังเปิดศูนย์ควบคุม Admin Mission Control...</div>
-            <div style="font-size:12px;color:#94a3b8;">กำลังเชื่อมต่อฐานข้อมูลผู้เรียน 5 ขั้นตอน และศูนย์ตรวจสอบทุกหน้าจอ</div>
+            <div style="font-size:12px;color:#93b4d8;">rjcloud.organ 2.0 • ฐานข้อมูลผู้เรียน 5 ขั้นตอน และศูนย์ตรวจสอบทุกหน้าจอ</div>
         </div>
         <style>@keyframes adminSpin{to{transform:rotate(360deg);}}</style>
     </div>
 
-    <!-- Global Error Guard ป้องกันหน้าขาว/จอดำ (ข้าม Error 404 ของ data.js ตอนพรีวิวเดี่ยว) -->
+    <!-- Global Error Guard ป้องกันหน้าขาว/จอดำ -->
     <script>
       window.addEventListener('error', function (ev) {
         const src = String(ev.filename || (ev.target && ev.target.src) || '');
-        if (src.includes('data.js')) return;
+        if (src.includes('data.js') || src.includes('learning-core.js') || src.includes('styles.css')) return;
         const root = document.getElementById('admin-root');
         if (root && !root.dataset.mounted && ev.message) {
           root.innerHTML =
-            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#030712;color:#f8fafc;font-family:Sarabun,sans-serif;">' +
-            '<div style="max-width:440px;width:100%;background:#070d1c;border:1px solid rgba(244,63,94,0.4);border-radius:24px;padding:24px;text-align:center;">' +
+            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#020612;color:#f8fafc;font-family:Sarabun,sans-serif;">' +
+            '<div style="max-width:440px;width:100%;background:#061229;border:1px solid rgba(244,63,94,0.4);border-radius:24px;padding:24px;text-align:center;">' +
             '<h2 style="color:#fda4af;font-weight:700;margin:0 0 8px;">ไม่สามารถเปิดหน้า Admin ได้ชั่วคราว</h2>' +
-            '<p style="font-size:13px;color:#cbd5e1;margin:0 0 16px;">' + String(ev.message || 'Unknown error') + '</p>' +
-            '<button onclick="window.location.reload()" style="padding:12px 24px;border:none;border-radius:14px;background:#10b981;color:#030712;font-weight:700;cursor:pointer;">โหลดหน้าใหม่</button>' +
+            '<p style="font-size:13px;color:#dbeafe;margin:0 0 16px;">' + String(ev.message || 'Unknown error') + '</p>' +
+            '<button onclick="window.location.reload()" style="padding:12px 24px;border:none;border-radius:14px;background:#34d399;color:#020612;font-weight:700;cursor:pointer;">โหลดหน้าใหม่</button>' +
             '</div></div>';
         }
       });
@@ -355,15 +368,18 @@
         } from 'firebase/firestore';
 
         // ============================================================================
-        // 1. CONFIGURATION & DEFAULT DATA (PRODUCTION 2027 — FULL LIVE CLOUD)
+        // 1. CONFIGURATION & DEFAULT DATA (RJCLOUD.ORGAN 2.0 — FULL LIVE CLOUD)
         // ============================================================================
+        const CORE = window.RJCLOUD_CORE || {};
         const BUILTIN_CONFIG = {
             appName: 'rjcloud.organ',
-            edition: '2027 Clinical Edition',
+            themeName: 'rjcloud.organ 2.0',
+            edition: 'rjcloud.organ 2.0 • Cloud AI (2027)',
             contactEmail: 'rjcloud.organ@gmail.com',
             appId: 'rjcloud-organ-2027',
             adminEmails: ['rjcloud.organ@gmail.com'],
             theme: {
+                name: 'rjcloud.organ 2.0',
                 defaultMode: 'dark',
                 storageKey: 'rjcloud_theme'
             },
@@ -384,22 +400,24 @@
             appsScriptUrl: 'https://script.google.com/macros/s/AKfycbwuN8MeZhhhomEhpkfXtpoTP341cugDqw1DbQPK_6NSHun2pGZCE0Kfc3eH4YYJ6aWQIg/exec'
         };
 
-        const CONFIG = {
-            ...BUILTIN_CONFIG,
-            ...(window.RJCLOUD_CONFIG || {}),
-            theme: {
-                ...BUILTIN_CONFIG.theme,
-                ...(window.RJCLOUD_CONFIG?.theme || {})
-            },
-            learningRules: {
-                ...BUILTIN_CONFIG.learningRules,
-                ...(window.RJCLOUD_CONFIG?.learningRules || {})
-            },
-            firebaseConfig: (window.RJCLOUD_CONFIG?.firebaseConfig?.apiKey)
-                ? window.RJCLOUD_CONFIG.firebaseConfig
-                : BUILTIN_CONFIG.firebaseConfig,
-            appsScriptUrl: window.RJCLOUD_CONFIG?.appsScriptUrl || BUILTIN_CONFIG.appsScriptUrl
-        };
+        const CONFIG = typeof CORE.getResolvedConfig === 'function'
+            ? CORE.getResolvedConfig()
+            : {
+                ...BUILTIN_CONFIG,
+                ...(window.RJCLOUD_CONFIG || {}),
+                theme: {
+                    ...BUILTIN_CONFIG.theme,
+                    ...(window.RJCLOUD_CONFIG?.theme || {})
+                },
+                learningRules: {
+                    ...BUILTIN_CONFIG.learningRules,
+                    ...(window.RJCLOUD_CONFIG?.learningRules || {})
+                },
+                firebaseConfig: (window.RJCLOUD_CONFIG?.firebaseConfig?.apiKey)
+                    ? window.RJCLOUD_CONFIG.firebaseConfig
+                    : BUILTIN_CONFIG.firebaseConfig,
+                appsScriptUrl: window.RJCLOUD_CONFIG?.appsScriptUrl || BUILTIN_CONFIG.appsScriptUrl
+            };
 
         const THEME_KEY = CONFIG.theme?.storageKey || 'rjcloud_theme';
         const MIN_STUDY_PERCENT = Number(CONFIG.learningRules?.minStudyPercent || 80);
@@ -934,7 +952,7 @@
             useEffect(() => {
                 document.documentElement.setAttribute('data-theme', theme);
                 const meta = document.querySelector('meta[name="theme-color"]');
-                if (meta) meta.setAttribute('content', theme === 'dark' ? '#030712' : '#f8fafc');
+                if (meta) meta.setAttribute('content', theme === 'dark' ? '#020612' : '#edf6fd');
                 try { localStorage.setItem(THEME_KEY, theme); } catch (_) {}
             }, [theme]);
 
@@ -1531,7 +1549,7 @@
                     groupTitle: '1. หน้าแรก & ระบบลงทะเบียน (Auth Wizard 3 ขั้น)',
                     badge: 'LANDING & REGISTER',
                     items: [
-                        { id: 'landing', title: 'หน้าแรกผู้เรียน (Landing)', desc: 'ตรวจภาพหน้าหลัก ข้อความมาตรฐานปี 2027 และเส้นทาง 5 ขั้นตอน', url: './index.html?admin_preview=landing', icon: 'Home' },
+                        { id: 'landing', title: 'หน้าแรกผู้เรียน (Landing 2.0)', desc: 'ตรวจธีม rjcloud.organ 2.0 กรอบกระจก Liquid Glass ต้นไม้มีชีวิตออร่า และเส้นทาง 5 ขั้นตอน', url: './index.html?admin_preview=landing', icon: 'Home' },
                         { id: 'auth1', title: 'ลงทะเบียน ขั้นที่ 1/3', desc: 'หน้ากรอกและตรวจสอบเลขที่ใบประกอบวิชาชีพ', url: './index.html?admin_preview=auth1', icon: 'UserCheck' },
                         { id: 'auth2', title: 'ลงทะเบียน ขั้นที่ 2/3', desc: 'หน้ายืนยันข้อมูลผู้เรียนและประเภทการเรียน', url: './index.html?admin_preview=auth2', icon: 'FileText' },
                         { id: 'auth3', title: 'ลงทะเบียน ขั้นที่ 3/3 (OTP)', desc: 'หน้ากรอกรหัสยืนยันตัวตน OTP 6 หลัก', url: './index.html?admin_preview=auth3', icon: 'ShieldCheck' }
@@ -1551,12 +1569,12 @@
                     ]
                 },
                 {
-                    groupTitle: '3. หน้าบริการเสริม ตรวจสอบ QR และผู้บริหาร',
+                    groupTitle: '3. หน้าบริการเสริม ตรวจสอบ QR และ Dashboard',
                     badge: 'PORTALS & COMMAND',
                     items: [
                         { id: 'profile', title: 'หน้าโปรไฟล์ผู้เรียน (Profile)', desc: 'ตรวจคะแนน Pre/Post-test, โหมดอุ่นเครื่อง 30 วิ และปุ่มประกาศฯ', url: './index.html?admin_preview=profile', icon: 'User' },
                         { id: 'verify', title: 'หน้าตรวจ QR Code & ตราโฮโลแกรม 3 มิติ', desc: 'ตรวจหน้า verify.html กล้องสแกนเลเซอร์, หน่วยคะแนน CNEU และปุ่มบันทึก PNG ลงมือถือ', url: './verify.html?admin_preview=1', icon: 'QrCode' },
-                        { id: 'executive', title: 'แดชบอร์ดผู้บริหาร (PDPA Zero-PII)', desc: 'ตรวจสถิติไม่ระบุตัวตน 13 เขต, เรดาร์ 5 แกน และ AI วิเคราะห์นโยบาย', url: './executive.html?admin_preview=1', icon: 'Globe' }
+                        { id: 'executive', title: 'Dashboard (PDPA Zero-PII)', desc: 'ตรวจสถิติไม่ระบุตัวตน 13 เขต, เรดาร์ 5 แกน และ AI วิเคราะห์นโยบาย', url: './executive.html?admin_preview=1', icon: 'Globe' }
                     ]
                 }
             ]), []);
@@ -1591,7 +1609,7 @@
                         <div className="spatial-card relative z-10 w-full max-w-md rounded-[2rem] p-6 sm:p-8 space-y-6">
                             <div className="flex items-center justify-between">
                                 <span className="px-2.5 py-1 rounded-full bg-aurora-500/20 text-accent-adaptive font-mono text-[10px] font-bold">
-                                    ADMIN MISSION CONTROL • LIVE
+                                    RJCLOUD.ORGAN 2.0 • ADMIN LIVE
                                 </span>
                                 <ThemeToggleButton theme={theme} onToggle={toggleTheme} compact />
                             </div>
@@ -1600,7 +1618,7 @@
                                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-aurora-400 to-prism-400 text-void-950 flex items-center justify-center mx-auto shadow-lg shadow-aurora-500/25">
                                     <Icon name="ShieldCheck" size={28} />
                                 </div>
-                                <h1 className="font-display text-2xl font-extrabold text-primary-adaptive">rjcloud.organ Backend</h1>
+                                <h1 className="font-display text-2xl font-extrabold text-primary-adaptive">rjcloud.organ 2.0 Backend</h1>
                                 <p className="text-xs text-secondary-adaptive">
                                     ยืนยันตัวตนผู้ดูแลระบบด้วยบัญชี <b className="text-primary-adaptive">{CONFIG.contactEmail}</b>
                                 </p>
@@ -1626,7 +1644,7 @@
                                 <button
                                     type="submit"
                                     disabled={isLoggingIn}
-                                    className="touch-target w-full py-3.5 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 hover:from-aurora-300 hover:to-prism-300 text-void-950 font-display font-extrabold text-base shadow-lg shadow-aurora-500/25 transition-all active:scale-[0.98]"
+                                    className="rjc2-pill-btn touch-target w-full py-3.5 rounded-full font-display font-extrabold text-base"
                                 >
                                     {isLoggingIn ? 'กำลังยืนยันตัวตน...' : 'เข้าสู่ศูนย์ควบคุมหลังบ้าน'}
                                 </button>
@@ -1669,7 +1687,7 @@
                                     </div>
                                     <div className="min-w-0">
                                         <span className="font-display font-extrabold text-base text-primary-adaptive block leading-none truncate">
-                                            rjcloud<span className="text-accent-adaptive">.organ</span>
+                                            rjcloud<span className="text-accent-adaptive">.organ</span> <span className="text-[10px] font-mono text-prism-adaptive">2.0</span>
                                         </span>
                                         <span className="text-[10px] font-mono text-muted-adaptive">Admin Mission Control</span>
                                     </div>
@@ -1721,7 +1739,7 @@
                                 </div>
                                 <div className="min-w-0">
                                     <div className="flex items-center gap-1.5">
-                                        <span className="font-display font-extrabold text-sm text-primary-adaptive truncate">Admin Control</span>
+                                        <span className="font-display font-extrabold text-sm text-primary-adaptive truncate">Admin 2.0</span>
                                         <span className="px-1.5 py-0.5 rounded-full text-[9px] font-mono font-bold bg-aurora-500/20 text-accent-adaptive">
                                             LIVE
                                         </span>
@@ -1775,7 +1793,7 @@
                                         >
                                             <Icon name="FileCheck2" size={15} /> รายงาน CNEU (PDF)
                                         </button>
-                                        <button type="button" onClick={handleExportCSV} className="touch-target px-4 py-2.5 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-md">
+                                        <button type="button" onClick={handleExportCSV} className="rjc2-pill-btn touch-target px-4 py-2.5 rounded-full font-display font-extrabold text-xs flex items-center justify-center gap-1.5">
                                             <Icon name="Download" size={15} /> ส่งออก CSV
                                         </button>
                                     </div>
