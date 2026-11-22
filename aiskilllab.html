@@ -57,7 +57,7 @@
       }
     </script>
 
-    <!-- สไตล์สำรองธีม rjcloud.organ 2.0 + Obsidian Frosted Glass สำหรับเวที 3 มิติ -->
+    <!-- สไตล์ธีม rjcloud.organ 2.0 + Obsidian Frosted Glass สำหรับเวที 3 มิติ -->
     <style>
       :root, html[data-theme="dark"] {
         --bg-page: #020612;
@@ -214,7 +214,7 @@
       }
     }
     </script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
 </head>
 <body>
     <div id="lab-root">
@@ -243,7 +243,7 @@
       });
     </script>
 
-    <script type="text/babel" data-type="module">
+    <script type="text/babel" data-type="module" data-presets="react">
         import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
         import { createRoot } from 'react-dom/client';
         import * as LucideIcons from 'lucide-react';
@@ -431,7 +431,7 @@
                 openingEmotion: 'ANGRY',
                 openingActionTH: 'ภรรยาหยิบบัตรบริจาคขึ้นมากุมไว้ ขณะที่คุณแม่ขยับตัวแทรกขึ้นมาพร้อมน้ำตาคลอและน้ำเสียงสั่นเครือ',
                 openingActionEN: 'The wife holds up the donor card while the mother leans forward tearfully, voice trembling with protectiveness.',
-                openingTH: '[ภรรยา]: หนูจำได้ว่าพี่ต้นเคยทำบัตรบริจาคอวัยวะไว้ค่ะ อยากทำให้เป็นบุญครั้งสุดท้ายของพี่เขา... [คุณแม่]: แม่ไม่ยอมนะ! ต้นลูกแม่เจ็บมามากพอแล้ว ใครอย่ามาแตะตัวลูกแม่เด็ดขาด! คุณเจ้าหน้าที่ตกลงจะเอาตามบัตรหรือเอาตามใจแม่คะ?',
+                openingTH: '[ภรรยา]: หนูจำได้ว่าพี่ต้นเคยทำบัตรบริจาคอวัยวะไว้ค่ะ อยากทำให้เป็นบุญครั้งสุดท้ายของพี่เขา... [คุณแม่]: แม่ไม่ยอมนะ! ต้นลูกแม่เจ็บมามากพอแล้ว ใครอย่ามาแตะตัวลูกแม่เด็ดขาด! ตกลงจะเอาตามบัตรหรือเอาตามใจแม่คะ?',
                 openingEN: '[Wife]: He signed a donor card—I want to honor my husband’s last wish... [Mother]: No! My son has suffered enough! Don’t let anyone touch him! Who has the final say here?!',
                 briefingTH: 'ผู้ป่วยคือ “คุณต้น” (อายุ 36 ปี) ในห้องมีทั้ง “ภรรยา” (อยากทำตามบัตรจำนง) และ “คุณแม่” (คัดค้านด้วยความเจ็บปวด) หลักจริยธรรมไทยคือไม่ฝืนใจญาติสายตรงและประคับประคองความรักของทั้งสองฝ่าย',
                 briefingEN: 'The patient is a 36-year-old man (husband/son). Both his wife (pro-donation) and mother (strongly objecting) are present. Stay neutral, never coerce, and protect family unity.',
@@ -472,8 +472,8 @@
         const SKILL_LAB_DIFFICULTIES = window.SKILL_LAB_DIFFICULTIES || {
             normal: {
                 id: 'normal', labelTH: 'Normal (มีตัวช่วยแนะนำ)', labelEN: 'Normal (Guided Support)', badge: 'NORMAL',
-                descTH: 'มี AI Coach ชี้นำและแสดงปุ่มแนวทางคำพูด 2 ข้อให้เลือกปรับใช้ได้ เหมาะสำหรับสร้างความมั่นใจ',
-                descEN: 'Includes AI Coach tips and 2 empathetic suggested replies.',
+                descTH: 'มี AI Coach ชี้นำและแสดงปุ่มแนวทางคำพูด 2 ข้อให้แตะส่งได้ทันที เหมาะสำหรับสร้างความมั่นใจ',
+                descEN: 'Includes AI Coach tips and 2 tap-to-send empathetic replies.',
                 showSuggestions: true,
                 aiPromptRuleTH: 'ระดับ Normal: ตอบสนองสมจริงและค่อยๆ เปิดใจเมื่อผู้เรียนแสดงความเห็นอกเห็นใจและให้ข้อมูลชัดเจน',
                 aiPromptRuleEN: 'Normal Mode: Respond realistically and gradually open up when empathy and clear facts are shared.'
@@ -517,47 +517,61 @@
         const GUIDED_DRILLS = {
             th: [
                 {
-                    prompt: 'ด่านที่ 1/3 (เปิดบทสนทนา & สะท้อนอารมณ์): แนะนำบทบาทอย่างอ่อนโยน แสดงความเสียใจ และยอมรับความสับสน/ความกังวลของญาติ',
+                    prompt: 'ด่านที่ 1/4 (เปิดบทสนทนา & สะท้อนอารมณ์): แนะนำตัว/บทบาทอย่างอ่อนโยน แสดงความเสียใจ และยอมรับความสับสนหรือความกังวลของญาติ',
                     suggestions: [
                         'สวัสดีค่ะ ดิฉันเป็นพยาบาลผู้ประสานงานดูแลครอบครัวค่ะ ขอแสดงความเสียใจอย่างสุดซึ้งกับเหตุการณ์ที่เกิดขึ้นนะคะ เข้าใจความรู้สึกหนักใจของครอบครัวมากเลยค่ะ',
                         'สวัสดีค่ะ ขอบคุณที่มานั่งคุยกันในห้องส่วนตัวนี้นะคะ ดิฉันเข้าใจดีว่าทุกอย่างเกิดขึ้นเร็วจนตั้งตัวแทบไม่ทัน อยากให้ค่อยๆ หายใจและถามได้ทุกข้อสงสัยเลยค่ะ'
                     ]
                 },
                 {
-                    prompt: 'ด่านที่ 2/3 (อธิบายความจริงชัดเจนตามเคส): อธิบายความต่างของเครื่องช่วยหายใจกับสมองตาย หรือตอบความเชื่อ/ความโปร่งใส ODC อย่างสุภาพ',
+                    prompt: 'ด่านที่ 2/4 (เคลียร์ความเข้าใจภาวะสมองตาย & ปมกังวลหลัก): อธิบายความต่างของเครื่องช่วยหายใจกับสมองตาย หรือตอบข้อกังวลตามเคสให้ชัดเจน',
                     suggestions: [
-                        'ที่ยังเห็นหน้าอกขยับและตัวอุ่นเป็นเพราะเครื่องช่วยหายใจและยาพยุงอยู่ค่ะ แต่แพทย์ผู้เชี่ยวชาญได้ตรวจยืนยันแล้วว่าก้านสมองหยุดทำงานอย่างถาวรแล้วค่ะ',
-                        'ขอยืนยันว่าทุกขั้นตอนโปร่งใสผ่านศูนย์รับบริจาคอวัยวะสภากาชาดไทย (ODC) ไม่มีค่าใช้จ่ายกับครอบครัว และเราเคารพความเชื่อกับพิธีกรรมศาสนาอย่างเต็มที่ค่ะ'
+                        'ที่ยังเห็นหน้าอกขยับและตัวอุ่นเป็นเพราะเครื่องช่วยหายใจและยาพยุงอยู่ค่ะ แต่แพทย์ผู้เชี่ยวชาญได้ตรวจยืนยันครบเกณฑ์แล้วว่าก้านสมองหยุดทำงานอย่างถาวรแล้วค่ะ',
+                        'เข้าใจความกังวลใจของครอบครัวมากค่ะ ขอยืนยันว่าทุกอย่างดำเนินการตามมาตรฐานการแพทย์และเคารพความเชื่อกับความรู้สึกของครอบครัวอย่างเต็มที่ค่ะ'
                     ]
                 },
                 {
-                    prompt: 'ด่านที่ 3/3 (ไม่เร่งรัด & ปิดบทสนทนาอย่างอบอุ่น): รับรองการดูแลตกแต่งร่างอย่างประณีตสมเกียรติ และให้เวลาครอบครัวปรึกษากันโดยไม่กดดัน',
+                    prompt: 'ด่านที่ 3/4 (ให้ข้อมูลทางเลือกการบริจาคอวัยวะ & ตอบคำถามเรื่องกลับไปตัดสินใจ): อธิบายความโปร่งใส ODC ไม่มีค่าใช้จ่าย การตกแต่งร่างประณีต และให้เวลาตัดสินใจโดยไม่กดดัน',
                     suggestions: [
-                        'ไม่ต้องรีบตัดสินใจตอนนี้เลยนะคะ ทีมศัลยแพทย์จะดูแลตกแต่งร่างอย่างประณีตสมเกียรติที่สุด ขอให้ครอบครัวได้ใช้เวลาปรึกษากันอย่างเป็นส่วนตัวได้เลยค่ะ',
-                        'ขอยืนยันว่าจะไม่ฝืนใจครอบครัวเด็ดขาดค่ะ ขอให้ทุกท่านได้พูดคุยกันอย่างสงบก่อน ดิฉันจะคอยดูแลอยู่ใกล้ๆ เรียกได้ตลอดเวลาค่ะ'
+                        'หากครอบครัวสนใจส่งต่อบุญกุศลด้วยการบริจาคอวัยวะ ทุกขั้นตอนจัดสรรผ่านศูนย์รับบริจาคอวัยวะสภากาชาดไทย (ODC) อย่างโปร่งใส ไม่มีค่าใช้จ่าย และทีมศัลยแพทย์จะตกแต่งร่างอย่างประณีตสมเกียรติที่สุดค่ะ',
+                        'ครอบครัวสามารถใช้เวลาปรึกษาหรือกลับไปพูดคุยกันที่บ้านก่อนได้แน่นอนค่ะ โดยเราจะอธิบายกรอบเวลาการดูแลสัญญาณชีพอย่างสุภาพและไม่เร่งรัดการตัดสินใจเลยนะคะ'
+                    ]
+                },
+                {
+                    prompt: 'ด่านที่ 4/4 (เคารพการตัดสินใจ & ปิดบทสนทนาอย่างสง่างาม): รับฟังคำตัดสินใจของญาติ ไม่ว่าจะยินยอม ไม่ยินยอม หรือขอกลับไปตัดสินใจที่บ้านก่อน',
+                    suggestions: [
+                        'ขอขอบพระคุณและเคารพการตัดสินใจของครอบครัวอย่างสูงสุดค่ะ ไม่ว่าครอบครัวจะตัดสินใจอย่างไร ทีมแพทย์และพยาบาลจะดูแลท่านอย่างสมเกียรติและเคียงข้างครอบครัวเสมอค่ะ',
+                        'รับทราบและเข้าใจความตั้งใจของครอบครัวอย่างเต็มที่ค่ะ หากพร้อมหรือมีคำถามเพิ่มเติมสามารถแจ้งดิฉันได้ตลอดเวลาเลยนะคะ'
                     ]
                 }
             ],
             en: [
                 {
-                    prompt: 'Stage 1/3 (Setting & Empathy): Introduce yourself gently, offer condolences, and validate the relative’s feelings.',
+                    prompt: 'Stage 1/4 (Setting & Empathy): Introduce yourself gently, offer condolences, and validate the relative’s feelings.',
                     suggestions: [
                         'Hello, I am the clinical coordinator here to support your family. I am truly sorry for what you are going through—I hear how overwhelming this moment feels.',
                         'Thank you for sitting with me in this private space. Everything has happened so suddenly, and I am here to listen and answer every question gently.'
                     ]
                 },
                 {
-                    prompt: 'Stage 2/3 (Clinical / Ethical Clarity): Clarify brain death vs. ventilator support, cultural respect, or transparent ODC allocation.',
+                    prompt: 'Stage 2/4 (Brain Death & Core Concerns): Clarify brain death vs. ventilator support and address the relative’s primary concern.',
                     suggestions: [
                         'The warmth and chest movement come from the ventilator and medications, while specialists have confirmed that brain function has permanently stopped.',
-                        'Everything is audited transparently by the Thai Red Cross (ODC) with zero extra cost to your family, and we deeply honor your spiritual traditions.'
+                        'We deeply respect your family’s beliefs and feelings, and every step follows strict clinical and ethical standards.'
                     ]
                 },
                 {
-                    prompt: 'Stage 3/3 (Dignity & Natural Closure): Assure dignified body care and offer unhurried private family time.',
+                    prompt: 'Stage 3/4 (Donation Information & Time to Decide): Share transparent ODC facts, zero cost, dignified body care, and answer whether they may go home to decide.',
                     suggestions: [
-                        'There is absolutely no rush to decide. Our surgical team treats every patient with the utmost dignity so funeral rites proceed peacefully. Please take quiet time together.',
-                        'We will never pressure or force your family. Please take all the private time you need to talk together, and I will remain right outside whenever you are ready.'
+                        'If your family wishes to consider organ donation, allocation is transparently managed by the Thai Red Cross (ODC) at zero cost, and surgeons restore the body with utmost dignity.',
+                        'Of course you may take time to talk with your family or go home to decide—there is zero pressure, and I can gently explain the medical timeframe so you feel supported.'
+                    ]
+                },
+                {
+                    prompt: 'Stage 4/4 (Respect Autonomy & Warm Closure): Honor the family’s decision gracefully whether they consent, decline, or defer to decide at home.',
+                    suggestions: [
+                        'Thank you so much for trusting me with your decision. Whatever your family chooses, we will honor it completely and care for your loved one with the highest dignity.',
+                        'We fully respect your family’s wishes and will remain right here to support you whenever you need us.'
                     ]
                 }
             ]
@@ -572,16 +586,23 @@
                 systemPrompt: `### บทบาทจำลอง (AI Relative Simulator — rjcloud.organ 2.0)
 - คุณสวมบทบาทเป็น "ญาติสายตรงของผู้ป่วย" ตาม Character Bible ที่กำหนดเท่านั้น ห้ามเปลี่ยนชื่อหรือเปลี่ยนความสัมพันธ์ของผู้ป่วยเด็ดขาด
 - ผู้เรียนสวมบทบาทเป็น "ผู้ให้ข้อมูลญาติ"
-- ตอบเป็นภาษาไทยอย่างเป็นธรรมชาติ สั้นกระชับ 2–3 ประโยค ห้ามหลุดบทบาท ห้ามวนถามเรื่องเดิมที่ผู้เรียนอธิบายไปแล้ว!
-- เดินเรื่องอย่างมีเป้าหมายชัดเจนและจบภายใน 4–5 รอบการสนทนา:
-  • รอบที่ 1–2: แสดงอารมณ์และความกังวลหลักตามเคส เมื่อผู้เรียนอธิบายดีให้ยอมรับและขยับไปข้อกังวลขั้นถัดไป
-  • รอบที่ 3: แสดงความผ่อนคลายขึ้นและถามข้อกังวลสุดท้าย (เช่น การตกแต่งร่าง หรือขอเวลาปรึกษาครอบครัว)
-  • รอบที่ 4–5 (หรือเมื่อผู้เรียนตอบครบหลักการแล้ว): เปลี่ยนอารมณ์เป็น [CALM], กล่าวขอบคุณและปิดบทสนทนาอย่างเป็นธรรมชาติว่าขอไปปรึกษาครอบครัวเงียบๆ โดยห้ามตั้งคำถามเปิดใหม่ให้ยืดเยื้อ และใส่แท็ก [READY_TO_EVALUATE] ปิดท้าย
+- **กฎการเรียกชื่อผู้เรียน (สำคัญมาก):** ให้เรียกผู้เรียนด้วยชื่อที่ระบุในหัวข้อ [LEARNER_ADDRESS] เสมอ (เช่น คุณสมชาย) เว้นแต่ในบทสนทนาผู้เรียนแนะนำตัวด้วยชื่อหรือสรรพนามอื่น (เช่น หมอต้น, พี่นก, พยาบาลจอย) ให้เปลี่ยนไปเรียกตามที่ผู้เรียนแนะนำตัวทันที ห้ามเรียกว่า "คุณเจ้าหน้าที่" เด็ดขาด
+- ตอบเป็นภาษาไทยอย่างเป็นธรรมชาติ สั้นกระชับ 2–4 ประโยค ห้ามหลุดบทบาท ห้ามวนถามเรื่องเดิมที่ผู้เรียนอธิบายชัดเจนไปแล้ว
+- **ห้ามรีบจบบทสนทนาเร็วเกินไปเด็ดขาด!** ต้องดำเนินเรื่องจนได้รับข้อมูลครบทั้งเรื่องภาวะสมองตายและทางเลือกการบริจาคอวัยวะ (อย่างน้อย 5–7 รอบสนทนา) ตามลำดับขั้นดังนี้:
+  • รอบที่ 1–2: แสดงอารมณ์และความสับสน/กังวลหลักของเคส (ภาวะสมองตาย, ความเชื่อ, ความขัดแย้ง หรือความระแวง) — ห้ามปิดจบเด็ดขาด
+  • รอบที่ 3–4: เมื่อเข้าใจภาวะสมองตายหรือคลายปมแรกแล้ว ให้ซักถามรายละเอียดเรื่องการบริจาคอวัยวะ ความโปร่งใส สภากาชาดไทย (ODC) ค่าใช้จ่าย หรือการดูแลตกแต่งร่างอย่างสมจริง — ห้ามปิดจบเด็ดขาด
+  • รอบที่ 4–5 (กรณีญาติยังลังเล): ให้ลองถามผู้เรียนว่า "ขออนุญาตถามนะคะ ครอบครัวเราสามารถกลับไปปรึกษาและตัดสินใจที่บ้านก่อนได้ไหมคะ?" เพื่อดูว่าผู้เรียนอธิบายอย่างให้เกียรติและไม่เร่งรัดหรือไม่
+  • รอบที่ 5–7 (ขั้นสรุปการตัดสินใจของญาติ): เมื่อได้รับข้อมูลครบถ้วนแล้ว ให้ญาติประกาศการตัดสินใจชัดเจน **เลือกเพียง 1 ใน 3 รูปแบบ** ตามคุณภาพการสื่อสารจริงของผู้เรียน:
+    1) **[DECISION:CONSENT]** ตัดสินใจ **ยินยอมบริจาคอวัยวะ** (เมื่อผู้เรียนสื่อสารอ่อนโยน ให้ข้อมูลครบ คลายความกังวลได้หมด และไม่กดดัน)
+    2) **[DECISION:DECLINE]** ตัดสินใจ **ไม่ยินยอมบริจาคอวัยวะ** (เมื่อผู้เรียนเร่งรัด ใช้คำกระทบใจ ตอบไม่เคลียร์ หรือครอบครัวไม่พร้อมจริงๆ)
+    3) **[DECISION:DEFER_HOME]** ตัดสินใจ **ขอกลับไปตัดสินใจที่บ้านก่อน** (เฉพาะกรณีที่ได้สอบถามผู้เรียนแล้วว่าสามารถกลับไปตัดสินใจที่บ้านก่อนได้ไหม และผู้เรียนอนุญาต/ให้เวลาอย่างสุภาพ)
+  • เมื่อประกาศผลการตัดสินใจ 1 ใน 3 ข้อด้านบนชัดเจนแล้วเท่านั้น จึงค่อยใส่แท็ก [DECISION:...] คู่กับ [READY_TO_EVALUATE] ปิดท้าย
 
 ### รูปแบบคำตอบ (บังคับ)
-- บรรทัดที่ 1: ขึ้นต้นด้วย Tag อารมณ์ 1 Tag เสมอ: [SHOCK], [CONFUSED], [ANGRY], [SAD], [HESITANT], หรือ [CALM] ตามด้วยแท็กภาษากายสั้นๆ 1 บรรทัด: [ACTION] อธิบายสีหน้า/อากัปกิริยาที่ไม่ใช่คำพูด (เช่น ก้มหน้าซับน้ำตา, ถอนหายใจเบาๆ, คลายมือที่กำแน่น)
-- บรรทัดถัดมา: คำพูดของญาติโดยตรง (หากเป็นเคส 3 ความขัดแย้ง ให้ระบุ [ภรรยา]: และ [คุณแม่]: นำหน้าคำพูดของแต่ละคนเสมอ)
-- หากถึงจุดจบบทสนทนาแล้ว ให้ใส่แท็ก [READY_TO_EVALUATE] บนบรรทัดแยก
+- บรรทัดที่ 1: Tag อารมณ์ 1 Tag: [SHOCK], [CONFUSED], [ANGRY], [SAD], [HESITANT], หรือ [CALM]
+- บรรทัดที่ 2: [ACTION] อธิบายสีหน้า/ภาษากายสั้นๆ 1 ประโยค (ไม่อ่านออกเสียง)
+- บรรทัดถัดมา: คำพูดของญาติโดยตรง (หากเป็นเคส 3 ให้ขึ้นต้นด้วย [ภรรยา]: และ [คุณแม่]: เสมอ)
+- หากถึงขั้นประกาศผลการตัดสินใจแล้ว ให้ใส่แท็ก [DECISION:CONSENT] หรือ [DECISION:DECLINE] หรือ [DECISION:DEFER_HOME] และ [READY_TO_EVALUATE] บนบรรทัดแยก
 - ต่อท้ายด้วยคำแนะนำสั้นๆ จาก AI Coach 1 บรรทัด: [COACH_TIP] ...`
             },
             {
@@ -591,45 +612,73 @@
                 relativeName: 'Bereaved Relative (AI)', voiceName: 'Sulafat',
                 systemPrompt: `### ROLE (AI Bereaved Relative — rjcloud.organ 2.0)
 - Act strictly according to the LOCKED CHARACTERS specified below. NEVER change who the patient is or who you are.
-- Respond naturally in English (2–3 concise sentences). NEVER repeat a question the learner already answered clearly.
-- Follow a clear 4–5 turn arc:
-  • Turns 1–2: Express the core emotional/clinical concern, then progress forward when answered well.
-  • Turn 3: Soften and voice one final practical/family concern (e.g., body dignity or private family time).
-  • Turns 4–5 (or once key principles are met): Shift to [CALM], thank the communicator warmly, close the conversation naturally with NO new open-ended questions, and output [READY_TO_EVALUATE].
+- **LEARNER ADDRESS RULE (MANDATORY):** Always address the learner using the name specified in [LEARNER_ADDRESS] unless the learner introduces themselves by another name/title during the conversation, in which case adopt their preferred name immediately.
+- Respond naturally in English (2–4 concise sentences). NEVER end the session prematurely! Progress organically across 5–7 turns:
+  • Turns 1–2: Express core emotional shock/confusion/concerns about brain death or the case dilemma. Do NOT close yet.
+  • Turns 3–4: Once understood, ask practical questions about organ donation, ODC transparency, zero family cost, and dignified body care. Do NOT close yet.
+  • Turns 4–5 (if still hesitant): Ask the learner, "Could our family go home to talk and decide first?" to test their zero-pressure response.
+  • Turns 5–7 (Final Decision Stage): Once full information has been given, clearly announce ONE of 3 realistic outcomes:
+    1) [DECISION:CONSENT] — Family agrees to organ donation (earned through warm empathy, clarity, and dignity).
+    2) [DECISION:DECLINE] — Family declines donation (if rushed, harsh wording used, or unresolved concerns).
+    3) [DECISION:DEFER_HOME] — Family chooses to go home to decide first (after asking the learner whether going home to decide is allowed).
+  • Output [DECISION:...] AND [READY_TO_EVALUATE] ONLY when stating that final decision.
 
 ### REQUIRED FORMAT
 - Line 1: ONE emotion tag: [SHOCK], [CONFUSED], [ANGRY], [SAD], [HESITANT], or [CALM]
-- Line 2: [ACTION] Brief realistic non-verbal stage cue (e.g., wipes a tear, lowers gaze, relaxes tense shoulders) — never spoken aloud.
-- Next line: The relative's spoken words directly (for Case 3 conflict, prefix each speaker with [Wife]: and [Mother]:).
-- When closing naturally, include [READY_TO_EVALUATE] on its own line.
+- Line 2: [ACTION] Brief non-verbal stage cue (never spoken aloud).
+- Next line: Spoken words (for Case 3 conflict, prefix each speaker with [Wife]: and [Mother]:).
+- When concluding with a final decision, output [DECISION:CONSENT|DECLINE|DEFER_HOME] and [READY_TO_EVALUATE] on separate lines.
 - Append one supportive hint: [COACH_TIP] ...`
             }
         ];
 
+        const DECISION_META = {
+            CONSENT: {
+                badgeTH: 'ผลการตัดสินใจของญาติ: ยินยอมบริจาคอวัยวะ ✓',
+                badgeEN: 'Family Decision: Consented to Organ Donation ✓',
+                shortTH: 'ยินยอมบริจาคอวัยวะ',
+                shortEN: 'Consented',
+                cls: 'bg-emerald-500/20 border-emerald-400/55 text-emerald-300'
+            },
+            DECLINE: {
+                badgeTH: 'ผลการตัดสินใจของญาติ: ไม่ยินยอมบริจาคอวัยวะ (เคารพสิทธิ์ตามหลัก Autonomy)',
+                badgeEN: 'Family Decision: Declined Donation (Autonomy Respected)',
+                shortTH: 'ไม่ยินยอมบริจาคอวัยวะ',
+                shortEN: 'Declined',
+                cls: 'bg-rose-500/20 border-rose-400/50 text-rose-300'
+            },
+            DEFER_HOME: {
+                badgeTH: 'ผลการตัดสินใจของญาติ: ขอกลับไปปรึกษาและตัดสินใจที่บ้านก่อน',
+                badgeEN: 'Family Decision: Deferred to Decide at Home First',
+                shortTH: 'ขอกลับไปตัดสินใจที่บ้านก่อน',
+                shortEN: 'Decide at Home First',
+                cls: 'bg-sky-500/20 border-sky-400/50 text-sky-200'
+            }
+        };
+
         // ============================================================================
-        // 2. AUDIO DSP (EXACT WAV DATA CHUNK + ANTI-HISS), KNOCK SFX & MULTI-VOICE PARSER
+        // 2. AUDIO, MULTI-VOICE CASTING, RIFF-DATA WAV DSP & GENTLE KNOCK SOUND
         // ============================================================================
-        function playGentleKnockSound() {
-            try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = new AudioCtx();
-                [0, 0.24].forEach((delay) => {
-                    const t = ctx.currentTime + delay;
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(165, t);
-                    osc.frequency.exponentialRampToValueAtTime(68, t + 0.08);
-                    gain.gain.setValueAtTime(0.0001, t);
-                    gain.gain.exponentialRampToValueAtTime(0.18, t + 0.012);
-                    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.11);
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-                    osc.start(t);
-                    osc.stop(t + 0.13);
-                });
-            } catch (_) {}
+        function prepareNaturalSpeech(rawText, lang = 'th') {
+            if (lang !== 'en' && typeof CORE.prepareNaturalThaiSpeech === 'function') {
+                return CORE.prepareNaturalThaiSpeech(rawText);
+            }
+            return String(rawText || '')
+                .replace(/\[[^\]]+\]:?\s*/g, '')
+                .replace(/[*#_]/g, ' ')
+                .replace(/\bODC\b/g, lang === 'en' ? 'Thai Red Cross Organ Donation Center' : 'ศูนย์รับบริจาคอวัยวะสภากาชาดไทย')
+                .replace(/\bICU\b/g, lang === 'en' ? 'ICU' : 'ไอซียู')
+                .replace(/\s{2,}/g, ' ')
+                .trim();
+        }
+
+        function pickBestBrowserVoice(lang = 'th') {
+            if (typeof CORE.pickNaturalBrowserVoice === 'function') return CORE.pickNaturalBrowserVoice(lang);
+            if (!('speechSynthesis' in window)) return null;
+            const voices = window.speechSynthesis.getVoices() || [];
+            const prefix = lang === 'en' ? 'en' : 'th';
+            const matches = voices.filter(v => String(v.lang || '').toLowerCase().startsWith(prefix));
+            return matches.find(v => /premwadee|kanya|google|natural|samantha|aria|narisa/i.test(v.name || '')) || matches[0] || null;
         }
 
         function pcm16ToWavUrl(base64PCM, sampleRate = 24000) {
@@ -638,159 +687,222 @@
                 return blob && blob.size > 0 ? URL.createObjectURL(blob) : '';
             }
             let rate = sampleRate || 24000;
-            const binaryString = window.atob(base64PCM);
-            const rawBytes = new Uint8Array(binaryString.length);
-            for (let i = 0; i < binaryString.length; i++) rawBytes[i] = binaryString.charCodeAt(i);
+            const bin = window.atob(base64PCM);
+            const rawBytes = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) rawBytes[i] = bin.charCodeAt(i);
 
+            // แกะเฉพาะก้อน 'data' เพื่อตัดก้อน Metadata ท้ายไฟล์ WAV ออก 100%
             let offsetBytes = 0;
-            let byteLen = rawBytes.length;
-            if (rawBytes.length >= 44 && rawBytes[0] === 0x52 && rawBytes[1] === 0x49 && rawBytes[2] === 0x46 && rawBytes[3] === 0x46 && rawBytes[8] === 0x57 && rawBytes[9] === 0x41) {
-                const hv = new DataView(rawBytes.buffer, rawBytes.byteOffset, rawBytes.byteLength);
+            let byteLength = rawBytes.length;
+            if (
+                rawBytes.length >= 44 &&
+                rawBytes[0] === 0x52 && rawBytes[1] === 0x49 && rawBytes[2] === 0x46 && rawBytes[3] === 0x46 &&
+                rawBytes[8] === 0x57 && rawBytes[9] === 0x41 && rawBytes[10] === 0x56 && rawBytes[11] === 0x45
+            ) {
+                const hdrView = new DataView(rawBytes.buffer, rawBytes.byteOffset, rawBytes.byteLength);
                 let pos = 12;
-                let found = false;
+                let foundData = false;
                 while (pos + 8 <= rawBytes.length) {
                     const id = String.fromCharCode(rawBytes[pos], rawBytes[pos + 1], rawBytes[pos + 2], rawBytes[pos + 3]);
-                    const sz = hv.getUint32(pos + 4, true);
+                    const sz = hdrView.getUint32(pos + 4, true);
                     if (id === 'fmt ' && pos + 16 <= rawBytes.length) {
-                        const r = hv.getUint32(pos + 12, true);
-                        if (r >= 8000 && r <= 96000) rate = r;
+                        const wr = hdrView.getUint32(pos + 12, true);
+                        if (wr >= 8000 && wr <= 96000) rate = wr;
                     } else if (id === 'data') {
                         offsetBytes = pos + 8;
-                        byteLen = Math.min(sz, rawBytes.length - offsetBytes);
-                        found = true;
+                        byteLength = Math.min(sz, rawBytes.length - offsetBytes);
+                        foundData = true;
                         break;
                     }
                     const step = 8 + sz + (sz % 2);
                     if (step <= 8) break;
                     pos += step;
                 }
-                if (!found) { offsetBytes = 44; byteLen = Math.max(0, rawBytes.length - 44); }
+                if (!foundData) {
+                    offsetBytes = 44;
+                    byteLength = Math.max(0, rawBytes.length - 44);
+                }
             }
 
-            const sampleCount = Math.floor(byteLen / 2);
-            if (sampleCount <= 0) return '';
-
-            const inView = new DataView(rawBytes.buffer, rawBytes.byteOffset + offsetBytes, sampleCount * 2);
-            const samples = new Float32Array(sampleCount);
-            for (let i = 0; i < sampleCount; i++) samples[i] = inView.getInt16(i * 2, true) / 32768;
+            const count = Math.floor(byteLength / 2);
+            if (count <= 0) return '';
+            const inView = new DataView(rawBytes.buffer, rawBytes.byteOffset + offsetBytes, count * 2);
+            const samples = new Float32Array(count);
+            for (let i = 0; i < count; i++) samples[i] = inView.getInt16(i * 2, true) / 32768;
 
             const frameSize = Math.max(128, Math.round(rate * 0.02));
-            const numFrames = Math.floor(sampleCount / frameSize);
-            const frameRms = new Float32Array(numFrames);
-            const frameZcr = new Float32Array(numFrames);
-            for (let f = 0; f < numFrames; f++) {
-                const start = f * frameSize;
-                let sumSq = 0, zc = 0, prev = samples[start];
+            const numFrames = Math.floor(count / frameSize);
+            let endFrame = numFrames - 1;
+            while (endFrame > 12) {
+                let sumSq = 0, zc = 0, prev = samples[endFrame * frameSize];
                 for (let j = 0; j < frameSize; j++) {
-                    const s = samples[start + j];
+                    const s = samples[endFrame * frameSize + j];
                     sumSq += s * s;
                     if ((s >= 0 && prev < 0) || (s < 0 && prev >= 0)) zc++;
                     prev = s;
                 }
-                frameRms[f] = Math.sqrt(sumSq / frameSize);
-                frameZcr[f] = zc / frameSize;
+                if (Math.sqrt(sumSq / frameSize) < 0.016 || zc / frameSize > 0.22) endFrame--;
+                else break;
             }
-            let endFrame = numFrames - 1;
-            while (endFrame > 12 && (frameRms[endFrame] < 0.016 || frameZcr[endFrame] > 0.22)) endFrame--;
 
-            const keptSamples = Math.min(sampleCount, Math.max(Math.min(sampleCount, Math.round(rate * 0.25)), (endFrame + 1) * frameSize));
-            const padZeroSamples = Math.round(rate * 0.045);
-            const outBytesLen = (keptSamples + padZeroSamples) * 2;
-            const fadeInLen = Math.min(Math.round(rate * 0.012), Math.floor(keptSamples * 0.1));
-            const fadeOutLen = Math.min(Math.round(rate * 0.075), Math.floor(keptSamples * 0.22));
+            const kept = Math.min(count, Math.max(Math.min(count, Math.round(rate * 0.25)), (endFrame + 1) * frameSize));
+            const pad = Math.round(rate * 0.045);
+            const outBytes = (kept + pad) * 2;
+            const fadeIn = Math.min(Math.round(rate * 0.012), Math.floor(kept * 0.1));
+            const fadeOut = Math.min(Math.round(rate * 0.075), Math.floor(kept * 0.22));
 
-            const buffer = new ArrayBuffer(44 + outBytesLen);
-            const view = new DataView(buffer);
-            const writeStr = (offset, str) => { for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i)); };
-            writeStr(0, 'RIFF'); view.setUint32(4, 36 + outBytesLen, true); writeStr(8, 'WAVE'); writeStr(12, 'fmt ');
-            view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, 1, true);
-            view.setUint32(24, rate, true); view.setUint32(28, rate * 2, true);
-            view.setUint16(32, 2, true); view.setUint16(34, 16, true); writeStr(36, 'data'); view.setUint32(40, outBytesLen, true);
+            const buf = new ArrayBuffer(44 + outBytes);
+            const v = new DataView(buf);
+            const ws = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+            ws(0, 'RIFF'); v.setUint32(4, 36 + outBytes, true); ws(8, 'WAVE'); ws(12, 'fmt ');
+            v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+            v.setUint32(24, rate, true); v.setUint32(28, rate * 2, true);
+            v.setUint16(32, 2, true); v.setUint16(34, 16, true); ws(36, 'data'); v.setUint32(40, outBytes, true);
 
-            for (let i = 0; i < keptSamples; i++) {
+            for (let i = 0; i < kept; i++) {
                 let s = samples[i];
-                if (i < fadeInLen) s *= i / fadeInLen;
-                else if (i >= keptSamples - fadeOutLen) s *= 0.5 * (1 + Math.cos(Math.PI * ((i - (keptSamples - fadeOutLen)) / fadeOutLen)));
-                view.setInt16(44 + i * 2, Math.round(Math.max(-1, Math.min(1, s)) * 32767), true);
+                if (i < fadeIn) s *= i / fadeIn;
+                else if (i >= kept - fadeOut) s *= 0.5 * (1 + Math.cos(Math.PI * ((i - (kept - fadeOut)) / fadeOut)));
+                v.setInt16(44 + i * 2, Math.round(Math.max(-1, Math.min(1, s)) * 32767), true);
             }
-            return URL.createObjectURL(new Blob([buffer], { type: 'audio/wav' }));
+            return URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
         }
 
-        function cleanTextForSpeech(text, lang) {
-            if (lang !== 'en' && typeof CORE.prepareNaturalThaiSpeech === 'function') {
-                return CORE.prepareNaturalThaiSpeech(text);
-            }
-            return String(text || '')
-                .replace(/\[[^\]]+\]:?\s*/g, '')
-                .replace(/\bODC\b/g, lang === 'en' ? 'Thai Red Cross Organ Donation Centre' : 'ศูนย์รับบริจาคอวัยวะสภากาชาดไทย')
-                .replace(/\bICU\b/g, lang === 'en' ? 'ICU' : 'ไอซียู')
-                .replace(/\.\.\./g, ', ')
-                .replace(/[*#_]/g, '')
-                .trim();
-        }
-
-        /**
-         * แยกเสียงตัวละครอัตโนมัติ (รองรับ Dual-Voice สำหรับเคส 3: [ภรรยา] = Sulafat, [คุณแม่] = Kore)
-         */
-        function splitIntoVoiceSegments(rawText, persona, lang, emoMeta) {
-            const text = String(rawText || '').trim();
+        function splitIntoVoiceSegments(text, personaObj, lang, emoMeta) {
+            const raw = String(text || '').trim();
+            if (!raw) return [];
             const isEn = lang === 'en';
-            const primaryVoice = persona?.voiceCast?.primary || 'Sulafat';
-            const secondaryVoice = persona?.voiceCast?.secondary || 'Kore';
+            const primaryVoice = personaObj?.voiceCast?.primary || 'Sulafat';
+            const secondaryVoice = personaObj?.voiceCast?.secondary || 'Kore';
             const baseStyle = isEn ? emoMeta.ttsStyleEN : emoMeta.ttsStyleTH;
 
-            if (persona?.id === 'conflict') {
-                const tagRegex = /\[(ภรรยา[^\]]*|คุณแม่[^\]]*|แม่[^\]]*|Wife[^\]]*|Mother[^\]]*)\]\s*:?/gi;
-                const matches = [...text.matchAll(tagRegex)];
-                if (matches.length > 0) {
-                    const segs = [];
-                    for (let i = 0; i < matches.length; i++) {
-                        const rawLabel = matches[i][1].trim();
-                        const start = matches[i].index + matches[i][0].length;
-                        const end = i + 1 < matches.length ? matches[i + 1].index : text.length;
-                        const spoken = cleanTextForSpeech(text.slice(start, end), lang);
-                        if (!spoken) continue;
-                        const isMother = /แม่|mother/i.test(rawLabel);
-                        segs.push({
-                            speakerLabel: isMother ? (isEn ? 'Mother' : 'คุณแม่') : (isEn ? 'Wife' : 'ภรรยา'),
-                            voiceName: isMother ? secondaryVoice : primaryVoice,
-                            pitchShift: isMother ? 0.88 : 1.06,
-                            styleHint: isMother
-                                ? (isEn ? 'Speak as a grieving, protective older mother with a deeper, emotionally trembling yet firm voice.' : 'พูดภาษาไทยด้วยน้ำเสียงคุณแม่วัยกลางคน–ผู้ใหญ่ที่ทุ้มหนักแน่นกว่าเล็กน้อย สั่นเครือด้วยความรักและหวงแหนลูกชาย ไม่แข็งเป็นหุ่นยนต์')
-                                : (isEn ? 'Speak as a gentle, tearful younger wife trying to speak respectfully and softly.' : 'พูดภาษาไทยด้วยน้ำเสียงภรรยาวัยทำงานที่นุ่มนวล สั่นเครือเบาๆ และพยายามพูดด้วยความเคารพอย่างเป็นธรรมชาติ'),
-                            text: spoken
-                        });
-                    }
-                    if (segs.length > 0) return segs;
+            // แยกเสียง 2 ตัวละครสำหรับเคส 3 (ภรรยา + คุณแม่)
+            if (personaObj?.id === 'conflict') {
+                const regex = /\[(ภรรยา|คุณแม่|แม่|Wife|Mother)\]\s*:?\s*([\s\S]*?)(?=\[(?:ภรรยา|คุณแม่|แม่|Wife|Mother)\]|$)/gi;
+                const segments = [];
+                let m;
+                while ((m = regex.exec(raw)) !== null) {
+                    const who = String(m[1] || '').trim();
+                    const spoken = prepareNaturalSpeech(m[2], lang);
+                    if (!spoken) continue;
+                    const isMother = /แม่|mother/i.test(who);
+                    segments.push({
+                        speakerLabel: isMother ? (isEn ? 'Mother' : 'คุณแม่') : (isEn ? 'Wife' : 'ภรรยา'),
+                        voiceName: isMother ? secondaryVoice : primaryVoice,
+                        pitchShift: isMother ? 0.88 : 1.05,
+                        styleHint: isMother
+                            ? (isEn
+                                ? 'Speak as a deeply grieving, protective older mother with a firm, resonant, emotional voice.'
+                                : 'พูดภาษาไทยด้วยน้ำเสียงคุณแม่วัยกลางคนที่ทุ้มหนักแน่น โศกเศร้าและหวงแหนลูกชายอย่างเป็นธรรมชาติ')
+                            : baseStyle,
+                        text: spoken
+                    });
                 }
+                if (segments.length > 0) return segments;
             }
 
-            const cleaned = cleanTextForSpeech(text, lang);
-            if (!cleaned) return [];
+            const clean = prepareNaturalSpeech(raw, lang);
+            if (!clean) return [];
             return [{
-                speakerLabel: persona?.speakerRoleTH?.split(' ')[0] || (isEn ? 'Relative' : 'ญาติ'),
+                speakerLabel: isEn ? 'Relative' : (personaObj?.speakerRoleTH?.split(' ')[0] || 'ญาติ'),
                 voiceName: primaryVoice,
                 pitchShift: 1.02,
                 styleHint: baseStyle,
-                text: cleaned
+                text: clean
             }];
         }
 
-        function pickBestBrowserVoice(lang) {
-            if (typeof CORE.pickNaturalBrowserVoice === 'function') return CORE.pickNaturalBrowserVoice(lang);
-            if (!('speechSynthesis' in window)) return null;
-            const voices = window.speechSynthesis.getVoices() || [];
-            const prefix = lang === 'en' ? 'en' : 'th';
-            const matches = voices.filter(v => String(v.lang || '').toLowerCase().startsWith(prefix));
-            return matches.find(v => /premwadee|kanya|google|natural|samantha|aria/i.test(v.name || '')) || matches[0] || null;
+        function playGentleKnockSound() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                [0, 0.24].forEach((offset) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'triangle';
+                    const t = ctx.currentTime + offset;
+                    osc.frequency.setValueAtTime(165, t);
+                    osc.frequency.exponentialRampToValueAtTime(62, t + 0.09);
+                    gain.gain.setValueAtTime(0.001, t);
+                    gain.gain.linearRampToValueAtTime(0.18, t + 0.01);
+                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.11);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(t);
+                    osc.stop(t + 0.12);
+                });
+            } catch (_) {}
         }
 
         // ============================================================================
-        // 3. AI RESPONSE PARSER (WITH [ACTION] NON-VERBAL CUES), TRIGGER DETECTOR & AI SUPERVISOR
+        // 3. NAME ADDRESSING, AI PARSER, OFFLINE SIMULATOR & 5-AXIS EVALUATOR
         // ============================================================================
+        function extractDefaultAddressName(learnerObj, isEn = false) {
+            const rawName = String(learnerObj?.name || '').replace(/\(Preview\)/gi, '').trim();
+            const rawEn = String(learnerObj?.nameEN || '').trim();
+            if (isEn) {
+                const src = rawEn || rawName;
+                if (!src) return 'Coordinator';
+                const clean = src.replace(/^(Mr\.|Mrs\.|Ms\.|Dr\.|RN|พว\.|นพ\.|พญ\.|คุณ|นาย|นางสาว|นาง)\s*/i, '').trim();
+                const first = clean.split(/[\s,]+/)[0];
+                return first ? `Khun ${first}` : 'Coordinator';
+            }
+            if (!rawName) return 'คุณผู้เรียน';
+            const cleaned = rawName
+                .replace(/^(ว่าที่\s*ร\.ต\.|ร\.ต\.|พ\.ต\.ท\.|ผศ\.|รศ\.|ศ\.|ดร\.|นพ\.|พญ\.|ทพ\.|ทพญ\.|ภก\.|ภญ\.|พว\.|นางสาว|น\.ส\.|นาย|นาง|คุณ)\s*/i, '')
+                .trim();
+            const firstName = cleaned.split(/\s+/)[0] || rawName.split(/\s+/)[0];
+            return firstName ? (firstName.startsWith('คุณ') ? firstName : `คุณ${firstName}`) : 'คุณผู้เรียน';
+        }
+
+        function detectCustomSelfIntro(text, isEn = false) {
+            const input = String(text || '').trim();
+            if (!input) return '';
+            if (isEn) {
+                const m = input.match(/(?:call me|my name is|i am|i'm)\s+((?:Dr\.|Nurse|Mr\.|Ms\.)?\s*[A-Za-z]{2,18})/i);
+                if (m && m[1]) {
+                    const cand = m[1].trim();
+                    if (!/^(the|a|an|here|sorry|clinical|coordinator|nurse|doctor|very|truly|so)$/i.test(cand)) {
+                        return cand;
+                    }
+                }
+                return '';
+            }
+            const callMe = input.match(/เรียก(?:ผม|ดิฉัน|หนู|ฉัน)?ว่า\s*([ก-๙a-zA-Z0-9\.]{2,20})/);
+            if (callMe && callMe[1]) {
+                const raw = callMe[1].replace(/(?:นะ|ค่ะ|ครับ|นะคะ|นะครับ|ได้เลย|ก็ได้).*$/, '').trim();
+                if (raw.length >= 2) {
+                    return /^(คุณ|พี่|น้อง|หมอ|อาจารย์|พยาบาล|พว\.|นพ\.|พญ\.)/.test(raw) ? raw : `คุณ${raw}`;
+                }
+            }
+            const named = input.match(/(?:ผม|ดิฉัน|หนู|ฉัน|กระผม)\s*(?:ชื่อ(?:เล่น)?(?:ว่า)?|คือ)\s*([ก-๙a-zA-Z0-9\.]{2,22})/);
+            if (named && named[1]) {
+                const raw = named[1].replace(/(?:นะ|ค่ะ|ครับ|นะคะ|นะครับ|เป็น|จาก|อยู่).*$/, '').trim();
+                const isGeneric = /^(พยาบาล|ผู้ประสานงาน|เจ้าหน้าที่|บุคลากร|หมอ|แพทย์|ทีม|คนดูแล|ตัวแทน)/.test(raw) && raw.length >= 6;
+                if (raw.length >= 2 && !isGeneric) {
+                    return /^(คุณ|พี่|น้อง|หมอ|อาจารย์|พยาบาล|พว\.|นพ\.|พญ\.)/.test(raw) ? raw : `คุณ${raw}`;
+                }
+            }
+            const roleNamed = input.match(/(?:ผม|ดิฉัน|หนู|ฉัน)?\s*((?:พี่|หมอ|พว\.|นพ\.|พญ\.|อาจารย์)[ก-๙a-zA-Z]{2,14})(?:\s|ค่ะ|ครับ|นะ|$)/);
+            if (roleNamed && roleNamed[1]) {
+                const raw = roleNamed[1].trim();
+                if (!/^(พี่น้อง|พี่ชาย|พี่สาว|หมอแจ้ง|หมอบอก|หมอตรวจ|หมอวินิจฉัย|หมอเวร)/.test(raw)) {
+                    return raw;
+                }
+            }
+            return '';
+        }
+
         function parseAiResponse(rawText) {
             const text = String(rawText || '').trim();
             const readyToEvaluate = /\[(READY_TO_EVALUATE|CONVERSATION_END|END_SESSION)\]/i.test(text);
+            let decision = null;
+            const decMatch = text.match(/\[DECISION\s*:\s*(CONSENT|DECLINE|DEFER_HOME)\]/i);
+            if (decMatch && decMatch[1]) {
+                decision = decMatch[1].toUpperCase();
+            }
+
             const suggestions = [];
             const sugRegex = /\[SUGGESTION\s*\d+\]\s*([^\n]+)/gi;
             let match;
@@ -807,6 +919,7 @@
 
             let cleaned = text
                 .replace(/\[(READY_TO_EVALUATE|CONVERSATION_END|END_SESSION)\]/gi, '')
+                .replace(/\[DECISION\s*:\s*(CONSENT|DECLINE|DEFER_HOME)\]/gi, '')
                 .replace(/\[ACTION\]\s*[^\n]+/gi, '')
                 .replace(/\[SUGGESTION\s*\d+\]\s*[^\n]+/gi, '')
                 .replace(/\[COACH_TIP\]\s*[^\n]+/gi, '')
@@ -818,7 +931,6 @@
                 emotion = emoMatch[1].toUpperCase();
                 cleaned = cleaned.replace(emoMatch[0], '').trim();
             }
-            // คงแท็ก [ภรรยา] / [คุณแม่] / [Wife] / [Mother] ไว้เพื่อแยกเสียง 2 ตัวละคร
             if (!/^\[(ภรรยา|คุณแม่|แม่|Wife|Mother)/i.test(cleaned)) {
                 cleaned = cleaned.replace(/^\[[^\]]{1,25}\]\s*/, '').trim();
             }
@@ -829,6 +941,7 @@
                 text: cleaned || '...',
                 coachTip,
                 suggestions: readyToEvaluate ? [] : suggestions.slice(0, 2),
+                decision,
                 readyToEvaluate
             };
         }
@@ -838,56 +951,73 @@
             return TRIGGER_PHRASE_DICTIONARY.filter(item => item.lang === lang && item.pattern.test(input));
         }
 
-        function generateOfflineRelativeReply(userMsg, mode, turnCount, persona, difficulty) {
+        function generateOfflineRelativeReply(userMsg, mode, turnCount, persona, difficulty, addressName = 'คุณผู้เรียน', prevMessages = []) {
             const msg = String(userMsg || '').toLowerCase();
             const isEn = mode.language === 'en';
             const personaId = persona?.id || 'standard';
-            const targetTurns = difficulty?.id === 'hard' ? 4 : 3;
+            const addr = addressName || (isEn ? 'Coordinator' : 'คุณผู้เรียน');
+            const targetTurns = difficulty?.id === 'hard' ? 6 : 5;
+            const allUserText = [...prevMessages.filter(m => m.sender === 'user').map(m => m.text || ''), userMsg].join(' ');
+            const hasHarshTriggers = detectTriggerPhrases(allUserText, isEn ? 'en' : 'th').length >= 2;
+            const prevAskedHome = prevMessages.some(m => m.sender === 'ai' && /กลับไป.*บ้าน|go home.*decide/i.test(m.text || ''));
+            const allowedHome = /กลับไป|ที่บ้าน|ได้ค่ะ|ได้ครับ|ไม่เร่ง|ตามสบาย|go home|take.*time|of course/i.test(msg);
 
-            if (personaId === 'belief') {
-                if (turnCount >= targetTurns || msg.match(/ไม่เร่ง|ปรึกษา|เวลา|ตามสบาย|สมเกียรติ|no rush|family|time/)) {
+            // รอบที่ 1–2: ซักถามปมหลักของเคสและขอความชัดเจนเรื่องภาวะสมองตาย/ความกังวล
+            if (turnCount <= 2) {
+                if (personaId === 'conflict') {
                     return isEn
-                        ? `[CALM]\n[ACTION] Relaxes her shoulders, gently wipes her eyes, and nods with quiet gratitude.\nThank you for honoring our grandmother's beliefs and reassuring us that my brother's body will be cared for peacefully. I feel much calmer now and will talk gently with my family.\n[READY_TO_EVALUATE]\n[COACH_TIP] Natural closure achieved! Tap "Evaluate & Claim Card" below.`
-                        : `[CALM]\n[ACTION] คลายมือที่ประสานแน่นลง ซับน้ำตาเบาๆ และพยักหน้าด้วยสีหน้าผ่อนคลายขึ้น\nขอบคุณมากนะคะที่ไม่มองว่าความเชื่อของคุณยายเป็นเรื่องงมงาย และยืนยันว่าจะดูแลตกแต่งร่างน้องชายให้เรียบร้อยสมบูรณ์ที่สุด ตอนนี้หนูสบายใจขึ้นมากแล้วค่ะ ขอให้หนูไปคุยกับคุณยายและที่บ้านก่อนนะคะ\n[READY_TO_EVALUATE]\n[COACH_TIP] ปิดบทสนทนาได้อย่างงดงามและครบถ้วนแล้วค่ะ กดปุ่ม “ประเมินผลและรับการ์ดสมรรถนะ” ด้านล่างได้เลยค่ะ`;
+                        ? `[HESITANT]\n[ACTION] The mother dabs her tears while the wife glances anxiously at ${addr}.\n[Mother]: ${addr}, I just can't bear seeing my son hurt any more... [Wife]: Please tell us honestly—how does organ donation actually work, and will his body be respected?\n[COACH_TIP] Stay neutral, acknowledge both their love, and gently explain the transparent ODC process and dignified body care.\n[SUGGESTION 1] I feel how deeply both of you love him. Every step is overseen transparently by the Thai Red Cross (ODC) with zero cost, and surgeons restore his body with utmost dignity.\n[SUGGESTION 2] We will never force any decision. Let me gently explain how the process works so both of you have clear facts before talking together.`
+                        : `[HESITANT]\n[ACTION] คุณแม่หยิบทิชชูซับน้ำตาด้วยมือสั่น ขณะที่ภรรยาหันมามอง${addr}อย่างตั้งใจฟัง\n[คุณแม่]: ${addr}คะ แม่แค่ไม่อยากเห็นต้นเจ็บอีกแล้ว... [ภรรยา]: หนูก็รักพี่ต้นเหมือนกันค่ะแม่ รบกวน${addr}ช่วยอธิบายขั้นตอนการบริจาคและเรื่องการดูแลร่างให้แม่สบายใจหน่อยได้ไหมคะ?\n[COACH_TIP] วางตัวเป็นกลาง สะท้อนความรักของทั้งสองฝ่าย แล้วให้ข้อมูลขั้นตอน ODC และการดูแลตกแต่งร่างอย่างประณีตค่ะ\n[SUGGESTION 1] ดิฉันสัมผัสได้ถึงความรักที่ทั้งคุณแม่และภรรยามีให้คุณต้นอย่างลึกซึ้งค่ะ ขอยืนยันว่าจะไม่ฝืนใจครอบครัวเด็ดขาด และทุกขั้นตอนผ่านศูนย์รับบริจาคอวัยวะสภากาชาดไทย (ODC) โดยไม่มีค่าใช้จ่ายค่ะ\n[SUGGESTION 2] ทีมศัลยแพทย์จะดูแลจัดเก็บอย่างประณีตและตกแต่งร่างคุณต้นให้เรียบร้อยสมเกียรติที่สุดจนทำพิธีทางศาสนาได้ตามปกติค่ะ`;
+                }
+                if (personaId === 'distrust') {
+                    return isEn
+                        ? `[HESITANT]\n[ACTION] Loosens her crossed arms slightly, still watching ${addr} closely.\nThank you for staying calm, ${addr}. So how can our family be sure organs aren't sold to wealthy patients, and that we won't face extra ICU charges?\n[COACH_TIP] Explain ODC computer-based allocation, legal transparency, and zero donation-related cost to the family.\n[SUGGESTION 1] Allocation is strictly audited by the Thai Red Cross (ODC) computer system based on medical match and urgency—never wealth—and your family bears zero donation-related cost.\n[SUGGESTION 2] Buying or selling organs is strictly illegal. Everything is tracked transparently by ODC, and our surgical team cares for your mother with complete dignity.`
+                        : `[HESITANT]\n[ACTION] คลายแขนที่กอดอกลงเล็กน้อย แววตายังคงระแวดระวังแต่เริ่มตั้งใจฟัง${addr}\nขอบคุณที่${addr}ตอบอย่างใจเย็นนะคะ แต่หนูยังอยากมั่นใจจริงๆ ค่ะ ว่าอวัยวะจะไม่ถูกนำไปขายหรือให้คนรวยลัดคิว และครอบครัวไม่ต้องจ่ายค่าใช้จ่ายคุณแม่เพิ่มใช่ไหมคะ?\n[COACH_TIP] อธิบายระบบจัดสรรด้วยคอมพิวเตอร์ของศูนย์รับบริจาคอวัยวะสภากาชาดไทย (ODC) ความโปร่งใส และยืนยันไม่มีค่าใช้จ่ายกับครอบครัวค่ะ\n[SUGGESTION 1] ขอยืนยันค่ะว่าไม่มีการซื้อขายหรือลัดคิวเด็ดขาด ระบบคอมพิวเตอร์ของศูนย์รับบริจาคอวัยวะสภากาชาดไทย (ODC) จะจัดสรรตามความเข้ากันได้ของเนื้อเยื่อและความเร่งด่วนเท่านั้น และครอบครัวไม่มีค่าใช้จ่ายส่วนนี้เพิ่มเลยค่ะ\n[SUGGESTION 2] ทุกขั้นตอนตรวจสอบย้อนกลับได้ตามกฎหมายค่ะ นอกจากนี้หากครอบครัวตัดสินใจอย่างไร ทีมแพทย์จะดูแลคุณแม่อย่างเต็มที่และให้เกียรติสูงสุดเสมอค่ะ`;
+                }
+                if (personaId === 'belief') {
+                    return isEn
+                        ? `[SAD]\n[ACTION] Looks down thoughtfully, voice softening as she listens to ${addr}.\nHearing ${addr} honor our grandmother's faith helps so much. Still, if we consider donation, will my brother's body look peaceful for our religious ceremony?\n[COACH_TIP] Reassure meticulous surgical restoration and explain how donation aligns with the highest act of compassion.\n[SUGGESTION 1] Our surgical team closes incisions neatly and cares for your brother with utmost dignity so funeral rites proceed completely peacefully.\n[SUGGESTION 2] In spiritual traditions, saving other lives is honored as the highest act of generosity, and your brother's body will be restored with full respect.`
+                        : `[SAD]\n[ACTION] ก้มหน้าครุ่นคิดตามช้าๆ แววตาอ่อนลงเมื่อได้ยิน${addr}รับฟังด้วยความเคารพ\nพอได้ยิน${addr}ไม่มองว่าความเชื่อของคุณยายเป็นเรื่องงมงาย หนูก็อุ่นใจขึ้นค่ะ แต่อยากถามให้มั่นใจจริงๆ ว่าร่างน้องชายหลังผ่าตัดจะเรียบร้อยสมบูรณ์และทำพิธีศาสนาได้ตามปกติใช่ไหมคะ?\n[COACH_TIP] ยืนยันการเย็บแผลตกแต่งร่างน้องชายอย่างประณีตสมเกียรติที่สุด และอธิบายเรื่องทานบารมีอันยิ่งใหญ่อย่างอ่อนโยนค่ะ\n[SUGGESTION 1] ขอรับรองเลยค่ะว่าทีมศัลยแพทย์จะดูแลเย็บแผลและตกแต่งร่างน้องชายอย่างประณีตสมเกียรติที่สุดจนทำพิธีศาสนาได้ตามปกติทุกประการค่ะ\n[SUGGESTION 2] ตามหลักศาสนาการต่อชีวิตให้เพื่อนมนุษย์ถือเป็นมหาทานบารมีอันยิ่งใหญ่ค่ะ และทีมจะดูแลร่างน้องชายด้วยความเคารพสูงสุดเสมอค่ะ`;
                 }
                 return isEn
-                    ? `[SAD]\n[ACTION] Looks down thoughtfully, voice softening as she processes your explanation.\nHearing that you respect our traditions helps so much. Still, will my brother truly look peaceful with no scary surgical marks at the funeral?\n[COACH_TIP] Reassure meticulous surgical closure and offer unhurried family time.\n[SUGGESTION 1] I assure you our surgical team closes incisions neatly and cares for your brother with utmost dignity so funeral rites proceed peacefully. Please take all the time your family needs.\n[SUGGESTION 2] Your grandmother's peace of mind matters deeply. There is no rush at all—we will respect whatever your family decides together.`
-                    : `[SAD]\n[ACTION] ก้มหน้าคิดตามช้าๆ แววตาอ่อนลงแต่ยังมีความห่วงใยต่อร่างของน้องชาย\nฟังที่คุณเจ้าหน้าที่อธิบายเรื่องทานบารมีแล้วหนูอุ่นใจขึ้นค่ะ แต่อยากถามให้มั่นใจอีกนิดนะคะว่าหลังผ่าตัดร่างของน้องชายจะเรียบร้อยไม่มีรอยแผลน่ากลัว และครอบครัวขอเวลาไปปรึกษาคุณยายก่อนได้ไหมคะ?\n[COACH_TIP] ยืนยันการเย็บแผลตกแต่งร่างน้องชายอย่างประณีตสูงสุด และให้เวลาครอบครัวปรึกษาคุณยายโดยไม่เร่งรัดเพื่อปิดบทสนทนาค่ะ\n[SUGGESTION 1] ขอรับรองค่ะว่าทีมศัลยแพทย์จะดูแลเย็บแผลและตกแต่งร่างน้องชายอย่างประณีตสมเกียรติที่สุดจนทำพิธีศาสนาได้ตามปกติ และขอให้ครอบครัวค่อยๆ ปรึกษาคุณยายอย่างเต็มที่โดยไม่เร่งรัดเลยนะคะ\n[SUGGESTION 2] ได้แน่นอนค่ะ ไม่ต้องรีบตัดสินใจเลยนะคะ ไม่ว่าคุณยายและครอบครัวจะตัดสินใจอย่างไร ทีมจะดูแลน้องชายอย่างดีที่สุดเสมอค่ะ`;
+                    ? `[SAD]\n[ACTION] Tears well up as she holds the tissue closer, looking at ${addr}.\nSo the ventilator is only keeping my father's chest moving, and his brain cannot recover, ${addr}... That hurts so deeply. If we even think about organ donation, what actually happens next?\n[COACH_TIP] Validate her grief, explain the transparent ODC process, zero cost, and dignified care for her father.\n[SUGGESTION 1] I am truly sorry for your pain. If your family considers donation, the Thai Red Cross (ODC) coordinates everything transparently at zero cost, and surgeons care for your father with complete dignity.\n[SUGGESTION 2] Please take a moment to breathe. Donation is completely voluntary—his organs could help save up to 8 lives while his body is cared for peacefully and respectfully.`
+                    : `[SAD]\n[ACTION] น้ำตาคลอไหลลงมา ยกทิชชูขึ้นซับเบาๆ แล้วเงยหน้ามอง${addr}ด้วยเสียงสั่นเครือ\nแสดงว่าที่เห็นหน้าอกคุณพ่อขยับเป็นเพราะเครื่องช่วยหายใจ และสมองคุณพ่อจะไม่ฟื้นแล้วจริงๆ เหรอคะ${addr}... หนูเสียใจมากเลยค่ะ แล้วเรื่องการบริจาคอวัยวะขั้นตอนจริงๆ มันเป็นยังไงคะ ครอบครัวต้องดูแลหรือจ่ายอะไรเพิ่มไหมคะ?\n[COACH_TIP] สะท้อนความเสียใจอย่างอ่อนโยน แล้วให้ข้อมูลขั้นตอนบริจาคอวัยวะ ระบบ ODC สภากาชาดไทย ไม่มีค่าใช้จ่าย และการตกแต่งร่างประณีตค่ะ\n[SUGGESTION 1] ดิฉันเสียใจด้วยอย่างสุดซึ้งค่ะ หากครอบครัวพิจารณาบริจาคอวัยวะ ศูนย์รับบริจาคอวัยวะสภากาชาดไทย (ODC) จะจัดสรรอย่างโปร่งใส ไม่มีค่าใช้จ่ายกับครอบครัว และทีมศัลยแพทย์จะตกแต่งร่างคุณพ่ออย่างประณีตสมเกียรติที่สุดค่ะ\n[SUGGESTION 2] การบริจาคอวัยวะหนึ่งท่านสามารถช่วยต่อชีวิตผู้ป่วยระยะสุดท้ายได้หลายชีวิตเลยค่ะ ทั้งหมดขึ้นอยู่กับความสมัครใจของครอบครัวโดยไม่มีการเร่งรัดเลยนะคะ`;
             }
 
-            if (personaId === 'conflict') {
-                if (turnCount >= targetTurns || msg.match(/ไม่ฝืน|ไม่บังคับ|เคารพทั้งสอง|ปรึกษา|never force|neutral|peace/)) {
+            // รอบที่ 3–4: ซักถามเรื่องเวลาอำลา และถามว่าสามารถกลับไปตัดสินใจที่บ้านก่อนได้ไหม
+            if (turnCount < targetTurns) {
+                if (turnCount === targetTurns - 1 && !prevAskedHome) {
+                    const homeAskPrefix = personaId === 'conflict' ? (isEn ? '[Wife]: ' : '[ภรรยา]: ') : '';
                     return isEn
-                        ? `[CALM]\n[ACTION] The mother slowly lowers her tense hands and reaches out to hold her daughter-in-law's arm.\n[Mother]: Hearing that you will never force us against our hearts helps me breathe again... [Wife]: Thank you for helping us stay united. May we take quiet time together now?\n[READY_TO_EVALUATE]\n[COACH_TIP] Compassionate de-escalation complete! Tap "Evaluate & Claim Card" below.`
-                        : `[CALM]\n[ACTION] คุณแม่ค่อยๆ ผ่อนลมหายใจและเอื้อมมือมาจับแขนลูกสะใภ้เบาๆ บรรยากาศในห้องเริ่มอบอุ่นลง\n[คุณแม่]: พอได้ยินว่าโรงพยาบาลจะไม่ฝืนใจแม่และเคารพความรู้สึกของครอบครัว แม่ก็โล่งใจขึ้นมากค่ะ... [ภรรยา]: ขอบคุณนะคะที่ช่วยให้พวกเราใจเย็นลง ขอให้หนูกับแม่ได้นั่งคุยกันเงียบๆ สักครู่นะคะ\n[READY_TO_EVALUATE]\n[COACH_TIP] ประคับประคองความขัดแย้งและปิดบทสนทนาได้อย่างยอดเยี่ยมแล้วค่ะ กดปุ่ม “ประเมินผลและรับการ์ดสมรรถนะ” ได้เลยค่ะ`;
+                        ? `[HESITANT]\n[ACTION] Takes a slow, thoughtful breath and looks gently at ${addr}.\n${homeAskPrefix}Thank you for explaining everything so clearly, ${addr}. Because this is such a big decision for all of us—may I ask, can our family go home to discuss and decide first?\n[COACH_TIP] Answer honestly and gently—allow family discussion without pressure while kindly clarifying the supportive clinical timeframe.\n[SUGGESTION 1] Of course your family may take time to talk together or return home to discuss—there is zero pressure. I will gently share the medical timeframe for ventilator support so your family has all the information you need.\n[SUGGESTION 2] Your family's peace of mind comes first. Please take quiet time together—whether here or after speaking with relatives at home—and let me know whenever you are ready.`
+                        : `[HESITANT]\n[ACTION] ถอนหายใจช้าๆ มอง${addr}ด้วยแววตาที่ไว้วางใจขึ้นแต่ยังอยากปรึกษาคนในครอบครัวให้ครบทุกคน\n${homeAskPrefix}ขอบคุณ${addr}มากนะคะที่อธิบายทุกอย่างชัดเจนและอ่อนโยนขนาดนี้ แต่เรื่องนี้เป็นการตัดสินใจครั้งใหญ่ของบ้านเรา ขอถาม${addr}ตรงๆ นะคะ... ครอบครัวเราสามารถกลับไปปรึกษาและตัดสินใจที่บ้านก่อนได้ไหมคะ?\n[COACH_TIP] ตอบคำถามเรื่องขอกลับไปตัดสินใจที่บ้านอย่างให้เกียรติ ไม่กดดัน พร้อมแจ้งกรอบเวลาดูแลสัญญาณชีพอย่างสุภาพค่ะ\n[SUGGESTION 1] ได้แน่นอนค่ะ ครอบครัวสามารถกลับไปปรึกษาพูดคุยกับญาติทุกคนที่บ้านให้สบายใจก่อนได้เลยนะคะ ดิฉันไม่เร่งรัดเด็ดขาด เพียงขอแจ้งข้อมูลกรอบเวลาการดูแลสัญญาณชีพไว้เพื่อให้ครอบครัววางแผนได้อย่างสะดวกค่ะ\n[SUGGESTION 2] ความสบายใจของครอบครัวสำคัญที่สุดค่ะ ไม่ว่าจะนั่งปรึกษากันที่นี่หรือกลับไปพูดคุยกับครอบครัวที่บ้านก่อน ทีมก็พร้อมเคารพและรอคำตอบอย่างเต็มที่ค่ะ`;
                 }
                 return isEn
-                    ? `[HESITANT]\n[ACTION] The mother dabs her tears while the wife glances at her with gentle concern.\n[Mother]: I just don't want my son to suffer any more... [Wife]: I love him too, Mom. Can you assure us that the hospital won't rush us or force anything?\n[COACH_TIP] Validate both sides' love, assure zero coercion, and offer private family time.\n[SUGGESTION 1] I can feel how deeply both of you love him. Our team will never force any decision—please take quiet private time together and we will honor whatever brings your family peace.\n[SUGGESTION 2] Both perspectives come from love. There is absolutely no rush; I will give you private space to talk calmly whenever you are ready.`
-                    : `[HESITANT]\n[ACTION] คุณแม่หยิบทิชชูขึ้นซับน้ำตาด้วยเสียงสั่นเครือ ขณะที่ภรรยาหันไปมองคุณแม่ด้วยความเห็นใจ\n[คุณแม่]: แม่แค่ไม่อยากเห็นต้นเจ็บอีกแล้ว... [ภรรยา]: หนูก็รักพี่ต้นเหมือนกันค่ะแม่... คุณเจ้าหน้าที่ช่วยยืนยันได้ไหมคะว่าจะไม่เร่งรัดและไม่บังคับครอบครัวเรา?\n[COACH_TIP] สะท้อนความรักของทั้งคุณแม่และภรรยา ยืนยันไม่ฝืนใจเด็ดขาด และให้เวลาส่วนตัวเพื่อปิดบทสนทนาอย่างสงบค่ะ\n[SUGGESTION 1] ดิฉันสัมผัสได้ถึงความรักที่ทั้งคุณแม่และภรรยามีให้คุณต้นอย่างลึกซึ้งค่ะ ขอยืนยันว่าจะไม่ฝืนใจหรือเร่งรัดเด็ดขาด ขอให้ทั้งสองท่านได้ใช้เวลาพูดคุยกันอย่างเป็นส่วนตัวได้เลยนะคะ\n[SUGGESTION 2] ความสบายใจและความรักของครอบครัวสำคัญที่สุดค่ะ ทีมพร้อมเคารพการตัดสินใจร่วมกันของครอบครัวเสมอ ดิฉันจะคอยอยู่ด้านนอกเรียกได้ตลอดนะคะ`;
+                    ? `[HESITANT]\n[ACTION] Nods slowly, absorbing your explanation with quieter breathing.\nThat makes much more sense now, ${addr}. Will our family still have private time to say goodbye to our loved one peacefully before and after everything?\n[COACH_TIP] Assure ample private goodbye time and continuous bereavement support without pressure.\n[SUGGESTION 1] Absolutely—your family will have full private time to say goodbye peacefully, and we will stand beside you with compassionate support every step of the way.\n[SUGGESTION 2] Yes, we honor every farewell wish and religious blessing your family wants, with zero rush.`
+                    : `[HESITANT]\n[ACTION] พยักหน้ารับช้าๆ สีหน้าคลายความตึงเครียดลงมากและเริ่มหายใจได้ทั่วท้องขึ้น\nฟังที่${addr}อธิบายแล้วหนูเข้าใจชัดเจนขึ้นมากเลยค่ะ แต่อยากถามอีกนิดว่าครอบครัวเราจะได้มีเวลาเข้าไปอำลาและทำพิธีขอขมาอย่างสงบเป็นส่วนตัวใช่ไหมคะ?\n[COACH_TIP] ยืนยันว่าครอบครัวจะได้มีเวลาอำลาและทำพิธีขอขมาอย่างเป็นส่วนตัวเต็มที่โดยไม่เร่งรัดค่ะ\n[SUGGESTION 1] ได้อย่างเต็มที่เลยค่ะ ทีมจะจัดเวลาและพื้นที่ส่วนตัวให้ครอบครัวได้เข้าไปอำลาและขอขมาอย่างสงบก่อนและหลังทุกขั้นตอนอย่างสมเกียรติที่สุดค่ะ\n[SUGGESTION 2] แน่นอนค่ะ เราเคารพทุกช่วงเวลาแห่งความรักของครอบครัว ดิฉันจะคอยดูแลประสานทุกอย่างให้ราบรื่นและอ่อนโยนที่สุดค่ะ`;
             }
 
-            if (personaId === 'distrust') {
-                if (turnCount >= targetTurns || msg.match(/สภากาชาด|odc|ไม่มีค่าใช้จ่าย|โปร่งใส|red cross|transparent|no cost/)) {
-                    return isEn
-                        ? `[CALM]\n[ACTION] Uncrosses her arms, lets out a relieved breath, and nods sincerely.\nThank you for answering openly without getting defensive. Knowing ODC allocates organs fairly by computer with zero extra cost to our family truly eases my mind. I will speak with my relatives now.\n[READY_TO_EVALUATE]\n[COACH_TIP] Trust established cleanly! Tap "Evaluate & Claim Card" below.`
-                        : `[CALM]\n[ACTION] คลายแขนที่กอดอกออก สีหน้าอ่อนโยนลงและพยักหน้าด้วยความไว้วางใจ\nขอบคุณนะคะที่ตอบอย่างตรงไปตรงมาและไม่หงุดหงิดใส่คำถามแรงๆ ของหนู พอรู้ว่าสภากาชาดไทย (ODC) จัดสรรด้วยคอมพิวเตอร์อย่างเป็นธรรมและครอบครัวไม่ต้องเสียค่าใช้จ่ายของคุณแม่เพิ่ม ก็สบายใจขึ้นมากเลยค่ะ เดี๋ยวหนูขอไปปรึกษาพี่น้องก่อนนะคะ\n[READY_TO_EVALUATE]\n[COACH_TIP] คลายความระแวงและปิดบทสนทนาได้อย่างมืออาชีพแล้วค่ะ กดปุ่ม “ประเมินผลและรับการ์ดสมรรถนะ” ด้านล่างได้เลยค่ะ`;
-                }
+            // รอบสรุปการตัดสินใจ 1 ใน 3 รูปแบบ: ยินยอม / ไม่ยินยอม / ขอกลับไปตัดสินใจที่บ้านก่อน
+            if (hasHarshTriggers) {
                 return isEn
-                    ? `[HESITANT]\n[ACTION] Loosens her posture slightly, listening more closely though still cautious.\nThat sounds clearer... So there is strictly no organ selling and no extra ICU bill for my mother if we consider this, and we don't have to decide immediately?\n[COACH_TIP] Confirm ODC transparency, zero family cost, and unhurried family time.\n[SUGGESTION 1] Yes—strictly no buying or selling, allocation is audited by the Thai Red Cross (ODC), zero donation-related cost to your family, and there is no rush at all.\n[SUGGESTION 2] You have every right to be certain. Everything is transparent under ODC with no extra bill—please take all the private time your family needs.`
-                    : `[HESITANT]\n[ACTION] คลายคิ้วที่ขมวดลงเล็กน้อย ตั้งใจฟังข้อมูลมากขึ้นแต่ยังอยากได้คำยืนยันที่ชัดเจน\nฟังดูชัดเจนขึ้นค่ะ... แปลว่าไม่มีการซื้อขายหรือลัดคิวจริงๆ ครอบครัวไม่ต้องจ่ายค่าใช้จ่ายส่วนนี้ของคุณแม่เพิ่ม และไม่ต้องรีบตัดสินใจตอนนี้ใช่ไหมคะ?\n[COACH_TIP] ยืนยันความโปร่งใสของสภากาชาดไทย (ODC) ไม่มีค่าใช้จ่ายกับครอบครัว และให้เวลาปรึกษากันโดยไม่เร่งรัดเพื่อปิดบทสนทนาค่ะ\n[SUGGESTION 1] ใช่ค่ะ ขอยืนยันว่าไม่มีซื้อขายหรือลัดคิวเด็ดขาด จัดสรรโดยศูนย์รับบริจาคอวัยวะสภากาชาดไทย (ODC) ไม่มีค่าใช้จ่ายกับครอบครัว และขอให้ครอบครัวค่อยๆ ปรึกษากันอย่างสบายใจโดยไม่เร่งรัดนะคะ\n[SUGGESTION 2] เป็นสิทธิ์ของครอบครัวที่ซักถามให้มั่นใจได้เต็มที่เลยค่ะ ดิฉันขอให้เวลาครอบครัวพูดคุยกันก่อน หากมีคำถามเพิ่มเติมเรียกดิฉันได้ตลอดนะคะ`;
+                    ? `[SAD]\n[ACTION] Steps back slightly, wiping away tears with a guarded, pained expression.\nI'm sorry, ${addr}... Everything still feels too overwhelming and painful for us right now. Our family has decided to decline organ donation. We just want to bring our loved one home peacefully.\n[DECISION:DECLINE]\n[READY_TO_EVALUATE]\n[COACH_TIP] The family declined donation (respect their autonomy). Tap "Evaluate & Claim Card" to review your coaching feedback.`
+                    : `[SAD]\n[ACTION] ขยับตัวถอยเล็กน้อย ก้มหน้าซับน้ำตาด้วยสีหน้ายังคงเจ็บปวดและไม่พร้อม\nขอโทษนะคะ${addr}... ตอนนี้ครอบครัวเรายังทำใจไม่ไหวจริงๆ ค่ะ พวกเราตัดสินใจ ไม่ยินยอมบริจาคอวัยวะ นะคะ ขอนำร่างท่านกลับไปบำเพ็ญกุศลตามประเพณีอย่างสงบค่ะ\n[DECISION:DECLINE]\n[READY_TO_EVALUATE]\n[COACH_TIP] ญาติตัดสินใจไม่ยินยอมบริจาคอวัยวะ (ฝึกเคารพสิทธิ์ตามหลัก Autonomy) กดปุ่ม “ประเมินผลและรับการ์ดสมรรถนะ” เพื่อดูคำแนะนำการเกลาคำพูดค่ะ`;
             }
 
-            if (turnCount >= targetTurns || (turnCount >= 2 && msg.match(/ไม่รีบ|ปรึกษา|ตกแต่ง|เวลา|ประณีต|no rush|dignity|private time/))) {
+            if (prevAskedHome && allowedHome && (personaId === 'belief' || personaId === 'conflict' || /กลับไป|ที่บ้าน|go home/.test(msg))) {
+                const deferPrefix = personaId === 'conflict' ? (isEn ? '[Mother]: ' : '[คุณแม่]: ') : '';
                 return isEn
-                    ? `[CALM]\n[ACTION] Gently wipes away her tears and offers a small, heartfelt nod of relief.\nThank you for explaining about my father so gently and giving me space to breathe. I understand now and feel calmer. May I take some quiet time to talk with my family?\n[READY_TO_EVALUATE]\n[COACH_TIP] Strong trust and natural closure achieved! Tap "Evaluate & Claim Card" below.`
-                    : `[CALM]\n[ACTION] ยกมือซับน้ำตาเบาๆ หายใจเข้าลึกและพยักหน้ารับด้วยสีหน้าที่สงบลง\nขอบคุณมากนะคะที่ค่อยๆ อธิบายเรื่องคุณพ่อด้วยน้ำเสียงที่นุ่มนวลและให้เวลาครอบครัวเราอย่างเต็มที่ ตอนนี้หนูเข้าใจและใจนิ่งขึ้นมากแล้วค่ะ ขอให้หนูได้นั่งปรึกษากับที่บ้านเงียบๆ สักครู่นะคะ\n[READY_TO_EVALUATE]\n[COACH_TIP] ปิดบทสนทนาได้อย่างอบอุ่นและครบหลักการแล้วค่ะ กดปุ่ม “ประเมินผลและรับการ์ดสมรรถนะ” ด้านล่างได้เลยค่ะ`;
+                    ? `[CALM]\n[ACTION] Relaxes her shoulders and offers ${addr} a sincere, grateful nod.\n${deferPrefix}Thank you so much for respecting our pace, ${addr}. Knowing we aren't pressured means the world to us. We will go home to talk with the rest of our family and decide first, then call you right back.\n[DECISION:DEFER_HOME]\n[READY_TO_EVALUATE]\n[COACH_TIP] The family chose to go home and decide first with full trust in you! Tap "Evaluate & Claim Card" below.`
+                    : `[CALM]\n[ACTION] คลายความเกร็งที่ไหล่ลง ซับน้ำตาเบาๆ และพยักหน้าให้${addr}ด้วยความซาบซึ้งใจ\n${deferPrefix}ขอบคุณ${addr}มากจริงๆ นะคะที่ไม่เร่งรัดและเข้าใจความรู้สึกของครอบครัวเรา พอรู้ว่าสามารถกลับไปปรึกษากันได้ก็โล่งใจขึ้นมากค่ะ พวกเรา ขอกลับไปปรึกษาและตัดสินใจที่บ้านก่อน แล้วจะรีบติดต่อกลับมาแจ้ง${addr}นะคะ\n[DECISION:DEFER_HOME]\n[READY_TO_EVALUATE]\n[COACH_TIP] ญาติไว้วางใจและเลือกขอกลับไปตัดสินใจที่บ้านก่อนอย่างสงบแล้วค่ะ กดปุ่ม “ประเมินผลและรับการ์ดสมรรถนะ” ได้เลยค่ะ`;
             }
+
+            const consentPrefix = personaId === 'conflict' ? (isEn ? '[Mother]: ' : '[คุณแม่]: ') : '';
             return isEn
-                ? `[SAD]\n[ACTION] Tears well up as she covers her mouth briefly, voice trembling softly.\nSo the ventilator is the only thing keeping my father's chest moving, and his brain has permanently stopped... It hurts so deeply. If we even think about next steps, will my father's body look peaceful, and can we take time as a family?\n[COACH_TIP] Pause 2.5s (Therapeutic Silence), validate her grief, assure dignified care for her father, and offer unhurried family time.\n[SUGGESTION 1] I am truly sorry for your loss. There is no rush at all—our surgeons care for your father with utmost dignity so he looks completely peaceful. Please take quiet time together.\n[SUGGESTION 2] I hear how heartbreaking this is. Your family's peace comes first—we will give you private space here and support whatever you decide without any pressure.`
-                : `[SAD]\n[ACTION] น้ำตาคลอไหลลงมา ก้มหน้าลงเล็กน้อยและพูดด้วยเสียงที่สั่นเครือ\nแสดงว่าที่เห็นหน้าอกคุณพ่อขยับและตัวอุ่นอยู่เป็นเพราะเครื่องช่วยหายใจกับยา และสมองคุณพ่อจะไม่ฟื้นกลับมาอีกแล้วจริงๆ เหรอคะ... หนูทำใจแทบไม่ทันเลยค่ะ แล้วขั้นตอนต่อไปครอบครัวเราขอเวลาปรึกษากันก่อนได้ไหมคะ หนูกลัวว่าถ้ามีขั้นตอนอะไรต่อร่างคุณพ่อจะไม่เรียบร้อยค่ะ\n[COACH_TIP] ลองเว้นจังหวะเงียบ 2.5 วินาที แล้วปลอบใจอย่างอ่อนโยน ยืนยันว่าไม่เร่งรัดและดูแลให้เกียรติร่างคุณพ่ออย่างประณีตเพื่อปิดบทสนทนาค่ะ\n[SUGGESTION 1] ดิฉันเสียใจด้วยจริงๆ ค่ะ ไม่ต้องรีบตัดสินใจเลยนะคะ ครอบครัวสามารถปรึกษากันได้อย่างเต็มที่ และหากสนใจทางเลือกใดๆ ทีมแพทย์จะดูแลให้เกียรติร่างคุณพ่ออย่างประณีตสมบูรณ์ที่สุดค่ะ\n[SUGGESTION 2] เข้าใจความเจ็บปวดของลูกมากค่ะ ตอนนี้ขอให้คุณแพรวและครอบครัวได้พักหายใจและคุยกันอย่างเป็นส่วนตัวก่อนนะคะ ดิฉันอยู่ตรงนี้คอยดูแลเสมอโดยไม่มีแรงกดดันใดๆ ค่ะ`;
+                ? `[CALM]\n[ACTION] Gently wipes her tears, smiles softly through her grief, and looks warmly at ${addr}.\n${consentPrefix}Thank you for walking us through every detail with such kindness and honesty, ${addr}. We feel completely at peace now—our family has decided to consent to organ donation so our loved one's kindness can keep living on.\n[DECISION:CONSENT]\n[READY_TO_EVALUATE]\n[COACH_TIP] Compassionate clarity earned the family's full trust and consent! Tap "Evaluate & Claim Card" below.`
+                : `[CALM]\n[ACTION] ยกมือซับน้ำตาเบาๆ แววตาอ่อนโยนและสงบลงอย่างเห็นได้ชัดก่อนมอง${addr}ด้วยความซาบซึ้งใจ\n${consentPrefix}ขอบคุณ${addr}มากจริงๆ นะคะที่ดูแลจิตใจและให้ข้อมูลครอบครัวเราอย่างตรงไปตรงมาและอ่อนโยนที่สุด ตอนนี้พวกเราสบายใจและมั่นใจแล้วค่ะ ครอบครัวเราตัดสินใจ ยินยอมบริจาคอวัยวะ เพื่อให้ความดีของท่านได้ช่วยต่อชีวิตให้ผู้อื่นต่อไปนะคะ\n[DECISION:CONSENT]\n[READY_TO_EVALUATE]\n[COACH_TIP] ยอดเยี่ยมมากค่ะ! คุณสื่อสารจนญาติไว้วางใจและตัดสินใจยินยอมบริจาคอวัยวะแล้ว กดปุ่ม “ประเมินผลและรับการ์ดสมรรถนะ” ได้เลยค่ะ`;
         }
 
-        function evaluateConversation5Axis(messages, timeline, lang = 'th') {
+        function evaluateConversation5Axis(messages, timeline, lang = 'th', decisionOutcome = null) {
             const isEn = lang === 'en';
             const userTurns = messages.filter(m => m.sender === 'user');
             const combined = userTurns.map(m => m.text || '').join(' ');
@@ -897,9 +1027,9 @@
             const lastEmotion = timeline[timeline.length - 1]?.emotion || 'CONFUSED';
 
             const hit = (id) => principles.find(p => p.id === id)?.pattern?.test(combined) || false;
-            const baseTurnBonus = Math.min(18, userTurns.length * 6);
+            const baseTurnBonus = Math.min(18, userTurns.length * 4);
 
-            const setting = Math.min(100, (hit('setting') ? 76 : 56) + Math.min(20, userTurns.length * 5));
+            const setting = Math.min(100, (hit('setting') ? 76 : 56) + Math.min(20, userTurns.length * 4));
             const empathy = Math.min(100, (hit('empathy') ? 78 : 58) + (lastEmotion === 'CALM' ? 14 : 6) - triggersFound.length * 8);
             const clarity = Math.min(100, (hit('clarity') ? 78 : 56) + baseTurnBonus);
             const vocal = Math.min(100, 68 + Math.min(24, silenceCount * 12) + (lastEmotion === 'CALM' ? 8 : 0));
@@ -930,6 +1060,7 @@
                 source: 'local',
                 score,
                 radar,
+                decision: decisionOutcome,
                 triggersFound,
                 silenceCount,
                 supervisorSummary: isEn
@@ -1015,7 +1146,7 @@
         }
 
         // ============================================================================
-        // 4. UI PRIMITIVES: ERROR BOUNDARY, 3D THREE.JS HOLOGRAM & 5-AXIS RADAR
+        // 4. UI PRIMITIVES: ERROR BOUNDARY, ULTRA SMOOTH 3D HOLOGRAM & 5-AXIS RADAR
         // ============================================================================
         class LabErrorBoundary extends React.Component {
             constructor(props) { super(props); this.state = { hasError: false, err: null }; }
@@ -1055,11 +1186,11 @@
                 const height = Math.max(1, container.clientHeight || window.innerHeight);
 
                 const scene = new THREE.Scene();
-                const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 100);
+                const camera = new THREE.PerspectiveCamera(48, width / height, 0.1, 100);
                 camera.position.set(0, 0.2, width < 640 ? 7.2 : 5.8);
 
                 let renderer;
-                try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); }
+                try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' }); }
                 catch (_) { return; }
                 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
                 renderer.setSize(width, height);
@@ -1072,8 +1203,8 @@
                 const g = c.getContext('2d');
                 const grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
                 grad.addColorStop(0, 'rgba(255,255,255,1)');
-                grad.addColorStop(0.35, 'rgba(255,255,255,0.72)');
-                grad.addColorStop(0.75, 'rgba(255,255,255,0.14)');
+                grad.addColorStop(0.28, 'rgba(255,255,255,0.82)');
+                grad.addColorStop(0.68, 'rgba(255,255,255,0.18)');
                 grad.addColorStop(1, 'rgba(255,255,255,0)');
                 g.fillStyle = grad;
                 g.fillRect(0, 0, 64, 64);
@@ -1093,7 +1224,7 @@
                     const y = 1 - (i / (COUNT - 1)) * 2;
                     const r = Math.sqrt(Math.max(0, 1 - y * y));
                     const theta = golden * i;
-                    const rad = 1.55 + (i % 7 === 0 ? 0.5 : 0) + (Math.random() - 0.5) * 0.16;
+                    const rad = 1.56 + (i % 7 === 0 ? 0.46 : 0) + (Math.random() - 0.5) * 0.14;
                     basePos[i * 3] = Math.cos(theta) * r * rad;
                     basePos[i * 3 + 1] = y * rad;
                     basePos[i * 3 + 2] = Math.sin(theta) * r * rad;
@@ -1107,30 +1238,38 @@
                 pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
                 pGeo.setAttribute('color', new THREE.BufferAttribute(cols, 3));
                 const pMat = new THREE.PointsMaterial({
-                    size: 0.088, map: tex, vertexColors: true,
+                    size: 0.086, map: tex, vertexColors: true,
                     transparent: true, opacity: 0.92, depthWrite: false,
                     blending: THREE.AdditiveBlending
                 });
                 root.add(new THREE.Points(pGeo, pMat));
 
-                const coreGeo = new THREE.IcosahedronGeometry(0.92, 2);
+                const coreGeo = new THREE.IcosahedronGeometry(0.9, 2);
                 const coreMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true, transparent: true, opacity: 0.14, blending: THREE.AdditiveBlending });
                 const coreMesh = new THREE.Mesh(coreGeo, coreMat);
                 root.add(coreMesh);
 
-                const ringGeo = new THREE.TorusGeometry(2.25, 0.011, 12, 120);
-                const ringMat = new THREE.MeshBasicMaterial({ color: 0x67e8f9, transparent: true, opacity: 0.28, blending: THREE.AdditiveBlending });
+                const ringGeo = new THREE.TorusGeometry(2.22, 0.011, 16, 140);
+                const ringMat = new THREE.MeshBasicMaterial({ color: 0x67e8f9, transparent: true, opacity: 0.3, blending: THREE.AdditiveBlending });
                 const ring = new THREE.Mesh(ringGeo, ringMat);
                 ring.rotation.x = Math.PI * 0.42;
                 root.add(ring);
 
-                // รองรับการหมุนมุมกล้อง 3 มิติทั้งเมาส์และสัมผัสหน้าจอ
-                let dragging = false, lastX = 0, lastY = 0, userRotY = 0, userRotX = 0;
+                const outerRingGeo = new THREE.TorusGeometry(2.58, 0.007, 12, 140);
+                const outerRingMat = new THREE.MeshBasicMaterial({ color: 0x818cf8, transparent: true, opacity: 0.16, blending: THREE.AdditiveBlending });
+                const outerRing = new THREE.Mesh(outerRingGeo, outerRingMat);
+                outerRing.rotation.x = Math.PI * 0.56;
+                outerRing.rotation.y = Math.PI * 0.2;
+                root.add(outerRing);
+
+                // รองรับการหมุนมุมกล้อง 3 มิติแบบ Ultra-Smooth Damped Inertia ทั้งเมาส์และสัมผัส
+                let dragging = false, lastX = 0, lastY = 0;
+                let targetRotY = 0, targetRotX = 0, smoothRotY = 0, smoothRotX = 0;
                 const startDrag = (x, y) => { dragging = true; lastX = x; lastY = y; };
                 const moveDrag = (x, y) => {
                     if (!dragging) return;
-                    userRotY += (x - lastX) * 0.005;
-                    userRotX = Math.max(-0.6, Math.min(0.6, userRotX + (y - lastY) * 0.004));
+                    targetRotY += (x - lastX) * 0.0055;
+                    targetRotX = Math.max(-0.55, Math.min(0.55, targetRotX + (y - lastY) * 0.0042));
                     lastX = x; lastY = y;
                 };
                 const endDrag = () => { dragging = false; };
@@ -1160,52 +1299,83 @@
 
                 const c1 = new THREE.Color(0x38bdf8), c2 = new THREE.Color(0x818cf8);
                 const t1 = new THREE.Color(), t2 = new THREE.Color(), tmp = new THREE.Color();
-                let elapsed = 0, last = performance.now(), rafId = null;
+
+                // สะสมเฟสแบบต่อเนื่อง (Phase Integration) เพื่อไม่ให้กระตุกหรือกระโดดเวลาเปลี่ยนอารมณ์
+                let breathPhase = 0, wavePhase = 0, colorPhase = 0;
+                let smoothSpeed = 0.9, smoothSpeak = 0, autoYaw = 0;
+                let last = performance.now(), rafId = null;
 
                 const animate = (now) => {
                     rafId = requestAnimationFrame(animate);
-                    const dt = Math.min(0.05, (now - last) / 1000);
+                    const dt = Math.min(0.033, Math.max(0.001, (now - last) / 1000));
                     last = now;
-                    elapsed += dt;
 
                     const { emotionKey: ek, isSpeaking: speaking } = liveRef.current;
                     const meta = EMOTION_PHYSICS[ek] || EMOTION_PHYSICS.CONFUSED;
-                    const damp = Math.min(1, dt * 1.8);
+
+                    // Frame-rate independent exponential damping (Ultra Smooth)
+                    const dampColor = 1 - Math.exp(-dt * 2.2);
+                    const dampSpeed = 1 - Math.exp(-dt * 2.4);
+                    const dampSpeak = 1 - Math.exp(-dt * 3.8);
+                    const dampDrag = 1 - Math.exp(-dt * 6.5);
+
                     t1.setHex(meta.primaryHex);
                     t2.setHex(meta.secondaryHex);
-                    c1.lerp(t1, damp);
-                    c2.lerp(t2, damp);
+                    c1.lerp(t1, dampColor);
+                    c2.lerp(t2, dampColor);
+
+                    smoothSpeed += (meta.speed - smoothSpeed) * dampSpeed;
+                    smoothSpeak += ((speaking ? 1 : 0) - smoothSpeak) * dampSpeak;
+                    smoothRotX += (targetRotX - smoothRotX) * dampDrag;
+                    smoothRotY += (targetRotY - smoothRotY) * dampDrag;
+
+                    breathPhase += dt * (0.72 + smoothSpeed * 0.28);
+                    wavePhase += dt * (0.65 + smoothSpeed * 0.42 + smoothSpeak * 0.65);
+                    colorPhase += dt * 0.36;
+                    autoYaw += dt * (0.055 + smoothSpeak * 0.035);
 
                     const pAttr = pGeo.attributes.position;
                     const cAttr = pGeo.attributes.color;
-                    const speakBoost = speaking ? 0.055 * Math.abs(Math.sin(elapsed * 6.5)) : 0;
-                    const breath = 1 + Math.sin(elapsed * 0.85 * meta.speed) * 0.03 + speakBoost;
+                    const pArr = pAttr.array;
+                    const cArr = cAttr.array;
+
+                    const speakRipple = smoothSpeak * (0.028 + 0.02 * Math.sin(wavePhase * 2.8) + 0.011 * Math.cos(wavePhase * 4.3));
+                    const breath = 1 + Math.sin(breathPhase) * 0.026 + speakRipple;
+                    const waveAmp = 0.026 + smoothSpeak * 0.028;
 
                     for (let i = 0; i < COUNT; i++) {
                         const i3 = i * 3;
                         const bx = basePos[i3], by = basePos[i3 + 1], bz = basePos[i3 + 2];
-                        const wave = Math.sin(elapsed * meta.speed + by * 1.4 + bx * 0.8) * (speaking ? 0.055 : 0.03);
-                        const sc = breath + wave;
-                        pAttr.array[i3] = bx * sc;
-                        pAttr.array[i3 + 1] = by * sc;
-                        pAttr.array[i3 + 2] = bz * sc;
+                        const sd = seeds[i];
+                        const wave = Math.sin(wavePhase + by * 1.25 + bx * 0.72 + sd * 0.15) * waveAmp;
+                        const flow = Math.cos(breathPhase * 0.85 + bz * 1.1 - bx * 0.55) * 0.014;
+                        const sc = breath + wave + flow;
+                        pArr[i3] = bx * sc;
+                        pArr[i3 + 1] = by * sc;
+                        pArr[i3 + 2] = bz * sc;
 
-                        const mix = 0.5 + 0.5 * Math.sin(elapsed * 0.4 + by * 0.9 + seeds[i] * 0.2);
+                        const mix = 0.5 + 0.5 * Math.sin(colorPhase + by * 0.85 + sd * 0.22);
                         tmp.copy(c1).lerp(c2, mix);
-                        cAttr.array[i3] = tmp.r;
-                        cAttr.array[i3 + 1] = tmp.g;
-                        cAttr.array[i3 + 2] = tmp.b;
+                        cArr[i3] = tmp.r;
+                        cArr[i3 + 1] = tmp.g;
+                        cArr[i3 + 2] = tmp.b;
                     }
                     pAttr.needsUpdate = true;
                     cAttr.needsUpdate = true;
 
                     coreMat.color.copy(c1);
+                    coreMat.opacity = 0.12 + smoothSpeak * 0.07;
                     ringMat.color.copy(c2);
-                    root.rotation.y += dt * 0.065;
-                    root.rotation.x = userRotX;
-                    coreMesh.rotation.y = -elapsed * 0.08 + userRotY;
-                    ring.rotation.z += dt * (speaking ? 0.14 : 0.055);
-                    root.position.y = 0.65;
+                    ringMat.opacity = 0.24 + smoothSpeak * 0.14;
+                    outerRingMat.color.copy(c1);
+
+                    root.rotation.y = autoYaw + smoothRotY;
+                    root.rotation.x = smoothRotX + Math.sin(breathPhase * 0.5) * 0.035;
+                    coreMesh.rotation.y = -autoYaw * 1.15;
+                    coreMesh.scale.setScalar(1 + speakRipple * 1.2);
+                    ring.rotation.z += dt * (0.048 + smoothSpeak * 0.075);
+                    outerRing.rotation.z -= dt * (0.032 + smoothSpeak * 0.045);
+                    root.position.y = 0.65 + Math.sin(breathPhase * 0.7) * 0.045;
 
                     renderer.render(scene, camera);
                 };
@@ -1220,7 +1390,9 @@
                     renderer.domElement.removeEventListener('touchstart', onTouchStart);
                     window.removeEventListener('touchmove', onTouchMove);
                     window.removeEventListener('touchend', endDrag);
-                    pGeo.dispose(); pMat.dispose(); coreGeo.dispose(); coreMat.dispose(); ringGeo.dispose(); ringMat.dispose(); tex.dispose(); renderer.dispose();
+                    pGeo.dispose(); pMat.dispose(); coreGeo.dispose(); coreMat.dispose();
+                    ringGeo.dispose(); ringMat.dispose(); outerRingGeo.dispose(); outerRingMat.dispose();
+                    tex.dispose(); renderer.dispose();
                 };
             }, []);
 
@@ -1317,10 +1489,12 @@
             const [isListening, setIsListening] = useState(false);
             const [isPttHolding, setIsPttHolding] = useState(false);
             const [pttAutoSend, setPttAutoSend] = useState(true);
-            const [paceFeedback, setPaceFeedback] = useState(null); // { status: 'good'|'fast', text }
+            const [paceFeedback, setPaceFeedback] = useState(null);
             const [silenceElapsed, setSilenceElapsed] = useState(0);
             const [drillIndex, setDrillIndex] = useState(0);
             const [sessionReadyToEnd, setSessionReadyToEnd] = useState(false);
+            const [finalDecision, setFinalDecision] = useState(null); // CONSENT | DECLINE | DEFER_HOME | null
+            const [customAddressName, setCustomAddressName] = useState('');
             const [triggerWarning, setTriggerWarning] = useState(null);
             const [isEvaluating, setIsEvaluating] = useState(false);
             const [evalResult, setEvalResult] = useState(null);
@@ -1337,12 +1511,17 @@
             const pttTranscriptRef = useRef('');
             const pttAutoSendRef = useRef(true);
             const sendLearnerMsgRef = useRef(null);
+            const evalAbortRef = useRef(false);
             useEffect(() => { pttAutoSendRef.current = pttAutoSend; }, [pttAutoSend]);
 
             const selectedMode = useMemo(() => LAB_MODES.find(m => m.id === langId) || LAB_MODES[0], [langId]);
             const activePersona = useMemo(() => SKILL_LAB_PERSONAS.find(p => p.id === personaId) || SKILL_LAB_PERSONAS[0], [personaId]);
             const activeDifficulty = useMemo(() => SKILL_LAB_DIFFICULTIES[difficulty] || SKILL_LAB_DIFFICULTIES.normal, [difficulty]);
             const isEn = selectedMode.language === 'en';
+            const learnerAddressName = useMemo(
+                () => customAddressName || extractDefaultAddressName(learner, isEn),
+                [customAddressName, learner, isEn]
+            );
 
             const showToast = useCallback((text, type = 'success') => {
                 setToast({ visible: true, text: String(text), type });
@@ -1423,26 +1602,34 @@
                 setIsPttHolding(false);
             }, []);
 
-            useEffect(() => () => { stopAiVoice(); stopMicCompletely(); }, [stopAiVoice, stopMicCompletely]);
+            useEffect(() => () => {
+                stopAiVoice();
+                stopMicCompletely();
+            }, [stopAiVoice, stopMicCompletely]);
 
-            const callAppsScript = useCallback(async (payload) => {
+            const callAppsScript = useCallback(async (payload, timeoutMs = 18000) => {
                 if (!appsScriptUrl) return { status: 'offline' };
+                const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+                const timer = ctrl ? setTimeout(() => { try { ctrl.abort(); } catch (_) {} }, timeoutMs) : null;
                 try {
                     const res = await fetch(appsScriptUrl, {
                         method: 'POST',
                         redirect: 'follow',
                         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify(payload)
+                        body: JSON.stringify(payload),
+                        signal: ctrl ? ctrl.signal : undefined
                     });
                     const txt = await res.text();
                     try { return JSON.parse(txt); }
                     catch (_) { return { status: 'error', raw: txt }; }
                 } catch (err) {
-                    return { status: 'error', message: err.message };
+                    return { status: 'error', message: err?.name === 'AbortError' ? 'timeout' : err?.message };
+                } finally {
+                    if (timer) clearTimeout(timer);
                 }
             }, [appsScriptUrl]);
 
-            // เสียง AI ญาติผู้เสียชีวิต (แยกเสียงตัวละคร + เล่น 2 เสียงสลับกันจริงในเคส 3 + ตัด WAV Metadata ไร้เสียงซ่า)
+            // เสียง AI ญาติผู้เสียชีวิต (แยกเสียงตัวละคร + เล่น 2 เสียงสลับกันจริงในเคส 3 + ตัด WAV Metadata)
             const speakText = useCallback(async (text, modeObj, emoKey = 'SAD', personaObj = activePersona) => {
                 stopAiVoice();
                 const sessionId = speechSessionRef.current;
@@ -1494,7 +1681,7 @@
                             voiceName: seg.voiceName || 'Sulafat',
                             languageCode: modeObj.language === 'en' ? 'en-US' : 'th-TH',
                             style: seg.styleHint
-                        });
+                        }, 18000);
                         if (speechSessionRef.current !== sessionId) return;
                         if (res?.status === 'success' && res.inlineData?.data) {
                             const rate = parseInt(res.inlineData.mimeType?.match(/rate=(\d+)/)?.[1] ?? '24000', 10);
@@ -1527,7 +1714,13 @@
                 playGentleKnockSound();
                 stopAiVoice();
                 stopMicCompletely();
-                const openingText = isEn ? activePersona.openingEN : activePersona.openingTH;
+                const defaultAddr = extractDefaultAddressName(learner, isEn);
+                const rawOpening = isEn ? activePersona.openingEN : activePersona.openingTH;
+                const openingText = isEn
+                    ? rawOpening.replace(/^Hello\.\.\./, `Hello ${defaultAddr}...`)
+                    : rawOpening
+                        .replace(/^สวัสดีค่ะ\.\.\./, `สวัสดีค่ะ${defaultAddr}...`)
+                        .replace(/คุณเจ้าหน้าที่/g, defaultAddr);
                 const openingAction = isEn ? activePersona.openingActionEN : activePersona.openingActionTH;
                 const openingEmo = activePersona.openingEmotion || 'CONFUSED';
                 const initCoach = trainingTrack === 'micro_drill'
@@ -1540,6 +1733,8 @@
                     ? GUIDED_DRILLS[isEn ? 'en' : 'th'][0].suggestions
                     : (activeDifficulty.showSuggestions ? GUIDED_DRILLS[isEn ? 'en' : 'th'][0].suggestions : []);
 
+                setCustomAddressName('');
+                setFinalDecision(null);
                 setRelativeEmotion(openingEmo);
                 setMessages([{
                     id: `open-${Date.now()}`, sender: 'ai', emotion: openingEmo,
@@ -1565,6 +1760,7 @@
                 }, 420);
             };
 
+            // ส่งคำพูดของผู้เรียน (รองรับกดแนวทางคำพูดส่งทันที, PTT และพิมพ์เอง)
             const handleSendLearnerMessage = async (e, overrideText = null) => {
                 if (e) e.preventDefault();
                 const learnerText = String(overrideText ?? chatInput).trim();
@@ -1572,6 +1768,13 @@
 
                 stopAiVoice();
                 stopMicCompletely();
+
+                // ตรวจจับว่าผู้เรียนแนะนำตัวด้วยชื่อหรือสรรพนามอื่นหรือไม่
+                const introducedName = detectCustomSelfIntro(learnerText, isEn);
+                const effectiveAddressName = introducedName || learnerAddressName;
+                if (introducedName && introducedName !== customAddressName) {
+                    setCustomAddressName(introducedName);
+                }
 
                 const heldSilenceThisTurn = silenceElapsed >= 2.5;
                 const prevTrust = EMOTION_PHYSICS[relativeEmotion]?.trust || 45;
@@ -1587,37 +1790,52 @@
                 setMessages(nextMessages);
                 setChatInput('');
 
-                // โหมดฝึกทีละขั้น Micro-Drill 3 ด่าน
+                // โหมดฝึกทีละขั้น Micro-Drill 4 ด่าน (ให้ข้อมูลครบจนญาติตัดสินใจ)
                 if (trainingTrack === 'micro_drill') {
                     const drills = GUIDED_DRILLS[isEn ? 'en' : 'th'];
                     const nextIdx = drillIndex + 1;
                     if (nextIdx < drills.length) {
-                        const midAction = isEn ? 'Takes a slow breath and looks up cautiously.' : 'สูดลมหายใจช้าๆ สีหน้าอ่อนลงเล็กน้อยแต่ยังมีแววกังวล';
-                        const midText = isEn
-                            ? 'Thank you for speaking so gently... May I ask one more thing to be completely sure before talking with my family?'
-                            : 'ขอบคุณที่ค่อยๆ อธิบายอย่างอ่อนโยนนะคะ... แต่อยากขอถามให้มั่นใจอีกเรื่องก่อนไปคุยกับที่บ้านค่ะ';
+                        const stageRepliesTH = [
+                            { emo: 'SAD', act: 'สูดลมหายใจช้าๆ สีหน้าอ่อนลงเล็กน้อยแต่ยังมีแววสับสน', text: `ขอบคุณ${effectiveAddressName}ที่รับฟังอย่างอ่อนโยนนะคะ... แต่หนูยังไม่แน่ใจเรื่องภาวะสมองตายและขั้นตอนหลังจากนี้เลยค่ะ` },
+                            { emo: 'HESITANT', act: 'พยักหน้ารับช้าๆ ครุ่นคิดด้วยความหนักใจก่อนเงยหน้าถาม', text: `เข้าใจชัดเจนขึ้นมากเลยค่ะ${effectiveAddressName}... แต่อยากขอถามตรงๆ นะคะ เรื่องการบริจาคอวัยวะมีขั้นตอนโปร่งใสยังไง และครอบครัวเราสามารถกลับไปปรึกษาตัดสินใจที่บ้านก่อนได้ไหมคะ?` },
+                            { emo: 'CALM', act: 'คลายความตึงเครียดที่ไหล่ลง ซับน้ำตาเบาๆ และมองด้วยความไว้วางใจ', text: `ขอบคุณ${effectiveAddressName}มากจริงๆ นะคะที่อธิบายครบถ้วนและไม่เร่งรัดครอบครัวเราเลย ตอนนี้พวกเราสบายใจแล้วค่ะ ขอให้ครอบครัวได้สรุปความตั้งใจสุดท้ายให้${effectiveAddressName}ทราบนะคะ` }
+                        ];
+                        const stageRepliesEN = [
+                            { emo: 'SAD', act: 'Takes a slow breath and looks up cautiously.', text: `Thank you for listening so gently, ${effectiveAddressName}... Could you help clarify brain death and what this really means?` },
+                            { emo: 'HESITANT', act: 'Nods slowly, weighing the options carefully.', text: `That is much clearer, ${effectiveAddressName}... How does organ donation work transparently, and could our family go home to decide first?` },
+                            { emo: 'CALM', act: 'Relaxes her posture with quiet relief.', text: `Thank you for answering every question with zero pressure, ${effectiveAddressName}. Our family feels calm and ready to share our decision.` }
+                        ];
+                        const pick = (isEn ? stageRepliesEN : stageRepliesTH)[Math.min(nextIdx - 1, 2)];
                         setDrillIndex(nextIdx);
-                        setRelativeEmotion('SAD');
+                        setRelativeEmotion(pick.emo);
                         setAiCoachTip(drills[nextIdx].prompt);
                         setSmartSuggestions(drills[nextIdx].suggestions);
-                        setMessages([...nextMessages, { id: `ai-d-${Date.now()}`, sender: 'ai', emotion: 'SAD', actionCue: midAction, speakerName: selectedMode.relativeName, text: midText }]);
+                        setMessages([...nextMessages, { id: `ai-d-${Date.now()}`, sender: 'ai', emotion: pick.emo, actionCue: pick.act, speakerName: selectedMode.relativeName, text: pick.text }]);
                         setTimeline(prev => [...prev, {
-                            id: `tl-${Date.now()}`, userText: learnerText, aiText: midText, emotion: 'SAD',
-                            trust: 64, tension: 48, deltaTrust: 64 - prevTrust, silenceHeld: heldSilenceThisTurn,
+                            id: `tl-${Date.now()}`, userText: learnerText, aiText: pick.text, emotion: pick.emo,
+                            trust: EMOTION_PHYSICS[pick.emo]?.trust || 64, tension: EMOTION_PHYSICS[pick.emo]?.tension || 48,
+                            deltaTrust: (EMOTION_PHYSICS[pick.emo]?.trust || 64) - prevTrust, silenceHeld: heldSilenceThisTurn,
                             snapshotBeforeTurn: preTurnSnapshot, drillIndexBeforeTurn: drillIndex, emotionBeforeTurn: relativeEmotion
                         }]);
-                        speakText(midText, selectedMode, 'SAD', activePersona);
+                        speakText(pick.text, selectedMode, pick.emo, activePersona);
                     } else {
+                        const allText = nextMessages.filter(m => m.sender === 'user').map(m => m.text || '').join(' ');
+                        const drillDecision = /กลับไป|ที่บ้าน|go home/i.test(allText) ? 'DEFER_HOME' : 'CONSENT';
                         const closingAction = isEn ? 'Wipes a tear softly and nods with quiet relief.' : 'ซับน้ำตาเบาๆ คลายความเกร็งที่ไหล่และพยักหน้าด้วยความซาบซึ้งใจ';
-                        const closingLine = isEn
-                            ? 'Thank you so much for your kindness and patience. I feel much calmer now and will talk gently with my family.'
-                            : 'ขอบคุณมากนะคะที่รับฟังและดูแลจิตใจครอบครัวเราอย่างอ่อนโยน ตอนนี้หนูสบายใจขึ้นมากแล้วค่ะ ขอเวลาหนูไปปรึกษากับที่บ้านก่อนนะคะ';
+                        const closingLine = drillDecision === 'DEFER_HOME'
+                            ? (isEn
+                                ? `Thank you so much, ${effectiveAddressName}. Knowing we have zero pressure means everything—we will go home to decide together as a family and call you right back.`
+                                : `ขอบคุณ${effectiveAddressName}มากจริงๆ นะคะที่ไม่เร่งรัดและดูแลจิตใจครอบครัวเราอย่างอ่อนโยน พวกเราขอกลับไปปรึกษาและตัดสินใจที่บ้านก่อน แล้วจะรีบติดต่อกลับมาแจ้งนะคะ`)
+                            : (isEn
+                                ? `Thank you so much, ${effectiveAddressName}. We feel completely at peace now and have decided to consent to organ donation so our loved one's kindness continues.`
+                                : `ขอบคุณ${effectiveAddressName}มากจริงๆ นะคะที่รับฟังและดูแลจิตใจครอบครัวเราอย่างอ่อนโยน ตอนนี้ครอบครัวเรามั่นใจและตัดสินใจยินยอมบริจาคอวัยวะเพื่อส่งต่อชีวิตใหม่แล้วค่ะ`);
+                        setFinalDecision(drillDecision);
                         setRelativeEmotion('CALM');
                         setSessionReadyToEnd(true);
                         setSmartSuggestions([]);
                         setAiCoachTip(isEn
-                            ? 'All 3 stages complete! Tap "Evaluate & Claim Card" below.'
-                            : 'ฝึกครบทั้ง 3 ด่านแล้วค่ะ กดปุ่ม “ประเมินผลและรับการ์ดสมรรถนะ” ด้านล่างได้เลยค่ะ');
+                            ? 'All 4 stages complete! Tap "Evaluate & Claim Card" below.'
+                            : 'ฝึกครบทั้ง 4 ด่านและได้รับผลการตัดสินใจจากญาติแล้วค่ะ กดปุ่ม “ประเมินผลและรับการ์ดสมรรถนะ” ด้านล่างได้เลยค่ะ');
                         setMessages([...nextMessages, { id: `ai-final-${Date.now()}`, sender: 'ai', emotion: 'CALM', actionCue: closingAction, speakerName: selectedMode.relativeName, text: closingLine }]);
                         setTimeline(prev => [...prev, {
                             id: `tl-${Date.now()}`, userText: learnerText, aiText: closingLine, emotion: 'CALM',
@@ -1629,31 +1847,36 @@
                     return;
                 }
 
-                // โหมด Roleplay อิสระ (Character Bible Lock + Anti-Loop Memory + Auto-Closure)
+                // โหมด Roleplay อิสระ (Character Bible Lock + เรียกชื่อผู้เรียน + 5–7 รอบจนญาติประกาศการตัดสินใจ 1 ใน 3 รูปแบบ)
                 setIsAiTyping(true);
                 const turnCount = nextMessages.filter(m => m.sender === 'user').length;
-                const targetTurns = activeDifficulty.id === 'hard' ? 5 : 4;
+                const minTurnsBeforeDecision = 5;
+                const targetTurns = activeDifficulty.id === 'hard' ? 7 : 6;
 
                 const historyText = nextMessages
-                    .slice(-10)
-                    .map(m => `${m.sender === 'user' ? 'Clinical Communicator' : 'Bereaved Relative'}: ${m.text}`)
+                    .slice(-12)
+                    .map(m => `${m.sender === 'user' ? `Clinical Communicator (${effectiveAddressName})` : 'Bereaved Relative'}: ${m.text}`)
                     .join('\n');
 
                 const combinedLearnerText = nextMessages.filter(m => m.sender === 'user').map(m => m.text || '').join(' ');
                 const currentPrinciples = GUIDED_PRINCIPLES[isEn ? 'en' : 'th'];
                 const coveredList = currentPrinciples.filter(p => p.pattern.test(combinedLearnerText)).map(p => p.label);
-                const shouldWrapUpNow = turnCount >= targetTurns || (turnCount >= 3 && coveredList.length >= 3);
+                const shouldWrapUpNow = turnCount >= targetTurns;
 
                 const personaRule = isEn ? activePersona.promptHintEN : activePersona.promptHintTH;
                 const diffRule = isEn ? activeDifficulty.aiPromptRuleEN : activeDifficulty.aiPromptRuleTH;
 
                 const pacingDirective = shouldWrapUpNow
                     ? (isEn
-                        ? `\n### CLOSING STAGE (Turn ${turnCount}/${targetTurns}): Natural ending reached! Shift to [CALM], thank the communicator warmly, say you will now consult your family privately, DO NOT ask new open-ended questions, and output [READY_TO_EVALUATE] on its own line.`
-                        : `\n### ขั้นตอนปิดบทสนทนา (รอบที่ ${turnCount}/${targetTurns}): ถึงจุดจบบทสนทนาอย่างเป็นธรรมชาติแล้ว! ให้ปรับอารมณ์เป็น [CALM], กล่าวขอบคุณอย่างอบอุ่น, แจ้งว่าจะขอเวลาไปปรึกษาครอบครัวเงียบๆ, ห้ามตั้งคำถามปลายเปิดใหม่ให้ยืดเยื้อเด็ดขาด และต้องใส่แท็ก [READY_TO_EVALUATE] บนบรรทัดแยก`)
-                    : (isEn
-                        ? `\n### PACING (Turn ${turnCount}/${targetTurns}): Learner already addressed: [${coveredList.join(', ') || 'None'}]. NEVER repeat answered questions—advance naturally so the conversation concludes cleanly by Turn ${targetTurns}.`
-                        : `\n### ความคืบหน้า (รอบที่ ${turnCount}/${targetTurns}): ประเด็นที่ผู้เรียนอธิบายไปแล้ว: [${coveredList.join(', ') || 'ยังไม่มี'}] — ห้ามถามซ้ำเรื่องที่ผู้เรียนตอบชัดเจนแล้ว! ให้ขยับไปประเด็นถัดไปอย่างมีเหตุผลเพื่อให้บทสนทนาจบลงอย่างเป็นธรรมชาติภายในรอบที่ ${targetTurns}`);
+                        ? `\n### FINAL DECISION STAGE (Turn ${turnCount}/${targetTurns}): You now have full information. Clearly announce ONE realistic decision: [DECISION:CONSENT] (if empathetic & clear), [DECISION:DECLINE] (if rushed/harsh/unresolved), or [DECISION:DEFER_HOME] (if you asked about going home to decide first and the learner respected that). Address the learner as "${effectiveAddressName}", close warmly with NO new open-ended questions, and output [READY_TO_EVALUATE].`
+                        : `\n### ขั้นประกาศผลการตัดสินใจของญาติ (รอบที่ ${turnCount}/${targetTurns}): ตอนนี้คุณได้รับข้อมูลครบถ้วนแล้ว ให้ญาติประกาศการตัดสินใจที่ชัดเจน 1 ใน 3 รูปแบบ: [DECISION:CONSENT] ยินยอมบริจาคอวัยวะ (หากผู้เรียนสื่อสารดี ครบถ้วน อ่อนโยน), [DECISION:DECLINE] ไม่ยินยอมบริจาค (หากผู้เรียนเร่งรัด ใช้คำกระทบใจ หรือยังคลายกังวลไม่ได้), หรือ [DECISION:DEFER_HOME] ขอกลับไปตัดสินใจที่บ้านก่อน (หากได้ถามผู้เรียนแล้วเรื่องกลับไปตัดสินใจที่บ้านและผู้เรียนให้เวลาอย่างสุภาพ) เรียกผู้เรียนว่า "${effectiveAddressName}" และใส่แท็ก [DECISION:...] คู่กับ [READY_TO_EVALUATE]`)
+                    : turnCount === minTurnsBeforeDecision - 1
+                        ? (isEn
+                            ? `\n### DECISION PREPARATION (Turn ${turnCount}/${targetTurns}): Do NOT end the conversation yet! If the learner has given good information, ask one final thoughtful question—specifically asking whether your family can go home to talk and decide first (if not asked yet), or asking about dignified goodbye time. Address the learner as "${effectiveAddressName}".`
+                            : `\n### ช่วงก่อนตัดสินใจ (รอบที่ ${turnCount}/${targetTurns}): ห้ามจบบทสนทนาในรอบนี้เด็ดขาด! หากผู้เรียนอธิบายเรื่องภาวะสมองตายและการบริจาคอวัยวะแล้ว ให้ถามคำถามสำคัญก่อนตัดสินใจ เช่น "ครอบครัวเราสามารถกลับไปปรึกษาและตัดสินใจที่บ้านก่อนได้ไหมคะ?" หรือถามเรื่องเวลาอำลาท่านอย่างเป็นส่วนตัว โดยเรียกผู้เรียนว่า "${effectiveAddressName}"`)
+                        : (isEn
+                            ? `\n### ONGOING DIALOGUE (Turn ${turnCount}/${targetTurns}): Do NOT output [READY_TO_EVALUATE] before Turn ${minTurnsBeforeDecision}! Learner addressed: [${coveredList.join(', ') || 'None'}]. Advance naturally from emotional reaction -> brain death clarity -> organ donation details (ODC transparency, zero cost, body dignity). Always address learner as "${effectiveAddressName}".`
+                            : `\n### ความคืบหน้าการสนทนา (รอบที่ ${turnCount}/${targetTurns}): ห้ามใส่ [READY_TO_EVALUATE] และห้ามจบบทสนทนาก่อนรอบที่ ${minTurnsBeforeDecision} เด็ดขาด! ประเด็นที่ผู้เรียนอธิบายไปแล้ว: [${coveredList.join(', ') || 'ยังไม่มี'}] ให้เดินเรื่องต่อจากอารมณ์ความกังวล -> ความเข้าใจภาวะสมองตาย -> ซักถามรายละเอียดการบริจาคอวัยวะ (ODC/ไม่มีค่าใช้จ่าย/การตกแต่งร่าง) และเรียกผู้เรียนว่า "${effectiveAddressName}" เสมอ`);
 
                 const sugRule = (!shouldWrapUpNow && activeDifficulty.showSuggestions)
                     ? (isEn
@@ -1662,6 +1885,9 @@
                     : '\n\n(Do NOT output [SUGGESTION] lines.)';
 
                 const fullPrompt = `${selectedMode.systemPrompt}
+
+### [LEARNER_ADDRESS] (ชื่อที่ใช้เรียกผู้เรียนในรอบนี้)
+- เรียกผู้เรียนว่า: "${effectiveAddressName}" (ห้ามเรียกว่า "คุณเจ้าหน้าที่" เด็ดขาด เว้นแต่ผู้เรียนแนะนำตัวเองแบบอื่น)
 
 ### CHARACTER BIBLE (ล็อกตัวละครตายตัว — ห้ามสลับตัวละครเด็ดขาด!)
 - เคสปัจจุบัน: ${activePersona.titleTH}
@@ -1682,30 +1908,42 @@ Bereaved Relative (Start with [EMOTION]):`;
 
                 let rawReply = '';
                 if (appsScriptUrl) {
-                    const res = await callAppsScript({ action: 'callGemini', prompt: learnerText, systemInstruction: fullPrompt });
+                    const res = await callAppsScript({ action: 'callGemini', prompt: learnerText, systemInstruction: fullPrompt }, 20000);
                     if (res?.status === 'success' && res.text) rawReply = res.text;
                 }
                 if (!rawReply) {
-                    await new Promise(r => setTimeout(r, 450));
-                    rawReply = generateOfflineRelativeReply(learnerText, selectedMode, turnCount, activePersona, activeDifficulty);
+                    await new Promise(r => setTimeout(r, 420));
+                    rawReply = generateOfflineRelativeReply(learnerText, selectedMode, turnCount, activePersona, activeDifficulty, effectiveAddressName, preTurnSnapshot);
                 }
 
                 const parsed = parseAiResponse(rawReply);
+                const aiExplicitlyDecided = Boolean(parsed.decision && turnCount >= minTurnsBeforeDecision);
                 const reachedEnd = Boolean(
-                    parsed.readyToEvaluate ||
+                    aiExplicitlyDecided ||
+                    (parsed.readyToEvaluate && turnCount >= minTurnsBeforeDecision) ||
                     shouldWrapUpNow ||
-                    (turnCount >= targetTurns && parsed.emotion === 'CALM') ||
-                    turnCount >= 6
+                    turnCount >= 8
                 );
-                const finalEmotion = reachedEnd ? 'CALM' : parsed.emotion;
+
+                let resolvedDecision = parsed.decision;
+                if (reachedEnd && !resolvedDecision) {
+                    const rt = parsed.text || '';
+                    if (/ไม่ยินยอม|ไม่บริจาค|decline/i.test(rt)) resolvedDecision = 'DECLINE';
+                    else if (/กลับไป.*บ้าน|ตัดสินใจที่บ้าน|go home|defer/i.test(rt)) resolvedDecision = 'DEFER_HOME';
+                    else resolvedDecision = 'CONSENT';
+                }
+                if (resolvedDecision) setFinalDecision(resolvedDecision);
+
+                const finalEmotion = reachedEnd && resolvedDecision !== 'DECLINE' ? 'CALM' : parsed.emotion;
                 const nextMeta = EMOTION_PHYSICS[finalEmotion] || EMOTION_PHYSICS.SAD;
 
                 setRelativeEmotion(finalEmotion);
                 if (reachedEnd) {
                     setSessionReadyToEnd(true);
+                    const decInfo = DECISION_META[resolvedDecision || 'CONSENT'];
                     setAiCoachTip(isEn
-                        ? 'Conversation reached natural closure! Tap "Evaluate & Claim Card" below.'
-                        : 'จบบทสนทนาอย่างสมบูรณ์และเป็นธรรมชาติแล้วค่ะ กดปุ่ม “ประเมินผลและรับการ์ดสมรรถนะ” ด้านล่างได้เลยค่ะ');
+                        ? `${decInfo.badgeEN} — Tap "Evaluate & Claim Card" below.`
+                        : `${decInfo.badgeTH} — กดปุ่ม “ประเมินผลและรับการ์ดสมรรถนะ” ด้านล่างได้เลยค่ะ`);
                 } else if (parsed.coachTip) {
                     setAiCoachTip(parsed.coachTip);
                 }
@@ -1713,6 +1951,7 @@ Bereaved Relative (Start with [EMOTION]):`;
                 setMessages(prev => [...prev, {
                     id: `ai-${Date.now()}`, sender: 'ai', emotion: finalEmotion,
                     actionCue: parsed.actionCue || '',
+                    decision: resolvedDecision || null,
                     speakerName: selectedMode.relativeName, text: parsed.text
                 }]);
                 setTimeline(prev => [...prev, {
@@ -1721,16 +1960,14 @@ Bereaved Relative (Start with [EMOTION]):`;
                     silenceHeld: heldSilenceThisTurn, snapshotBeforeTurn: preTurnSnapshot,
                     drillIndexBeforeTurn: drillIndex, emotionBeforeTurn: relativeEmotion
                 }]);
-                setSmartSuggestions((!reachedEnd && activeDifficulty.showSuggestions) ? parsed.suggestions : []);
+                setSmartSuggestions((!reachedEnd && activeDifficulty.showSuggestions) ? (parsed.suggestions.length > 0 ? parsed.suggestions : GUIDED_DRILLS[isEn ? 'en' : 'th'][Math.min(turnCount, 3)].suggestions) : []);
                 setIsAiTyping(false);
 
                 speakText(parsed.text, selectedMode, finalEmotion, activePersona);
             };
+            sendLearnerMsgRef.current = handleSendLearnerMessage;
 
-            useEffect(() => {
-                sendLearnerMsgRef.current = handleSendLearnerMessage;
-            });
-
+            // ย้อนเวลาแก้ไขคำพูดในรอบก่อนหน้า (Time-Rewind)
             const handleRewindToTurn = (turnIdx) => {
                 const target = timeline[turnIdx];
                 if (!target) return;
@@ -1741,9 +1978,10 @@ Bereaved Relative (Start with [EMOTION]):`;
                 setRelativeEmotion(target.emotionBeforeTurn || 'CONFUSED');
                 setDrillIndex(target.drillIndexBeforeTurn || 0);
                 setSessionReadyToEnd(false);
-                setShowHistoryDrawer(false);
+                setFinalDecision(null);
                 setChatInput(target.userText || '');
-                showToast(isEn ? 'Rewound to selected turn—try refining your phrase.' : 'ย้อนกลับไปรอบที่เลือกแล้ว ลองเกลาคำพูดใหม่ได้เลยค่ะ', 'info');
+                setShowHistoryDrawer(false);
+                showToast(isEn ? `Rewound to turn ${turnIdx + 1} — edit and resend.` : `ย้อนเวลากลับไปยังรอบที่ ${turnIdx + 1} แล้ว ปรับคำพูดแล้วส่งใหม่ได้เลยค่ะ`, 'info');
             };
 
             // ตรวจจังหวะความเร็วการพูด (Vocal Pace Monitor)
@@ -1829,58 +2067,9 @@ Bereaved Relative (Start with [EMOTION]):`;
                 try { recRef.current?.stop(); } catch (_) { stopMicCompletely(); }
             };
 
-            // AI Clinical Supervisor ประเมินผล 5 แกนจากบทสนทนาจริง (Gemini AI + Local Fallback)
-            const handleEvaluateSession = async () => {
-                stopAiVoice();
-                stopMicCompletely();
-                setIsEvaluating(true);
-
-                const fallbackEval = evaluateConversation5Axis(messages, timeline, isEn ? 'en' : 'th');
-                let finalResult = fallbackEval;
-
-                if (appsScriptUrl && messages.some(m => m.sender === 'user')) {
-                    const transcript = messages
-                        .map((m, idx) => `${idx + 1}. ${m.sender === 'user' ? 'ผู้เรียน (TC)' : 'ญาติผู้ป่วย'}: ${m.text}${m.silenceHeld ? ' [เว้นความเงียบ ≥2.5 วิ]' : ''}`)
-                        .join('\n');
-
-                    const supervisorPrompt = isEn
-                        ? `You are a senior Clinical Organ Donation Communication Supervisor evaluating a learner's conversation in "${activePersona.titleEN}" (${activeDifficulty.badge}).
-Therapeutic silence (>=2.5s) count: ${fallbackEval.silenceCount}.
-Flagged harsh words: ${fallbackEval.triggersFound.map(t => t.flagged).join(', ') || 'None'}.
-Analyze the ACTUAL conversation below and return ONLY valid JSON with no extra text:
-{
-  "radar": { "setting": 0-100, "empathy": 0-100, "clarity": 0-100, "vocal": 0-100, "dignity": 0-100 },
-  "supervisorSummary": "2-sentence supportive clinical supervisor feedback",
-  "goldenMoment": { "quote": "exact best learner quote", "reason": "why it built trust" },
-  "turningPoint": { "quote": "1 learner phrase that can be softened/improved", "betterPhrase": "softer clinical alternative", "reason": "brief clinical rationale" },
-  "strengths": ["strength 1", "strength 2"],
-  "improvements": ["actionable tip 1", "actionable tip 2"]
-}`
-                        : `คุณคือ "อาจารย์พยาบาลและผู้เชี่ยวชาญการสื่อสารรับบริจาคอวัยวะ (AI Clinical Supervisor)"
-กำลังประเมินบทสนทนาจริงของผู้เรียนในเคส "${activePersona.titleTH}" (ระดับ ${activeDifficulty.badge})
-ข้อมูลเสริม: เว้นความเงียบเยียวยา ≥2.5 วิ จำนวน ${fallbackEval.silenceCount} ครั้ง | คำที่อาจกระทบใจที่ตรวจพบ: ${fallbackEval.triggersFound.map(t => t.flagged).join(', ') || 'ไม่มี'}
-อ่านบทสนทนาจริงอย่างละเอียด ให้คะแนนตามเนื้อหาจริง (ไม่ดูแค่คำซ้ำ) แล้วตอบกลับเป็น JSON เท่านั้นตามโครงสร้างนี้:
-{
-  "radar": { "setting": 40-100, "empathy": 40-100, "clarity": 40-100, "vocal": 40-100, "dignity": 40-100 },
-  "supervisorSummary": "สรุปภาพรวมจากอาจารย์ผู้ประเมิน 2 ประโยคอย่างอบอุ่นและตรงประเด็น",
-  "goldenMoment": { "quote": "ยกประโยคจริงของผู้เรียนที่ทำได้ดีที่สุด 1 ประโยค", "reason": "เหตุผลว่าทำไมประโยคนี้ช่วยเยียวยาใจและสร้างความไว้วางใจ" },
-  "turningPoint": { "quote": "ยกประโยคจริงของผู้เรียน 1 จุดที่ยังปรับให้ละมุนหรือชัดเจนขึ้นได้", "betterPhrase": "เสนอประโยคทางเลือกที่นุ่มนวลและตรงหลัก SPIKES/Decoupling มากขึ้น", "reason": "เหตุผลทางคลินิกสั้นๆ" },
-  "strengths": ["จุดแข็งข้อที่ 1", "จุดแข็งข้อที่ 2"],
-  "improvements": ["คำแนะนำพัฒนาต่อข้อที่ 1", "คำแนะนำพัฒนาต่อข้อที่ 2"]
-}`;
-
-                    const aiRes = await callAppsScript({
-                        action: 'callGemini',
-                        prompt: `บทสนทนาจริง:\n${transcript}`,
-                        systemInstruction: supervisorPrompt
-                    });
-                    if (aiRes?.status === 'success' && aiRes.text) {
-                        const parsedSup = parseAiSupervisorJson(aiRes.text, fallbackEval, isEn ? 'en' : 'th');
-                        if (parsedSup) finalResult = parsedSup;
-                    }
-                }
-
-                setEvalResult(finalResult);
+            // AI Clinical Supervisor ประเมินผล 5 แกนจากบทสนทนาจริง (ป้องกันหน้าค้าง 100% ด้วย Timeout + Background Cloud Save)
+            const finishWithEvalResult = useCallback((resultObj) => {
+                setEvalResult(resultObj);
                 setIsEvaluating(false);
                 setPhase('debrief');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1888,16 +2077,17 @@ Analyze the ACTUAL conversation below and return ONLY valid JSON with no extra t
                 if (isAdminPreview || !learner?.id) return;
 
                 const radarObj = {};
-                finalResult.radar.forEach(r => { radarObj[r.key] = r.value; });
+                (resultObj.radar || []).forEach(r => { radarObj[r.key] = r.value; });
                 const prevHist = Array.isArray(learner.skillLabHistory) ? learner.skillLabHistory : [];
                 const nextEntry = {
                     at: new Date().toISOString(),
                     personaId: activePersona.id,
                     difficulty: activeDifficulty.id,
-                    score: finalResult.score,
-                    radar: finalResult.radar
+                    decision: resultObj.decision || null,
+                    score: resultObj.score,
+                    radar: resultObj.radar
                 };
-                const nextBest = Math.max(Number(learner.skillLabBestScore || 0), finalResult.score);
+                const nextBest = Math.max(Number(learner.skillLabBestScore || 0), resultObj.score);
                 const updatedLearner = {
                     ...learner,
                     skillLabPassed: true,
@@ -1913,30 +2103,106 @@ Analyze the ACTUAL conversation below and return ONLY valid JSON with no extra t
                 } catch (_) {}
 
                 if (fbDb) {
-                    try {
-                        await setDoc(
-                            doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', String(learner.id)),
-                            {
-                                skillLabPassed: true,
-                                skillLabBestScore: nextBest,
-                                skillLabLatestRadar: radarObj,
-                                skillLabHistory: updatedLearner.skillLabHistory
-                            },
-                            { merge: true }
-                        );
-                        if (typeof CORE.buildAnonTelemetryId === 'function' && typeof CORE.buildExecutiveTelemetryPayload === 'function') {
-                            const anonId = CORE.buildAnonTelemetryId(learner.id);
+                    (async () => {
+                        try {
                             await setDoc(
-                                doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'executive_telemetry', anonId),
-                                CORE.buildExecutiveTelemetryPayload(updatedLearner),
+                                doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', String(learner.id)),
+                                {
+                                    skillLabPassed: true,
+                                    skillLabBestScore: nextBest,
+                                    skillLabLatestRadar: radarObj,
+                                    skillLabHistory: updatedLearner.skillLabHistory
+                                },
                                 { merge: true }
                             );
+                            if (typeof CORE.buildAnonTelemetryId === 'function' && typeof CORE.buildExecutiveTelemetryPayload === 'function') {
+                                const anonId = CORE.buildAnonTelemetryId(learner.id);
+                                await setDoc(
+                                    doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'executive_telemetry', anonId),
+                                    CORE.buildExecutiveTelemetryPayload(updatedLearner),
+                                    { merge: true }
+                                );
+                            }
+                            showToast('บันทึกผลฝึก AI Skill Lab และปลดล็อก Post-test เรียบร้อยแล้วค่ะ ✓');
+                        } catch (err) {
+                            console.warn('Save Skill Lab cloud warning:', err);
                         }
-                        showToast('บันทึกผลฝึก AI Skill Lab และปลดล็อก Post-test เรียบร้อยแล้วค่ะ ✓');
-                    } catch (err) {
-                        console.warn('Save Skill Lab cloud warning:', err);
+                    })();
+                }
+            }, [activeDifficulty.id, activePersona.id, isAdminPreview, learner, showToast]);
+
+            const handleEvaluateSession = async () => {
+                if (isEvaluating) return;
+                stopAiVoice();
+                stopMicCompletely();
+                evalAbortRef.current = false;
+                setIsEvaluating(true);
+
+                const fallbackEval = evaluateConversation5Axis(messages, timeline, isEn ? 'en' : 'th', finalDecision);
+                let finalResult = fallbackEval;
+
+                try {
+                    if (appsScriptUrl && messages.some(m => m.sender === 'user')) {
+                        const transcript = messages
+                            .map((m, idx) => `${idx + 1}. ${m.sender === 'user' ? `ผู้เรียน (${learnerAddressName})` : 'ญาติผู้ป่วย'}: ${m.text}${m.silenceHeld ? ' [เว้นความเงียบ ≥2.5 วิ]' : ''}`)
+                            .join('\n');
+
+                        const decisionLabel = finalDecision && DECISION_META[finalDecision]
+                            ? DECISION_META[finalDecision].shortTH
+                            : 'กำลังประเมินจากบทสนทนา';
+
+                        const supervisorPrompt = isEn
+                            ? `You are a senior Clinical Organ Donation Communication Supervisor evaluating ${learnerAddressName}'s conversation in "${activePersona.titleEN}" (${activeDifficulty.badge}).
+Family outcome: ${decisionLabel}. Therapeutic silence (>=2.5s): ${fallbackEval.silenceCount}. Flagged harsh words: ${fallbackEval.triggersFound.map(t => t.flagged).join(', ') || 'None'}.
+Return ONLY valid JSON with no markdown or extra text:
+{
+  "radar": { "setting": 40-100, "empathy": 40-100, "clarity": 40-100, "vocal": 40-100, "dignity": 40-100 },
+  "supervisorSummary": "2-sentence supportive clinical supervisor feedback",
+  "goldenMoment": { "quote": "exact best learner quote", "reason": "why it built trust" },
+  "turningPoint": { "quote": "1 learner phrase that can be improved", "betterPhrase": "softer clinical alternative", "reason": "brief clinical rationale" },
+  "strengths": ["strength 1", "strength 2"],
+  "improvements": ["actionable tip 1", "actionable tip 2"]
+}`
+                            : `คุณคือ "อาจารย์พยาบาลและผู้เชี่ยวชาญการสื่อสารรับบริจาคอวัยวะ (AI Clinical Supervisor)"
+กำลังประเมินบทสนทนาจริงของ${learnerAddressName} ในเคส "${activePersona.titleTH}" (ระดับ ${activeDifficulty.badge})
+ผลการตัดสินใจของญาติ: ${decisionLabel} | เว้นความเงียบ ≥2.5 วิ: ${fallbackEval.silenceCount} ครั้ง | คำกระทบใจ: ${fallbackEval.triggersFound.map(t => t.flagged).join(', ') || 'ไม่มี'}
+อ่านบทสนทนาจริงอย่างละเอียดแล้วตอบกลับเป็น JSON เท่านั้น:
+{
+  "radar": { "setting": 40-100, "empathy": 40-100, "clarity": 40-100, "vocal": 40-100, "dignity": 40-100 },
+  "supervisorSummary": "สรุปภาพรวมจากอาจารย์ผู้ประเมิน 2 ประโยคอย่างอบอุ่นและตรงประเด็น",
+  "goldenMoment": { "quote": "ยกประโยคจริงของผู้เรียนที่ทำได้ดีที่สุด 1 ประโยค", "reason": "เหตุผลว่าทำไมประโยคนี้ช่วยเยียวยาใจและสร้างความไว้วางใจ" },
+  "turningPoint": { "quote": "ยกประโยคจริงของผู้เรียน 1 จุดที่ปรับให้ละมุนหรือชัดเจนขึ้นได้", "betterPhrase": "เสนอประโยคทางเลือกที่นุ่มนวลและตรงหลัก SPIKES/Decoupling มากขึ้น", "reason": "เหตุผลทางคลินิกสั้นๆ" },
+  "strengths": ["จุดแข็งข้อที่ 1", "จุดแข็งข้อที่ 2"],
+  "improvements": ["คำแนะนำพัฒนาต่อข้อที่ 1", "คำแนะนำพัฒนาต่อข้อที่ 2"]
+}`;
+
+                        const aiRes = await Promise.race([
+                            callAppsScript({
+                                action: 'callGemini',
+                                prompt: `บทสนทนาจริง:\n${transcript}`,
+                                systemInstruction: supervisorPrompt
+                            }, 11500),
+                            new Promise(resolve => setTimeout(() => resolve({ status: 'timeout' }), 12000))
+                        ]);
+
+                        if (!evalAbortRef.current && aiRes?.status === 'success' && aiRes.text) {
+                            const parsedSup = parseAiSupervisorJson(aiRes.text, fallbackEval, isEn ? 'en' : 'th');
+                            if (parsedSup) finalResult = { ...parsedSup, decision: finalDecision };
+                        }
+                    }
+                } catch (err) {
+                    console.warn('AI Supervisor evaluation fallback:', err);
+                } finally {
+                    if (!evalAbortRef.current) {
+                        finishWithEvalResult(finalResult);
                     }
                 }
+            };
+
+            const handleSkipEvalWait = () => {
+                evalAbortRef.current = true;
+                const instantEval = evaluateConversation5Axis(messages, timeline, isEn ? 'en' : 'th', finalDecision);
+                finishWithEvalResult(instantEval);
             };
 
             const latestAiMessage = useMemo(() => {
@@ -1954,7 +2220,7 @@ Analyze the ACTUAL conversation below and return ONLY valid JSON with no extra t
 
             const activeEmotionMeta = EMOTION_PHYSICS[phase === 'negotiating' ? relativeEmotion : 'CALM'] || EMOTION_PHYSICS.CONFUSED;
             const learnerTurnCount = useMemo(() => messages.filter(m => m.sender === 'user').length, [messages]);
-            const targetTurnsDisplay = trainingTrack === 'micro_drill' ? 3 : (activeDifficulty.id === 'hard' ? 5 : 4);
+            const targetTurnsDisplay = trainingTrack === 'micro_drill' ? 4 : (activeDifficulty.id === 'hard' ? 7 : 6);
 
             // ============================================================================
             // 6. RENDER PHASES (SETUP -> BRIEFING -> 3D NEGOTIATING -> 5-AXIS DEBRIEF)
@@ -2057,8 +2323,8 @@ Analyze the ACTUAL conversation below and return ONLY valid JSON with no extra t
                                     <h2 className="font-display font-bold text-sm text-primary-adaptive">2. {isEn ? 'Training Mode' : 'รูปแบบการฝึก'}</h2>
                                     <div className="grid grid-cols-2 gap-2">
                                         {[
-                                            { id: 'roleplay', title: isEn ? 'Full AI Roleplay' : 'โต้ตอบ AI อิสระ', sub: isEn ? '4–5 turns + Auto-Close' : '4–5 รอบ จบเป็นธรรมชาติ' },
-                                            { id: 'micro_drill', title: isEn ? '3-Stage Drill' : 'ฝึกทีละขั้น 3 ด่าน', sub: isEn ? 'Guided step-by-step' : 'มีไกด์คำพูดทีละจังหวะ' }
+                                            { id: 'roleplay', title: isEn ? 'Full AI Roleplay' : 'โต้ตอบ AI อิสระ', sub: isEn ? '5–7 turns until decision' : '5–7 รอบ จนญาติตัดสินใจ' },
+                                            { id: 'micro_drill', title: isEn ? '4-Stage Drill' : 'ฝึกทีละขั้น 4 ด่าน', sub: isEn ? 'Guided step-by-step' : 'มีไกด์คำพูดทีละจังหวะ' }
                                         ].map(m => (
                                             <button
                                                 key={m.id}
@@ -2179,8 +2445,8 @@ Analyze the ACTUAL conversation below and return ONLY valid JSON with no extra t
                                     <Icon name="Sparkles" size={16} className="text-accent-adaptive shrink-0 mt-0.5" />
                                     <p className="leading-relaxed">
                                         {isEn
-                                            ? 'Tip: Observe the relative’s non-verbal cues above their dialogue, pause 2.5s after they speak, and try Hold-to-Talk (PTT) for a natural voice experience.'
-                                            : 'คำแนะนำก่อนเข้าห้อง: สังเกตภาษากายของญาติที่แสดงเหนือคำพูด เว้นจังหวะเงียบ 2.5 วินาทีหลังญาติพูดจบ และลองใช้ปุ่ม “กดค้างเพื่อพูด (PTT)” เพื่อจำลองการสื่อสารเสมือนหน้างานจริงค่ะ'}
+                                            ? `Relative will address you as "${learnerAddressName}" unless you introduce yourself differently. Observe non-verbal cues above the dialogue and guide the family until they share their final decision.`
+                                            : `ญาติจะเรียกคุณว่า “${learnerAddressName}” (หรือเรียกตามชื่อที่คุณแนะนำตัวในห้อง) สังเกตภาษากายเหนือคำพูดและให้ข้อมูลอย่างอ่อนโยนจนญาติตัดสินใจค่ะ`}
                                     </p>
                                 </div>
 
@@ -2280,7 +2546,7 @@ Analyze the ACTUAL conversation below and return ONLY valid JSON with no extra t
                                 </div>
                             </header>
 
-                            {/* Middle Spacer (ให้เห็นแกนอนุภาค 3 มิติหมุนและเปลี่ยนสีตามอารมณ์ได้เต็มตา) */}
+                            {/* Middle Spacer (ให้เห็นแกนอนุภาค 3 มิติหมุน Ultra Smooth และเปลี่ยนสีตามอารมณ์ได้เต็มตา) */}
                             <div className="flex-1 min-h-[150px] sm:min-h-[210px] flex flex-col items-center justify-end gap-2 pb-3 pointer-events-none">
                                 {isSpeaking && (
                                     <div className="holo-stage-pill px-4 py-1.5 rounded-full flex items-center gap-2 text-xs text-cyan-200 font-bold">
@@ -2369,15 +2635,20 @@ Analyze the ACTUAL conversation below and return ONLY valid JSON with no extra t
                                     </div>
                                 )}
 
-                                {/* Natural Closure Banner & Evaluate CTA OR Suggestions + PTT Input Bar */}
+                                {/* Natural Decision Closure Banner OR Tap-to-Send Suggestions + PTT Input Bar */}
                                 {sessionReadyToEnd ? (
                                     <div className="p-3.5 rounded-2xl bg-emerald-500/20 border border-emerald-400/55 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                                        <div className="text-xs text-emerald-100">
+                                        <div className="text-xs text-emerald-100 space-y-1">
+                                            {finalDecision && DECISION_META[finalDecision] && (
+                                                <span className={`inline-block px-2.5 py-0.5 rounded-full border font-mono text-[10px] font-bold ${DECISION_META[finalDecision].cls}`}>
+                                                    {isEn ? DECISION_META[finalDecision].badgeEN : DECISION_META[finalDecision].badgeTH}
+                                                </span>
+                                            )}
                                             <p className="font-display font-bold text-sm text-emerald-200">
-                                                {isEn ? 'Natural Closure Reached ✓' : 'จบบทสนทนาอย่างเป็นธรรมชาติแล้ว ✓'}
+                                                {isEn ? 'Family Decision Reached ✓' : 'ญาติสรุปผลการตัดสินใจเรียบร้อยแล้ว ✓'}
                                             </p>
-                                            <p className="mt-0.5 opacity-90">
-                                                {isEn ? 'You have guided the relative to calm closure. Tap to view your 5-axis Empathy Radar.' : 'คุณได้ประคับประคองอารมณ์ญาติจนสงบและปิดบทสนทนาอย่างอบอุ่นแล้ว กดรับผลประเมิน 5 มิติได้เลยค่ะ'}
+                                            <p className="opacity-90">
+                                                {isEn ? 'Tap below to view your 5-axis Empathy Radar and Supervisor Review.' : 'กดปุ่มด้านขวาเพื่อดูผลประเมินเรดาร์ 5 มิติและคำแนะนำจากอาจารย์ AI ได้เลยค่ะ'}
                                             </p>
                                         </div>
                                         <button
@@ -2393,12 +2664,12 @@ Analyze the ACTUAL conversation below and return ONLY valid JSON with no extra t
                                     </div>
                                 ) : (
                                     <>
-                                        {/* Smart Suggestions (Normal Mode / Micro-Drill) */}
+                                        {/* Smart Suggestions — แตะเพื่อส่งคำพูดทันที */}
                                         {smartSuggestions.length > 0 && (
                                             <div className="space-y-1.5">
                                                 <div className="flex items-center justify-between text-[11px]">
                                                     <span className="font-mono text-[10px] font-bold text-emerald-300 uppercase">
-                                                        {isEn ? 'Suggested Empathetic Replies' : 'แนวทางคำพูดแนะนำ (แตะเพื่อเลือกใช้หรือปรับแก้)'}
+                                                        {isEn ? 'Suggested Empathetic Replies (Tap to Send Immediately)' : 'แนวทางคำพูดแนะนำ (แตะเพื่อส่งคำพูดทันที)'}
                                                     </span>
                                                     <button
                                                         type="button"
@@ -2414,10 +2685,12 @@ Analyze the ACTUAL conversation below and return ONLY valid JSON with no extra t
                                                             <button
                                                                 key={idx}
                                                                 type="button"
-                                                                onClick={() => setChatInput(sug)}
-                                                                className="text-left p-2.5 rounded-xl bg-white/[0.07] hover:bg-white/[0.14] border border-white/15 text-xs text-sky-100 leading-snug transition-all"
+                                                                disabled={isAiTyping}
+                                                                onClick={() => handleSendLearnerMessage(null, sug)}
+                                                                className="text-left p-2.5 rounded-xl bg-white/[0.07] hover:bg-emerald-500/20 hover:border-emerald-400/50 active:scale-[0.99] disabled:opacity-45 border border-white/15 text-xs text-sky-100 leading-snug transition-all flex items-start justify-between gap-2"
                                                             >
-                                                                “{sug}”
+                                                                <span>“{sug}”</span>
+                                                                <Icon name="Send" size={14} className="text-emerald-300 shrink-0 mt-0.5" />
                                                             </button>
                                                         ))}
                                                     </div>
@@ -2498,15 +2771,24 @@ Analyze the ACTUAL conversation below and return ONLY valid JSON with no extra t
 
                     {/* ==================== LOADING OVERLAY: AI CLINICAL SUPERVISOR ANALYZING ==================== */}
                     {isEvaluating && (
-                        <div className="fixed inset-0 z-[65] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-                            <div className="spatial-card max-w-sm w-full rounded-[2rem] p-6 text-center space-y-3 border-prism-400/45">
-                                <div className="w-12 h-12 border-4 border-aurora-400 border-t-transparent rounded-full animate-spin mx-auto" />
-                                <p className="font-display font-bold text-base text-primary-adaptive">
-                                    {isEn ? 'AI Clinical Supervisor is reviewing your dialogue...' : 'อาจารย์ AI กำลังอ่านบทสนทนาจริงและวิเคราะห์เรดาร์ 5 แกน...'}
-                                </p>
-                                <p className="text-xs text-muted-adaptive">
-                                    {isEn ? 'Identifying your Golden Moment and Turning Point coaching tips' : 'กำลังคัดเลือกประโยคทองที่ทำได้ดีและข้อแนะนำเฉพาะบุคคลค่ะ'}
-                                </p>
+                        <div className="fixed inset-0 z-[65] bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
+                            <div className="holo-obsidian-card max-w-sm w-full rounded-[2rem] p-6 text-center space-y-4 border-prism-400/45 text-white">
+                                <div className="w-12 h-12 border-4 border-emerald-400 border-t-transparent rounded-full animate-spin mx-auto" />
+                                <div className="space-y-1.5">
+                                    <p className="font-display font-bold text-base text-white">
+                                        {isEn ? 'AI Clinical Supervisor is reviewing your dialogue...' : 'อาจารย์ AI กำลังอ่านบทสนทนาจริงและวิเคราะห์เรดาร์ 5 แกน...'}
+                                    </p>
+                                    <p className="text-xs text-sky-200/80">
+                                        {isEn ? 'Identifying your Golden Moment and Turning Point coaching tips' : 'กำลังคัดเลือกประโยคทองที่ทำได้ดีและข้อแนะนำเฉพาะบุคคล (ไม่เกิน 12 วินาที)'}
+                                    </p>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={handleSkipEvalWait}
+                                    className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-bold text-cyan-200 transition-all"
+                                >
+                                    {isEn ? 'Show Instant Summary Now →' : 'แสดงผลสรุปทันที →'}
+                                </button>
                             </div>
                         </div>
                     )}
@@ -2517,11 +2799,18 @@ Analyze the ACTUAL conversation below and return ONLY valid JSON with no extra t
                             <div className="spatial-card rounded-[2rem] p-5 sm:p-8 space-y-6 border-aurora-400/40">
                                 <div className="flex flex-wrap items-start justify-between gap-3">
                                     <div>
-                                        <span className="px-3 py-1 rounded-full bg-aurora-500/20 text-accent-adaptive font-mono text-[11px] font-bold">
-                                            {evalResult.source === 'gemini_supervisor'
-                                                ? 'AI CLINICAL SUPERVISOR • GEMINI REAL DIALOGUE REVIEW'
-                                                : 'AI SKILL LAB COMPLETE • 5-AXIS COMPETENCY CARD'}
-                                        </span>
+                                        <div className="flex flex-wrap items-center gap-2">
+                                            <span className="px-3 py-1 rounded-full bg-aurora-500/20 text-accent-adaptive font-mono text-[11px] font-bold">
+                                                {evalResult.source === 'gemini_supervisor'
+                                                    ? 'AI CLINICAL SUPERVISOR • GEMINI REAL DIALOGUE REVIEW'
+                                                    : 'AI SKILL LAB COMPLETE • 5-AXIS COMPETENCY CARD'}
+                                            </span>
+                                            {evalResult.decision && DECISION_META[evalResult.decision] && (
+                                                <span className={`px-3 py-1 rounded-full border font-mono text-[11px] font-bold ${DECISION_META[evalResult.decision].cls}`}>
+                                                    {isEn ? DECISION_META[evalResult.decision].badgeEN : DECISION_META[evalResult.decision].badgeTH}
+                                                </span>
+                                            )}
+                                        </div>
                                         <h1 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive mt-2">
                                             ผลการประเมินทักษะการสื่อสารกับญาติผู้เสียชีวิต
                                         </h1>
