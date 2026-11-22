@@ -1,10 +1,10 @@
 /* ============================================================================
  * rjcloud.organ — Certificate, Real QR Code & Export Engine (cert-engine.js)
- * แยกออกมาจาก index.html ตามแนวทาง Modular Zero-Build (ไฟล์ที่ 3/4)
+ * แยกออกมาจาก index.html ตามแนวทาง Modular Zero-Build (ไฟล์ที่ 4/6 สะอาดพร้อมใช้งาน)
  *
  * โครงสร้างภายในไฟล์ (เผยแพร่ผ่าน window.RJCLOUD_CERT):
- * 1. Safe Image Loader, Verify URL Builder & Thai Date Formatter
- * 2. Real QR Code Canvas Renderer (qrcode-generator + CORS Fallback)
+ * 1. Safe Image Loader, Font Ready Guard, Verify URL Builder & Thai Date Formatter
+ * 2. Pixel-Perfect Real QR Code Canvas Renderer (qrcode-generator + CORS Fallback)
  * 3. Apple-Minimalist Certificate Canvas Renderer (1600×1131 px • A4 Landscape)
  * 4. Public Certificate Registry Payload Builder (PDPA-Safe: No Email/Phone)
  * 5. PNG / PDF Exporters & Individual A4 CNEU Print Controller
@@ -29,11 +29,11 @@
   };
 
   // ============================================================================
-  // 1. SAFE IMAGE LOADER, VERIFY URL BUILDER & THAI DATE FORMATTER
+  // 1. SAFE IMAGE LOADER, FONT READY GUARD, VERIFY URL & THAI DATE FORMATTER
   // ============================================================================
 
   /**
-   * โหลดรูปภาพภายนอก (โลโก้/ลายเซ็น/QR สำรอง) แบบปลอดภัย ไม่ทำให้ Canvas ค้างเมื่อโหลดไม่ได้
+   * โหลดรูปภาพภายนอก (โลโก้/ลายเซ็น/QR สำรอง) แบบปลอดภัย ไม่ทำให้ Canvas ค้างหรือติด Tainted Canvas
    */
   function loadImageSafe(url) {
     return new Promise(function (resolve) {
@@ -47,11 +47,28 @@
         img.onerror = function () {
           resolve(null);
         };
-        img.src = url;
+        img.src = String(url).trim();
       } catch (_) {
         resolve(null);
       }
     });
+  }
+
+  /**
+   * รอให้ฟอนต์เว็บ (Prompt / Sarabun / JetBrains Mono) พร้อมก่อนวาดลง Canvas
+   * จำกัดเวลารอสูงสุด 1.5 วินาที เพื่อไม่ให้หน้าเว็บค้างหากเชื่อมต่อฟอนต์ช้า
+   */
+  function waitFontsReadySafe(timeoutMs) {
+    const limit = timeoutMs || 1500;
+    if (!global.document || !global.document.fonts || !global.document.fonts.ready) {
+      return Promise.resolve();
+    }
+    return Promise.race([
+      global.document.fonts.ready.catch(function () {}),
+      new Promise(function (resolve) {
+        setTimeout(resolve, limit);
+      })
+    ]);
   }
 
   /**
@@ -80,18 +97,19 @@
         .split('?')[0]
         .split('#')[0]
         .replace(/index\.html$/i, '');
-      return base + 'verify.html?code=' + encodeURIComponent(code);
+      const normalizedBase = base.endsWith('/') ? base : base + '/';
+      return normalizedBase + 'verify.html?code=' + encodeURIComponent(code);
     } catch (_) {
       return 'https://learn.coerj.com/verify.html?code=' + encodeURIComponent(code);
     }
   }
 
   // ============================================================================
-  // 2. REAL QR CODE CANVAS RENDERER (ANTI-BLANK BOX GUARANTEE)
+  // 2. PIXEL-PERFECT REAL QR CODE CANVAS RENDERER (ANTI-BLANK BOX GUARANTEE)
   // ============================================================================
 
   /**
-   * วาด QR Code จริงลงบน Canvas โดยตรงด้วย qrcode-generator
+   * วาด QR Code จริงลงบน Canvas โดยตรงด้วย qrcode-generator แบบคมชัดชิดพิกเซล
    * พร้อมระบบสำรอง (qrserver API) หาก CDN หลักถูกบล็อก ป้องกันช่อง QR สีขาวว่าง 100%
    */
   async function drawRealQrOnCanvas(ctx, urlText, x, y, size, darkColor) {
@@ -107,9 +125,13 @@
         const cell = size / count;
         ctx.fillStyle = fillHex;
         for (let r = 0; r < count; r++) {
+          const py = Math.floor(y + r * cell);
+          const ph = Math.ceil(y + (r + 1) * cell) - py;
           for (let c = 0; c < count; c++) {
             if (qr.isDark(r, c)) {
-              ctx.fillRect(x + c * cell, y + r * cell, Math.ceil(cell), Math.ceil(cell));
+              const px = Math.floor(x + c * cell);
+              const pw = Math.ceil(x + (c + 1) * cell) - px;
+              ctx.fillRect(px, py, pw, ph);
             }
           }
         }
@@ -148,15 +170,19 @@
 
     const W = 1600;
     const H = 1131;
+    const SAFE_TEXT_W = W - 240;
     canvas.width = W;
     canvas.height = H;
     const ctx = canvas.getContext('2d');
     if (!ctx) return false;
 
-    const [logoImg, sigImg] = await Promise.all([
+    const results = await Promise.all([
+      waitFontsReadySafe(1500),
       loadImageSafe(tpl.logoUrl),
       loadImageSafe(tpl.signatureUrl)
     ]);
+    const logoImg = results[1];
+    const sigImg = results[2];
 
     // 1. พื้นหลังสีขาวบริสุทธิ์
     ctx.fillStyle = '#ffffff';
@@ -198,8 +224,9 @@
     let topY = 148;
     if (logoImg) {
       const maxH = 74;
-      const drawW = maxH * (logoImg.width / (logoImg.height || 1));
-      ctx.drawImage(logoImg, W / 2 - drawW / 2, 82, drawW, maxH);
+      const drawW = Math.min(340, maxH * (logoImg.width / (logoImg.height || 1)));
+      const drawH = drawW / (logoImg.width / (logoImg.height || 1));
+      ctx.drawImage(logoImg, W / 2 - drawW / 2, 82 + (maxH - drawH) / 2, drawW, drawH);
       topY = 192;
     } else {
       const barGrad = ctx.createLinearGradient(W / 2 - 58, 0, W / 2 + 58, 0);
@@ -214,33 +241,33 @@
     ctx.textAlign = 'center';
     ctx.fillStyle = '#1d1d1f';
     ctx.font = '600 22px "Prompt", sans-serif';
-    ctx.fillText(tpl.orgTitleTH, W / 2, topY);
+    ctx.fillText(tpl.orgTitleTH || '', W / 2, topY, SAFE_TEXT_W);
 
     ctx.fillStyle = '#86868b';
     ctx.font = '500 15px "JetBrains Mono", monospace';
-    ctx.fillText(tpl.orgTitleEN, W / 2, topY + 32);
+    ctx.fillText(tpl.orgTitleEN || '', W / 2, topY + 32, SAFE_TEXT_W);
 
     ctx.fillStyle = '#a8843b';
     ctx.font = '600 16px "JetBrains Mono", monospace';
-    ctx.fillText('C E R T I F I C A T E   O F   C O M P L E T I O N', W / 2, topY + 86);
+    ctx.fillText('C E R T I F I C A T E   O F   C O M P L E T I O N', W / 2, topY + 86, SAFE_TEXT_W);
 
     ctx.fillStyle = '#1d1d1f';
     ctx.font = '700 54px "Prompt", sans-serif';
-    ctx.fillText('ประกาศนียบัตร', W / 2, topY + 150);
+    ctx.fillText('ประกาศนียบัตร', W / 2, topY + 150, SAFE_TEXT_W);
 
     ctx.fillStyle = '#6e6e73';
     ctx.font = '500 22px "Sarabun", sans-serif';
-    ctx.fillText(tpl.subtitleTH, W / 2, topY + 196);
+    ctx.fillText(tpl.subtitleTH || '', W / 2, topY + 196, SAFE_TEXT_W);
 
     // 6. ชื่อผู้สำเร็จการอบรม (รองรับทั้งชื่อไทยและชื่อภาษาอังกฤษแบบไม่บังคับ)
     ctx.fillStyle = '#1d1d1f';
     ctx.font = '700 56px "Prompt", sans-serif';
-    ctx.fillText(u.name || 'ผู้สำเร็จการอบรม', W / 2, topY + 272);
+    ctx.fillText(u.name || 'ผู้สำเร็จการอบรม', W / 2, topY + 272, SAFE_TEXT_W);
 
     if (u.nameEN) {
       ctx.fillStyle = '#424245';
       ctx.font = '600 24px "Prompt", sans-serif';
-      ctx.fillText(u.nameEN, W / 2, topY + 308);
+      ctx.fillText(u.nameEN, W / 2, topY + 308, SAFE_TEXT_W);
     }
 
     const ruleY = u.nameEN ? topY + 324 : topY + 294;
@@ -257,31 +284,32 @@
     const orgMeta = [u.hospital || '', u.license ? 'เลขที่ใบอนุญาต ' + u.license : '']
       .filter(Boolean)
       .join('   •   ');
-    ctx.fillText(orgMeta, W / 2, ruleY + 38);
+    ctx.fillText(orgMeta, W / 2, ruleY + 38, SAFE_TEXT_W);
 
     // 7. ข้อความรับรอง ชื่อหลักสูตร และวันที่ออกเอกสาร
     ctx.fillStyle = '#424245';
     ctx.font = '500 23px "Sarabun", sans-serif';
-    ctx.fillText(tpl.completionTextTH, W / 2, ruleY + 92);
+    ctx.fillText(tpl.completionTextTH || '', W / 2, ruleY + 92, SAFE_TEXT_W);
 
     ctx.fillStyle = '#1d1d1f';
     ctx.font = '700 28px "Prompt", sans-serif';
-    ctx.fillText(tpl.courseTitleTH, W / 2, ruleY + 142);
+    ctx.fillText(tpl.courseTitleTH || '', W / 2, ruleY + 142, SAFE_TEXT_W);
 
     ctx.fillStyle = '#a8843b';
     ctx.font = '500 18px "Prompt", sans-serif';
-    ctx.fillText(tpl.courseTitleEN, W / 2, ruleY + 178);
+    ctx.fillText(tpl.courseTitleEN || '', W / 2, ruleY + 178, SAFE_TEXT_W);
 
     ctx.fillStyle = '#6e6e73';
     ctx.font = '500 18px "Sarabun", sans-serif';
-    ctx.fillText('ให้ไว้ ณ วันที่ ' + formatThaiDateSafe(u.certificateIssuedAt), W / 2, ruleY + 216);
+    ctx.fillText('ให้ไว้ ณ วันที่ ' + formatThaiDateSafe(u.certificateIssuedAt), W / 2, ruleY + 216, SAFE_TEXT_W);
 
     // 8. ส่วนลายเซ็นกึ่งกลาง
     const sigBaseY = H - 186;
     if (sigImg) {
-      const sigH = 68;
-      const sigW = sigH * (sigImg.width / (sigImg.height || 1));
-      ctx.drawImage(sigImg, W / 2 - sigW / 2, sigBaseY - 76, sigW, sigH);
+      const maxSigH = 68;
+      const sigW = Math.min(240, maxSigH * (sigImg.width / (sigImg.height || 1)));
+      const sigH = sigW / (sigImg.width / (sigImg.height || 1));
+      ctx.drawImage(sigImg, W / 2 - sigW / 2, sigBaseY - sigH - 8, sigW, sigH);
     }
     ctx.strokeStyle = '#c5a059';
     ctx.lineWidth = 1.6;
@@ -292,11 +320,11 @@
 
     ctx.fillStyle = '#1d1d1f';
     ctx.font = '600 23px "Prompt", sans-serif';
-    ctx.fillText(tpl.signerName, W / 2, sigBaseY + 38);
+    ctx.fillText(tpl.signerName || '', W / 2, sigBaseY + 38, 560);
 
     ctx.fillStyle = '#6e6e73';
     ctx.font = '500 18px "Sarabun", sans-serif';
-    ctx.fillText(tpl.signerPosition, W / 2, sigBaseY + 68);
+    ctx.fillText(tpl.signerPosition || '', W / 2, sigBaseY + 68, 620);
 
     // 9. รหัสอ้างอิงประกาศนียบัตร (มุมซ้ายล่าง)
     const certCode = u.certificateCode || ((tpl.certPrefix || 'RJC-2027') + '-DEMO01');
@@ -308,10 +336,10 @@
     ctx.fillText('CERTIFICATE NO.', 114, H - 158);
     ctx.fillStyle = '#1d1d1f';
     ctx.font = '700 18px "JetBrains Mono", monospace';
-    ctx.fillText(certCode, 114, H - 134);
+    ctx.fillText(certCode, 114, H - 134, 340);
     ctx.fillStyle = '#86868b';
     ctx.font = '500 15px "Sarabun", sans-serif';
-    ctx.fillText('ตรวจสอบความถูกต้องผ่าน QR Code ที่ rjcloud.organ', 114, H - 110);
+    ctx.fillText('ตรวจสอบความถูกต้องผ่าน QR Code ที่ rjcloud.organ', 114, H - 110, 380);
 
     // 10. กรอบ QR Code จริง (มุมขวาล่าง)
     const qrSize = 136;
@@ -381,12 +409,12 @@
   function downloadCanvasAsPng(canvas, code) {
     if (!canvas) return false;
     try {
-      const a = document.createElement('a');
+      const a = global.document.createElement('a');
       a.href = canvas.toDataURL('image/png', 1.0);
       a.download = 'Certificate_' + (code || 'rjcloud') + '.png';
-      document.body.appendChild(a);
+      global.document.body.appendChild(a);
       a.click();
-      document.body.removeChild(a);
+      global.document.body.removeChild(a);
       return true;
     } catch (err) {
       console.warn('PNG export error:', err);
@@ -419,16 +447,27 @@
 
   /**
    * สั่งพิมพ์หรือบันทึก PDF หนังสือรับรอง CNEU รายบุคคล (A4 แนวตั้ง)
+   * คงคลาส printing-cneu-letter ไว้จนกว่าหน้าต่างพิมพ์จะปิดลงจริง
    */
   function printIndividualCneuLetter() {
-    document.body.classList.add('printing-cneu-letter');
+    if (!global.document || !global.document.body) return;
+    let cleaned = false;
+    const cleanup = function () {
+      if (cleaned) return;
+      cleaned = true;
+      global.document.body.classList.remove('printing-cneu-letter');
+    };
+
+    global.document.body.classList.add('printing-cneu-letter');
+    try {
+      global.addEventListener('afterprint', cleanup, { once: true });
+    } catch (_) {}
+
     setTimeout(function () {
       try {
         global.print();
       } finally {
-        setTimeout(function () {
-          document.body.classList.remove('printing-cneu-letter');
-        }, 500);
+        setTimeout(cleanup, 1500);
       }
     }, 150);
   }
@@ -438,6 +477,7 @@
   // ============================================================================
   global.RJCLOUD_CERT = {
     loadImageSafe: loadImageSafe,
+    waitFontsReadySafe: waitFontsReadySafe,
     buildVerifyUrl: buildVerifyUrl,
     drawRealQrOnCanvas: drawRealQrOnCanvas,
     drawMinimalistCertificate: drawMinimalistCertificate,
