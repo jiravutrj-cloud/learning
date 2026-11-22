@@ -785,6 +785,167 @@
   }
 
   // ==========================================================================
+  // 8. AI WELCOME CONCIERGE MODAL (VOICE GREETING & AUTO-RESUME SUMMARY)
+  // ==========================================================================
+  function closeWelcomeModal() {
+    VoiceEngine.stop();
+    Controller.welcomeSpeaking = false;
+    if (Controller.els.welcomeModal) {
+      Controller.els.welcomeModal.classList.add('hidden');
+      Controller.els.welcomeModal.classList.remove('flex');
+    }
+  }
+
+  function ensureWelcomeModal() {
+    if (Controller.els.welcomeModal) return Controller.els.welcomeModal;
+
+    const modal = document.createElement('div');
+    modal.id = 'rjc-welcome-modal';
+    modal.className = 'fixed inset-0 z-[160] bg-slate-950/75 backdrop-blur-md hidden items-end sm:items-center justify-center p-0 sm:p-4';
+    modal.innerHTML = `
+      <div class="spatial-card w-full sm:max-w-lg rounded-t-[2rem] sm:rounded-[2rem] overflow-hidden border-emerald-400/40 shadow-2xl">
+        <div class="rjc-ambient-bar" id="rjc-welcome-ambient-bar"></div>
+        <div class="p-5 sm:p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] space-y-4">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <span class="font-mono text-[10px] font-bold text-accent-adaptive uppercase">AI WELCOME CONCIERGE • SMART RESUME</span>
+              <h3 id="rjc-welcome-heading" class="font-display font-extrabold text-lg text-primary-adaptive mt-0.5">ยินดีต้อนรับกลับมาค่ะ</h3>
+            </div>
+            <button type="button" id="rjc-welcome-close-btn" aria-label="ปิดหน้าต่างต้อนรับ" class="spatial-soft w-9 h-9 rounded-xl text-primary-adaptive font-bold shrink-0">✕</button>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 text-center">
+            <div class="spatial-soft p-2.5 rounded-2xl">
+              <span class="text-[10px] font-bold text-muted-adaptive block">จบบทเรียนแล้ว</span>
+              <span id="rjc-welcome-stat-done" class="font-mono text-sm sm:text-base font-extrabold text-accent-adaptive">0/20</span>
+            </div>
+            <div class="spatial-soft p-2.5 rounded-2xl">
+              <span class="text-[10px] font-bold text-muted-adaptive block">เวลาเรียนสะสม</span>
+              <span id="rjc-welcome-stat-pct" class="font-mono text-sm sm:text-base font-extrabold text-prism-adaptive">0%</span>
+            </div>
+            <div class="spatial-soft p-2.5 rounded-2xl">
+              <span class="text-[10px] font-bold text-muted-adaptive block">เรียนค้างไว้ที่</span>
+              <span id="rjc-welcome-stat-last" class="font-mono text-sm sm:text-base font-extrabold text-amber-400">บทที่ 1</span>
+            </div>
+          </div>
+
+          <div class="spatial-soft p-4 rounded-2xl space-y-2 border-prism-400/30">
+            <p id="rjc-welcome-speech-text" class="text-xs sm:text-sm text-primary-adaptive leading-relaxed"></p>
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-1.5 border-t border-white/10">
+              <span id="rjc-welcome-voice-status" class="text-[11px] font-bold text-prism-adaptive">พร้อมเล่นเสียง AI กล่าวต้อนรับ</span>
+              <button type="button" id="rjc-welcome-voice-btn" class="px-3 py-1.5 rounded-xl bg-prism-500/20 border border-prism-400/40 text-prism-adaptive font-bold text-xs">
+                🔊 ฟังเสียง AI
+              </button>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-2 pt-1">
+            <button type="button" id="rjc-welcome-resume-btn" class="touch-target flex-1 py-3 px-4 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-xs sm:text-sm shadow-lg">
+              เรียนต่อจากจุดที่ค้างทันที →
+            </button>
+            <button type="button" id="rjc-welcome-tour-btn" class="touch-target spatial-soft py-3 px-4 rounded-2xl text-primary-adaptive font-display font-bold text-xs sm:text-sm">
+              ทัวร์แนะนำเมนู
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+    Controller.els.welcomeModal = modal;
+
+    modal.addEventListener('click', (ev) => {
+      if (ev.target === modal) closeWelcomeModal();
+    });
+    modal.querySelector('#rjc-welcome-close-btn').onclick = closeWelcomeModal;
+    modal.querySelector('#rjc-welcome-tour-btn').onclick = () => {
+      closeWelcomeModal();
+      startGuidedTour();
+    };
+
+    return modal;
+  }
+
+  function playWelcomeGreetingVoice(info, modal) {
+    const statusEl = modal.querySelector('#rjc-welcome-voice-status');
+    const voiceBtn = modal.querySelector('#rjc-welcome-voice-btn');
+
+    if (Controller.welcomeSpeaking) {
+      VoiceEngine.stop();
+      Controller.welcomeSpeaking = false;
+      if (statusEl) statusEl.textContent = 'หยุดเสียงชั่วคราว (กดปุ่มเพื่อฟังอีกครั้ง)';
+      if (voiceBtn) voiceBtn.textContent = '🔊 ฟังเสียง AI';
+      return;
+    }
+
+    Controller.welcomeSpeaking = true;
+    if (voiceBtn) voiceBtn.textContent = '⏹ หยุดเสียง';
+
+    const cachePrefix = `welcome_${LearningMemory.getUserId()}_l${info.lastLesson.id}_c${info.completedCount}_p${info.studyPct}`;
+    VoiceEngine.speakPipeline(
+      [info.speech],
+      Controller.bridge?.appsScriptUrl || '',
+      cachePrefix,
+      (st) => {
+        if (!Controller.els.welcomeModal) return;
+        if (st.phase === 'loading') {
+          if (statusEl) statusEl.textContent = 'กำลังเตรียมเสียง AI กล่าวต้อนรับ...';
+        } else if (st.phase === 'speaking') {
+          if (statusEl) statusEl.textContent = 'AI กำลังกล่าวต้อนรับและสรุปสถานะการเรียน...';
+        } else {
+          Controller.welcomeSpeaking = false;
+          if (statusEl) statusEl.textContent = 'สรุปสถานะเรียบร้อยแล้วค่ะ (กดฟังซ้ำได้ตลอดเวลา)';
+          if (voiceBtn) voiceBtn.textContent = '🔊 ฟังอีกครั้ง';
+        }
+      }
+    );
+  }
+
+  function openWelcomeModal(autoSpeak = true) {
+    wakeActivity();
+    TactileFX.wake();
+
+    const modal = ensureWelcomeModal();
+    const info = buildWelcomeSummary(Controller.bridge);
+
+    modal.querySelector('#rjc-welcome-heading').textContent = `สวัสดีค่ะคุณ${info.name}`;
+    modal.querySelector('#rjc-welcome-stat-done').textContent = `${info.completedCount}/${info.totalLessons}`;
+    modal.querySelector('#rjc-welcome-stat-pct').textContent = `${info.studyPct}%`;
+    modal.querySelector('#rjc-welcome-stat-last').textContent = `บทที่ ${info.lastLesson.id}`;
+    modal.querySelector('#rjc-welcome-speech-text').textContent = info.speech;
+
+    const resumeBtn = modal.querySelector('#rjc-welcome-resume-btn');
+    resumeBtn.textContent = `เรียนต่อบทที่ ${info.lastLesson.id} ทันที →`;
+    resumeBtn.onclick = () => {
+      TactileFX.tap();
+      closeWelcomeModal();
+      const bridge = Controller.bridge;
+      if (bridge) {
+        bridge.setActiveTab('lessons');
+        bridge.selectLesson(Number(info.lastLesson.id));
+        bridge.toast(`พาไปเรียนต่อที่บทที่ ${info.lastLesson.id} แล้วค่ะ`, 'info');
+      }
+    };
+
+    const voiceBtn = modal.querySelector('#rjc-welcome-voice-btn');
+    voiceBtn.onclick = () => {
+      wakeActivity();
+      playWelcomeGreetingVoice(info, modal);
+    };
+
+    Controller.welcomeSpeaking = false;
+    modal.querySelector('#rjc-welcome-voice-status').textContent = 'พร้อมเล่นเสียง AI กล่าวต้อนรับ';
+    voiceBtn.textContent = '🔊 ฟังเสียง AI';
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+
+    if (autoSpeak) {
+      playWelcomeGreetingVoice(info, modal);
+    }
+  }
+
+  // ==========================================================================
   // 9. AMBIENT SPOTLIGHT GUIDED TOUR (FIRST TIME ONLY + REPLAY ANYTIME)
   // ==========================================================================
   function ensureTourOverlay() {
