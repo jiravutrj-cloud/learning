@@ -1213,6 +1213,7 @@ ${roleProfile.aiPromptAddon || ''}
 
             // Profile PDPA Self-Service & Warm-up States
             const [pdpaEditOpen, setPdpaEditOpen] = useState(false);
+            const [pdpaDangerOpen, setPdpaDangerOpen] = useState(false);
             const [pdpaForm, setPdpaForm] = useState({ name: '', position: '', department: '', hospital: '', province: '', email: '', phone: '' });
             const [warmupTags, setWarmupTags] = useState({ age: 'วัยทำงาน (20–45 ปี)', cause: 'อุบัติเหตุทางศีรษะ (TBI)', mood: 'สับสนเรื่องเครื่องช่วยหายใจ', concern: 'กลัวร่างไม่เรียบร้อย' });
             const [warmupResult, setWarmupResult] = useState('');
@@ -1731,6 +1732,7 @@ ${roleProfile.aiPromptAddon || ''}
                         userRef.current = null;
                         setUser(null);
                         setPdpaEditOpen(false);
+                        setPdpaDangerOpen(false);
                         setScreen('landing');
                         showToast('ลบข้อมูลส่วนบุคคลของคุณออกจากระบบเรียบร้อยแล้วค่ะ', 'info');
                     }
@@ -1748,6 +1750,8 @@ ${roleProfile.aiPromptAddon || ''}
                         try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
                         userRef.current = null;
                         setUser(null);
+                        setPdpaEditOpen(false);
+                        setPdpaDangerOpen(false);
                         setAuthStep(1);
                         setScreen('landing');
                         showToast('ออกจากระบบเรียบร้อยแล้วค่ะ', 'info');
@@ -2399,13 +2403,9 @@ ${roleProfile.aiPromptAddon || ''}
                                                             <p><b>สังกัด / จังหวัด:</b> {user.department || '-'} {user.province ? `• จ.${user.province}` : ''}</p>
                                                             <p><b>อีเมล:</b> <span className="font-mono">{user.email || '-'}</span></p>
                                                             <p><b>เบอร์โทรศัพท์:</b> <span className="font-mono">{user.phone || '-'}</span></p>
-                                                            <div className="grid grid-cols-2 gap-2 pt-2">
-                                                                <button type="button" onClick={handleOpenPdpaEdit} className="touch-target spatial-soft py-2 rounded-xl font-bold text-prism-adaptive flex items-center justify-center gap-1.5">
-                                                                    <Icon name="Edit3" size={14} /> ตรวจสอบ / แก้ไขข้อมูล
-                                                                </button>
-                                                                {/* ใช้ red-600/red-400 เพื่อไม่ให้ชนกับ Selector rose-500 ของปุ่มออกจากระบบใน ai-interactive.js */}
-                                                                <button type="button" onClick={handleDeletePersonalData} className="touch-target py-2 rounded-xl bg-red-600/15 border border-red-400/35 text-red-400 font-bold flex items-center justify-center gap-1.5">
-                                                                    <Icon name="Trash2" size={14} /> ลบข้อมูลส่วนบุคคล
+                                                            <div className="pt-2">
+                                                                <button type="button" onClick={handleOpenPdpaEdit} className="touch-target spatial-soft w-full py-2.5 rounded-xl font-bold text-prism-adaptive flex items-center justify-center gap-1.5">
+                                                                    <Icon name="Edit3" size={14} /> ตรวจสอบ / แก้ไขข้อมูลส่วนตัว
                                                                 </button>
                                                             </div>
                                                         </div>
@@ -2430,15 +2430,47 @@ ${roleProfile.aiPromptAddon || ''}
                                                     )}
                                                 </div>
 
-                                                {/* ปุ่มออกจากระบบผู้เรียน (ใช้ class rose-500 + id เฉพาะให้ ai-interactive.js ไฮไลต์แม่นยำ) */}
+                                                {/* ปุ่มออกจากระบบผู้เรียน: โทนสีกลางสุภาพ ไม่ใช้สีแดง เพื่อไม่ให้สับสนกับการลบข้อมูล */}
                                                 <button
                                                     id="btn-learner-logout"
                                                     type="button"
                                                     onClick={handleLogout}
-                                                    className="touch-target w-full py-3 rounded-2xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/40 text-rose-400 font-display font-bold text-sm flex items-center justify-center gap-2"
+                                                    className="touch-target spatial-soft w-full py-3 px-4 rounded-2xl border-slate-400/40 hover:border-prism-400/50 text-primary-adaptive font-display font-bold text-sm flex items-center justify-center gap-2 transition-all"
                                                 >
-                                                    <Icon name="LogOut" size={16} /> ออกจากระบบผู้เรียน
+                                                    <Icon name="LogOut" size={16} className="text-secondary-adaptive" />
+                                                    <span>ออกจากระบบผู้เรียน</span>
+                                                    <span className="text-[11px] font-sans font-normal text-muted-adaptive hidden sm:inline">(ข้อมูลไม่หาย)</span>
                                                 </button>
+
+                                                {/* โซนลบข้อมูลถาวร (Danger Zone): พับเก็บไว้ด้านล่างสุดแยกขาดจากปุ่มออกจากระบบ */}
+                                                <div className="pt-2 border-t border-dashed border-slate-500/25">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setPdpaDangerOpen(v => !v)}
+                                                        className="w-full py-1.5 text-xs font-semibold text-muted-adaptive hover:text-red-500 flex items-center justify-between gap-2 transition-colors"
+                                                    >
+                                                        <span className="flex items-center gap-1.5">
+                                                            <Icon name="AlertTriangle" size={13} className="text-red-400" />
+                                                            สิทธิ PDPA: ขอลบข้อมูลส่วนบุคคลถาวร (Danger Zone)
+                                                        </span>
+                                                        <Icon name={pdpaDangerOpen ? 'ChevronUp' : 'ChevronDown'} size={15} />
+                                                    </button>
+
+                                                    {pdpaDangerOpen && (
+                                                        <div className="mt-2.5 p-3.5 rounded-2xl bg-red-600/10 border border-red-500/40 space-y-2.5">
+                                                            <p className="text-xs text-red-500 dark:text-red-300 leading-relaxed">
+                                                                <b>คำเตือน:</b> ปุ่มนี้จะลบบัญชี ประวัติการเรียน และข้อมูลส่วนตัวของคุณออกจากระบบ <b>อย่างถาวร</b> (หากต้องการแค่พักการเรียนชั่วคราว ให้กดปุ่ม <b>“ออกจากระบบผู้เรียน”</b> ด้านบนแทนค่ะ)
+                                                            </p>
+                                                            <button
+                                                                type="button"
+                                                                onClick={handleDeletePersonalData}
+                                                                className="touch-target w-full py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-display font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-colors"
+                                                            >
+                                                                <Icon name="Trash2" size={14} /> ยืนยันลบข้อมูลส่วนบุคคลถาวร
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
 
