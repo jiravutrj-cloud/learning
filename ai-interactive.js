@@ -1,11 +1,12 @@
 /**
  * ============================================================================
- * rjcloud.organ — AI Interactive Layer (ai-interactive.js)
+ * rjcloud.organ 2.0 — AI Interactive Layer (ai-interactive.js)
+ * ชื่อธีมอย่างเป็นทางการ: rjcloud.organ 2.0 (Atmospheric Horizon + Liquid Glass)
  * ยกระดับห้องเรียนผู้เรียนให้เป็นระบบ Interactive เต็มรูปแบบ โดยไม่กระทบโค้ดหลัก
  *
  * 5 ความสามารถหลัก:
  * 1. ระบบจดจำการเรียนต่อรายบท (Per-Lesson Smart Memory & Auto-Resume + 20-Lesson Map)
- * 2. AI กล่าวต้อนรับด้วยเสียงเมื่อ Login กลับเข้ามา (AI Welcome Concierge + Ambient Runner)
+ * 2. AI กล่าวต้อนรับด้วยเสียงธรรมชาติเมื่อ Login กลับเข้ามา (AI Welcome Concierge + Ambient Runner)
  * 3. ทัวร์แนะนำการใช้งานห้องเรียนแบบไฟแอมเบี้ยน + เสียง AI (แสดงครั้งเดียวสำหรับผู้เรียนใหม่)
  * 4. ผู้ช่วย AI สดแบบลอยสั่งงานข้ามหน้าได้ (ลากย้ายอิสระ, จางอัตโนมัติเมื่อไม่ใช้งาน,
  *    สว่างชัดพร้อมวงแสงแอมเบี้ยนแสดงสถานะเมื่อเรียกใช้งาน)
@@ -19,11 +20,11 @@
   window.RJCLOUD_AI_INTERACTIVE_LOADED = true;
 
   // ==========================================================================
-  // 1. CONSTANTS & STORAGE KEYS
+  // 1. CONSTANTS & STORAGE KEYS (RJCLOUD.ORGAN 2.0 + NATURAL VOICE CACHE v3)
   // ==========================================================================
   const STORE_PREFIX = 'rjcloud_ai_interactive_v1';
   const LEGACY_STORAGE_KEY = 'rjcloud_organ_state_v2027';
-  const AUDIO_CACHE_DB = 'rjcloud_interactive_voice_cache_v2';
+  const AUDIO_CACHE_DB = 'rjcloud_interactive_voice_cache_v3';
   const AUDIO_CACHE_STORE = 'clips';
   const IDLE_DIM_MS = 4000; // จางลงอัตโนมัติเมื่อไม่มีการโต้ตอบเกิน 4 วินาที
 
@@ -108,10 +109,10 @@
       .rjc-ambient-bar {
         height: 4px;
         width: 100%;
-        background: linear-gradient(90deg, #10b981, #22d3ee, #818cf8, #f472b6, #34d399);
+        background: linear-gradient(90deg, #6ee7b7, #38bdf8, #818cf8, #f0abfc, #6ee7b7);
         background-size: 280% 100%;
         animation: rjcAmbientRun 1.8s linear infinite;
-        box-shadow: 0 0 14px rgba(34, 211, 238, 0.75);
+        box-shadow: 0 0 14px rgba(56, 189, 248, 0.75);
       }
       .rjc-spotlight-ring {
         position: fixed;
@@ -120,13 +121,13 @@
         border-radius: 18px;
         border: 2.5px solid transparent;
         background:
-          linear-gradient(var(--bg-page, #030712), var(--bg-page, #030712)) padding-box,
-          linear-gradient(120deg, #34d399, #22d3ee, #a78bfa, #f472b6, #34d399) border-box;
+          linear-gradient(var(--bg-page, #020612), var(--bg-page, #020612)) padding-box,
+          linear-gradient(120deg, #6ee7b7, #38bdf8, #a78bfa, #f0abfc, #6ee7b7) border-box;
         background-size: 100% 100%, 260% 260%;
         animation: rjcAmbientRun 2s linear infinite;
         box-shadow:
-          0 0 0 4px rgba(34, 211, 238, 0.22),
-          0 0 32px rgba(16, 185, 129, 0.55);
+          0 0 0 4px rgba(56, 189, 248, 0.24),
+          0 0 32px rgba(22, 92, 196, 0.55);
         transition: top 0.32s cubic-bezier(0.22, 1, 0.36, 1),
                     left 0.32s cubic-bezier(0.22, 1, 0.36, 1),
                     width 0.32s cubic-bezier(0.22, 1, 0.36, 1),
@@ -158,7 +159,7 @@
         inset: -4px;
         border-radius: 9999px;
         pointer-events: none;
-        background: conic-gradient(from 0deg, #10b981, #22d3ee, #818cf8, #f472b6, #10b981);
+        background: conic-gradient(from 0deg, #6ee7b7, #38bdf8, #818cf8, #f0abfc, #6ee7b7);
         animation: rjcSpinRing 3.2s linear infinite;
         -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3.5px), #000 calc(100% - 2.5px));
         mask: radial-gradient(farthest-side, transparent calc(100% - 3.5px), #000 calc(100% - 2.5px));
@@ -449,20 +450,45 @@
       }
     },
 
+    prepareNaturalText(raw) {
+      if (window.RJCLOUD_CORE && typeof window.RJCLOUD_CORE.prepareNaturalThaiSpeech === 'function') {
+        return window.RJCLOUD_CORE.prepareNaturalThaiSpeech(raw);
+      }
+      return String(raw || '')
+        .replace(/[*#_]/g, ' ')
+        .replace(/≥/g, 'ไม่น้อยกว่า ')
+        .replace(/≤/g, 'ไม่เกิน ')
+        .replace(/\bPDPA\b/gi, 'พีดีพีเอ')
+        .replace(/\bCNEU\b/gi, 'ซีเอ็นอียู')
+        .replace(/\s{2,}/g, ' ')
+        .trim();
+    },
+
     async fetchSentenceBlob(text, appsScriptUrl, cacheKey, timeoutMs = 22000) {
       const hit = await this.getCache(cacheKey);
       if (hit) return hit;
       if (!appsScriptUrl || !text) return null;
 
+      const naturalText = this.prepareNaturalText(text);
       const ctrl = new AbortController();
       this.activeControllers.add(ctrl);
       const timer = setTimeout(() => ctrl.abort(), timeoutMs);
       try {
-        const res = await fetch(appsScriptUrl, {
+        const rawRes = await fetch(appsScriptUrl, {
           method: 'POST',
-          body: JSON.stringify({ action: 'callGeminiTTS', text, voiceName: 'Aoede' }),
+          redirect: 'follow',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({
+            action: 'callGeminiTTS',
+            text: naturalText,
+            voiceName: 'Sulafat',
+            languageCode: 'th-TH',
+            style: 'พูดภาษาไทยด้วยน้ำเสียงผู้หญิงที่อบอุ่น นุ่มนวล ลื่นหู และเป็นธรรมชาติเหมือนผู้ช่วยอัจฉริยะประจำห้องเรียน ไม่แข็งเป็นหุ่นยนต์'
+          }),
           signal: ctrl.signal
-        }).then((r) => r.json());
+        });
+        const txt = await rawRes.text();
+        const res = JSON.parse(txt || '{}');
         if (res?.status === 'success' && res.inlineData?.data) {
           const rate = parseInt(res.inlineData.mimeType?.match(/rate=(\d+)/)?.[1] ?? '24000', 10);
           const blob = this.pcm16ToWavBlob(res.inlineData.data, rate);
@@ -499,9 +525,14 @@
         if (this.sessionCounter !== sessionId || !('speechSynthesis' in window)) return resolve();
         try {
           window.speechSynthesis.cancel();
-          const utter = new SpeechSynthesisUtterance(text);
+          const utter = new SpeechSynthesisUtterance(this.prepareNaturalText(text));
           utter.lang = 'th-TH';
-          utter.rate = 1.0;
+          utter.rate = 0.96;
+          utter.pitch = 1.02;
+          if (window.RJCLOUD_CORE && typeof window.RJCLOUD_CORE.pickNaturalBrowserVoice === 'function') {
+            const best = window.RJCLOUD_CORE.pickNaturalBrowserVoice('th');
+            if (best) utter.voice = best;
+          }
           utter.onend = () => resolve();
           utter.onerror = () => resolve();
           window.speechSynthesis.speak(utter);
@@ -899,7 +930,7 @@
         <div class="p-5 sm:p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] space-y-4">
           <div class="flex items-start justify-between gap-3">
             <div>
-              <span class="font-mono text-[10px] font-bold text-accent-adaptive uppercase">AI WELCOME CONCIERGE • SMART RESUME</span>
+              <span class="font-mono text-[10px] font-bold text-accent-adaptive uppercase">RJCLOUD.ORGAN 2.0 • AI WELCOME CONCIERGE</span>
               <h3 id="rjc-welcome-heading" class="font-display font-extrabold text-lg text-primary-adaptive mt-0.5">ยินดีต้อนรับกลับมาค่ะ</h3>
             </div>
             <button type="button" id="rjc-welcome-close-btn" aria-label="ปิดหน้าต่างต้อนรับ" class="spatial-soft w-9 h-9 rounded-xl text-primary-adaptive font-bold shrink-0">✕</button>
@@ -931,10 +962,10 @@
           </div>
 
           <div class="flex flex-col sm:flex-row gap-2 pt-1">
-            <button type="button" id="rjc-welcome-resume-btn" class="touch-target flex-1 py-3 px-4 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-xs sm:text-sm shadow-lg">
+            <button type="button" id="rjc-welcome-resume-btn" class="rjc2-pill-btn touch-target flex-1 py-3 px-4 rounded-full font-display font-extrabold text-xs sm:text-sm">
               เรียนต่อจากจุดที่ค้างทันที →
             </button>
-            <button type="button" id="rjc-welcome-tour-btn" class="touch-target spatial-soft py-3 px-4 rounded-2xl text-primary-adaptive font-display font-bold text-xs sm:text-sm">
+            <button type="button" id="rjc-welcome-tour-btn" class="touch-target spatial-soft py-3 px-4 rounded-full text-primary-adaptive font-display font-bold text-xs sm:text-sm">
               ทัวร์แนะนำเมนู
             </button>
           </div>
@@ -1410,7 +1441,7 @@
               <span class="relative z-10 font-display font-extrabold text-xs text-accent-adaptive">AI</span>
             </div>
             <div class="min-w-0">
-              <h3 class="font-display font-extrabold text-sm sm:text-base text-primary-adaptive truncate">ผู้ช่วย AI สด (ลากปุ่มย้ายได้อิสระ)</h3>
+              <h3 class="font-display font-extrabold text-sm sm:text-base text-primary-adaptive truncate">ผู้ช่วย AI สด • rjcloud.organ 2.0</h3>
               <p id="rjc-copilot-state-label" class="text-[11px] font-bold text-prism-adaptive truncate">แสงแอมเบี้ยนพร้อมรับคำสั่ง</p>
             </div>
           </div>
