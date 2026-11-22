@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#030712">
+    <meta name="theme-color" content="#020612">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Dashboard — rjcloud.organ</title>
+    <title>Dashboard — rjcloud.organ 2.0</title>
 
-    <!-- โหลดค่าตั้งต้นและข้อมูลกลางจาก data.js -->
+    <!-- โหลดไฟล์สไตล์ธีม rjcloud.organ 2.0 และโมดูลกลาง (มีค่าสำรองในตัวกรณีเปิดพรีวิวไฟล์เดี่ยว) -->
+    <link rel="stylesheet" href="./styles.css">
     <script src="./data.js" onerror="console.warn('data.js not loaded, using built-in defaults')"></script>
+    <script src="./learning-core.js" onerror="console.warn('learning-core.js not loaded, using built-in DSP')"></script>
 
     <!-- ซิงค์โหมดมืด/สว่างทันทีจาก localStorage ป้องกันจอกระพริบ -->
     <script>
@@ -21,16 +23,16 @@
           const mode = saved === 'light' ? 'light' : 'dark';
           document.documentElement.setAttribute('data-theme', mode);
           const meta = document.querySelector('meta[name="theme-color"]');
-          if (meta) meta.setAttribute('content', mode === 'dark' ? '#030712' : '#f8fafc');
+          if (meta) meta.setAttribute('content', mode === 'dark' ? '#020612' : '#edf6fd');
         } catch (_) {}
       })();
     </script>
 
-    <!-- Tailwind CSS & ฟอนต์มาตรฐานระบบ (Prompt + Sarabun + JetBrains Mono) -->
+    <!-- Tailwind CSS & ฟอนต์สไตล์ Apple (System SF Pro + Anuphan / Prompt / Sarabun / JetBrains Mono) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Prompt:wght@500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Prompt:wght@500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <script>
       if (window.tailwind) {
@@ -38,9 +40,9 @@
           theme: {
             extend: {
               fontFamily: {
-                display: ['Prompt', 'sans-serif'],
-                sans: ['Sarabun', 'sans-serif'],
-                mono: ['JetBrains Mono', 'monospace']
+                display: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Anuphan', 'Prompt', 'sans-serif'],
+                sans: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'Anuphan', 'Sarabun', 'sans-serif'],
+                mono: ['SF Mono', 'ui-monospace', 'JetBrains Mono', 'monospace']
               },
               fontSize: {
                 xs: ['0.875rem', { lineHeight: '1.5' }],
@@ -55,10 +57,10 @@
               },
               colors: {
                 void: {
-                  950: '#030712',
-                  900: '#070d1c',
-                  800: '#0d172e',
-                  700: '#162547'
+                  950: '#020612',
+                  900: '#061229',
+                  800: '#0c1f42',
+                  700: '#153263'
                 },
                 aurora: {
                   200: '#a7f3d0',
@@ -68,10 +70,10 @@
                   600: '#059669'
                 },
                 prism: {
-                  200: '#a5f3fc',
-                  300: '#67e8f9',
-                  400: '#22d3ee',
-                  500: '#06b6d4',
+                  200: '#bae6fd',
+                  300: '#7dd3fc',
+                  400: '#38bdf8',
+                  500: '#0ea5e9',
                   600: '#0284c7'
                 }
               }
@@ -83,55 +85,55 @@
 
     <style>
       /* ============================================================================
-       * ADAPTIVE DESIGN TOKENS (SPATIAL DARK DEFAULT <-> FROSTED PEARL LIGHT)
+       * RJCLOUD.ORGAN 2.0 DESIGN TOKENS (ATMOSPHERIC DARK <-> ICY PEARL LIGHT)
        * ============================================================================ */
       :root,
       html[data-theme="dark"] {
-        --bg-page: #030712;
+        --bg-page: #020612;
         --text-main: #f8fafc;
-        --text-secondary: #cbd5e1;
-        --text-muted: #94a3b8;
-        --glass-bg: linear-gradient(135deg, rgba(15, 23, 42, 0.76) 0%, rgba(7, 13, 28, 0.88) 100%);
-        --glass-border: rgba(255, 255, 255, 0.13);
-        --glass-shadow: 0 22px 50px -16px rgba(0, 0, 0, 0.72), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-        --header-bg: rgba(7, 13, 28, 0.84);
-        --surface-soft: rgba(255, 255, 255, 0.045);
-        --surface-soft-hover: rgba(255, 255, 255, 0.09);
-        --surface-border: rgba(255, 255, 255, 0.11);
-        --input-bg: rgba(15, 23, 42, 0.88);
-        --input-border: rgba(148, 163, 184, 0.28);
+        --text-secondary: #dbeafe;
+        --text-muted: #93b4d8;
+        --glass-bg: linear-gradient(145deg, rgba(16, 40, 86, 0.54) 0%, rgba(5, 16, 40, 0.82) 100%);
+        --glass-border: rgba(186, 230, 253, 0.24);
+        --glass-shadow: 0 24px 54px -18px rgba(0, 8, 28, 0.78), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+        --header-bg: rgba(4, 12, 30, 0.8);
+        --surface-soft: rgba(147, 197, 253, 0.08);
+        --surface-soft-hover: rgba(147, 197, 253, 0.16);
+        --surface-border: rgba(186, 230, 253, 0.18);
+        --input-bg: rgba(6, 18, 44, 0.82);
+        --input-border: rgba(147, 197, 253, 0.3);
         --input-text: #f8fafc;
-        --accent-text: #34d399;
-        --accent-prism: #22d3ee;
-        --grid-line: rgba(148, 163, 184, 0.045);
-        --aura-1: rgba(16, 185, 129, 0.15);
-        --aura-2: rgba(34, 211, 238, 0.14);
-        --aura-3: rgba(99, 102, 241, 0.12);
-        --dock-bg: rgba(7, 13, 28, 0.94);
+        --accent-text: #6ee7b7;
+        --accent-prism: #67e8f9;
+        --grid-line: rgba(147, 197, 253, 0.055);
+        --aura-1: rgba(22, 92, 196, 0.34);
+        --aura-2: rgba(56, 189, 248, 0.22);
+        --aura-3: rgba(168, 85, 247, 0.16);
+        --dock-bg: rgba(4, 12, 30, 0.94);
       }
 
       html[data-theme="light"] {
-        --bg-page: #f8fafc;
-        --text-main: #0f172a;
-        --text-secondary: #334155;
-        --text-muted: #64748b;
-        --glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(241, 245, 249, 0.84) 100%);
+        --bg-page: #edf6fd;
+        --text-main: #0c1b33;
+        --text-secondary: #284366;
+        --text-muted: #5a7496;
+        --glass-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.9) 0%, rgba(232, 244, 253, 0.82) 100%);
         --glass-border: rgba(255, 255, 255, 0.96);
-        --glass-shadow: 0 18px 40px -14px rgba(15, 23, 42, 0.1), 0 2px 6px rgba(15, 23, 42, 0.04);
-        --header-bg: rgba(255, 255, 255, 0.88);
-        --surface-soft: rgba(255, 255, 255, 0.78);
+        --glass-shadow: 0 18px 42px -14px rgba(15, 58, 125, 0.14);
+        --header-bg: rgba(244, 250, 255, 0.86);
+        --surface-soft: rgba(255, 255, 255, 0.76);
         --surface-soft-hover: rgba(255, 255, 255, 0.98);
-        --surface-border: rgba(148, 163, 184, 0.28);
-        --input-bg: #ffffff;
-        --input-border: #cbd5e1;
-        --input-text: #0f172a;
-        --accent-text: #059669;
-        --accent-prism: #0284c7;
-        --grid-line: rgba(15, 23, 42, 0.032);
-        --aura-1: rgba(16, 185, 129, 0.16);
-        --aura-2: rgba(14, 165, 233, 0.15);
-        --aura-3: rgba(99, 102, 241, 0.09);
-        --dock-bg: rgba(255, 255, 255, 0.95);
+        --surface-border: rgba(125, 175, 226, 0.32);
+        --input-bg: rgba(255, 255, 255, 0.95);
+        --input-border: rgba(148, 184, 222, 0.65);
+        --input-text: #0c1b33;
+        --accent-text: #047857;
+        --accent-prism: #0369a1;
+        --grid-line: rgba(22, 92, 196, 0.04);
+        --aura-1: rgba(75, 152, 232, 0.24);
+        --aura-2: rgba(169, 214, 247, 0.36);
+        --aura-3: rgba(192, 132, 252, 0.14);
+        --dock-bg: rgba(244, 250, 255, 0.95);
       }
 
       html {
@@ -139,7 +141,7 @@
         scroll-behavior: smooth;
       }
       body {
-        font-family: 'Sarabun', sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Anuphan', 'Sarabun', sans-serif;
         font-size: 16px;
         line-height: 1.65;
         background-color: var(--bg-page);
@@ -147,6 +149,7 @@
         margin: 0;
         overflow-x: hidden;
         overscroll-behavior-y: none;
+        -webkit-font-smoothing: antialiased;
         transition: background-color 0.28s ease, color 0.28s ease;
       }
 
@@ -165,9 +168,9 @@
         inset: 0;
         z-index: 0;
         background:
-          radial-gradient(circle at 10% 10%, var(--aura-1) 0%, transparent 45%),
-          radial-gradient(circle at 90% 12%, var(--aura-2) 0%, transparent 45%),
-          radial-gradient(circle at 65% 88%, var(--aura-3) 0%, transparent 48%);
+          radial-gradient(ellipse 90% 55% at 50% 108%, var(--aura-1) 0%, transparent 66%),
+          radial-gradient(circle at 86% 14%, var(--aura-2) 0%, transparent 48%),
+          radial-gradient(circle at 14% 28%, var(--aura-3) 0%, transparent 46%);
         pointer-events: none;
       }
       .spatial-grid {
@@ -177,28 +180,28 @@
         background-image:
           linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
           linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
-        background-size: 42px 42px;
-        mask-image: radial-gradient(ellipse at center, black 45%, transparent 94%);
+        background-size: 44px 44px;
+        mask-image: radial-gradient(ellipse at center, black 42%, transparent 94%);
         pointer-events: none;
       }
 
       .spatial-card {
         background: var(--glass-bg);
-        backdrop-filter: blur(24px) saturate(155%);
-        -webkit-backdrop-filter: blur(24px) saturate(155%);
+        backdrop-filter: blur(22px) saturate(165%);
+        -webkit-backdrop-filter: blur(22px) saturate(165%);
         border: 1px solid var(--glass-border);
         box-shadow: var(--glass-shadow);
       }
       .spatial-header {
         background: var(--header-bg);
-        backdrop-filter: blur(22px) saturate(150%);
-        -webkit-backdrop-filter: blur(22px) saturate(150%);
+        backdrop-filter: blur(22px) saturate(160%);
+        -webkit-backdrop-filter: blur(22px) saturate(160%);
         border-bottom: 1px solid var(--surface-border);
       }
       .spatial-dock {
         background: var(--dock-bg);
-        backdrop-filter: blur(24px) saturate(150%);
-        -webkit-backdrop-filter: blur(24px) saturate(150%);
+        backdrop-filter: blur(24px) saturate(160%);
+        -webkit-backdrop-filter: blur(24px) saturate(160%);
         border-top: 1px solid var(--surface-border);
       }
       .spatial-soft {
@@ -215,9 +218,19 @@
       }
       .spatial-input:focus {
         outline: none;
-        border-color: #10b981;
-        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
+        border-color: #38bdf8;
+        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.22);
       }
+
+      /* ปุ่มแคปซูลพาสเทล rjcloud.organ 2.0 */
+      .rjc2-pill-btn {
+        background: linear-gradient(95deg, #d7fbe6 0%, #c6f3f9 48%, #b3c8ff 100%);
+        color: #050b16 !important;
+        box-shadow: 0 10px 28px -6px rgba(134, 239, 172, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.72) inset;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .rjc2-pill-btn:hover { transform: translateY(-1px) scale(1.015); }
+      .rjc2-pill-btn:active { transform: scale(0.98); }
 
       .text-primary-adaptive { color: var(--text-main); }
       .text-secondary-adaptive { color: var(--text-secondary); }
@@ -236,7 +249,7 @@
 
       .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
       .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-      .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.38); border-radius: 999px; }
+      .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(147, 197, 253, 0.38); border-radius: 999px; }
 
       @media print {
         .no-print { display: none !important; }
@@ -263,10 +276,10 @@
 <body>
     <!-- หน้าจอโหลดเริ่มต้น -->
     <div id="executive-root">
-        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg-page);color:var(--text-main);font-family:'Prompt','Sarabun',sans-serif;gap:14px;padding:24px;text-align:center;">
-            <div style="width:48px;height:48px;border:3px solid rgba(34,211,238,0.2);border-top-color:#34d399;border-right-color:#22d3ee;border-radius:9999px;animation:execSpin 0.85s linear infinite;"></div>
+        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#020612;color:#f8fafc;font-family:-apple-system,'Anuphan','Prompt',sans-serif;gap:14px;padding:24px;text-align:center;">
+            <div style="width:48px;height:48px;border:3px solid rgba(56,189,248,0.22);border-top-color:#6ee7b7;border-right-color:#38bdf8;border-radius:9999px;animation:execSpin 0.85s linear infinite;"></div>
             <div style="font-weight:800;font-size:17px;">กำลังเปิด Dashboard...</div>
-            <div style="font-size:12px;color:#94a3b8;">กำลังเชื่อมต่อสถิติไม่ระบุตัวตน 13 เขตสุขภาพ (PDPA-Safe)</div>
+            <div style="font-size:12px;color:#93b4d8;">rjcloud.organ 2.0 • สถิติไม่ระบุตัวตน 13 เขตสุขภาพ (PDPA-Safe)</div>
         </div>
         <style>@keyframes execSpin{to{transform:rotate(360deg);}}</style>
     </div>
@@ -275,15 +288,15 @@
     <script>
       window.addEventListener('error', function (ev) {
         const src = String(ev.filename || (ev.target && ev.target.src) || '');
-        if (src.includes('data.js')) return;
+        if (src.includes('data.js') || src.includes('learning-core.js') || src.includes('styles.css')) return;
         const root = document.getElementById('executive-root');
         if (root && !root.dataset.mounted && ev.message) {
           root.innerHTML =
-            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#030712;color:#f8fafc;font-family:Sarabun,sans-serif;">' +
-            '<div style="max-width:440px;width:100%;background:#070d1c;border:1px solid rgba(244,63,94,0.4);border-radius:24px;padding:24px;text-align:center;">' +
-            '<h2 style="color:#fda4af;font-weight:700;margin:0 0 8px;">ไม่สามารถเปิดแดชบอร์ดผู้บริหารได้ชั่วคราว</h2>' +
-            '<p style="font-size:13px;color:#cbd5e1;margin:0 0 16px;">' + String(ev.message || 'Unknown error') + '</p>' +
-            '<button onclick="window.location.reload()" style="padding:12px 24px;border:none;border-radius:14px;background:#10b981;color:#030712;font-weight:700;cursor:pointer;">โหลดหน้าใหม่</button>' +
+            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#020612;color:#f8fafc;font-family:Sarabun,sans-serif;">' +
+            '<div style="max-width:440px;width:100%;background:#061229;border:1px solid rgba(244,63,94,0.4);border-radius:24px;padding:24px;text-align:center;">' +
+            '<h2 style="color:#fda4af;font-weight:700;margin:0 0 8px;">ไม่สามารถเปิด Dashboard ได้ชั่วคราว</h2>' +
+            '<p style="font-size:13px;color:#dbeafe;margin:0 0 16px;">' + String(ev.message || 'Unknown error') + '</p>' +
+            '<button onclick="window.location.reload()" style="padding:12px 24px;border:none;border-radius:14px;background:#34d399;color:#020612;font-weight:700;cursor:pointer;">โหลดหน้าใหม่</button>' +
             '</div></div>';
         }
       });
@@ -298,14 +311,17 @@
         import { getFirestore, collection, doc, onSnapshot } from 'firebase/firestore';
 
         // ============================================================================
-        // 1. CONFIGURATION, 5-AXIS RADAR META & 4 CLINICAL DOMAINS (PDPA-SAFE 2027)
+        // 1. CONFIGURATION, 5-AXIS RADAR META & 4 CLINICAL DOMAINS (RJCLOUD.ORGAN 2.0)
         // ============================================================================
+        const CORE = window.RJCLOUD_CORE || {};
         const BUILTIN_CONFIG = {
             appName: 'rjcloud.organ',
-            edition: '2027 Clinical Edition',
+            themeName: 'rjcloud.organ 2.0',
+            edition: 'rjcloud.organ 2.0 • Cloud AI (2027)',
             contactEmail: 'rjcloud.organ@gmail.com',
             appId: 'rjcloud-organ-2027',
             theme: {
+                name: 'rjcloud.organ 2.0',
                 defaultMode: 'dark',
                 storageKey: 'rjcloud_theme'
             },
@@ -321,18 +337,20 @@
             appsScriptUrl: 'https://script.google.com/macros/s/AKfycbwuN8MeZhhhomEhpkfXtpoTP341cugDqw1DbQPK_6NSHun2pGZCE0Kfc3eH4YYJ6aWQIg/exec'
         };
 
-        const CONFIG = {
-            ...BUILTIN_CONFIG,
-            ...(window.RJCLOUD_CONFIG || {}),
-            theme: {
-                ...BUILTIN_CONFIG.theme,
-                ...(window.RJCLOUD_CONFIG?.theme || {})
-            },
-            firebaseConfig: (window.RJCLOUD_CONFIG?.firebaseConfig?.apiKey)
-                ? window.RJCLOUD_CONFIG.firebaseConfig
-                : BUILTIN_CONFIG.firebaseConfig,
-            appsScriptUrl: window.RJCLOUD_CONFIG?.appsScriptUrl || BUILTIN_CONFIG.appsScriptUrl
-        };
+        const CONFIG = typeof CORE.getResolvedConfig === 'function'
+            ? CORE.getResolvedConfig()
+            : {
+                ...BUILTIN_CONFIG,
+                ...(window.RJCLOUD_CONFIG || {}),
+                theme: {
+                    ...BUILTIN_CONFIG.theme,
+                    ...(window.RJCLOUD_CONFIG?.theme || {})
+                },
+                firebaseConfig: (window.RJCLOUD_CONFIG?.firebaseConfig?.apiKey)
+                    ? window.RJCLOUD_CONFIG.firebaseConfig
+                    : BUILTIN_CONFIG.firebaseConfig,
+                appsScriptUrl: window.RJCLOUD_CONFIG?.appsScriptUrl || BUILTIN_CONFIG.appsScriptUrl
+            };
 
         const THEME_KEY = CONFIG.theme?.storageKey || 'rjcloud_theme';
 
@@ -530,7 +548,35 @@
             };
         }
 
+        function prepareNaturalThaiSpeechSafe(rawText) {
+            if (typeof CORE.prepareNaturalThaiSpeech === 'function') {
+                return CORE.prepareNaturalThaiSpeech(rawText);
+            }
+            return String(rawText || '')
+                .replace(/[*#📊•]/g, ' ')
+                .replace(/≥/g, 'ไม่น้อยกว่า ')
+                .replace(/≤/g, 'ไม่เกิน ')
+                .replace(/\bCSAT\b/gi, 'คะแนนความพึงพอใจ')
+                .replace(/\bPDPA\b/gi, 'พีดีพีเอ')
+                .replace(/\s{2,}/g, ' ')
+                .trim();
+        }
+
+        function pickBestThaiVoiceSafe() {
+            if (typeof CORE.pickNaturalBrowserVoice === 'function') {
+                return CORE.pickNaturalBrowserVoice('th');
+            }
+            if (!('speechSynthesis' in window)) return null;
+            const voices = window.speechSynthesis.getVoices() || [];
+            const thVoices = voices.filter(v => String(v.lang || '').toLowerCase().startsWith('th'));
+            return thVoices.find(v => /premwadee|kanya|google|natural|narisa/i.test(v.name || '')) || thVoices[0] || null;
+        }
+
         function pcm16ToWavUrl(base64PCM, sampleRate = 24000) {
+            if (typeof CORE.pcm16ToWavBlob === 'function') {
+                const blob = CORE.pcm16ToWavBlob(base64PCM, sampleRate);
+                return blob && blob.size > 0 ? URL.createObjectURL(blob) : '';
+            }
             const binaryString = window.atob(base64PCM);
             const rawBytes = new Uint8Array(binaryString.length);
             for (let i = 0; i < binaryString.length; i++) rawBytes[i] = binaryString.charCodeAt(i);
@@ -658,7 +704,7 @@
         }
 
         // ============================================================================
-        // 4. VISUALIZATION COMPONENTS (5-AXIS RADAR + 13-REGION MAP)
+        // 4. VISUALIZATION COMPONENTS (5-AXIS RADAR + 13-REGION MAP — RJCLOUD 2.0)
         // ============================================================================
         function DualComparisonRadarSVG({ regionRadar, nationalRadar, theme }) {
             const isDark = theme === 'dark';
@@ -680,7 +726,7 @@
                     <defs>
                         <linearGradient id="execRadarFill" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stopColor="#34d399" stopOpacity="0.48" />
-                            <stop offset="100%" stopColor="#22d3ee" stopOpacity="0.22" />
+                            <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.24" />
                         </linearGradient>
                     </defs>
 
@@ -689,33 +735,33 @@
                             key={li}
                             points={RADAR_AXES.map((_, i) => pt(i, lv).join(',')).join(' ')}
                             fill="none"
-                            stroke={isDark ? 'rgba(148,163,184,0.22)' : 'rgba(15,23,42,0.12)'}
+                            stroke={isDark ? 'rgba(147,197,253,0.24)' : 'rgba(15,58,125,0.14)'}
                             strokeWidth="1"
                         />
                     ))}
                     {RADAR_AXES.map((_, i) => {
                         const [x, y] = pt(i, 1);
-                        return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke={isDark ? 'rgba(148,163,184,0.2)' : 'rgba(15,23,42,0.1)'} strokeWidth="1" />;
+                        return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke={isDark ? 'rgba(147,197,253,0.22)' : 'rgba(15,58,125,0.12)'} strokeWidth="1" />;
                     })}
 
                     <polygon
                         points={natPts.map(p => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ')}
                         fill="none"
-                        stroke="#22d3ee"
+                        stroke="#38bdf8"
                         strokeWidth="1.8"
                         strokeDasharray="4 3"
-                        opacity="0.85"
+                        opacity="0.88"
                     />
 
                     <polygon
                         points={regPts.map(p => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ')}
                         fill="url(#execRadarFill)"
-                        stroke="#10b981"
+                        stroke="#34d399"
                         strokeWidth="2.4"
                     />
 
                     {regPts.map(([x, y], i) => (
-                        <circle key={i} cx={x} cy={y} r="3.8" fill="#34d399" stroke={isDark ? '#030712' : '#ffffff'} strokeWidth="1.6" />
+                        <circle key={i} cx={x} cy={y} r="3.8" fill="#34d399" stroke={isDark ? '#020612' : '#ffffff'} strokeWidth="1.6" />
                     ))}
 
                     {RADAR_AXES.map((axis, i) => {
@@ -726,9 +772,9 @@
                                     x={lx}
                                     y={ly - 4}
                                     textAnchor="middle"
-                                    fill={isDark ? '#cbd5e1' : '#334155'}
+                                    fill={isDark ? '#dbeafe' : '#284366'}
                                     fontSize="9.2"
-                                    fontFamily="Sarabun, sans-serif"
+                                    fontFamily="Anuphan, Sarabun, sans-serif"
                                     fontWeight="700"
                                 >
                                     {axis.shortTH}
@@ -753,25 +799,25 @@
 
         function SpatialThailandNetworkMap({ regions, activeRegion, onSelectRegion }) {
             return (
-                <div className="relative w-full aspect-[4/4.5] sm:aspect-[16/11] lg:aspect-auto lg:h-[460px] rounded-[1.5rem] bg-gradient-to-br from-[#061126] via-[#07152e] to-[#041d24] border border-prism-400/25 overflow-hidden select-none shadow-inner">
+                <div className="relative w-full aspect-[4/4.5] sm:aspect-[16/11] lg:aspect-auto lg:h-[460px] rounded-[1.5rem] bg-gradient-to-br from-[#020818] via-[#072154] to-[#0a337a] border border-prism-300/30 overflow-hidden select-none shadow-inner">
                     <div
-                        className="absolute inset-0 opacity-75 pointer-events-none"
+                        className="absolute inset-0 opacity-80 pointer-events-none"
                         style={{
                             backgroundImage:
-                                'radial-gradient(circle at 47% 55%, rgba(16,185,129,0.22) 0%, transparent 55%), linear-gradient(to right, rgba(34,211,238,0.07) 1px, transparent 1px), linear-gradient(to bottom, rgba(34,211,238,0.07) 1px, transparent 1px)',
+                                'radial-gradient(circle at 47% 55%, rgba(56,189,248,0.28) 0%, transparent 58%), linear-gradient(to right, rgba(147,197,253,0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(147,197,253,0.08) 1px, transparent 1px)',
                             backgroundSize: '100% 100%, 30px 30px, 30px 30px'
                         }}
                     />
 
                     <div className="absolute top-3.5 left-3.5 z-10 pointer-events-none">
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-void-950/75 border border-prism-400/35 text-[10px] font-mono font-bold text-prism-300 backdrop-blur-md">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-void-950/75 border border-prism-300/35 text-[10px] font-mono font-bold text-prism-200 backdrop-blur-md">
                             <span className="w-2 h-2 rounded-full bg-aurora-400 animate-pulse" />
                             13 HEALTH REGIONS • ANONYMIZED STATS
                         </span>
                     </div>
 
                     <div className="absolute bottom-3 right-4 z-0 pointer-events-none">
-                        <span className="font-display font-extrabold text-3xl sm:text-5xl tracking-[0.25em] text-white/[0.05]">
+                        <span className="font-display font-extrabold text-3xl sm:text-5xl tracking-[0.25em] text-white/[0.06]">
                             THAILAND
                         </span>
                     </div>
@@ -779,8 +825,8 @@
                     <svg className="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 100 100" preserveAspectRatio="none">
                         <path
                             d="M 22,12 L 36,9 L 44,18 L 58,20 L 79,19 L 87,32 L 87,49 L 76,53 L 64,56 L 62,64 L 54,64 L 48,59 L 41,62 L 37,70 L 36,78 L 44,86 L 47,94 L 38,96 L 31,88 L 26,76 L 28,62 L 26,48 L 22,36 L 19,22 Z"
-                            fill="rgba(16, 185, 129, 0.12)"
-                            stroke="rgba(52, 211, 153, 0.45)"
+                            fill="rgba(56, 189, 248, 0.14)"
+                            stroke="rgba(125, 211, 252, 0.5)"
                             strokeWidth="0.6"
                             strokeLinejoin="round"
                         />
@@ -791,7 +837,7 @@
                                 y1="55"
                                 x2={r.x}
                                 y2={r.y}
-                                stroke={activeRegion?.id === r.id ? '#34d399' : '#22d3ee'}
+                                stroke={activeRegion?.id === r.id ? '#6ee7b7' : '#7dd3fc'}
                                 strokeWidth={activeRegion?.id === r.id ? '0.85' : '0.35'}
                                 strokeOpacity={activeRegion?.id === r.id ? '0.95' : '0.45'}
                                 strokeDasharray="1.3 1.3"
@@ -822,10 +868,10 @@
                                         isSelected
                                             ? 'w-7 h-7 bg-aurora-400 text-void-950 text-[10px] ring-4 ring-aurora-400/35'
                                             : isHub
-                                                ? 'w-6 h-6 bg-gradient-to-br from-aurora-400 to-prism-400 text-void-950 text-[9px]'
+                                                ? 'w-6 h-6 bg-gradient-to-br from-aurora-300 to-prism-300 text-void-950 text-[9px]'
                                                 : needsSupport
                                                     ? 'w-[22px] h-[22px] px-1.5 bg-amber-400 text-void-950 text-[8.5px]'
-                                                    : 'w-5 h-5 bg-prism-400 text-void-950 text-[8.5px]'
+                                                    : 'w-5 h-5 bg-prism-300 text-void-950 text-[8.5px]'
                                     }`}
                                 >
                                     {r.id === 'BKK' ? 'กทม' : r.id.replace('R', '')}
@@ -834,9 +880,9 @@
                         );
                     })}
 
-                    <div className="absolute bottom-3 left-3 z-20 flex flex-wrap items-center gap-2.5 px-3 py-1.5 rounded-xl bg-void-950/80 backdrop-blur-md border border-white/15 text-[10px] font-bold text-slate-200">
+                    <div className="absolute bottom-3 left-3 z-20 flex flex-wrap items-center gap-2.5 px-3 py-1.5 rounded-xl bg-void-950/80 backdrop-blur-md border border-white/15 text-[10px] font-bold text-sky-100">
                         <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-aurora-400" /> ส่วนกลาง / ที่เลือก</span>
-                        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-prism-400" /> ปกติ</span>
+                        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-prism-300" /> ปกติ</span>
                         <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-amber-400" /> ควรเสริมคลินิก</span>
                     </div>
                 </div>
@@ -863,7 +909,7 @@
             useEffect(() => {
                 document.documentElement.setAttribute('data-theme', theme);
                 const meta = document.querySelector('meta[name="theme-color"]');
-                if (meta) meta.setAttribute('content', theme === 'dark' ? '#030712' : '#f8fafc');
+                if (meta) meta.setAttribute('content', theme === 'dark' ? '#020612' : '#edf6fd');
                 try { localStorage.setItem(THEME_KEY, theme); } catch (_) {}
             }, [theme]);
 
@@ -1249,30 +1295,42 @@
 
             useEffect(() => () => stopVoice(), [stopVoice]);
 
-            // 5. Voice Synthesis
+            // 5. Voice Synthesis (Natural Thai Executive Voice + Anti-Hiss DSP)
             const playPolicyVoice = async (textToSpeak) => {
                 if (isSpeaking) { stopVoice(); return; }
-                const cleanText = String(textToSpeak || '').replace(/[*#📊•]/g, '').trim();
+                const cleanText = prepareNaturalThaiSpeechSafe(textToSpeak);
                 if (!cleanText) return;
                 setIsSpeaking(true);
 
                 if (appsScriptUrl) {
                     try {
-                        const res = await fetch(appsScriptUrl, {
+                        const rawRes = await fetch(appsScriptUrl, {
                             method: 'POST',
-                            body: JSON.stringify({ action: 'callGeminiTTS', text: cleanText, voiceName: 'Aoede' })
-                        }).then(r => r.json());
+                            redirect: 'follow',
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                            body: JSON.stringify({
+                                action: 'callGeminiTTS',
+                                text: cleanText,
+                                voiceName: 'Sulafat',
+                                languageCode: 'th-TH',
+                                style: 'พูดภาษาไทยด้วยน้ำเสียงผู้หญิงที่สุภาพ ชัดถ้อยชัดคำ อบอุ่นและเป็นธรรมชาติเหมือนผู้รายงานสรุปนโยบายการแพทย์ ไม่แข็งเป็นหุ่นยนต์'
+                            })
+                        });
+                        const txt = await rawRes.text();
+                        const res = JSON.parse(txt || '{}');
 
                         if (res?.status === 'success' && res.inlineData?.data) {
                             const rate = parseInt(res.inlineData.mimeType?.match(/rate=(\d+)/)?.[1] ?? '24000', 10);
                             const url = pcm16ToWavUrl(res.inlineData.data, rate);
-                            audioUrlRef.current = url;
-                            const audio = new Audio(url);
-                            audioRef.current = audio;
-                            audio.onended = () => stopVoice();
-                            audio.onerror = () => stopVoice();
-                            await audio.play();
-                            return;
+                            if (url) {
+                                audioUrlRef.current = url;
+                                const audio = new Audio(url);
+                                audioRef.current = audio;
+                                audio.onended = () => stopVoice();
+                                audio.onerror = () => stopVoice();
+                                await audio.play();
+                                return;
+                            }
                         }
                     } catch (_) {}
                 }
@@ -1282,7 +1340,10 @@
                         window.speechSynthesis.cancel();
                         const utter = new SpeechSynthesisUtterance(cleanText);
                         utter.lang = 'th-TH';
-                        utter.rate = 1.02;
+                        utter.rate = 0.96;
+                        utter.pitch = 1.02;
+                        const best = pickBestThaiVoiceSafe();
+                        if (best) utter.voice = best;
                         utter.onend = () => setIsSpeaking(false);
                         utter.onerror = () => setIsSpeaking(false);
                         window.speechSynthesis.speak(utter);
@@ -1312,7 +1373,7 @@
                 setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 80);
 
                 const liveSnapshotJson = JSON.stringify({
-                    platform: 'rjcloud.organ Executive Dashboard',
+                    platform: 'rjcloud.organ 2.0 Dashboard',
                     privacyMode: 'PDPA Anonymized Statistics Only (Zero PII)',
                     nationalTotals: analytics.total,
                     passRatePercent: analytics.passRate,
@@ -1336,7 +1397,7 @@
                     }))
                 });
 
-                const systemInstruction = `คุณคือ "AI วิเคราะห์เชิงนโยบายระดับชาติ" ประจำแพลตฟอร์ม rjcloud.organ
+                const systemInstruction = `คุณคือ "AI วิเคราะห์เชิงนโยบายระดับชาติ" ประจำแพลตฟอร์ม rjcloud.organ 2.0
 อ้างอิงจากข้อมูลสถิติแบบไม่ระบุตัวตน (PDPA Zero-PII) ด้านล่างนี้เท่านั้น ห้ามเดาหรือแต่งตัวเลขเอง:
 ${liveSnapshotJson}
 
@@ -1348,10 +1409,14 @@ ${liveSnapshotJson}
                 let answerText = '';
                 if (appsScriptUrl) {
                     try {
-                        const res = await fetch(appsScriptUrl, {
+                        const rawRes = await fetch(appsScriptUrl, {
                             method: 'POST',
+                            redirect: 'follow',
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                             body: JSON.stringify({ action: 'callGemini', prompt: userQ, systemInstruction })
-                        }).then(r => r.json());
+                        });
+                        const txt = await rawRes.text();
+                        const res = JSON.parse(txt || '{}');
                         if (res?.status === 'success' && res.text) answerText = res.text;
                     } catch (_) {}
                 }
@@ -1412,11 +1477,11 @@ ${liveSnapshotJson}
                                         </span>
                                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-aurora-500/20 text-accent-adaptive text-[9px] font-mono font-bold shrink-0">
                                             <span className="w-1.5 h-1.5 rounded-full bg-aurora-400 animate-pulse" />
-                                            PDPA STATS
+                                            2.0 PDPA STATS
                                         </span>
                                     </div>
                                     <p className="text-[10px] font-mono text-muted-adaptive truncate">
-                                        rjcloud.organ • สถิติภาพรวม 13 เขตสุขภาพ (ไม่ระบุตัวตน)
+                                        rjcloud.organ 2.0 • สถิติภาพรวม 13 เขตสุขภาพ (ไม่ระบุตัวตน)
                                     </p>
                                 </div>
                             </div>
@@ -1426,10 +1491,10 @@ ${liveSnapshotJson}
                                 <button
                                     type="button"
                                     onClick={() => playPolicyVoice(executiveBrief.speechText)}
-                                    className={`px-3 py-2 rounded-xl font-display font-bold text-[11px] flex items-center gap-1.5 shadow-md transition-all ${
+                                    className={`px-3.5 py-2 rounded-full font-display font-bold text-[11px] flex items-center gap-1.5 transition-all ${
                                         isSpeaking
-                                            ? 'bg-rose-500 text-white'
-                                            : 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950'
+                                            ? 'bg-rose-500 text-white shadow-md'
+                                            : 'rjc2-pill-btn'
                                     }`}
                                 >
                                     <Icon name={isSpeaking ? 'Square' : 'Volume2'} size={14} />
@@ -1447,7 +1512,7 @@ ${liveSnapshotJson}
                                 <div>
                                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-aurora-500/15 border border-aurora-400/30 text-accent-adaptive text-[10px] font-mono font-bold mb-2">
                                         <Icon name="ShieldCheck" size={12} />
-                                        PDPA ANONYMIZED STATISTICS • เฉพาะข้อมูลสถิติ ไม่นำข้อมูลส่วนตัวมาใช้งาน
+                                        RJCLOUD.ORGAN 2.0 • PDPA ANONYMIZED STATISTICS (ZERO-PII)
                                     </span>
                                     <h1 className="font-display text-xl sm:text-2xl md:text-3xl font-extrabold text-primary-adaptive leading-tight">
                                         Dashboard พัฒนาบุคลากรการรับบริจาคอวัยวะ
