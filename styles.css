@@ -1,18 +1,16 @@
 /* ============================================================================
 
-rjcloud.organ — Master Adaptive Stylesheet (styles.css)
+rjcloud.organ 2.0 — Master Adaptive Stylesheet (styles.css)
 
-แยกออกมาจาก index.html ตามแนวทาง Modular Zero-Build เพื่อลดขนาดไฟล์หลัก
-
-และให้เบราว์เซอร์เก็บแคชไฟล์ดีไซน์แยกอิสระ (โหลดเร็วขึ้นและดูแลง่ายขึ้น)
+ชื่อธีมอย่างเป็นทางการ: rjcloud.organ 2.0 (Atmospheric Horizon + Liquid Glass)
 
 โครงสร้างภายในไฟล์:
 
-Adaptive Design Tokens (Spatial Dark Default <-> Frosted Pearl Light)
+Theme Tokens: rjcloud.organ 2.0 (Atmospheric Dark <-> Icy Pearl Light)
 
-Base Typography, Safe Areas & Mobile Touch Targets
+Apple-Style Typography, Safe Areas & Mobile Touch Targets
 
-Spatial Aura Background & Glassmorphism Surfaces
+Atmospheric Horizon Backdrop & Ultra-Clear Liquid Glass Surfaces
 
 Scrollbar & Native Form Element Styling
 
@@ -20,65 +18,84 @@ Ambient Light Runner & Audio Equalizer Animations
 
 Individual CNEU Letter Sheet & A4 Print Rules
 
+rjcloud.organ 2.0 Hero Stage, Sculpted Liquid Glass & Living Tree Aura
+
 ============================================================================ */
 
 /* ============================================================================
 
-ADAPTIVE DESIGN TOKENS (SPATIAL DARK DEFAULT <-> FROSTED PEARL LIGHT)
+THEME TOKENS: RJCLOUD.ORGAN 2.0 (ATMOSPHERIC DARK <-> ICY PEARL LIGHT)
 
 ============================================================================ */
 :root,
 html[data-theme="dark"] {
---bg-page: #030712;
+--theme-name: "rjcloud.organ 2.0";
+--font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Anuphan', 'Prompt', sans-serif;
+--font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Anuphan', 'Sarabun', sans-serif;
+--font-mono: 'SF Mono', ui-monospace, 'JetBrains Mono', monospace;
+
+--bg-page: #020612;
 --text-main: #f8fafc;
---text-secondary: #cbd5e1;
---text-muted: #94a3b8;
---glass-bg: linear-gradient(135deg, rgba(15, 23, 42, 0.78) 0%, rgba(7, 13, 28, 0.9) 100%);
---glass-border: rgba(255, 255, 255, 0.13);
---glass-shadow: 0 22px 50px -16px rgba(0, 0, 0, 0.72), inset 0 1px 0 rgba(255, 255, 255, 0.12);
---header-bg: rgba(7, 13, 28, 0.86);
---dock-bg: rgba(7, 13, 28, 0.95);
---surface-soft: rgba(255, 255, 255, 0.045);
---surface-soft-hover: rgba(255, 255, 255, 0.09);
---surface-border: rgba(255, 255, 255, 0.11);
---input-bg: rgba(15, 23, 42, 0.88);
---input-border: rgba(148, 163, 184, 0.28);
+--text-secondary: #dbeafe;
+--text-muted: #93b4d8;
+
+/* Ultra-Clear Liquid Glass Surfaces (Dark Atmospheric) */
+--glass-bg: linear-gradient(145deg, rgba(16, 40, 86, 0.52) 0%, rgba(5, 16, 40, 0.78) 100%);
+--glass-border: rgba(186, 230, 253, 0.24);
+--glass-shadow:
+0 24px 54px -18px rgba(0, 8, 28, 0.78),
+inset 0 1px 0 rgba(255, 255, 255, 0.24),
+inset 0 -1px 0 rgba(125, 211, 252, 0.1);
+--header-bg: rgba(4, 12, 30, 0.76);
+--dock-bg: rgba(4, 12, 30, 0.92);
+--surface-soft: rgba(147, 197, 253, 0.08);
+--surface-soft-hover: rgba(147, 197, 253, 0.15);
+--surface-border: rgba(186, 230, 253, 0.18);
+--input-bg: rgba(6, 18, 44, 0.78);
+--input-border: rgba(147, 197, 253, 0.3);
 --input-text: #f8fafc;
---accent-text: #34d399;
---accent-prism: #22d3ee;
---grid-line: rgba(148, 163, 184, 0.045);
---aura-1: rgba(16, 185, 129, 0.16);
---aura-2: rgba(34, 211, 238, 0.14);
---aura-3: rgba(99, 102, 241, 0.12);
+
+--accent-text: #6ee7b7;
+--accent-prism: #67e8f9;
+--grid-line: rgba(147, 197, 253, 0.055);
+--aura-1: rgba(22, 92, 196, 0.34);
+--aura-2: rgba(56, 189, 248, 0.22);
+--aura-3: rgba(168, 85, 247, 0.16);
 }
 
 html[data-theme="light"] {
---bg-page: #f4f9fb;
---text-main: #0f172a;
---text-secondary: #334155;
---text-muted: #64748b;
---glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(241, 245, 249, 0.86) 100%);
+--bg-page: #edf6fd;
+--text-main: #0c1b33;
+--text-secondary: #284366;
+--text-muted: #5a7496;
+
+/* Crisp Icy Liquid Glass Surfaces (Light Atmospheric) */
+--glass-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.88) 0%, rgba(232, 244, 253, 0.78) 100%);
 --glass-border: rgba(255, 255, 255, 0.96);
---glass-shadow: 0 18px 40px -14px rgba(15, 23, 42, 0.1), 0 2px 6px rgba(15, 23, 42, 0.04);
---header-bg: rgba(255, 255, 255, 0.88);
---dock-bg: rgba(255, 255, 255, 0.96);
---surface-soft: rgba(255, 255, 255, 0.78);
---surface-soft-hover: rgba(255, 255, 255, 0.98);
---surface-border: rgba(148, 163, 184, 0.28);
---input-bg: #ffffff;
---input-border: #cbd5e1;
---input-text: #0f172a;
---accent-text: #059669;
---accent-prism: #0284c7;
---grid-line: rgba(15, 23, 42, 0.032);
---aura-1: rgba(16, 185, 129, 0.16);
---aura-2: rgba(14, 165, 233, 0.15);
---aura-3: rgba(99, 102, 241, 0.09);
+--glass-shadow:
+0 18px 42px -14px rgba(15, 58, 125, 0.14),
+0 2px 8px rgba(15, 58, 125, 0.05),
+inset 0 1px 0 rgba(255, 255, 255, 0.95);
+--header-bg: rgba(244, 250, 255, 0.82);
+--dock-bg: rgba(244, 250, 255, 0.94);
+--surface-soft: rgba(255, 255, 255, 0.72);
+--surface-soft-hover: rgba(255, 255, 255, 0.96);
+--surface-border: rgba(125, 175, 226, 0.32);
+--input-bg: rgba(255, 255, 255, 0.94);
+--input-border: rgba(148, 184, 222, 0.65);
+--input-text: #0c1b33;
+
+--accent-text: #047857;
+--accent-prism: #0369a1;
+--grid-line: rgba(22, 92, 196, 0.04);
+--aura-1: rgba(75, 152, 232, 0.24);
+--aura-2: rgba(169, 214, 247, 0.36);
+--aura-3: rgba(192, 132, 252, 0.14);
 }
 
 /* ============================================================================
 
-BASE TYPOGRAPHY, SAFE AREAS & MOBILE TOUCH TARGETS
+APPLE-STYLE TYPOGRAPHY, SAFE AREAS & MOBILE TOUCH TARGETS
 
 ============================================================================ */
 html {
@@ -87,7 +104,7 @@ scroll-behavior: smooth;
 }
 
 body {
-font-family: 'Sarabun', sans-serif;
+font-family: var(--font-sans);
 font-size: 16px;
 line-height: 1.65;
 background-color: var(--bg-page);
@@ -95,7 +112,22 @@ color: var(--text-main);
 margin: 0;
 overflow-x: hidden;
 overscroll-behavior-y: none;
+-webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
 transition: background-color 0.28s ease, color 0.28s ease;
+}
+
+.font-display {
+font-family: var(--font-display) !important;
+letter-spacing: -0.012em;
+}
+
+.font-sans {
+font-family: var(--font-sans) !important;
+}
+
+.font-mono {
+font-family: var(--font-mono) !important;
 }
 
 /* ขยายขนาดฟอนต์ย่อยภาษาไทยให้อ่านสบายตาบนสมาร์ทโฟน */
@@ -145,7 +177,7 @@ transform: rotate(360deg);
 
 /* ============================================================================
 
-SPATIAL AURA BACKGROUND & GLASSMORPHISM SURFACES
+ATMOSPHERIC HORIZON BACKDROP & ULTRA-CLEAR LIQUID GLASS SURFACES
 
 ============================================================================ */
 .spatial-aura {
@@ -153,9 +185,10 @@ position: fixed;
 inset: 0;
 z-index: 0;
 background:
-radial-gradient(circle at 12% 14%, var(--aura-1) 0%, transparent 46%),
-radial-gradient(circle at 88% 12%, var(--aura-2) 0%, transparent 45%),
-radial-gradient(circle at 65% 88%, var(--aura-3) 0%, transparent 48%);
+radial-gradient(ellipse 90% 55% at 50% 108%, var(--aura-1) 0%, transparent 66%),
+radial-gradient(circle at 86% 14%, var(--aura-2) 0%, transparent 48%),
+radial-gradient(circle at 14% 28%, var(--aura-3) 0%, transparent 46%),
+linear-gradient(180deg, var(--bg-page) 0%, var(--bg-page) 100%);
 pointer-events: none;
 }
 
@@ -166,37 +199,38 @@ z-index: 0;
 background-image:
 linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
 linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
-background-size: 42px 42px;
-mask-image: radial-gradient(ellipse at center, black 45%, transparent 94%);
--webkit-mask-image: radial-gradient(ellipse at center, black 45%, transparent 94%);
+background-size: 44px 44px;
+mask-image: radial-gradient(ellipse at center, black 42%, transparent 94%);
+-webkit-mask-image: radial-gradient(ellipse at center, black 42%, transparent 94%);
 pointer-events: none;
 }
 
 .spatial-card {
 background: var(--glass-bg);
-backdrop-filter: blur(24px) saturate(155%);
--webkit-backdrop-filter: blur(24px) saturate(155%);
+backdrop-filter: blur(22px) saturate(165%);
+-webkit-backdrop-filter: blur(22px) saturate(165%);
 border: 1px solid var(--glass-border);
 box-shadow: var(--glass-shadow);
 }
 
 .spatial-header {
 background: var(--header-bg);
-backdrop-filter: blur(22px) saturate(150%);
--webkit-backdrop-filter: blur(22px) saturate(150%);
+backdrop-filter: blur(22px) saturate(160%);
+-webkit-backdrop-filter: blur(22px) saturate(160%);
 border-bottom: 1px solid var(--surface-border);
 }
 
 .spatial-dock {
 background: var(--dock-bg);
-backdrop-filter: blur(24px) saturate(150%);
--webkit-backdrop-filter: blur(24px) saturate(150%);
+backdrop-filter: blur(24px) saturate(160%);
+-webkit-backdrop-filter: blur(24px) saturate(160%);
 border-top: 1px solid var(--surface-border);
 }
 
 .spatial-soft {
 background: var(--surface-soft);
 border: 1px solid var(--surface-border);
+transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .spatial-soft:hover {
@@ -211,8 +245,34 @@ color: var(--input-text);
 
 .spatial-input:focus {
 outline: none;
-border-color: #10b981;
-box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
+border-color: #38bdf8;
+box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.22);
+}
+
+/* ปุ่มหลักสไตล์ rjcloud.organ 2.0 (Pastel Mint-to-Periwinkle Pill CTA) */
+.rjc2-pill-btn,
+.login-pill-btn {
+background: linear-gradient(95deg, #d7fbe6 0%, #c6f3f9 48%, #b3c8ff 100%);
+color: #050b16 !important;
+box-shadow:
+0 10px 28px -6px rgba(134, 239, 172, 0.48),
+0 0 0 1px rgba(255, 255, 255, 0.72) inset;
+transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease, filter 0.22s ease;
+}
+
+.rjc2-pill-btn:hover,
+.login-pill-btn:hover {
+transform: translateY(-2px) scale(1.02);
+filter: brightness(1.04);
+box-shadow:
+0 16px 36px -6px rgba(147, 197, 253, 0.72),
+0 0 24px rgba(187, 247, 208, 0.65),
+0 0 0 1.5px rgba(255, 255, 255, 0.92) inset;
+}
+
+.rjc2-pill-btn:active,
+.login-pill-btn:active {
+transform: scale(0.97);
 }
 
 /* คลาสสีตัวอักษรปรับตามธีมมืด/สว่างอัตโนมัติ */
@@ -242,7 +302,7 @@ SCROLLBAR & NATIVE FORM ELEMENT STYLING
 
 ============================================================================ */
 html[data-theme="dark"] select option {
-background-color: #070d1c;
+background-color: #06142e;
 color: #f8fafc;
 }
 
@@ -256,7 +316,7 @@ background: transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-background: rgba(148, 163, 184, 0.38);
+background: rgba(147, 197, 253, 0.38);
 border-radius: 999px;
 }
 
@@ -264,170 +324,8 @@ border-radius: 999px;
 
 AMBIENT LIGHT RUNNER & AUDIO EQUALIZER ANIMATIONS
 
-============================================================================ */
-@keyframes ambientBorderFlow {
-0% {
-background-position: 0% 50%;
-}
-50% {
-background-position: 100% 50%;
-}
-100% {
-background-position: 0% 50%;
-}
-}
-
-@keyframes ambientSweep {
-0% {
-transform: translateX(-115%);
-}
-100% {
-transform: translateX(220%);
-}
-}
-
-@keyframes audioEqPulse {
-0%,
-100% {
-transform: scaleY(0.32);
-opacity: 0.65;
-}
-50% {
-transform: scaleY(1);
-opacity: 1;
-}
-}
-
-.ambient-loading-card {
-position: relative;
-border-color: rgba(34, 211, 238, 0.48) !important;
-box-shadow:
-0 0 0 1px rgba(52, 211, 153, 0.28),
-0 16px 46px -14px rgba(34, 211, 238, 0.34),
-0 0 30px -8px rgba(16, 185, 129, 0.28) !important;
-}
-
-.ambient-playing-card {
-position: relative;
-border-color: rgba(52, 211, 153, 0.5) !important;
-box-shadow:
-0 0 0 1px rgba(52, 211, 153, 0.25),
-0 14px 40px -14px rgba(16, 185, 129, 0.28) !important;
-}
-
-.ambient-ribbon {
-position: absolute;
-top: 0;
-left: 0;
-right: 0;
-height: 3.5px;
-overflow: hidden;
-border-top-left-radius: 1.75rem;
-border-top-right-radius: 1.75rem;
-pointer-events: none;
-z-index: 5;
-}
-
-.ambient-ribbon-loading {
-background: linear-gradient(90deg, #10b981, #22d3ee, #818cf8, #34d399, #22d3ee);
-background-size: 280% 100%;
-animation: ambientBorderFlow 1.7s linear infinite;
-box-shadow: 0 0 16px rgba(34, 211, 238, 0.78);
-}
-
-.ambient-ribbon-playing {
-background: linear-gradient(90deg, rgba(16, 185, 129, 0.18), #34d399, #22d3ee, rgba(16, 185, 129, 0.18));
-background-size: 220% 100%;
-animation: ambientBorderFlow 3s ease-in-out infinite;
-box-shadow: 0 0 12px rgba(52, 211, 153, 0.55);
-}
-
-.ambient-btn-runner {
-position: relative;
-overflow: hidden;
-background: linear-gradient(120deg, #0284c7, #10b981, #6366f1, #22d3ee);
-background-size: 260% 260%;
-animation: ambientBorderFlow 2s ease infinite;
-color: #ffffff !important;
-box-shadow: 0 0 22px -4px rgba(34, 211, 238, 0.65);
-}
-
-.ambient-btn-runner::after {
-content: '';
-position: absolute;
-inset: 0;
-width: 48%;
-background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.42), transparent);
-animation: ambientSweep 1.3s ease-in-out infinite;
-pointer-events: none;
-}
-
-.audio-eq-bar {
-transform-origin: bottom;
-animation: audioEqPulse 0.85s ease-in-out infinite;
-}
-
-/* ============================================================================
-
-INDIVIDUAL CNEU LETTER SHEET & A4 PRINT RULES
-
-============================================================================ */
-.cneu-letter-sheet {
-background: #ffffff;
-color: #0f172a;
-font-family: 'Sarabun', sans-serif;
-width: 100%;
-max-width: 794px;
-box-shadow: 0 24px 60px -16px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(148, 163, 184, 0.25);
-}
-
-.cneu-evidence-table {
-width: 100%;
-border-collapse: collapse;
-font-size: 13px;
-line-height: 1.5;
-}
-
-.cneu-evidence-table th,
-.cneu-evidence-table td {
-border: 1px solid #cbd5e1;
-padding: 8px 10px;
-vertical-align: middle;
-}
-
-.cneu-evidence-table th {
-background-color: #f1f5f9;
-color: #0f172a;
-font-weight: 700;
-}
-
-@media print {
-@page {
-size: A4 portrait;
-margin: 14mm;
-}
-
-.no-print,
-.spatial-aura,
-.spatial-grid {
-display: none !important;
-}
-
-body.printing-cneu-letter {
-background: #ffffff !important;
-color: #0f172a !important;
-}
-
-body.printing-cneu-letter .hide-when-printing-cneu {
-display: none !important;
-}
-
-body.printing-cneu-letter .cneu-print-container {
-max-width: 100% !important;
-padding: 0 !important;
-margin: 0 !important;
-}
-
+============================================================================ /
+/ ... existing code ... */
 body.printing-cneu-letter .cneu-letter-sheet {
 max-width: 100% !important;
 width: 100% !important;
@@ -436,5 +334,248 @@ border: none !important;
 border-radius: 0 !important;
 padding: 0 !important;
 margin: 0 !important;
+}
+}
+
+/* ============================================================================
+
+RJCLOUD.ORGAN 2.0 HERO: ATMOSPHERIC HORIZON, LIQUID GLASS & LIVING TREE
+
+============================================================================ */
+.hero-atmosphere {
+background: linear-gradient(
+180deg,
+#000000 0%,
+#000000 25%,
+#030c1e 39%,
+#07255e 54%,
+#165cc4 71%,
+#4b98e8 85%,
+#a9d6f7 96%,
+#c4e4fb 100%
+);
+}
+
+.lower-atmosphere {
+background: linear-gradient(
+180deg,
+#c4e4fb 0%,
+#9ccbf2 14%,
+#1d4f9c 44%,
+#071838 78%,
+#030816 100%
+);
+}
+
+.liquid-glass-backdrop {
+clip-path: url(#liquidGlassClipNorm);
+-webkit-clip-path: url(#liquidGlassClipNorm);
+background: radial-gradient(
+circle at var(--gx, 32%) var(--gy, 28%),
+rgba(255, 255, 255, 0.13) 0%,
+rgba(186, 224, 255, 0.045) 38%,
+rgba(15, 58, 130, 0.045) 74%,
+rgba(255, 255, 255, 0.035) 100%
+);
+backdrop-filter: blur(3.5px) saturate(135%) brightness(1.04);
+-webkit-backdrop-filter: blur(3.5px) saturate(135%) brightness(1.04);
+transition: background 0.2s ease;
+}
+
+.liquid-glass-mobile {
+background: linear-gradient(
+145deg,
+rgba(255, 255, 255, 0.12) 0%,
+rgba(160, 210, 255, 0.05) 48%,
+rgba(16, 65, 148, 0.14) 100%
+);
+backdrop-filter: blur(5px) saturate(135%);
+-webkit-backdrop-filter: blur(5px) saturate(135%);
+border: 1px solid rgba(255, 255, 255, 0.48);
+box-shadow:
+0 20px 50px -15px rgba(0, 18, 56, 0.45),
+inset 0 1px 1px rgba(255, 255, 255, 0.55),
+inset 0 -1px 1px rgba(147, 197, 253, 0.22);
+}
+
+.hero-eyebrow {
+font-family: var(--font-display);
+letter-spacing: 0.055em;
+background: rgba(255, 255, 255, 0.09);
+border: 1px solid rgba(255, 255, 255, 0.3);
+box-shadow:
+0 4px 18px rgba(0, 14, 44, 0.35),
+inset 0 1px 0 rgba(255, 255, 255, 0.38);
+text-shadow: 0 1px 8px rgba(0, 12, 42, 0.7);
+}
+
+.hero-headline {
+font-family: var(--font-display);
+font-weight: 500;
+letter-spacing: -0.015em;
+text-shadow:
+0 2px 14px rgba(0, 10, 38, 0.8),
+0 1px 4px rgba(0, 12, 42, 0.74),
+0 0 26px rgba(147, 210, 255, 0.24);
+}
+
+.beta-glow {
+font-family: var(--font-display);
+font-weight: 300;
+color: #fffce0;
+letter-spacing: 0.015em;
+text-shadow:
+0 0 10px rgba(254, 249, 195, 0.85),
+0 0 26px rgba(253, 224, 71, 0.45),
+0 0 46px rgba(250, 204, 21, 0.25);
+}
+
+.rajavithi-watermark {
+color: rgba(45, 76, 120, 0.82);
+letter-spacing: 0.06em;
+text-shadow: 0 1px 0 rgba(255, 255, 255, 0.42);
+}
+
+.pathway-glass-card {
+background: linear-gradient(155deg, rgba(255, 255, 255, 0.2) 0%, rgba(15, 40, 88, 0.42) 100%);
+backdrop-filter: blur(20px) saturate(155%);
+-webkit-backdrop-filter: blur(20px) saturate(155%);
+border: 1px solid rgba(255, 255, 255, 0.28);
+box-shadow:
+0 18px 40px -16px rgba(3, 14, 40, 0.55),
+inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+/* Living Tree Animation & Luminous Leaf Aura */
+@keyframes treeCanopySway {
+0%, 100% { transform: rotate(0deg) scale(1); }
+32% { transform: rotate(1.15deg) scale(1.008); }
+68% { transform: rotate(-1.05deg) scale(1.004); }
+}
+
+@keyframes branchSwayLeft {
+0%, 100% { transform: rotate(0deg); }
+40% { transform: rotate(-2.2deg); }
+75% { transform: rotate(1.3deg); }
+}
+
+@keyframes branchSwayRight {
+0%, 100% { transform: rotate(0deg); }
+38% { transform: rotate(2.1deg); }
+76% { transform: rotate(-1.35deg); }
+}
+
+@keyframes leafFlutterOrganic {
+0%, 100% {
+transform: rotate(0deg) translate(0px, 0px) scale(1);
+filter: brightness(1);
+}
+30% {
+transform: rotate(var(--fl-rot, 8deg)) translate(var(--fl-x, 1.5px), var(--fl-y, -2px)) scale(1.09);
+filter: brightness(1.32) drop-shadow(0 0 8px var(--aura-col, rgba(167, 243, 208, 0.9)));
+}
+62% {
+transform: rotate(calc(var(--fl-rot, 8deg) * -0.55)) translate(calc(var(--fl-x, 1.5px) * -0.5), 1px) scale(0.98);
+filter: brightness(1.06);
+}
+}
+
+@keyframes leafAuraHaloSync {
+0%, 100% { opacity: 0.08; transform: scale(0.72); }
+30% { opacity: 0.85; transform: scale(1.65); }
+62% { opacity: 0.22; transform: scale(1.05); }
+}
+
+@keyframes nodePulseGlow {
+0%, 100% { opacity: 0.65; transform: scale(1); }
+50% { opacity: 1; transform: scale(1.24); }
+}
+
+@keyframes auraWispRise {
+0% { opacity: 0; transform: translate(0px, 0px) scale(0.45); }
+18% { opacity: 0.95; transform: translate(calc(var(--dx, 6px) * 0.25), -8px) scale(1.15); }
+68% { opacity: 0.55; transform: translate(calc(var(--dx, 6px) * 0.8), -32px) scale(1.45); }
+100% { opacity: 0; transform: translate(var(--dx, 6px), -54px) scale(0.5); }
+}
+
+@keyframes auraRingExpand {
+0% { opacity: 0.82; transform: scale(0.45); }
+100% { opacity: 0; transform: scale(2.8); }
+}
+
+@keyframes floatParticle {
+0%, 100% { transform: translateY(0px) scale(1); opacity: 0.28; }
+50% { transform: translateY(-16px) scale(1.18); opacity: 0.75; }
+}
+
+.tree-living-root {
+transform-origin: 260px 362px;
+animation: treeCanopySway 9.5s ease-in-out infinite;
+will-change: transform;
+}
+
+.branch-group-left {
+transform-origin: 252px 236px;
+animation: branchSwayLeft 6.8s ease-in-out infinite;
+}
+
+.branch-group-right {
+transform-origin: 268px 236px;
+animation: branchSwayRight 7.4s ease-in-out infinite;
+animation-delay: -1.4s;
+}
+
+.living-leaf {
+transform-box: fill-box;
+transform-origin: center;
+animation: leafFlutterOrganic var(--dur, 4.4s) ease-in-out infinite;
+animation-delay: var(--del, 0s);
+transition: filter 0.35s ease;
+}
+
+.living-leaf.leaf-gust {
+filter: brightness(1.6) drop-shadow(0 0 12px var(--aura-col, #67e8f9)) !important;
+}
+
+.leaf-aura-halo {
+transform-box: fill-box;
+transform-origin: center;
+pointer-events: none;
+animation: leafAuraHaloSync var(--dur, 4.4s) ease-in-out infinite;
+animation-delay: var(--del, 0s);
+}
+
+.cloud-node-pulse {
+transform-box: fill-box;
+transform-origin: center;
+animation: nodePulseGlow 3.6s ease-in-out infinite;
+}
+
+.aura-wisp {
+transform-box: fill-box;
+transform-origin: center;
+animation: auraWispRise var(--wisp-dur, 2.5s) cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.aura-ring-burst {
+transform-box: fill-box;
+transform-origin: center;
+animation: auraRingExpand 1.35s ease-out forwards;
+}
+
+.ambient-dot {
+animation: floatParticle var(--dur, 7s) ease-in-out infinite;
+animation-delay: var(--del, 0s);
+}
+
+@media (prefers-reduced-motion: reduce) {
+.tree-living-root,
+.branch-group-left,
+.branch-group-right,
+.living-leaf,
+.leaf-aura-halo,
+.cloud-node-pulse,
+.ambient-dot {
+animation: none !important;
 }
 }
