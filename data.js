@@ -1,5 +1,6 @@
 // ============================================================================
-// rjcloud.organ — Master Static Data & AI Clinical Knowledge Base (Production 2027)
+// rjcloud.organ 2.0 — Master Static Data & AI Clinical Knowledge Base (Production 2027)
+// ชื่อธีมอย่างเป็นทางการ: rjcloud.organ 2.0 (Atmospheric Horizon + Liquid Glass)
 // ศูนย์กลางข้อมูล การตั้งค่าธีม และคลังสมรรถนะ AI ผูกบัญชีหลัก: rjcloud.organ@gmail.com
 // ============================================================================
 
@@ -9,7 +10,9 @@
  */
 window.RJCLOUD_CONFIG = {
   appName: "rjcloud.organ",
-  edition: "2027 Clinical Edition",
+  themeName: "rjcloud.organ 2.0",
+  edition: "rjcloud.organ 2.0 • Cloud AI (2027)",
+  taglineEN: "e-Learning Organ Donation Training",
   contactEmail: "rjcloud.organ@gmail.com",
   appId: "rjcloud-organ-2027",
 
@@ -28,9 +31,11 @@ window.RJCLOUD_CONFIG = {
     minPosttestPercent: 80    // ขั้นที่ 4 & 5: ทำ Post-test ไม่น้อยกว่า 80% เพื่อรับประกาศนียบัตร
   },
 
-  // ค่าเริ่มต้นโหมดการแสดงผล (ผู้เรียนสามารถกดสลับ มืด/สว่าง ได้ทุกหน้า)
+  // การตั้งค่าธีมมาตรฐานระบบ rjcloud.organ 2.0 (ผู้เรียนสลับ มืด/สว่าง ได้ทุกหน้า)
   theme: {
-    defaultMode: "dark",      // "dark" (Spatial Dark) | "light" (Frosted Pearl)
+    name: "rjcloud.organ 2.0",
+    subtitle: "Cloud AI",
+    defaultMode: "dark",      // "dark" (Atmospheric Dark) | "light" (Icy Pearl Light)
     storageKey: "rjcloud_theme"
   },
 
