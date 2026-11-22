@@ -23,7 +23,7 @@
   // ==========================================================================
   const STORE_PREFIX = 'rjcloud_ai_interactive_v1';
   const LEGACY_STORAGE_KEY = 'rjcloud_organ_state_v2027';
-  const AUDIO_CACHE_DB = 'rjcloud_interactive_voice_cache_v1';
+  const AUDIO_CACHE_DB = 'rjcloud_interactive_voice_cache_v2';
   const AUDIO_CACHE_STORE = 'clips';
   const IDLE_DIM_MS = 4000; // จางลงอัตโนมัติเมื่อไม่มีการโต้ตอบเกิน 4 วินาที
 
@@ -79,8 +79,8 @@
       selectorMobile: 'nav button:nth-child(5)',
       badge: 'MENU 05 • โปรไฟล์ & Warm-up',
       title: 'โปรไฟล์ รายงาน Portfolio และโหมดอุ่นเครื่อง 30 วิ',
-      desc: 'รวมข้อมูลส่วนตัว คะแนนทั้งหมด การจัดการข้อมูล PDPA และโหมดอุ่นเครื่อง 30 วิ ส่วนปุ่มสีแดง “ออกจากระบบ” อยู่ถัดจากเมนูนี้ทันทีค่ะ',
-      speech: 'และเมนูโปรไฟล์ อยู่ตรงนี้ค่ะ ใช้ดูข้อมูลส่วนตัว คะแนน จัดการข้อมูลพีดีพีเอ และโหมดอุ่นเครื่องสามสิบวินาที ส่วนปุ่มสีแดงออกจากระบบจะอยู่ถัดจากเมนูนี้เลยค่ะ'
+      desc: 'รวมข้อมูลส่วนตัว คะแนนทั้งหมด การจัดการข้อมูล PDPA และโหมดอุ่นเครื่อง 30 วิ ส่วนปุ่ม “ออกจากระบบ” อยู่ถัดจากเมนูนี้ (จะเปลี่ยนเป็นสีแดงเมื่อชี้เมาส์หรือแตะ) ค่ะ',
+      speech: 'และเมนูโปรไฟล์ อยู่ตรงนี้ค่ะ ใช้ดูข้อมูลส่วนตัว คะแนน จัดการข้อมูลพีดีพีเอ และโหมดอุ่นเครื่องสามสิบวินาที ส่วนปุ่มออกจากระบบจะอยู่ถัดจากเมนูนี้เลยค่ะ'
     }
   ];
 
@@ -314,16 +314,96 @@
     },
 
     pcm16ToWavBlob(base64PCM, sampleRate = 24000) {
+      if (window.RJCLOUD_CORE && typeof window.RJCLOUD_CORE.pcm16ToWavBlob === 'function') {
+        return window.RJCLOUD_CORE.pcm16ToWavBlob(base64PCM, sampleRate);
+      }
       const bin = window.atob(base64PCM);
-      const bytes = new Uint8Array(bin.length);
-      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-      const buf = new ArrayBuffer(44 + bytes.length);
+      const rawBytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) rawBytes[i] = bin.charCodeAt(i);
+
+      let offsetBytes = 0;
+      if (rawBytes.length > 44 && rawBytes[0] === 0x52 && rawBytes[1] === 0x49 && rawBytes[2] === 0x46 && rawBytes[3] === 0x46) {
+        offsetBytes = 44;
+      }
+
+      const sampleCount = Math.floor((rawBytes.length - offsetBytes) / 2);
+      if (sampleCount <= 0) return new Blob([], { type: 'audio/wav' });
+
+      const inView = new DataView(rawBytes.buffer, rawBytes.byteOffset + offsetBytes, sampleCount * 2);
+      const samples = new Float32Array(sampleCount);
+      for (let i = 0; i < sampleCount; i++) {
+        samples[i] = inView.getInt16(i * 2, true) / 32768;
+      }
+
+      // ตัดเสียงซ่าความถี่สูงท้ายคลิป (Anti-Hiss DSP) + Smooth Cosine Fade-out
+      const frameSize = Math.max(128, Math.round(sampleRate * 0.02));
+      const numFrames = Math.floor(sampleCount / frameSize);
+      const frameRms = new Float32Array(numFrames);
+      const frameZcr = new Float32Array(numFrames);
+
+      for (let f = 0; f < numFrames; f++) {
+        const start = f * frameSize;
+        let sumSq = 0;
+        let zc = 0;
+        let prev = samples[start];
+        for (let j = 0; j < frameSize; j++) {
+          const s = samples[start + j];
+          sumSq += s * s;
+          if ((s >= 0 && prev < 0) || (s < 0 && prev >= 0)) zc++;
+          prev = s;
+        }
+        frameRms[f] = Math.sqrt(sumSq / frameSize);
+        frameZcr[f] = zc / frameSize;
+      }
+
+      let endFrame = numFrames - 1;
+      while (endFrame > 12) {
+        if (frameRms[endFrame] < 0.016 || frameZcr[endFrame] > 0.22) {
+          endFrame--;
+        } else {
+          break;
+        }
+      }
+
+      const lookbackStart = Math.max(12, endFrame - Math.round(1.6 / 0.02));
+      let silentRun = 0;
+      for (let f = lookbackStart; f <= endFrame; f++) {
+        if (frameRms[f] < 0.015) {
+          silentRun++;
+        } else {
+          if (silentRun >= 5) {
+            let tailZcrSum = 0;
+            let tailCount = 0;
+            for (let k = f; k <= endFrame; k++) {
+              tailZcrSum += frameZcr[k];
+              tailCount++;
+            }
+            if (tailCount > 0 && tailZcrSum / tailCount > 0.21) {
+              endFrame = Math.max(12, f - silentRun - 1);
+              break;
+            }
+          }
+          silentRun = 0;
+        }
+      }
+
+      const keptSamples = Math.min(
+        sampleCount,
+        Math.max(Math.min(sampleCount, Math.round(sampleRate * 0.25)), (endFrame + 1) * frameSize)
+      );
+      const padZeroSamples = Math.round(sampleRate * 0.045);
+      const totalOutSamples = keptSamples + padZeroSamples;
+      const outBytesLen = totalOutSamples * 2;
+      const fadeInLen = Math.min(Math.round(sampleRate * 0.012), Math.floor(keptSamples * 0.1));
+      const fadeOutLen = Math.min(Math.round(sampleRate * 0.075), Math.floor(keptSamples * 0.22));
+
+      const buf = new ArrayBuffer(44 + outBytesLen);
       const view = new DataView(buf);
       const writeStr = (off, s) => {
         for (let i = 0; i < s.length; i++) view.setUint8(off + i, s.charCodeAt(i));
       };
       writeStr(0, 'RIFF');
-      view.setUint32(4, 36 + bytes.length, true);
+      view.setUint32(4, 36 + outBytesLen, true);
       writeStr(8, 'WAVE');
       writeStr(12, 'fmt ');
       view.setUint32(16, 16, true);
@@ -334,8 +414,19 @@
       view.setUint16(32, 2, true);
       view.setUint16(34, 16, true);
       writeStr(36, 'data');
-      view.setUint32(40, bytes.length, true);
-      new Uint8Array(buf, 44).set(bytes);
+      view.setUint32(40, outBytesLen, true);
+
+      for (let i = 0; i < keptSamples; i++) {
+        let s = samples[i];
+        if (i < fadeInLen) {
+          s *= i / fadeInLen;
+        } else if (i >= keptSamples - fadeOutLen) {
+          const t = (i - (keptSamples - fadeOutLen)) / fadeOutLen;
+          s *= 0.5 * (1 + Math.cos(Math.PI * t));
+        }
+        const clamped = Math.max(-1, Math.min(1, s));
+        view.setInt16(44 + i * 2, Math.round(clamped * 32767), true);
+      }
       return new Blob([buf], { type: 'audio/wav' });
     },
 
@@ -1134,8 +1225,8 @@
       if (lower.includes('ออก') || lower.includes('logout')) {
         const isMobile = window.innerWidth < 1024;
         setTimeout(() => pulseElementBySelector(isMobile ? '#btn-learner-logout-mobile' : '#btn-learner-logout'), 180);
-        reply = 'ปุ่มสีแดง **“ออกจากระบบ”** อยู่ที่แถบเมนูหน้าห้องเรียน ถัดจากเมนู **โปรไฟล์ & Warm-up** ค่ะ ดิฉันไฮไลต์ตำแหน่งปุ่มให้แล้วนะคะ';
-        speakOut = 'ปุ่มสีแดงออกจากระบบอยู่ที่แถบเมนูหน้าห้องเรียน ถัดจากเมนูโปรไฟล์ค่ะ ดิฉันไฮไลต์ตำแหน่งปุ่มให้แล้วนะคะ';
+        reply = 'ปุ่ม **“ออกจากระบบ”** อยู่ที่แถบเมนูหน้าห้องเรียน ถัดจากเมนู **โปรไฟล์ & Warm-up** ค่ะ (จะเปลี่ยนเป็นสีแดงเมื่อชี้เมาส์หรือแตะ) ดิฉันไฮไลต์ตำแหน่งปุ่มให้แล้วนะคะ';
+        speakOut = 'ปุ่มออกจากระบบอยู่ที่แถบเมนูหน้าห้องเรียน ถัดจากเมนูโปรไฟล์ค่ะ ดิฉันไฮไลต์ตำแหน่งปุ่มให้แล้วนะคะ';
       } else if (lower.includes('โปรไฟล์')) {
         bridge.setActiveTab('profile');
         reply = 'เปิดหน้า **โปรไฟล์ & Warm-up** ให้เรียบร้อยแล้วค่ะ';
