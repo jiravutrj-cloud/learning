@@ -1127,6 +1127,10 @@
     const bridge = Controller.bridge || {};
     const info = buildWelcomeSummary(bridge);
 
+    setTimeout(() => {
+      let reply = '';
+      let speakOut = '';
+
       if (lower.includes('ออก') || lower.includes('logout')) {
         const isMobile = window.innerWidth < 1024;
         setTimeout(() => pulseElementBySelector(isMobile ? '#btn-learner-logout-mobile' : '#btn-learner-logout'), 180);
