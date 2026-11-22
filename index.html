@@ -312,35 +312,59 @@
         const resolveRoleProfile = CORE.resolveRoleProfile || (() => ({ id: 'icu_er_or', badgeTH: 'มุมมองบุคลากรคลินิก', focusSummary: 'เน้นคัดกรอง Potential Donor, Donor Management และสื่อสารกับญาติ', aiPromptAddon: '' }));
         const getTargetHoursForUser = CORE.getTargetHoursForUser || ((u, cfg) => (u?.userType === 'เรียนต่อเนื่อง' ? Math.max(2, Math.round(Number(cfg?.hours || 8) * 0.75)) : Math.max(1, Number(cfg?.hours || 8))));
         const formatStudyTime = CORE.formatStudyTime || ((sec) => {
-            const s = Math.max(0, Math.floor(Number(sec || 0)));
-            const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
-            return h > 0 ? `${h} ชม. ${m} น.` : `${m} น. ${s % 60} วิ`;
+            const total = Math.max(0, Math.floor(Number(sec || 0)));
+            const h = Math.floor(total / 3600);
+            const m = Math.floor((total % 3600) / 60);
+            const s = total % 60;
+            if (h > 0) return `${h} ชม. ${m} น.`;
+            if (m > 0) return `${m} น. ${s} วิ`;
+            return `${s} วินาที`;
         });
         const formatThaiDate = CORE.formatThaiDate || ((iso) => {
-            try { return (iso ? new Date(iso) : new Date()).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' }); }
-            catch (_) { return '-'; }
+            try {
+                const d = iso ? new Date(iso) : new Date();
+                return isNaN(d.getTime()) ? '-' : d.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+            } catch (_) { return '-'; }
         });
         const maskEmail = CORE.maskEmail || ((e) => {
-            const c = String(e || '').trim();
-            if (!c.includes('@')) return c ? '••••••' : '';
-            const [l, d] = c.split('@');
-            return `${l.slice(0, Math.min(2, l.length))}••••@${d}`;
+            const clean = String(e || '').trim();
+            if (!clean || !clean.includes('@')) return clean ? '••••••' : '';
+            const [local, dom] = clean.split('@');
+            return `${local.slice(0, Math.min(2, local.length))}••••@${dom}`;
         });
         const maskPhone = CORE.maskPhone || ((p) => {
             const d = String(p || '').replace(/[^0-9]/g, '');
-            return d.length > 5 ? `${d.slice(0, 3)}••••${d.slice(-3)}` : (d ? '•••••' : '');
+            if (!d) return '';
+            return d.length <= 5 ? '•••••' : `${d.slice(0, 3)}••••${d.slice(-3)}`;
         });
-        const buildAnonTelemetryId = CORE.buildAnonTelemetryId || ((rawId) => {
+        const resolveRegionId = CORE.resolveRegionId || ((dep = '') => {
+            const d = String(dep || '').trim();
+            if (d.startsWith('เขตสุขภาพที่')) {
+                const num = d.replace(/[^0-9]/g, '');
+                if (num && Number(num) >= 1 && Number(num) <= 12) return `R${num}`;
+            }
+            if (['กรมการแพทย์', 'สำนักการแพทย์ กรุงเทพฯ', 'สำนักอนามัย กรุงเทพฯ', 'กรุงเทพมหานคร'].some(k => d.includes(k))) return 'BKK';
+            return 'OTHER';
+        });
+        const buildAnonTelemetryId = CORE.buildAnonTelemetryId || ((rawId = '') => {
             const str = `RJCLOUD_PDPA_ANON|${rawId}|2027`;
             let h = 2166136261;
-            for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
+            for (let i = 0; i < str.length; i++) {
+                h ^= str.charCodeAt(i);
+                h = Math.imul(h, 16777619);
+            }
             return `ANON-${(h >>> 0).toString(16).toUpperCase().padStart(8, '0')}`;
         });
         const buildExecutiveTelemetryPayload = CORE.buildExecutiveTelemetryPayload || ((u) => ({
-            regionId: 'OTHER', department: u?.department || '', status: u?.status === 'ผ่าน' ? 'ผ่าน' : 'กำลังเรียน',
-            progress: Number(u?.progress || 0), hasLab: Boolean(u?.skillLabPassed),
+            regionId: resolveRegionId(u?.department),
+            department: u?.department || '',
+            status: u?.status === 'ผ่าน' ? 'ผ่าน' : 'กำลังเรียน',
+            progress: Number(u?.progress || 0),
+            hasLab: Boolean(u?.skillLabPassed || (Array.isArray(u?.skillLabHistory) && u.skillLabHistory.length > 0)),
             skillLabBestScore: typeof u?.skillLabBestScore === 'number' ? u.skillLabBestScore : null,
-            radar: u?.skillLabLatestRadar || null, domains: [], satisfactionScore: u?.satisfactionScore || null,
+            radar: u?.skillLabLatestRadar || null,
+            domains: Array.isArray(u?.aiRoadmap?.domains) ? u.aiRoadmap.domains.map(d => ({ id: d.id, percent: Number(d.percent || 0) })) : [],
+            satisfactionScore: typeof u?.satisfactionScore === 'number' ? u.satisfactionScore : null,
             updatedAt: new Date().toISOString()
         }));
 
@@ -357,12 +381,13 @@
             }
         }
 
-        // CORS-Safe Apps Script Caller (ป้องกัน Failed to fetch บน GitHub Pages & Preview)
+        // CORS-Safe Apps Script Caller (เพิ่ม redirect: 'follow' รองรับ Google Apps Script Web App)
         async function postAppsScript(url, payload) {
-            if (!url) return { status: 'no_url' };
+            if (!url) return { status: 'no_url', message: 'ยังไม่ได้ตั้งค่า Apps Script URL' };
             try {
                 const res = await fetch(url, {
                     method: 'POST',
+                    redirect: 'follow',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify(payload)
                 });
@@ -374,30 +399,40 @@
             }
         }
 
-        // ส่งรหัส OTP ทางอีเมลจริงผ่าน Apps Script (ลองทั้ง sendOTP และ sendOtpEmail อัตโนมัติ)
+        // ส่งรหัส OTP ทางอีเมลจริงผ่าน Apps Script (รองรับชื่อ action มาตรฐานและแนบฟิลด์ครบถ้วน)
         async function sendOtpViaEmail(url, email, otp, name, license) {
             if (!url || !email) return { ok: false, reason: 'ไม่พบ URL ส่งอีเมลหรือที่อยู่อีเมลปลายทาง' };
+            const cleanEmail = String(email).trim();
+            const cleanOtp = String(otp).trim();
+            const appName = CONFIG.appName || 'rjcloud.organ';
             const basePayload = {
-                email: String(email).trim(),
-                otp: String(otp),
-                code: String(otp),
+                email: cleanEmail,
+                to: cleanEmail,
+                otp: cleanOtp,
+                code: cleanOtp,
                 name: String(name || 'ผู้เรียน'),
                 license: String(license || ''),
-                appName: CONFIG.appName || 'rjcloud.organ'
+                appName,
+                subject: `[${appName}] รหัสยืนยันตัวตน OTP 6 หลัก: ${cleanOtp}`,
+                body: `สวัสดีค่ะคุณ ${name || 'ผู้เรียน'}\n\nรหัสยืนยันตัวตน OTP 6 หลักสำหรับเข้าสู่ระบบ ${appName} คือ: ${cleanOtp}\n(ใช้ได้ภายใน 10 นาที • ห้ามเปิดเผยรหัสนี้แก่ผู้อื่น)\n\nขอบคุณค่ะ\nทีมงาน ${appName}`
             };
 
-            const r1 = await postAppsScript(url, { action: 'sendOTP', ...basePayload });
-            if (r1?.status === 'success' || r1?.ok === true || r1?.sent === true) {
-                return { ok: true, res: r1 };
+            const candidateActions = ['sendOtp', 'sendOTP', 'sendOtpEmail', 'sendEmail'];
+            let lastErr = 'ระบบส่งอีเมลไม่ตอบสนอง กรุณาตรวจสอบการ Deploy Web App ของ Code.gs ค่ะ';
+
+            for (const act of candidateActions) {
+                const res = await postAppsScript(url, { action: act, ...basePayload });
+                if (res?.status === 'success' || res?.ok === true || res?.sent === true) {
+                    return { ok: true, res };
+                }
+                const msg = String(res?.message || '');
+                if (msg) lastErr = msg;
+                // หาก error ไม่ใช่เรื่องไม่รองรับชื่อ action ให้หยุดทันที (เช่น โควต้าเต็มหรือเน็ตหลุด)
+                if (!msg.includes('ไม่รองรับ') && !msg.toLowerCase().includes('action')) {
+                    break;
+                }
             }
-            const r2 = await postAppsScript(url, { action: 'sendOtpEmail', ...basePayload });
-            if (r2?.status === 'success' || r2?.ok === true || r2?.sent === true) {
-                return { ok: true, res: r2 };
-            }
-            return {
-                ok: false,
-                reason: r2?.message || r1?.message || 'ระบบส่งอีเมลไม่ตอบสนอง กรุณาตรวจสอบสิทธิ์ Web App ของ Apps Script ค่ะ'
-            };
+            return { ok: false, reason: lastErr };
         }
 
         // ============================================================================
@@ -1003,6 +1038,20 @@ ${roleProfile.aiPromptAddon || ''}
                 ctx.fillRect(0, 0, 160, 160);
                 if (typeof CERT.drawRealQrOnCanvas === 'function') {
                     CERT.drawRealQrOnCanvas(ctx, verifyUrl, 8, 8, 144, '#0f172a');
+                } else if (typeof window.qrcode === 'function') {
+                    try {
+                        const qr = window.qrcode(0, 'M');
+                        qr.addData(String(verifyUrl));
+                        qr.make();
+                        const count = qr.getModuleCount();
+                        const cell = 144 / count;
+                        ctx.fillStyle = '#0f172a';
+                        for (let r = 0; r < count; r++) {
+                            for (let c = 0; c < count; c++) {
+                                if (qr.isDark(r, c)) ctx.fillRect(Math.floor(8 + c * cell), Math.floor(8 + r * cell), Math.ceil(cell), Math.ceil(cell));
+                            }
+                        }
+                    } catch (_) {}
                 }
             }, [verifyUrl]);
 
@@ -1031,20 +1080,19 @@ ${roleProfile.aiPromptAddon || ''}
                             <tr><th>รายการหลักฐานผ่านเกณฑ์</th><th>ผลการประเมิน</th><th>สถานะ</th></tr>
                         </thead>
                         <tbody>
-                            <tr><td>1. การสะสมเวลาเรียนบทเรียนออนไลน์ (เกณฑ์ ≥ {MIN_STUDY_PERCENT}%)</td><td className="font-mono text-center">{user?.progress || 100}% ({formatStudyTime(user?.studySeconds)})</td><td className="text-center font-bold text-emerald-700">ผ่านเกณฑ์ ✓</td></tr>
+                            <tr><td>1. การสะสมเวลาเรียนบทเรียนออนไลน์ (เกณฑ์ ≥ {MIN_STUDY_PERCENT}%)</td><td className="font-mono text-center">{user?.progress ?? 0}% ({formatStudyTime(user?.studySeconds)})</td><td className="text-center font-bold text-emerald-700">ผ่านเกณฑ์ ✓</td></tr>
                             <tr><td>2. การฝึกปฏิบัติการสื่อสารในห้องจำลอง AI Skill Lab 3 มิติ</td><td className="font-mono text-center">{typeof user?.skillLabBestScore === 'number' ? `${user.skillLabBestScore}/100` : 'ผ่านการฝึก'}</td><td className="text-center font-bold text-emerald-700">ผ่านเกณฑ์ ✓</td></tr>
-                            <tr><td>3. แบบทดสอบวัดผลหลังเรียน Post-test (เกณฑ์ ≥ {MIN_POSTTEST_PERCENT}%)</td><td className="font-mono text-center">{user?.posttest || '-'} ({parsePosttestPercent(user)}%)</td><td className="text-center font-bold text-emerald-700">ผ่านเกณฑ์ ✓</td></tr>
-                            <tr><td>4. รหัสประกาศนียบัตรอ้างอิง &amp; วันที่ออกเอกสาร</td><td className="font-mono text-center">{user?.certificateCode || '-'}</td><td className="text-center">{formatThaiDate(user?.certificateIssuedAt)}</td></tr>
+                            <tr><td>3. แบบทดสอบหลังเรียน Post-test (เกณฑ์ ≥ {MIN_POSTTEST_PERCENT}%)</td><td className="font-mono text-center">{user?.posttest || '-'} ({parsePosttestPercent(user)}%)</td><td className="text-center font-bold text-emerald-700">ผ่านเกณฑ์ ✓</td></tr>
                         </tbody>
                     </table>
 
-                    <div className="pt-4 flex flex-wrap items-end justify-between gap-6">
+                    <div className="pt-4 grid grid-cols-1 sm:grid-cols-2 gap-6 items-end">
                         <div className="flex items-center gap-3">
-                            <canvas ref={qrCanvasRef} className="w-24 h-24 border border-slate-300 rounded-lg bg-white" />
+                            <canvas ref={qrCanvasRef} className="w-24 h-24 border border-slate-300 rounded-lg bg-white shrink-0" />
                             <div className="text-[11px] text-slate-600 space-y-0.5">
-                                <p className="font-bold text-slate-900">สแกน QR Code ตรวจสอบสด</p>
-                                <p className="font-mono text-emerald-800 font-bold">{user?.certificateCode || '-'}</p>
-                                <p>ยืนยันความถูกต้องบนระบบ Cloud rjcloud.organ</p>
+                                <p className="font-bold text-slate-900">ตรวจสอบความถูกต้องด้วย QR Code</p>
+                                <p className="font-mono text-emerald-800 font-bold">{user?.certificateCode || 'RJC-2027-DEMO01'}</p>
+                                <p>ออกหนังสือรับรอง ณ วันที่ {formatThaiDate(user?.certificateIssuedAt)}</p>
                             </div>
                         </div>
                         <div className="text-center text-xs space-y-1">
@@ -1060,6 +1108,12 @@ ${roleProfile.aiPromptAddon || ''}
         // ============================================================================
         // 4. MAIN LEARNER APPLICATION (INDEX.HTML — PRODUCTION 2027)
         // ============================================================================
+        const DEFAULT_AUTH_FORM = {
+            license: '', name: '', position: 'พยาบาลวิชาชีพ', workContext: 'ICU / ER / OR',
+            department: 'กรมการแพทย์', hospital: 'รพ.ราชวิถี', province: 'กรุงเทพมหานคร',
+            email: '', phone: '', userType: 'เรียนใหม่', pdpaAccepted: false
+        };
+
         function App() {
             const adminPreviewParam = useMemo(() => {
                 try { return new URLSearchParams(window.location.search).get('admin_preview') || ''; }
@@ -1144,14 +1198,10 @@ ${roleProfile.aiPromptAddon || ''}
             const [authStep, setAuthStep] = useState(() => (adminPreviewParam === 'auth2' ? 2 : adminPreviewParam === 'auth3' ? 3 : 1));
             const [authBusy, setAuthBusy] = useState(false);
             const [isExistingAccount, setIsExistingAccount] = useState(false);
-            const [editContactInStep2, setEditContactInStep2] = useState(false);
+            const [existingRegisteredEmail, setExistingRegisteredEmail] = useState('');
             const [pdpaAgreed, setPdpaAgreed] = useState(false);
             const [pdpaModalOpen, setPdpaModalOpen] = useState(false);
-            const [authForm, setAuthForm] = useState({
-                license: '', name: '', position: 'พยาบาลวิชาชีพ', workContext: 'ICU / ER / OR',
-                department: 'กรมการแพทย์', hospital: 'รพ.ราชวิถี', province: 'กรุงเทพมหานคร',
-                email: '', phone: '', userType: 'เรียนใหม่', pdpaAccepted: false
-            });
+            const [authForm, setAuthForm] = useState(() => ({ ...DEFAULT_AUTH_FORM }));
             const [generatedOtp, setGeneratedOtp] = useState('');
             const [otpInput, setOtpInput] = useState('');
             const [otpCooldown, setOtpCooldown] = useState(0);
@@ -1172,8 +1222,12 @@ ${roleProfile.aiPromptAddon || ''}
             const [confirmDialog, setConfirmDialog] = useState({ open: false, title: '', message: '', danger: false, confirmText: 'ยืนยัน', onConfirm: null });
 
             const userRef = useRef(user);
+            const studySecondsRef = useRef(studySeconds);
+            const currentLessonIdRef = useRef(currentLessonId);
             const certCanvasRef = useRef(null);
             useEffect(() => { userRef.current = user; }, [user]);
+            useEffect(() => { studySecondsRef.current = studySeconds; }, [studySeconds]);
+            useEffect(() => { currentLessonIdRef.current = currentLessonId; }, [currentLessonId]);
 
             const showToast = useCallback((text, type = 'success') => {
                 setToast({ visible: true, text: String(text), type });
@@ -1243,13 +1297,17 @@ ${roleProfile.aiPromptAddon || ''}
                             try {
                                 if (typeof fbAuth.authStateReady === 'function') await fbAuth.authStateReady();
                                 if (active && !fbAuth.currentUser) await signInAnonymously(fbAuth);
-                            } catch (_) {}
+                            } catch (err) {
+                                console.warn('Anonymous auth warning:', err);
+                            }
                         }
                         return;
                     }
                     setIsCloudReady(true);
 
                     if (unsubSettings) unsubSettings();
+                    if (unsubContent) unsubContent();
+
                     unsubSettings = onSnapshot(
                         doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_config', 'settings'),
                         (snap) => {
@@ -1263,7 +1321,6 @@ ${roleProfile.aiPromptAddon || ''}
                         () => {}
                     );
 
-                    if (unsubContent) unsubContent();
                     unsubContent = onSnapshot(
                         doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_config', 'content'),
                         (snap) => {
@@ -1284,7 +1341,7 @@ ${roleProfile.aiPromptAddon || ''}
                 };
             }, [isAdminPreview]);
 
-            // Live Cloud Sync สำหรับข้อมูลผู้เรียนปัจจุบัน (รับค่าที่แอดมินอัปเดตสดโดยไม่ทับเวลาเรียนที่สูงกว่า)
+            // ซิงค์ข้อมูลผู้เรียนสดจาก Cloud Firestore (ไม่ทับข้อมูลที่แอดมินปรับแก้)
             useEffect(() => {
                 if (!isCloudReady || !fbDb || isAdminPreview || !user?.id || String(user.id).startsWith('admin_preview_')) return;
                 const unsubUser = onSnapshot(
@@ -1292,14 +1349,16 @@ ${roleProfile.aiPromptAddon || ''}
                     (snap) => {
                         if (!snap.exists()) return;
                         const cloud = snap.data();
-                        const local = userRef.current;
-                        if (!local) return;
-                        const bestSec = Math.max(Number(local.studySeconds || 0), Number(cloud.studySeconds || 0));
-                        const bestPct = Math.max(Number(local.progress || 0), Number(cloud.progress || 0));
-                        const merged = { ...local, ...cloud, studySeconds: bestSec, progress: bestPct };
+                        const cur = userRef.current || {};
+                        const bestSeconds = Math.max(Number(cur.studySeconds || 0), Number(cloud.studySeconds || 0));
+                        const bestProgress = Math.max(Number(cur.progress || 0), Number(cloud.progress || 0));
+                        const merged = { ...cur, ...cloud, id: String(user.id), studySeconds: bestSeconds, progress: bestProgress };
                         userRef.current = merged;
                         setUser(merged);
-                        setStudySeconds(prev => Math.max(prev, bestSec));
+                        if (bestSeconds > Number(studySecondsRef.current || 0)) {
+                            studySecondsRef.current = bestSeconds;
+                            setStudySeconds(bestSeconds);
+                        }
                         try {
                             const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
                             localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...raw, user: merged }));
@@ -1310,39 +1369,43 @@ ${roleProfile.aiPromptAddon || ''}
                 return () => unsubUser();
             }, [isCloudReady, isAdminPreview, user?.id]);
 
-            // คำนวณเวลาเรียนและเงื่อนไข 5 ขั้นตอน
+            // คำนวณเกณฑ์ความคืบหน้า 5 ขั้นตอนแบบ Real-time
             const targetHours = useMemo(() => getTargetHoursForUser(user, liveConfig), [user, liveConfig]);
-            const targetSeconds = targetHours * 3600;
-            const liveStudyPercent = useMemo(() => {
-                const calc = Math.min(100, Math.round((studySeconds / Math.max(1, targetSeconds)) * 100));
-                return Math.max(Number(user?.progress || 0), calc);
-            }, [studySeconds, targetSeconds, user?.progress]);
-
+            const targetSeconds = Math.max(60, targetHours * 3600);
+            const liveStudyPercent = useMemo(
+                () => Math.max(Number(user?.progress || 0), Math.min(100, Math.round((Number(studySeconds || 0) / targetSeconds) * 100))),
+                [user?.progress, studySeconds, targetSeconds]
+            );
             const hasDonePretest = Boolean(user?.pretest && user.pretest !== '-');
             const isStudyHoursMet = liveStudyPercent >= MIN_STUDY_PERCENT;
             const isSkillLabDone = Boolean(user?.skillLabPassed || (Array.isArray(user?.skillLabHistory) && user.skillLabHistory.length > 0));
             const isPosttestUnlocked = Boolean(isAdminPreview || liveConfig.allowPosttest || (hasDonePretest && isStudyHoursMet && isSkillLabDone));
-            const isPosttestPassed = Boolean(user?.status === 'ผ่าน' || parsePosttestPercent(user, MIN_POSTTEST_PERCENT) >= MIN_POSTTEST_PERCENT);
+            const isPosttestPassed = Boolean(user?.status === 'ผ่าน' || parsePosttestPercent(user) >= MIN_POSTTEST_PERCENT);
 
-            // นาฬิกาจับเวลาเรียนอัตโนมัติ (บันทึกเฉพาะ studySeconds/progress/lastVideoId ทุก 20 วินาที ไม่ทับข้อมูลแอดมิน)
+            // นาฬิกาจับเวลาเรียนอัตโนมัติ (แยก Side-Effect ออกจาก setState updater เพื่อความถูกต้องตาม React 18)
             useEffect(() => {
                 if (screen !== 'dashboard' || !user || isAdminPreview) return;
                 if (!['lessons', 'live', 'clinical_cases', 'flashcards'].includes(activeTab)) return;
 
                 let tickCount = 0;
                 const timer = setInterval(() => {
-                    setStudySeconds(prev => {
-                        const nextSec = prev + 1;
-                        tickCount += 1;
-                        if (tickCount % 20 === 0) {
-                            const nextPct = Math.max(Number(userRef.current?.progress || 0), Math.min(100, Math.round((nextSec / Math.max(1, targetSeconds)) * 100)));
-                            saveUserProgress({ studySeconds: nextSec, progress: nextPct, lastVideoId: currentLessonId }, { partialOnly: true });
-                        }
-                        return nextSec;
-                    });
+                    const nextSec = Number(studySecondsRef.current || 0) + 1;
+                    studySecondsRef.current = nextSec;
+                    setStudySeconds(nextSec);
+                    tickCount += 1;
+                    if (tickCount % 20 === 0) {
+                        const nextPct = Math.max(
+                            Number(userRef.current?.progress || 0),
+                            Math.min(100, Math.round((nextSec / Math.max(1, targetSeconds)) * 100))
+                        );
+                        saveUserProgress(
+                            { studySeconds: nextSec, progress: nextPct, lastVideoId: Number(currentLessonIdRef.current || 1) },
+                            { partialOnly: true }
+                        );
+                    }
                 }, 1000);
                 return () => clearInterval(timer);
-            }, [screen, activeTab, user?.id, isAdminPreview, targetSeconds, currentLessonId, saveUserProgress]);
+            }, [screen, activeTab, user?.id, isAdminPreview, targetSeconds, saveUserProgress]);
 
             // เชื่อมต่อ Bridge กับไฟล์เสริม ai-interactive.js ครบทุกฟิลด์
             useEffect(() => {
@@ -1382,7 +1445,7 @@ ${roleProfile.aiPromptAddon || ''}
                 }
             }, [screen, user]);
 
-            // วาดใบประกาศนียบัตรลง Canvas เมื่อเข้าหน้า certificate
+            // วาดใบประกาศนียบัตรลง Canvas เมื่อเข้าหน้า certificate (พร้อม Fallback กรณีพรีวิวไฟล์เดี่ยวไม่มี cert-engine.js)
             const verifyUrl = useMemo(() => {
                 const code = user?.certificateCode || `${certTemplate.certPrefix || 'RJC-2027'}-DEMO01`;
                 return typeof CERT.buildVerifyUrl === 'function'
@@ -1391,10 +1454,68 @@ ${roleProfile.aiPromptAddon || ''}
             }, [user?.certificateCode, certTemplate.certPrefix]);
 
             useEffect(() => {
-                if (screen === 'certificate' && certSubView === 'cert' && certCanvasRef.current && user) {
-                    if (typeof CERT.drawMinimalistCertificate === 'function') {
-                        CERT.drawMinimalistCertificate(certCanvasRef.current, certTemplate, user, verifyUrl);
-                    }
+                if (screen !== 'certificate' || certSubView !== 'cert' || !certCanvasRef.current || !user) return;
+                if (typeof CERT.drawMinimalistCertificate === 'function') {
+                    CERT.drawMinimalistCertificate(certCanvasRef.current, certTemplate, user, verifyUrl);
+                    return;
+                }
+                // Built-in Fallback Canvas Renderer สำหรับโหมดพรีวิวไฟล์เดี่ยว
+                const canvas = certCanvasRef.current;
+                const W = 1200, H = 848;
+                canvas.width = W;
+                canvas.height = H;
+                const ctx = canvas.getContext('2d');
+                if (!ctx) return;
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, W, H);
+                ctx.strokeStyle = '#c5a059';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(32, 32, W - 64, H - 64);
+                ctx.strokeStyle = 'rgba(197, 160, 89, 0.45)';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(46, 46, W - 92, H - 92);
+                ctx.textAlign = 'center';
+                ctx.fillStyle = '#1d1d1f';
+                ctx.font = '600 18px "Prompt", sans-serif';
+                ctx.fillText(certTemplate.orgTitleTH || '', W / 2, 120, W - 160);
+                ctx.fillStyle = '#a8843b';
+                ctx.font = '700 13px "JetBrains Mono", monospace';
+                ctx.fillText('CERTIFICATE OF COMPLETION', W / 2, 170);
+                ctx.fillStyle = '#1d1d1f';
+                ctx.font = '700 44px "Prompt", sans-serif';
+                ctx.fillText('ประกาศนียบัตร', W / 2, 228);
+                ctx.font = '700 40px "Prompt", sans-serif';
+                ctx.fillText(user.name || 'ผู้สำเร็จการอบรม', W / 2, 330, W - 160);
+                ctx.fillStyle = '#475569';
+                ctx.font = '500 19px "Sarabun", sans-serif';
+                ctx.fillText([user.hospital || '', user.license ? `เลขที่ใบอนุญาต ${user.license}` : ''].filter(Boolean).join(' • '), W / 2, 378, W - 160);
+                ctx.fillStyle = '#0f172a';
+                ctx.font = '700 22px "Prompt", sans-serif';
+                ctx.fillText(certTemplate.courseTitleTH || '', W / 2, 460, W - 180);
+                ctx.fillStyle = '#64748b';
+                ctx.font = '500 16px "Sarabun", sans-serif';
+                ctx.fillText(`ให้ไว้ ณ วันที่ ${formatThaiDate(user.certificateIssuedAt)}`, W / 2, 505);
+                ctx.fillStyle = '#1d1d1f';
+                ctx.font = '600 18px "Prompt", sans-serif';
+                ctx.fillText(certTemplate.signerName || '', W / 2, H - 115);
+                ctx.textAlign = 'left';
+                ctx.fillStyle = '#0f172a';
+                ctx.font = '700 15px "JetBrains Mono", monospace';
+                ctx.fillText(user.certificateCode || 'RJC-2027-DEMO01', 78, H - 96);
+                if (typeof window.qrcode === 'function') {
+                    try {
+                        const qr = window.qrcode(0, 'M');
+                        qr.addData(String(verifyUrl));
+                        qr.make();
+                        const count = qr.getModuleCount();
+                        const qSize = 110, qx = W - 78 - qSize, qy = H - 78 - qSize, cell = qSize / count;
+                        ctx.fillStyle = '#1d1d1f';
+                        for (let r = 0; r < count; r++) {
+                            for (let c = 0; c < count; c++) {
+                                if (qr.isDark(r, c)) ctx.fillRect(Math.floor(qx + c * cell), Math.floor(qy + r * cell), Math.ceil(cell), Math.ceil(cell));
+                            }
+                        }
+                    } catch (_) {}
                 }
             }, [screen, certSubView, certTemplate, user, verifyUrl]);
 
@@ -1409,6 +1530,9 @@ ${roleProfile.aiPromptAddon || ''}
                     return;
                 }
                 setAuthBusy(true);
+                setGeneratedOtp('');
+                setOtpInput('');
+
                 let found = null;
                 if (fbDb) {
                     try {
@@ -1424,37 +1548,52 @@ ${roleProfile.aiPromptAddon || ''}
                 }
 
                 if (found) {
+                    const regEmail = String(found.email || '').trim();
+                    const hasRegEmail = Boolean(regEmail && regEmail.includes('@'));
                     const isContinuing = found.userType === 'เรียนต่อเนื่อง' || Boolean(found.pdpaAccepted);
                     setIsExistingAccount(true);
-                    setEditContactInStep2(false);
-                    // ผู้เรียนเดิม / เรียนต่อเนื่อง ไม่ต้องติ๊ก PDPA ซ้ำ
+                    setExistingRegisteredEmail(hasRegEmail ? regEmail : '');
+                    // บัญชีเดิมที่เคยลงทะเบียนไว้แล้ว ไม่ต้องติ๊ก PDPA ซ้ำ
                     setPdpaAgreed(true);
                     setAuthForm({
+                        ...DEFAULT_AUTH_FORM,
                         ...found,
                         license: cleanLic,
+                        workContext: found.workContext || 'ICU / ER / OR',
                         userType: found.userType === 'เรียนต่อเนื่อง' ? 'เรียนต่อเนื่อง' : 'เรียนใหม่',
                         pdpaAccepted: true
                     });
-                    showToast(isContinuing ? 'พบประวัติเรียนต่อเนื่องในระบบ ดึงข้อมูลเรียบร้อยค่ะ' : 'พบประวัติเดิมในระบบ ปกปิดข้อมูลติดต่อตามหลัก PDPA แล้วค่ะ', 'info');
+                    showToast(
+                        isContinuing
+                            ? 'พบประวัติเรียนต่อเนื่องในระบบ ปกปิดข้อมูลติดต่อตามหลัก PDPA แล้วค่ะ'
+                            : 'พบประวัติเดิมในระบบ ปกปิดข้อมูลติดต่อตามหลัก PDPA แล้วค่ะ',
+                        'info'
+                    );
                 } else {
+                    // รีเซ็ตฟอร์มสะอาดทั้งอ็อบเจกต์ ป้องกันข้อมูลรั่วข้ามบัญชีเมื่อกดย้อนกลับ
                     setIsExistingAccount(false);
-                    setEditContactInStep2(true);
+                    setExistingRegisteredEmail('');
                     setPdpaAgreed(false);
-                    setAuthForm(p => ({ ...p, license: cleanLic, pdpaAccepted: false }));
+                    setAuthForm({ ...DEFAULT_AUTH_FORM, license: cleanLic });
                 }
                 setAuthBusy(false);
                 setAuthStep(2);
             };
 
-            const needsPdpaCheckbox = !(isExistingAccount || authForm.userType === 'เรียนต่อเนื่อง' || authForm.pdpaAccepted);
+            // ผู้เรียนใหม่ที่ยังไม่เคยลงทะเบียนหรือยังไม่เคยยินยอม PDPA ต้องติ๊กยินยอม 1 ครั้งเสมอ
+            const needsPdpaCheckbox = !(isExistingAccount || authForm.pdpaAccepted);
 
             const handleRequestOtp = async (e) => {
                 if (e) e.preventDefault();
                 if (!authForm.name.trim()) { showToast('กรุณากรอกชื่อ–นามสกุลค่ะ', 'error'); return; }
-                const targetEmail = String(authForm.email || '').trim();
+
+                // บังคับส่ง OTP ไปยังอีเมลที่ลงทะเบียนไว้เดิมเท่านั้นสำหรับบัญชีเก่า (ป้องกันการยึดบัญชีและเผยอีเมลก่อน OTP)
+                const targetEmail = (isExistingAccount && existingRegisteredEmail)
+                    ? existingRegisteredEmail
+                    : String(authForm.email || '').trim();
+
                 if (!targetEmail || !targetEmail.includes('@')) {
                     showToast('กรุณากรอกอีเมลที่ถูกต้องสำหรับรับรหัส OTP 6 หลักค่ะ', 'error');
-                    setEditContactInStep2(true);
                     return;
                 }
                 if (needsPdpaCheckbox && !pdpaAgreed) {
@@ -1799,7 +1938,14 @@ ${roleProfile.aiPromptAddon || ''}
                                 <div className="flex items-center justify-between">
                                     <button
                                         type="button"
-                                        onClick={() => (authStep > 1 ? setAuthStep(s => s - 1) : setScreen('landing'))}
+                                        onClick={() => {
+                                            if (authStep > 1) {
+                                                if (authStep === 3) { setGeneratedOtp(''); setOtpInput(''); }
+                                                setAuthStep(s => s - 1);
+                                            } else {
+                                                setScreen('landing');
+                                            }
+                                        }}
                                         className="spatial-soft px-3.5 py-2 rounded-xl text-xs font-bold text-primary-adaptive inline-flex items-center gap-1.5"
                                     >
                                         <Icon name="ArrowLeft" size={14} /> ย้อนกลับ
@@ -1871,18 +2017,29 @@ ${roleProfile.aiPromptAddon || ''}
                                                 <label className="block text-xs font-bold text-secondary-adaptive mb-1 ml-1">โรงพยาบาล / หน่วยงาน</label>
                                                 <input type="text" value={authForm.hospital} onChange={e => setAuthForm(p => ({ ...p, hospital: e.target.value }))} className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-2xl text-sm" />
                                             </div>
+                                            <div className="sm:col-span-2">
+                                                <label className="block text-xs font-bold text-secondary-adaptive mb-1 ml-1">ลักษณะงาน / แผนก (สำหรับปรับมุมมองผู้ช่วย AI)</label>
+                                                <select value={authForm.workContext || 'ICU / ER / OR'} onChange={e => setAuthForm(p => ({ ...p, workContext: e.target.value }))} className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-2xl text-sm">
+                                                    <option value="ICU / ER / OR">หอผู้ป่วยวิกฤต / ห้องฉุกเฉิน / ห้องผ่าตัด (ICU / ER / OR)</option>
+                                                    <option value="ทีมรับบริจาคและปลูกถ่ายอวัยวะ (TC)">ทีมรับบริจาคและปลูกถ่ายอวัยวะ (TC)</option>
+                                                    <option value="หอผู้ป่วยทั่วไป / คลินิก">หอผู้ป่วยทั่วไป / คลินิกเฉพาะทาง</option>
+                                                    <option value="ผู้สนใจศึกษาทั่วไป">ผู้สนใจศึกษาทั่วไป</option>
+                                                </select>
+                                            </div>
                                         </div>
 
-                                        {/* PDPA Pre-OTP Masking สำหรับข้อมูลติดต่อเดิม */}
-                                        {isExistingAccount && !editContactInStep2 ? (
-                                            <div className="spatial-soft p-3.5 rounded-2xl flex items-center justify-between gap-2 text-xs">
-                                                <div>
-                                                    <span className="font-bold text-accent-adaptive block">ข้อมูลติดต่อเดิม (ปกปิดตามหลัก PDPA ก่อน OTP)</span>
-                                                    <p className="font-mono text-primary-adaptive mt-0.5">{maskEmail(authForm.email)} • {maskPhone(authForm.phone) || '-'}</p>
-                                                </div>
-                                                <button type="button" onClick={() => setEditContactInStep2(true)} className="px-3 py-1.5 rounded-xl bg-prism-500/20 text-prism-adaptive font-bold shrink-0">
-                                                    เปลี่ยนอีเมล/เบอร์
-                                                </button>
+                                        {/* PDPA Pre-OTP Lock: บัญชีเดิมที่มีอีเมลแล้วจะไม่เปิดเผยหรือให้แก้ไขอีเมลก่อนยืนยัน OTP */}
+                                        {isExistingAccount && existingRegisteredEmail ? (
+                                            <div className="spatial-soft p-3.5 rounded-2xl space-y-1 text-xs">
+                                                <span className="font-bold text-accent-adaptive flex items-center gap-1.5">
+                                                    <Icon name="Lock" size={13} /> ส่ง OTP ไปยังอีเมลที่ลงทะเบียนไว้ (ปกปิดตามหลัก PDPA)
+                                                </span>
+                                                <p className="font-mono text-primary-adaptive font-bold">
+                                                    {maskEmail(existingRegisteredEmail)} {authForm.phone ? `• ${maskPhone(authForm.phone)}` : ''}
+                                                </p>
+                                                <p className="text-[11px] text-muted-adaptive leading-snug">
+                                                    เพื่อป้องกันการสวมสิทธิ์ สามารถแก้ไขข้อมูลติดต่อได้ในเมนู <b>โปรไฟล์ &amp; Warm-up</b> หลังยืนยัน OTP แล้ว หรือติดต่อ {CONFIG.contactEmail}
+                                                </p>
                                             </div>
                                         ) : (
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1897,7 +2054,7 @@ ${roleProfile.aiPromptAddon || ''}
                                             </div>
                                         )}
 
-                                        {/* เงื่อนไข PDPA: เรียนใหม่ต้องติ๊กยินยอมครั้งแรก ส่วนเรียนต่อเนื่อง/บัญชีเดิมไม่ต้องติ๊กซ้ำ */}
+                                        {/* เงื่อนไข PDPA: ผู้เรียนใหม่ต้องติ๊กยินยอมครั้งแรก ส่วนบัญชีเดิมที่เคยยินยอมแล้วไม่ต้องติ๊กซ้ำ */}
                                         {needsPdpaCheckbox ? (
                                             <div className="p-3.5 rounded-2xl bg-aurora-500/10 border border-aurora-400/35 space-y-2">
                                                 <p className="text-xs font-bold text-primary-adaptive leading-relaxed">
@@ -2239,13 +2396,15 @@ ${roleProfile.aiPromptAddon || ''}
 
                                                     {!pdpaEditOpen ? (
                                                         <div className="spatial-soft p-3.5 rounded-2xl space-y-2 text-xs text-secondary-adaptive">
+                                                            <p><b>สังกัด / จังหวัด:</b> {user.department || '-'} {user.province ? `• จ.${user.province}` : ''}</p>
                                                             <p><b>อีเมล:</b> <span className="font-mono">{user.email || '-'}</span></p>
                                                             <p><b>เบอร์โทรศัพท์:</b> <span className="font-mono">{user.phone || '-'}</span></p>
                                                             <div className="grid grid-cols-2 gap-2 pt-2">
                                                                 <button type="button" onClick={handleOpenPdpaEdit} className="touch-target spatial-soft py-2 rounded-xl font-bold text-prism-adaptive flex items-center justify-center gap-1.5">
                                                                     <Icon name="Edit3" size={14} /> ตรวจสอบ / แก้ไขข้อมูล
                                                                 </button>
-                                                                <button type="button" onClick={handleDeletePersonalData} className="touch-target py-2 rounded-xl bg-rose-500/15 border border-rose-400/35 text-rose-400 font-bold flex items-center justify-center gap-1.5">
+                                                                {/* ใช้ red-600/red-400 เพื่อไม่ให้ชนกับ Selector rose-500 ของปุ่มออกจากระบบใน ai-interactive.js */}
+                                                                <button type="button" onClick={handleDeletePersonalData} className="touch-target py-2 rounded-xl bg-red-600/15 border border-red-400/35 text-red-400 font-bold flex items-center justify-center gap-1.5">
                                                                     <Icon name="Trash2" size={14} /> ลบข้อมูลส่วนบุคคล
                                                                 </button>
                                                             </div>
@@ -2255,7 +2414,11 @@ ${roleProfile.aiPromptAddon || ''}
                                                             <input type="text" required value={pdpaForm.name} onChange={e => setPdpaForm(p => ({ ...p, name: e.target.value }))} placeholder="ชื่อ–สกุล" className="spatial-input w-full px-3 py-2 rounded-xl" />
                                                             <div className="grid grid-cols-2 gap-2">
                                                                 <input type="text" value={pdpaForm.position} onChange={e => setPdpaForm(p => ({ ...p, position: e.target.value }))} placeholder="ตำแหน่ง" className="spatial-input w-full px-3 py-2 rounded-xl" />
+                                                                <select value={pdpaForm.department} onChange={e => setPdpaForm(p => ({ ...p, department: e.target.value }))} className="spatial-input w-full px-3 py-2 rounded-xl">
+                                                                    {Object.keys(HOSPITAL_MAPPING).map(k => <option key={k} value={k}>{k}</option>)}
+                                                                </select>
                                                                 <input type="text" value={pdpaForm.hospital} onChange={e => setPdpaForm(p => ({ ...p, hospital: e.target.value }))} placeholder="โรงพยาบาล" className="spatial-input w-full px-3 py-2 rounded-xl" />
+                                                                <input type="text" value={pdpaForm.province} onChange={e => setPdpaForm(p => ({ ...p, province: e.target.value }))} placeholder="จังหวัด" className="spatial-input w-full px-3 py-2 rounded-xl" />
                                                                 <input type="email" value={pdpaForm.email} onChange={e => setPdpaForm(p => ({ ...p, email: e.target.value }))} placeholder="อีเมล" className="spatial-input w-full px-3 py-2 rounded-xl" />
                                                                 <input type="tel" value={pdpaForm.phone} onChange={e => setPdpaForm(p => ({ ...p, phone: e.target.value }))} placeholder="เบอร์โทรศัพท์" className="spatial-input w-full px-3 py-2 rounded-xl" />
                                                             </div>
@@ -2267,8 +2430,9 @@ ${roleProfile.aiPromptAddon || ''}
                                                     )}
                                                 </div>
 
-                                                {/* ปุ่มออกจากระบบผู้เรียน (ใช้ class rose-500 ให้ ai-interactive.js ไฮไลต์ได้ตรงจุด) */}
+                                                {/* ปุ่มออกจากระบบผู้เรียน (ใช้ class rose-500 + id เฉพาะให้ ai-interactive.js ไฮไลต์แม่นยำ) */}
                                                 <button
+                                                    id="btn-learner-logout"
                                                     type="button"
                                                     onClick={handleLogout}
                                                     className="touch-target w-full py-3 rounded-2xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/40 text-rose-400 font-display font-bold text-sm flex items-center justify-center gap-2"
