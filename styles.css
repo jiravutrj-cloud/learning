@@ -130,7 +130,6 @@ font-family: var(--font-sans) !important;
 font-family: var(--font-mono) !important;
 }
 
-/* ขยายขนาดฟอนต์ย่อยภาษาไทยให้อ่านสบายตาบนสมาร์ทโฟน */
 .text-[11px] {
 font-size: 0.8125rem !important;
 line-height: 1.5;
@@ -141,7 +140,6 @@ font-size: 0.72rem !important;
 line-height: 1.4;
 }
 
-/* ขนาดปุ่มสัมผัสขั้นต่ำตามมาตรฐานสมาร์ทโฟน (46px+) และพื้นที่ปลอดภัย Notch/Home Bar */
 .touch-target {
 min-height: 46px;
 touch-action: manipulation;
@@ -159,7 +157,6 @@ padding-bottom: env(safe-area-inset-bottom, 0px);
 padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
 }
 
-/* ป้องกัน iOS Safari ซูมหน้าจออัตโนมัติเมื่อแตะช่องกรอกข้อมูล */
 @media (max-width: 768px) {
 input,
 select,
@@ -168,7 +165,6 @@ font-size: 16px !important;
 }
 }
 
-/* แอนิเมชันหมุนสำหรับหน้าจอโหลดเริ่มต้น */
 @keyframes appSpin {
 to {
 transform: rotate(360deg);
@@ -275,26 +271,11 @@ box-shadow:
 transform: scale(0.97);
 }
 
-/* คลาสสีตัวอักษรปรับตามธีมมืด/สว่างอัตโนมัติ */
-.text-primary-adaptive {
-color: var(--text-main);
-}
-
-.text-secondary-adaptive {
-color: var(--text-secondary);
-}
-
-.text-muted-adaptive {
-color: var(--text-muted);
-}
-
-.text-accent-adaptive {
-color: var(--accent-text);
-}
-
-.text-prism-adaptive {
-color: var(--accent-prism);
-}
+.text-primary-adaptive { color: var(--text-main); }
+.text-secondary-adaptive { color: var(--text-secondary); }
+.text-muted-adaptive { color: var(--text-muted); }
+.text-accent-adaptive { color: var(--accent-text); }
+.text-prism-adaptive { color: var(--accent-prism); }
 
 /* ============================================================================
 
@@ -324,8 +305,98 @@ border-radius: 999px;
 
 AMBIENT LIGHT RUNNER & AUDIO EQUALIZER ANIMATIONS
 
-============================================================================ /
-/ ... existing code ... */
+============================================================================ */
+@keyframes ambientFlow {
+0% { background-position: 0% 50%; }
+50% { background-position: 100% 50%; }
+100% { background-position: 0% 50%; }
+}
+
+.ambient-ribbon {
+height: 3.5px;
+width: calc(100% + 2.5rem);
+margin: -1.25rem -1.25rem 0.5rem -1.25rem;
+background-size: 280% 100%;
+animation: ambientFlow 1.8s linear infinite;
+}
+
+.ambient-ribbon-loading {
+background-image: linear-gradient(90deg, #38bdf8, #818cf8, #f0abfc, #6ee7b7, #38bdf8);
+}
+
+.ambient-ribbon-playing {
+background-image: linear-gradient(90deg, #34d399, #22d3ee, #6ee7b7, #38bdf8, #34d399);
+}
+
+.ambient-loading-card {
+border-color: rgba(56, 189, 248, 0.55) !important;
+box-shadow: 0 0 28px -8px rgba(56, 189, 248, 0.45);
+}
+
+.ambient-playing-card {
+border-color: rgba(52, 211, 153, 0.55) !important;
+box-shadow: 0 0 28px -8px rgba(52, 211, 153, 0.42);
+}
+
+.ambient-btn-runner {
+background: linear-gradient(90deg, #38bdf8, #818cf8, #6ee7b7, #38bdf8);
+background-size: 260% 100%;
+animation: ambientFlow 1.4s linear infinite;
+color: #020612 !important;
+font-weight: 800;
+}
+
+/* ============================================================================
+
+INDIVIDUAL CNEU LETTER SHEET & A4 PRINT RULES
+
+============================================================================ */
+.cneu-letter-sheet {
+background: #ffffff;
+color: #0f172a;
+font-family: 'Sarabun', sans-serif;
+width: 100%;
+max-width: 794px;
+box-shadow: 0 24px 60px -16px rgba(0, 0, 0, 0.45);
+}
+
+.cneu-evidence-table {
+width: 100%;
+border-collapse: collapse;
+font-size: 13px;
+}
+
+.cneu-evidence-table th,
+.cneu-evidence-table td {
+border: 1px solid #cbd5e1;
+padding: 8px 10px;
+}
+
+.cneu-evidence-table th {
+background-color: #f1f5f9;
+color: #0f172a;
+font-weight: 700;
+}
+
+@media print {
+body.printing-cneu-letter .no-print,
+body.printing-cneu-letter .hide-when-printing-cneu,
+body.printing-cneu-letter .spatial-aura,
+body.printing-cneu-letter .spatial-grid {
+display: none !important;
+}
+
+body.printing-cneu-letter {
+background: #ffffff !important;
+color: #0f172a !important;
+}
+
+body.printing-cneu-letter .cneu-print-container {
+max-width: 100% !important;
+padding: 0 !important;
+margin: 0 !important;
+}
+
 body.printing-cneu-letter .cneu-letter-sheet {
 max-width: 100% !important;
 width: 100% !important;
