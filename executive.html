@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#030712">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Executive Dashboard — rjcloud.organ</title>
+    <title>Dashboard — rjcloud.organ</title>
 
     <!-- โหลดค่าตั้งต้นและข้อมูลกลางจาก data.js -->
     <script src="./data.js" onerror="console.warn('data.js not loaded, using built-in defaults')"></script>
@@ -265,7 +265,7 @@
     <div id="executive-root">
         <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg-page);color:var(--text-main);font-family:'Prompt','Sarabun',sans-serif;gap:14px;padding:24px;text-align:center;">
             <div style="width:48px;height:48px;border:3px solid rgba(34,211,238,0.2);border-top-color:#34d399;border-right-color:#22d3ee;border-radius:9999px;animation:execSpin 0.85s linear infinite;"></div>
-            <div style="font-weight:800;font-size:17px;">กำลังเปิดแดชบอร์ดผู้บริหาร...</div>
+            <div style="font-weight:800;font-size:17px;">กำลังเปิด Dashboard...</div>
             <div style="font-size:12px;color:#94a3b8;">กำลังเชื่อมต่อสถิติไม่ระบุตัวตน 13 เขตสุขภาพ (PDPA-Safe)</div>
         </div>
         <style>@keyframes execSpin{to{transform:rotate(360deg);}}</style>
@@ -532,15 +532,74 @@
 
         function pcm16ToWavUrl(base64PCM, sampleRate = 24000) {
             const binaryString = window.atob(base64PCM);
-            const bytes = new Uint8Array(binaryString.length);
-            for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
-            const buffer = new ArrayBuffer(44 + bytes.length);
+            const rawBytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) rawBytes[i] = binaryString.charCodeAt(i);
+
+            let offsetBytes = 0;
+            if (rawBytes.length > 44 && rawBytes[0] === 0x52 && rawBytes[1] === 0x49 && rawBytes[2] === 0x46 && rawBytes[3] === 0x46) {
+                offsetBytes = 44;
+            }
+            const sampleCount = Math.floor((rawBytes.length - offsetBytes) / 2);
+            if (sampleCount <= 0) return '';
+
+            const inView = new DataView(rawBytes.buffer, rawBytes.byteOffset + offsetBytes, sampleCount * 2);
+            const samples = new Float32Array(sampleCount);
+            for (let i = 0; i < sampleCount; i++) samples[i] = inView.getInt16(i * 2, true) / 32768;
+
+            // ตัดเสียงซ่าท้ายคลิป (Anti-Hiss DSP) + Smooth Cosine Fade-out + เติมความเงียบ 45ms
+            const frameSize = Math.max(128, Math.round(sampleRate * 0.02));
+            const numFrames = Math.floor(sampleCount / frameSize);
+            const frameRms = new Float32Array(numFrames);
+            const frameZcr = new Float32Array(numFrames);
+            for (let f = 0; f < numFrames; f++) {
+                const start = f * frameSize;
+                let sumSq = 0, zc = 0, prev = samples[start];
+                for (let j = 0; j < frameSize; j++) {
+                    const s = samples[start + j];
+                    sumSq += s * s;
+                    if ((s >= 0 && prev < 0) || (s < 0 && prev >= 0)) zc++;
+                    prev = s;
+                }
+                frameRms[f] = Math.sqrt(sumSq / frameSize);
+                frameZcr[f] = zc / frameSize;
+            }
+
+            let endFrame = numFrames - 1;
+            while (endFrame > 12 && (frameRms[endFrame] < 0.016 || frameZcr[endFrame] > 0.22)) {
+                endFrame--;
+            }
+
+            const lookbackStart = Math.max(12, endFrame - Math.round(1.6 / 0.02));
+            let silentRun = 0;
+            for (let f = lookbackStart; f <= endFrame; f++) {
+                if (frameRms[f] < 0.015) {
+                    silentRun++;
+                } else {
+                    if (silentRun >= 5) {
+                        let tailZcrSum = 0, tailCount = 0;
+                        for (let k = f; k <= endFrame; k++) { tailZcrSum += frameZcr[k]; tailCount++; }
+                        if (tailCount > 0 && tailZcrSum / tailCount > 0.21) {
+                            endFrame = Math.max(12, f - silentRun - 1);
+                            break;
+                        }
+                    }
+                    silentRun = 0;
+                }
+            }
+
+            const keptSamples = Math.min(sampleCount, Math.max(Math.min(sampleCount, Math.round(sampleRate * 0.25)), (endFrame + 1) * frameSize));
+            const padZeroSamples = Math.round(sampleRate * 0.045);
+            const outBytesLen = (keptSamples + padZeroSamples) * 2;
+            const fadeInLen = Math.min(Math.round(sampleRate * 0.012), Math.floor(keptSamples * 0.1));
+            const fadeOutLen = Math.min(Math.round(sampleRate * 0.075), Math.floor(keptSamples * 0.22));
+
+            const buffer = new ArrayBuffer(44 + outBytesLen);
             const view = new DataView(buffer);
             const writeStr = (offset, str) => {
                 for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
             };
             writeStr(0, 'RIFF');
-            view.setUint32(4, 36 + bytes.length, true);
+            view.setUint32(4, 36 + outBytesLen, true);
             writeStr(8, 'WAVE');
             writeStr(12, 'fmt ');
             view.setUint32(16, 16, true);
@@ -551,8 +610,17 @@
             view.setUint16(32, 2, true);
             view.setUint16(34, 16, true);
             writeStr(36, 'data');
-            view.setUint32(40, bytes.length, true);
-            new Uint8Array(buffer, 44).set(bytes);
+            view.setUint32(40, outBytesLen, true);
+
+            for (let i = 0; i < keptSamples; i++) {
+                let s = samples[i];
+                if (i < fadeInLen) s *= i / fadeInLen;
+                else if (i >= keptSamples - fadeOutLen) {
+                    const t = (i - (keptSamples - fadeOutLen)) / fadeOutLen;
+                    s *= 0.5 * (1 + Math.cos(Math.PI * t));
+                }
+                view.setInt16(44 + i * 2, Math.round(Math.max(-1, Math.min(1, s)) * 32767), true);
+            }
             return URL.createObjectURL(new Blob([buffer], { type: 'audio/wav' }));
         }
 
@@ -1340,7 +1408,7 @@ ${liveSnapshotJson}
                                 <div className="min-w-0">
                                     <div className="flex items-center gap-1.5">
                                         <span className="font-display font-extrabold text-sm sm:text-base text-primary-adaptive truncate">
-                                            Executive <span className="text-accent-adaptive">Dashboard</span>
+                                            <span className="text-accent-adaptive">Dashboard</span>
                                         </span>
                                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-aurora-500/20 text-accent-adaptive text-[9px] font-mono font-bold shrink-0">
                                             <span className="w-1.5 h-1.5 rounded-full bg-aurora-400 animate-pulse" />
@@ -1382,7 +1450,7 @@ ${liveSnapshotJson}
                                         PDPA ANONYMIZED STATISTICS • เฉพาะข้อมูลสถิติ ไม่นำข้อมูลส่วนตัวมาใช้งาน
                                     </span>
                                     <h1 className="font-display text-xl sm:text-2xl md:text-3xl font-extrabold text-primary-adaptive leading-tight">
-                                        ศูนย์ข้อมูลผู้บริหารพัฒนาบุคลากรการรับบริจาคอวัยวะ
+                                        Dashboard พัฒนาบุคลากรการรับบริจาคอวัยวะ
                                     </h1>
                                     <p className="text-xs sm:text-sm text-secondary-adaptive mt-1">
                                         แสดงผลเฉพาะตัวเลขสถิติภาพรวม 4 หมวดคลินิก และเรดาร์ทักษะสื่อสาร 5 แกน ครบ 13 เขตสุขภาพโดยไม่ระบุตัวตนผู้เรียน
