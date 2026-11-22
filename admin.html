@@ -316,7 +316,7 @@
       }
     }
     </script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
 </head>
 <body>
     <!-- หน้าจอโหลดเริ่มต้น -->
@@ -347,7 +347,7 @@
       });
     </script>
 
-    <script type="text/babel" data-type="module">
+    <script type="text/babel" data-type="module" data-presets="react">
         import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
         import { createRoot } from 'react-dom/client';
         import * as LucideIcons from 'lucide-react';
@@ -1025,6 +1025,7 @@
             // UI Controls
             const [searchTerm, setSearchTerm] = useState('');
             const [filterType, setFilterType] = useState('ALL');
+            const [displayLimit, setDisplayLimit] = useState(50);
             const [showAddUser, setShowAddUser] = useState(false);
             const [isSyncing, setIsSyncing] = useState(false);
             const [lastSyncTime, setLastSyncTime] = useState('');
@@ -1065,20 +1066,27 @@
                     setAuthChecked(true);
                     return;
                 }
-                const unsub = onAuthStateChanged(fbAuth, (fbUser) => {
-                    if (fbUser && fbUser.email) {
-                        const allowed = (CONFIG.adminEmails || [CONFIG.contactEmail]).map(e => e.toLowerCase());
-                        if (allowed.includes(fbUser.email.toLowerCase())) {
-                            setAdminSession({ email: fbUser.email, mode: 'cloud' });
+                let unsub = () => {};
+                try {
+                    unsub = onAuthStateChanged(fbAuth, (fbUser) => {
+                        if (fbUser && fbUser.email) {
+                            const allowed = (CONFIG.adminEmails || [CONFIG.contactEmail]).map(e => e.toLowerCase());
+                            if (allowed.includes(fbUser.email.toLowerCase())) {
+                                setAdminSession({ email: fbUser.email, mode: 'cloud' });
+                            } else {
+                                setAdminSession(null);
+                            }
                         } else {
                             setAdminSession(null);
                         }
-                    } else {
-                        setAdminSession(null);
-                    }
+                        setAuthChecked(true);
+                    }, () => {
+                        setAuthChecked(true);
+                    });
+                } catch (_) {
                     setAuthChecked(true);
-                });
-                return () => unsub();
+                }
+                return () => { try { unsub(); } catch (_) {} };
             }, []);
 
             // 2. Real-time Firestore Subscriptions
@@ -1430,31 +1438,51 @@
                         };
                         setContentConfig(restored);
                         if (fbDb) {
-                            await setDoc(
-                                doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_config', 'content'),
-                                { lessons: restored.lessons, questionSets: Object.assign({}, restored.questionSets) },
-                                { merge: true }
-                            );
+                            try {
+                                await setDoc(
+                                    doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_config', 'content'),
+                                    {
+                                        lessons: restored.lessons,
+                                        questionSets: Object.assign({}, restored.questionSets)
+                                    },
+                                    { merge: true }
+                                );
+                                showToast('กู้คืนบทเรียนและข้อสอบเริ่มต้นขึ้น Cloud เรียบร้อยแล้วค่ะ');
+                            } catch (err) {
+                                showToast('กู้คืนข้อมูลขึ้น Cloud ไม่สำเร็จ: ' + err.message, 'error');
+                            }
+                        } else {
+                            showToast('กู้คืนบทเรียนและข้อสอบเริ่มต้นเรียบร้อยแล้วค่ะ');
                         }
-                        showToast('กู้คืนบทเรียนและข้อสอบมาตรฐานเรียบร้อยแล้วค่ะ');
                     }
                 });
             };
 
+            const hasSearchQuery = searchTerm.trim().length > 0;
+
+            useEffect(() => {
+                setDisplayLimit(50);
+            }, [searchTerm, filterType]);
+
             const filteredUsers = useMemo(() => {
                 const q = searchTerm.trim().toLowerCase();
+                if (!q) return [];
                 return usersList.filter(u => {
                     const normalizedType = u.userType === 'เรียนต่อเนื่อง' ? 'เรียนต่อเนื่อง' : 'เรียนใหม่';
                     const matchType = filterType === 'ALL' || normalizedType === filterType || (filterType === 'PASSED' && u.status === 'ผ่าน');
                     if (!matchType) return false;
-                    if (!q) return true;
                     return (
                         String(u.name || '').toLowerCase().includes(q) ||
-                        getUserLicense(u).toLowerCase().includes(q) ||
-                        String(u.hospital || '').toLowerCase().includes(q)
+                        String(u.hospital || '').toLowerCase().includes(q) ||
+                        getUserLicense(u).toLowerCase().includes(q)
                     );
                 });
             }, [usersList, searchTerm, filterType]);
+
+            const visibleUsers = useMemo(
+                () => filteredUsers.slice(0, displayLimit),
+                [filteredUsers, displayLimit]
+            );
 
             const quickStats = useMemo(() => {
                 const passed = usersList.filter(u => u.status === 'ผ่าน').length;
@@ -1847,9 +1875,19 @@
                                             type="text"
                                             value={searchTerm}
                                             onChange={e => setSearchTerm(e.target.value)}
-                                            placeholder="ค้นหาชื่อ, เลขใบอนุญาต หรือโรงพยาบาล..."
-                                            className="touch-target spatial-input w-full pl-10 pr-4 py-2.5 rounded-2xl text-sm"
+                                            placeholder="พิมพ์ค้นหาชื่อผู้เรียน, โรงพยาบาล หรือเลขใบอนุญาต..."
+                                            className="touch-target spatial-input w-full pl-10 pr-10 py-2.5 rounded-2xl text-sm"
                                         />
+                                        {hasSearchQuery && (
+                                            <button
+                                                type="button"
+                                                onClick={() => setSearchTerm('')}
+                                                aria-label="ล้างคำค้นหา"
+                                                className="absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-xl spatial-soft text-muted-adaptive hover:text-primary-adaptive flex items-center justify-center"
+                                            >
+                                                <Icon name="X" size={14} />
+                                            </button>
+                                        )}
                                     </div>
                                     <div className="flex gap-1.5 overflow-x-auto custom-scrollbar pb-0.5">
                                         {[
@@ -1874,33 +1912,145 @@
                                     </div>
                                 </div>
 
-                                {/* รายชื่อผู้เรียนแบบการ์ด (มือถือ) & ตาราง (คอมพิวเตอร์) */}
+                                {/* รายชื่อผู้เรียน: แสดงเฉพาะเมื่อค้นหาด้วยชื่อ โรงพยาบาล หรือเลขใบอนุญาต */}
                                 <div className="spatial-card rounded-[1.75rem] overflow-hidden">
-                                    {/* Desktop Table */}
-                                    <div className="hidden md:block overflow-x-auto custom-scrollbar">
-                                        <table className="w-full text-left border-collapse">
-                                            <thead className="spatial-thead text-[11px] font-mono uppercase text-muted-adaptive">
-                                                <tr>
-                                                    <th className="py-3.5 px-4">ผู้เรียน / หน่วยงาน</th>
-                                                    <th className="py-3.5 px-3">สิทธิ์การเรียน</th>
-                                                    <th className="py-3.5 px-3">ความคืบหน้า 5 ขั้นตอน</th>
-                                                    <th className="py-3.5 px-3">Pre / Post</th>
-                                                    <th className="py-3.5 px-4 text-right">จัดการ</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="divide-y divide-white/10 text-xs">
-                                                {filteredUsers.map(u => {
+                                    {!hasSearchQuery ? (
+                                        <div className="py-14 px-6 text-center space-y-2.5">
+                                            <div className="w-12 h-12 rounded-2xl spatial-soft text-prism-adaptive flex items-center justify-center mx-auto">
+                                                <Icon name="Search" size={22} />
+                                            </div>
+                                            <h3 className="font-display font-bold text-base text-primary-adaptive">
+                                                พิมพ์ “ชื่อ” หรือ “โรงพยาบาล” เพื่อค้นหาผู้เรียน
+                                            </h3>
+                                            <p className="text-xs sm:text-sm text-muted-adaptive max-w-md mx-auto leading-relaxed">
+                                                ระบบจะไม่แสดงรายชื่อทั้งหมดในคราวเดียวเพื่อความรวดเร็วและลดการเปิดเผยข้อมูลส่วนตัว (PDPA)
+                                                • มีผู้เรียนในฐานข้อมูลทั้งหมด <b className="text-primary-adaptive">{usersList.length}</b> ราย (ส่งออก CSV และรายงาน CNEU ได้ครบทุกคนตามปกติ)
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <div className="px-4 py-2.5 border-b border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs">
+                                                <span className="text-secondary-adaptive">
+                                                    พบผลลัพธ์ <b className="font-mono text-accent-adaptive">{filteredUsers.length}</b> ราย สำหรับคำค้นหา <b className="text-primary-adaptive">“{searchTerm.trim()}”</b>
+                                                </span>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setSearchTerm('')}
+                                                    className="text-prism-adaptive hover:underline font-bold"
+                                                >
+                                                    ล้างการค้นหา
+                                                </button>
+                                            </div>
+
+                                            {/* Desktop Table */}
+                                            <div className="hidden md:block overflow-x-auto custom-scrollbar">
+                                                <table className="w-full text-left border-collapse">
+                                                    <thead className="spatial-thead text-[11px] font-mono uppercase text-muted-adaptive">
+                                                        <tr>
+                                                            <th className="py-3.5 px-4">ผู้เรียน / หน่วยงาน</th>
+                                                            <th className="py-3.5 px-3">สิทธิ์การเรียน</th>
+                                                            <th className="py-3.5 px-3">ความคืบหน้า 5 ขั้นตอน</th>
+                                                            <th className="py-3.5 px-3">Pre / Post</th>
+                                                            <th className="py-3.5 px-4 text-right">จัดการ</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody className="divide-y divide-white/10 text-xs">
+                                                        {visibleUsers.map(u => {
+                                                            const lic = getUserLicense(u);
+                                                            const st = getUserFiveStepStatus(u);
+                                                            return (
+                                                                <tr key={u.id || lic} className="hover:bg-white/[0.03] transition-colors">
+                                                                    <td className="py-3.5 px-4">
+                                                                        <p className="font-display font-bold text-sm text-primary-adaptive">{u.name || 'ไม่ระบุชื่อ'}</p>
+                                                                        <p className="text-[11px] text-muted-adaptive">
+                                                                            <span className="font-mono text-prism-adaptive">{lic}</span> • {u.hospital || '-'}
+                                                                        </p>
+                                                                    </td>
+                                                                    <td className="py-3.5 px-3">
+                                                                        <select
+                                                                            value={u.userType === 'เรียนต่อเนื่อง' ? 'เรียนต่อเนื่อง' : 'เรียนใหม่'}
+                                                                            onChange={e => handleUpdateUser(u, { userType: e.target.value })}
+                                                                            className="spatial-input px-2.5 py-1.5 rounded-xl text-xs font-bold"
+                                                                        >
+                                                                            <option value="เรียนใหม่">เรียนใหม่</option>
+                                                                            <option value="เรียนต่อเนื่อง">เรียนต่อเนื่อง</option>
+                                                                        </select>
+                                                                    </td>
+                                                                    <td className="py-3.5 px-3">
+                                                                        <FiveStepTelemetryPills
+                                                                            u={u}
+                                                                            onToggleLab={() => handleUpdateUser(u, { skillLabPassed: !st.step3Lab })}
+                                                                        />
+                                                                    </td>
+                                                                    <td className="py-3.5 px-3 font-mono font-bold text-secondary-adaptive">
+                                                                        <span>{u.pretest || '-'}</span>
+                                                                        <span className="mx-1 text-muted-adaptive">/</span>
+                                                                        <span className={st.step4Post ? 'text-accent-adaptive' : ''}>{u.posttest || '-'}</span>
+                                                                    </td>
+                                                                    <td className="py-3.5 px-4 text-right">
+                                                                        <div className="inline-flex items-center gap-1.5">
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => handleUpdateUser(u, { status: u.status === 'ผ่าน' ? 'กำลังเรียน' : 'ผ่าน' })}
+                                                                                className={`px-2.5 py-1.5 rounded-xl font-bold text-[11px] border ${
+                                                                                    u.status === 'ผ่าน'
+                                                                                        ? 'bg-aurora-500/20 border-aurora-400/40 text-accent-adaptive'
+                                                                                        : 'spatial-soft text-secondary-adaptive'
+                                                                                }`}
+                                                                            >
+                                                                                {u.status === 'ผ่าน' ? 'ผ่านแล้ว ✓' : 'กำลังเรียน'}
+                                                                            </button>
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => handleDeleteUser(u)}
+                                                                                className="p-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-400"
+                                                                                title="ลบผู้เรียน"
+                                                                            >
+                                                                                <Icon name="Trash2" size={14} />
+                                                                            </button>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            );
+                                                        })}
+                                                        {filteredUsers.length === 0 && (
+                                                            <tr>
+                                                                <td colSpan="5" className="py-10 text-center text-sm text-muted-adaptive">
+                                                                    ไม่พบรายชื่อผู้เรียนตามเงื่อนไขที่ค้นหาค่ะ
+                                                                </td>
+                                                            </tr>
+                                                        )}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            {/* Mobile Cards */}
+                                            <div className="md:hidden divide-y divide-white/10">
+                                                {visibleUsers.map(u => {
                                                     const lic = getUserLicense(u);
                                                     const st = getUserFiveStepStatus(u);
                                                     return (
-                                                        <tr key={u.id || lic} className="hover:bg-white/[0.03] transition-colors">
-                                                            <td className="py-3.5 px-4">
-                                                                <p className="font-display font-bold text-sm text-primary-adaptive">{u.name || 'ไม่ระบุชื่อ'}</p>
-                                                                <p className="text-[11px] text-muted-adaptive">
-                                                                    <span className="font-mono text-prism-adaptive">{lic}</span> • {u.hospital || '-'}
-                                                                </p>
-                                                            </td>
-                                                            <td className="py-3.5 px-3">
+                                                        <div key={u.id || lic} className="p-4 space-y-3">
+                                                            <div className="flex items-start justify-between gap-2">
+                                                                <div className="min-w-0">
+                                                                    <p className="font-display font-bold text-sm text-primary-adaptive truncate">{u.name || 'ไม่ระบุชื่อ'}</p>
+                                                                    <p className="text-xs text-muted-adaptive truncate">
+                                                                        <span className="font-mono text-prism-adaptive">{lic}</span> • {u.hospital || '-'}
+                                                                    </p>
+                                                                </div>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handleDeleteUser(u)}
+                                                                    className="p-2 rounded-xl bg-rose-500/15 text-rose-400 shrink-0"
+                                                                >
+                                                                    <Icon name="Trash2" size={14} />
+                                                                </button>
+                                                            </div>
+                                                            <FiveStepTelemetryPills
+                                                                u={u}
+                                                                onToggleLab={() => handleUpdateUser(u, { skillLabPassed: !st.step3Lab })}
+                                                            />
+                                                            <div className="flex items-center justify-between gap-2 pt-1">
                                                                 <select
                                                                     value={u.userType === 'เรียนต่อเนื่อง' ? 'เรียนต่อเนื่อง' : 'เรียนใหม่'}
                                                                     onChange={e => handleUpdateUser(u, { userType: e.target.value })}
@@ -1909,109 +2059,40 @@
                                                                     <option value="เรียนใหม่">เรียนใหม่</option>
                                                                     <option value="เรียนต่อเนื่อง">เรียนต่อเนื่อง</option>
                                                                 </select>
-                                                            </td>
-                                                            <td className="py-3.5 px-3">
-                                                                <FiveStepTelemetryPills
-                                                                    u={u}
-                                                                    onToggleLab={() => handleUpdateUser(u, { skillLabPassed: !st.step3Lab })}
-                                                                />
-                                                            </td>
-                                                            <td className="py-3.5 px-3 font-mono font-bold text-secondary-adaptive">
-                                                                <span>{u.pretest || '-'}</span>
-                                                                <span className="mx-1 text-muted-adaptive">/</span>
-                                                                <span className={st.step4Post ? 'text-accent-adaptive' : ''}>{u.posttest || '-'}</span>
-                                                            </td>
-                                                            <td className="py-3.5 px-4 text-right">
-                                                                <div className="inline-flex items-center gap-1.5">
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => handleUpdateUser(u, { status: u.status === 'ผ่าน' ? 'กำลังเรียน' : 'ผ่าน' })}
-                                                                        className={`px-2.5 py-1.5 rounded-xl font-bold text-[11px] border ${
-                                                                            u.status === 'ผ่าน'
-                                                                                ? 'bg-aurora-500/20 border-aurora-400/40 text-accent-adaptive'
-                                                                                : 'spatial-soft text-secondary-adaptive'
-                                                                        }`}
-                                                                    >
-                                                                        {u.status === 'ผ่าน' ? 'ผ่านแล้ว ✓' : 'กำลังเรียน'}
-                                                                    </button>
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => handleDeleteUser(u)}
-                                                                        className="p-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-400"
-                                                                        title="ลบผู้เรียน"
-                                                                    >
-                                                                        <Icon name="Trash2" size={14} />
-                                                                    </button>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handleUpdateUser(u, { status: u.status === 'ผ่าน' ? 'กำลังเรียน' : 'ผ่าน' })}
+                                                                    className={`px-3 py-1.5 rounded-xl font-bold text-xs border ${
+                                                                        u.status === 'ผ่าน'
+                                                                            ? 'bg-aurora-500/20 border-aurora-400/40 text-accent-adaptive'
+                                                                            : 'spatial-soft text-secondary-adaptive'
+                                                                    }`}
+                                                                >
+                                                                    {u.status === 'ผ่าน' ? 'ผ่านแล้ว ✓' : 'กำลังเรียน'}
+                                                                </button>
+                                                            </div>
+                                                        </div>
                                                     );
                                                 })}
                                                 {filteredUsers.length === 0 && (
-                                                    <tr>
-                                                        <td colSpan="5" className="py-10 text-center text-sm text-muted-adaptive">
-                                                            ไม่พบรายชื่อผู้เรียนตามเงื่อนไขที่ค้นหาค่ะ
-                                                        </td>
-                                                    </tr>
+                                                    <p className="py-10 text-center text-sm text-muted-adaptive">ไม่พบรายชื่อผู้เรียนตามเงื่อนไขที่ค้นหาค่ะ</p>
                                                 )}
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                            </div>
 
-                                    {/* Mobile Cards */}
-                                    <div className="md:hidden divide-y divide-white/10">
-                                        {filteredUsers.map(u => {
-                                            const lic = getUserLicense(u);
-                                            const st = getUserFiveStepStatus(u);
-                                            return (
-                                                <div key={u.id || lic} className="p-4 space-y-3">
-                                                    <div className="flex items-start justify-between gap-2">
-                                                        <div className="min-w-0">
-                                                            <p className="font-display font-bold text-sm text-primary-adaptive truncate">{u.name || 'ไม่ระบุชื่อ'}</p>
-                                                            <p className="text-xs text-muted-adaptive truncate">
-                                                                <span className="font-mono text-prism-adaptive">{lic}</span> • {u.hospital || '-'}
-                                                            </p>
-                                                        </div>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => handleDeleteUser(u)}
-                                                            className="p-2 rounded-xl bg-rose-500/15 text-rose-400 shrink-0"
-                                                        >
-                                                            <Icon name="Trash2" size={14} />
-                                                        </button>
-                                                    </div>
-                                                    <FiveStepTelemetryPills
-                                                        u={u}
-                                                        onToggleLab={() => handleUpdateUser(u, { skillLabPassed: !st.step3Lab })}
-                                                    />
-                                                    <div className="flex items-center justify-between gap-2 pt-1">
-                                                        <select
-                                                            value={u.userType === 'เรียนต่อเนื่อง' ? 'เรียนต่อเนื่อง' : 'เรียนใหม่'}
-                                                            onChange={e => handleUpdateUser(u, { userType: e.target.value })}
-                                                            className="spatial-input px-2.5 py-1.5 rounded-xl text-xs font-bold"
-                                                        >
-                                                            <option value="เรียนใหม่">เรียนใหม่</option>
-                                                            <option value="เรียนต่อเนื่อง">เรียนต่อเนื่อง</option>
-                                                        </select>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => handleUpdateUser(u, { status: u.status === 'ผ่าน' ? 'กำลังเรียน' : 'ผ่าน' })}
-                                                            className={`px-3 py-1.5 rounded-xl font-bold text-xs border ${
-                                                                u.status === 'ผ่าน'
-                                                                    ? 'bg-aurora-500/20 border-aurora-400/40 text-accent-adaptive'
-                                                                    : 'spatial-soft text-secondary-adaptive'
-                                                            }`}
-                                                        >
-                                                            {u.status === 'ผ่าน' ? 'ผ่านแล้ว ✓' : 'กำลังเรียน'}
-                                                        </button>
-                                                    </div>
+                                            {/* ปุ่มแสดงเพิ่มเติมกรณีผลการค้นหามีมากกว่า 50 ราย */}
+                                            {filteredUsers.length > displayLimit && (
+                                                <div className="p-3.5 border-t border-white/10 text-center">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setDisplayLimit(prev => prev + 50)}
+                                                        className="touch-target spatial-soft px-5 py-2.5 rounded-2xl text-xs font-bold text-prism-adaptive"
+                                                    >
+                                                        แสดงเพิ่มเติม ({visibleUsers.length} / {filteredUsers.length} ราย)
+                                                    </button>
                                                 </div>
-                                            );
-                                        })}
-                                        {filteredUsers.length === 0 && (
-                                            <p className="py-10 text-center text-sm text-muted-adaptive">ไม่พบรายชื่อผู้เรียนตามเงื่อนไขที่ค้นหาค่ะ</p>
-                                        )}
-                                    </div>
+                                            )}
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         )}
