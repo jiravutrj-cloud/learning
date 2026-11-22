@@ -20,11 +20,11 @@
   window.RJCLOUD_AI_INTERACTIVE_LOADED = true;
 
   // ==========================================================================
-  // 1. CONSTANTS & STORAGE KEYS (RJCLOUD.ORGAN 2.0 + NATURAL VOICE CACHE v3)
+  // 1. CONSTANTS & STORAGE KEYS (RJCLOUD.ORGAN 2.0 + NATURAL VOICE CACHE v4)
   // ==========================================================================
   const STORE_PREFIX = 'rjcloud_ai_interactive_v1';
   const LEGACY_STORAGE_KEY = 'rjcloud_organ_state_v2027';
-  const AUDIO_CACHE_DB = 'rjcloud_interactive_voice_cache_v3';
+  const AUDIO_CACHE_DB = 'rjcloud_interactive_voice_cache_v4';
   const AUDIO_CACHE_STORE = 'clips';
   const IDLE_DIM_MS = 4000; // จางลงอัตโนมัติเมื่อไม่มีการโต้ตอบเกิน 4 วินาที
 
