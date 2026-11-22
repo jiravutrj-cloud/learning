@@ -486,7 +486,14 @@
   // 5. PER-LESSON SMART MEMORY & STATE MANAGER
   // ==========================================================================
   const LearningMemory = {
+    activeUserId: '',
+
+    setActiveUserId(uid) {
+      this.activeUserId = uid ? String(uid) : '';
+    },
+
     getUserId() {
+      if (this.activeUserId) return this.activeUserId;
       try {
         const raw = JSON.parse(localStorage.getItem(LEGACY_STORAGE_KEY) || 'null');
         return raw?.user?.id || raw?.user?.license || 'guest_learner';
@@ -507,7 +514,6 @@
           completedLessonIds: Array.isArray(saved?.completedLessonIds) ? saved.completedLessonIds.map(Number) : [],
           perLessonSeconds: saved?.perLessonSeconds && typeof saved.perLessonSeconds === 'object' ? saved.perLessonSeconds : {},
           tourSeen: Boolean(saved?.tourSeen),
-          welcomeShownForSession: Boolean(saved?.welcomeShownForSession),
           fabPos: saved?.fabPos && typeof saved.fabPos.right === 'number' && typeof saved.fabPos.bottom === 'number'
             ? saved.fabPos
             : null,
@@ -519,7 +525,6 @@
           completedLessonIds: [],
           perLessonSeconds: {},
           tourSeen: false,
-          welcomeShownForSession: false,
           fabPos: null,
           soundEffectsOn: true
         };
@@ -542,12 +547,16 @@
   const Controller = {
     bridge: null,
     mem: LearningMemory.load(),
+    loadedForUserId: LearningMemory.getUserId(),
+    lastBridgeStudySeconds: null,
+    welcomeShownForUserId: '',
     tourStepIndex: -1,
     copilotOpen: false,
     copilotState: 'idle', // idle | listening | thinking | speaking
     copilotMessages: [],
     lastActivityAt: Date.now(),
     idleCheckInterval: null,
+    resizeBound: false,
     fabDrag: { dragging: false, moved: false, startX: 0, startY: 0, origRight: 18, origBottom: 92 },
     els: {}
   };
@@ -631,6 +640,65 @@
       panel = document.createElement('div');
       panel.id = 'rjc-lesson-memory-panel';
       panel.className = 'spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3.5 border-emerald-400/30';
+      panel.onclick = (ev) => {
+        const btn = ev.target.closest('button');
+        const activeBridge = Controller.bridge;
+        if (!btn || !activeBridge) return;
+        wakeActivity();
+
+        const currentLessons = Array.isArray(activeBridge.lessons) ? activeBridge.lessons : [];
+        const currentId = Number(activeBridge.currentLessonId || 1);
+        const doneSet = new Set((Controller.mem.completedLessonIds || []).map(Number));
+        const nextOpen = currentLessons.find((l) => !doneSet.has(Number(l.id))) || currentLessons[0];
+
+        const lidAttr = btn.getAttribute('data-rjc-lesson');
+        if (lidAttr) {
+          const targetId = Number(lidAttr);
+          TactileFX.tap();
+          VoiceEngine.stop();
+          Controller.mem = LearningMemory.save({ lastLessonId: targetId });
+          activeBridge.selectLesson(targetId);
+          return;
+        }
+        const act = btn.getAttribute('data-rjc-act');
+        if (act === 'mark_done') {
+          const nextSet = new Set(doneSet);
+          if (nextSet.has(currentId)) {
+            nextSet.delete(currentId);
+            Controller.mem = LearningMemory.save({ completedLessonIds: Array.from(nextSet) });
+            TactileFX.tap();
+            activeBridge.toast(`ยกเลิกเครื่องหมายจบบทที่ ${currentId} แล้วค่ะ`, 'info');
+          } else {
+            nextSet.add(currentId);
+            const nextAfterDone = currentLessons.find((l) => !nextSet.has(Number(l.id))) || currentLessons[0];
+            Controller.mem = LearningMemory.save({
+              completedLessonIds: Array.from(nextSet),
+              lastLessonId: Number(nextAfterDone?.id || currentId)
+            });
+            TactileFX.complete();
+            showCelebrationBurst(`เรียนจบบทที่ ${currentId} แล้วค่ะ! (${nextSet.size}/${currentLessons.length})`);
+            activeBridge.toast(`บันทึกว่าเรียนจบบทที่ ${currentId} เรียบร้อยแล้วค่ะ`, 'success');
+          }
+          ensureLessonInteractivePanel();
+        } else if (act === 'resume_best' && nextOpen) {
+          TactileFX.tap();
+          VoiceEngine.stop();
+          Controller.mem = LearningMemory.save({ lastLessonId: Number(nextOpen.id) });
+          activeBridge.selectLesson(Number(nextOpen.id));
+          activeBridge.toast(`พาไปเรียนต่อที่บทที่ ${nextOpen.id} ค่ะ`, 'info');
+        } else if (act === 'next_lesson' && currentLessons.length > 0) {
+          const idx = currentLessons.findIndex((l) => Number(l.id) === currentId);
+          const nextL = currentLessons[(idx + 1) % currentLessons.length];
+          if (nextL) {
+            TactileFX.tap();
+            VoiceEngine.stop();
+            Controller.mem = LearningMemory.save({ lastLessonId: Number(nextL.id) });
+            activeBridge.selectLesson(Number(nextL.id));
+          }
+        } else if (act === 'welcome_modal') {
+          openWelcomeModal();
+        }
+      };
       Controller.els.lessonPanel = panel;
     }
     panel.style.display = 'block';
@@ -643,16 +711,31 @@
     const perMap = Controller.mem.perLessonSeconds || {};
     const curSec = Number(perMap[curId] || 0);
     const isCurDone = completedSet.has(curId);
-
-    // หาบทถัดไปที่ยังไม่จบ
     const nextUnfinished = lessons.find((l) => !completedSet.has(Number(l.id))) || lessons[0];
 
+    // สร้างคีย์โครงสร้างเพื่อเรนเดอร์ HTML ใหม่เฉพาะเมื่อบท/สถานะเปลี่ยน (ไม่รีเฟรชทุก 1 วินาที)
+    const partialMask = lessons.map((l) => (Number(perMap[Number(l.id)] || 0) > 0 ? '1' : '0')).join('');
+    const completedKey = Array.from(completedSet).sort((a, b) => a - b).join(',');
+    const renderKey = `${curId}|${lessons.length}|${completedKey}|${partialMask}|${nextUnfinished?.id || 1}`;
+
+    if (panel.dataset.renderKey === renderKey) {
+      const timeEl = panel.querySelector('#rjc-lesson-time-status');
+      if (timeEl) {
+        timeEl.textContent = isCurDone ? 'ดูจบแล้ว ✓' : `ดูค้างไว้ ${formatShortMinSec(curSec)}`;
+      }
+      return;
+    }
+
+    const prevStrip = panel.querySelector('#rjc-20-lesson-strip');
+    const prevScrollLeft = prevStrip ? prevStrip.scrollLeft : 0;
+
+    panel.dataset.renderKey = renderKey;
     panel.innerHTML = `
       <div class="flex flex-wrap items-center justify-between gap-2">
         <div>
           <span class="font-mono text-[10px] font-bold text-prism-adaptive uppercase">SMART RESUME • จดจำการเรียนต่อรายบท (${completedSet.size}/${lessons.length} บท)</span>
           <p class="text-xs text-secondary-adaptive mt-0.5">
-            บทที่ ${curId}: <b class="text-primary-adaptive">${isCurDone ? 'ดูจบแล้ว ✓' : `ดูค้างไว้ ${formatShortMinSec(curSec)}`}</b>
+            บทที่ ${curId}: <b id="rjc-lesson-time-status" class="text-primary-adaptive">${isCurDone ? 'ดูจบแล้ว ✓' : `ดูค้างไว้ ${formatShortMinSec(curSec)}`}</b>
           </p>
         </div>
         <div class="flex flex-wrap items-center gap-1.5">
@@ -695,168 +778,9 @@
       </div>
     `;
 
-    panel.onclick = (ev) => {
-      const btn = ev.target.closest('button');
-      if (!btn) return;
-      wakeActivity();
-      const lidAttr = btn.getAttribute('data-rjc-lesson');
-      if (lidAttr) {
-        const targetId = Number(lidAttr);
-        TactileFX.tap();
-        VoiceEngine.stop();
-        Controller.mem = LearningMemory.save({ lastLessonId: targetId });
-        bridge.selectLesson(targetId);
-        return;
-      }
-      const act = btn.getAttribute('data-rjc-act');
-      if (act === 'mark_done') {
-        const nextSet = new Set(completedSet);
-        if (nextSet.has(curId)) {
-          nextSet.delete(curId);
-          Controller.mem = LearningMemory.save({ completedLessonIds: Array.from(nextSet) });
-          TactileFX.tap();
-          bridge.toast(`ยกเลิกเครื่องหมายจบบทที่ ${curId} แล้วค่ะ`, 'info');
-        } else {
-          nextSet.add(curId);
-          Controller.mem = LearningMemory.save({ completedLessonIds: Array.from(nextSet), lastLessonId: nextUnfinished.id });
-          TactileFX.complete();
-          showCelebrationBurst(`เรียนจบบทที่ ${curId} แล้วค่ะ! (${nextSet.size}/${lessons.length})`);
-          bridge.toast(`บันทึกว่าเรียนจบบทที่ ${curId} เรียบร้อยแล้วค่ะ`, 'success');
-        }
-        ensureLessonInteractivePanel();
-      } else if (act === 'resume_best') {
-        TactileFX.tap();
-        VoiceEngine.stop();
-        Controller.mem = LearningMemory.save({ lastLessonId: Number(nextUnfinished.id) });
-        bridge.selectLesson(Number(nextUnfinished.id));
-        bridge.toast(`พาไปเรียนต่อที่บทที่ ${nextUnfinished.id} ค่ะ`, 'info');
-      } else if (act === 'next_lesson') {
-        const idx = lessons.findIndex((l) => Number(l.id) === curId);
-        const nextL = lessons[(idx + 1) % lessons.length];
-        if (nextL) {
-          TactileFX.tap();
-          VoiceEngine.stop();
-          Controller.mem = LearningMemory.save({ lastLessonId: Number(nextL.id) });
-          bridge.selectLesson(Number(nextL.id));
-        }
-      } else if (act === 'welcome_modal') {
-        openWelcomeModal();
-      }
-    };
-  }
-
-  // ==========================================================================
-  // 8. AI WELCOME CONCIERGE MODAL (WHEN RETURNING TO CLASSROOM)
-  // ==========================================================================
-  function ensureWelcomeModal() {
-    if (Controller.els.welcomeModal) return Controller.els.welcomeModal;
-    const modal = document.createElement('div');
-    modal.id = 'rjc-ai-welcome-modal';
-    modal.className = 'fixed inset-0 z-[160] bg-slate-950/75 backdrop-blur-md hidden items-center justify-center p-4';
-    modal.innerHTML = `
-      <div class="spatial-card w-full max-w-lg rounded-[2rem] overflow-hidden border-aurora-400/40 shadow-2xl">
-        <div class="rjc-ambient-bar" id="rjc-welcome-ambient-bar" style="opacity:0.4;"></div>
-        <div class="p-5 sm:p-6 space-y-4">
-          <div class="flex items-start justify-between gap-2">
-            <div class="flex items-center gap-3">
-              <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-aurora-400 to-prism-400 text-void-950 flex items-center justify-center font-extrabold shrink-0">
-                AI
-              </div>
-              <div>
-                <span class="font-mono text-[10px] font-bold text-prism-adaptive uppercase">AI WELCOME CONCIERGE</span>
-                <h3 class="font-display font-extrabold text-base sm:text-lg text-primary-adaptive" id="rjc-welcome-title">ต้อนรับกลับสู่ห้องเรียน</h3>
-              </div>
-            </div>
-            <button type="button" id="rjc-welcome-close" class="spatial-soft w-9 h-9 rounded-xl text-primary-adaptive font-bold">✕</button>
-          </div>
-
-          <p id="rjc-welcome-speech" class="p-4 rounded-2xl spatial-soft text-xs sm:text-sm text-primary-adaptive leading-relaxed"></p>
-
-          <div id="rjc-welcome-stats" class="grid grid-cols-3 gap-2 text-center text-xs"></div>
-
-          <div id="rjc-welcome-voice-status" class="text-[11px] font-bold text-prism-adaptive min-h-[18px]"></div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-            <button type="button" id="rjc-welcome-replay-voice" class="touch-target spatial-soft py-3 px-4 rounded-2xl text-accent-adaptive font-display font-bold text-xs sm:text-sm">
-              🔊 ฟังเสียง AI ต้อนรับ
-            </button>
-            <button type="button" id="rjc-welcome-resume-btn" class="touch-target py-3 px-4 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-xs sm:text-sm">
-              เริ่มเรียนต่อจากจุดที่แนะนำ →
-            </button>
-          </div>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(modal);
-    Controller.els.welcomeModal = modal;
-
-    modal.querySelector('#rjc-welcome-close').onclick = () => {
-      VoiceEngine.stop();
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    };
-
-    modal.querySelector('#rjc-welcome-replay-voice').onclick = () => {
-      const info = buildWelcomeSummary(Controller.bridge);
-      const statusEl = modal.querySelector('#rjc-welcome-voice-status');
-      const barEl = modal.querySelector('#rjc-welcome-ambient-bar');
-      VoiceEngine.speakPipeline(
-        info.speech.split(/(?<=ค่ะ)\s*/).filter(Boolean),
-        Controller.bridge?.appsScriptUrl || '',
-        `welcome_${info.completedCount}_${info.lastLesson.id}`,
-        (st) => {
-          if (st.phase === 'loading') {
-            barEl.style.opacity = '1';
-            statusEl.textContent = `กำลังเตรียมเสียง AI ต้อนรับ (${st.index}/${st.total})...`;
-          } else if (st.phase === 'speaking') {
-            barEl.style.opacity = '1';
-            statusEl.textContent = `AI กำลังกล่าวต้อนรับ (${st.index}/${st.total})...`;
-          } else {
-            barEl.style.opacity = '0.35';
-            statusEl.textContent = '';
-          }
-        }
-      );
-    };
-
-    modal.querySelector('#rjc-welcome-resume-btn').onclick = () => {
-      const info = buildWelcomeSummary(Controller.bridge);
-      VoiceEngine.stop();
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-      TactileFX.tap();
-      Controller.bridge?.setActiveTab('lessons');
-      Controller.bridge?.selectLesson(Number(info.lastLesson.id));
-    };
-
-    return modal;
-  }
-
-  function openWelcomeModal(autoSpeak = false) {
-    if (!Controller.bridge?.user) return;
-    const modal = ensureWelcomeModal();
-    const info = buildWelcomeSummary(Controller.bridge);
-    modal.querySelector('#rjc-welcome-title').textContent = `สวัสดีค่ะคุณ${info.name}`;
-    modal.querySelector('#rjc-welcome-speech').textContent = info.speech;
-    modal.querySelector('#rjc-welcome-stats').innerHTML = `
-      <div class="spatial-soft p-2.5 rounded-xl">
-        <span class="text-[10px] text-muted-adaptive block">เรียนจบแล้ว</span>
-        <span class="font-mono font-extrabold text-accent-adaptive">${info.completedCount}/${info.totalLessons} บท</span>
-      </div>
-      <div class="spatial-soft p-2.5 rounded-xl">
-        <span class="text-[10px] text-muted-adaptive block">จุดที่ค้างล่าสุด</span>
-        <span class="font-mono font-extrabold text-prism-adaptive">บทที่ ${info.lastLesson.id}</span>
-      </div>
-      <div class="spatial-soft p-2.5 rounded-xl">
-        <span class="text-[10px] text-muted-adaptive block">เวลาที่ต้องสะสมต่อ</span>
-        <span class="font-mono font-extrabold text-amber-400">${info.remainSec > 0 ? formatDurationTH(info.remainSec) : 'ครบเกณฑ์ ✓'}</span>
-      </div>
-    `;
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-
-    if (autoSpeak) {
-      modal.querySelector('#rjc-welcome-replay-voice').click();
+    const nextStrip = panel.querySelector('#rjc-20-lesson-strip');
+    if (nextStrip && prevScrollLeft > 0) {
+      nextStrip.scrollLeft = prevScrollLeft;
     }
   }
 
@@ -1328,6 +1252,23 @@
       bar = document.createElement('div');
       bar.id = 'rjc-header-interactive-actions';
       bar.className = 'flex items-center gap-1';
+      bar.onclick = (ev) => {
+        const btn = ev.target.closest('button');
+        const activeBridge = Controller.bridge;
+        if (!btn || !activeBridge) return;
+        wakeActivity();
+        const act = btn.getAttribute('data-rjc-hdr');
+        if (act === 'tour') {
+          startGuidedTour();
+        } else if (act === 'welcome') {
+          openWelcomeModal(true);
+        } else if (act === 'fx') {
+          TactileFX.enabled = !TactileFX.enabled;
+          Controller.mem = LearningMemory.save({ soundEffectsOn: TactileFX.enabled });
+          ensureDashboardHeaderActions();
+          activeBridge.toast(TactileFX.enabled ? 'เปิดเสียงเอฟเฟกต์สัมผัสแล้วค่ะ' : 'ปิดเสียงเอฟเฟกต์สัมผัสแล้วค่ะ', 'info');
+        }
+      };
       Controller.els.headerBar = bar;
     }
     bar.style.display = 'flex';
@@ -1335,28 +1276,15 @@
       rightGroup.insertBefore(bar, rightGroup.firstChild);
     }
 
+    const fxKey = String(TactileFX.enabled);
+    if (bar.dataset.fxState === fxKey) return;
+    bar.dataset.fxState = fxKey;
+
     bar.innerHTML = `
       <button type="button" data-rjc-hdr="tour" title="แนะนำการใช้งานเมนู (เปิดดูซ้ำได้ทุกเมื่อ)" class="spatial-soft px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-prism-adaptive">แนะนำเมนู</button>
       <button type="button" data-rjc-hdr="welcome" title="AI กล่าวต้อนรับและสรุปจุดที่เรียนค้าง" class="hidden sm:inline-flex spatial-soft px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-accent-adaptive">AI ต้อนรับ</button>
       <button type="button" data-rjc-hdr="fx" title="เปิด/ปิดเสียงเอฟเฟกต์สัมผัส" class="spatial-soft px-2 py-1.5 rounded-xl text-[11px] font-bold text-secondary-adaptive">${TactileFX.enabled ? '🔔' : '🔕'}</button>
     `;
-
-    bar.onclick = (ev) => {
-      const btn = ev.target.closest('button');
-      if (!btn) return;
-      wakeActivity();
-      const act = btn.getAttribute('data-rjc-hdr');
-      if (act === 'tour') {
-        startGuidedTour();
-      } else if (act === 'welcome') {
-        openWelcomeModal(true);
-      } else if (act === 'fx') {
-        TactileFX.enabled = !TactileFX.enabled;
-        Controller.mem = LearningMemory.save({ soundEffectsOn: TactileFX.enabled });
-        ensureDashboardHeaderActions();
-        bridge.toast(TactileFX.enabled ? 'เปิดเสียงเอฟเฟกต์สัมผัสแล้วค่ะ' : 'ปิดเสียงเอฟเฟกต์สัมผัสแล้วค่ะ', 'info');
-      }
-    };
   }
 
   // ==========================================================================
@@ -1367,33 +1295,70 @@
       injectStyles();
       ensureCopilotFabAndModal();
 
+      if (!Controller.resizeBound) {
+        Controller.resizeBound = true;
+        window.addEventListener('resize', () => {
+          if (Controller.tourStepIndex >= 0 && MENU_TOUR_STEPS[Controller.tourStepIndex]) {
+            positionTourRing(MENU_TOUR_STEPS[Controller.tourStepIndex]);
+          }
+        });
+      }
+
       const prevScreen = Controller.bridge?.screen;
-      const prevUserId = Controller.bridge?.user?.id;
+      const prevUserId = Controller.bridge?.user?.id || '';
+      const nextUserId = bridgeApi?.user?.id || bridgeApi?.user?.license || '';
+
+      // รีโหลดหน่วยความจำรายบุคคลหากสลับบัญชีผู้เรียน
+      if (nextUserId && nextUserId !== Controller.loadedForUserId) {
+        LearningMemory.setActiveUserId(nextUserId);
+        Controller.mem = LearningMemory.load();
+        Controller.loadedForUserId = nextUserId;
+        Controller.lastBridgeStudySeconds = Number(bridgeApi.studySeconds || 0);
+      }
+
       Controller.bridge = bridgeApi;
       TactileFX.enabled = Controller.mem.soundEffectsOn;
 
-      // ติดตามเวลาสะสมแยกทีละบทเรียน
-      if (bridgeApi.screen === 'dashboard' && bridgeApi.activeTab === 'lessons') {
-        const lid = Number(bridgeApi.currentLessonId || 1);
-        const perMap = { ...(Controller.mem.perLessonSeconds || {}) };
-        perMap[lid] = Number(perMap[lid] || 0) + 1;
-        Controller.mem = LearningMemory.save({
-          lastLessonId: lid,
-          perLessonSeconds: perMap
-        });
+      // แสดงปุ่ม AI Co-Pilot ลอยตัวเฉพาะเมื่ออยู่ในหน้าห้องเรียน (dashboard)
+      if (Controller.els.fab) {
+        const showFab = bridgeApi.screen === 'dashboard' && Boolean(bridgeApi.user);
+        Controller.els.fab.style.display = showFab ? 'flex' : 'none';
+        if (!showFab && Controller.copilotOpen) closeCopilotDrawer();
       }
+
+      // นับเวลาสะสมรายบทเฉพาะเมื่อ studySeconds จากห้องเรียนเพิ่มขึ้นจริง (ไม่บวกซ้ำเมื่อกดสลับธีม)
+      const incomingStudySec = Number(bridgeApi.studySeconds || 0);
+      if (bridgeApi.screen === 'dashboard' && bridgeApi.activeTab === 'lessons' && bridgeApi.user) {
+        const lid = Number(bridgeApi.currentLessonId || 1);
+        const delta =
+          Controller.lastBridgeStudySeconds === null
+            ? 0
+            : Math.max(0, Math.min(15, incomingStudySec - Controller.lastBridgeStudySeconds));
+
+        if (delta > 0 || Number(Controller.mem.lastLessonId) !== lid) {
+          const perMap = { ...(Controller.mem.perLessonSeconds || {}) };
+          if (delta > 0) perMap[lid] = Number(perMap[lid] || 0) + delta;
+          Controller.mem = LearningMemory.save({
+            lastLessonId: lid,
+            perLessonSeconds: perMap
+          });
+        }
+      }
+      Controller.lastBridgeStudySeconds = incomingStudySec;
 
       ensureDashboardHeaderActions();
       ensureLessonInteractivePanel();
 
       // เมื่อผู้เรียนเข้าสู่หน้าห้องเรียนครั้งแรกในรอบเซสชัน
-      const justEnteredDashboard = bridgeApi.screen === 'dashboard' && (prevScreen !== 'dashboard' || prevUserId !== bridgeApi.user?.id);
+      const justEnteredDashboard =
+        bridgeApi.screen === 'dashboard' && (prevScreen !== 'dashboard' || prevUserId !== nextUserId);
       if (justEnteredDashboard && bridgeApi.user && !bridgeApi.isAdminPreview) {
         if (!Controller.mem.tourSeen && bridgeApi.hasDonePretest) {
-          Controller.mem = LearningMemory.save({ tourSeen: true, welcomeShownForSession: true });
+          Controller.mem = LearningMemory.save({ tourSeen: true });
+          Controller.welcomeShownForUserId = nextUserId;
           setTimeout(() => startGuidedTour(), 450);
-        } else if (!Controller.mem.welcomeShownForSession) {
-          Controller.mem = LearningMemory.save({ welcomeShownForSession: true });
+        } else if (Controller.welcomeShownForUserId !== nextUserId) {
+          Controller.welcomeShownForUserId = nextUserId;
           setTimeout(() => openWelcomeModal(true), 450);
         }
       }
