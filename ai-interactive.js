@@ -1133,7 +1133,7 @@
 
       if (lower.includes('ออก') || lower.includes('logout') || lower.includes('โปรไฟล์')) {
         bridge.setActiveTab('profile');
-        setTimeout(() => pulseElementBySelector('button[class*="rose-500"]'), 250);
+        setTimeout(() => pulseElementBySelector('#btn-learner-logout, button[class*="rose-500"]'), 250);
         reply = 'ปุ่ม “ออกจากระบบผู้เรียน” อยู่ในเมนู **โปรไฟล์ & Warm-up** ค่ะ ดิฉันพาคุณมาที่หน้าโปรไฟล์และไฮไลต์ปุ่มออกจากระบบให้แล้วนะคะ';
         speakOut = 'ปุ่มออกจากระบบผู้เรียนอยู่ในเมนูโปรไฟล์ค่ะ ดิฉันพาคุณมาที่หน้าโปรไฟล์และไฮไลต์ตำแหน่งปุ่มให้แล้วนะคะ';
       } else if (lower.includes('เรียนต่อ') || lower.includes('ค้าง') || lower.includes('ต่อจาก')) {
