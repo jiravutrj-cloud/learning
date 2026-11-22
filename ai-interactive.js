@@ -77,10 +77,10 @@
       id: 'tab_profile',
       selectorDesktop: 'header .lg\\:flex button:nth-child(5)',
       selectorMobile: 'nav button:nth-child(5)',
-      badge: 'MENU 05 • โปรไฟล์ & ออกจากระบบ',
-      title: 'โปรไฟล์ รายงาน Portfolio และปุ่มออกจากระบบ',
-      desc: 'จุดสำคัญที่หลายคนมองหา: รวมข้อมูลส่วนตัว คะแนนทั้งหมด โหมดอุ่นเครื่อง 30 วิ และปุ่ม “ออกจากระบบผู้เรียน” อยู่ที่เมนูนี้ค่ะ',
-      speech: 'และเมนูโปรไฟล์ อยู่ตรงนี้ค่ะ ใช้ดูข้อมูลส่วนตัว คะแนน โหมดอุ่นเครื่องสามสิบวินาที และที่สำคัญปุ่มออกจากระบบผู้เรียนก็อยู่ในเมนูโปรไฟล์นี้เช่นกันค่ะ'
+      badge: 'MENU 05 • โปรไฟล์ & Warm-up',
+      title: 'โปรไฟล์ รายงาน Portfolio และโหมดอุ่นเครื่อง 30 วิ',
+      desc: 'รวมข้อมูลส่วนตัว คะแนนทั้งหมด การจัดการข้อมูล PDPA และโหมดอุ่นเครื่อง 30 วิ ส่วนปุ่มสีแดง “ออกจากระบบ” อยู่ถัดจากเมนูนี้ทันทีค่ะ',
+      speech: 'และเมนูโปรไฟล์ อยู่ตรงนี้ค่ะ ใช้ดูข้อมูลส่วนตัว คะแนน จัดการข้อมูลพีดีพีเอ และโหมดอุ่นเครื่องสามสิบวินาที ส่วนปุ่มสีแดงออกจากระบบจะอยู่ถัดจากเมนูนี้เลยค่ะ'
     }
   ];
 
@@ -1127,15 +1127,15 @@
     const bridge = Controller.bridge || {};
     const info = buildWelcomeSummary(bridge);
 
-    setTimeout(() => {
-      let reply = '';
-      let speakOut = '';
-
-      if (lower.includes('ออก') || lower.includes('logout') || lower.includes('โปรไฟล์')) {
+      if (lower.includes('ออก') || lower.includes('logout')) {
+        const isMobile = window.innerWidth < 1024;
+        setTimeout(() => pulseElementBySelector(isMobile ? '#btn-learner-logout-mobile' : '#btn-learner-logout'), 180);
+        reply = 'ปุ่มสีแดง **“ออกจากระบบ”** อยู่ที่แถบเมนูหน้าห้องเรียน ถัดจากเมนู **โปรไฟล์ & Warm-up** ค่ะ ดิฉันไฮไลต์ตำแหน่งปุ่มให้แล้วนะคะ';
+        speakOut = 'ปุ่มสีแดงออกจากระบบอยู่ที่แถบเมนูหน้าห้องเรียน ถัดจากเมนูโปรไฟล์ค่ะ ดิฉันไฮไลต์ตำแหน่งปุ่มให้แล้วนะคะ';
+      } else if (lower.includes('โปรไฟล์')) {
         bridge.setActiveTab('profile');
-        setTimeout(() => pulseElementBySelector('#btn-learner-logout, button[class*="rose-500"]'), 250);
-        reply = 'ปุ่ม “ออกจากระบบผู้เรียน” อยู่ในเมนู **โปรไฟล์ & Warm-up** ค่ะ ดิฉันพาคุณมาที่หน้าโปรไฟล์และไฮไลต์ปุ่มออกจากระบบให้แล้วนะคะ';
-        speakOut = 'ปุ่มออกจากระบบผู้เรียนอยู่ในเมนูโปรไฟล์ค่ะ ดิฉันพาคุณมาที่หน้าโปรไฟล์และไฮไลต์ตำแหน่งปุ่มให้แล้วนะคะ';
+        reply = 'เปิดหน้า **โปรไฟล์ & Warm-up** ให้เรียบร้อยแล้วค่ะ';
+        speakOut = 'เปิดหน้าโปรไฟล์ให้เรียบร้อยแล้วค่ะ';
       } else if (lower.includes('เรียนต่อ') || lower.includes('ค้าง') || lower.includes('ต่อจาก')) {
         bridge.setActiveTab('lessons');
         bridge.selectLesson(Number(info.lastLesson.id));
