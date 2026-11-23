@@ -212,6 +212,15 @@
     }
     </script>
     <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
+    <script>
+      if (window.Babel && typeof window.Babel.registerPreset === 'function') {
+        try {
+          window.Babel.registerPreset('react-module', {
+            presets: [[window.Babel.availablePresets['react'], { runtime: 'classic' }]]
+          });
+        } catch (_) {}
+      }
+    </script>
 </head>
 <body>
     <!-- หน้าจอโหลดเริ่มต้น -->
@@ -1571,7 +1580,7 @@
                     colorPhase += dt * 0.36;
                     autoYaw += dt * (0.055 + smoothSpeak * 0.035);
 
-                    stageRoot.position.y = (isCompact ? 0.04 : 0.62) + Math.sin(breathPhase * 0.7) * 0.04;
+                    stageRoot.position.y = (isCompact ? 0.04 : 0.42) + Math.sin(breathPhase * 0.7) * 0.04;
                     stageRoot.rotation.x = smoothRotX;
                     stageRoot.rotation.y = smoothRotY;
 
@@ -1876,6 +1885,7 @@
             const [isSpeaking, setIsSpeaking] = useState(false);
             const [voiceEnabled, setVoiceEnabled] = useState(true);
             const [showSuggestionsBar, setShowSuggestionsBar] = useState(true);
+            const [showTranscriptText, setShowTranscriptText] = useState(false);
             const [showHistoryDrawer, setShowHistoryDrawer] = useState(false);
 
             // Voice & Push-to-Talk + Pace Monitor States
@@ -2221,8 +2231,10 @@
                 setPaceHint('');
                 setEvalReport(null);
                 setShowSuggestionsBar(activeDifficulty.showSuggestions);
+                setShowTranscriptText(false);
 
-                const openingText = isEn ? activePersona.openingEN : activePersona.openingTH;
+                const rawOpeningText = isEn ? activePersona.openingEN : activePersona.openingTH;
+                const openingText = isEn ? rawOpeningText : rawOpeningText.replace(/คุณเจ้าหน้าที่/g, defaultAddr);
                 const initMsg = {
                     id: 'open-0',
                     role: 'relative',
@@ -2958,6 +2970,25 @@ ${isEn ? activeDifficulty.aiPromptRuleEN : activeDifficulty.aiPromptRuleTH}
 
                                     <button
                                         type="button"
+                                        disabled={!latestRelativeMsg || isThinking}
+                                        onClick={() => latestRelativeMsg && speakRelativeSegments(latestRelativeMsg.text, latestRelativeMsg.emotion || relativeEmotion, activePersona)}
+                                        className="holo-stage-pill px-2.5 py-1.5 rounded-xl text-cyan-200 text-[11px] font-bold inline-flex items-center gap-1 hover:bg-white/15 disabled:opacity-40"
+                                        title="ฟังเสียงญาติพูดซ้ำอีกครั้ง"
+                                    >
+                                        <Icon name="RotateCcw" size={14} /> <span className="hidden sm:inline">ฟังซ้ำ</span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowTranscriptText(v => !v)}
+                                        className={`holo-stage-pill px-2.5 py-1.5 rounded-xl text-[11px] font-bold inline-flex items-center gap-1 ${showTranscriptText ? 'border-cyan-300/60 text-cyan-200 bg-cyan-500/20' : 'text-sky-200/75 hover:bg-white/15'}`}
+                                        title={showTranscriptText ? 'ซ่อนคำบรรยายข้อความ' : 'แสดงคำบรรยายข้อความ (CC)'}
+                                    >
+                                        <Icon name="Captions" size={14} /> <span className="hidden sm:inline">CC</span>
+                                    </button>
+
+                                    <button
+                                        type="button"
                                         onClick={() => {
                                             const next = !voiceEnabled;
                                             setVoiceEnabled(next);
@@ -2993,38 +3024,40 @@ ${isEn ? activeDifficulty.aiPromptRuleEN : activeDifficulty.aiPromptRuleTH}
 
                             {/* Bottom Consultation Obsidian Frosted Glass Dock */}
                             <section className="max-w-4xl w-full mx-auto space-y-2.5">
-                                {/* กล่องคำพูดล่าสุดของญาติ + ภาษากาย [ACTION] + ป้ายเสียงกำลังพูด */}
+                                {/* แถบสถานะผู้กำลังพูดแบบโปร่งกะทัดรัด (ซ่อนกล่องข้อความคำพูดเป็นค่าเริ่มต้นเพื่อไม่บัง Hologram บนมือถือ) */}
                                 {latestRelativeMsg && (
-                                    <div className="holo-obsidian-card rounded-[1.75rem] p-4 sm:p-5 space-y-2.5">
-                                        <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-                                            <div className="flex items-center gap-2">
-                                                <span className="px-2.5 py-0.5 rounded-full bg-cyan-400/20 border border-cyan-300/40 font-mono text-[10px] font-bold text-cyan-200">
+                                    <div className="space-y-2">
+                                        <div className="flex flex-wrap items-center justify-between gap-2 px-1">
+                                            <div className="holo-stage-pill px-3 py-1 rounded-full text-xs flex items-center gap-2">
+                                                <span className="font-mono text-[10px] font-bold text-cyan-200">
                                                     {activeSpeakerBadge || activePersona.speakerRoleTH}
                                                 </span>
                                                 {isSpeaking && (
                                                     <span className="text-[11px] font-bold text-emerald-300 animate-pulse">● กำลังพูด...</span>
                                                 )}
                                                 {isThinking && (
-                                                    <span className="text-[11px] font-bold text-amber-300 animate-pulse">● ญาติกำลังรับฟังและตอบกลับ...</span>
+                                                    <span className="text-[11px] font-bold text-amber-300 animate-pulse">● กำลังตอบกลับ...</span>
                                                 )}
+                                                <span className="text-white/25">•</span>
+                                                <span className="font-mono text-[10px] text-sky-200/80">Trust {emotionMeta.trust}%</span>
                                             </div>
-                                            <span className="font-mono text-[10px] text-sky-200/75">
-                                                Trust {emotionMeta.trust}%
-                                            </span>
+
+                                            {currentActionCue && (
+                                                <span className="holo-stage-pill px-3 py-1 rounded-full text-[11px] italic text-amber-200/90 max-w-full truncate">
+                                                    ✦ {currentActionCue}
+                                                </span>
+                                            )}
                                         </div>
 
-                                        {currentActionCue && (
-                                            <p className="text-xs italic text-amber-200/90 bg-amber-400/10 border border-amber-300/25 px-3 py-1.5 rounded-xl">
-                                                ✦ {currentActionCue}
-                                            </p>
+                                        {/* แสดงกล่องคำบรรยายเฉพาะเมื่อผู้เรียนกดเปิดปุ่ม CC บนแถบด้านบน */}
+                                        {showTranscriptText && (
+                                            <div className="holo-obsidian-card rounded-2xl px-4 py-3 text-xs sm:text-sm text-white/95 leading-relaxed whitespace-pre-line">
+                                                {latestRelativeMsg.text}
+                                            </div>
                                         )}
 
-                                        <p className="text-sm sm:text-base text-white leading-relaxed whitespace-pre-line">
-                                            {latestRelativeMsg.text}
-                                        </p>
-
                                         {familyDecision && DECISION_META[familyDecision] && (
-                                            <div className={`p-3.5 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${DECISION_META[familyDecision].colorCls}`}>
+                                            <div className={`holo-obsidian-card p-3.5 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${DECISION_META[familyDecision].colorCls}`}>
                                                 <div>
                                                     <p className="font-display font-extrabold text-sm">
                                                         {isEn ? DECISION_META[familyDecision].badgeEN : DECISION_META[familyDecision].badgeTH}
