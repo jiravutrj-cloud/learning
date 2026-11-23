@@ -439,6 +439,8 @@
 
         const DEFAULT_CERT_TEMPLATE = window.DEFAULT_CERT_TEMPLATE || {
             certPrefix: 'RJC-2027',
+            cneuActivityCode: 'CNEU-2027-0148',
+            cneuCredits: '8.0',
             orgTitleTH: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ',
             orgTitleEN: 'rjcloud.organ • Clinical Organ Donation & Transplantation Network',
             courseTitleTH: 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ',
@@ -642,7 +644,7 @@
          * วาดพรีวิวใบประกาศนียบัตรสไตล์มินิมอลเรียบหรู (Apple Minimalist — พื้นสีขาว ตัดเส้นสายสีทองบางเฉียบ)
          * ตรงกับต้นแบบประกาศนียบัตรจริงในหน้า index.html 100%
          */
-        async function drawMiniCertPreview(canvas, tpl) {
+        async function drawMiniCertPreview(canvas, tpl, cneuCfg) {
             if (!canvas) return;
             const W = 1200, H = 848;
             canvas.width = W;
@@ -760,6 +762,19 @@
             ctx.font = '500 13px "Prompt", sans-serif';
             ctx.fillText(tpl.courseTitleEN || '', W / 2, topY + 358);
 
+            // แสดงรหัสกิจกรรม CNEU และจำนวนหน่วยคะแนนบนใบประกาศนียบัตร (หากระบุไว้)
+            const actCode = String(cneuCfg?.activityCode ?? tpl.cneuActivityCode ?? '').trim();
+            const credits = String(cneuCfg?.cneuCredits ?? tpl.cneuCredits ?? '').trim();
+            if (actCode || credits) {
+                const cneuText = [
+                    actCode ? `รหัสกิจกรรม CNEU: ${actCode}` : '',
+                    credits ? `จำนวน ${credits} หน่วยคะแนน` : ''
+                ].filter(Boolean).join('   •   ');
+                ctx.fillStyle = '#047857';
+                ctx.font = '600 14px "Prompt", sans-serif';
+                ctx.fillText(cneuText, W / 2, topY + 388);
+            }
+
             // 9. ส่วนลายเซ็นกึ่งกลาง (เส้นทองบาง)
             const sigBaseY = H - 142;
             if (sigImg) {
@@ -825,7 +840,7 @@
         function ToastBanner({ toast }) {
             if (!toast.visible) return null;
             return (
-                <div className="fixed top-[calc(1rem+env(safe-area-inset-top,0px))] left-1/2 -translate-x-1/2 z-[140] w-[92vw] max-w-md pointer-events-none">
+                <div className="no-print fixed top-[calc(1rem+env(safe-area-inset-top,0px))] left-1/2 -translate-x-1/2 z-[140] w-[92vw] max-w-md pointer-events-none">
                     <div className={`px-4 py-3 rounded-2xl shadow-2xl border backdrop-blur-2xl flex items-center gap-2.5 text-xs sm:text-sm font-bold text-white ${
                         toast.type === 'error'
                             ? 'bg-rose-700/95 border-rose-400/60'
@@ -843,7 +858,7 @@
         function ConfirmModal({ dialog, onClose }) {
             if (!dialog.open) return null;
             return (
-                <div className="fixed inset-0 z-[130] bg-slate-950/75 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
+                <div className="no-print fixed inset-0 z-[130] bg-slate-950/75 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
                     <div className="spatial-card w-full sm:max-w-md rounded-t-[2rem] sm:rounded-[2rem] p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] space-y-4">
                         <div className="flex items-start gap-3.5">
                             <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 ${
@@ -1144,9 +1159,9 @@
             // 3. Live Certificate Preview (Apple Minimalist White & Thin Gold)
             useEffect(() => {
                 if (activeTab === 'cert' && certSubTab === 'designer' && certCanvasRef.current) {
-                    drawMiniCertPreview(certCanvasRef.current, certTemplate);
+                    drawMiniCertPreview(certCanvasRef.current, certTemplate, cneuConfig);
                 }
-            }, [activeTab, certSubTab, certTemplate]);
+            }, [activeTab, certSubTab, certTemplate, cneuConfig]);
 
             // รีเซ็ตสถานะโหลดโลโก้ CNEU เมื่อเปลี่ยนลิงก์ และตั้งค่าขนาดกระดาษพิมพ์ @page อัตโนมัติ
             useEffect(() => {
@@ -1537,8 +1552,9 @@
             }, [cneuFilteredUsers, cneuConfig.cneuCredits]);
 
             const handlePrintCneuPdf = () => {
-                showToast('กำลังเปิดหน้าต่างบันทึก PDF (เลือก Destination: Save as PDF)', 'info');
-                setTimeout(() => window.print(), 220);
+                // ปิดแถบแจ้งเตือนทั้งหมดก่อนสั่งพิมพ์ เพื่อไม่ให้กรอบข้อความบังหัวเอกสาร PDF
+                setToast(p => ({ ...p, visible: false }));
+                setTimeout(() => window.print(), 120);
             };
 
             const handleExportTnmcCsv = () => {
@@ -2142,10 +2158,32 @@
                                                 <p className="text-xs sm:text-sm text-secondary-adaptive">พื้นสีขาวบริสุทธิ์ ตัดเส้นสายสีทองบางเรียบหรู แก้ไขข้อความ โลโก้ และลายเซ็นได้ทันที</p>
                                             </div>
                                             <div className="flex gap-2">
-                                                <button type="button" onClick={() => setCertTemplate({ ...DEFAULT_CERT_TEMPLATE })} className="touch-target spatial-soft px-4 py-2.5 rounded-2xl text-primary-adaptive font-bold text-xs">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setCertTemplate({ ...DEFAULT_CERT_TEMPLATE });
+                                                        setCneuConfig(p => ({
+                                                            ...p,
+                                                            activityCode: DEFAULT_CNEU_CONFIG.activityCode,
+                                                            cneuCredits: DEFAULT_CNEU_CONFIG.cneuCredits
+                                                        }));
+                                                    }}
+                                                    className="touch-target spatial-soft px-4 py-2.5 rounded-2xl text-primary-adaptive font-bold text-xs"
+                                                >
                                                     คืนค่าเริ่มต้น
                                                 </button>
-                                                <button type="button" onClick={() => persistSettings({ certTemplate })} className="touch-target px-5 py-2.5 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-xs flex items-center gap-1.5 shadow-md">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => persistSettings({
+                                                        certTemplate: {
+                                                            ...certTemplate,
+                                                            cneuActivityCode: cneuConfig.activityCode,
+                                                            cneuCredits: cneuConfig.cneuCredits
+                                                        },
+                                                        cneuConfig
+                                                    })}
+                                                    className="touch-target px-5 py-2.5 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-xs flex items-center gap-1.5 shadow-md"
+                                                >
                                                     <Icon name="Save" size={16} /> บันทึกและเผยแพร่
                                                 </button>
                                             </div>
@@ -2166,6 +2204,28 @@
 
                                             <div className="lg:col-span-5 spatial-card rounded-[1.75rem] p-4 sm:p-6 space-y-3.5">
                                                 <FieldInput label="รหัสนำหน้าใบประกาศฯ (Prefix)" value={certTemplate.certPrefix} onChange={e => setCertTemplate(p => ({ ...p, certPrefix: e.target.value }))} />
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                    <FieldInput
+                                                        label="รหัสกิจกรรม CNEU"
+                                                        value={cneuConfig.activityCode}
+                                                        onChange={e => {
+                                                            const val = e.target.value;
+                                                            setCneuConfig(p => ({ ...p, activityCode: val }));
+                                                            setCertTemplate(p => ({ ...p, cneuActivityCode: val }));
+                                                        }}
+                                                        placeholder="เช่น CNEU-2027-0148"
+                                                    />
+                                                    <FieldInput
+                                                        label="หน่วยคะแนน (CNEU)"
+                                                        value={cneuConfig.cneuCredits}
+                                                        onChange={e => {
+                                                            const val = e.target.value;
+                                                            setCneuConfig(p => ({ ...p, cneuCredits: val }));
+                                                            setCertTemplate(p => ({ ...p, cneuCredits: val }));
+                                                        }}
+                                                        placeholder="เช่น 8.0"
+                                                    />
+                                                </div>
                                                 <FieldInput label="ชื่อหน่วยงานหลัก (ไทย)" value={certTemplate.orgTitleTH} onChange={e => setCertTemplate(p => ({ ...p, orgTitleTH: e.target.value }))} />
                                                 <FieldInput label="ชื่อหน่วยงาน (อังกฤษ)" value={certTemplate.orgTitleEN} onChange={e => setCertTemplate(p => ({ ...p, orgTitleEN: e.target.value }))} />
                                                 <FieldInput label="ชื่อหลักสูตร (ไทย)" value={certTemplate.courseTitleTH} onChange={e => setCertTemplate(p => ({ ...p, courseTitleTH: e.target.value }))} />
@@ -2546,14 +2606,14 @@
                                                         <b>คำรับรองความถูกต้องของข้อมูล:</b> ข้าพเจ้าขอรับรองว่ารายชื่อผู้สำเร็จการอบรมจำนวน <b>{cneuStats.total} ราย</b> ข้างต้น เป็นผู้ผ่านการยืนยันตัวตนด้วยรหัส OTP ศึกษาบทเรียนครบตามเกณฑ์เวลาไม่น้อยกว่าร้อยละ 80 ผ่านการฝึกปฏิบัติการสื่อสารใน AI Skill Lab และสอบวัดผลหลังเรียน (Post-test) ได้คะแนนไม่น้อยกว่าร้อยละ 80 ถูกต้องตรงตามฐานข้อมูลระบบ <span className="font-mono font-bold">rjcloud.organ</span> โดยสามารถตรวจสอบรหัสประกาศนียบัตรย้อนกลับได้ทุกรายการผ่าน <span className="font-mono">verify.html</span>
                                                     </div>
 
-                                                    <div className="grid grid-cols-2 gap-8 pt-4 text-center text-xs sm:text-[13px]">
+                                                    <div className="grid grid-cols-2 gap-6 pt-4 text-center text-xs sm:text-[13px]">
                                                         <div className="space-y-1.5">
-                                                            <p className="text-slate-600">ลงชื่อ ........................................................................ ผู้จัดทำรายงาน</p>
+                                                            <p className="text-slate-600 whitespace-nowrap">ลงชื่อ .................................................. ผู้จัดทำรายงาน</p>
                                                             <p className="font-bold text-slate-900">( {cneuConfig.reporterName} )</p>
                                                             <p className="text-slate-600 text-[12px]">{cneuConfig.reporterPosition} • วันที่ {formatThaiFullDate()}</p>
                                                         </div>
                                                         <div className="space-y-1.5">
-                                                            <p className="text-slate-600">ลงชื่อ ........................................................................ ผู้รับรองความถูกต้อง</p>
+                                                            <p className="text-slate-600 whitespace-nowrap">ลงชื่อ .................................................. ผู้รับรองความถูกต้อง</p>
                                                             <p className="font-bold text-slate-900">( {cneuConfig.approverName} )</p>
                                                             <p className="text-slate-600 text-[12px]">{cneuConfig.approverPosition}</p>
                                                         </div>
