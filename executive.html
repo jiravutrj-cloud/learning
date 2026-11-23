@@ -6,12 +6,13 @@
     <meta name="theme-color" content="#020612">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Dashboard — rjcloud.organ 2.0</title>
+    <title>Dashboard 13 เขตสุขภาพ (PDPA Zero-PII) — rjcloud.organ 2.0</title>
+    <link rel="manifest" href="./manifest.json">
 
-    <!-- โหลดไฟล์สไตล์ธีม rjcloud.organ 2.0 และโมดูลกลาง (มีค่าสำรองในตัวกรณีเปิดพรีวิวไฟล์เดี่ยว) -->
+    <!-- โหลดไฟล์สไตล์และโมดูลกลาง (วางคู่กันในโฟลเดอร์เดียวกัน มีค่าสำรองในตัว) -->
     <link rel="stylesheet" href="./styles.css">
     <script src="./data.js" onerror="console.warn('data.js not loaded, using built-in defaults')"></script>
-    <script src="./learning-core.js" onerror="console.warn('learning-core.js not loaded, using built-in DSP')"></script>
+    <script src="./learning-core.js" onerror="console.warn('learning-core.js not loaded, using built-in defaults')"></script>
 
     <!-- ซิงค์โหมดมืด/สว่างทันทีจาก localStorage ป้องกันจอกระพริบ -->
     <script>
@@ -28,7 +29,7 @@
       })();
     </script>
 
-    <!-- Tailwind CSS & ฟอนต์สไตล์ Apple (System SF Pro + Anuphan / Prompt / Sarabun / JetBrains Mono) -->
+    <!-- Tailwind CSS & ฟอนต์ภาษาไทยสไตล์ Apple -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -44,38 +45,10 @@
                 sans: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'Anuphan', 'Sarabun', 'sans-serif'],
                 mono: ['SF Mono', 'ui-monospace', 'JetBrains Mono', 'monospace']
               },
-              fontSize: {
-                xs: ['0.875rem', { lineHeight: '1.5' }],
-                sm: ['1rem', { lineHeight: '1.6' }],
-                base: ['1.125rem', { lineHeight: '1.65' }],
-                lg: ['1.25rem', { lineHeight: '1.55' }],
-                xl: ['1.42rem', { lineHeight: '1.45' }],
-                '2xl': ['1.7rem', { lineHeight: '1.35' }],
-                '3xl': ['2.05rem', { lineHeight: '1.25' }],
-                '4xl': ['2.45rem', { lineHeight: '1.2' }],
-                '5xl': ['3.15rem', { lineHeight: '1.15' }]
-              },
               colors: {
-                void: {
-                  950: '#020612',
-                  900: '#061229',
-                  800: '#0c1f42',
-                  700: '#153263'
-                },
-                aurora: {
-                  200: '#a7f3d0',
-                  300: '#6ee7b7',
-                  400: '#34d399',
-                  500: '#10b981',
-                  600: '#059669'
-                },
-                prism: {
-                  200: '#bae6fd',
-                  300: '#7dd3fc',
-                  400: '#38bdf8',
-                  500: '#0ea5e9',
-                  600: '#0284c7'
-                }
+                void: { 950: '#020612', 900: '#061229', 800: '#0c1f42', 700: '#153263' },
+                aurora: { 200: '#a7f3d0', 300: '#6ee7b7', 400: '#34d399', 500: '#10b981', 600: '#059669' },
+                prism: { 200: '#bae6fd', 300: '#7dd3fc', 400: '#38bdf8', 500: '#0ea5e9', 600: '#0284c7' }
               }
             }
           }
@@ -84,11 +57,7 @@
     </script>
 
     <style>
-      /* ============================================================================
-       * RJCLOUD.ORGAN 2.0 DESIGN TOKENS (ATMOSPHERIC DARK <-> ICY PEARL LIGHT)
-       * ============================================================================ */
-      :root,
-      html[data-theme="dark"] {
+      :root, html[data-theme="dark"] {
         --bg-page: #020612;
         --text-main: #f8fafc;
         --text-secondary: #dbeafe;
@@ -96,7 +65,7 @@
         --glass-bg: linear-gradient(145deg, rgba(16, 40, 86, 0.54) 0%, rgba(5, 16, 40, 0.82) 100%);
         --glass-border: rgba(186, 230, 253, 0.24);
         --glass-shadow: 0 24px 54px -18px rgba(0, 8, 28, 0.78), inset 0 1px 0 rgba(255, 255, 255, 0.22);
-        --header-bg: rgba(4, 12, 30, 0.8);
+        --header-bg: rgba(4, 12, 30, 0.82);
         --surface-soft: rgba(147, 197, 253, 0.08);
         --surface-soft-hover: rgba(147, 197, 253, 0.16);
         --surface-border: rgba(186, 230, 253, 0.18);
@@ -109,9 +78,7 @@
         --aura-1: rgba(22, 92, 196, 0.34);
         --aura-2: rgba(56, 189, 248, 0.22);
         --aura-3: rgba(168, 85, 247, 0.16);
-        --dock-bg: rgba(4, 12, 30, 0.94);
       }
-
       html[data-theme="light"] {
         --bg-page: #edf6fd;
         --text-main: #0c1b33;
@@ -120,8 +87,8 @@
         --glass-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.9) 0%, rgba(232, 244, 253, 0.82) 100%);
         --glass-border: rgba(255, 255, 255, 0.96);
         --glass-shadow: 0 18px 42px -14px rgba(15, 58, 125, 0.14);
-        --header-bg: rgba(244, 250, 255, 0.86);
-        --surface-soft: rgba(255, 255, 255, 0.76);
+        --header-bg: rgba(244, 250, 255, 0.88);
+        --surface-soft: rgba(255, 255, 255, 0.78);
         --surface-soft-hover: rgba(255, 255, 255, 0.98);
         --surface-border: rgba(125, 175, 226, 0.32);
         --input-bg: rgba(255, 255, 255, 0.95);
@@ -133,35 +100,25 @@
         --aura-1: rgba(75, 152, 232, 0.24);
         --aura-2: rgba(169, 214, 247, 0.36);
         --aura-3: rgba(192, 132, 252, 0.14);
-        --dock-bg: rgba(244, 250, 255, 0.95);
       }
 
-      html {
-        -webkit-tap-highlight-color: transparent;
-        scroll-behavior: smooth;
-      }
+      html { -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
       body {
+        margin: 0;
         font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Anuphan', 'Sarabun', sans-serif;
         font-size: 16px;
         line-height: 1.65;
         background-color: var(--bg-page);
         color: var(--text-main);
-        margin: 0;
         overflow-x: hidden;
-        overscroll-behavior-y: none;
         -webkit-font-smoothing: antialiased;
         transition: background-color 0.28s ease, color 0.28s ease;
       }
 
-      .text-\[11px\] { font-size: 0.8125rem !important; line-height: 1.5; }
-      .text-\[10px\] { font-size: 0.72rem !important; line-height: 1.4; }
       .touch-target { min-height: 46px; touch-action: manipulation; }
       .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
-      .pb-dock-safe { padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px)); }
-
-      @media (max-width: 768px) {
-        input, select, textarea { font-size: 16px !important; }
-      }
+      .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+      @media (max-width: 768px) { input, select, textarea { font-size: 16px !important; } }
 
       .spatial-aura {
         position: fixed;
@@ -184,7 +141,6 @@
         mask-image: radial-gradient(ellipse at center, black 42%, transparent 94%);
         pointer-events: none;
       }
-
       .spatial-card {
         background: var(--glass-bg);
         backdrop-filter: blur(22px) saturate(165%);
@@ -198,31 +154,11 @@
         -webkit-backdrop-filter: blur(22px) saturate(160%);
         border-bottom: 1px solid var(--surface-border);
       }
-      .spatial-dock {
-        background: var(--dock-bg);
-        backdrop-filter: blur(24px) saturate(160%);
-        -webkit-backdrop-filter: blur(24px) saturate(160%);
-        border-top: 1px solid var(--surface-border);
-      }
-      .spatial-soft {
-        background: var(--surface-soft);
-        border: 1px solid var(--surface-border);
-      }
-      .spatial-soft:hover {
-        background: var(--surface-soft-hover);
-      }
-      .spatial-input {
-        background: var(--input-bg);
-        border: 1px solid var(--input-border);
-        color: var(--input-text);
-      }
-      .spatial-input:focus {
-        outline: none;
-        border-color: #38bdf8;
-        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.22);
-      }
+      .spatial-soft { background: var(--surface-soft); border: 1px solid var(--surface-border); }
+      .spatial-soft:hover { background: var(--surface-soft-hover); }
+      .spatial-input { background: var(--input-bg); border: 1px solid var(--input-border); color: var(--input-text); }
+      .spatial-input:focus { outline: none; border-color: #38bdf8; box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.22); }
 
-      /* ปุ่มแคปซูลพาสเทล rjcloud.organ 2.0 */
       .rjc2-pill-btn {
         background: linear-gradient(95deg, #d7fbe6 0%, #c6f3f9 48%, #b3c8ff 100%);
         color: #050b16 !important;
@@ -238,23 +174,11 @@
       .text-accent-adaptive { color: var(--accent-text); }
       .text-prism-adaptive { color: var(--accent-prism); }
 
-      @keyframes softPulseRing {
-        0% { transform: scale(0.82); opacity: 0.78; }
-        70% { transform: scale(1.85); opacity: 0; }
-        100% { transform: scale(1.85); opacity: 0; }
-      }
-      .map-pulse {
-        animation: softPulseRing 2.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
-      }
-
       .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
       .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
       .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(147, 197, 253, 0.38); border-radius: 999px; }
 
-      @media print {
-        .no-print { display: none !important; }
-        .spatial-aura, .spatial-grid { display: none !important; }
-      }
+      @keyframes execSpin { to { transform: rotate(360deg); } }
     </style>
 
     <!-- ESM Import Map (React 18, Lucide Icons, Firebase 11) -->
@@ -271,20 +195,19 @@
       }
     }
     </script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
 </head>
 <body>
     <!-- หน้าจอโหลดเริ่มต้น -->
     <div id="executive-root">
         <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#020612;color:#f8fafc;font-family:-apple-system,'Anuphan','Prompt',sans-serif;gap:14px;padding:24px;text-align:center;">
-            <div style="width:48px;height:48px;border:3px solid rgba(56,189,248,0.22);border-top-color:#6ee7b7;border-right-color:#38bdf8;border-radius:9999px;animation:execSpin 0.85s linear infinite;"></div>
-            <div style="font-weight:800;font-size:17px;">กำลังเปิด Dashboard...</div>
-            <div style="font-size:12px;color:#93b4d8;">rjcloud.organ 2.0 • สถิติไม่ระบุตัวตน 13 เขตสุขภาพ (PDPA-Safe)</div>
+            <div style="width:46px;height:46px;border:3px solid rgba(56,189,248,0.22);border-top-color:#6ee7b7;border-right-color:#38bdf8;border-radius:9999px;animation:execSpin 0.85s linear infinite;"></div>
+            <div style="font-weight:800;font-size:17px;">กำลังเปิด Dashboard สถิติภาพรวม 13 เขตสุขภาพ...</div>
+            <div style="font-size:12px;color:#93b4d8;">rjcloud.organ 2.0 • PDPA Zero-PII &amp; Zero-Cost 1-Read Scalability Guard</div>
         </div>
-        <style>@keyframes execSpin{to{transform:rotate(360deg);}}</style>
     </div>
 
-    <!-- Global Error Guard ป้องกันหน้าขาว/จอดำ -->
+    <!-- Global Error & Mount Guard ป้องกันหน้าขาว -->
     <script>
       window.addEventListener('error', function (ev) {
         const src = String(ev.filename || (ev.target && ev.target.src) || '');
@@ -294,7 +217,7 @@
           root.innerHTML =
             '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#020612;color:#f8fafc;font-family:Sarabun,sans-serif;">' +
             '<div style="max-width:440px;width:100%;background:#061229;border:1px solid rgba(244,63,94,0.4);border-radius:24px;padding:24px;text-align:center;">' +
-            '<h2 style="color:#fda4af;font-weight:700;margin:0 0 8px;">ไม่สามารถเปิด Dashboard ได้ชั่วคราว</h2>' +
+            '<h2 style="color:#fda4af;font-weight:700;margin:0 0 8px;">ไม่สามารถเปิดหน้า Dashboard ได้ชั่วคราว</h2>' +
             '<p style="font-size:13px;color:#dbeafe;margin:0 0 16px;">' + String(ev.message || 'Unknown error') + '</p>' +
             '<button onclick="window.location.reload()" style="padding:12px 24px;border:none;border-radius:14px;background:#34d399;color:#020612;font-weight:700;cursor:pointer;">โหลดหน้าใหม่</button>' +
             '</div></div>';
@@ -302,7 +225,7 @@
       });
     </script>
 
-    <script type="text/babel" data-type="module">
+    <script type="text/babel" data-type="module" data-presets="react">
         import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
         import { createRoot } from 'react-dom/client';
         import * as LucideIcons from 'lucide-react';
@@ -311,20 +234,14 @@
         import { getFirestore, collection, doc, onSnapshot } from 'firebase/firestore';
 
         // ============================================================================
-        // 1. CONFIGURATION, 5-AXIS RADAR META & 4 CLINICAL DOMAINS (RJCLOUD.ORGAN 2.0)
+        // 1. CONFIGURATION, 13 HEALTH REGIONS & ZERO-PII SANITIZER
         // ============================================================================
         const CORE = window.RJCLOUD_CORE || {};
         const BUILTIN_CONFIG = {
             appName: 'rjcloud.organ',
             themeName: 'rjcloud.organ 2.0',
-            edition: 'rjcloud.organ 2.0 • Cloud AI (2027)',
-            contactEmail: 'rjcloud.organ@gmail.com',
             appId: 'rjcloud-organ-2027',
-            theme: {
-                name: 'rjcloud.organ 2.0',
-                defaultMode: 'dark',
-                storageKey: 'rjcloud_theme'
-            },
+            theme: { defaultMode: 'dark', storageKey: 'rjcloud_theme' },
             firebaseConfig: {
                 apiKey: 'AIzaSyCpvK0FCVVk9dt0ylHn_VzUStl7540UsbY',
                 authDomain: 'rj-cloud-organ.firebaseapp.com',
@@ -342,10 +259,7 @@
             : {
                 ...BUILTIN_CONFIG,
                 ...(window.RJCLOUD_CONFIG || {}),
-                theme: {
-                    ...BUILTIN_CONFIG.theme,
-                    ...(window.RJCLOUD_CONFIG?.theme || {})
-                },
+                theme: { ...BUILTIN_CONFIG.theme, ...(window.RJCLOUD_CONFIG?.theme || {}) },
                 firebaseConfig: (window.RJCLOUD_CONFIG?.firebaseConfig?.apiKey)
                     ? window.RJCLOUD_CONFIG.firebaseConfig
                     : BUILTIN_CONFIG.firebaseConfig,
@@ -354,45 +268,39 @@
 
         const THEME_KEY = CONFIG.theme?.storageKey || 'rjcloud_theme';
 
+        const BASE_REGIONS = [
+            { id: 'R1', name: 'เขตสุขภาพที่ 1', area: 'ภาคเหนือตอนบน', provinces: 'เชียงใหม่, เชียงราย, ลำปาง, แพร่, น่าน, พะเยา, ลำพูน, แม่ฮ่องสอน' },
+            { id: 'R2', name: 'เขตสุขภาพที่ 2', area: 'ภาคเหนือตอนล่าง', provinces: 'พิษณุโลก, ตาก, เพชรบูรณ์, สุโขทัย, อุตรดิตถ์' },
+            { id: 'R3', name: 'เขตสุขภาพที่ 3', area: 'ภาคกลางตอนบน', provinces: 'นครสวรรค์, กำแพงเพชร, ชัยนาท, พิจิตร, อุทัยธานี' },
+            { id: 'R4', name: 'เขตสุขภาพที่ 4', area: 'ภาคกลางปริมณฑล', provinces: 'สระบุรี, นนทบุรี, ปทุมธานี, อยุธยา, ลพบุรี, สิงห์บุรี, อ่างทอง, นครนายก' },
+            { id: 'R5', name: 'เขตสุขภาพที่ 5', area: 'ภาคตะวันตก', provinces: 'ราชบุรี, นครปฐม, กาญจนบุรี, สุพรรณบุรี, เพชรบุรี, ประจวบฯ, สมุทรสาคร, สมุทรสงคราม' },
+            { id: 'R6', name: 'เขตสุขภาพที่ 6', area: 'ภาคตะวันออก', provinces: 'ชลบุรี, ระยอง, จันทบุรี, ตราด, ฉะเชิงเทรา, ปราจีนบุรี, สระแก้ว, สมุทรปราการ' },
+            { id: 'R7', name: 'เขตสุขภาพที่ 7', area: 'อีสานตอนกลาง', provinces: 'ขอนแก่น, กาฬสินธุ์, มหาสารคาม, ร้อยเอ็ด' },
+            { id: 'R8', name: 'เขตสุขภาพที่ 8', area: 'อีสานตอนบน', provinces: 'อุดรธานี, สกลนคร, นครพนม, เลย, หนองคาย, หนองบัวลำภู, บึงกาฬ' },
+            { id: 'R9', name: 'เขตสุขภาพที่ 9', area: 'นครชัยบุรินทร์', provinces: 'นครราชสีมา, ชัยภูมิ, บุรีรัมย์, สุรินทร์' },
+            { id: 'R10', name: 'เขตสุขภาพที่ 10', area: 'อีสานตอนล่าง', provinces: 'อุบลราชธานี, ศรีสะเกษ, ยโสธร, อำนาจเจริญ, มุกดาหาร' },
+            { id: 'R11', name: 'เขตสุขภาพที่ 11', area: 'ภาคใต้ตอนบน', provinces: 'สุราษฎร์ธานี, นครศรีธรรมราช, ภูเก็ต, กระบี่, พังงา, ระนอง, ชุมพร' },
+            { id: 'R12', name: 'เขตสุขภาพที่ 12', area: 'ภาคใต้ตอนล่าง', provinces: 'สงขลา, ตรัง, พัทลุง, สตูล, ปัตตานี, ยะลา, นราธิวาส' },
+            { id: 'BKK', name: 'เขตสุขภาพที่ 13 (กทม.)', area: 'กรุงเทพมหานคร & กรมการแพทย์', provinces: 'รพ.ราชวิถี, สำนักการแพทย์ กทม. และเครือข่ายโรงพยาบาลส่วนกลาง' }
+        ];
+
         const RADAR_AXES = [
-            { key: 'setting', labelTH: 'ห้องรับรอง & บทบาท', shortTH: 'ห้องรับรอง', actionTip: 'จัดอบรมการเปิดบทบาทและการเตรียมห้องรับรองส่วนตัวตามหลัก SPIKES' },
-            { key: 'empathy', labelTH: 'รับรู้อารมณ์ร่วม', shortTH: 'อารมณ์ร่วม', actionTip: 'เสริม Workshop การสะท้อนอารมณ์สูญเสียและปลอบโยนญาติก่อนให้ข้อมูลคลินิก' },
-            { key: 'clarity', labelTH: 'ข้อมูลภาวะสมองตาย', shortTH: 'ข้อมูลสมองตาย', actionTip: 'ทบทวนแนวทางอธิบายความต่างระหว่างเครื่องช่วยหายใจกับภาวะสมองตายถาวร' },
-            { key: 'vocal', labelTH: 'น้ำเสียง & ความเงียบ', shortTH: 'น้ำเสียง/ความเงียบ', actionTip: 'ฝึกเทคนิค Therapeutic Silence (เว้นความเงียบ 2.5 วินาที) และการผ่อนจังหวะน้ำเสียง' },
-            { key: 'dignity', labelTH: 'ไม่เร่งรัด & เกียรติร่าง', shortTH: 'ให้เกียรติร่าง', actionTip: 'เน้นหลัก Decoupling ให้เวลาครอบครัวตัดสินใจและให้ความมั่นใจการตกแต่งร่างประณีต' }
+            { key: 'setting', labelTH: 'ห้องรับรอง & บทบาท', shortTH: 'ห้องรับรอง' },
+            { key: 'empathy', labelTH: 'รับรู้อารมณ์ร่วม', shortTH: 'อารมณ์ร่วม' },
+            { key: 'clarity', labelTH: 'ข้อมูลภาวะสมองตาย', shortTH: 'ข้อมูลคลินิก' },
+            { key: 'vocal', labelTH: 'น้ำเสียง & ความเงียบ', shortTH: 'ความเงียบ 2.5 วิ' },
+            { key: 'dignity', labelTH: 'ไม่เร่งรัด & เกียรติร่าง', shortTH: 'ให้เกียรติร่าง' }
         ];
 
-        const CLINICAL_DOMAINS = window.CLINICAL_DOMAINS || {
-            policy_ethics: { id: 'policy_ethics', nameTH: 'นโยบาย กฎหมาย และจริยธรรม', shortName: 'กฎหมาย & จริยธรรม', color: '#38bdf8' },
-            brain_death_donor: { id: 'brain_death_donor', nameTH: 'วินิจฉัยภาวะสมองตาย & ดูแลผู้บริจาค', shortName: 'สมองตาย & Donor', color: '#34d399' },
-            procurement_transplant: { id: 'procurement_transplant', nameTH: 'จัดเก็บ ขนส่ง และปลูกถ่ายอวัยวะ', shortName: 'จัดเก็บ & ปลูกถ่าย', color: '#a78bfa' },
-            family_communication: { id: 'family_communication', nameTH: 'สื่อสารและให้ข้อมูลญาติในห้องรับรอง', shortName: 'สื่อสารกับญาติ', color: '#fbbf24' }
-        };
-
-        const DOMAIN_LIST = Object.values(CLINICAL_DOMAINS);
-
-        const BASE_REGIONS = (Array.isArray(window.BASE_REGIONS) && window.BASE_REGIONS.length > 0) ? window.BASE_REGIONS : [
-            { id: 'R1', name: 'เขตสุขภาพที่ 1', desc: 'เชียงใหม่และภาคเหนือตอนบน', x: 28, y: 15 },
-            { id: 'R2', name: 'เขตสุขภาพที่ 2', desc: 'พิษณุโลกและภาคเหนือตอนล่าง', x: 34, y: 30 },
-            { id: 'R3', name: 'เขตสุขภาพที่ 3', desc: 'นครสวรรค์และภาคกลางตอนบน', x: 39, y: 42 },
-            { id: 'R4', name: 'เขตสุขภาพที่ 4', desc: 'สระบุรีและภาคกลางตอนบน', x: 46, y: 48 },
-            { id: 'R5', name: 'เขตสุขภาพที่ 5', desc: 'ราชบุรีและภาคตะวันตก', x: 34, y: 56 },
-            { id: 'R6', name: 'เขตสุขภาพที่ 6', desc: 'ชลบุรีและภาคตะวันออก', x: 58, y: 58 },
-            { id: 'R7', name: 'เขตสุขภาพที่ 7', desc: 'ขอนแก่นและอีสานตอนกลาง', x: 64, y: 37 },
-            { id: 'R8', name: 'เขตสุขภาพที่ 8', desc: 'อุดรธานีและอีสานตอนบน', x: 74, y: 25 },
-            { id: 'R9', name: 'เขตสุขภาพที่ 9', desc: 'นครราชสีมาและอีสานตอนล่าง', x: 63, y: 48 },
-            { id: 'R10', name: 'เขตสุขภาพที่ 10', desc: 'อุบลราชธานีและอีสานตอนล่าง', x: 82, y: 47 },
-            { id: 'R11', name: 'เขตสุขภาพที่ 11', desc: 'สุราษฎร์ธานีและภาคใต้ตอนบน', x: 30, y: 76 },
-            { id: 'R12', name: 'เขตสุขภาพที่ 12', desc: 'สงขลาและภาคใต้ตอนล่าง', x: 40, y: 90 },
-            { id: 'BKK', name: 'กรุงเทพมหานคร', desc: 'กรมการแพทย์ / สำนักการแพทย์ กทม.', x: 47, y: 55 }
+        const DOMAIN_LIST = [
+            { id: 'policy_ethics', shortName: 'กฎหมาย & จริยธรรม', color: '#38bdf8' },
+            { id: 'brain_death_donor', shortName: 'สมองตาย & Donor', color: '#34d399' },
+            { id: 'procurement_transplant', shortName: 'จัดเก็บ & ปลูกถ่าย', color: '#a78bfa' },
+            { id: 'family_communication', shortName: 'สื่อสารกับญาติ', color: '#fbbf24' }
         ];
 
-        // ============================================================================
-        // 2. FIREBASE INITIALIZATION
-        // ============================================================================
         let fbApp = null, fbAuth = null, fbDb = null;
         const isCloudConfigured = Boolean(CONFIG.firebaseConfig?.apiKey && CONFIG.firebaseConfig?.projectId);
-
         if (isCloudConfigured) {
             try {
                 fbApp = getApps().length === 0 ? initializeApp(CONFIG.firebaseConfig) : getApp();
@@ -403,136 +311,43 @@
             }
         }
 
-        // ============================================================================
-        // 3. PDPA ZERO-PII SANITIZER, ERROR BOUNDARY & UI PRIMITIVES
-        // ============================================================================
-        class ExecutiveErrorBoundary extends React.Component {
-            constructor(props) {
-                super(props);
-                this.state = { hasError: false, err: null };
-            }
-            static getDerivedStateFromError(err) { return { hasError: true, err }; }
-            componentDidCatch(err, info) { console.error('Executive Error:', err, info); }
-            render() {
-                if (this.state.hasError) {
-                    return (
-                        <div className="min-h-dvh flex items-center justify-center p-6">
-                            <div className="spatial-card max-w-md w-full rounded-3xl p-6 border-rose-500/40 text-center space-y-4">
-                                <h2 className="font-display font-bold text-lg text-rose-400">พบข้อผิดพลาดในการแสดงผล</h2>
-                                <p className="text-xs font-mono bg-rose-500/10 text-rose-300 p-3 rounded-xl overflow-auto">
-                                    {String(this.state.err?.message || this.state.err)}
-                                </p>
-                                <button
-                                    type="button"
-                                    onClick={() => window.location.reload()}
-                                    className="touch-target w-full py-3 rounded-2xl bg-aurora-500 text-void-950 font-display font-bold text-sm"
-                                >
-                                    โหลดหน้าใหม่
-                                </button>
-                            </div>
-                        </div>
-                    );
-                }
-                return this.props.children;
-            }
-        }
-
-        function Icon({ name, size = 20, className = '', strokeWidth = 2 }) {
-            const Comp = LucideIcons[name] || LucideIcons.Activity || LucideIcons.BarChart3;
-            if (!Comp) return null;
-            return <Comp size={size} className={className} strokeWidth={strokeWidth} />;
-        }
-
-        function ThemeToggleButton({ theme, onToggle }) {
-            const isDark = theme === 'dark';
-            return (
-                <button
-                    type="button"
-                    onClick={onToggle}
-                    title={isDark ? 'สลับเป็นโหมดสว่าง (Frosted Pearl)' : 'สลับเป็นโหมดมืด (Spatial Dark)'}
-                    aria-label="สลับโหมดมืดหรือสว่าง"
-                    className="spatial-soft px-2.5 sm:px-3 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all active:scale-95 text-primary-adaptive shrink-0"
-                >
-                    <Icon name={isDark ? 'Sun' : 'Moon'} size={15} className={isDark ? 'text-amber-300' : 'text-indigo-600'} />
-                    <span className="hidden md:inline">{isDark ? 'โหมดสว่าง' : 'โหมดมืด'}</span>
-                </button>
-            );
-        }
-
-        function ToastBanner({ toast }) {
-            if (!toast.visible) return null;
-            return (
-                <div className="fixed top-[calc(1rem+env(safe-area-inset-top,0px))] left-1/2 -translate-x-1/2 z-[120] w-[92vw] max-w-md pointer-events-none">
-                    <div className={`px-4 py-3 rounded-2xl shadow-2xl border backdrop-blur-2xl flex items-center gap-2.5 text-xs sm:text-sm font-bold text-white ${
-                        toast.type === 'error'
-                            ? 'bg-rose-700/95 border-rose-400/60'
-                            : 'bg-emerald-700/95 border-emerald-400/60'
-                    }`}>
-                        <Icon name={toast.type === 'error' ? 'AlertCircle' : 'CheckCircle2'} size={17} className="shrink-0 text-white" />
-                        <span className="text-white">{toast.text}</span>
-                    </div>
-                </div>
-            );
-        }
-
         function resolveRegionId(department = '') {
+            if (typeof CORE.resolveRegionId === 'function') return CORE.resolveRegionId(department);
             const d = String(department || '').trim();
             if (d.startsWith('เขตสุขภาพที่')) {
                 const num = d.replace(/[^0-9]/g, '');
                 if (num && Number(num) >= 1 && Number(num) <= 12) return `R${num}`;
             }
-            if (['กรมการแพทย์', 'สำนักการแพทย์ กรุงเทพฯ', 'สำนักอนามัย กรุงเทพฯ', 'กรุงเทพมหานคร'].some(k => d.includes(k))) {
+            if (['กรมการแพทย์', 'สำนักการแพทย์ กรุงเทพฯ', 'สำนักอนามัย กรุงเทพฯ', 'กรุงเทพมหานคร', 'รพ.ราชวิถี'].some(k => d.includes(k))) {
                 return 'BKK';
             }
             return 'OTHER';
         }
 
-        function extractRadarNumbers(raw) {
-            const direct = raw?.radar || raw?.skillLabLatestRadar;
-            if (direct && typeof direct === 'object' && !Array.isArray(direct)) {
-                const hasAny = RADAR_AXES.some(a => Number(direct[a.key] || 0) > 0);
-                if (hasAny) {
-                    return {
-                        setting: Number(direct.setting || 0),
-                        empathy: Number(direct.empathy || 0),
-                        clarity: Number(direct.clarity || 0),
-                        vocal: Number(direct.vocal || 0),
-                        dignity: Number(direct.dignity || 0)
-                    };
-                }
-            }
-            const hist = Array.isArray(raw?.skillLabHistory) ? raw.skillLabHistory : [];
-            for (let i = hist.length - 1; i >= 0; i--) {
-                const r = hist[i]?.radar;
-                if (Array.isArray(r) && r.length > 0) {
-                    const map = { setting: 0, empathy: 0, clarity: 0, vocal: 0, dignity: 0 };
-                    r.forEach(item => { if (item?.key && map[item.key] !== undefined) map[item.key] = Number(item.value || 0); });
-                    return map;
-                }
-            }
-            return null;
-        }
-
         /**
-         * PDPA Zero-PII Sanitizer:
-         * ตัดข้อมูลส่วนบุคคลทั้งหมดออกทันที (ไม่เก็บชื่อ-สกุล เลขใบอนุญาต อีเมล เบอร์โทร โรงพยาบาล หรือรหัสประจำตัว)
-         * เหลือเฉพาะฟิลด์สถิติเชิงปริมาณสำหรับการวิเคราะห์ระดับเขตสุขภาพเท่านั้น
+         * ตัดข้อมูลส่วนบุคคล (PII) ออก 100% คงไว้เฉพาะสถิติรวมเชิงนโยบาย
          */
         function sanitizeToStatsOnly(raw) {
             if (!raw || typeof raw !== 'object') return null;
-            const radar = extractRadarNumbers(raw);
-            const rawDomains = Array.isArray(raw.domains)
-                ? raw.domains
-                : (Array.isArray(raw?.aiRoadmap?.domains) ? raw.aiRoadmap.domains : []);
-            const domains = rawDomains
-                .filter(d => d && d.id && typeof d.percent === 'number')
-                .map(d => ({ id: String(d.id), percent: Number(d.percent) }));
-
             const hist = Array.isArray(raw.skillLabHistory) ? raw.skillLabHistory : [];
-            const lastScore = hist.length > 0 ? Number(hist[hist.length - 1]?.score || 0) : 0;
+            const latestHist = hist.length > 0 ? hist[hist.length - 1] : null;
+            let radar = null;
+            if (raw.radar && typeof raw.radar === 'object') {
+                radar = raw.radar;
+            } else if (raw.skillLabLatestRadar && typeof raw.skillLabLatestRadar === 'object') {
+                radar = raw.skillLabLatestRadar;
+            } else if (latestHist && Array.isArray(latestHist.radar) && latestHist.radar.length > 0) {
+                radar = {};
+                latestHist.radar.forEach(item => { if (item?.key) radar[item.key] = Number(item.value || 0); });
+            }
+
+            const domains = Array.isArray(raw.domains)
+                ? raw.domains
+                : (Array.isArray(raw.aiRoadmap?.domains) ? raw.aiRoadmap.domains.map(d => ({ id: d.id, percent: Number(d.percent || 0) })) : []);
+
             const bestLabScore = typeof raw.skillLabBestScore === 'number'
-                ? Number(raw.skillLabBestScore)
-                : (lastScore > 0 ? lastScore : null);
+                ? raw.skillLabBestScore
+                : (hist.length > 0 ? Math.max(...hist.map(h => Number(h.score || 0))) : null);
 
             return {
                 regionId: raw.regionId || resolveRegionId(raw.department),
@@ -544,251 +359,210 @@
                 domains,
                 satisfactionScore: (typeof raw.satisfactionScore === 'number' && raw.satisfactionScore > 0)
                     ? Number(raw.satisfactionScore)
+                    : null,
+                susScore: (typeof raw.susScore === 'number' && raw.susScore >= 0)
+                    ? Number(raw.susScore)
+                    : null,
+                preSelfEfficacyAvg: (typeof raw.preSelfEfficacyAvg === 'number' && raw.preSelfEfficacyAvg > 0)
+                    ? Number(raw.preSelfEfficacyAvg)
+                    : null,
+                postSelfEfficacyAvg: (typeof raw.postSelfEfficacyAvg === 'number' && raw.postSelfEfficacyAvg > 0)
+                    ? Number(raw.postSelfEfficacyAvg)
                     : null
             };
         }
 
-        function prepareNaturalThaiSpeechSafe(rawText) {
-            if (typeof CORE.prepareNaturalThaiSpeech === 'function') {
-                return CORE.prepareNaturalThaiSpeech(rawText);
-            }
-            return String(rawText || '')
-                .replace(/[*#📊•]/g, ' ')
-                .replace(/≥/g, 'ไม่น้อยกว่า ')
-                .replace(/≤/g, 'ไม่เกิน ')
-                .replace(/\bCSAT\b/gi, 'คะแนนความพึงพอใจ')
-                .replace(/\bPDPA\b/gi, 'พีดีพีเอ')
-                .replace(/\s{2,}/g, ' ')
-                .trim();
-        }
-
-        function pickBestThaiVoiceSafe() {
-            if (typeof CORE.pickNaturalBrowserVoice === 'function') {
-                return CORE.pickNaturalBrowserVoice('th');
-            }
-            if (!('speechSynthesis' in window)) return null;
-            const voices = window.speechSynthesis.getVoices() || [];
-            const thVoices = voices.filter(v => String(v.lang || '').toLowerCase().startsWith('th'));
-            return thVoices.find(v => /premwadee|kanya|google|natural|narisa/i.test(v.name || '')) || thVoices[0] || null;
-        }
-
-        function pcm16ToWavUrl(base64PCM, sampleRate = 24000) {
-            if (typeof CORE.pcm16ToWavBlob === 'function') {
-                const blob = CORE.pcm16ToWavBlob(base64PCM, sampleRate);
-                return blob && blob.size > 0 ? URL.createObjectURL(blob) : '';
-            }
-            const binaryString = window.atob(base64PCM);
-            const rawBytes = new Uint8Array(binaryString.length);
-            for (let i = 0; i < binaryString.length; i++) rawBytes[i] = binaryString.charCodeAt(i);
-
-            let offsetBytes = 0;
-            if (rawBytes.length > 44 && rawBytes[0] === 0x52 && rawBytes[1] === 0x49 && rawBytes[2] === 0x46 && rawBytes[3] === 0x46) {
-                offsetBytes = 44;
-            }
-            const sampleCount = Math.floor((rawBytes.length - offsetBytes) / 2);
-            if (sampleCount <= 0) return '';
-
-            const inView = new DataView(rawBytes.buffer, rawBytes.byteOffset + offsetBytes, sampleCount * 2);
-            const samples = new Float32Array(sampleCount);
-            for (let i = 0; i < sampleCount; i++) samples[i] = inView.getInt16(i * 2, true) / 32768;
-
-            // ตัดเสียงซ่าท้ายคลิป (Anti-Hiss DSP) + Smooth Cosine Fade-out + เติมความเงียบ 45ms
-            const frameSize = Math.max(128, Math.round(sampleRate * 0.02));
-            const numFrames = Math.floor(sampleCount / frameSize);
-            const frameRms = new Float32Array(numFrames);
-            const frameZcr = new Float32Array(numFrames);
-            for (let f = 0; f < numFrames; f++) {
-                const start = f * frameSize;
-                let sumSq = 0, zc = 0, prev = samples[start];
-                for (let j = 0; j < frameSize; j++) {
-                    const s = samples[start + j];
-                    sumSq += s * s;
-                    if ((s >= 0 && prev < 0) || (s < 0 && prev >= 0)) zc++;
-                    prev = s;
+        function buildAdminPreviewRows() {
+            const rows = [];
+            BASE_REGIONS.forEach((r, rIdx) => {
+                const count = r.id === 'BKK' ? 28 : 8 + ((rIdx * 5) % 14);
+                for (let i = 0; i < count; i++) {
+                    const passed = i < Math.round(count * 0.72);
+                    const hasLab = i < Math.round(count * 0.8);
+                    const base = 74 + ((rIdx * 3 + i * 2) % 21);
+                    rows.push({
+                        regionId: r.id,
+                        status: passed ? 'ผ่าน' : 'กำลังเรียน',
+                        progress: passed ? 95 : 55,
+                        hasLab,
+                        skillLabBestScore: hasLab ? base : null,
+                        radar: hasLab ? {
+                            setting: Math.min(98, base + 4),
+                            empathy: Math.min(98, base + 2),
+                            clarity: Math.min(98, base - 3),
+                            vocal: Math.min(98, base - 6),
+                            dignity: Math.min(98, base + 5)
+                        } : null,
+                        domains: [
+                            { id: 'policy_ethics', percent: Math.min(98, base + 3) },
+                            { id: 'brain_death_donor', percent: Math.min(98, base - 4) },
+                            { id: 'procurement_transplant', percent: Math.min(98, base - 2) },
+                            { id: 'family_communication', percent: Math.min(98, base + 1) }
+                        ],
+                        satisfactionScore: passed ? Number((4.5 + ((i % 5) * 0.1)).toFixed(1)) : null,
+                        susScore: passed ? (82 + (i % 12)) : null,
+                        preSelfEfficacyAvg: hasLab ? Number((2.8 + ((i % 4) * 0.2)).toFixed(2)) : null,
+                        postSelfEfficacyAvg: hasLab ? Number((4.3 + ((i % 4) * 0.15)).toFixed(2)) : null
+                    });
                 }
-                frameRms[f] = Math.sqrt(sumSq / frameSize);
-                frameZcr[f] = zc / frameSize;
-            }
-
-            let endFrame = numFrames - 1;
-            while (endFrame > 12 && (frameRms[endFrame] < 0.016 || frameZcr[endFrame] > 0.22)) {
-                endFrame--;
-            }
-
-            const lookbackStart = Math.max(12, endFrame - Math.round(1.6 / 0.02));
-            let silentRun = 0;
-            for (let f = lookbackStart; f <= endFrame; f++) {
-                if (frameRms[f] < 0.015) {
-                    silentRun++;
-                } else {
-                    if (silentRun >= 5) {
-                        let tailZcrSum = 0, tailCount = 0;
-                        for (let k = f; k <= endFrame; k++) { tailZcrSum += frameZcr[k]; tailCount++; }
-                        if (tailCount > 0 && tailZcrSum / tailCount > 0.21) {
-                            endFrame = Math.max(12, f - silentRun - 1);
-                            break;
-                        }
-                    }
-                    silentRun = 0;
-                }
-            }
-
-            const keptSamples = Math.min(sampleCount, Math.max(Math.min(sampleCount, Math.round(sampleRate * 0.25)), (endFrame + 1) * frameSize));
-            const padZeroSamples = Math.round(sampleRate * 0.045);
-            const outBytesLen = (keptSamples + padZeroSamples) * 2;
-            const fadeInLen = Math.min(Math.round(sampleRate * 0.012), Math.floor(keptSamples * 0.1));
-            const fadeOutLen = Math.min(Math.round(sampleRate * 0.075), Math.floor(keptSamples * 0.22));
-
-            const buffer = new ArrayBuffer(44 + outBytesLen);
-            const view = new DataView(buffer);
-            const writeStr = (offset, str) => {
-                for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
-            };
-            writeStr(0, 'RIFF');
-            view.setUint32(4, 36 + outBytesLen, true);
-            writeStr(8, 'WAVE');
-            writeStr(12, 'fmt ');
-            view.setUint32(16, 16, true);
-            view.setUint16(20, 1, true);
-            view.setUint16(22, 1, true);
-            view.setUint32(24, sampleRate, true);
-            view.setUint32(28, sampleRate * 2, true);
-            view.setUint16(32, 2, true);
-            view.setUint16(34, 16, true);
-            writeStr(36, 'data');
-            view.setUint32(40, outBytesLen, true);
-
-            for (let i = 0; i < keptSamples; i++) {
-                let s = samples[i];
-                if (i < fadeInLen) s *= i / fadeInLen;
-                else if (i >= keptSamples - fadeOutLen) {
-                    const t = (i - (keptSamples - fadeOutLen)) / fadeOutLen;
-                    s *= 0.5 * (1 + Math.cos(Math.PI * t));
-                }
-                view.setInt16(44 + i * 2, Math.round(Math.max(-1, Math.min(1, s)) * 32767), true);
-            }
-            return URL.createObjectURL(new Blob([buffer], { type: 'audio/wav' }));
+            });
+            return rows;
         }
 
         function generateLocalExecutiveAnswer(question, analytics, activeRegion) {
             const q = String(question || '').toLowerCase();
-            const { total, regionList, maxRegion, minRegion, avgCsat, csatCount, avgSkillScore, passRate, hasNationalDomains, hasNationalRadar, nationalWeakestDomain, nationalWeakestAxis } = analytics;
+            const {
+                total, maxRegion, minRegion, avgCsat, csatCount, avgSkillScore, passRate,
+                hasNationalDomains, hasNationalRadar, nationalWeakestDomain, nationalWeakestAxis,
+                avgSusNum, susCount, susGrade, avgPreEff, avgPostEff, effGain, effPairedCount
+            } = analytics;
 
             if (total.users === 0) {
                 return 'ขณะนี้ยังไม่มีสถิติผู้เรียนในฐานข้อมูลค่ะ เมื่อมีผู้เรียนเข้าสู่ระบบ ตัวเลขสถิติแบบไม่ระบุตัวตนทั้ง 13 เขตสุขภาพจะอัปเดตขึ้นที่นี่อัตโนมัติค่ะ';
             }
 
+            if (q.includes('sus') || q.includes('วิจัย') || q.includes('r2r') || q.includes('มั่นใจ') || q.includes('usability') || q.includes('efficacy')) {
+                const susText = avgSusNum !== null
+                    ? `${avgSusNum}/100 (${susGrade} จากผู้ประเมิน ${susCount} ราย)`
+                    : 'รอเก็บข้อมูลจากขั้นที่ 5';
+                const effText = avgPreEff !== null && avgPostEff !== null
+                    ? `ก่อนฝึก ${avgPreEff}/5 → หลังฝึก ${avgPostEff}/5 (เพิ่มขึ้น ${Number(effGain) >= 0 ? `+${effGain}` : effGain} จาก ${effPairedCount} ราย)`
+                    : 'รอเก็บข้อมูลจากห้องฝึก AI Skill Lab';
+                return `สรุปตัวชี้วัดงานวิจัย R2R และมาตรฐานสากล (PDPA Zero-PII):\n\n• ดัชนีความง่ายในการใช้งาน (SUS Score): ${susText}\n• ความมั่นใจก่อน–หลังฝึก (Pre → Post Self-Efficacy): ${effText}\n• ดัชนี Empathy จาก AI Skill Lab เฉลี่ย: ${avgSkillScore}/100 | ความพึงพอใจ CSAT: ${avgCsat}/5.0\n\nข้อมูลชุดนี้พร้อมนำไปใช้อ้างอิงเทียบเคียงมาตรฐานสากลและการพัฒนาคุณภาพ R2R ได้ทันทีค่ะ`;
+            }
+
             if (q.includes('อ่อน') || q.includes('จุดอ่อน') || q.includes('อบรมเสริม') || q.includes('ทักษะ') || q.includes('เรดาร์') || q.includes('skill')) {
-                const domainLine = hasNationalDomains
-                    ? `• ระดับประเทศ — หมวดวิชาการที่ควรเสริมที่สุด: "${nationalWeakestDomain.nameTH}" (เฉลี่ย ${nationalWeakestDomain.avg}%)`
-                    : '• ระดับประเทศ — แสดงข้อมูลสถิติรวมตามเขตสุขภาพ';
-                const axisLine = hasNationalRadar
-                    ? `• ระดับประเทศ — แกนสื่อสาร AI Skill Lab ที่ควรเสริมที่สุด: "${nationalWeakestAxis.labelTH}" (เฉลี่ย ${nationalWeakestAxis.avg}/100)`
-                    : '• ระดับประเทศ — ผู้ผ่านการฝึก AI Skill Lab รวม ' + total.lab.toLocaleString() + ' ราย';
-                const regLine = activeRegion && activeRegion.hasDomainData
-                    ? `\n• เฉพาะ ${activeRegion.name}: ควรจัด Live ทบทวนเรื่อง "${activeRegion.weakestDomain.shortName}" (${activeRegion.weakestDomain.avg}%)`
-                    : '';
-                return `วิเคราะห์ช่องว่างสมรรถนะจากสถิติไม่ระบุตัวตน (${activeRegion?.name || 'ภาพรวม'}):\n\n${domainLine}\n${axisLine}${regLine}${hasNationalRadar ? `\n\nข้อเสนอแนะเชิงนโยบาย: ${nationalWeakestAxis.actionTip}ค่ะ` : ''}`;
+                if (!hasNationalDomains && !hasNationalRadar) {
+                    return 'ขณะนี้ระบบทำงานในโหมดประหยัด (Eco 1-Read Mode) เพื่อประหยัดโควต้าอ่าน Firebase ฟรี >99% ค่ะ กรุณากดปุ่ม “โหลดเรดาร์ 5 แกน & เจาะลึกรายเขต” ด้านบนเพื่อให้ AI วิเคราะห์จุดอ่อนรายหมวดคลินิกและรายแกนทักษะให้ละเอียดค่ะ';
+                }
+                const lines = [];
+                if (hasNationalDomains && nationalWeakestDomain) {
+                    lines.push(`• หมวดความรู้ที่ควรเร่งเสริมระดับประเทศ: ${nationalWeakestDomain.shortName} (เฉลี่ย ${nationalWeakestDomain.avg}%)`);
+                }
+                if (hasNationalRadar && nationalWeakestAxis) {
+                    lines.push(`• แกนสื่อสาร AI Skill Lab ที่ควรเน้นซ้อมเพิ่ม: ${nationalWeakestAxis.labelTH} (เฉลี่ย ${nationalWeakestAxis.avg}/100)`);
+                }
+                if (activeRegion && (activeRegion.hasDomainData || activeRegion.hasRadarData)) {
+                    lines.push(`• เฉพาะพื้นที่ที่เลือก (${activeRegion.name}): แนะนำจัด Workshop เสริมด้าน ${activeRegion.weakestDomain.shortName} และ ${activeRegion.weakestAxis.labelTH}`);
+                }
+                return `การวิเคราะห์จุดอ่อนเชิงนโยบาย (PDPA Zero-PII):\n\n${lines.join('\n')}\n\nข้อเสนอแนะ: ใช้โหมด Micro-Drill 4 ด่านคำถามหนักใน AI Skill Lab เพื่อปิดช่องว่างทักษะดังกล่าวทั่วทุกเขตสุขภาพค่ะ`;
             }
 
-            if (q.includes('เขต') || q.includes('พื้นที่') || q.includes('น้อยสุด') || q.includes('มากสุด') || q.includes('เหลื่อมล้ำ')) {
-                const bottom3 = [...regionList].filter(r => r.id !== 'BKK').sort((a, b) => a.users - b.users).slice(0, 3);
-                return `ผลการวิเคราะห์ความครอบคลุมเชิงพื้นที่ (13 เขตสุขภาพ):\n\n• เขตนำร่องสูงสุด: ${maxRegion.name} (${maxRegion.users} ราย | ผ่าน ${maxRegion.passed} ราย)\n• 3 เขตที่ควรเร่งสนับสนุนเชิงรุก:\n${bottom3.map((r, i) => `  ${i + 1}. ${r.name} (${r.desc}) — ${r.users} ราย`).join('\n')}\n\nแนะนำประสานหัวหน้ากลุ่มงานการพยาบาลใน 3 เขตดังกล่าวเพื่อผลักดันการเรียนสะสม ≥80% และเข้าฝึก AI Skill Lab ค่ะ`;
+            if (q.includes('เขต') || q.includes('พื้นที่') || q.includes('สนับสนุน')) {
+                return `ภาพรวมความครอบคลุมเชิงพื้นที่ 13 เขตสุขภาพ:\n\n• เขตนำร่องที่มีบุคลากรเข้าร่วมสูงสุด: ${maxRegion.name} (${maxRegion.users.toLocaleString()} ราย • สอบผ่าน ${maxRegion.passed.toLocaleString()} ราย)\n• พื้นที่ควรเร่งสนับสนุนเชิงรุก: ${minRegion.name} (${minRegion.users.toLocaleString()} ราย)\n\nข้อเสนอแนะ: ส่งลิงก์แพลตฟอร์มและเปิดรอบ Micro-Drill 3 นาทีให้พยาบาล ICU/ER ใน ${minRegion.name} เพื่อลดช่องว่างความเหลื่อมล้ำค่ะ`;
             }
 
-            if (q.includes('พึงพอใจ') || q.includes('csat') || q.includes('ดาว') || q.includes('ประเมิน')) {
-                return `ตัวชี้วัดความพึงพอใจและคุณภาพการฝึก:\n• คะแนน CSAT เฉลี่ย: ${avgCsat} / 5.0 (จากผู้ประเมิน ${csatCount.toLocaleString()} ราย)\n• ดัชนี Empathy เฉลี่ยจาก AI Skill Lab: ${avgSkillScore} / 100 คะแนน\n• อัตราสำเร็จหลักสูตร (Post-test ≥ 80%): ${passRate}% ค่ะ`;
-            }
+            return `สรุปภาพรวมบุคลากรระดับประเทศ (PDPA Zero-PII):\n\n• ผู้เข้าร่วมอบรมทั้งหมด: ${total.users.toLocaleString()} ราย | สอบผ่าน Post-test ≥80% แล้ว ${total.passed.toLocaleString()} ราย (${passRate}%)\n• ผ่านการฝึก AI Skill Lab 3D: ${total.lab.toLocaleString()} ราย | ดัชนี Empathy เฉลี่ย: ${avgSkillScore}/100\n• ความพึงพอใจ CSAT เฉลี่ย: ${avgCsat}/5.0 (จาก ${csatCount.toLocaleString()} ผู้ประเมิน)`;
+        }
 
-            return `สรุปสถิติแดชบอร์ดผู้บริหาร rjcloud.organ (ไม่ระบุตัวตนตามหลัก PDPA):\n• บุคลากรในระบบทั้งหมด: ${total.users.toLocaleString()} ราย (สอบผ่านรับประกาศฯ ${total.passed.toLocaleString()} ราย — ${passRate}%)\n• ผ่านการฝึก AI Skill Lab: ${total.lab.toLocaleString()} ราย (Empathy เฉลี่ย ${avgSkillScore}/100)\n• พื้นที่นำร่อง: ${maxRegion.name} (${maxRegion.users} ราย) | พื้นที่เฝ้าระวัง: ${minRegion.name} (${minRegion.users} ราย)\n\nท่ามกลางผู้ป่วยรออวัยวะสะสม 8,019 ราย การติดตามสถิติรายเขตจะช่วยให้จัดสรรการอบรมเสริมได้ตรงจุดยิ่งขึ้นค่ะ`;
+        function copyTextSafe(text) {
+            try {
+                const ta = document.createElement('textarea');
+                ta.value = String(text || '');
+                ta.setAttribute('readonly', '');
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                const ok = document.execCommand('copy');
+                document.body.removeChild(ta);
+                if (ok) return true;
+            } catch (_) {}
+            try {
+                if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+                    navigator.clipboard.writeText(String(text || '')).catch(() => {});
+                    return true;
+                }
+            } catch (_) {}
+            return false;
         }
 
         // ============================================================================
-        // 4. VISUALIZATION COMPONENTS (5-AXIS RADAR + 13-REGION MAP — RJCLOUD 2.0)
+        // 2. SHARED UI PRIMITIVES & 5-AXIS RADAR SVG
         // ============================================================================
-        function DualComparisonRadarSVG({ regionRadar, nationalRadar, theme }) {
+        class ExecutiveErrorBoundary extends React.Component {
+            constructor(props) { super(props); this.state = { hasError: false, err: null }; }
+            static getDerivedStateFromError(err) { return { hasError: true, err }; }
+            render() {
+                if (this.state.hasError) {
+                    return (
+                        <div className="min-h-dvh flex items-center justify-center p-6 bg-void-950 text-white">
+                            <div className="spatial-card max-w-md w-full rounded-3xl p-6 text-center space-y-4 border-rose-500/40">
+                                <h2 className="font-display font-bold text-lg text-rose-400">พบข้อผิดพลาดในการแสดงผล Dashboard</h2>
+                                <p className="text-xs font-mono bg-rose-500/10 text-rose-200 p-3 rounded-xl overflow-auto">{String(this.state.err?.message || this.state.err)}</p>
+                                <button type="button" onClick={() => window.location.reload()} className="rjc2-pill-btn touch-target w-full py-3 rounded-full font-display font-bold text-sm">โหลดหน้าใหม่</button>
+                            </div>
+                        </div>
+                    );
+                }
+                return this.props.children;
+            }
+        }
+
+        function Icon({ name, size = 18, className = '' }) {
+            const Comp = LucideIcons[name] || LucideIcons.BarChart3 || LucideIcons.Activity;
+            return Comp ? <Comp size={size} className={className} /> : null;
+        }
+
+        function ThemeToggleButton({ theme, onToggle }) {
             const isDark = theme === 'dark';
-            const size = 250;
-            const cx = size / 2;
-            const cy = size / 2;
-            const maxR = 76;
+            return (
+                <button type="button" onClick={onToggle} aria-label="สลับโหมดมืดหรือสว่าง" className="spatial-soft px-2.5 sm:px-3 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5 text-primary-adaptive shrink-0">
+                    <Icon name={isDark ? 'Sun' : 'Moon'} size={15} className={isDark ? 'text-amber-300' : 'text-indigo-600'} />
+                    <span className="hidden sm:inline">{isDark ? 'โหมดสว่าง' : 'โหมดมืด'}</span>
+                </button>
+            );
+        }
 
+        function ToastBanner({ toast }) {
+            if (!toast.visible) return null;
+            return (
+                <div className="fixed top-[calc(1rem+env(safe-area-inset-top,0px))] left-1/2 -translate-x-1/2 z-[160] w-[92vw] max-w-md pointer-events-none">
+                    <div className={`px-4 py-3 rounded-2xl shadow-2xl border backdrop-blur-2xl flex items-center gap-2 text-xs sm:text-sm font-bold text-white ${
+                        toast.type === 'error' ? 'bg-rose-700/95 border-rose-400/60' : 'bg-emerald-700/95 border-emerald-400/60'
+                    }`}>
+                        <Icon name={toast.type === 'error' ? 'AlertCircle' : 'CheckCircle2'} size={16} className="shrink-0" />
+                        <span>{toast.text}</span>
+                    </div>
+                </div>
+            );
+        }
+
+        function FiveAxisRadarSVG({ radarObj, theme }) {
+            const isDark = theme === 'dark';
+            const w = 290, h = 248, cx = w / 2, cy = h / 2, maxR = 68;
             const pt = (idx, ratio) => {
-                const angle = (Math.PI * 2 * idx) / RADAR_AXES.length - Math.PI / 2;
-                return [cx + Math.cos(angle) * maxR * ratio, cy + Math.sin(angle) * maxR * ratio];
+                const ang = (Math.PI * 2 * idx) / RADAR_AXES.length - Math.PI / 2;
+                return [cx + Math.cos(ang) * maxR * ratio, cy + Math.sin(ang) * maxR * ratio];
             };
-
-            const regPts = RADAR_AXES.map((a, i) => pt(i, (regionRadar[a.key] || 0) / 100));
-            const natPts = RADAR_AXES.map((a, i) => pt(i, (nationalRadar[a.key] || 0) / 100));
+            const dataPts = RADAR_AXES.map((a, i) => pt(i, Math.max(0, Math.min(100, Number(radarObj?.[a.key] || 0))) / 100));
 
             return (
-                <svg viewBox={`0 0 ${size} ${size}`} className="w-full max-w-[260px] mx-auto overflow-visible">
+                <svg viewBox={`0 0 ${w} ${h}`} className="w-full max-w-[290px] mx-auto overflow-visible">
                     <defs>
                         <linearGradient id="execRadarFill" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stopColor="#34d399" stopOpacity="0.48" />
-                            <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.24" />
+                            <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.22" />
                         </linearGradient>
                     </defs>
-
                     {[0.25, 0.5, 0.75, 1].map((lv, li) => (
-                        <polygon
-                            key={li}
-                            points={RADAR_AXES.map((_, i) => pt(i, lv).join(',')).join(' ')}
-                            fill="none"
-                            stroke={isDark ? 'rgba(147,197,253,0.24)' : 'rgba(15,58,125,0.14)'}
-                            strokeWidth="1"
-                        />
+                        <polygon key={li} points={RADAR_AXES.map((_, i) => pt(i, lv).join(',')).join(' ')} fill="none" stroke={isDark ? 'rgba(147,197,253,0.22)' : 'rgba(15,58,125,0.16)'} strokeWidth="1" />
                     ))}
                     {RADAR_AXES.map((_, i) => {
                         const [x, y] = pt(i, 1);
-                        return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke={isDark ? 'rgba(147,197,253,0.22)' : 'rgba(15,58,125,0.12)'} strokeWidth="1" />;
+                        return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke={isDark ? 'rgba(147,197,253,0.2)' : 'rgba(15,58,125,0.14)'} strokeWidth="1" />;
                     })}
-
-                    <polygon
-                        points={natPts.map(p => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ')}
-                        fill="none"
-                        stroke="#38bdf8"
-                        strokeWidth="1.8"
-                        strokeDasharray="4 3"
-                        opacity="0.88"
-                    />
-
-                    <polygon
-                        points={regPts.map(p => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ')}
-                        fill="url(#execRadarFill)"
-                        stroke="#34d399"
-                        strokeWidth="2.4"
-                    />
-
-                    {regPts.map(([x, y], i) => (
-                        <circle key={i} cx={x} cy={y} r="3.8" fill="#34d399" stroke={isDark ? '#020612' : '#ffffff'} strokeWidth="1.6" />
+                    <polygon points={dataPts.map(p => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ')} fill="url(#execRadarFill)" stroke="#34d399" strokeWidth="2.3" />
+                    {dataPts.map(([x, y], i) => (
+                        <circle key={i} cx={x} cy={y} r="3.6" fill="#34d399" stroke={isDark ? '#020612' : '#ffffff'} strokeWidth="1.5" />
                     ))}
-
-                    {RADAR_AXES.map((axis, i) => {
-                        const [lx, ly] = pt(i, 1.32);
+                    {RADAR_AXES.map((a, i) => {
+                        const [lx, ly] = pt(i, 1.38);
                         return (
-                            <g key={axis.key}>
-                                <text
-                                    x={lx}
-                                    y={ly - 4}
-                                    textAnchor="middle"
-                                    fill={isDark ? '#dbeafe' : '#284366'}
-                                    fontSize="9.2"
-                                    fontFamily="Anuphan, Sarabun, sans-serif"
-                                    fontWeight="700"
-                                >
-                                    {axis.shortTH}
-                                </text>
-                                <text
-                                    x={lx}
-                                    y={ly + 9}
-                                    textAnchor="middle"
-                                    fill={isDark ? '#6ee7b7' : '#047857'}
-                                    fontSize="9.8"
-                                    fontFamily="JetBrains Mono, monospace"
-                                    fontWeight="700"
-                                >
-                                    {regionRadar[axis.key] || 0}
+                            <g key={a.key}>
+                                <text x={lx} y={ly - 4} textAnchor="middle" fill={isDark ? '#dbeafe' : '#284366'} fontSize="9.2" fontWeight="700">{a.shortTH}</text>
+                                <text x={lx} y={ly + 9} textAnchor="middle" fill={isDark ? '#6ee7b7' : '#047857'} fontSize="10" fontFamily="JetBrains Mono, monospace" fontWeight="700">
+                                    {Number(radarObj?.[a.key] || 0)}
                                 </text>
                             </g>
                         );
@@ -797,100 +571,8 @@
             );
         }
 
-        function SpatialThailandNetworkMap({ regions, activeRegion, onSelectRegion }) {
-            return (
-                <div className="relative w-full aspect-[4/4.5] sm:aspect-[16/11] lg:aspect-auto lg:h-[460px] rounded-[1.5rem] bg-gradient-to-br from-[#020818] via-[#072154] to-[#0a337a] border border-prism-300/30 overflow-hidden select-none shadow-inner">
-                    <div
-                        className="absolute inset-0 opacity-80 pointer-events-none"
-                        style={{
-                            backgroundImage:
-                                'radial-gradient(circle at 47% 55%, rgba(56,189,248,0.28) 0%, transparent 58%), linear-gradient(to right, rgba(147,197,253,0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(147,197,253,0.08) 1px, transparent 1px)',
-                            backgroundSize: '100% 100%, 30px 30px, 30px 30px'
-                        }}
-                    />
-
-                    <div className="absolute top-3.5 left-3.5 z-10 pointer-events-none">
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-void-950/75 border border-prism-300/35 text-[10px] font-mono font-bold text-prism-200 backdrop-blur-md">
-                            <span className="w-2 h-2 rounded-full bg-aurora-400 animate-pulse" />
-                            13 HEALTH REGIONS • ANONYMIZED STATS
-                        </span>
-                    </div>
-
-                    <div className="absolute bottom-3 right-4 z-0 pointer-events-none">
-                        <span className="font-display font-extrabold text-3xl sm:text-5xl tracking-[0.25em] text-white/[0.06]">
-                            THAILAND
-                        </span>
-                    </div>
-
-                    <svg className="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 100 100" preserveAspectRatio="none">
-                        <path
-                            d="M 22,12 L 36,9 L 44,18 L 58,20 L 79,19 L 87,32 L 87,49 L 76,53 L 64,56 L 62,64 L 54,64 L 48,59 L 41,62 L 37,70 L 36,78 L 44,86 L 47,94 L 38,96 L 31,88 L 26,76 L 28,62 L 26,48 L 22,36 L 19,22 Z"
-                            fill="rgba(56, 189, 248, 0.14)"
-                            stroke="rgba(125, 211, 252, 0.5)"
-                            strokeWidth="0.6"
-                            strokeLinejoin="round"
-                        />
-                        {regions.map(r => r.id !== 'BKK' && (
-                            <line
-                                key={`conn-${r.id}`}
-                                x1="47"
-                                y1="55"
-                                x2={r.x}
-                                y2={r.y}
-                                stroke={activeRegion?.id === r.id ? '#6ee7b7' : '#7dd3fc'}
-                                strokeWidth={activeRegion?.id === r.id ? '0.85' : '0.35'}
-                                strokeOpacity={activeRegion?.id === r.id ? '0.95' : '0.45'}
-                                strokeDasharray="1.3 1.3"
-                            />
-                        ))}
-                    </svg>
-
-                    {regions.map(r => {
-                        const isSelected = activeRegion?.id === r.id;
-                        const isHub = r.id === 'BKK';
-                        const needsSupport = r.hasDomainData && r.weakestDomain && r.weakestDomain.avg < 72;
-                        return (
-                            <button
-                                key={r.id}
-                                type="button"
-                                onClick={() => onSelectRegion(r)}
-                                aria-label={`${r.name}: ${r.users} ราย`}
-                                style={{ left: `${r.x}%`, top: `${r.y}%` }}
-                                className={`absolute -translate-x-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center rounded-full focus:outline-none transition-transform duration-200 ${
-                                    isSelected ? 'z-30 scale-125' : 'z-20 hover:scale-110 active:scale-95'
-                                }`}
-                            >
-                                {(isSelected || isHub) && (
-                                    <span className={`absolute w-9 h-9 rounded-full map-pulse ${isSelected ? 'bg-aurora-400/60' : 'bg-prism-400/50'}`} />
-                                )}
-                                <span
-                                    className={`relative flex items-center justify-center rounded-full border-2 border-white shadow-lg font-mono font-extrabold transition-all ${
-                                        isSelected
-                                            ? 'w-7 h-7 bg-aurora-400 text-void-950 text-[10px] ring-4 ring-aurora-400/35'
-                                            : isHub
-                                                ? 'w-6 h-6 bg-gradient-to-br from-aurora-300 to-prism-300 text-void-950 text-[9px]'
-                                                : needsSupport
-                                                    ? 'w-[22px] h-[22px] px-1.5 bg-amber-400 text-void-950 text-[8.5px]'
-                                                    : 'w-5 h-5 bg-prism-300 text-void-950 text-[8.5px]'
-                                    }`}
-                                >
-                                    {r.id === 'BKK' ? 'กทม' : r.id.replace('R', '')}
-                                </span>
-                            </button>
-                        );
-                    })}
-
-                    <div className="absolute bottom-3 left-3 z-20 flex flex-wrap items-center gap-2.5 px-3 py-1.5 rounded-xl bg-void-950/80 backdrop-blur-md border border-white/15 text-[10px] font-bold text-sky-100">
-                        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-aurora-400" /> ส่วนกลาง / ที่เลือก</span>
-                        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-prism-300" /> ปกติ</span>
-                        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-amber-400" /> ควรเสริมคลินิก</span>
-                    </div>
-                </div>
-            );
-        }
-
         // ============================================================================
-        // 5. MAIN EXECUTIVE APPLICATION (PDPA ZERO-PII STATISTICS ONLY)
+        // 3. MAIN EXECUTIVE COMMAND CENTER APPLICATION (ZERO-PII & ECO 1-READ)
         // ============================================================================
         function ExecutiveApp() {
             const isAdminPreview = useMemo(() => {
@@ -905,39 +587,34 @@
                 } catch (_) {}
                 return CONFIG.theme?.defaultMode === 'light' ? 'light' : 'dark';
             });
-
             useEffect(() => {
                 document.documentElement.setAttribute('data-theme', theme);
                 const meta = document.querySelector('meta[name="theme-color"]');
                 if (meta) meta.setAttribute('content', theme === 'dark' ? '#020612' : '#edf6fd');
                 try { localStorage.setItem(THEME_KEY, theme); } catch (_) {}
             }, [theme]);
+            const toggleTheme = useCallback(() => setTheme(p => (p === 'dark' ? 'light' : 'dark')), []);
 
-            const toggleTheme = useCallback(() => {
-                setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
-            }, []);
-
-            // เก็บเฉพาะอาร์เรย์สถิติที่ตัดข้อมูลส่วนบุคคลออกทั้งหมดแล้ว (Zero-PII)
-            const [telemetryStats, setTelemetryStats] = useState([]);
+            // Zero-Cost Scalability Guard: Eco 1-Read Summary First + On-Demand Deep Telemetry
+            const [authReady, setAuthReady] = useState(!isCloudConfigured || isAdminPreview);
+            const [globalSummaryDoc, setGlobalSummaryDoc] = useState(null);
+            const [deepTelemetryEnabled, setDeepTelemetryEnabled] = useState(isAdminPreview);
+            const [autoFallbackDeep, setAutoFallbackDeep] = useState(false);
+            const [telemetryStats, setTelemetryStats] = useState(() => (isAdminPreview ? buildAdminPreviewRows() : []));
             const [fallbackStats, setFallbackStats] = useState([]);
             const [appsScriptUrl, setAppsScriptUrl] = useState(CONFIG.appsScriptUrl || '');
-            const [isLoadingCloud, setIsLoadingCloud] = useState(isCloudConfigured);
+            const [isLoadingCloud, setIsLoadingCloud] = useState(isCloudConfigured && !isAdminPreview);
+            const [isLoadingDeep, setIsLoadingDeep] = useState(false);
 
-            const [mobileTab, setMobileTab] = useState('overview');
-            const [regionViewMode, setRegionViewMode] = useState('map');
-            const [activeRegionId, setActiveRegionId] = useState('BKK');
-
-            const [messages, setMessages] = useState([]);
-            const [chatInput, setChatInput] = useState('');
-            const [isAiThinking, setIsAiThinking] = useState(false);
-            const [isListening, setIsListening] = useState(false);
+            const [selectedRegionId, setSelectedRegionId] = useState('BKK');
+            const [aiQuestion, setAiQuestion] = useState('');
+            const [aiAnswer, setAiAnswer] = useState('');
+            const [aiBusy, setAiBusy] = useState(false);
             const [isSpeaking, setIsSpeaking] = useState(false);
             const [toast, setToast] = useState({ visible: false, text: '', type: 'success' });
 
-            const recRef = useRef(null);
-            const audioRef = useRef(null);
-            const audioUrlRef = useRef(null);
-            const chatEndRef = useRef(null);
+            const ttsAudioRef = useRef(null);
+            const ttsUrlRef = useRef(null);
 
             const showToast = useCallback((text, type = 'success') => {
                 setToast({ visible: true, text: String(text), type });
@@ -949,145 +626,204 @@
                 if (el) el.dataset.mounted = 'true';
             }, []);
 
-            // 1. Firebase Real-Time Subscription (ให้ความสำคัญกับคอลเลกชันสถิติไม่ระบุตัวตน executive_telemetry ก่อน)
+            // 1A. Firebase Anonymous Auth Verification
             useEffect(() => {
-                if (!isCloudConfigured || !fbAuth || !fbDb) {
+                if (isAdminPreview || !isCloudConfigured || !fbAuth || !fbDb) {
+                    setAuthReady(true);
                     setIsLoadingCloud(false);
                     return;
                 }
-
                 let active = true;
                 let anonAttempted = false;
-                let unsubTelemetry = null;
-                let unsubFallback = null;
-                let unsubSettings = null;
-
                 const unsubAuth = onAuthStateChanged(fbAuth, async (fbUser) => {
                     if (!active) return;
                     if (!fbUser) {
-                        if (isAdminPreview) {
-                            setIsLoadingCloud(false);
-                            return;
-                        }
                         if (!anonAttempted) {
                             anonAttempted = true;
-                            try {
-                                if (typeof fbAuth.authStateReady === 'function') {
-                                    await fbAuth.authStateReady();
-                                }
-                                if (active && !fbAuth.currentUser) {
-                                    await signInAnonymously(fbAuth);
-                                }
-                            } catch (err) {
-                                console.warn('Anon auth warning:', err);
-                                if (active) setIsLoadingCloud(false);
+                            try { await signInAnonymously(fbAuth); }
+                            catch (_) {
+                                if (active) { setAuthReady(true); setIsLoadingCloud(false); }
                             }
                         }
                         return;
                     }
-
-                    if (unsubTelemetry) unsubTelemetry();
-                    if (unsubFallback) unsubFallback();
-                    if (unsubSettings) unsubSettings();
-
-                    // แหล่งข้อมูลหลัก: สถิติไม่ระบุตัวตน (Zero-PII)
-                    unsubTelemetry = onSnapshot(
-                        collection(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'executive_telemetry'),
-                        (snap) => {
-                            const cleaned = [];
-                            snap.forEach(d => {
-                                const item = sanitizeToStatsOnly(d.data());
-                                if (item) cleaned.push(item);
-                            });
-                            setTelemetryStats(cleaned);
-                            setIsLoadingCloud(false);
-                        },
-                        () => {
-                            setIsLoadingCloud(false);
-                        }
-                    );
-
-                    // แหล่งข้อมูลสำรองช่วงเปลี่ยนผ่าน: กรองผ่าน sanitizeToStatsOnly ทันที ไม่เก็บข้อมูลส่วนบุคคลลง state
-                    unsubFallback = onSnapshot(
-                        collection(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users'),
-                        (snap) => {
-                            const cleaned = [];
-                            snap.forEach(d => {
-                                const item = sanitizeToStatsOnly(d.data());
-                                if (item) cleaned.push(item);
-                            });
-                            setFallbackStats(cleaned);
-                            setIsLoadingCloud(false);
-                        },
-                        () => {
-                            setIsLoadingCloud(false);
-                        }
-                    );
-
-                    unsubSettings = onSnapshot(
-                        doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_config', 'settings'),
-                        (docSnap) => {
-                            if (docSnap.exists() && docSnap.data()?.appsScriptUrl) {
-                                setAppsScriptUrl(docSnap.data().appsScriptUrl);
-                            }
-                        },
-                        () => {}
-                    );
+                    setAuthReady(true);
                 });
-
-                return () => {
-                    active = false;
-                    unsubAuth();
-                    if (unsubTelemetry) unsubTelemetry();
-                    if (unsubFallback) unsubFallback();
-                    if (unsubSettings) unsubSettings();
-                };
+                return () => { active = false; unsubAuth(); };
             }, [isAdminPreview]);
 
-            // ใช้ข้อมูลจาก executive_telemetry เป็นหลัก (หากยังว่างช่วงเปลี่ยนผ่านใช้ข้อมูลที่ตัด PII ออกแล้ว)
+            // 1B. Zero-Cost Scalability Guard: อ่านเอกสารสรุปรวม 1 ใบ (executive_summary/global)
+            useEffect(() => {
+                if (isAdminPreview || !authReady || !fbDb) return;
+                const unsubSummary = onSnapshot(
+                    doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'executive_summary', 'global'),
+                    (docSnap) => {
+                        if (docSnap.exists() && Number(docSnap.data()?.totalUsers || 0) > 0) {
+                            setGlobalSummaryDoc(docSnap.data());
+                            setAutoFallbackDeep(false);
+                            setIsLoadingCloud(false);
+                        } else {
+                            setGlobalSummaryDoc(null);
+                            setAutoFallbackDeep(true);
+                        }
+                    },
+                    () => {
+                        setGlobalSummaryDoc(null);
+                        setAutoFallbackDeep(true);
+                    }
+                );
+
+                const unsubSettings = onSnapshot(
+                    doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_config', 'settings'),
+                    (docSnap) => {
+                        if (docSnap.exists() && docSnap.data()?.appsScriptUrl) {
+                            setAppsScriptUrl(docSnap.data().appsScriptUrl);
+                        }
+                    },
+                    () => {}
+                );
+                return () => { unsubSummary(); unsubSettings(); };
+            }, [authReady, isAdminPreview]);
+
+            // 1C. On-Demand Deep Telemetry (เมื่อผู้ใช้กดเจาะลึกเรดาร์ 5 แกน หรือยังไม่มีเอกสารสรุป 1 ใบ)
+            const shouldLoadDeepCollection = Boolean(!isAdminPreview && authReady && fbDb && (deepTelemetryEnabled || autoFallbackDeep));
+            useEffect(() => {
+                if (!shouldLoadDeepCollection) {
+                    setIsLoadingDeep(false);
+                    return;
+                }
+                setIsLoadingDeep(true);
+
+                const unsubTelemetry = onSnapshot(
+                    collection(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'executive_telemetry'),
+                    (snap) => {
+                        const cleaned = [];
+                        snap.forEach(d => {
+                            const item = sanitizeToStatsOnly(d.data());
+                            if (item) cleaned.push(item);
+                        });
+                        setTelemetryStats(cleaned);
+                        setIsLoadingCloud(false);
+                        setIsLoadingDeep(false);
+                    },
+                    () => { setIsLoadingCloud(false); setIsLoadingDeep(false); }
+                );
+
+                const unsubFallback = onSnapshot(
+                    collection(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users'),
+                    (snap) => {
+                        const cleaned = [];
+                        snap.forEach(d => {
+                            const item = sanitizeToStatsOnly(d.data());
+                            if (item) cleaned.push(item);
+                        });
+                        setFallbackStats(cleaned);
+                        setIsLoadingCloud(false);
+                        setIsLoadingDeep(false);
+                    },
+                    () => { setIsLoadingCloud(false); setIsLoadingDeep(false); }
+                );
+
+                return () => { unsubTelemetry(); unsubFallback(); };
+            }, [shouldLoadDeepCollection]);
+
+            const isEcoSummaryMode = Boolean(
+                !isAdminPreview && globalSummaryDoc && Number(globalSummaryDoc.totalUsers || 0) > 0 && !deepTelemetryEnabled
+            );
+
             const activeStatsRows = useMemo(
                 () => (telemetryStats.length > 0 ? telemetryStats : fallbackStats),
                 [telemetryStats, fallbackStats]
             );
 
-            // 2. Real-Time Analytics Engine (เฉพาะข้อมูลสถิติไม่ระบุตัวตน 100%)
+            // 2. Real-Time Analytics Engine (รองรับทั้งโหมดประหยัด 1 Read และโหมดเจาะลึก)
             const analytics = useMemo(() => {
-                const sourceRows = activeStatsRows;
+                const buildSusMeta = (susSum, susCount) => {
+                    const avgSusNum = susCount > 0 ? Math.round(susSum / susCount) : null;
+                    const susGrade = avgSusNum === null ? '-' : avgSusNum >= 80 ? 'Grade A (ดีเยี่ยมระดับโลก)' : avgSusNum >= 68 ? 'Grade B (เหนือมาตรฐานสากล)' : 'กำลังปรับปรุง';
+                    return { avgSusNum, susCount, susGrade };
+                };
+                const buildEffMeta = (preSum, preCount, postSum, postCount) => {
+                    const avgPreEff = preCount > 0 ? (preSum / preCount).toFixed(2) : null;
+                    const avgPostEff = postCount > 0 ? (postSum / postCount).toFixed(2) : null;
+                    const effGain = avgPreEff !== null && avgPostEff !== null ? (Number(avgPostEff) - Number(avgPreEff)).toFixed(2) : null;
+                    return { avgPreEff, avgPostEff, effGain, effPairedCount: Math.min(preCount, postCount) };
+                };
 
-                const makeEmptyAccumulator = () => ({
+                if (isEcoSummaryMode && globalSummaryDoc) {
+                    const g = globalSummaryDoc;
+                    const totalUsers = Number(g.totalUsers || 0);
+                    const totalPassed = Number(g.passedUsers || 0);
+                    const totalLearning = Math.max(0, totalUsers - totalPassed);
+                    const totalLab = Number(g.labUsers || 0);
+                    const unmappedCount = Number(g.region_OTHER || 0);
+                    const csatSum = Number(g.csatSum || 0);
+                    const csatCount = Number(g.csatCount || 0);
+                    const skillScoreSum = Number(g.skillScoreSum || 0);
+                    const skillScoreCount = Number(g.skillScoreCount || 0);
+
+                    const emptyRadar = { setting: 0, empathy: 0, clarity: 0, vocal: 0, dignity: 0 };
+                    const emptyDomains = DOMAIN_LIST.map(d => ({ ...d, avg: 0 }));
+                    const regionList = BASE_REGIONS.map(r => {
+                        const users = Number(g[`region_${r.id}`] || 0);
+                        const passed = Number(g[`region_${r.id}_passed`] || 0);
+                        return {
+                            ...r,
+                            users,
+                            learning: Math.max(0, users - passed),
+                            lab: 0,
+                            passed,
+                            radar: emptyRadar,
+                            domains: emptyDomains,
+                            hasRadarData: false,
+                            hasDomainData: false,
+                            weakestDomain: emptyDomains[0],
+                            weakestAxis: { ...RADAR_AXES[0], avg: 0 },
+                            avgEmpathy: 0,
+                            passPct: users > 0 ? Math.round((passed / users) * 100) : 0
+                        };
+                    });
+
+                    const regionalOnly = regionList.filter(r => r.id !== 'BKK');
+                    const sortedByUsers = [...regionalOnly].sort((a, b) => b.users - a.users);
+                    return {
+                        total: { users: totalUsers, learning: totalLearning, lab: totalLab, passed: totalPassed, unmapped: unmappedCount },
+                        regionList,
+                        maxRegion: sortedByUsers[0] || { name: '-', users: 0, passed: 0 },
+                        minRegion: sortedByUsers[sortedByUsers.length - 1] || { name: '-', users: 0, passed: 0 },
+                        passRate: totalUsers > 0 ? Math.round((totalPassed / totalUsers) * 100) : 0,
+                        avgCsat: csatCount > 0 ? (csatSum / csatCount).toFixed(1) : '0.0',
+                        csatCount,
+                        avgSkillScore: skillScoreCount > 0 ? Math.round(skillScoreSum / skillScoreCount) : 0,
+                        hasNationalRadar: false,
+                        hasNationalDomains: false,
+                        nationalRadar: emptyRadar,
+                        nationalDomains: emptyDomains,
+                        nationalWeakestDomain: emptyDomains[0],
+                        nationalWeakestAxis: { ...RADAR_AXES[0], avg: 0 },
+                        ...buildSusMeta(Number(g.susSum || 0), Number(g.susCount || 0)),
+                        ...buildEffMeta(Number(g.preEffSum || 0), Number(g.preEffCount || 0), Number(g.postEffSum || 0), Number(g.postEffCount || 0))
+                    };
+                }
+
+                const makeAcc = () => ({
                     radarSum: { setting: 0, empathy: 0, clarity: 0, vocal: 0, dignity: 0 },
                     radarCount: 0,
                     domainSum: { policy_ethics: 0, brain_death_donor: 0, procurement_transplant: 0, family_communication: 0 },
                     domainCount: { policy_ethics: 0, brain_death_donor: 0, procurement_transplant: 0, family_communication: 0 }
                 });
-
-                const natAcc = makeEmptyAccumulator();
+                const natAcc = makeAcc();
                 const statsMap = {};
-                BASE_REGIONS.forEach(r => {
-                    statsMap[r.id] = {
-                        ...r,
-                        users: 0,
-                        learning: 0,
-                        lab: 0,
-                        passed: 0,
-                        acc: makeEmptyAccumulator()
-                    };
-                });
+                BASE_REGIONS.forEach(r => { statsMap[r.id] = { ...r, users: 0, learning: 0, lab: 0, passed: 0, acc: makeAcc() }; });
 
-                let totalLearning = 0;
-                let totalLab = 0;
-                let totalPassed = 0;
-                let unmappedCount = 0;
-                let csatSum = 0;
-                let csatCount = 0;
-                let skillScoreSum = 0;
-                let skillScoreCount = 0;
+                let totalLearning = 0, totalLab = 0, totalPassed = 0, unmappedCount = 0;
+                let csatSum = 0, csatCount = 0, susSum = 0, susCount = 0;
+                let preEffSum = 0, preEffCount = 0, postEffSum = 0, postEffCount = 0;
+                let skillScoreSum = 0, skillScoreCount = 0;
 
-                const accumulateMetrics = (acc, row) => {
+                const accumulate = (acc, row) => {
                     if (row.radar) {
-                        RADAR_AXES.forEach(a => {
-                            acc.radarSum[a.key] += Number(row.radar[a.key] || 0);
-                        });
+                        RADAR_AXES.forEach(a => { acc.radarSum[a.key] += Number(row.radar[a.key] || 0); });
                         acc.radarCount += 1;
                     }
                     if (Array.isArray(row.domains)) {
@@ -1100,12 +836,9 @@
                     }
                 };
 
-                sourceRows.forEach(row => {
+                activeStatsRows.forEach(row => {
                     const isPassed = row.status === 'ผ่าน';
-                    const isLearning = !isPassed;
-
-                    if (isPassed) totalPassed++;
-                    if (isLearning) totalLearning++;
+                    if (isPassed) totalPassed++; else totalLearning++;
                     if (row.hasLab) {
                         totalLab++;
                         if (typeof row.skillLabBestScore === 'number' && row.skillLabBestScore > 0) {
@@ -1113,222 +846,135 @@
                             skillScoreCount++;
                         }
                     }
+                    if (typeof row.satisfactionScore === 'number' && row.satisfactionScore > 0) { csatSum += row.satisfactionScore; csatCount++; }
+                    if (typeof row.susScore === 'number' && row.susScore >= 0) { susSum += row.susScore; susCount++; }
+                    if (typeof row.preSelfEfficacyAvg === 'number' && row.preSelfEfficacyAvg > 0) { preEffSum += row.preSelfEfficacyAvg; preEffCount++; }
+                    if (typeof row.postSelfEfficacyAvg === 'number' && row.postSelfEfficacyAvg > 0) { postEffSum += row.postSelfEfficacyAvg; postEffCount++; }
 
-                    if (typeof row.satisfactionScore === 'number' && row.satisfactionScore > 0) {
-                        csatSum += row.satisfactionScore;
-                        csatCount++;
-                    }
-
-                    accumulateMetrics(natAcc, row);
-
-                    const regId = row.regionId;
-                    if (statsMap[regId]) {
-                        statsMap[regId].users += 1;
-                        if (isLearning) statsMap[regId].learning += 1;
-                        if (row.hasLab) statsMap[regId].lab += 1;
-                        if (isPassed) statsMap[regId].passed += 1;
-                        accumulateMetrics(statsMap[regId].acc, row);
+                    accumulate(natAcc, row);
+                    if (statsMap[row.regionId]) {
+                        statsMap[row.regionId].users += 1;
+                        if (!isPassed) statsMap[row.regionId].learning += 1;
+                        if (row.hasLab) statsMap[row.regionId].lab += 1;
+                        if (isPassed) statsMap[row.regionId].passed += 1;
+                        accumulate(statsMap[row.regionId].acc, row);
                     } else {
                         unmappedCount += 1;
                     }
                 });
 
-                const finalizeRadar = (acc) => {
+                const finRadar = (acc) => {
                     const out = {};
-                    RADAR_AXES.forEach(a => {
-                        out[a.key] = acc.radarCount > 0 ? Math.round(acc.radarSum[a.key] / acc.radarCount) : 0;
-                    });
+                    RADAR_AXES.forEach(a => { out[a.key] = acc.radarCount > 0 ? Math.round(acc.radarSum[a.key] / acc.radarCount) : 0; });
                     return out;
                 };
-
-                const finalizeDomains = (acc) => {
-                    return DOMAIN_LIST.map(d => ({
-                        ...d,
-                        avg: acc.domainCount[d.id] > 0 ? Math.round(acc.domainSum[d.id] / acc.domainCount[d.id]) : 0
-                    }));
-                };
+                const finDomains = (acc) => DOMAIN_LIST.map(d => ({ ...d, avg: acc.domainCount[d.id] > 0 ? Math.round(acc.domainSum[d.id] / acc.domainCount[d.id]) : 0 }));
 
                 const hasNationalRadar = natAcc.radarCount > 0;
                 const hasNationalDomains = DOMAIN_LIST.some(d => natAcc.domainCount[d.id] > 0);
-                const nationalRadar = finalizeRadar(natAcc);
-                const nationalDomains = finalizeDomains(natAcc);
+                const nationalRadar = finRadar(natAcc);
+                const nationalDomains = finDomains(natAcc);
                 const nationalWeakestDomain = [...nationalDomains].sort((a, b) => a.avg - b.avg)[0];
-                const nationalWeakestAxis = RADAR_AXES
-                    .map(a => ({ ...a, avg: nationalRadar[a.key] }))
-                    .sort((a, b) => a.avg - b.avg)[0];
+                const nationalWeakestAxis = RADAR_AXES.map(a => ({ ...a, avg: nationalRadar[a.key] })).sort((a, b) => a.avg - b.avg)[0];
 
                 const regionList = Object.values(statsMap).map(r => {
-                    const radar = finalizeRadar(r.acc);
-                    const domains = finalizeDomains(r.acc);
+                    const radar = finRadar(r.acc);
+                    const domains = finDomains(r.acc);
                     const hasRadarData = r.acc.radarCount > 0;
                     const hasDomainData = DOMAIN_LIST.some(d => r.acc.domainCount[d.id] > 0);
-
-                    const weakestDomain = [...domains].sort((a, b) => a.avg - b.avg)[0];
-                    const weakestAxis = RADAR_AXES
-                        .map(a => ({ ...a, avg: radar[a.key] }))
-                        .sort((a, b) => a.avg - b.avg)[0];
-                    const avgEmpathy = hasRadarData
-                        ? Math.round(RADAR_AXES.reduce((s, a) => s + (radar[a.key] || 0), 0) / RADAR_AXES.length)
-                        : 0;
-                    const passPct = r.users > 0 ? Math.round((r.passed / r.users) * 100) : 0;
-
                     return {
                         ...r,
                         radar,
                         domains,
                         hasRadarData,
                         hasDomainData,
-                        weakestDomain,
-                        weakestAxis,
-                        avgEmpathy,
-                        passPct
+                        weakestDomain: [...domains].sort((a, b) => a.avg - b.avg)[0],
+                        weakestAxis: RADAR_AXES.map(a => ({ ...a, avg: radar[a.key] })).sort((a, b) => a.avg - b.avg)[0],
+                        avgEmpathy: hasRadarData ? Math.round(RADAR_AXES.reduce((s, a) => s + (radar[a.key] || 0), 0) / RADAR_AXES.length) : 0,
+                        passPct: r.users > 0 ? Math.round((r.passed / r.users) * 100) : 0
                     };
                 });
 
                 const regionalOnly = regionList.filter(r => r.id !== 'BKK');
                 const sortedByUsers = [...regionalOnly].sort((a, b) => b.users - a.users);
-                const maxRegion = sortedByUsers[0] || { name: '-', users: 0, passed: 0 };
-                const minRegion = sortedByUsers[sortedByUsers.length - 1] || maxRegion;
-
-                const totalUsers = sourceRows.length;
-                const passRate = totalUsers > 0 ? Math.round((totalPassed / totalUsers) * 100) : 0;
-                const avgCsat = csatCount > 0 ? (csatSum / csatCount).toFixed(1) : '0.0';
-                const avgSkillScore = skillScoreCount > 0
-                    ? Math.round(skillScoreSum / skillScoreCount)
-                    : (hasNationalRadar ? Math.round(RADAR_AXES.reduce((s, a) => s + nationalRadar[a.key], 0) / RADAR_AXES.length) : 0);
+                const totalUsers = activeStatsRows.length;
 
                 return {
                     total: { users: totalUsers, learning: totalLearning, lab: totalLab, passed: totalPassed, unmapped: unmappedCount },
                     regionList,
-                    maxRegion,
-                    minRegion,
-                    passRate,
-                    avgCsat,
+                    maxRegion: sortedByUsers[0] || { name: '-', users: 0, passed: 0 },
+                    minRegion: sortedByUsers[sortedByUsers.length - 1] || { name: '-', users: 0, passed: 0 },
+                    passRate: totalUsers > 0 ? Math.round((totalPassed / totalUsers) * 100) : 0,
+                    avgCsat: csatCount > 0 ? (csatSum / csatCount).toFixed(1) : '0.0',
                     csatCount,
-                    avgSkillScore,
+                    avgSkillScore: skillScoreCount > 0
+                        ? Math.round(skillScoreSum / skillScoreCount)
+                        : (hasNationalRadar ? Math.round(RADAR_AXES.reduce((s, a) => s + nationalRadar[a.key], 0) / RADAR_AXES.length) : 0),
                     hasNationalRadar,
                     hasNationalDomains,
                     nationalRadar,
                     nationalDomains,
                     nationalWeakestDomain,
-                    nationalWeakestAxis
+                    nationalWeakestAxis,
+                    ...buildSusMeta(susSum, susCount),
+                    ...buildEffMeta(preEffSum, preEffCount, postEffSum, postEffCount)
                 };
-            }, [activeStatsRows]);
+            }, [isEcoSummaryMode, globalSummaryDoc, activeStatsRows]);
 
             const activeRegion = useMemo(
-                () => analytics.regionList.find(r => r.id === activeRegionId) || analytics.regionList[0],
-                [analytics.regionList, activeRegionId]
+                () => analytics.regionList.find(r => r.id === selectedRegionId) || analytics.regionList[analytics.regionList.length - 1],
+                [analytics.regionList, selectedRegionId]
+            );
+            const maxRegionUsers = useMemo(
+                () => Math.max(1, ...analytics.regionList.map(r => r.users || 0)),
+                [analytics.regionList]
             );
 
-            // 3. Auto-updating Executive Policy Briefing
-            const executiveBrief = useMemo(() => {
-                if (analytics.total.users === 0) {
-                    const emptyInsight = `📊 rjcloud.organ — AI Executive Policy Brief (สถิติไม่ระบุตัวตน PDPA-Safe):
-
-• ระบบเชื่อมต่อฐานข้อมูลสถิติกลางเรียบร้อยแล้วค่ะ (ไม่มีการนำข้อมูลส่วนบุคคลมาประมวลผล)
-• จำนวนผู้เรียนในฐานข้อมูลสถิติขณะนี้: 0 ราย
-• ทันทีที่มีผู้เรียนเข้าเรียนและประเมินผล สถิติทั้ง 13 เขตสุขภาพจะอัปเดตขึ้นที่นี่อัตโนมัติค่ะ`;
-                    const emptySpeech = 'สวัสดีค่ะท่านผู้บริหาร ระบบแดชบอร์ดผู้บริหาร อาร์เจคลาวด์ดอทออร์แกน พร้อมแสดงผลสถิติแบบไม่ระบุตัวตนตามนโยบายพีดีพีเอแล้วค่ะ';
-                    return { insightText: emptyInsight, speechText: emptySpeech };
-                }
-
-                const gapText = analytics.hasNationalDomains || analytics.hasNationalRadar
-                    ? `\n\n[2] AI Clinical Gap Alert (หัวข้อที่ควรจัดอบรมเสริมด่วน):${analytics.hasNationalDomains ? `\n• หมวดวิชาการที่อ่อนที่สุด: "${analytics.nationalWeakestDomain.nameTH}" (เฉลี่ย ${analytics.nationalWeakestDomain.avg}%)` : ''}${analytics.hasNationalRadar ? `\n• ทักษะสื่อสาร 5 แกนที่ควรพัฒนาที่สุด: "${analytics.nationalWeakestAxis.labelTH}" (เฉลี่ย ${analytics.nationalWeakestAxis.avg}/100)` : ''}`
-                    : '';
-
-                const insightText = `📊 rjcloud.organ — AI Executive Policy Brief (สถิติไม่ระบุตัวตน PDPA-Safe):
-
-[1] ภาพรวมบุคลากรระดับประเทศ:
-• บุคลากรทั้งหมด ${analytics.total.users.toLocaleString()} ราย | สอบผ่าน Post-test ≥80% แล้ว ${analytics.total.passed.toLocaleString()} ราย (${analytics.passRate}%)
-• ดัชนี Empathy เฉลี่ย (AI Skill Lab): ${analytics.avgSkillScore}/100 | CSAT เฉลี่ย: ${analytics.avgCsat}/5.0${gapText}
-
-[3] มิติความเหลื่อมล้ำเชิงพื้นที่ (13 เขตสุขภาพ):
-• เขตนำร่องสูงสุด: ${analytics.maxRegion.name} (${analytics.maxRegion.users} ราย)
-• พื้นที่ควรเร่งสนับสนุน: ${analytics.minRegion.name} (${analytics.minRegion.users} ราย)`;
-
-                const speechText = `สวัสดีค่ะท่านผู้บริหาร จากสถิติภาพรวมล่าสุดของระบบ อาร์เจคลาวด์ดอทออร์แกน ขณะนี้มีบุคลากรทั้งหมด ${analytics.total.users} ท่าน สอบผ่านรับประกาศนียบัตรแล้ว ${analytics.total.passed} ท่าน คิดเป็นร้อยละ ${analytics.passRate} คะแนนทักษะสื่อสารสามมิติเฉลี่ย ${analytics.avgSkillScore} เต็มร้อย และความพึงพอใจเฉลี่ย ${analytics.avgCsat} เต็มห้าค่ะ`;
-
-                return { insightText, speechText };
-            }, [analytics]);
-
-            useEffect(() => {
-                setMessages(prev => {
-                    const initMsg = { id: 'brief-live', role: 'ai', text: executiveBrief.insightText };
-                    if (prev.length === 0) return [initMsg];
-                    return [initMsg, ...prev.slice(1)];
-                });
-            }, [executiveBrief.insightText]);
-
-            // 4. Speech Recognition Setup
-            useEffect(() => {
-                const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-                if (!SR) return;
-                const rec = new SR();
-                rec.continuous = false;
-                rec.interimResults = true;
-                rec.lang = 'th-TH';
-                rec.onresult = (e) => {
-                    let transcript = '';
-                    for (let i = e.resultIndex; i < e.results.length; ++i) transcript += e.results[i][0].transcript;
-                    setChatInput(transcript);
-                };
-                rec.onend = () => setIsListening(false);
-                rec.onerror = () => setIsListening(false);
-                recRef.current = rec;
-                return () => { try { rec.abort(); } catch (_) {} };
-            }, []);
-
+            // 3. AI Executive Policy Brief & TTS Readout
             const stopVoice = useCallback(() => {
-                if (audioRef.current) {
-                    try { audioRef.current.pause(); } catch (_) {}
-                    audioRef.current = null;
-                }
-                if (audioUrlRef.current) {
-                    URL.revokeObjectURL(audioUrlRef.current);
-                    audioUrlRef.current = null;
-                }
-                if ('speechSynthesis' in window) {
-                    try { window.speechSynthesis.cancel(); } catch (_) {}
-                }
+                if (ttsAudioRef.current) { try { ttsAudioRef.current.pause(); } catch (_) {} ttsAudioRef.current = null; }
+                if (ttsUrlRef.current) { try { URL.revokeObjectURL(ttsUrlRef.current); } catch (_) {} ttsUrlRef.current = null; }
+                if ('speechSynthesis' in window) { try { window.speechSynthesis.cancel(); } catch (_) {} }
                 setIsSpeaking(false);
             }, []);
-
             useEffect(() => () => stopVoice(), [stopVoice]);
 
-            // 5. Voice Synthesis (Natural Thai Executive Voice + Anti-Hiss DSP)
-            const playPolicyVoice = async (textToSpeak) => {
+            const handleSpeakExecutiveSummary = async (textToRead) => {
                 if (isSpeaking) { stopVoice(); return; }
-                const cleanText = prepareNaturalThaiSpeechSafe(textToSpeak);
-                if (!cleanText) return;
+                const clean = String(textToRead || '').replace(/[*#•📊]/g, ' ').replace(/\s{2,}/g, ' ').trim();
+                if (!clean) return;
                 setIsSpeaking(true);
 
-                if (appsScriptUrl) {
+                if (appsScriptUrl && navigator.onLine) {
                     try {
+                        const ctrl = new AbortController();
+                        const tm = setTimeout(() => ctrl.abort(), 16000);
                         const rawRes = await fetch(appsScriptUrl, {
                             method: 'POST',
                             redirect: 'follow',
                             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                             body: JSON.stringify({
                                 action: 'callGeminiTTS',
-                                text: cleanText,
+                                text: clean.slice(0, 700),
                                 voiceName: 'Sulafat',
                                 languageCode: 'th-TH',
-                                style: 'พูดภาษาไทยด้วยน้ำเสียงผู้หญิงที่สุภาพ ชัดถ้อยชัดคำ อบอุ่นและเป็นธรรมชาติเหมือนผู้รายงานสรุปนโยบายการแพทย์ ไม่แข็งเป็นหุ่นยนต์'
-                            })
+                                style: 'พูดภาษาไทยด้วยน้ำเสียงสุภาพ มั่นใจ เป็นทางการระดับผู้บริหารสาธารณสุข'
+                            }),
+                            signal: ctrl.signal
                         });
-                        const txt = await rawRes.text();
-                        const res = JSON.parse(txt || '{}');
-
-                        if (res?.status === 'success' && res.inlineData?.data) {
+                        clearTimeout(tm);
+                        const res = JSON.parse((await rawRes.text()) || '{}');
+                        if (res?.status === 'success' && res.inlineData?.data && typeof CORE.pcm16ToWavBlob === 'function') {
                             const rate = parseInt(res.inlineData.mimeType?.match(/rate=(\d+)/)?.[1] ?? '24000', 10);
-                            const url = pcm16ToWavUrl(res.inlineData.data, rate);
-                            if (url) {
-                                audioUrlRef.current = url;
-                                const audio = new Audio(url);
-                                audioRef.current = audio;
-                                audio.onended = () => stopVoice();
-                                audio.onerror = () => stopVoice();
-                                await audio.play();
+                            const blob = CORE.pcm16ToWavBlob(res.inlineData.data, rate);
+                            if (blob && blob.size > 0) {
+                                const url = URL.createObjectURL(blob);
+                                ttsUrlRef.current = url;
+                                const a = new Audio(url);
+                                ttsAudioRef.current = a;
+                                a.onended = () => stopVoice();
+                                a.onerror = () => stopVoice();
+                                a.play().catch(() => stopVoice());
                                 return;
                             }
                         }
@@ -1336,457 +982,333 @@
                 }
 
                 if ('speechSynthesis' in window) {
-                    try {
-                        window.speechSynthesis.cancel();
-                        const utter = new SpeechSynthesisUtterance(cleanText);
-                        utter.lang = 'th-TH';
-                        utter.rate = 0.96;
-                        utter.pitch = 1.02;
-                        const best = pickBestThaiVoiceSafe();
-                        if (best) utter.voice = best;
-                        utter.onend = () => setIsSpeaking(false);
-                        utter.onerror = () => setIsSpeaking(false);
-                        window.speechSynthesis.speak(utter);
-                        return;
-                    } catch (_) {}
+                    const u = new SpeechSynthesisUtterance(clean.slice(0, 700));
+                    u.lang = 'th-TH';
+                    u.rate = 0.96;
+                    u.onend = () => stopVoice();
+                    u.onerror = () => stopVoice();
+                    window.speechSynthesis.speak(u);
+                } else {
+                    stopVoice();
                 }
-
-                setIsSpeaking(false);
-                showToast('อุปกรณ์นี้ไม่รองรับการอ่านเสียงอัตโนมัติค่ะ', 'error');
             };
 
-            // 6. Send Question to Executive AI (ส่งเฉพาะ JSON สถิติไม่ระบุตัวตน 100%)
-            const handleSendQuestion = async (e, presetText = null) => {
+            const handleAskExecutiveAi = async (e, presetQ = null) => {
                 if (e) e.preventDefault();
-                const userQ = String(presetText ?? chatInput).trim();
-                if (!userQ || isAiThinking) return;
-
+                const q = String(presetQ ?? aiQuestion).trim();
+                if (!q || aiBusy) return;
                 stopVoice();
-                if (isListening) {
-                    try { recRef.current?.stop(); } catch (_) {}
-                    setIsListening(false);
-                }
+                setAiQuestion('');
+                setAiBusy(true);
 
-                setChatInput('');
-                setMessages(prev => [...prev, { id: Date.now(), role: 'user', text: userQ }]);
-                setIsAiThinking(true);
-                setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 80);
-
-                const liveSnapshotJson = JSON.stringify({
-                    platform: 'rjcloud.organ 2.0 Dashboard',
-                    privacyMode: 'PDPA Anonymized Statistics Only (Zero PII)',
-                    nationalTotals: analytics.total,
+                const statsPayload = {
+                    totalUsers: analytics.total.users,
+                    passedUsers: analytics.total.passed,
                     passRatePercent: analytics.passRate,
+                    labUsers: analytics.total.lab,
                     csatAverageOutOf5: analytics.avgCsat,
                     csatRespondents: analytics.csatCount,
                     avgEmpathyIndex: analytics.avgSkillScore,
-                    nationalFiveAxisRadar: analytics.hasNationalRadar ? analytics.nationalRadar : null,
-                    nationalFourClinicalDomains: analytics.hasNationalDomains
-                        ? analytics.nationalDomains.map(d => ({ name: d.nameTH, avgPercent: d.avg }))
+                    susUsabilityScoreOutOf100: analytics.avgSusNum,
+                    susGrade: analytics.susGrade,
+                    preToPostSelfEfficacy: analytics.avgPreEff && analytics.avgPostEff
+                        ? { pre: analytics.avgPreEff, post: analytics.avgPostEff, gain: analytics.effGain, n: analytics.effPairedCount }
                         : null,
-                    selectedRegionFocus: activeRegion ? {
-                        name: activeRegion.name,
-                        users: activeRegion.users,
-                        passed: activeRegion.passed,
-                        passPct: activeRegion.passPct,
-                        radar5Axis: activeRegion.hasRadarData ? activeRegion.radar : null,
-                        weakestClinicalTopic: activeRegion.hasDomainData ? `${activeRegion.weakestDomain.nameTH} (${activeRegion.weakestDomain.avg}%)` : null
-                    } : null,
-                    allRegions: analytics.regionList.map(r => ({
-                        id: r.id, name: r.name, users: r.users, passed: r.passed, lab: r.lab, avgEmpathy: r.avgEmpathy
-                    }))
-                });
+                    quotaMode: isEcoSummaryMode ? 'Eco 1-Read Summary (executive_summary/global)' : 'Deep Telemetry (executive_telemetry)',
+                    nationalFiveAxisRadar: analytics.hasNationalRadar ? analytics.nationalRadar : null,
+                    nationalClinicalDomains: analytics.hasNationalDomains ? analytics.nationalDomains.map(d => ({ name: d.shortName, avg: d.avg })) : null,
+                    topRegion: { name: analytics.maxRegion.name, users: analytics.maxRegion.users },
+                    lowestRegion: { name: analytics.minRegion.name, users: analytics.minRegion.users }
+                };
 
-                const systemInstruction = `คุณคือ "AI วิเคราะห์เชิงนโยบายระดับชาติ" ประจำแพลตฟอร์ม rjcloud.organ 2.0
-อ้างอิงจากข้อมูลสถิติแบบไม่ระบุตัวตน (PDPA Zero-PII) ด้านล่างนี้เท่านั้น ห้ามเดาหรือแต่งตัวเลขเอง:
-${liveSnapshotJson}
-
-แนวทางการตอบ:
-1. ตอบเป็นภาษาไทยที่สุภาพ คมชัด เชิงกลยุทธ์ และจัดหัวข้อย่อยให้อ่านง่ายบนมือถือ
-2. วิเคราะห์เชิงสถิติรายเขตสุขภาพ 4 หมวดคลินิก และ 5 แกนทักษะสื่อสาร (AI Skill Lab) โดยไม่มีการกล่าวถึงข้อมูลส่วนบุคคล
-3. เชื่อมโยงกับเป้าหมายการลดจำนวนผู้ป่วยรออวัยวะระดับชาติ (8,019 ราย) เมื่อเหมาะสม`;
-
-                let answerText = '';
-                if (appsScriptUrl) {
+                let reply = '';
+                if (appsScriptUrl && navigator.onLine) {
                     try {
+                        const ctrl = new AbortController();
+                        const tm = setTimeout(() => ctrl.abort(), 14000);
                         const rawRes = await fetch(appsScriptUrl, {
                             method: 'POST',
                             redirect: 'follow',
                             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                            body: JSON.stringify({ action: 'callGemini', prompt: userQ, systemInstruction })
+                            body: JSON.stringify({
+                                action: 'callGemini',
+                                prompt: `คำถามผู้บริหาร: ${q}\nข้อมูลสถิติไม่ระบุตัวตน (Zero-PII):\n${JSON.stringify(statsPayload)}`,
+                                systemInstruction: 'คุณคือ AI ที่ปรึกษาเชิงนโยบายด้านการรับบริจาคและปลูกถ่ายอวัยวะ (Organ Transplantation Center of Rajavithi Hospital) ตอบเป็นภาษาไทยที่กระชับ มีตัวเลขชัดเจน เป็นข้อๆ อ่านง่ายสำหรับผู้บริหารระดับกระทรวง และห้ามระบุชื่อบุคคลใดๆ (PDPA Zero-PII)'
+                            }),
+                            signal: ctrl.signal
                         });
-                        const txt = await rawRes.text();
-                        const res = JSON.parse(txt || '{}');
-                        if (res?.status === 'success' && res.text) answerText = res.text;
+                        clearTimeout(tm);
+                        const res = JSON.parse((await rawRes.text()) || '{}');
+                        if (res?.status === 'success' && res.text) reply = res.text;
                     } catch (_) {}
                 }
-
-                if (!answerText) {
-                    await new Promise(r => setTimeout(r, 420));
-                    answerText = generateLocalExecutiveAnswer(userQ, analytics, activeRegion);
-                }
-
-                setMessages(prev => [...prev, { id: Date.now() + 1, role: 'ai', text: answerText }]);
-                setIsAiThinking(false);
-                setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
-            };
-
-            const toggleMic = () => {
-                if (!recRef.current) {
-                    showToast('เบราว์เซอร์นี้ไม่รองรับการสั่งงานด้วยเสียงค่ะ', 'error');
-                    return;
-                }
-                if (isListening) {
-                    recRef.current.stop();
-                    setIsListening(false);
-                } else {
-                    setChatInput('');
-                    try { recRef.current.start(); setIsListening(true); }
-                    catch (_) { setIsListening(false); }
-                }
+                if (!reply) reply = generateLocalExecutiveAnswer(q, analytics, activeRegion);
+                setAiAnswer(reply);
+                setAiBusy(false);
             };
 
             const quickPrompts = [
                 'จุดอ่อนและหัวข้อที่ควรจัดอบรมเสริมคืออะไร?',
+                'สรุปผลวิจัย R2R (SUS และความมั่นใจก่อน-หลังฝึก)',
                 'เขตสุขภาพไหนควรเร่งสนับสนุนเชิงรุก?',
                 'สรุปภาพรวมบุคลากรและดัชนี Empathy'
             ];
 
-            // ============================================================================
-            // 6. RENDER EXECUTIVE DASHBOARD (PDPA ZERO-PII)
-            // ============================================================================
+            const policyBriefText = useMemo(() => {
+                const r2rLine = (analytics.avgSusNum !== null || analytics.effGain !== null)
+                    ? `\n• ตัวชี้วัดวิจัย R2R: SUS ${analytics.avgSusNum !== null ? `${analytics.avgSusNum}/100 (${analytics.susGrade})` : 'รอข้อมูล'} | ความมั่นใจก่อน→หลังฝึก ${analytics.avgPreEff && analytics.avgPostEff ? `${analytics.avgPreEff}→${analytics.avgPostEff}/5` : 'รอข้อมูล'}`
+                    : '';
+                const gapText = (analytics.hasNationalDomains || analytics.hasNationalRadar)
+                    ? `\n\n[2] จุดอ่อนทางคลินิกและทักษะที่ควรเสริม:\n• หมวดความรู้ที่ควรเร่งเสริม: ${analytics.nationalWeakestDomain.shortName} (${analytics.nationalWeakestDomain.avg}%)\n• แกนสื่อสาร AI Skill Lab ที่ควรเน้น: ${analytics.nationalWeakestAxis.labelTH} (${analytics.nationalWeakestAxis.avg}/100)`
+                    : '';
+                return `📊 rjcloud.organ 2.0 — Executive Policy Brief (PDPA Zero-PII):\n\n[1] ภาพรวมบุคลากรระดับประเทศ:\n• บุคลากรทั้งหมด ${analytics.total.users.toLocaleString()} ราย | สอบผ่าน Post-test ≥80% แล้ว ${analytics.total.passed.toLocaleString()} ราย (${analytics.passRate}%)\n• ดัชนี Empathy เฉลี่ย (AI Skill Lab): ${analytics.avgSkillScore}/100 | CSAT เฉลี่ย: ${analytics.avgCsat}/5.0${r2rLine}${gapText}\n\n[3] มิติความเหลื่อมล้ำเชิงพื้นที่ (13 เขตสุขภาพ):\n• เขตนำร่องสูงสุด: ${analytics.maxRegion.name} (${analytics.maxRegion.users} ราย)\n• พื้นที่ควรเร่งสนับสนุน: ${analytics.minRegion.name} (${analytics.minRegion.users} ราย)`;
+            }, [analytics]);
+
             return (
-                <div className="min-h-dvh relative flex flex-col pt-safe pb-dock-safe lg:pb-10">
+                <div className="min-h-dvh relative flex flex-col pt-safe pb-safe">
                     <div className="spatial-aura" /><div className="spatial-grid" />
 
                     {/* Top Header */}
-                    <header className="sticky top-0 z-30 spatial-header no-print">
+                    <header className="sticky top-0 z-30 spatial-header">
                         <div className="max-w-7xl mx-auto px-3.5 sm:px-6 h-14 md:h-16 flex items-center justify-between gap-2">
                             <div className="flex items-center gap-2.5 min-w-0">
-                                <a
-                                    href="./index.html"
-                                    aria-label="กลับหน้าหลัก"
-                                    className="w-9 h-9 rounded-xl spatial-soft text-primary-adaptive flex items-center justify-center shrink-0"
-                                >
+                                <a href="./index.html" aria-label="กลับหน้าหลัก" className="w-9 h-9 rounded-xl spatial-soft text-primary-adaptive flex items-center justify-center shrink-0">
                                     <Icon name="ArrowLeft" size={18} />
                                 </a>
                                 <div className="min-w-0">
-                                    <div className="flex items-center gap-1.5">
-                                        <span className="font-display font-extrabold text-sm sm:text-base text-primary-adaptive truncate">
-                                            <span className="text-accent-adaptive">Dashboard</span>
-                                        </span>
-                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-aurora-500/20 text-accent-adaptive text-[9px] font-mono font-bold shrink-0">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-aurora-400 animate-pulse" />
-                                            2.0 PDPA STATS
-                                        </span>
-                                    </div>
-                                    <p className="text-[10px] font-mono text-muted-adaptive truncate">
-                                        rjcloud.organ 2.0 • สถิติภาพรวม 13 เขตสุขภาพ (ไม่ระบุตัวตน)
-                                    </p>
+                                    <span className="font-display font-extrabold text-sm sm:text-base text-primary-adaptive block leading-none truncate">
+                                        rjcloud<span className="text-accent-adaptive">.organ</span> <span className="font-mono text-[10px] text-prism-adaptive">2.0</span>
+                                    </span>
+                                    <span className="text-[10px] font-mono text-muted-adaptive block truncate">
+                                        National 13-Region Executive Dashboard • PDPA Zero-PII
+                                    </span>
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                            <div className="flex items-center gap-1.5 shrink-0">
+                                <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-aurora-500/15 border border-aurora-400/35 text-accent-adaptive font-mono text-[10px] font-bold">
+                                    <Icon name="ShieldCheck" size={13} /> ZERO-PII PROTECTED
+                                </span>
                                 <ThemeToggleButton theme={theme} onToggle={toggleTheme} />
-                                <button
-                                    type="button"
-                                    onClick={() => playPolicyVoice(executiveBrief.speechText)}
-                                    className={`px-3.5 py-2 rounded-full font-display font-bold text-[11px] flex items-center gap-1.5 transition-all ${
-                                        isSpeaking
-                                            ? 'bg-rose-500 text-white shadow-md'
-                                            : 'rjc2-pill-btn'
-                                    }`}
-                                >
-                                    <Icon name={isSpeaking ? 'Square' : 'Volume2'} size={14} />
-                                    <span className="hidden sm:inline">{isSpeaking ? 'หยุดเสียง' : 'ฟังรายงาน'}</span>
-                                </button>
                             </div>
                         </div>
                     </header>
 
-                    {/* Main Command Workspace */}
-                    <main className="relative z-10 flex-1 w-full max-w-7xl mx-auto px-3.5 sm:px-6 pt-4 md:pt-6 space-y-5">
-                        {/* SECTION A: NATIONAL KPI BENTO STRIP */}
-                        <section className={`${mobileTab === 'overview' ? 'block' : 'hidden'} lg:block space-y-4`}>
-                            <div className="spatial-card rounded-[1.75rem] p-5 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                <div>
-                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-aurora-500/15 border border-aurora-400/30 text-accent-adaptive text-[10px] font-mono font-bold mb-2">
-                                        <Icon name="ShieldCheck" size={12} />
-                                        RJCLOUD.ORGAN 2.0 • PDPA ANONYMIZED STATISTICS (ZERO-PII)
-                                    </span>
-                                    <h1 className="font-display text-xl sm:text-2xl md:text-3xl font-extrabold text-primary-adaptive leading-tight">
-                                        Dashboard พัฒนาบุคลากรการรับบริจาคอวัยวะ
-                                    </h1>
-                                    <p className="text-xs sm:text-sm text-secondary-adaptive mt-1">
-                                        แสดงผลเฉพาะตัวเลขสถิติภาพรวม 4 หมวดคลินิก และเรดาร์ทักษะสื่อสาร 5 แกน ครบ 13 เขตสุขภาพโดยไม่ระบุตัวตนผู้เรียน
-                                    </p>
-                                </div>
-
-                                <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-rose-500/15 border border-rose-400/35 shrink-0">
-                                    <div className="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center">
-                                        <Icon name="HeartPulse" size={21} />
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] font-mono font-bold text-rose-400 uppercase">National Benchmark</p>
-                                        <p className="font-mono text-xl font-extrabold text-primary-adaptive leading-none mt-0.5">8,019 ราย</p>
-                                        <p className="text-[10px] text-secondary-adaptive">ผู้ป่วยรออวัยวะสะสมระดับชาติ</p>
-                                    </div>
-                                </div>
+                    {/* Main Dashboard Content */}
+                    <main className="relative z-10 max-w-7xl w-full mx-auto px-3.5 sm:px-6 py-5 sm:py-7 space-y-5">
+                        {isLoadingCloud ? (
+                            <div className="spatial-card rounded-[2rem] p-12 text-center space-y-3">
+                                <div className="w-10 h-10 border-4 border-aurora-400 border-t-transparent rounded-full animate-spin mx-auto" />
+                                <p className="font-display font-bold text-sm text-primary-adaptive">กำลังเชื่อมต่อข้อมูลสถิติ 13 เขตสุขภาพ (PDPA Zero-PII)...</p>
                             </div>
+                        ) : (
+                            <>
+                                {/* 1. KPI Summary Strip */}
+                                <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                                    <div className="spatial-card rounded-[1.5rem] p-4 sm:p-5">
+                                        <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase block">TOTAL LEARNERS</span>
+                                        <p className="font-mono text-2xl sm:text-3xl font-extrabold text-primary-adaptive mt-1">{analytics.total.users.toLocaleString()}</p>
+                                        <p className="text-[11px] text-secondary-adaptive mt-1">กำลังเรียน <b>{analytics.total.learning.toLocaleString()}</b> ราย</p>
+                                    </div>
+                                    <div className="spatial-card rounded-[1.5rem] p-4 sm:p-5">
+                                        <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase block">CERTIFIED (≥80%)</span>
+                                        <p className="font-mono text-2xl sm:text-3xl font-extrabold text-accent-adaptive mt-1">{analytics.total.passed.toLocaleString()}</p>
+                                        <p className="text-[11px] text-secondary-adaptive mt-1">อัตราผ่าน <b>{analytics.passRate}%</b></p>
+                                    </div>
+                                    <div className="spatial-card rounded-[1.5rem] p-4 sm:p-5">
+                                        <span className="font-mono text-[10px] font-bold text-violet-400 uppercase block">AI SKILL LAB EMPATHY</span>
+                                        <p className="font-mono text-2xl sm:text-3xl font-extrabold text-violet-400 mt-1">{analytics.avgSkillScore}<span className="text-sm text-muted-adaptive">/100</span></p>
+                                        <p className="text-[11px] text-secondary-adaptive mt-1">ผ่านฝึก 3 มิติ <b>{analytics.total.lab.toLocaleString()}</b> ราย</p>
+                                    </div>
+                                    <div className="spatial-card rounded-[1.5rem] p-4 sm:p-5">
+                                        <span className="font-mono text-[10px] font-bold text-amber-400 uppercase block">CNEU CSAT SCORE</span>
+                                        <p className="font-mono text-2xl sm:text-3xl font-extrabold text-amber-400 mt-1">{analytics.avgCsat}<span className="text-sm text-muted-adaptive">/5.0</span></p>
+                                        <p className="text-[11px] text-secondary-adaptive mt-1">จากผู้ประเมิน <b>{analytics.csatCount.toLocaleString()}</b> ราย</p>
+                                    </div>
+                                </section>
 
-                            {/* 4 Core KPI Tiles */}
-                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                                <div className="spatial-card rounded-[1.5rem] p-4 sm:p-5">
-                                    <div className="flex items-center justify-between mb-1.5">
-                                        <span className="text-xs font-bold text-muted-adaptive">บุคลากรทั้งหมด</span>
-                                        <div className="w-8 h-8 rounded-xl bg-prism-500/15 text-prism-adaptive flex items-center justify-center">
-                                            <Icon name="Users" size={16} />
+                                {/* 2. Zero-Cost Scalability Guard + National R2R Research Metrics (SUS & Self-Efficacy) */}
+                                <section className="spatial-card rounded-[1.75rem] p-4 sm:p-5 border-prism-400/35 space-y-3.5">
+                                    <div className="flex flex-wrap items-center justify-between gap-2.5">
+                                        <span className={`px-3 py-1 rounded-full font-mono text-[10px] font-bold inline-flex items-center gap-1.5 ${
+                                            isEcoSummaryMode
+                                                ? 'bg-aurora-500/20 text-accent-adaptive border border-aurora-400/40'
+                                                : 'bg-prism-500/20 text-prism-adaptive border border-prism-400/40'
+                                        }`}>
+                                            <Icon name={isEcoSummaryMode ? 'Zap' : 'Microscope'} size={13} />
+                                            {isEcoSummaryMode
+                                                ? 'ECO 1-READ MODE • ประหยัดโควต้า Firebase ฟรี >99%'
+                                                : (isAdminPreview ? 'PREVIEW MODE • ข้อมูลตัวอย่าง 13 เขต' : 'DEEP TELEMETRY MODE • เรดาร์ 5 แกน & 4 หมวดคลินิก')}
+                                        </span>
+
+                                        <div className="flex items-center gap-2">
+                                            {isEcoSummaryMode ? (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setDeepTelemetryEnabled(true)}
+                                                    className="rjc2-pill-btn px-4 py-1.5 rounded-full font-display font-extrabold text-xs inline-flex items-center gap-1.5"
+                                                >
+                                                    <Icon name="Radar" size={14} /> โหลดเรดาร์ 5 แกน &amp; เจาะลึกรายเขต
+                                                </button>
+                                            ) : (
+                                                globalSummaryDoc && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setDeepTelemetryEnabled(false)}
+                                                        className="spatial-soft px-3.5 py-1.5 rounded-full text-xs font-bold text-accent-adaptive inline-flex items-center gap-1.5"
+                                                    >
+                                                        <Icon name="Zap" size={14} /> สลับกลับโหมดประหยัด (1 Read)
+                                                    </button>
+                                                )
+                                            )}
                                         </div>
                                     </div>
-                                    <p className="font-mono text-2xl sm:text-3xl font-extrabold text-primary-adaptive">
-                                        {analytics.total.users.toLocaleString()}
-                                    </p>
-                                    <p className="text-[11px] text-secondary-adaptive mt-1">
-                                        กำลังเรียน <b>{analytics.total.learning.toLocaleString()}</b> ราย
-                                    </p>
-                                </div>
 
-                                <div className="spatial-card rounded-[1.5rem] p-4 sm:p-5">
-                                    <div className="flex items-center justify-between mb-1.5">
-                                        <span className="text-xs font-bold text-muted-adaptive">ผ่าน Post-test ≥ 80%</span>
-                                        <div className="w-8 h-8 rounded-xl bg-aurora-500/15 text-accent-adaptive flex items-center justify-center">
-                                            <Icon name="Award" size={16} />
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                                        <div className="spatial-soft rounded-2xl p-3.5 space-y-1">
+                                            <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase block">SYSTEM USABILITY SCALE (SUS • R2R)</span>
+                                            <div className="flex items-baseline gap-1.5">
+                                                <span className="font-mono text-2xl font-extrabold text-primary-adaptive">
+                                                    {analytics.avgSusNum !== null ? analytics.avgSusNum : '-'}
+                                                </span>
+                                                <span className="font-mono text-xs text-muted-adaptive">/100</span>
+                                            </div>
+                                            <p className="text-[11px] font-bold text-accent-adaptive">
+                                                {analytics.susCount > 0 ? `${analytics.susGrade} (n=${analytics.susCount})` : 'รอข้อมูลจากแบบประเมินขั้นที่ 5'}
+                                            </p>
                                         </div>
-                                    </div>
-                                    <p className="font-mono text-2xl sm:text-3xl font-extrabold text-accent-adaptive">
-                                        {analytics.total.passed.toLocaleString()}
-                                    </p>
-                                    <p className="text-[11px] text-accent-adaptive font-bold mt-1">
-                                        อัตราสำเร็จ {analytics.passRate}%
-                                    </p>
-                                </div>
 
-                                <div className="spatial-card rounded-[1.5rem] p-4 sm:p-5">
-                                    <div className="flex items-center justify-between mb-1.5">
-                                        <span className="text-xs font-bold text-muted-adaptive">Empathy Index (AI Lab)</span>
-                                        <div className="w-8 h-8 rounded-xl bg-violet-500/15 text-violet-400 flex items-center justify-center">
-                                            <Icon name="Bot" size={16} />
+                                        <div className="spatial-soft rounded-2xl p-3.5 space-y-1">
+                                            <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase block">PRE → POST SELF-EFFICACY (AI LAB)</span>
+                                            <p className="font-mono text-2xl font-extrabold text-accent-adaptive">
+                                                {analytics.avgPreEff !== null && analytics.avgPostEff !== null
+                                                    ? `${analytics.avgPreEff} → ${analytics.avgPostEff}`
+                                                    : '-'}
+                                            </p>
+                                            <p className="text-[11px] font-bold text-secondary-adaptive">
+                                                {analytics.effGain !== null
+                                                    ? `ความมั่นใจเพิ่ม ${Number(analytics.effGain) >= 0 ? `+${analytics.effGain}` : analytics.effGain} / 5 (n=${analytics.effPairedCount})`
+                                                    : 'รอข้อมูลจากห้องฝึก AI Skill Lab 3D'}
+                                            </p>
                                         </div>
-                                    </div>
-                                    <div className="flex items-baseline gap-1">
-                                        <p className="font-mono text-2xl sm:text-3xl font-extrabold text-violet-400">
-                                            {analytics.avgSkillScore}
-                                        </p>
-                                        <span className="font-mono text-xs text-muted-adaptive">/100</span>
-                                    </div>
-                                    <p className="text-[11px] text-secondary-adaptive mt-1">
-                                        ผ่านฝึกแล้ว <b>{analytics.total.lab.toLocaleString()}</b> ราย
-                                    </p>
-                                </div>
 
-                                <div className="spatial-card rounded-[1.5rem] p-4 sm:p-5">
-                                    <div className="flex items-center justify-between mb-1.5">
-                                        <span className="text-xs font-bold text-muted-adaptive">ความพึงพอใจ (CSAT)</span>
-                                        <div className="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center">
-                                            <Icon name="Star" size={16} />
-                                        </div>
-                                    </div>
-                                    <div className="flex items-baseline gap-1">
-                                        <p className="font-mono text-2xl sm:text-3xl font-extrabold text-amber-400">
-                                            {analytics.avgCsat}
-                                        </p>
-                                        <span className="font-mono text-xs text-muted-adaptive">/5.0</span>
-                                    </div>
-                                    <p className="text-[11px] text-secondary-adaptive mt-1">
-                                        จากผู้ประเมิน <b>{analytics.csatCount.toLocaleString()}</b> ราย
-                                    </p>
-                                </div>
-                            </div>
-
-                            {/* National AI Weakness Alert Strip */}
-                            {(analytics.hasNationalDomains || analytics.hasNationalRadar) && (
-                                <div className="spatial-card rounded-2xl p-4 border-amber-400/35 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                                    <div className="flex items-start gap-3">
-                                        <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
-                                            <Icon name="AlertTriangle" size={20} />
-                                        </div>
-                                        <div>
-                                            <p className="font-mono text-[10px] font-bold text-amber-400 uppercase">AI NATIONAL TRAINING GAP DETECTOR</p>
-                                            <p className="text-xs sm:text-sm text-primary-adaptive leading-relaxed mt-0.5">
-                                                ระดับประเทศควรจัดอบรมเสริม
-                                                {analytics.hasNationalDomains && (
-                                                    <>เรื่อง <b>“{analytics.nationalWeakestDomain.nameTH}”</b> (เฉลี่ย <span className="font-mono text-amber-400 font-bold">{analytics.nationalWeakestDomain.avg}%</span>)</>
-                                                )}
-                                                {analytics.hasNationalDomains && analytics.hasNationalRadar && ' และ'}
-                                                {analytics.hasNationalRadar && (
-                                                    <>ทักษะ <b>“{analytics.nationalWeakestAxis.labelTH}”</b> (<span className="font-mono text-prism-adaptive font-bold">{analytics.nationalWeakestAxis.avg}/100</span>)</>
-                                                )}
+                                        <div className="spatial-soft rounded-2xl p-3.5 space-y-1">
+                                            <span className="font-mono text-[10px] font-bold text-amber-400 uppercase block">FIREBASE READ EFFICIENCY</span>
+                                            <p className="font-mono text-2xl font-extrabold text-amber-400">
+                                                {isEcoSummaryMode ? '1 Read' : `${activeStatsRows.length} Docs`}
+                                            </p>
+                                            <p className="text-[11px] text-muted-adaptive leading-snug">
+                                                {isEcoSummaryMode
+                                                    ? 'อ่านจาก executive_summary/global ใบเดียว รองรับผู้เรียนหลักหมื่นฟรี'
+                                                    : (isLoadingDeep ? 'กำลังโหลดข้อมูลเจาะลึกรายเขต...' : 'กำลังแสดงผลสถิติเจาะลึกครบ 5 แกน & 4 หมวด')}
                                             </p>
                                         </div>
                                     </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            setMobileTab('ai');
-                                            handleSendQuestion(null, 'วิเคราะห์จุดอ่อนระดับประเทศและเสนอแผนจัดอบรมเสริม Live สดสำหรับแต่ละเขตสุขภาพ');
-                                        }}
-                                        className="touch-target px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-void-950 font-display font-extrabold text-xs shrink-0"
-                                    >
-                                        ให้ AI วางแผนอบรมเสริม
-                                    </button>
-                                </div>
-                            )}
-                        </section>
+                                </section>
 
-                        {/* SECTION B: SPATIAL MAP + 5-AXIS RADAR + EXECUTIVE AI */}
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-                            {/* LEFT (7 COLS): 13-REGION MAP + 5-AXIS RADAR + 4-DOMAIN STATS */}
-                            <section className={`lg:col-span-7 ${mobileTab === 'regions' ? 'block' : 'hidden'} lg:block space-y-4`}>
-                                <div className="spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-4">
-                                    <div className="flex flex-wrap items-center justify-between gap-2">
-                                        <div>
-                                            <h2 className="font-display font-bold text-base sm:text-lg text-primary-adaptive flex items-center gap-2">
-                                                <Icon name="MapPin" size={18} className="text-accent-adaptive" />
-                                                แผนที่เครือข่าย 13 เขตสุขภาพ
-                                            </h2>
-                                            <p className="text-xs text-muted-adaptive">แตะจุดเขตสุขภาพเพื่อดูสถิติภาพรวมและเรดาร์สมรรถนะ 5 แกนรายเขต</p>
+                                {/* 3. 13 Health Regions Interactive Matrix + Selected Region Deep Dive */}
+                                <section className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+                                    <div className="lg:col-span-7 spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3.5">
+                                        <div className="flex flex-wrap items-center justify-between gap-2">
+                                            <div>
+                                                <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">THAILAND 13 HEALTH REGIONS COVERAGE</span>
+                                                <h2 className="font-display font-extrabold text-base sm:text-lg text-primary-adaptive">สถิติบุคลากรแยกตาม 13 เขตสุขภาพ</h2>
+                                            </div>
+                                            <span className="text-[11px] text-muted-adaptive">แตะเขตสุขภาพเพื่อเจาะลึก</span>
                                         </div>
 
-                                        <div className="inline-flex p-1 rounded-xl spatial-soft text-xs font-bold">
-                                            <button
-                                                type="button"
-                                                onClick={() => setRegionViewMode('map')}
-                                                className={`px-3 py-1.5 rounded-lg transition-all ${regionViewMode === 'map' ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'text-secondary-adaptive'}`}
-                                            >
-                                                แผนที่ 13 เขต
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => setRegionViewMode('list')}
-                                                className={`px-3 py-1.5 rounded-lg transition-all ${regionViewMode === 'list' ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'text-secondary-adaptive'}`}
-                                            >
-                                                ตาราง 13 เขต
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    {regionViewMode === 'map' ? (
-                                        <SpatialThailandNetworkMap
-                                            regions={analytics.regionList}
-                                            activeRegion={activeRegion}
-                                            onSelectRegion={(r) => setActiveRegionId(r.id)}
-                                        />
-                                    ) : (
-                                        <div className="space-y-2.5 max-h-[460px] overflow-y-auto custom-scrollbar pr-1">
-                                            {[...analytics.regionList].sort((a, b) => b.users - a.users).map((r, idx) => {
-                                                const pct = analytics.total.users > 0 ? Math.round((r.users / analytics.total.users) * 100) : 0;
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                            {analytics.regionList.map(r => {
+                                                const active = activeRegion && activeRegion.id === r.id;
+                                                const barW = Math.max(4, Math.round((r.users / maxRegionUsers) * 100));
                                                 return (
                                                     <button
                                                         key={r.id}
                                                         type="button"
-                                                        onClick={() => { setActiveRegionId(r.id); setRegionViewMode('map'); }}
-                                                        className="spatial-soft w-full text-left p-3.5 rounded-2xl transition-all space-y-1.5"
+                                                        onClick={() => setSelectedRegionId(r.id)}
+                                                        className={`text-left p-3 rounded-2xl border transition-all space-y-1.5 ${
+                                                            active
+                                                                ? 'bg-aurora-500/20 border-aurora-400 shadow-md'
+                                                                : 'spatial-soft hover:border-prism-400/50'
+                                                        }`}
                                                     >
                                                         <div className="flex items-center justify-between gap-2">
-                                                            <div className="flex items-center gap-2 min-w-0">
-                                                                <span className="w-6 h-6 rounded-lg bg-aurora-500/20 text-accent-adaptive font-mono text-xs font-bold flex items-center justify-center shrink-0">
-                                                                    {idx + 1}
-                                                                </span>
-                                                                <span className="font-display font-bold text-sm text-primary-adaptive truncate">{r.name}</span>
-                                                            </div>
-                                                            <span className="font-mono text-xs font-extrabold text-accent-adaptive shrink-0">
-                                                                {r.users} ราย • Empathy {r.avgEmpathy}
-                                                            </span>
+                                                            <span className="font-display font-bold text-xs sm:text-sm text-primary-adaptive truncate">{r.name}</span>
+                                                            <span className="font-mono text-xs font-extrabold text-accent-adaptive shrink-0">{r.users} ราย</span>
                                                         </div>
-                                                        <div className="flex items-center justify-between text-[11px] text-muted-adaptive">
-                                                            <span>
-                                                                {r.hasDomainData
-                                                                    ? <>จุดควรเสริม: <b className="text-amber-400">{r.weakestDomain.shortName} ({r.weakestDomain.avg}%)</b></>
-                                                                    : <>AI Lab <b className="font-mono text-secondary-adaptive">{r.lab}</b> ราย • เรียนอยู่ <b className="font-mono text-secondary-adaptive">{r.learning}</b> ราย</>}
-                                                            </span>
-                                                            <span className="font-mono">ผ่าน {r.passed} ราย ({r.passPct}%)</span>
+                                                        <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden">
+                                                            <div className="h-full rounded-full bg-gradient-to-r from-aurora-400 to-prism-400" style={{ width: `${r.users > 0 ? barW : 0}%` }} />
                                                         </div>
-                                                        <div className="w-full h-1.5 rounded-full bg-slate-500/20 overflow-hidden">
-                                                            <div className="h-full rounded-full bg-gradient-to-r from-aurora-400 to-prism-400" style={{ width: `${Math.min(100, Math.max(0, pct * 2.5))}%` }} />
+                                                        <div className="flex items-center justify-between text-[10px] text-muted-adaptive">
+                                                            <span className="truncate">{r.area}</span>
+                                                            <span className="font-mono font-bold text-prism-adaptive shrink-0">ผ่าน {r.passPct}%</span>
                                                         </div>
                                                     </button>
                                                 );
                                             })}
-                                            {analytics.total.unmapped > 0 && (
-                                                <div className="spatial-soft p-3 rounded-xl text-xs text-muted-adaptive flex items-center justify-between">
-                                                    <span>สังกัดอื่นๆ / ไม่ระบุเขตสุขภาพ (นับรวมในยอดประเทศแล้ว)</span>
-                                                    <span className="font-mono font-bold text-primary-adaptive">{analytics.total.unmapped} ราย</span>
-                                                </div>
-                                            )}
                                         </div>
-                                    )}
+                                    </div>
 
-                                    {/* Selected Region Deep Dive: 5-Axis Radar + 4-Domain Stats */}
-                                    {activeRegion && (
-                                        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 pt-2 border-t border-white/10 items-center">
-                                            <div className="md:col-span-6 spatial-soft rounded-2xl p-4 space-y-2">
-                                                <div className="flex items-center justify-between gap-2">
-                                                    <div>
-                                                        <span className="font-mono text-[10px] font-bold text-accent-adaptive">5-AXIS SKILL LAB RADAR</span>
-                                                        <h3 className="font-display font-bold text-sm text-primary-adaptive">{activeRegion.name}</h3>
-                                                    </div>
-                                                    <span className="px-2 py-0.5 rounded-lg bg-aurora-500/20 text-accent-adaptive font-mono text-xs font-extrabold">
-                                                        AVG {activeRegion.avgEmpathy}
-                                                    </span>
+                                    {/* Selected Region Detail + 5-Axis Radar */}
+                                    <div className="lg:col-span-5 spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-4">
+                                        {activeRegion && (
+                                            <>
+                                                <div>
+                                                    <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">REGIONAL COMPETENCY RADAR</span>
+                                                    <h3 className="font-display font-extrabold text-lg text-primary-adaptive">{activeRegion.name}</h3>
+                                                    <p className="text-xs text-muted-adaptive mt-0.5">{activeRegion.provinces}</p>
                                                 </div>
 
-                                                <DualComparisonRadarSVG
-                                                    regionRadar={activeRegion.radar}
-                                                    nationalRadar={analytics.nationalRadar}
-                                                    theme={theme}
-                                                />
-
-                                                <div className="flex items-center justify-center gap-4 text-[10px] font-bold">
-                                                    <span className="flex items-center gap-1.5 text-accent-adaptive">
-                                                        <span className="w-2.5 h-2.5 rounded-full bg-aurora-400" /> {activeRegion.id}
-                                                    </span>
-                                                    <span className="flex items-center gap-1.5 text-prism-adaptive">
-                                                        <span className="w-3 h-0.5 bg-prism-400 inline-block" /> ค่าเฉลี่ยประเทศ
-                                                    </span>
-                                                </div>
-                                            </div>
-
-                                            <div className="md:col-span-6 space-y-3">
-                                                <div className="grid grid-cols-4 gap-1.5 text-center">
-                                                    <div className="spatial-soft p-2 rounded-xl">
-                                                        <p className="text-[10px] text-muted-adaptive">ทั้งหมด</p>
-                                                        <p className="font-mono text-sm font-extrabold text-primary-adaptive">{activeRegion.users}</p>
+                                                <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                                                    <div className="spatial-soft p-2.5 rounded-xl">
+                                                        <span className="text-[10px] text-muted-adaptive block">ทั้งหมด</span>
+                                                        <span className="font-mono text-base font-extrabold text-primary-adaptive">{activeRegion.users}</span>
                                                     </div>
-                                                    <div className="spatial-soft p-2 rounded-xl">
-                                                        <p className="text-[10px] text-amber-400">เรียนอยู่</p>
-                                                        <p className="font-mono text-sm font-extrabold text-amber-400">{activeRegion.learning}</p>
+                                                    <div className="spatial-soft p-2.5 rounded-xl">
+                                                        <span className="text-[10px] text-muted-adaptive block">สอบผ่าน</span>
+                                                        <span className="font-mono text-base font-extrabold text-accent-adaptive">{activeRegion.passed}</span>
                                                     </div>
-                                                    <div className="spatial-soft p-2 rounded-xl">
-                                                        <p className="text-[10px] text-violet-400">AI Lab</p>
-                                                        <p className="font-mono text-sm font-extrabold text-violet-400">{activeRegion.lab}</p>
-                                                    </div>
-                                                    <div className="spatial-soft p-2 rounded-xl">
-                                                        <p className="text-[10px] text-accent-adaptive">ผ่าน</p>
-                                                        <p className="font-mono text-sm font-extrabold text-accent-adaptive">{activeRegion.passed}</p>
+                                                    <div className="spatial-soft p-2.5 rounded-xl">
+                                                        <span className="text-[10px] text-muted-adaptive block">Empathy</span>
+                                                        <span className="font-mono text-base font-extrabold text-prism-adaptive">{activeRegion.avgEmpathy || '-'}</span>
                                                     </div>
                                                 </div>
 
-                                                <div className="spatial-soft rounded-2xl p-3.5 space-y-2">
-                                                    <p className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">
-                                                        4-DOMAIN CLINICAL MASTERY ({activeRegion.id})
-                                                    </p>
-                                                    {activeRegion.domains.map(d => (
-                                                        <div key={d.id} className="space-y-1">
-                                                            <div className="flex justify-between text-[11px] font-bold">
-                                                                <span className="text-secondary-adaptive truncate">{d.shortName}</span>
-                                                                <span className="font-mono" style={{ color: d.color }}>{d.avg}%</span>
+                                                {activeRegion.hasRadarData ? (
+                                                    <div className="spatial-soft rounded-2xl p-3">
+                                                        <FiveAxisRadarSVG radarObj={activeRegion.radar} theme={theme} />
+                                                    </div>
+                                                ) : (
+                                                    <div className="spatial-soft rounded-2xl p-5 text-center space-y-2 text-xs">
+                                                        <p className="text-secondary-adaptive">
+                                                            {isEcoSummaryMode
+                                                                ? 'ขณะนี้อยู่ในโหมดประหยัด 1 Read เพื่อรักษาโควต้า Firebase ฟรี'
+                                                                : 'ยังไม่มีผลเรดาร์ AI Skill Lab ในเขตสุขภาพนี้'}
+                                                        </p>
+                                                        {isEcoSummaryMode && (
+                                                            <button type="button" onClick={() => setDeepTelemetryEnabled(true)} className="rjc2-pill-btn px-4 py-2 rounded-full font-display font-extrabold text-xs">
+                                                                โหลดเรดาร์ 5 แกนรายเขต →
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                )}
+
+                                                {activeRegion.hasDomainData && (
+                                                    <div className="space-y-2 text-xs">
+                                                        <p className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">คะแนนเฉลี่ย 4 หมวดคลินิกในเขตนี้</p>
+                                                        {activeRegion.domains.map(d => (
+                                                            <div key={d.id} className="space-y-1">
+                                                                <div className="flex justify-between font-bold">
+                                                                    <span className="text-secondary-adaptive">{d.shortName}</span>
+                                                                    <span className="font-mono" style={{ color: d.color }}>{d.avg}%</span>
+                                                                </div>
+                                                                <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
+                                                                    <div className="h-full rounded-full" style={{ width: `${d.avg}%`, backgroundColor: d.color }} />
+                                                                </div>
                                                             </div>
-                                                            <div className="w-full h-1.5 rounded-full bg-slate-500/20 overflow-hidden">
-                                                                <div className="h-full rounded-full" style={{ width: `${d.avg}%`, backgroundColor: d.color }} />
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
+                                                        ))}
+                                                    </div>
+                                                )}
 
                                                 <div className="p-3 rounded-2xl bg-aurora-500/10 border border-aurora-400/30 text-[11px] text-primary-adaptive leading-relaxed">
                                                     {activeRegion.hasDomainData || activeRegion.hasRadarData ? (
@@ -1797,155 +1319,95 @@ ${liveSnapshotJson}
                                                             {activeRegion.hasRadarData && <>ฝึก <b>{activeRegion.weakestAxis.labelTH}</b> ({activeRegion.weakestAxis.avg}/100)</>}
                                                         </>
                                                     ) : (
-                                                        <span className="text-secondary-adaptive">
-                                                            <b className="text-accent-adaptive">สถิติ {activeRegion.name}:</b> บุคลากรทั้งหมด <b className="font-mono">{activeRegion.users}</b> ราย • ผ่านเกณฑ์ <b className="font-mono">{activeRegion.passed}</b> ราย ({activeRegion.passPct}%) • AI Lab <b className="font-mono">{activeRegion.lab}</b> ราย
-                                                        </span>
+                                                        <div className="flex flex-wrap items-center justify-between gap-2">
+                                                            <span className="text-secondary-adaptive">
+                                                                <b className="text-accent-adaptive">สถิติ {activeRegion.name}:</b> บุคลากรทั้งหมด <b className="font-mono">{activeRegion.users}</b> ราย • ผ่านเกณฑ์ <b className="font-mono">{activeRegion.passed}</b> ราย ({activeRegion.passPct}%)
+                                                            </span>
+                                                            {isEcoSummaryMode && (
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => setDeepTelemetryEnabled(true)}
+                                                                    className="px-2.5 py-1 rounded-lg bg-prism-500/20 text-prism-adaptive font-bold text-[10px] hover:bg-prism-500/30 shrink-0"
+                                                                >
+                                                                    โหลดเรดาร์ 5 แกน →
+                                                                </button>
+                                                            )}
+                                                        </div>
                                                     )}
                                                 </div>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </section>
-
-                            {/* RIGHT (5 COLS): EXECUTIVE AI CHAT */}
-                            <section className={`lg:col-span-5 ${mobileTab === 'ai' || mobileTab === 'overview' ? 'block' : 'hidden'} lg:block`}>
-                                <div className="spatial-card rounded-[1.75rem] flex flex-col h-[580px] lg:h-[760px] overflow-hidden border-prism-400/25">
-                                    <div className="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between gap-2 shrink-0">
-                                        <div className="flex items-center gap-3 min-w-0">
-                                            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-aurora-400 to-prism-400 text-void-950 flex items-center justify-center shadow-lg shrink-0">
-                                                <Icon name="Cpu" size={20} />
-                                            </div>
-                                            <div className="min-w-0">
-                                                <h2 className="font-display font-bold text-sm sm:text-base text-primary-adaptive truncate">
-                                                    AI วิเคราะห์เชิงนโยบาย
-                                                </h2>
-                                                <p className="text-[11px] text-accent-adaptive font-semibold flex items-center gap-1.5">
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-aurora-400 animate-pulse" />
-                                                    วิเคราะห์สถิติ 13 เขต • PDPA Zero-PII
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <button
-                                            type="button"
-                                            onClick={() => playPolicyVoice(messages[messages.length - 1]?.text || executiveBrief.speechText)}
-                                            className={`px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shrink-0 ${
-                                                isSpeaking
-                                                    ? 'bg-rose-500 text-white'
-                                                    : 'spatial-soft text-accent-adaptive'
-                                            }`}
-                                        >
-                                            <Icon name={isSpeaking ? 'VolumeX' : 'Volume2'} size={15} />
-                                            {isSpeaking ? 'หยุด' : 'ฟังสรุป'}
-                                        </button>
-                                    </div>
-
-                                    <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-3">
-                                        {isLoadingCloud && (
-                                            <div className="text-center py-6 text-xs text-muted-adaptive">กำลังซิงค์สถิติไม่ระบุตัวตนจาก Cloud...</div>
+                                            </>
                                         )}
-
-                                        {messages.map((m) => (
-                                            <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                                <div className={`max-w-[92%] p-3.5 rounded-2xl text-xs sm:text-sm leading-relaxed whitespace-pre-line ${
-                                                    m.role === 'user'
-                                                        ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-bold rounded-br-sm'
-                                                        : 'spatial-soft text-primary-adaptive rounded-bl-sm'
-                                                }`}>
-                                                    {m.text}
-                                                </div>
-                                            </div>
-                                        ))}
-
-                                        {isAiThinking && (
-                                            <div className="flex justify-start">
-                                                <div className="spatial-soft px-4 py-3 rounded-2xl text-xs font-bold text-prism-adaptive flex items-center gap-2">
-                                                    <span className="w-2 h-2 rounded-full bg-prism-400 animate-bounce" />
-                                                    AI กำลังวิเคราะห์สถิติ 13 เขตสุขภาพ...
-                                                </div>
-                                            </div>
-                                        )}
-                                        <div ref={chatEndRef} />
                                     </div>
+                                </section>
 
-                                    <div className="p-3 sm:p-4 border-t border-white/10 space-y-2.5 shrink-0">
-                                        <div className="flex gap-1.5 overflow-x-auto custom-scrollbar pb-1">
-                                            {quickPrompts.map((qp, idx) => (
+                                {/* 4. AI Executive Policy Brief & Interactive Q&A */}
+                                <section className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+                                    <div className="lg:col-span-5 spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3">
+                                        <div className="flex items-center justify-between gap-2">
+                                            <div>
+                                                <span className="font-mono text-[10px] font-bold text-amber-400 uppercase">AUTO POLICY BRIEF</span>
+                                                <h3 className="font-display font-extrabold text-base text-primary-adaptive">รายงานสรุปผู้บริหารพร้อมส่งต่อ</h3>
+                                            </div>
+                                            <div className="flex items-center gap-1.5">
                                                 <button
-                                                    key={idx}
                                                     type="button"
-                                                    onClick={() => handleSendQuestion(null, qp)}
-                                                    className="spatial-soft shrink-0 px-3 py-1.5 rounded-full text-[11px] font-bold text-secondary-adaptive hover:text-accent-adaptive transition-colors"
+                                                    onClick={() => handleSpeakExecutiveSummary(aiAnswer || policyBriefText)}
+                                                    className={`px-3 py-1.5 rounded-xl text-xs font-bold inline-flex items-center gap-1 ${isSpeaking ? 'bg-rose-500 text-white' : 'spatial-soft text-prism-adaptive'}`}
                                                 >
+                                                    <Icon name={isSpeaking ? 'Square' : 'Volume2'} size={14} /> {isSpeaking ? 'หยุด' : 'ฟังสรุป'}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => { copyTextSafe(aiAnswer || policyBriefText); showToast('คัดลอกรายงาน Policy Brief เรียบร้อยค่ะ'); }}
+                                                    className="spatial-soft px-3 py-1.5 rounded-xl text-xs font-bold text-accent-adaptive inline-flex items-center gap-1"
+                                                >
+                                                    <Icon name="Copy" size={14} /> คัดลอก
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <pre className="spatial-soft p-3.5 rounded-2xl text-xs text-secondary-adaptive whitespace-pre-wrap font-sans leading-relaxed">
+                                            {policyBriefText}
+                                        </pre>
+                                    </div>
+
+                                    <div className="lg:col-span-7 spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3.5">
+                                        <div>
+                                            <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">AI EXECUTIVE POLICY ANALYST</span>
+                                            <h3 className="font-display font-extrabold text-base text-primary-adaptive">ถาม AI วิเคราะห์นโยบายและผลวิจัย R2R</h3>
+                                        </div>
+
+                                        <div className="flex flex-wrap gap-1.5">
+                                            {quickPrompts.map((qp, i) => (
+                                                <button key={i} type="button" disabled={aiBusy} onClick={() => handleAskExecutiveAi(null, qp)} className="spatial-soft px-3 py-1.5 rounded-full text-xs font-bold text-prism-adaptive hover:border-prism-400">
                                                     {qp}
                                                 </button>
                                             ))}
                                         </div>
 
-                                        <form onSubmit={handleSendQuestion} className="flex items-center gap-2">
+                                        {aiAnswer && (
+                                            <div className="p-4 rounded-2xl bg-aurora-500/10 border border-aurora-400/35 text-xs sm:text-sm text-primary-adaptive whitespace-pre-line leading-relaxed">
+                                                {aiAnswer}
+                                            </div>
+                                        )}
+
+                                        <form onSubmit={(e) => handleAskExecutiveAi(e)} className="flex items-center gap-2">
                                             <input
                                                 type="text"
-                                                value={chatInput}
-                                                onChange={e => setChatInput(e.target.value)}
-                                                placeholder={isListening ? 'กำลังรับเสียงพูด...' : 'ถามข้อมูลสถิติ จุดอ่อนรายเขต หรือนโยบาย...'}
-                                                disabled={isAiThinking}
+                                                value={aiQuestion}
+                                                onChange={e => setAiQuestion(e.target.value)}
+                                                disabled={aiBusy}
+                                                placeholder="พิมพ์คำถามเชิงนโยบาย เช่น เขตไหนควรเร่งสนับสนุน หรือสรุปค่า SUS..."
                                                 className="touch-target spatial-input flex-1 px-4 py-2.5 rounded-2xl text-sm"
                                             />
-                                            <button
-                                                type="button"
-                                                onClick={toggleMic}
-                                                aria-label="สั่งงานด้วยเสียง"
-                                                className={`touch-target w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 transition-all ${
-                                                    isListening
-                                                        ? 'bg-rose-500 text-white shadow-md animate-pulse'
-                                                        : 'spatial-soft text-accent-adaptive'
-                                                }`}
-                                            >
-                                                <Icon name="Mic" size={18} />
-                                            </button>
-                                            <button
-                                                type="submit"
-                                                disabled={!chatInput.trim() || isAiThinking}
-                                                aria-label="ส่งคำถาม"
-                                                className="touch-target w-11 h-11 rounded-2xl bg-gradient-to-r from-aurora-400 to-prism-400 disabled:opacity-40 text-void-950 flex items-center justify-center shrink-0 shadow-md"
-                                            >
-                                                <Icon name="Send" size={18} />
+                                            <button type="submit" disabled={!aiQuestion.trim() || aiBusy} className="rjc2-pill-btn touch-target px-5 rounded-2xl font-display font-extrabold text-xs shrink-0 disabled:opacity-40">
+                                                {aiBusy ? 'กำลังวิเคราะห์...' : 'ถาม AI'}
                                             </button>
                                         </form>
                                     </div>
-                                </div>
-                            </section>
-                        </div>
+                                </section>
+                            </>
+                        )}
                     </main>
-
-                    {/* Smartphone Bottom Dock */}
-                    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 spatial-dock px-3 pt-1.5 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] no-print">
-                        <div className="grid grid-cols-3 gap-1.5 max-w-md mx-auto">
-                            {[
-                                { id: 'overview', label: 'ภาพรวม KPI', icon: 'LayoutDashboard' },
-                                { id: 'regions', label: 'แผนที่ & เรดาร์', icon: 'MapPin' },
-                                { id: 'ai', label: 'ถาม AI', icon: 'Cpu' }
-                            ].map(item => {
-                                const active = mobileTab === item.id;
-                                return (
-                                    <button
-                                        key={item.id}
-                                        type="button"
-                                        onClick={() => { setMobileTab(item.id); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                                        className={`touch-target flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-xl text-[11px] font-bold transition-all active:scale-95 ${
-                                            active
-                                                ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 shadow-sm'
-                                                : 'text-secondary-adaptive'
-                                        }`}
-                                    >
-                                        <Icon name={item.icon} size={18} />
-                                        <span>{item.label}</span>
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </nav>
 
                     <ToastBanner toast={toast} />
                 </div>
