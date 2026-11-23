@@ -216,6 +216,19 @@
         -webkit-backdrop-filter: blur(22px) saturate(165%);
         border-top: 1px solid var(--surface-border);
       }
+      @keyframes rjcAmbientRun {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+      .rjc-ambient-bar {
+        height: 4px;
+        width: 100%;
+        background: linear-gradient(90deg, #6ee7b7, #38bdf8, #818cf8, #f0abfc, #6ee7b7);
+        background-size: 280% 100%;
+        animation: rjcAmbientRun 2s linear infinite;
+        box-shadow: 0 0 14px rgba(56, 189, 248, 0.7);
+      }
       @keyframes labSpin { to { transform: rotate(360deg); } }
     </style>
 
@@ -900,6 +913,153 @@
                     ? `You completed ${learnerMsgs.length} turns with ${silenceHits} therapeutic silence pauses. Empathy & clarity scored ${overall}/100.`
                     : `คุณสื่อสารครบ ${learnerMsgs.length} รอบ ใช้ความเงียบเยียวยา ${silenceHits} ครั้ง คะแนนรวมทักษะสื่อสาร 5 แกนอยู่ที่ ${overall}/100 คะแนนค่ะ`
             };
+        }
+
+        // ============================================================================
+        // 2.5 AI LAB ADVISOR (วิเคราะห์ประวัติผู้เรียน + แนะนำรูปแบบ/ระดับ/เคสก่อนเข้าฝึก)
+        // ============================================================================
+        const LAB_GOAL_PRESETS = [
+            { id: 'auto', label: 'AI วิเคราะห์ให้', icon: 'Sparkles' },
+            { id: 'beginner', label: 'เพิ่งฝึกครั้งแรก', icon: 'Compass' },
+            { id: 'quick', label: 'เวลาน้อย ซ้อมไว', icon: 'Clock' },
+            { id: 'hard_conflict', label: 'ฝึกเคสหิน 2 เสียง', icon: 'ShieldAlert' },
+            { id: 'english', label: 'ฝึกภาษาอังกฤษ', icon: 'Globe' }
+        ];
+
+        function computeLabRecommendation(learnerObj, goalId = 'auto') {
+            const addrName = extractDefaultAddressName(learnerObj, false);
+            const hist = Array.isArray(learnerObj?.skillLabHistory) ? learnerObj.skillLabHistory : [];
+            const bestScore = typeof learnerObj?.skillLabBestScore === 'number'
+                ? learnerObj.skillLabBestScore
+                : (hist.length > 0 ? Math.max(...hist.map(h => Number(h?.score || 0))) : null);
+            const practicedIds = new Set(hist.map(h => h?.personaId).filter(Boolean));
+            const latestRadar = learnerObj?.skillLabLatestRadar || null;
+
+            const weakAxisEntry = latestRadar
+                ? RADAR_AXES
+                    .map(a => ({ ...a, val: Number(latestRadar[a.key] || 0) }))
+                    .filter(a => a.val > 0)
+                    .sort((a, b) => a.val - b.val)[0]
+                : null;
+
+            // โหมดเลือกเป้าหมายเองแบบเร่งด่วน
+            if (goalId === 'beginner') {
+                return {
+                    modeId: 'roleplay_th',
+                    difficultyId: 'normal',
+                    personaId: 'standard',
+                    hologramStyle: 'lotus',
+                    badge: 'AI แนะนำสำหรับผู้เริ่มต้น',
+                    headline: 'เริ่มจาก Roleplay ไทย • ระดับ Normal • เคสที่ 1 (คุณพ่อ)',
+                    reason: 'เคสคุณพ่อเป็นสถานการณ์มาตรฐานที่พบบ่อยที่สุด ระดับ Normal จะแสดงปุ่มแนวทางคำพูดช่วยให้คุณจับจังหวะการอธิบายภาวะสมองตายและการเว้นความเงียบ 2.5 วินาทีได้อย่างมั่นใจค่ะ',
+                    speechText: `สวัสดีค่ะ${addrName} สำหรับการเริ่มฝึกครั้งแรก แนะนำให้เลือก โรลเพลย์เต็มรูปแบบภาษาไทย ระดับนอร์มอล และเคสที่หนึ่งเรื่องญาติสับสนภาวะสมองตายค่ะ เพราะมีปุ่มแนวทางคำพูดคอยช่วย และใช้ดอกบัวแสงเพื่อให้เห็นจังหวะที่ญาติค่อยๆ เปิดใจค่ะ`
+                };
+            }
+            if (goalId === 'quick') {
+                const pickPersona = !practicedIds.has('belief') ? 'belief' : 'standard';
+                const pTitle = pickPersona === 'belief' ? 'เคสที่ 2 (ความเชื่อและพิธีกรรม)' : 'เคสที่ 1 (คุณพ่อ)';
+                return {
+                    modeId: 'micro_drill',
+                    difficultyId: 'normal',
+                    personaId: pickPersona,
+                    hologramStyle: 'particles',
+                    badge: 'AI แนะนำสำหรับเวลาจำกัด (4 ด่านกระชับ)',
+                    headline: `เลือก Micro-Drill (4 ด่าน) • ระดับ Normal • ${pTitle}`,
+                    reason: 'โหมด Micro-Drill จบครบการประเมิน 5 แกนภายใน 4 รอบสนทนา เหมาะสำหรับทบทวนคำถามเฉพาะจุดบนสมาร์ทโฟนช่วงพักเวรค่ะ',
+                    speechText: `หากมีเวลาจำกัด แนะนำโหมด ไมโครดริล สี่ด่าน ระดับนอร์มอล คู่กับ${pTitle} ค่ะ ใช้เวลาเพียงไม่กี่นาทีก็ได้ฝึกตอบคำถามสำคัญและรับผลประเมินครบทั้งห้าแกนค่ะ`
+                };
+            }
+            if (goalId === 'hard_conflict') {
+                return {
+                    modeId: 'roleplay_th',
+                    difficultyId: 'hard',
+                    personaId: 'conflict',
+                    hologramStyle: 'dual',
+                    badge: 'AI แนะนำสำหรับยกระดับความเชี่ยวชาญ',
+                    headline: 'ท้าทาย Roleplay ไทย • ระดับ Hard • เคสที่ 3 (ความขัดแย้ง 2 เสียง)',
+                    reason: 'โหมด Hard ซ่อนแนวทางคำพูดเพื่อให้คิดตอบเอง 100% คู่กับเคส 3 ที่มีภรรยาและคุณแม่โต้ตอบ 2 เสียงจริง พร้อม Hologram ดวงแสงคู่ 2 เสียงค่ะ',
+                    speechText: `สำหรับความท้าทายระดับสูง แนะนำ โรลเพลย์ภาษาไทย ระดับฮาร์ด ในเคสที่สาม ความขัดแย้งในครอบครัวสองเสียง พร้อมโฮโลแกรมดวงแสงคู่ค่ะ จะได้ฝึกวางตัวเป็นกลางระหว่างภรรยากับคุณแม่โดยไม่ใช้ตัวช่วยค่ะ`
+                };
+            }
+            if (goalId === 'english') {
+                return {
+                    modeId: 'roleplay_en',
+                    difficultyId: bestScore && bestScore >= 85 ? 'hard' : 'normal',
+                    personaId: 'standard',
+                    hologramStyle: 'liquid',
+                    badge: 'AI แนะนำสำหรับฝึกสื่อสารนานาชาติ (EN)',
+                    headline: `เลือก International Family (EN) • ระดับ ${bestScore && bestScore >= 85 ? 'Hard' : 'Normal'} • เคสที่ 1`,
+                    reason: 'ฝึกอธิบายภาวะสมองตายและหลัก Decoupling เป็นภาษาอังกฤษอย่างสุภาพอ่อนโยน พร้อมระบบเสียงและการประเมิน 5 แกนมาตรฐานสากลค่ะ',
+                    speechText: `สำหรับฝึกสื่อสารกับครอบครัวชาวต่างชาติ แนะนำโหมด อินเตอร์เนชั่นแนลแฟมิลี่ ภาษาอังกฤษ คู่กับเคสที่หนึ่งค่ะ จะได้ฝึกใช้คำศัพท์ทางการแพทย์ที่สุภาพและนุ่มนวลเป็นภาษาอังกฤษค่ะ`
+                };
+            }
+
+            // โหมดอัตโนมัติ (AI วิเคราะห์จากประวัติการเรียนและคะแนนจริงของผู้เรียน)
+            if (hist.length === 0) {
+                const isTC = /TC|รับบริจาค|ปลูกถ่าย/i.test(`${learnerObj?.workContext || ''} ${learnerObj?.position || ''}`);
+                const isContinuing = learnerObj?.userType === 'เรียนต่อเนื่อง';
+                if (isTC || isContinuing) {
+                    return {
+                        modeId: 'roleplay_th',
+                        difficultyId: 'normal',
+                        personaId: 'belief',
+                        hologramStyle: 'lotus',
+                        badge: 'AI วิเคราะห์จากโปรไฟล์ของคุณ',
+                        headline: 'แนะนำ Roleplay ไทย • ระดับ Normal • เคสที่ 2 (ความเชื่อ & ศาสนา)',
+                        reason: `เห็นว่า${addrName}มีพื้นฐานงานรับบริจาค/เรียนต่อเนื่องอยู่แล้ว แนะนำเริ่มอุ่นเครื่องด้วยระดับ Normal ในเคสที่ 2 เพื่อฝึกตอบข้อกังวลเรื่องความเชื่อของคุณยายและพิธีศาสนาที่พบบ่อยในสังคมไทยค่ะ`,
+                        speechText: `สวัสดีค่ะ${addrName} ดิฉันดูจากโปรไฟล์ของคุณแล้ว แนะนำให้เริ่มอุ่นเครื่องด้วย โรลเพลย์เต็มรูปแบบ ระดับนอร์มอล และเคสที่สองเรื่องความเชื่อและพิธีกรรมค่ะ เมื่อมั่นใจแล้วค่อยขยับไประดับฮาร์ดในรอบถัดไปนะคะ`
+                    };
+                }
+                return {
+                    modeId: 'roleplay_th',
+                    difficultyId: 'normal',
+                    personaId: 'standard',
+                    hologramStyle: 'lotus',
+                    badge: 'AI แนะนำเฉพาะคุณ (ครั้งแรก)',
+                    headline: 'เริ่มด้วย Roleplay ไทย • ระดับ Normal • เคสที่ 1 (คุณพ่อ)',
+                    reason: `ยังไม่พบประวัติฝึกใน AI Skill Lab ค่ะ แนะนำเริ่มจากระดับ Normal (มีปุ่มแนวทางคำพูดช่วย) ในเคสที่ 1 เพื่อฝึกสร้างความคุ้นเคยกับการอธิบายเครื่องช่วยหายใจและภาวะสมองตายก่อนค่ะ`,
+                    speechText: `สวัสดีค่ะ${addrName} ยินดีต้อนรับสู่ห้องฝึกสื่อสารสามมิติค่ะ เนื่องจากเป็นการฝึกครั้งแรก แนะนำให้เลือก โรลเพลย์เต็มรูปแบบภาษาไทย ระดับนอร์มอล และเคสที่หนึ่งเรื่องคุณพ่อค่ะ ระบบจะมีปุ่มแนวทางคำพูดคอยช่วย กดปุ่มเลือกตามเอไอแนะนำด้านล่างแล้วเริ่มได้เลยนะคะ`
+                };
+            }
+
+            // เคยฝึกมาแล้ว: หาเคสที่ยังไม่เคยลอง + ปรับระดับความยากตามคะแนนเดิม
+            const unpracticed = PERSONAS.find(p => !practicedIds.has(p.id));
+            const nextPersonaId = unpracticed ? unpracticed.id : (weakAxisEntry?.key === 'clarity' ? 'distrust' : 'conflict');
+            const nextPersona = PERSONAS.find(p => p.id === nextPersonaId) || PERSONAS[0];
+            const shouldGoHard = (bestScore !== null && bestScore >= 85) || hist.length >= 2;
+            const recDiff = shouldGoHard ? 'hard' : 'normal';
+            const recHolo = nextPersonaId === 'conflict' ? 'dual' : (weakAxisEntry?.key === 'vocal' ? 'slanted' : 'liquid');
+            const weakNote = weakAxisEntry
+                ? ` จากรอบก่อนแกนที่ควรเสริมคือ “${weakAxisEntry.labelTH}” (${weakAxisEntry.val}/100)`
+                : '';
+
+            return {
+                modeId: hist.length >= 4 && bestScore >= 88 ? 'roleplay_en' : 'roleplay_th',
+                difficultyId: recDiff,
+                personaId: nextPersonaId,
+                hologramStyle: recHolo,
+                badge: `AI วิเคราะห์จากประวัติฝึก ${hist.length} ครั้ง (สูงสุด ${bestScore ?? '-'}/100)`,
+                headline: `แนะนำ ${hist.length >= 4 && bestScore >= 88 ? 'International (EN)' : 'Roleplay ไทย'} • ระดับ ${recDiff === 'hard' ? 'Hard' : 'Normal'} • ${nextPersona.titleTH}`,
+                reason: `${addrName}ฝึกไปแล้ว ${hist.length} ครั้ง${weakNote} แนะนำต่อยอดด้วย${unpracticed ? 'เคสที่ยังไม่เคยฝึก' : 'เคสท้าทาย'}ในระดับ ${recDiff === 'hard' ? 'Hard (คิดตอบเอง 100%)' : 'Normal'} เพื่อเพิ่มความแม่นยำก่อนสอบ Post-test ค่ะ`,
+                speechText: `ยินดีต้อนรับกลับมาค่ะ${addrName} คุณฝึกไปแล้ว ${hist.length} ครั้ง คะแนนสูงสุด ${bestScore ?? 80} คะแนน${weakNote} รอบนี้แนะนำระดับ ${recDiff === 'hard' ? 'ฮาร์ด' : 'นอร์มอล'} ใน${nextPersona.titleTH} ค่ะ กดปุ่มตั้งค่าตามเอไอแนะนำแล้วเข้าห้องฝึกได้เลยนะคะ`
+            };
+        }
+
+        function answerLabAdvisorOffline(question, rec, learnerObj) {
+            const q = String(question || '').toLowerCase();
+            if (q.includes('normal') || q.includes('hard') || q.includes('ยาก') || q.includes('ระดับ')) {
+                return '• ระดับ Normal: มีปุ่ม “แนวทางคำพูด” ให้แตะส่งหรือปรับใช้ได้ เหมาะสำหรับผู้เริ่มต้นและรอบแรกค่ะ\n• ระดับ Hard: ซ่อนแนวทางคำพูดทั้งหมด (คิดพูดเอง 100%) และญาติจะซักถามลึก/อ่อนไหวมากขึ้น เหมาะสำหรับซ้อมหน้างานจริงค่ะ';
+            }
+            if (q.includes('micro') || q.includes('drill') || q.includes('roleplay') || q.includes('รูปแบบ') || q.includes('ต่างกัน')) {
+                return '• Roleplay เต็มรูปแบบ (5–6 รอบ): ฝึกครบตั้งแต่เปิดใจ อธิบายสมองตาย จนญาติตัดสินใจ 3 รูปแบบ\n• Micro-Drill (4 ด่าน): กระชับ จบไว เหมาะสำหรับเวลาจำกัด\n• International Family (EN): ฝึกสื่อสารภาษาอังกฤษกับญาติชาวต่างชาติค่ะ';
+            }
+            if (q.includes('เคส') || q.includes('สถานการณ์') || q.includes('ไหนดี')) {
+                return 'แนะนำเรียงลำดับตามความง่ายไปยากค่ะ:\n1. เคสคุณพ่อ (มาตรฐาน สมองตาย & เครื่องช่วยหายใจ)\n2. เคสน้องชาย (ความเชื่อคุณยาย & พิธีศาสนา)\n3. เคสคุณแม่ (ระแวงลัดคิว & ค่าใช้จ่าย)\n4. เคสคุณต้น (ยากสุด! ขัดแย้ง 2 เสียง ภรรยา vs คุณแม่) ค่ะ';
+            }
+            if (q.includes('ผ่าน') || q.includes('คะแนน') || q.includes('เกณฑ์')) {
+                return 'เมื่อคุยจบหรือกด “จบ & ประเมิน” ระบบจะให้ AI Supervisor ประเมิน 5 แกน (ห้องรับรอง, อารมณ์ร่วม, ข้อมูลสมองตาย, น้ำเสียง/ความเงียบ 2.5 วิ, ไม่เร่งรัด) และบันทึกผ่านขั้นที่ 3 เพื่อปลดล็อก Post-test อัตโนมัติค่ะ';
+            }
+            return `สำหรับ${extractDefaultAddressName(learnerObj, false)} ตอนนี้แนะนำ: ${rec.headline}\n${rec.reason}\nกดปุ่ม “เลือกตาม AI แนะนำทันที” ด้านบนได้เลยค่ะ`;
         }
 
         // ============================================================================
@@ -1731,10 +1891,20 @@
             const [showDecompressModal, setShowDecompressModal] = useState(false);
             const [decompressSec, setDecompressSec] = useState(15);
 
+            // AI Lab Advisor States (ก่อนเข้าห้องฝึก)
+            const [advisorGoalId, setAdvisorGoalId] = useState('auto');
+            const [advisorExpanded, setAdvisorExpanded] = useState(true);
+            const [advisorVoicePhase, setAdvisorVoicePhase] = useState('idle'); // idle | loading | speaking
+            const [advisorQuestion, setAdvisorQuestion] = useState('');
+            const [advisorReply, setAdvisorReply] = useState('');
+            const [advisorAsking, setAdvisorAsking] = useState(false);
+
             const [toast, setToast] = useState({ visible: false, text: '', type: 'success' });
 
             // Refs
             const voiceSessionRef = useRef(0);
+            const advisorSessionRef = useRef(0);
+            const advisorAudioUrlRef = useRef(null);
             const sharedAudioRef = useRef(null);
             const activeAudioUrlRef = useRef(null);
             const recRef = useRef(null);
@@ -1768,6 +1938,15 @@
                 [activePersona.id, learnerTurns, isEn, learnerAddressName]
             );
             const dualSpeakerKey = /แม่|mother/i.test(activeSpeakerBadge) ? 'mother' : 'wife';
+            const activeRecommendation = useMemo(
+                () => computeLabRecommendation(learner, advisorGoalId),
+                [learner, advisorGoalId]
+            );
+            const isRecommendationApplied =
+                modeId === activeRecommendation.modeId &&
+                difficultyId === activeRecommendation.difficultyId &&
+                personaId === activeRecommendation.personaId &&
+                hologramStyle === activeRecommendation.hologramStyle;
 
             const showToast = useCallback((text, type = 'success') => {
                 setToast({ visible: true, text: String(text), type });
@@ -1890,14 +2069,47 @@
                 setIsSpeaking(false);
             }, []);
 
-            useEffect(() => () => stopAiVoice(), [stopAiVoice]);
+            const stopAdvisorVoice = useCallback(() => {
+                advisorSessionRef.current += 1;
+                if (sharedAudioRef.current) {
+                    try {
+                        sharedAudioRef.current.onended = null;
+                        sharedAudioRef.current.onerror = null;
+                        sharedAudioRef.current.pause();
+                    } catch (_) {}
+                }
+                if (advisorAudioUrlRef.current) {
+                    try { URL.revokeObjectURL(advisorAudioUrlRef.current); } catch (_) {}
+                    advisorAudioUrlRef.current = null;
+                }
+                if ('speechSynthesis' in window) {
+                    try { window.speechSynthesis.cancel(); } catch (_) {}
+                }
+                setAdvisorVoicePhase('idle');
+            }, []);
 
-            const speakRelativeSegments = useCallback(async (rawText, emoKey, personaObj) => {
-                if (!voiceEnabled) return;
+            useEffect(() => () => { stopAiVoice(); stopAdvisorVoice(); }, [stopAiVoice, stopAdvisorVoice]);
+
+            const handleApplyRecommendation = useCallback((recOverride = null) => {
+                const rec = recOverride || activeRecommendation;
+                setModeId(rec.modeId);
+                setDifficultyId(rec.difficultyId);
+                setPersonaId(rec.personaId);
+                handleSelectHologramStyle(rec.hologramStyle);
+                showToast('ตั้งค่ารูปแบบ ระดับ เคส และ Hologram ตามที่ AI แนะนำแล้วค่ะ ✨');
+            }, [activeRecommendation, handleSelectHologramStyle, showToast]);
+
+            const handleSpeakAdvisor = useCallback(async () => {
+                if (advisorVoicePhase !== 'idle') {
+                    stopAdvisorVoice();
+                    return;
+                }
+                unlockMobileAudio();
                 stopAiVoice();
-                const sessionId = voiceSessionRef.current;
-                const segs = splitIntoVoiceSegments(rawText, personaObj, isEn);
-                if (segs.length === 0) return;
+                stopAdvisorVoice();
+                const sessionId = advisorSessionRef.current;
+                const speakText = prepareNaturalSpeech(advisorReply || activeRecommendation.speechText, false);
+                if (!speakText) return;
 
                 if (!sharedAudioRef.current) {
                     const a = new Audio();
@@ -1906,40 +2118,174 @@
                     sharedAudioRef.current = a;
                 }
 
-                const emo = EMOTION_PHYSICS[emoKey] || EMOTION_PHYSICS.CONFUSED;
-                const stylePrompt = isEn ? emo.ttsStyleEN : emo.ttsStyleTH;
+                setAdvisorVoicePhase('loading');
+                let played = false;
+                if (appsScriptUrl) {
+                    try {
+                        const ctrl = new AbortController();
+                        const tm = setTimeout(() => ctrl.abort(), 16000);
+                        const rawRes = await fetch(appsScriptUrl, {
+                            method: 'POST',
+                            redirect: 'follow',
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                            body: JSON.stringify({
+                                action: 'callGeminiTTS',
+                                text: speakText,
+                                voiceName: 'Sulafat',
+                                languageCode: 'th-TH',
+                                style: 'พูดภาษาไทยด้วยน้ำเสียงผู้หญิงที่อบอุ่น นุ่มนวล เป็นมิตร เหมือนอาจารย์ที่ปรึกษาแนะนำการฝึกสื่อสารก่อนเข้าห้องทดสอบ'
+                            }),
+                            signal: ctrl.signal
+                        });
+                        clearTimeout(tm);
+                        const txt = await rawRes.text();
+                        const res = JSON.parse(txt || '{}');
+                        if (advisorSessionRef.current !== sessionId) return;
+                        if (res?.status === 'success' && res.inlineData?.data) {
+                            const rate = parseInt(res.inlineData.mimeType?.match(/rate=(\d+)/)?.[1] ?? '24000', 10);
+                            const wavUrl = pcm16ToWavUrl(res.inlineData.data, rate);
+                            if (wavUrl) {
+                                advisorAudioUrlRef.current = wavUrl;
+                                setAdvisorVoicePhase('speaking');
+                                played = await new Promise((resolve) => {
+                                    const audio = sharedAudioRef.current;
+                                    audio.muted = false;
+                                    audio.src = wavUrl;
+                                    audio.onended = () => resolve(true);
+                                    audio.onerror = () => resolve(false);
+                                    try { audio.load(); } catch (_) {}
+                                    const p = audio.play();
+                                    if (p && typeof p.catch === 'function') p.catch(() => resolve(false));
+                                });
+                            }
+                        }
+                    } catch (_) {}
+                }
+
+                if (!played && advisorSessionRef.current === sessionId && 'speechSynthesis' in window) {
+                    setAdvisorVoicePhase('speaking');
+                    await new Promise((resolve) => {
+                        try {
+                            window.speechSynthesis.cancel();
+                            const utter = new SpeechSynthesisUtterance(speakText);
+                            utter.lang = 'th-TH';
+                            utter.rate = 0.96;
+                            if (typeof CORE.pickNaturalBrowserVoice === 'function') {
+                                const v = CORE.pickNaturalBrowserVoice('th');
+                                if (v) utter.voice = v;
+                            }
+                            utter.onend = () => resolve();
+                            utter.onerror = () => resolve();
+                            window.speechSynthesis.speak(utter);
+                        } catch (_) {
+                            resolve();
+                        }
+                    });
+                }
+
+                if (advisorSessionRef.current === sessionId) {
+                    setAdvisorVoicePhase('idle');
+                }
+            }, [advisorVoicePhase, stopAdvisorVoice, unlockMobileAudio, stopAiVoice, advisorReply, activeRecommendation.speechText, appsScriptUrl]);
+
+            const handleAskAdvisor = useCallback(async (e, presetQ = null) => {
+                if (e) e.preventDefault();
+                const q = String(presetQ ?? advisorQuestion).trim();
+                if (!q || advisorAsking) return;
+                stopAdvisorVoice();
+                setAdvisorQuestion('');
+                setAdvisorAsking(true);
+
+                const sysPrompt = `คุณคือ AI อาจารย์ที่ปรึกษาประจำห้องฝึกสื่อสาร 3 มิติ AI Skill Lab (rjcloud.organ 2.0)
+หน้าที่: ช่วยแนะนำผู้เรียนว่าควรเลือกรูปแบบ ระดับความยาก และเคสไหนก่อนเข้าห้องทดสอบ
+ข้อมูลระบบ:
+- รูปแบบ: 1) Roleplay เต็มรูปแบบ ไทย (5-6 รอบ) 2) Micro-Drill (4 ด่าน กระชับ) 3) International Family (English)
+- ระดับ: Normal (มีแนวทางคำพูดช่วย เหมาะกับผู้เริ่มต้น) vs Hard (ซ่อนแนวทาง คิดพูดเอง 100% ญาติซักลึก)
+- 4 เคส: 1) คุณพ่อ-สับสนสมองตาย (มาตรฐาน) 2) น้องชาย-ความเชื่อคุณยาย 3) คุณต้น-ขัดแย้ง 2 เสียง (ยากสุด) 4) คุณแม่-ระแวงลัดคิว/ค่าใช้จ่าย
+- ข้อมูลผู้เรียนปัจจุบัน: ชื่อ ${learner?.name || 'ผู้เรียน'}, เคยฝึกแล้ว ${(learner?.skillLabHistory || []).length} ครั้ง, คะแนนสูงสุด ${learner?.skillLabBestScore ?? 'ยังไม่เคยฝึก'}
+- ค่าที่ระบบแนะนำตอนนี้: ${activeRecommendation.headline}
+ตอบภาษาไทยกระชับ 2-4 บรรทัด อ่านง่ายบนมือถือ เป็นมิตรและให้กำลังใจค่ะ`;
+
+                let reply = '';
+                if (appsScriptUrl) {
+                    try {
+                        const ctrl = new AbortController();
+                        const tm = setTimeout(() => ctrl.abort(), 12000);
+                        const rawRes = await fetch(appsScriptUrl, {
+                            method: 'POST',
+                            redirect: 'follow',
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                            body: JSON.stringify({ action: 'callGemini', prompt: q, systemInstruction: sysPrompt }),
+                            signal: ctrl.signal
+                        });
+                        clearTimeout(tm);
+                        const txt = await rawRes.text();
+                        const res = JSON.parse(txt || '{}');
+                        if (res?.status === 'success' && res.text) reply = res.text;
+                    } catch (_) {}
+                }
+                if (!reply) {
+                    reply = answerLabAdvisorOffline(q, activeRecommendation, learner);
+                }
+                setAdvisorReply(reply);
+                setAdvisorAsking(false);
+            }, [advisorQuestion, advisorAsking, stopAdvisorVoice, learner, activeRecommendation, appsScriptUrl]);
+
+            const speakRelativeSegments = useCallback(async (rawText, emoKey, personaObj) => {
+                if (!voiceEnabled) {
+                    silenceAnchorRef.current = Date.now();
+                    silenceCountedForTurnRef.current = false;
+                    return;
+                }
+                stopAiVoice();
+                const sessionId = voiceSessionRef.current;
+                const segments = splitIntoVoiceSegments(rawText, personaObj, isEn);
+                if (segments.length === 0) return;
+
+                const emoMeta = EMOTION_PHYSICS[emoKey] || EMOTION_PHYSICS.CONFUSED;
+                const ttsStyle = isEn ? emoMeta.ttsStyleEN : emoMeta.ttsStyleTH;
+
+                if (!sharedAudioRef.current) {
+                    const a = new Audio();
+                    a.playsInline = true;
+                    a.setAttribute('playsinline', '');
+                    sharedAudioRef.current = a;
+                }
+
                 setIsSpeaking(true);
 
-                for (let idx = 0; idx < segs.length; idx++) {
+                for (let i = 0; i < segments.length; i++) {
                     if (voiceSessionRef.current !== sessionId) return;
-                    const seg = segs[idx];
-                    const speakText = prepareNaturalSpeech(seg.text, isEn);
-                    if (!speakText) continue;
-                    setActiveSpeakerBadge(seg.speakerLabel);
+                    const seg = segments[i];
+                    setActiveSpeakerBadge(seg.speakerLabel || (isEn ? 'Relative' : (personaObj?.speakerRoleTH || 'ญาติผู้ป่วย')));
+                    const cleanSpeech = prepareNaturalSpeech(seg.text, isEn);
+                    if (!cleanSpeech) continue;
 
-                    let played = false;
-                    let blockedByBrowser = false;
+                    let playedViaCloud = false;
+                    let blockedByAutoplay = false;
+
                     if (appsScriptUrl) {
                         try {
                             const ctrl = new AbortController();
-                            const t = setTimeout(() => ctrl.abort(), 18000);
+                            const tm = setTimeout(() => ctrl.abort(), 16000);
                             const rawRes = await fetch(appsScriptUrl, {
                                 method: 'POST',
                                 redirect: 'follow',
                                 headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                                 body: JSON.stringify({
                                     action: 'callGeminiTTS',
-                                    text: speakText,
-                                    voiceName: seg.voiceName || 'Sulafat',
+                                    text: cleanSpeech,
+                                    voiceName: seg.voiceName || personaObj?.voiceName || 'Sulafat',
                                     languageCode: isEn ? 'en-US' : 'th-TH',
-                                    style: stylePrompt
+                                    style: ttsStyle
                                 }),
                                 signal: ctrl.signal
                             });
-                            clearTimeout(t);
+                            clearTimeout(tm);
                             const txt = await rawRes.text();
                             const res = JSON.parse(txt || '{}');
                             if (voiceSessionRef.current !== sessionId) return;
+
                             if (res?.status === 'success' && res.inlineData?.data) {
                                 const rate = parseInt(res.inlineData.mimeType?.match(/rate=(\d+)/)?.[1] ?? '24000', 10);
                                 const wavUrl = pcm16ToWavUrl(res.inlineData.data, rate);
@@ -1948,42 +2294,47 @@
                                         try { URL.revokeObjectURL(activeAudioUrlRef.current); } catch (_) {}
                                     }
                                     activeAudioUrlRef.current = wavUrl;
-                                    const playOutcome = await new Promise((resolve) => {
+                                    const outcome = await new Promise((resolve) => {
                                         const audio = sharedAudioRef.current;
                                         audio.muted = false;
                                         audio.src = wavUrl;
                                         audio.onended = () => resolve('ok');
                                         audio.onerror = () => resolve('err');
                                         try { audio.load(); } catch (_) {}
-                                        const playPromise = audio.play();
-                                        if (playPromise && typeof playPromise.catch === 'function') {
-                                            playPromise.catch((err) => {
-                                                resolve(err && err.name === 'NotAllowedError' ? 'blocked' : 'err');
+                                        const p = audio.play();
+                                        if (p && typeof p.then === 'function') {
+                                            p.catch((err) => {
+                                                if (err && (err.name === 'NotAllowedError' || /notallowed|interact|autoplay/i.test(String(err.message || '')))) {
+                                                    resolve('blocked');
+                                                } else {
+                                                    resolve('err');
+                                                }
                                             });
                                         }
                                     });
-                                    if (playOutcome === 'ok') {
-                                        played = true;
-                                    } else if (playOutcome === 'blocked') {
-                                        blockedByBrowser = true;
-                                        setAudioBlockedRetry({ rawText, emoKey, personaObj });
-                                        break;
+                                    if (outcome === 'ok') {
+                                        playedViaCloud = true;
+                                    } else if (outcome === 'blocked') {
+                                        blockedByAutoplay = true;
                                     }
                                 }
                             }
                         } catch (_) {}
                     }
 
-                    if (blockedByBrowser) break;
+                    if (blockedByAutoplay && voiceSessionRef.current === sessionId) {
+                        setIsSpeaking(false);
+                        setAudioBlockedRetry({ rawText, emoKey, personaObj });
+                        return;
+                    }
 
-                    if (!played && voiceSessionRef.current === sessionId && 'speechSynthesis' in window) {
+                    if (!playedViaCloud && voiceSessionRef.current === sessionId && 'speechSynthesis' in window) {
                         await new Promise((resolve) => {
                             try {
                                 window.speechSynthesis.cancel();
-                                const utter = new SpeechSynthesisUtterance(speakText);
+                                const utter = new SpeechSynthesisUtterance(cleanSpeech);
                                 utter.lang = isEn ? 'en-US' : 'th-TH';
-                                utter.rate = isEn ? 0.96 : 0.94;
-                                utter.pitch = /แม่|mother/i.test(seg.speakerLabel) ? 0.9 : 1.04;
+                                utter.rate = isEn ? 0.96 : 0.95;
                                 if (typeof CORE.pickNaturalBrowserVoice === 'function') {
                                     const v = CORE.pickNaturalBrowserVoice(isEn ? 'en' : 'th');
                                     if (v) utter.voice = v;
@@ -2005,51 +2356,57 @@
                 }
             }, [voiceEnabled, stopAiVoice, isEn, appsScriptUrl]);
 
-            // ==================== 2. SPEECH RECOGNITION (MOBILE-SAFE HYBRID TAP/HOLD + ANDROID DEDUP) ====================
+            // ==================== 2. HYBRID MICROPHONE (TAP-TO-SPEAK OR PUSH-TO-TALK) ====================
             const stopMicCompletely = useCallback(() => {
-                pttAutoSendOnEndRef.current = false;
                 pttHoldActiveRef.current = false;
+                pttAutoSendOnEndRef.current = false;
                 setIsPttHolding(false);
                 setIsListening(false);
                 if (recRef.current) {
-                    try { recRef.current.stop(); } catch (_) {}
+                    try { recRef.current.abort(); } catch (_) {}
                 }
             }, []);
 
             useEffect(() => {
                 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-                if (!SR) return;
+                if (!SR) {
+                    recRef.current = null;
+                    return;
+                }
                 const rec = new SR();
+                rec.lang = selectedMode.speechLang || 'th-TH';
                 rec.continuous = !isMobileDevice;
                 rec.interimResults = true;
-                rec.lang = selectedMode.speechLang;
 
                 rec.onresult = (ev) => {
-                    let finalStr = '';
-                    let interimStr = '';
+                    let interim = '';
+                    let rebuiltFinal = '';
                     for (let i = 0; i < ev.results.length; i++) {
-                        const part = String(ev.results[i][0]?.transcript || '').trim();
-                        if (!part) continue;
+                        const segText = String(ev.results[i][0]?.transcript || '').trim();
+                        if (!segText) continue;
                         if (ev.results[i].isFinal) {
-                            finalStr = finalStr ? `${finalStr} ${part}` : part;
+                            rebuiltFinal += (rebuiltFinal ? ' ' : '') + segText;
                         } else {
-                            interimStr = interimStr ? `${interimStr} ${part}` : part;
+                            interim += (interim ? ' ' : '') + segText;
                         }
                     }
-                    const combined = [finalStr, interimStr].filter(Boolean).join(' ').trim();
-                    finalTranscriptRef.current = finalStr;
+                    if (rebuiltFinal) finalTranscriptRef.current = rebuiltFinal;
+                    const combined = [finalTranscriptRef.current, interim].filter(Boolean).join(' ').trim();
                     pttTranscriptRef.current = combined;
                     setChatInput(combined);
                 };
+
                 rec.onerror = (ev) => {
+                    const code = String(ev?.error || '');
+                    if (code === 'not-allowed' || code === 'service-not-allowed') {
+                        showToast(isEn ? 'Microphone permission denied. Please allow mic access or type below.' : 'ไม่ได้รับสิทธิ์ไมโครโฟน กรุณาอนุญาตการใช้ไมค์หรือพิมพ์คำพูดแทนค่ะ', 'error');
+                    }
                     setIsListening(false);
                     setIsPttHolding(false);
                     pttHoldActiveRef.current = false;
                     pttAutoSendOnEndRef.current = false;
-                    if (ev?.error === 'not-allowed') {
-                        showToast(isEn ? 'Microphone permission denied. Please allow mic access or type instead.' : 'ยังไม่ได้อนุญาตไมโครโฟน กรุณากดอนุญาตหรือพิมพ์คำพูดแทนได้เลยค่ะ', 'info');
-                    }
                 };
+
                 rec.onend = () => {
                     setIsListening(false);
                     setIsPttHolding(false);
@@ -2138,6 +2495,7 @@
 
             // ==================== 3. FLOW: BRIEFING -> KNOCK DOOR -> CHAT -> EVALUATE ====================
             const handleOpenBriefing = () => {
+                stopAdvisorVoice();
                 setPhase('briefing');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             };
@@ -2517,6 +2875,160 @@ ${transcript}`;
                                     </div>
                                 </section>
 
+                                {/* 0. AI แนะนำการฝึกก่อนเข้าทดสอบ (AI Lab Advisor — เหมือน AI แนะนำการเรียนในหน้าห้องเรียน) */}
+                                <section className="spatial-card rounded-[1.75rem] overflow-hidden border-aurora-400/40">
+                                    <div className="rjc-ambient-bar" />
+                                    <div className="p-4 sm:p-5 space-y-3.5">
+                                        <div className="flex flex-wrap items-start justify-between gap-2.5">
+                                            <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                                                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-aurora-400 to-prism-400 text-void-950 flex items-center justify-center shrink-0 shadow-md">
+                                                    <Icon name="Bot" size={20} />
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase block">
+                                                        {activeRecommendation.badge}
+                                                    </span>
+                                                    <h2 className="font-display font-extrabold text-sm sm:text-base text-primary-adaptive leading-snug">
+                                                        AI แนะนำรูปแบบที่เหมาะกับคุณก่อนเข้าฝึก
+                                                    </h2>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-1.5 shrink-0">
+                                                <button
+                                                    type="button"
+                                                    onClick={handleSpeakAdvisor}
+                                                    className={`px-3 py-1.5 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 transition-all ${
+                                                        advisorVoicePhase === 'speaking'
+                                                            ? 'bg-rose-500 text-white'
+                                                            : advisorVoicePhase === 'loading'
+                                                                ? 'bg-prism-500/25 border border-prism-400/50 text-prism-adaptive animate-pulse'
+                                                                : 'spatial-soft text-prism-adaptive'
+                                                    }`}
+                                                >
+                                                    <Icon name={advisorVoicePhase === 'speaking' ? 'Square' : 'Volume2'} size={14} />
+                                                    <span>{advisorVoicePhase === 'loading' ? 'เตรียมเสียง...' : advisorVoicePhase === 'speaking' ? 'หยุดเสียง' : 'ฟัง AI แนะนำ'}</span>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setAdvisorExpanded(v => !v)}
+                                                    aria-label={advisorExpanded ? 'ย่อคำแนะนำ AI' : 'ขยายคำแนะนำ AI'}
+                                                    className="spatial-soft w-8 h-8 rounded-xl text-secondary-adaptive flex items-center justify-center"
+                                                >
+                                                    <Icon name={advisorExpanded ? 'ChevronUp' : 'ChevronDown'} size={16} />
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {advisorExpanded && (
+                                            <div className="space-y-3">
+                                                {/* ปุ่มเลือกเป้าหมายแบบแตะเดียว */}
+                                                <div className="flex gap-1.5 overflow-x-auto hide-scrollbar pb-0.5">
+                                                    {LAB_GOAL_PRESETS.map(g => {
+                                                        const active = advisorGoalId === g.id;
+                                                        return (
+                                                            <button
+                                                                key={g.id}
+                                                                type="button"
+                                                                onClick={() => { setAdvisorGoalId(g.id); setAdvisorReply(''); stopAdvisorVoice(); }}
+                                                                className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-bold border inline-flex items-center gap-1.5 transition-all ${
+                                                                    active
+                                                                        ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 border-transparent font-extrabold'
+                                                                        : 'spatial-soft text-secondary-adaptive'
+                                                                }`}
+                                                            >
+                                                                <Icon name={g.icon} size={13} />
+                                                                <span>{g.label}</span>
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+
+                                                {/* กล่องสรุปคำแนะนำ + ปุ่มตั้งค่าตาม AI ทันที */}
+                                                <div className="spatial-soft rounded-2xl p-3.5 sm:p-4 space-y-2.5 border-prism-400/30">
+                                                    <p className="font-display font-bold text-xs sm:text-sm text-accent-adaptive">
+                                                        ✦ {activeRecommendation.headline}
+                                                    </p>
+                                                    <p className="text-xs sm:text-sm text-secondary-adaptive leading-relaxed">
+                                                        {activeRecommendation.reason}
+                                                    </p>
+                                                    <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+                                                        <div className="flex flex-wrap gap-1.5 text-[10px] font-mono">
+                                                            <span className="px-2 py-0.5 rounded-lg bg-prism-500/15 text-prism-adaptive font-bold">
+                                                                {PRACTICE_MODES.find(m => m.id === activeRecommendation.modeId)?.badge}
+                                                            </span>
+                                                            <span className="px-2 py-0.5 rounded-lg bg-aurora-500/15 text-accent-adaptive font-bold">
+                                                                {(DIFFICULTIES[activeRecommendation.difficultyId] || DIFFICULTIES.normal).badge}
+                                                            </span>
+                                                            <span className="px-2 py-0.5 rounded-lg bg-white/10 text-primary-adaptive font-bold">
+                                                                Hologram {HOLOGRAM_STYLES.find(s => s.id === activeRecommendation.hologramStyle)?.code}
+                                                            </span>
+                                                        </div>
+
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleApplyRecommendation()}
+                                                            className={`touch-target px-4 py-2 rounded-full font-display font-extrabold text-xs inline-flex items-center gap-1.5 transition-all ${
+                                                                isRecommendationApplied
+                                                                    ? 'bg-emerald-500/20 border border-emerald-400/50 text-accent-adaptive'
+                                                                    : 'rjc2-pill-btn'
+                                                            }`}
+                                                        >
+                                                            <Icon name={isRecommendationApplied ? 'CheckCircle2' : 'Sparkles'} size={14} />
+                                                            <span>{isRecommendationApplied ? 'เลือกตามที่ AI แนะนำแล้ว ✓' : 'เลือกตามที่ AI แนะนำทันที'}</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                {/* ช่องถาม AI เพิ่มเติมก่อนเข้าห้องฝึก */}
+                                                <div className="space-y-2">
+                                                    <div className="flex gap-1.5 overflow-x-auto hide-scrollbar">
+                                                        {[
+                                                            'Normal กับ Hard ต่างกันยังไง?',
+                                                            'Micro-Drill คืออะไร?',
+                                                            'เคสไหนยากสุด?'
+                                                        ].map((q, idx) => (
+                                                            <button
+                                                                key={idx}
+                                                                type="button"
+                                                                disabled={advisorAsking}
+                                                                onClick={() => handleAskAdvisor(null, q)}
+                                                                className="shrink-0 spatial-soft px-2.5 py-1 rounded-full text-[11px] font-bold text-muted-adaptive hover:text-prism-adaptive"
+                                                            >
+                                                                {q}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+
+                                                    {advisorReply && (
+                                                        <div className="p-3 rounded-2xl bg-prism-500/15 border border-prism-400/30 text-xs sm:text-sm text-primary-adaptive whitespace-pre-line leading-relaxed">
+                                                            {advisorReply}
+                                                        </div>
+                                                    )}
+
+                                                    <form onSubmit={(e) => handleAskAdvisor(e)} className="flex items-center gap-2">
+                                                        <input
+                                                            type="text"
+                                                            value={advisorQuestion}
+                                                            onChange={e => setAdvisorQuestion(e.target.value)}
+                                                            disabled={advisorAsking}
+                                                            placeholder="ถาม AI เช่น ควรเริ่มจากเคสไหนดี หรือเกณฑ์ผ่านคืออะไร..."
+                                                            className="touch-target spatial-input flex-1 min-w-0 px-3.5 py-2 rounded-xl text-xs sm:text-sm"
+                                                        />
+                                                        <button
+                                                            type="submit"
+                                                            disabled={!advisorQuestion.trim() || advisorAsking}
+                                                            className="touch-target px-4 rounded-xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-xs disabled:opacity-40 shrink-0 inline-flex items-center gap-1"
+                                                        >
+                                                            <Icon name="Send" size={14} />
+                                                            <span>{advisorAsking ? '...' : 'ถาม AI'}</span>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </section>
+
                                 {/* 1. โหมดการฝึก & 2. ระดับความท้าทาย */}
                                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
                                     <section className="lg:col-span-7 spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3">
@@ -2524,6 +3036,7 @@ ${transcript}`;
                                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                                             {PRACTICE_MODES.map(m => {
                                                 const active = modeId === m.id;
+                                                const isRec = activeRecommendation.modeId === m.id;
                                                 return (
                                                     <button
                                                         key={m.id}
@@ -2533,7 +3046,10 @@ ${transcript}`;
                                                             active ? 'bg-aurora-500/20 border-aurora-400 text-primary-adaptive' : 'spatial-soft text-secondary-adaptive'
                                                         }`}
                                                     >
-                                                        <span className="font-mono text-[10px] font-bold text-prism-adaptive block">{m.badge}</span>
+                                                        <div className="flex items-center justify-between gap-1">
+                                                            <span className="font-mono text-[10px] font-bold text-prism-adaptive">{m.badge}</span>
+                                                            {isRec && <span className="px-1.5 py-0.5 rounded-full bg-aurora-500/20 text-accent-adaptive font-bold text-[9px]">✦ AI แนะนำ</span>}
+                                                        </div>
                                                         <span className="font-display font-bold text-xs sm:text-sm leading-snug block mt-0.5">{m.label}</span>
                                                     </button>
                                                 );
@@ -2546,6 +3062,7 @@ ${transcript}`;
                                         <div className="grid grid-cols-2 gap-2">
                                             {Object.values(DIFFICULTIES).map(d => {
                                                 const active = difficultyId === d.id;
+                                                const isRec = activeRecommendation.difficultyId === d.id;
                                                 return (
                                                     <button
                                                         key={d.id}
@@ -2555,7 +3072,10 @@ ${transcript}`;
                                                             active ? 'bg-aurora-500/20 border-aurora-400 text-primary-adaptive' : 'spatial-soft text-secondary-adaptive'
                                                         }`}
                                                     >
-                                                        <span className="font-mono text-[10px] font-bold text-accent-adaptive block">{d.badge}</span>
+                                                        <div className="flex items-center justify-between gap-1">
+                                                            <span className="font-mono text-[10px] font-bold text-accent-adaptive">{d.badge}</span>
+                                                            {isRec && <span className="px-1.5 py-0.5 rounded-full bg-aurora-500/20 text-accent-adaptive font-bold text-[9px]">✦ แนะนำ</span>}
+                                                        </div>
                                                         <span className="font-display font-bold text-xs sm:text-sm block mt-0.5">{isEn ? d.labelEN : d.labelTH}</span>
                                                         <span className="text-[11px] text-muted-adaptive leading-snug block mt-1">{isEn ? d.descEN : d.descTH}</span>
                                                     </button>
@@ -2571,6 +3091,7 @@ ${transcript}`;
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                                         {PERSONAS.map(p => {
                                             const active = personaId === p.id;
+                                            const isRec = activeRecommendation.personaId === p.id;
                                             return (
                                                 <button
                                                     key={p.id}
@@ -2584,9 +3105,14 @@ ${transcript}`;
                                                         <span className="inline-flex items-center gap-1.5 font-mono text-[10px] font-bold" style={{ color: p.accent }}>
                                                             <Icon name={p.icon} size={14} /> {isEn ? p.tagEN : p.tagTH}
                                                         </span>
-                                                        {p.id === 'conflict' && (
-                                                            <span className="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 font-mono text-[10px] font-bold">2 เสียงจริง</span>
-                                                        )}
+                                                        <div className="flex items-center gap-1">
+                                                            {isRec && (
+                                                                <span className="px-2 py-0.5 rounded-full bg-aurora-500/20 text-accent-adaptive font-bold text-[10px]">✦ AI แนะนำ</span>
+                                                            )}
+                                                            {p.id === 'conflict' && (
+                                                                <span className="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 font-mono text-[10px] font-bold">2 เสียงจริง</span>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                     <h3 className="font-display font-bold text-sm text-primary-adaptive leading-snug">{isEn ? p.titleEN : p.titleTH}</h3>
                                                     <p className="text-xs text-secondary-adaptive leading-relaxed">{isEn ? p.descEN : p.descTH}</p>
