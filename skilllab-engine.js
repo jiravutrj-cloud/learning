@@ -531,6 +531,150 @@
   }
 
   // ==========================================================================
+  // 4. REALISM #2: HARD MODE REAL-WORLD CURVEBALLS (สายแทรก & สะอื้นเงียบ)
+  // ==========================================================================
+  const HARD_MODE_CURVEBALLS = [
+    {
+      id: 'brother_phone_call',
+      type: 'phone',
+      triggerTurn: 2,
+      emotion: 'ANGRY',
+      badgeTH: '⚡ เหตุการณ์แทรกโหมด Hard • สายโทรศัพท์เข้า',
+      badgeEN: '⚡ Hard Mode Curveball • Incoming Phone Call',
+      titleTH: 'พี่ชายโทรแทรกเข้ามาคัดค้านกลางห้อง!',
+      actionTH: 'โทรศัพท์ในมือสั่นดังขึ้น ญาติรับสายสีหน้าเครียดจัดก่อนเงยหน้ามองคุณด้วยความระแวง',
+      actionEN: 'Her phone vibrates; after a tense call, she looks up anxiously.',
+      speechTH: 'เดี๋ยวนะคะ... พี่ชายเพิ่งโทรมาหาหนูเมื่อกี้เลย พี่เขาโกรธมาก บอกว่าห้ามเซ็นยินยอมอะไรเด็ดขาด กลัวโรงพยาบาลจะรีบเอาอวัยวะไปขาย! หนูทำตัวไม่ถูกแล้วค่ะ ตกลงมันปลอดภัยและโปร่งใสจริงใช่ไหมคะ?',
+      speechEN: 'Wait... My older brother just called and shouted at me not to sign anything—he fears the hospital is rushing to profit from organs! I am overwhelmed. Can I really trust this process?',
+      coachHintTH: 'รับฟังความกดดันจากพี่ชายอย่างใจเย็น ชี้แจงความโปร่งใสของ ODC สภากาชาดไทย และเสนอให้พี่ชายมาร่วมฟังพร้อมกันได้โดยไม่เร่งรัดค่ะ'
+    },
+    {
+      id: 'silent_sob_pause',
+      type: 'silence',
+      triggerTurn: 3,
+      emotion: 'SAD',
+      badgeTH: '🤍 เหตุการณ์แทรกโหมด Hard • จังหวะสะอื้นเงียบ',
+      badgeEN: '⚡ Hard Mode Curveball • Silent Grief Moment',
+      titleTH: 'ญาติสะอื้นจนพูดต่อไม่ไหว (ทดสอบการเว้นความเงียบ 2.5 วิ)',
+      actionTH: 'ก้มหน้าซบมือทั้งสองข้าง ไหล่สั่นสะอื้นเงียบๆ น้ำตาไหลไม่หยุด',
+      actionEN: 'Buries face in her hands, shoulders trembling in silent tears.',
+      speechTH: 'ขอโทษนะคะ... หนู... ฮึก... หนูพูดต่อไม่ไหวแล้วค่ะ ภาพตอนที่อยู่ด้วยกันมันวนกลับมาเต็มไปหมดเลย...',
+      speechEN: 'I am sorry... I... I just cannot speak right now... All our memories are flooding back...',
+      coachHintTH: 'อย่ารีบพูดแทรกนะคะ! ปล่อยความเงียบเยียวยาอย่างน้อย 2.5 วินาที แล้วค่อยเอ่ยปลอบอย่างอ่อนโยนสั้นๆ ค่ะ'
+    }
+  ];
+
+  function pickHardCurveball(nextTurnNum, usedIds) {
+    const used = new Set(Array.isArray(usedIds) ? usedIds : []);
+    for (let i = 0; i < HARD_MODE_CURVEBALLS.length; i++) {
+      const cb = HARD_MODE_CURVEBALLS[i];
+      if (!used.has(cb.id) && cb.triggerTurn === Number(nextTurnNum)) {
+        return cb;
+      }
+    }
+    return null;
+  }
+
+  // ==========================================================================
+  // 5. REALISM #3: TARGETED 4-STAGE MICRO-DRILL GAUNTLET & INSTANT EVALUATOR
+  // ==========================================================================
+  const MICRO_DRILL_STAGES = [
+    {
+      id: 'drill_ventilator',
+      stage: 1,
+      personaId: 'standard',
+      emotion: 'CONFUSED',
+      badgeTH: 'ด่าน 1/4 • หน้าอกยังขยับ',
+      titleTH: 'ตอบคำถามเรื่องเครื่องช่วยหายใจกับภาวะสมองตาย',
+      actionTH: 'จับแขนคุณเบาๆ แววตาสับสนและเต็มไปด้วยความหวัง',
+      promptTH: 'เมื่อกี้หนูเพิ่งไปจับมือคุณพ่อ ตัวพ่อก็ยังอุ่น หน้าอกก็ยังขยับขึ้นลงอยู่เลย ทำไมคุณหมอบอกว่าคุณพ่อเสียชีวิตแล้วล่ะคะ?',
+      criteria: [
+        { label: 'รับฟังความรู้สึก/แสดงความเห็นอกเห็นใจ', pattern: /เสียใจ|เข้าใจ|หนักมาก|ทำใจ.*ยาก|sorry|understand/i },
+        { label: 'แยกบทบาทเครื่องช่วยหายใจออกจากภาวะสมองตายถาวร', pattern: /เครื่องช่วยหายใจ|เป่าลม|พยุง|ก้านสมอง|สมองตาย|ถาวร|ventilator|brain\s*death/i },
+        { label: 'อ้างอิงเกณฑ์แพทย์ตรวจยืนยันตามมาตรฐาน', pattern: /แพทย์.*3|ตรวจ.*2|apnea|มาตรฐาน|ยืนยัน/i }
+      ],
+      modelAnswerTH: 'เข้าใจเลยค่ะว่าเห็นหน้าอกคุณพ่อยังขยับและตัวอุ่นแล้วทำใจเชื่อยากมาก จริงๆ แล้วเกิดจากเครื่องช่วยหายใจที่เป่าลมและยาพยุงความดันไว้ค่ะ ส่วนก้านสมองหยุดทำงานถาวรซึ่งแพทย์ผู้เชี่ยวชาญ 3 ท่านตรวจยืนยันครบ 2 ครั้งแล้วค่ะ'
+    },
+    {
+      id: 'drill_belief',
+      stage: 2,
+      personaId: 'belief',
+      emotion: 'HESITANT',
+      badgeTH: 'ด่าน 2/4 • ชาติหน้าไม่ครบ 32',
+      titleTH: 'ตอบคำถามความเชื่อ ศาสนา และการดูแลร่าง',
+      actionTH: 'กำทิชชูแน่น สีหน้ากังวลแทนคุณยายที่บ้าน',
+      promptTH: 'คุณยายท่านกลัวมากค่ะว่าถ้าบริจาคอวัยวะของน้องชายไปแล้ว ชาติหน้าอวัยวะจะไม่ครบ 32 แล้วจะแต่งตัวทำพิธีศาสนาได้เหมือนเดิมไหมคะ?',
+      criteria: [
+        { label: 'เคารพและรับฟังความเชื่อของคุณยายโดยไม่โต้แย้ง', pattern: /เข้าใจ|คุณยาย|เคารพ|ความเชื่อ|ศาสนา|respect/i },
+        { label: 'สื่อสารคุณค่าทานบารมี / การต่อชีวิตใหม่', pattern: /ทานบารมี|บุญ|ต่อชีวิต|ช่วยชีวิต|กุศล|merit/i },
+        { label: 'รับรองการตกแต่งร่างประณีตและทำพิธีศาสนาได้ตามปกติ', pattern: /ตกแต่งร่าง|เรียบร้อย|สมบูรณ์|พิธี|เหมือนเดิม|สมเกียรติ|dignity/i }
+      ],
+      modelAnswerTH: 'เข้าใจความห่วงใยของคุณยายมากค่ะ เราเคารพความเชื่อของครอบครัวเสมอ ในทางศาสนาการมอบอวัยวะช่วยต่อชีวิตผู้อื่นคือทานบารมีอันยิ่งใหญ่ และทีมแพทย์จะตกแต่งร่างน้องชายให้เรียบร้อยสมบูรณ์ ทำพิธีทางศาสนาได้ตามปกติทุกประการค่ะ'
+    },
+    {
+      id: 'drill_odc_cost',
+      stage: 3,
+      personaId: 'distrust',
+      emotion: 'ANGRY',
+      badgeTH: 'ด่าน 3/4 • ลัดคิว & ค่า ICU',
+      titleTH: 'ชี้แจงความโปร่งใส ODC และยืนยันไม่มีค่าใช้จ่ายเพิ่ม',
+      actionTH: 'จ้องมองตรงๆ ด้วยสีหน้าระแวดระวัง',
+      promptTH: 'ถามตรงๆ เลยนะคะ อวัยวะคุณแม่จะถูกเอาไปขายให้คนรวยลัดคิวใช่ไหมคะ? แล้วระหว่างรอผ่าตัด ครอบครัวต้องเสียค่าห้อง ICU เพิ่มหรือเปล่า?',
+      criteria: [
+        { label: 'รับฟังข้อสงสัยอย่างใจเย็นไม่โต้เถียง', pattern: /ขอบคุณที่ถาม|เข้าใจความกังวล|ตรงไปตรงมา|ยินดีชี้แจง|โปร่งใส/i },
+        { label: 'อธิบายระบบจัดสรรอวัยวะคอมพิวเตอร์ของ ODC สภากาชาดไทย', pattern: /สภากาชาด|ODC|ศูนย์รับบริจาค|คอมพิวเตอร์|เนื้อเยื่อ|ไม่มี.*ซื้อขาย|ไม่ลัดคิว/i },
+        { label: 'ยืนยันครอบครัวผู้บริจาคไม่มีค่าใช้จ่ายเพิ่มเติม', pattern: /ไม่มีค่าใช้จ่าย|ไม่เสียค่าใช้จ่าย|ไม่คิดเงิน|ฟรี|รับผิดชอบค่าใช้จ่าย/i }
+      ],
+      modelAnswerTH: 'ขอบคุณที่ถามตรงๆ เลยนะคะ การจัดสรรอวัยวะดำเนินการผ่านระบบคอมพิวเตอร์ของศูนย์รับบริจาคอวัยวะสภากาชาดไทย (ODC) ตามความเข้ากันได้ของเนื้อเยื่อ ไม่มีการซื้อขายหรือลัดคิว และครอบครัวไม่มีค่าใช้จ่ายเพิ่มเติมเลยค่ะ'
+    },
+    {
+      id: 'drill_conflict',
+      stage: 4,
+      personaId: 'conflict',
+      emotion: 'ANGRY',
+      badgeTH: 'ด่าน 4/4 • ขัดแย้ง 2 เสียง',
+      titleTH: 'วางตัวเป็นกลางระหว่างภรรยาและคุณแม่',
+      actionTH: 'ภรรยามองขอความช่วยเหลือ ส่วนคุณแม่กอดอกแน่นและเสียงสั่น',
+      promptTH: '[ภรรยา]: พี่ต้นทำบัตรบริจาคไว้ หนูอยากทำตามเจตนาพี่เขาค่ะ... [คุณแม่]: แม่ไม่ยอมเด็ดขาด! ตกลงคุณพยาบาลจะเอาตามบัตรหรือเอาตามใจแม่คะ?!',
+      criteria: [
+        { label: 'รับฟังทั้งความตั้งใจของภรรยาและความเจ็บปวดของคุณแม่', pattern: /ทั้งสอง|ภรรยา|คุณแม่|ความรัก|เป็นกลาง|เข้าใจทั้งคู่/i },
+        { label: 'ยืนยันจริยธรรมไทย: ไม่ฝืนใจคุณแม่หรือญาติสายตรงแม้มีบัตร', pattern: /ไม่ฝืนใจ|ไม่บังคับ|เห็นพ้อง|ยินยอมพร้อมกัน|เคารพคุณแม่|สายสัมพันธ์/i },
+        { label: 'ให้เวลาส่วนตัวครอบครัวปรึกษากันโดยไม่เร่งรัด', pattern: /ให้เวลา|คุยกันเอง|ปรึกษากัน|พื้นที่ส่วนตัว|ไม่เร่งรัด|ไม่กดดัน/i }
+      ],
+      modelAnswerTH: 'สัมผัสได้ถึงความรักที่ทั้งภรรยาและคุณแม่มีให้คุณต้นค่ะ ตามหลักจริยธรรมไทยเราจะไม่ฝืนใจคุณแม่เด็ดขาดแม้มีบัตรจำนง เพราะสายสัมพันธ์ครอบครัวสำคัญที่สุด ขอให้ทั้งสองท่านมีเวลาส่วนตัวปรึกษากันก่อนโดยไม่เร่งรัดนะคะ'
+    }
+  ];
+
+  function evaluateMicroDrillAnswer(stageObj, userText, triggers, usedSilence) {
+    const text = String(userText || '');
+    const criteria = Array.isArray(stageObj && stageObj.criteria) ? stageObj.criteria : [];
+    const hitLabels = [];
+    const missLabels = [];
+
+    criteria.forEach(function (c) {
+      if (c.pattern && c.pattern.test(text)) hitLabels.push(c.label);
+      else missLabels.push(c.label);
+    });
+
+    const trigLen = Array.isArray(triggers) ? triggers.length : 0;
+    const baseRatio = criteria.length > 0 ? hitLabels.length / criteria.length : 0.7;
+    const score = Math.max(
+      25,
+      Math.min(100, Math.round(35 + baseRatio * 60 + (usedSilence ? 5 : 0) - trigLen * 12))
+    );
+
+    return {
+      stage: stageObj.stage,
+      titleTH: stageObj.titleTH,
+      score: score,
+      passed: score >= 65 && trigLen === 0,
+      hitLabels: hitLabels,
+      missLabels: missLabels,
+      modelAnswerTH: stageObj.modelAnswerTH || ''
+    };
+  }
+
+  // ==========================================================================
   // 6. AI LAB ADVISOR v3 (วิเคราะห์ประวัติจริง + รองรับ 6 เคส + แนะนำฟีเจอร์ 0 บาท)
   // ==========================================================================
   const ADVISOR_GOALS = [
