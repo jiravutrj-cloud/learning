@@ -299,9 +299,25 @@
     ctx.font = '500 18px "Prompt", sans-serif';
     ctx.fillText(tpl.courseTitleEN || '', W / 2, ruleY + 178, SAFE_TEXT_W);
 
-    ctx.fillStyle = '#6e6e73';
-    ctx.font = '500 18px "Sarabun", sans-serif';
-    ctx.fillText('ให้ไว้ ณ วันที่ ' + formatThaiDateSafe(u.certificateIssuedAt), W / 2, ruleY + 216, SAFE_TEXT_W);
+    const cneuCode = String(tpl.cneuActivityCode || u.cneuActivityCode || '').trim();
+    const cneuCred = String(tpl.cneuCredits || u.cneuCredits || '').trim();
+    if (cneuCode || cneuCred) {
+      const cneuLine = [
+        cneuCode ? 'รหัสกิจกรรม CNEU: ' + cneuCode : '',
+        cneuCred ? 'จำนวน ' + cneuCred + ' หน่วยคะแนน' : ''
+      ].filter(Boolean).join('   •   ');
+      ctx.fillStyle = '#047857';
+      ctx.font = '600 19px "Prompt", sans-serif';
+      ctx.fillText(cneuLine, W / 2, ruleY + 212, SAFE_TEXT_W);
+
+      ctx.fillStyle = '#6e6e73';
+      ctx.font = '500 18px "Sarabun", sans-serif';
+      ctx.fillText('ให้ไว้ ณ วันที่ ' + formatThaiDateSafe(u.certificateIssuedAt), W / 2, ruleY + 244, SAFE_TEXT_W);
+    } else {
+      ctx.fillStyle = '#6e6e73';
+      ctx.font = '500 18px "Sarabun", sans-serif';
+      ctx.fillText('ให้ไว้ ณ วันที่ ' + formatThaiDateSafe(u.certificateIssuedAt), W / 2, ruleY + 216, SAFE_TEXT_W);
+    }
 
     // 8. ส่วนลายเซ็นกึ่งกลาง
     const sigBaseY = H - 186;
