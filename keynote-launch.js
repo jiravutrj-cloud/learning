@@ -7,12 +7,12 @@
  * 1. ม่านเปิดตัวแบบแตะ 1 ครั้ง (One-Tap Launch Curtain) เพื่อปลดล็อกเสียงบน iOS/Android/Desktop 100%
  * 2. เพลงประกอบฟรีไม่มีลิขสิทธิ์จาก YouTube: "Great (Epic Modern Cinematic)" — Alex-Productions
  *    (Video ID: TTwfAUzEHrM • CC BY 3.0) พร้อมดนตรีซินธ์ Cinematic สำรองในตัวขณะบัฟเฟอร์หรือออฟไลน์
- * 3. ระบบ Auto-Ducking หรี่เสียงเพลงอัตโนมัติ (~18%) ตอนพิธีกรพูด และเร่งเพลงขึ้น (~72%) ช่วงเปิด–ปิด
+ * 3. ระบบ Auto-Ducking หรี่เสียงเพลงอัตโนมัติ (~19%) ตอนพิธีกรพูด และเร่งเพลงขึ้น (~74%) ช่วงเปิด–ปิด
  * 4. พิธีกรคู่ ชาย–หญิง สลับประโยค (บทแบบที่ 2):
- *    - พิธีกรชาย: Gemini 3.8 Flash TTS (voice: Charon)
- *    - พิธีกรหญิง: Gemini 3.8 Flash TTS (voice: Sulafat)
- *    พร้อมระบบ Prefetch ประโยคถัดไปล่วงหน้า + IndexedDB Voice Cache ลดดีเลย์ระหว่างประโยค
- * 5. แถบซับไตเติลสด (Live Keynote Subtitle) + แถบควบคุมมุมขวาบน (เล่นซ้ำ / เปิด-ปิดเพลง / หยุด)
+ *    - พิธีกรชาย: Gemini 3.8 Flash TTS (voice: Puck — โทนกลางโปร่ง สดใส นุ่มสบายหู ไม่ทุ้มหนัก)
+ *    - พิธีกรหญิง: Gemini 3.8 Flash TTS (voice: Sulafat — โทนอบอุ่น สง่างาม)
+ *    พร้อมระบบ Prefetch ประโยคถัดไปล่วงหน้า + IndexedDB Voice Cache v4
+ * 5. ไม่มีกรอบข้อความซับไตเติลบังต้นไม้ เหลือเฉพาะปุ่มควบคุมเล็กๆ มุมขวาบน
  *    และหยุดเสียงอัตโนมัติเมื่อผู้เรียนกดปุ่ม "เข้าสู่ระบบ"
  * ============================================================================
  */
@@ -27,13 +27,13 @@
   // ==========================================================================
   const YOUTUBE_VIDEO_ID = 'TTwfAUzEHrM'; // Great (Epic Modern Cinematic) — Alex-Productions (Audio Library)
   const MUSIC_CREDIT = 'Music: "Great" by Alex-Productions (CC BY 3.0)';
-  const AUDIO_DB_NAME = 'rjcloud_keynote_voice_cache_v1';
+  const AUDIO_DB_NAME = 'rjcloud_keynote_voice_cache_v4';
   const AUDIO_STORE_NAME = 'clips';
   const SESSION_DISMISS_KEY = 'rjcloud_keynote_seen_session_v1';
   const SILENT_UNLOCK_WAV = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
 
-  // โทนเสียงพิธีกรชายโทนกลาง-นุ่ม (เปลี่ยนชื่อเสียงตรงนี้ได้ทันที เช่น Sadaltager, Puck, Achird, Umbriel, Iapetus, Enceladus)
-  const MALE_VOICE_NAME = 'Sadaltager';
+  // โทนเสียงพิธีกรชายโทนกลาง-โปร่ง สบายหู ไม่ทุ้มหนัก (เปลี่ยนชื่อได้: Puck, Achird, Umbriel, Iapetus, Enceladus)
+  const MALE_VOICE_NAME = 'Puck';
   const FEMALE_VOICE_NAME = 'Sulafat';
 
   const DUAL_HOST_SCRIPT = [
@@ -42,7 +42,7 @@
       speaker: 'male',
       voiceName: MALE_VOICE_NAME,
       badge: 'พิธีกรชาย • Keynote Host',
-      style: 'พูดภาษาไทยด้วยน้ำเสียงผู้ชายโทนกลางที่นุ่มนวล อบอุ่น เป็นมิตร ผ่อนคลาย และทันสมัยเหมือนพิธีกรงานเปิดตัวเทคโนโลยี ไม่ดุดันหรือทุ้มหนักจนเกินไป',
+      style: 'พูดภาษาไทยด้วยน้ำเสียงผู้ชายวัยทำงานโทนกลางโปร่ง สดใส นุ่มสบายหู ผ่อนคลายและเป็นกันเองแบบพิธีกรงานเทคโนโลยีสมัยใหม่ ไม่ทุ้มลึกหรือหนักแน่นจนเกินไป',
       display: '“เบื้องหลังทุกหนึ่งชีวิตที่ได้รับโอกาสครั้งใหม่… คือความเชี่ยวชาญ ความแม่นยำ และหัวใจของทีมบุคลากรทางการแพทย์ทุกคน”',
       speech: 'เบื้องหลังทุกหนึ่งชีวิตที่ได้รับโอกาสครั้งใหม่... คือความเชี่ยวชาญ ความแม่นยำ และหัวใจของทีมบุคลากรทางการแพทย์ทุกคนครับ'
     },
@@ -60,7 +60,7 @@
       speaker: 'male',
       voiceName: MALE_VOICE_NAME,
       badge: 'พิธีกรชาย • Keynote Host',
-      style: 'พูดด้วยน้ำเสียงผู้ชายโทนกลางที่สดใส ชัดถ้อยชัดคำ นุ่มลื่นหู และเป็นกันเอง สไตล์งานเปิดตัวเทคโนโลยีสมัยใหม่',
+      style: 'พูดด้วยน้ำเสียงผู้ชายโทนกลางโปร่งที่สดใส ชัดถ้อยชัดคำ ลื่นหู ทันสมัย และเป็นมิตร สไตล์งานเปิดตัวเทคโนโลยี',
       display: '“พบกับ rjcloud.organ 2.0 — Cloud AI แพลตฟอร์ม e-Learning การรับบริจาคและปลูกถ่ายอวัยวะ สู่มาตรฐานปี 2027”',
       speech: 'พบกับ อาร์เจ คลาวด์ ดอท ออร์แกน สองจุดศูนย์ คลาวด์เอไอ แพลตฟอร์มอีเลิร์นนิง การรับบริจาคและปลูกถ่ายอวัยวะ สู่มาตรฐานปีสองพันยี่สิบเจ็ดครับ'
     },
@@ -78,7 +78,7 @@
       speaker: 'male',
       voiceName: MALE_VOICE_NAME,
       badge: 'พิธีกรชาย • Keynote Host',
-      style: 'พูดด้วยน้ำเสียงผู้ชายที่อบอุ่น อ่อนโยน ลื่นหู และสร้างความรู้สึกเชิงบวกอย่างเป็นธรรมชาติ ไม่แข็งหรือทุ้มลึกเกินไป',
+      style: 'พูดด้วยน้ำเสียงผู้ชายโทนกลางที่อบอุ่น เบาสบาย นุ่มนวล และสร้างแรงบันดาลใจอย่างเป็นธรรมชาติ ไม่ทุ้มหนักหรือแข็งกร้าว',
       display: '“อนาคตแห่งการเรียนรู้และการให้ชีวิตใหม่… เริ่มต้นขึ้นตรงหน้าคุณแล้ว”',
       speech: 'อนาคตแห่งการเรียนรู้และการให้ชีวิตใหม่... เริ่มต้นขึ้นตรงหน้าคุณแล้วครับ'
     },
@@ -86,6 +86,10 @@
       id: 'k6',
       speaker: 'female',
       voiceName: FEMALE_VOICE_NAME,
+      badge: 'พิธีกรหญิง • Keynote Host',
+      style: 'พูดภาษาไทยด้วยน้ำเสียงผู้หญิงที่อบอุ่น สดใส ชวนเชิญ และน่าประทับใจเหมือนประโยคปิดงานเปิดตัวเทคโนโลยีระดับโลก',
+      display: '“ยินดีต้อนรับสู่ rjcloud.organ 2.0… กด ‘เข้าสู่ระบบ’ เพื่อเริ่มต้นได้เลยค่ะ”',
+      speech: 'ยินดีต้อนรับสู่ อาร์เจ คลาวด์ ดอท ออร์แกน สองจุดศูนย์... กดปุ่มเข้าสู่ระบบ เพื่อเริ่มต้นได้เลยค่ะ'
     }
   ];
 
@@ -662,7 +666,7 @@
   }
 
   async function fetchSegmentAudio(seg, appsScriptUrl) {
-    const cacheKey = 'keynote_v3_' + seg.id + '_' + seg.voiceName;
+    const cacheKey = 'keynote_v4_' + seg.id + '_' + seg.voiceName;
     const hit = await getCachedClip(cacheKey);
     if (hit) return hit;
     if (!appsScriptUrl) return null;
@@ -757,6 +761,10 @@
   // ==========================================================================
   function ensureDomOverlays() {
     injectKeynoteStyles();
+
+    // ลบกรอบซับไตเติลเก่าออกทันทีหากยังค้างในหน้าเว็บ เพื่อไม่ให้บังต้นไม้
+    const legacySub = document.getElementById('rjkn-subtitle');
+    if (legacySub && legacySub.parentNode) legacySub.parentNode.removeChild(legacySub);
 
     // 1) One-Tap Keynote Launch Curtain
     if (!State.els.curtain) {
