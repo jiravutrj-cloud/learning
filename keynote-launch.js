@@ -1,17 +1,17 @@
 /**
  * ============================================================================
- * rjcloud.organ 2.0 — World-Class Keynote Launch Module (keynote-launch.js • ไฟล์ 1/2)
+ * rjcloud.organ 2.0 — World-Class Keynote Launch Module (keynote-launch.js)
  * เชื่อมต่อหน้าแรกต้นไม้ (index.html) ผ่าน window.RJCLOUD_KEYNOTE
  *
  * ความสามารถครบชุด:
- * 1. ม่านเปิดตัวแบบแตะ 1 ครั้ง (One-Tap Launch Curtain) เพื่อปลดล็อกเสียงบน iOS/Android/Desktop 100%
+ * 1. ม่านเปิดตัวแบบแตะ 1 ครั้ง (ป้าย "สู่มาตรฐานปี 2027") ปลดล็อกเสียงบน iOS/Android/Desktop 100%
  * 2. เพลงประกอบฟรีไม่มีลิขสิทธิ์จาก YouTube: "Great (Epic Modern Cinematic)" — Alex-Productions
  *    (Video ID: TTwfAUzEHrM • CC BY 3.0) พร้อมดนตรีซินธ์ Cinematic สำรองในตัวขณะบัฟเฟอร์หรือออฟไลน์
  * 3. ระบบ Auto-Ducking หรี่เสียงเพลงอัตโนมัติ (~19%) ตอนพิธีกรพูด และเร่งเพลงขึ้น (~74%) ช่วงเปิด–ปิด
- * 4. พิธีกรคู่ ชาย–หญิง สลับประโยค (บทแบบที่ 2):
- *    - พิธีกรชาย: Gemini 3.8 Flash TTS (voice: Puck — โทนกลางโปร่ง สดใส นุ่มสบายหู ไม่ทุ้มหนัก)
+ * 4. พิธีกรคู่ ชาย–หญิง สลับประโยคตามบทพูดฉบับแก้ไข:
+ *    - พิธีกรชาย: Gemini 3.8 Flash TTS (voice: Puck — โทนกลางโปร่ง สดใส นุ่มสบายหู)
  *    - พิธีกรหญิง: Gemini 3.8 Flash TTS (voice: Sulafat — โทนอบอุ่น สง่างาม)
- *    พร้อมระบบ Prefetch ประโยคถัดไปล่วงหน้า + IndexedDB Voice Cache v4
+ *    พร้อมระบบ Prefetch ประโยคถัดไปล่วงหน้า + IndexedDB Voice Cache v5
  * 5. ไม่มีกรอบข้อความซับไตเติลบังต้นไม้ เหลือเฉพาะปุ่มควบคุมเล็กๆ มุมขวาบน
  *    และหยุดเสียงอัตโนมัติเมื่อผู้เรียนกดปุ่ม "เข้าสู่ระบบ"
  * ============================================================================
@@ -23,16 +23,15 @@
   global.RJCLOUD_KEYNOTE_LOADED = true;
 
   // ==========================================================================
-  // 1. CONSTANTS, YOUTUBE TRACK & DUAL-HOST SCRIPT (แบบที่ 2 + เพลงอันดับ 3)
+  // 1. CONSTANTS, YOUTUBE TRACK & DUAL-HOST SCRIPT (ฉบับแก้ไขล่าสุด)
   // ==========================================================================
   const YOUTUBE_VIDEO_ID = 'TTwfAUzEHrM'; // Great (Epic Modern Cinematic) — Alex-Productions (Audio Library)
   const MUSIC_CREDIT = 'Music: "Great" by Alex-Productions (CC BY 3.0)';
-  const AUDIO_DB_NAME = 'rjcloud_keynote_voice_cache_v4';
+  const AUDIO_DB_NAME = 'rjcloud_keynote_voice_cache_v5';
   const AUDIO_STORE_NAME = 'clips';
   const SESSION_DISMISS_KEY = 'rjcloud_keynote_seen_session_v1';
   const SILENT_UNLOCK_WAV = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
 
-  // โทนเสียงพิธีกรชายโทนกลาง-โปร่ง สบายหู ไม่ทุ้มหนัก (เปลี่ยนชื่อได้: Puck, Achird, Umbriel, Iapetus, Enceladus)
   const MALE_VOICE_NAME = 'Puck';
   const FEMALE_VOICE_NAME = 'Sulafat';
 
@@ -43,7 +42,7 @@
       voiceName: MALE_VOICE_NAME,
       badge: 'พิธีกรชาย • Keynote Host',
       style: 'พูดภาษาไทยด้วยน้ำเสียงผู้ชายวัยทำงานโทนกลางโปร่ง สดใส นุ่มสบายหู ผ่อนคลายและเป็นกันเองแบบพิธีกรงานเทคโนโลยีสมัยใหม่ ไม่ทุ้มลึกหรือหนักแน่นจนเกินไป',
-      display: '“เบื้องหลังทุกหนึ่งชีวิตที่ได้รับโอกาสครั้งใหม่… คือความเชี่ยวชาญ ความแม่นยำ และหัวใจของทีมบุคลากรทางการแพทย์ทุกคน”',
+      display: '“เบื้องหลังทุกหนึ่งชีวิตที่ได้รับโอกาสครั้งใหม่… คือความเชี่ยวชาญ ความแม่นยำ และหัวใจของทีมบุคลากรทางการแพทย์ทุกคนครับ”',
       speech: 'เบื้องหลังทุกหนึ่งชีวิตที่ได้รับโอกาสครั้งใหม่... คือความเชี่ยวชาญ ความแม่นยำ และหัวใจของทีมบุคลากรทางการแพทย์ทุกคนครับ'
     },
     {
@@ -52,7 +51,7 @@
       voiceName: FEMALE_VOICE_NAME,
       badge: 'พิธีกรหญิง • Keynote Host',
       style: 'พูดภาษาไทยสลับอังกฤษด้วยน้ำเสียงผู้หญิงที่อบอุ่น สง่างาม มั่นใจ และทันสมัยเหมือนพิธีกรงานเปิดตัว Apple Keynote',
-      display: '“และวันนี้… Organ Transplantation Center of Rajavithi Hospital พร้อมแล้วที่จะพาท่านก้าวข้ามทุกขีดจำกัดของการฝึกอบรมเดิมๆ”',
+      display: '“และวันนี้… Organ Transplantation Center of Rajavithi Hospital พร้อมแล้วที่จะพาท่านก้าวข้ามทุกขีดจำกัดของการฝึกอบรมเดิมๆ ค่ะ”',
       speech: 'และวันนี้... Organ Transplantation Center of ราชวิถี Hospital พร้อมแล้วที่จะพาท่านก้าวข้ามทุกขีดจำกัดของการฝึกอบรมเดิมๆ ค่ะ'
     },
     {
@@ -61,8 +60,8 @@
       voiceName: MALE_VOICE_NAME,
       badge: 'พิธีกรชาย • Keynote Host',
       style: 'พูดด้วยน้ำเสียงผู้ชายโทนกลางโปร่งที่สดใส ชัดถ้อยชัดคำ ลื่นหู ทันสมัย และเป็นมิตร สไตล์งานเปิดตัวเทคโนโลยี',
-      display: '“พบกับ rjcloud.organ 2.0 — Cloud AI แพลตฟอร์ม e-Learning การรับบริจาคและปลูกถ่ายอวัยวะ สู่มาตรฐานปี 2027”',
-      speech: 'พบกับ อาร์เจ คลาวด์ ดอท ออร์แกน สองจุดศูนย์ คลาวด์เอไอ แพลตฟอร์มอีเลิร์นนิง การรับบริจาคและปลูกถ่ายอวัยวะ สู่มาตรฐานปีสองพันยี่สิบเจ็ดครับ'
+      display: '“พบกับ rjcloud.organ 2.0 — Cloud AI แพลตฟอร์ม e-Learning การรับบริจาคและปลูกถ่ายอวัยวะ สู่มาตรฐานปี 2027 ครับ”',
+      speech: 'พบกับ อาร์เจ คลาวด์ ออร์แกน สองจุดศูนย์ คลาวด์เอไอ แพลตฟอร์มอีเลิร์นนิง การรับบริจาคและปลูกถ่ายอวัยวะ สู่มาตรฐานปีสองพันยี่สิบเจ็ดครับ'
     },
     {
       id: 'k4',
@@ -70,8 +69,8 @@
       voiceName: FEMALE_VOICE_NAME,
       badge: 'พิธีกรหญิง • Keynote Host',
       style: 'พูดภาษาไทยด้วยน้ำเสียงนุ่มนวล ลื่นไหล อบอุ่น และชัดเจน น่าเชื่อถือระดับวิชาการแพทย์สากล',
-      display: '“มาพร้อมผู้ช่วย AI ติวสรุปบทเรียน, ห้องฝึกสื่อสารกับญาติสามมิติ AI Skill Lab ที่ตอบโต้ด้วยเสียงและอารมณ์เสมือนจริง และระบบรับรองหน่วยคะแนน CNEU มาตรฐานสากล ภายใต้การคุ้มครองข้อมูล PDPA อย่างสูงสุด”',
-      speech: 'มาพร้อมผู้ช่วยเอไอติวสรุปบทเรียน, ห้องฝึกสื่อสารกับญาติสามมิติ เอไอสกิลแล็บ ที่ตอบโต้ด้วยเสียงและอารมณ์เสมือนจริง และระบบรับรองหน่วยคะแนนซีเอ็นอียู มาตรฐานสากล ภายใต้การคุ้มครองข้อมูลพีดีพีเอ อย่างสูงสุดค่ะ'
+      display: '“มาพร้อมผู้ช่วย AI ติวสรุปบทเรียน, ห้องฝึกสื่อสารกับญาติ AI Skill Lab ที่ตอบโต้ด้วยเสียงและอารมณ์เสมือนจริง และระบบรับรองหน่วยคะแนน CNEU มาตรฐานสภาการพยาบาล ภายใต้การคุ้มครองข้อมูล PDPA อย่างสูงสุดค่ะ”',
+      speech: 'มาพร้อมผู้ช่วยเอไอติวสรุปบทเรียน, ห้องฝึกสื่อสารกับญาติ เอไอสกิลแล็บ ที่ตอบโต้ด้วยเสียงและอารมณ์เสมือนจริง และระบบรับรองหน่วยคะแนนซีเอ็นอียู มาตรฐานสภาการพยาบาล ภายใต้การคุ้มครองข้อมูลพีดีพีเอ อย่างสูงสุดค่ะ'
     },
     {
       id: 'k5',
@@ -79,8 +78,8 @@
       voiceName: MALE_VOICE_NAME,
       badge: 'พิธีกรชาย • Keynote Host',
       style: 'พูดด้วยน้ำเสียงผู้ชายโทนกลางที่อบอุ่น เบาสบาย นุ่มนวล และสร้างแรงบันดาลใจอย่างเป็นธรรมชาติ ไม่ทุ้มหนักหรือแข็งกร้าว',
-      display: '“อนาคตแห่งการเรียนรู้และการให้ชีวิตใหม่… เริ่มต้นขึ้นตรงหน้าคุณแล้ว”',
-      speech: 'อนาคตแห่งการเรียนรู้และการให้ชีวิตใหม่... เริ่มต้นขึ้นตรงหน้าคุณแล้วครับ'
+      display: '“อนาคตแห่งการเรียนรู้และการให้ชีวิตใหม่…”',
+      speech: 'อนาคตแห่งการเรียนรู้และการให้ชีวิตใหม่...'
     },
     {
       id: 'k6',
@@ -88,13 +87,13 @@
       voiceName: FEMALE_VOICE_NAME,
       badge: 'พิธีกรหญิง • Keynote Host',
       style: 'พูดภาษาไทยด้วยน้ำเสียงผู้หญิงที่อบอุ่น สดใส ชวนเชิญ และน่าประทับใจเหมือนประโยคปิดงานเปิดตัวเทคโนโลยีระดับโลก',
-      display: '“ยินดีต้อนรับสู่ rjcloud.organ 2.0… กด ‘เข้าสู่ระบบ’ เพื่อเริ่มต้นได้เลยค่ะ”',
-      speech: 'ยินดีต้อนรับสู่ อาร์เจ คลาวด์ ดอท ออร์แกน สองจุดศูนย์... กดปุ่มเข้าสู่ระบบ เพื่อเริ่มต้นได้เลยค่ะ'
+      display: '“ยินดีต้อนรับสู่ rjcloud.organ 2.0… กดปุ่ม ‘เข้าสู่ระบบ’ เพื่อเริ่มต้นได้เลยค่ะ”',
+      speech: 'ยินดีต้อนรับสู่ อาร์เจ คลาวด์ ออร์แกน สองจุดศูนย์... กดปุ่มเข้าสู่ระบบ เพื่อเริ่มต้นได้เลยค่ะ'
     }
   ];
 
   // ==========================================================================
-  // 2. STYLES INJECTION (CURTAIN, KEYNOTE SUBTITLE & EQUALIZER)
+  // 2. STYLES INJECTION (CURTAIN & FLOATING CONTROL DOCK)
   // ==========================================================================
   function injectKeynoteStyles() {
     if (document.getElementById('rjcloud-keynote-styles')) return;
@@ -326,7 +325,6 @@
     pendingPlay: false,
     desiredTargetVol: 75,
 
-    // Web Audio API Cinematic Epic Pad Fallback (ทำงานทันทีและค่อยๆ เฟดออกเมื่อ YouTube เริ่มเล่น)
     synthCtx: null,
     synthGain: null,
     synthNodes: [],
@@ -449,7 +447,6 @@
       }, 40);
     },
 
-    // ดนตรีซินธ์ Cinematic สำรอง (คอร์ด Dm9 -> Bbmaj7 -> Fmaj7 -> Csus4 อบอุ่นยิ่งใหญ่สไตล์ Keynote)
     startSynthFallback: function (gainLevel) {
       if (this.synthActive) return;
       try {
@@ -467,10 +464,10 @@
         this.synthActive = true;
 
         const chords = [
-          [146.83, 220.0, 261.63, 329.63], // Dm9
-          [116.54, 220.0, 293.66, 349.23], // Bbmaj7
-          [174.61, 261.63, 329.63, 440.0], // Fmaj7
-          [130.81, 261.63, 349.23, 392.0]  // Csus4
+          [146.83, 220.0, 261.63, 329.63],
+          [116.54, 220.0, 293.66, 349.23],
+          [174.61, 261.63, 329.63, 440.0],
+          [130.81, 261.63, 349.23, 392.0]
         ];
         let chordIdx = 0;
         const self = this;
@@ -538,7 +535,6 @@
       this.desiredTargetVol = typeof initialVol === 'number' ? initialVol : 74;
       this.pendingPlay = true;
       this.loadYouTubeApi();
-      // เปิดซินธ์คลอทันทีระหว่างรอ YouTube เริ่มเล่น (หาก YouTube เล่นแล้วจะเฟดซินธ์ออกอัตโนมัติ)
       if (!this.ytPlaying) {
         this.startSynthFallback(0.065);
       }
@@ -666,7 +662,7 @@
   }
 
   async function fetchSegmentAudio(seg, appsScriptUrl) {
-    const cacheKey = 'keynote_v4_' + seg.id + '_' + seg.voiceName;
+    const cacheKey = 'keynote_v5_' + seg.id + '_' + seg.voiceName;
     const hit = await getCachedClip(cacheKey);
     if (hit) return hit;
     if (!appsScriptUrl) return null;
@@ -757,25 +753,24 @@
   }
 
   // ==========================================================================
-  // 6. UI BUILDERS (LAUNCH CURTAIN, LIVE SUBTITLE & FLOATING CONTROL DOCK)
+  // 6. UI BUILDERS (LAUNCH CURTAIN & FLOATING CONTROL DOCK)
   // ==========================================================================
   function ensureDomOverlays() {
     injectKeynoteStyles();
 
-    // ลบกรอบซับไตเติลเก่าออกทันทีหากยังค้างในหน้าเว็บ เพื่อไม่ให้บังต้นไม้
     const legacySub = document.getElementById('rjkn-subtitle');
     if (legacySub && legacySub.parentNode) legacySub.parentNode.removeChild(legacySub);
 
-    // 1) One-Tap Keynote Launch Curtain
+    // 1) One-Tap Keynote Launch Curtain (ป้าย "สู่มาตรฐานปี 2027")
     if (!State.els.curtain) {
       const curtain = document.createElement('div');
       curtain.id = 'rjkn-launch-curtain';
       curtain.className = 'rjkn-curtain is-hidden';
       curtain.innerHTML = `
         <div class="rjkn-curtain-card">
-          <div style="display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:9999px;background:rgba(255,255,255,0.08);border:1px solid rgba(186,230,253,0.32);font-size:11px;font-weight:700;letter-spacing:0.08em;color:#a7f3d0;margin-bottom:16px;">
+          <div style="display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:9999px;background:rgba(255,255,255,0.08);border:1px solid rgba(186,230,253,0.32);font-size:12px;font-weight:700;letter-spacing:0.06em;color:#a7f3d0;margin-bottom:16px;">
             <span style="width:7px;height:7px;border-radius:9999px;background:#6ee7b7;box-shadow:0 0 10px #6ee7b7;"></span>
-            KEYNOTE LAUNCH EXPERIENCE • 2027
+            สู่มาตรฐานปี 2027
           </div>
           <p style="margin:0 0 6px;font-size:12px;letter-spacing:0.14em;color:#7dd3fc;font-weight:600;text-transform:uppercase;">
             Organ Transplantation Center of Rajavithi Hospital
@@ -907,16 +902,13 @@
     updateDockUi();
     triggerLaunchFlash();
 
-    // 1. เริ่มเพลง "Great" (Epic Modern Cinematic) ที่ระดับเสียง 74% ให้ความยิ่งใหญ่ช่วงเปิดตัว 2.2 วินาที
     MusicEngine.setMuted(false);
     MusicEngine.start(74);
 
-    // Prefetch เสียงพิธีกรประโยคที่ 1 ระหว่างดนตรีเปิดฉาก 2.2 วินาที
     const firstClipPromise = fetchSegmentAudio(DUAL_HOST_SCRIPT[0], State.appsScriptUrl);
     await new Promise(function (r) { setTimeout(r, 2200); });
     if (State.sessionId !== sid || !State.running) return;
 
-    // 2. หรี่เสียงเพลงอัตโนมัติ (Auto-Duck to 19%) เพื่อรับเสียงพิธีกรคู่ ชาย–หญิง
     MusicEngine.duckTo(19, 750);
 
     let nextPromise = firstClipPromise;
@@ -925,7 +917,6 @@
       if (State.sessionId !== sid || !State.running) return;
       const seg = DUAL_HOST_SCRIPT[i];
 
-      // ประโยคที่ 5-6 ค่อยๆ ยกระดับเพลงขึ้นเล็กน้อย (Swell to 30%) สร้างอารมณ์ Finale
       if (i === DUAL_HOST_SCRIPT.length - 2) {
         MusicEngine.duckTo(28, 800);
       }
@@ -933,7 +924,6 @@
       const blob = await nextPromise;
       if (State.sessionId !== sid || !State.running) return;
 
-      // Prefetch ประโยคถัดไปทันทีเพื่อสลับเสียงชาย–หญิงแบบไร้รอยต่อ
       if (i + 1 < DUAL_HOST_SCRIPT.length) {
         nextPromise = fetchSegmentAudio(DUAL_HOST_SCRIPT[i + 1], State.appsScriptUrl);
       } else {
@@ -949,13 +939,11 @@
       }
 
       if (State.sessionId !== sid || !State.running) return;
-      // พักจังหวะหายใจสั้นๆ 240ms ระหว่างสลับพิธีกรชาย–หญิง
       if (i + 1 < DUAL_HOST_SCRIPT.length) {
         await new Promise(function (r) { setTimeout(r, 240); });
       }
     }
 
-    // 3. จบบทพูด: เร่งเพลง Epic ขึ้นอย่างสง่างาม (Swell to 65%) แล้วค่อยๆ ผ่อนคลอเบาๆ
     if (State.sessionId === sid && State.running) {
       MusicEngine.duckTo(65, 900);
       setTimeout(function () {
@@ -986,11 +974,9 @@
         return;
       }
 
-      // เตรียมโหลด YouTube Player รอไว้ล่วงหน้า
       MusicEngine.loadYouTubeApi();
       updateDockUi();
 
-      // แสดงม่านเปิดตัวเฉพาะเข้าครั้งแรกของเซสชัน (และไม่แสดงในโหมด Admin Preview)
       if (!State.mounted) {
         State.mounted = true;
         if (!isAdminPreview && !hasSeenInSession()) {
