@@ -1,18 +1,19 @@
 /**
  * ============================================================================
- * rjcloud.organ 2.0 — AI Skill Lab 3D Engine (skilllab-engine.js • ไฟล์ 1/2)
+ * rjcloud.organ 2.0 — AI Skill Lab 3D Engine (skilllab-engine.js • อัปเกรด Zero-Cost 2027)
  * โมดูลกลางแบบ Zero-Build เผยแพร่ผ่าน window.RJCLOUD_SKILLLAB
  *
  * องค์ประกอบครบชุดภายในไฟล์เดียว:
  * 1. Emotion & Radar Metadata + 6 Hologram Styles Registry
- * 2. 4 Clinical Personas, Multi-Voice Cast & Pre-Room ICU Briefing Cards
+ * 2. 6 Clinical Personas (รวมเคส 5 ผู้ป่วยเด็ก & เคส 6 ส่งเวร SBAR แพทย์เวร ICU) + Multi-Voice Cast
  * 3. Realism #1: 3 Hidden Barriers per Case + Emotional Inertia Trust Engine
  * 4. Realism #2: Hard Mode Real-World Curveballs (Phone Interruption & Silent Sob)
  * 5. Realism #3: Targeted 4-Stage Micro-Drill Gauntlet & Instant Evaluator
- * 6. AI Lab Advisor v2 (วิเคราะห์ประวัติจริง แนะนำชุดฝึก + ตอบคำถามด่วน)
- * 7. Trigger-Word Polisher, Dual-Speaker Parser & 5-Axis Fallback Evaluator
- * 8. Web Audio API Consultation Room SFX (เคาะประตู, สั่นมือถือ, เสียงห้องสงบ)
- * 9. Three.js Ultra-Smooth 6-Style 3D Hologram Renderer (mountHologram3D)
+ * 6. Realism #4 (0 THB): Client-Side Vocal Tone Monitor (Web Audio API) + RAM-Only Audio Replay
+ * 7. Realism #5 (0 THB): Perceived Latency Masking Cues + LINE In-App Browser Auto-Detector
+ * 8. Research R2R (0 THB): Pre/Post Self-Efficacy Scale + SUS Score + Blind Transcript Builder
+ * 9. AI Lab Advisor v3 + Clinical Mastery Badges Calculator
+ * 10. Web Audio API Consultation Room SFX + Three.js 6-Style 3D Hologram Renderer
  * ============================================================================
  */
 (function (global) {
@@ -212,6 +213,48 @@
       briefingTH: 'ผู้ป่วยคือ คุณแม่ (อายุ 58 ปี) คุณกำลังคุยกับคุณนุช (ลูกสาว) ที่ระแวงระบบจัดสรรอวัยวะและกลัวค่าใช้จ่ายเพิ่มเติม',
       briefingEN: 'Patient is a 58-year-old mother. Her daughter doubts allocation fairness and fears extra bills.',
       promptHintTH: 'ล็อกตัวละคร: ผู้ป่วยคือคุณแม่ และคุณคือลูกสาว (คุณนุช) อ่อนลงเมื่อผู้เรียนอธิบายระบบคอมพิวเตอร์ ODC สภากาชาดไทยอย่างใจเย็นและยืนยันไม่มีค่าใช้จ่าย'
+    },
+    {
+      id: 'pediatric',
+      icon: 'Baby',
+      accent: '#f472b6',
+      titleTH: '5. พ่อแม่ผู้ป่วยเด็ก/วัยรุ่น (เคสน้องต้นกล้า)',
+      titleEN: '5. Pediatric Donor — Grieving Parents (14yo Son)',
+      tagTH: 'อ่อนไหวสูงสุด',
+      tagEN: 'Pediatric',
+      patientRoleTH: 'น้องต้นกล้า (อายุ 14 ปี อุบัติเหตุจักรยานยนต์ TBI)',
+      speakerRoleTH: 'คุณแม่น้องต้นกล้า (อารมณ์ช็อกและอาลัยรุนแรง)',
+      descTH: 'เคสผู้ป่วยเยาวชนอายุ 14 ปี ที่พ่อแม่เพิ่งสูญเสียกะทันหัน ฝึกการปลอบประโลมความโศกเศร้ารุนแรงและการเว้นความเงียบเยียวยา',
+      descEN: 'Sudden loss of a 14-year-old boy; practice deep bereavement support, pacing, and gentle pediatric family communication.',
+      openingEmotion: 'SHOCK',
+      openingActionTH: 'กอดกระเป๋านักเรียนของลูกไว้แนบอก น้ำตาไหลไม่หยุด มือสั่นและหายใจสะอื้นถี่',
+      openingActionEN: 'Hugs her son’s schoolbag tightly, weeping uncontrollably with trembling hands.',
+      openingTH: 'ไม่จริงใช่ไหมคะ... เมื่อเช้านี้ลูกยังยิ้มโบกมือไปโรงเรียนอยู่เลย น้องต้นกล้าเพิ่งอายุ 14 เองค่ะ ทำไมคุณหมอบอกว่าสมองน้องไม่ทำงานแล้ว แม่รับไม่ได้จริงๆ ค่ะ มันเร็วเกินไป...',
+      openingEN: 'This cannot be real... He was just smiling and waving goodbye for school this morning. He is only 14! Why did the doctor say his brain has stopped working? I cannot bear this...',
+      briefingTH: 'ผู้ป่วยคือ น้องต้นกล้า (เด็กชายอายุ 14 ปี อุบัติเหตุจราจร) แพทย์ยืนยันภาวะสมองตายตามเกณฑ์เด็กแล้ว คุณแม่กำลังช็อกอย่างรุนแรง เน้นการประคับประคองใจ หลัก Decoupling และการเว้นความเงียบ 2.5 วิ',
+      briefingEN: 'Patient is a 14-year-old boy confirmed brain dead. His mother is in acute shock. Prioritize bereavement presence, silence, and zero rush.',
+      promptHintTH: 'ล็อกตัวละคร: ผู้ป่วยคือลูกชายอายุ 14 ปีชื่อน้องต้นกล้า และคุณคือคุณแม่ที่กำลังช็อกและโศกเศร้าอย่างมาก ห้ามรีบพูดเรื่องบริจาคจนกว่าผู้เรียนจะปลอบโยนรับฟังอารมณ์และเว้นพื้นที่ให้หายใจก่อน'
+    },
+    {
+      id: 'sbar_doctor',
+      icon: 'Stethoscope',
+      accent: '#2dd4bf',
+      titleTH: '6. ส่งเวร SBAR แพทย์เวร ICU (Potential Donor)',
+      titleEN: '6. ICU SBAR Handoff with Attending Physician',
+      tagTH: 'ทีมสหสาขา SBAR',
+      tagEN: 'SBAR Team',
+      patientRoleTH: 'ผู้ป่วยชาย 38 ปี TBI • GCS 3 • BP 78/46 • UO 640 mL/hr',
+      speakerRoleTH: 'นพ.ภาคิน (แพทย์เวร ICU • สื่อสารสหสาขาวิชาชีพ)',
+      descTH: 'ฝึกการรายงานเคส Potential Donor แบบ SBAR กับแพทย์เวร ICU เมื่อพบ GCS = 3, ความดันตก และปัสสาวะออกมาก (สงสัยเบาจืด DI)',
+      descEN: 'Practice concise SBAR clinical handoff with the ICU physician for an unstable potential donor (GCS 3, hypotension, polyuria/DI).',
+      openingEmotion: 'CONFUSED',
+      openingActionTH: 'ยืนดูจอ Monitor ข้างเตียง ICU ด้วยสีหน้าเร่งรีบ พร้อมฟังรายงานแบบ SBAR จากพยาบาล',
+      openingActionEN: 'Glances intently at the ICU bedside monitor, asking for a structured SBAR summary.',
+      openingTH: 'ครับคุณพยาบาล ตอนนี้เคสเตียง 3 ยุ่งมากเลย ขอรายงานเคสเตียง 1 แบบ SBAR กระชับๆ เลยครับ สถานการณ์ตอนนี้เป็นยังไง สัญญาณชีพกับปัสสาวะเป็นยังไงบ้าง แล้วคุณพยาบาลประเมินและเสนอให้จัดการอะไรเร่งด่วนครับ?',
+      openingEN: 'Nurse, things are very busy in ICU right now. Please give me a concise SBAR on Bed 1—what is the situation, current vitals and urine output, and what urgent management do you recommend?',
+      briefingTH: 'ผู้ป่วยชาย 38 ปี อุบัติเหตุทางศีรษะ (TBI) คะแนน GCS = 3 (E1V1M1) ม่านตาขยายคงที่ 6 มม. BP 78/46 mmHg, HR 116, ปัสสาวะใสออก 640 mL/hr, Na 154 mEq/L — ฝึกสื่อสาร SBAR ให้ครบ S-B-A-R เพื่อพยุงอวัยวะ (Fluid/Vasopressor + DDAVP) และวางแผนประเมินสมองตาย',
+      briefingEN: '38yo male TBI, GCS 3, BP 78/46, HR 116, UO 640 mL/hr, Na 154. Deliver a crisp SBAR recommending hemodynamic support, DDAVP for DI, and formal brain death evaluation.',
+      promptHintTH: 'ล็อกตัวละคร: คุณคือ นพ.ภาคิน แพทย์เวร ICU ที่ยุ่งและต้องการรายงานแบบ SBAR ที่แม่นยำ ชัดเจน กระชับ (S: ผู้ป่วยชาย 38 ปี GCS 3, B: TBI, A: เข้าข่าย Potential Donor + Hypotension + สงสัยเบาจืด DI, R: เสนอให้สารน้ำ/ยากระตุ้นความดัน, DDAVP, เตรียมตรวจสมองตาย 2 ครั้งห่าง 6 ชม. และประสาน ODC) ให้ซักถามต่อหากผู้เรียนยังรายงานไม่ครบองค์ประกอบ SBAR'
     }
   ];
 
@@ -247,15 +290,38 @@
       brainDeath: 'แพทย์ยืนยันภาวะสมองตายครบเกณฑ์แล้ว',
       vitals: 'BP 112/70 • HR 78 • On Ventilator',
       handoffNote: 'คุณนุช (ลูกสาว) เคยได้ยินข่าวลือเรื่องการลัดคิวและค่าใช้จ่ายห้อง ICU มีท่าทีระแวดระวังสูง ต้องการคำอธิบายที่โปร่งใสและใจเย็น'
+    },
+    pediatric: {
+      ward: 'Pediatric ICU เตียง 1',
+      patient: 'เด็กชาย อายุ 14 ปี (น้องต้นกล้า)',
+      diagnosis: 'Severe TBI from RTA • Pediatric Brain Death Confirmed',
+      brainDeath: 'แพทย์กุมารเวชศาสตร์และทีมผู้เชี่ยวชาญยืนยันภาวะสมองตายตามเกณฑ์เด็กครบถ้วนแล้ว',
+      vitals: 'BP 98/60 • HR 96 • SpO₂ 100% (On Ventilator)',
+      handoffNote: 'คุณแม่เพิ่งรับทราบข่าวและช็อกมาก กอดกระเป๋านักเรียนของลูกไว้แน่น ควรเน้นการประคับประคองความรู้สึก เว้นความเงียบเยียวยา และแยกช่วงแจ้งข่าวออกจากการพูดถึงการบริจาค (Decoupling)'
+    },
+    sbar_doctor: {
+      ward: 'Trauma ICU เตียง 1 (SBAR Handoff)',
+      patient: 'ชาย อายุ 38 ปี (Severe TBI • Potential Donor)',
+      diagnosis: 'GCS E1V1M1 (3) • Fixed Dilated Pupils 6 mm • สงสัย Diabetes Insipidus',
+      brainDeath: 'ยังไม่เริ่มตรวจยืนยันสมองตายอย่างเป็นทางการ — ต้องพยุงสัญญาณชีพก่อน',
+      vitals: 'BP 78/46 mmHg • HR 116 • UO 640 mL/hr (ใสมาก) • Na 154 mEq/L',
+      handoffNote: 'ภารกิจ SBAR: รายงาน นพ.ภาคิน ให้ครบ S (Situation), B (Background), A (Assessment: Potential Donor + Hypotension + DI) และ R (Recommendation: พยุงความดัน, พิจารณา DDAVP, เตรียมประเมินสมองตายและประสานทีม TC/ODC)'
     }
   };
 
   function getPersonas() {
     if (Array.isArray(global.SKILL_LAB_PERSONAS) && global.SKILL_LAB_PERSONAS.length > 0) {
-      return global.SKILL_LAB_PERSONAS.map(function (p) {
+      const merged = global.SKILL_LAB_PERSONAS.map(function (p) {
         const fb = FALLBACK_PERSONAS.find(function (x) { return x.id === p.id; }) || FALLBACK_PERSONAS[0];
         return Object.assign({}, fb, p);
       });
+      // เติมเคสระดับสูงใหม่ (เคส 5 ผู้ป่วยเด็ก และเคส 6 ส่งเวร SBAR) หากยังไม่มีใน data.js
+      FALLBACK_PERSONAS.forEach(function (fb) {
+        if (!merged.some(function (m) { return m.id === fb.id; })) {
+          merged.push(fb);
+        }
+      });
+      return merged;
     }
     return FALLBACK_PERSONAS;
   }
@@ -268,6 +334,10 @@
         return { primary: 'Sulafat', secondary: 'Kore', labelPrimary: 'ภรรยา', labelSecondary: 'คุณแม่' };
       case 'distrust':
         return { primary: 'Vindemiatrix', secondary: 'Sulafat', labelPrimary: 'คุณนุช (ลูกสาว)' };
+      case 'pediatric':
+        return { primary: 'Sulafat', secondary: 'Aoede', labelPrimary: 'คุณแม่น้องต้นกล้า' };
+      case 'sbar_doctor':
+        return { primary: 'Puck', secondary: 'Charon', labelPrimary: 'นพ.ภาคิน (แพทย์เวร ICU)' };
       default:
         return { primary: 'Sulafat', secondary: 'Aoede', labelPrimary: 'คุณแพรว (ลูกสาว)' };
     }
@@ -343,6 +413,40 @@
         id: 'zero_extra_cost',
         titleTH: 'ยืนยันชัดเจนว่าครอบครัวผู้บริจาคไม่มีค่าใช้จ่ายเพิ่มเติมและไม่เร่งรัด',
         keywords: /ไม่มีค่าใช้จ่าย|ไม่เสียค่าใช้จ่าย|ไม่คิดเงิน|ฟรี|รับผิดชอบค่าใช้จ่าย|ไม่เร่ง|no\s*cost|free\s*of\s*charge|zero\s*cost|not\s*billed/i
+      }
+    ],
+    pediatric: [
+      {
+        id: 'deep_bereavement_presence',
+        titleTH: 'อยู่เคียงข้างและรับรู้ความเจ็บปวดสูงสุดของคนเป็นแม่โดยไม่รีบอธิบายข้อมูล',
+        keywords: /เสียใจอย่างสุดซึ้ง|หัวอก.*แม่|เข้าใจ.*แม่|เจ็บปวด|เร็วเกินไป|อยู่ตรงนี้|เป็นเพื่อน|กอด|ไม่ต้องรีบพูด|deeply\s*sorry|mother|heartbreaking|here\s*with\s*you/i
+      },
+      {
+        id: 'gentle_decoupling_legacy',
+        titleTH: 'ใช้หลัก Decoupling ค่อยๆ อธิบายความจริงอย่างอ่อนโยนและเชื่อมโยงคุณค่าชีวิตของน้อง',
+        keywords: /ก้านสมอง|สมองตาย|ทีมแพทย์ดูแล.*สุดความสามารถ|ความทรงจำ|ความภูมิใจ|ส่งต่อชีวิต|ช่วยเด็ก|decoupling|brain\s*death|legacy|help\s*other\s*children/i
+      },
+      {
+        id: 'parental_autonomy_dignity',
+        titleTH: 'เคารพสิทธิ์พ่อแม่ 100% ให้เวลาบอกลาลูกอย่างเต็มที่และดูแลร่างอย่างทะนุถนอมที่สุด',
+        keywords: /ให้เวลา.*บอกลา|อยู่กับน้อง|ปรึกษาคุณพ่อ|ไม่เร่งรัด|เคารพการตัดสินใจ|ดูแลร่าง|ทะนุถนอม|เรียบร้อย|say\s*goodbye|take\s*all\s*the\s*time|dignity/i
+      }
+    ],
+    sbar_doctor: [
+      {
+        id: 'sbar_situation_background',
+        titleTH: 'S & B: ระบุตัวตนเคส TBI คะแนน GCS = 3 และสัญญาณชีพวิกฤต (BP 78/46, UO 640)',
+        keywords: /GCS\s*=?\s*3|จีซีเอส.*3|TBI|อุบัติเหตุทางศีรษะ|78\/46|ความดันตก|ความดันต่ำ|640|ปัสสาวะออกมาก|เตียง\s*1|situation|background/i
+      },
+      {
+        id: 'sbar_assessment_di',
+        titleTH: 'A: ประเมินเข้าข่าย Potential Donor ร่วมกับภาวะ Hypotension และเบาจืด (DI / Na สูง)',
+        keywords: /potential\s*donor|เข้าข่ายผู้บริจาค|สมองตาย|เบาจืด|diabetes\s*insipidus|\bDI\b|โซเดียมสูง|154|hypernatremia|assessment/i
+      },
+      {
+        id: 'sbar_recommendation_plan',
+        titleTH: 'R: เสนอแผนพยุงความดัน (Fluid/Vasopressor), ยา DDAVP, เตรียมตรวจสมองตาย & ประสาน ODC',
+        keywords: /DDAVP|ดีดีเอวีพี|desmopressin|สารน้ำ|fluid|vasopressor|กระตุ้นความดัน|ตรวจสมองตาย|apnea|ประสาน.*ODC|ศูนย์รับบริจาค|recommendation/i
       }
     ]
   };
@@ -427,154 +531,7 @@
   }
 
   // ==========================================================================
-  // 4. REALISM #2: HARD MODE REAL-WORLD CURVEBALLS
-  // ==========================================================================
-  const HARD_MODE_CURVEBALLS = [
-    {
-      id: 'brother_phone_call',
-      type: 'phone',
-      badgeTH: 'สายแทรกกลางห้อง (HARD CURVEBALL)',
-      badgeEN: 'INCOMING CALL CURVEBALL',
-      titleTH: 'พี่ชายโทรเข้ามาค้านกลางคัน',
-      actionTH: 'เสียงมือถือในกระเป๋าญาติสั่นดังขึ้น... ญาติรีบกดรับสายสั้นๆ แล้วสีหน้าเครียดลงทันที',
-      actionEN: 'A phone vibrates sharply in the relative’s pocket... after a brief call, their face tightens.',
-      speechTH: 'เดี๋ยวนะคะ... พี่ชายเพิ่งโทรมาค่ะ พี่เขาบอกว่าห้ามเซ็นอะไรเด็ดขาด กลัวโรงพยาบาลจะรีบทำอะไรโดยไม่รอพี่เขากลับมาดูหน้าก่อน แบบนี้จะทำยังไงดีคะ?',
-      speechEN: 'Wait a moment... my older brother just called and told me not to sign anything until he arrives. He is afraid the hospital will rush things. What should we do?',
-      emotion: 'ANGRY',
-      coachHintTH: 'ยืนยันทันทีว่า "จะรอให้พี่ชายและครอบครัวคุยกันครบทุกคนก่อน ไม่มีการเร่งเซ็นเอกสารเด็ดขาดค่ะ"'
-    },
-    {
-      id: 'silent_sobbing',
-      type: 'silence_test',
-      badgeTH: 'บททดสอบความเงียบ 2.5 วิ (HARD CURVEBALL)',
-      badgeEN: 'THERAPEUTIC SILENCE TEST',
-      titleTH: 'ญาติสะอื้นเงียบ พูดไม่ออก',
-      actionTH: 'ญาติพูดค้างไว้เพียงครึ่งประโยคแล้วก้มหน้าสะอื้นเงียบๆ น้ำตาไหลอาบแก้ม (ลองเว้นความเงียบ 2.5 วินาทีก่อนปลอบอย่างแผ่วเบา)',
-      actionEN: 'The relative stops mid-sentence, head bowed in quiet sobs. Try holding 2.5s of therapeutic silence.',
-      speechTH: 'คือหนู... หนูยังไม่ทันได้บอกลาเลยค่ะ... (สะอื้นเงียบไปครู่หนึ่ง)',
-      speechEN: 'I just... I never even got to say goodbye... (falls quietly silent, sobbing)',
-      emotion: 'SAD',
-      coachHintTH: 'อย่ารีบพูดแทรกหรืออธิบายข้อมูล! รอให้แถบความเงียบ 2.5 วิ ครบก่อน แล้วพูดสั้นๆ ว่า "อยู่ตรงนี้เป็นเพื่อนนะคะ ไม่ต้องรีบพูดก็ได้ค่ะ"'
-    }
-  ];
-
-  function pickHardCurveball(turnNumber, usedIds) {
-    const used = new Set(Array.isArray(usedIds) ? usedIds : []);
-    if (turnNumber < 2) return null;
-    const candidates = HARD_MODE_CURVEBALLS.filter(function (c) { return !used.has(c.id); });
-    if (candidates.length === 0) return null;
-    // รอบที่ 2 สุ่ม 55% รอบที่ 3 เกิดแน่นอนหากยังไม่เคยเกิด
-    if (turnNumber === 2 && Math.random() > 0.55) return null;
-    return candidates[Math.floor(Math.random() * candidates.length)];
-  }
-
-  // ==========================================================================
-  // 5. REALISM #3: TARGETED 4-STAGE MICRO-DRILL GAUNTLET
-  // ==========================================================================
-  const MICRO_DRILL_STAGES = [
-    {
-      stage: 1,
-      id: 'drill_ventilator',
-      personaId: 'standard',
-      badgeTH: 'ด่าน 1/4 • คำถามหน้าอกยังขยับ',
-      titleTH: 'รับมือความสับสนเรื่องเครื่องช่วยหายใจ',
-      emotion: 'CONFUSED',
-      actionTH: 'ลูกสาวชี้ไปทางห้อง ICU น้ำตาคลอด้วยความสับสน',
-      promptTH: '“ตัวคุณพ่อก็ยังอุ่น หน้าอกก็ยังขยับอยู่เลยค่ะ คุณพยาบาลแน่ใจได้ยังไงคะว่าคุณพ่อสมองตายแล้วจริงๆ ไม่ใช่แค่หลับลึก?”',
-      promptEN: '“My dad’s body is still warm and his chest is moving. How can you be sure he is brain dead and not just in a deep coma?”',
-      checklist: [
-        { label: 'รับฟังความสับสนอย่างอ่อนโยน', rx: /เข้าใจ|สับสน|เสียใจ|ตกใจ|หนักใจ|sorry|understand|confusing/i, weight: 30 },
-        { label: 'อธิบายบทบาทเครื่องช่วยหายใจ vs ก้านสมองหยุดทำงานถาวร', rx: /เครื่องช่วยหายใจ|ก้านสมอง|สมองตาย|ถาวร|ออกซิเจน|สูบฉีด|ventilator|brain\s*stem|permanent/i, weight: 45 },
-        { label: 'อ้างอิงเกณฑ์แพทย์ตรวจยืนยันตามมาตรฐาน', rx: /แพทย์|ตรวจ|ยืนยัน|2\s*ครั้ง|3\s*ท่าน|6\s*ชั่วโมง|apnea|doctors|confirmed/i, weight: 25 }
-      ],
-      modelAnswerTH: 'เข้าใจเลยค่ะว่าเห็นหน้าอกคุณพ่อยังขยับแล้วทำใจเชื่อยากมาก จริงๆ แล้วการที่หน้าอกขยับและตัวอุ่นเกิดจากเครื่องช่วยหายใจที่ช่วยเป่าลมและยาพยุงความดันไว้ค่ะ แต่ก้านสมองของคุณพ่อหยุดทำงานอย่างถาวรแล้ว ซึ่งทีมแพทย์ผู้เชี่ยวชาญ 3 ท่านได้ตรวจยืนยันครบ 2 ครั้งตามเกณฑ์กฎหมายอย่างรอบคอบที่สุดแล้วค่ะ'
-    },
-    {
-      stage: 2,
-      id: 'drill_belief',
-      personaId: 'belief',
-      badgeTH: 'ด่าน 2/4 • คำถามชาติหน้าไม่ครบ 32',
-      titleTH: 'ตอบข้อกังวลความเชื่อ ศาสนา และพิธีกรรม',
-      emotion: 'HESITANT',
-      actionTH: 'พี่สาวมองอย่างกังวลและเล่าความกลัวของคุณยาย',
-      promptTH: '“คุณยายท่านกลัวมากค่ะว่าถ้าบริจาคอวัยวะน้องชาย ชาติหน้าน้องจะเกิดมาอวัยวะไม่ครบ 32 แล้วร่างน้องจะเสียรูปจนทำพิธีศาสนาไม่ได้ใช่ไหมคะ?”',
-      promptEN: '“Our grandmother fears that donating my brother’s organs will leave him incomplete in the next life and ruin his funeral ceremony.”',
-      checklist: [
-        { label: 'เคารพความรู้สึกและความเชื่อของคุณยาย', rx: /เข้าใจ|เคารพ|คุณยาย|ความเชื่อ|ศาสนา|respect|understand|grandmother/i, weight: 30 },
-        { label: 'อธิบายเรื่องทานบารมี / การส่งต่อชีวิตใหม่', rx: /ทานบารมี|บุญ|กุศล|ต่อชีวิต|ช่วยชีวิต|ชีวิตใหม่|merit|gift\s*of\s*life/i, weight: 35 },
-        { label: 'ยืนยันตกแต่งร่างเรียบร้อยและทำพิธีศาสนาได้ตามปกติ', rx: /ตกแต่งร่าง|เรียบร้อย|สมบูรณ์|พิธี|ศาสนา|แต่งตัว|ไม่เสียรูป|restored|ceremony|funeral|dignity/i, weight: 35 }
-      ],
-      modelAnswerTH: 'เข้าใจความห่วงใยของคุณยายมากๆ เลยค่ะ ในทางพระพุทธศาสนาการมอบอวัยวะช่วยต่อชีวิตผู้อื่นถือเป็นทานบารมีอันยิ่งใหญ่ และทีมแพทย์ห้องผ่าตัดจะดูแลเย็บแผลตกแต่งร่างของน้องชายอย่างประณีตเรียบร้อยที่สุด เพื่อส่งมอบให้ครอบครัวประกอบพิธีทางศาสนาได้ตามปกติทุกประการค่ะ'
-    },
-    {
-      stage: 3,
-      id: 'drill_distrust',
-      personaId: 'distrust',
-      badgeTH: 'ด่าน 3/4 • คำถามลัดคิว & ค่าห้อง ICU',
-      titleTH: 'ตอบข้อระแวงเรื่องความโปร่งใสและค่าใช้จ่าย',
-      emotion: 'ANGRY',
-      actionTH: 'ลูกสาวกอดอกแน่นและตั้งคำถามตรงไปตรงมา',
-      promptTH: '“ถามตรงๆ นะคะ อวัยวะของคุณแม่จะถูกเอาไปให้คนรวยจ่ายเงินลัดคิวหรือเปล่า? แล้วระหว่างรอผ่าตัด ครอบครัวเราต้องจ่ายค่าห้อง ICU เพิ่มใช่ไหมคะ?”',
-      promptEN: '“Will my mother’s organs go to wealthy people who pay to skip the queue? And will our family have to pay extra ICU bills?”',
-      checklist: [
-        { label: 'ตอบอย่างใจเย็นไม่โต้แย้ง (ขอบคุณที่ถามตรงๆ)', rx: /ขอบคุณ|เข้าใจ|ตรงไปตรงมา|ยินดี|โปร่งใส|ตรวจสอบ|thank|transparent|fair/i, weight: 25 },
-        { label: 'อธิบายระบบจัดสรรคอมพิวเตอร์ ODC สภากาชาดไทยที่เป็นธรรม', rx: /สภากาชาด|ODC|คอมพิวเตอร์|เข้ากันได้|เนื้อเยื่อ|ไม่มี.*ซื้อขาย|ไม่ลัดคิว|red\s*cross|computer|matching/i, weight: 40 },
-        { label: 'ยืนยันไม่มีค่าใช้จ่ายเพิ่มเติมกับครอบครัวผู้บริจาค', rx: /ไม่มีค่าใช้จ่าย|ไม่เสียค่าใช้จ่าย|ไม่คิดเงิน|ฟรี|รับผิดชอบ|no\s*cost|free|not\s*billed/i, weight: 35 }
-      ],
-      modelAnswerTH: 'ขอบคุณที่ถามตรงๆ เลยนะคะ ขอยืนยันอย่างโปร่งใสว่าการจัดสรรอวัยวะทั้งหมดดำเนินการผ่านระบบคอมพิวเตอร์ของศูนย์รับบริจาคอวัยวะสภากาชาดไทย (ODC) ตามความเข้ากันได้ของเนื้อเยื่อและความเร่งด่วน ไม่มีการซื้อขายหรือลัดคิวเด็ดขาด และค่าใช้จ่ายหลังยืนยันการบริจาคทั้งหมดครอบครัวไม่ต้องรับผิดชอบเพิ่มเติมเลยค่ะ'
-    },
-    {
-      stage: 4,
-      id: 'drill_conflict',
-      personaId: 'conflict',
-      badgeTH: 'ด่าน 4/4 • ขัดแย้ง 2 เสียง (ภรรยา vs คุณแม่)',
-      titleTH: 'ประคับประคองความขัดแย้งในครอบครัวอย่างเป็นกลาง',
-      emotion: 'ANGRY',
-      actionTH: 'ภรรยาร้องไห้ถือบัตรบริจาค ขณะที่คุณแม่สะอื้นคัดค้านเสียงแข็ง',
-      promptTH: '[ภรรยา]: “พี่ต้นมีบัตรบริจาคอวัยวะค่ะ อยากทำตามเจตนารมณ์พี่เขา” [คุณแม่]: “แม่ไม่ยอม! ลูกแม่เจ็บมามากพอแล้ว ห้ามใครมาแตะตัวลูกแม่ ตกลงจะเอาตามบัตรหรือเอาตามใจแม่?!”',
-      promptEN: '[Wife]: “He has a donor card!” [Mother]: “I refuse! Don’t touch my son! Who gets the final say?!”',
-      checklist: [
-        { label: 'รับฟังและยอมรับความรักของทั้งสองฝ่ายอย่างเป็นกลาง', rx: /ทั้งสอง|ทั้งคู่|เข้าใจคุณแม่|เข้าใจภรรยา|ความรัก|เป็นกลาง|both|mother.*wife|love/i, weight: 35 },
-        { label: 'ยืนยันไม่ฝืนใจคุณแม่หรือญาติสายตรงแม้มีบัตรจำนง', rx: /ไม่ฝืนใจ|ไม่บังคับ|ไม่ดำเนินการ|ยินยอมพร้อมกัน|เคารพคุณแม่|เห็นพ้อง|never\s*force|no\s*coercion|consensus/i, weight: 40 },
-        { label: 'ให้เวลาครอบครัวปรึกษากันอย่างสงบไม่เร่งรัด', rx: /ให้เวลา|ปรึกษากัน|พื้นที่ส่วนตัว|ไม่เร่ง|ค่อยๆ|private\s*time|no\s*rush|discuss/i, weight: 25 }
-      ],
-      modelAnswerTH: 'ดิฉันสัมผัสได้ถึงความรักที่ทั้งคุณภรรยาและคุณแม่มีให้คุณต้นมากเลยค่ะ ขอยืนยันนะคะว่าแม้จะมีบัตรแสดงความจำนง แต่ตามหลักจริยธรรมเราจะไม่ดำเนินการใดๆ หากคุณแม่และครอบครัวไม่ได้เห็นพ้องสบายใจร่วมกัน ขอให้ทั้งสองท่านมีเวลาส่วนตัวค่อยๆ ปรึกษากันอย่างเต็มที่โดยไม่มีการเร่งรัดเลยค่ะ'
-    }
-  ];
-
-  function evaluateMicroDrillAnswer(stageObj, userText, triggerMatches, usedSilence) {
-    const text = String(userText || '');
-    let score = 0;
-    const hitLabels = [];
-    const missLabels = [];
-
-    (stageObj.checklist || []).forEach(function (item) {
-      if (item.rx.test(text)) {
-        score += item.weight;
-        hitLabels.push(item.label);
-      } else {
-        missLabels.push(item.label);
-      }
-    });
-
-    if (usedSilence) score += 8;
-    const penalty = (triggerMatches || []).length * 14;
-    score = Math.max(20, Math.min(100, score - penalty));
-
-    return {
-      stage: stageObj.stage,
-      titleTH: stageObj.titleTH,
-      score: score,
-      passed: score >= 65,
-      hitLabels: hitLabels,
-      missLabels: missLabels,
-      modelAnswerTH: stageObj.modelAnswerTH,
-      triggerCount: (triggerMatches || []).length
-    };
-  }
-
-  // ==========================================================================
-  // 6. AI LAB ADVISOR v2 (วิเคราะห์ประวัติจริง + แนะนำ 3 ฟีเจอร์ใหม่ + ตอบคำถาม)
+  // 6. AI LAB ADVISOR v3 (วิเคราะห์ประวัติจริง + รองรับ 6 เคส + แนะนำฟีเจอร์ 0 บาท)
   // ==========================================================================
   const ADVISOR_GOALS = [
     { id: 'auto', label: 'AI วิเคราะห์ให้', icon: 'Sparkles' },
@@ -582,14 +539,16 @@
     { id: 'drill4', label: 'ซ้อม 4 ด่านคำถามหนัก', icon: 'Zap' },
     { id: 'hard_challenge', label: 'ท้าทาย Hard + เหตุการณ์แทรก', icon: 'Flame' },
     { id: 'conflict2', label: 'ฝึกเคสหิน 2 เสียง', icon: 'Users' },
+    { id: 'pediatric', label: 'เคสผู้ป่วยเด็ก (อ่อนไหวสูง)', icon: 'Baby' },
+    { id: 'sbar_team', label: 'ฝึกส่งเวร SBAR แพทย์เวร ICU', icon: 'Stethoscope' },
     { id: 'english', label: 'ฝึกภาษาอังกฤษ', icon: 'Globe' }
   ];
 
   const ADVISOR_QUICK_QUESTIONS = [
     'Normal กับ Hard ต่างกันยังไง?',
-    'โหมด 4 ด่านคำถามหนักคืออะไร?',
-    'ปมในใจ 3 ข้อและ Trust ทำงานยังไง?',
-    'เคสไหนยากที่สุดและควรฝึกแบบไหน?'
+    'เคสผู้ป่วยเด็กกับส่งเวร SBAR ฝึกยังไง?',
+    'วัดความนุ่มนวลน้ำเสียงกับฟังเสียงตัวเองทำงานยังไง?',
+    'ปมในใจ 3 ข้อและ Trust ทำงานยังไง?'
   ];
 
   function computeLabRecommendation(userObj, goalId) {
@@ -612,9 +571,10 @@
       });
     }
 
-    // เคสที่ยังไม่เคยฝึก
+    // เคสที่ยังไม่เคยฝึก (รวมเคส 5 และเคส 6)
     const practicedIds = new Set(hist.map(function (h) { return h.personaId; }).filter(Boolean));
-    const unpracticed = ['standard', 'belief', 'conflict', 'distrust'].find(function (id) { return !practicedIds.has(id); }) || 'conflict';
+    const unpracticed = ['standard', 'belief', 'conflict', 'distrust', 'pediatric', 'sbar_doctor']
+      .find(function (id) { return !practicedIds.has(id); }) || 'pediatric';
 
     if (goalId === 'first') {
       return {
@@ -653,6 +613,26 @@
         reason: 'ฝึกวางตัวเป็นกลางเมื่อในห้องมีเสียงคัดค้านรุนแรง ระบบแยกเสียงพูด 2 ตัวละครจริงพร้อมดวงแสงคู่ที่จะค่อยๆ เคลื่อนเข้าหากันเมื่อคุณประคับประคองทั้งสองฝ่ายได้สำเร็จ',
         tip: 'ยืนยันหลักจริยธรรมไทยว่าจะไม่ฝืนใจคุณแม่แม้มีบัตรบริจาค แล้วให้เวลาครอบครัวปรึกษากันค่ะ',
         speech: 'แนะนำเคสความขัดแย้งสองเสียงจริง พร้อมดวงแสงคู่ค่ะ คุณจะได้ฝึกวางตัวเป็นกลางระหว่างภรรยาและคุณแม่ด้วยเสียงสองตัวละครจริงในห้องเดียวกันค่ะ'
+      };
+    }
+
+    if (goalId === 'pediatric') {
+      return {
+        mode: 'roleplay_th', difficulty: bestScore && bestScore >= 84 ? 'hard' : 'normal', personaId: 'pediatric', holoStyle: 'lotus',
+        headline: 'เคสระดับสูงที่ 5: พ่อแม่ผู้ป่วยเด็กอายุ 14 ปี (Bereavement Sensitivity)',
+        reason: 'สถานการณ์ที่ละเอียดอ่อนและท้าทายหัวใจที่สุด ฝึกการอยู่เคียงข้าง การคุมความนุ่มนวลของน้ำเสียง และการเว้นความเงียบเยียวยา 2.5 วิ ก่อนพูดถึงทางเลือกใดๆ',
+        tip: 'สังเกตมาตรวัดน้ำเสียงสดขณะพูด และลองกดฟังเสียงตัวเองย้อนหลังในหน้าประเมินผลนะคะ',
+        speech: 'แนะนำเคสที่ห้า เคสพ่อแม่ผู้ป่วยเด็กอายุสิบสี่ปีค่ะ เคสนี้ละเอียดอ่อนมาก เน้นการประคับประคองความรู้สึก การคุมความนุ่มนวลของน้ำเสียง และการเว้นความเงียบเยียวยาค่ะ'
+      };
+    }
+
+    if (goalId === 'sbar_team') {
+      return {
+        mode: 'roleplay_th', difficulty: 'normal', personaId: 'sbar_doctor', holoStyle: 'prism',
+        headline: 'เคสระดับสูงที่ 6: ส่งเวร SBAR กับแพทย์เวร ICU (Potential Donor + DI)',
+        reason: 'ฝึกสื่อสารทีมสหสาขาวิชาชีพแบบ SBAR เมื่อพบ Potential Donor (GCS 3, BP 78/46, ปัสสาวะ 640 mL/hr) ให้ครบทั้ง S-B-A-R พร้อมเสนอแผนพยุงความดันและ DDAVP',
+        tip: 'เริ่มรายงานให้กระชับตามลำดับ S (ผู้ป่วย/GCS 3) → B (TBI) → A (สงสัย DI) → R (DDAVP/พยุง BP/เตรียมตรวจสมองตาย) ค่ะ',
+        speech: 'แนะนำเคสที่หก ฝึกส่งเวรแบบเอสบาร์กับแพทย์เวรไอซียูค่ะ เพื่อฝึกสื่อสารข้อมูลคลินิกผู้บริจาคอวัยวะให้กระชับ แม่นยำ และครบถ้วนค่ะ'
       };
     }
 
@@ -707,6 +687,12 @@
     if (q.includes('normal') || q.includes('hard') || q.includes('ต่างกัน')) {
       return '• ระดับ Normal: มี AI Coach และปุ่มแนวทางคำพูดให้เลือกปรับใช้ เหมาะสำหรับสร้างความมั่นใจ\n• ระดับ Hard: ซ่อนตัวช่วยคำพูด 100%, ค่า Trust ไต่ขึ้นยากกว่า และมี "เหตุการณ์ไม่คาดฝันกลางห้อง" เช่น สายพี่ชายโทรแทรกมาค้าน หรือจังหวะญาติสะอื้นเงียบ 3 วิ ให้รับมือเหมือนหน้างานจริงค่ะ';
     }
+    if (q.includes('เด็ก') || q.includes('sbar') || q.includes('แพทย์')) {
+      return '• เคส 5 (ผู้ป่วยเด็กอายุ 14 ปี): อ่อนไหวสูงสุด เน้นการปลอบโยนหัวอกคนเป็นแม่ คุมน้ำเสียงให้นุ่มนวล และใช้หลัก Decoupling ไม่เร่งรัดค่ะ\n• เคส 6 (ส่งเวร SBAR แพทย์เวร ICU): ฝึกสื่อสารสหสาขาวิชาชีพเมื่อพบ Potential Donor (GCS 3, BP ตก, ปัสสาวะออกมากสงสัย DI) ให้รายงานครบ S-B-A-R และเสนอแผนดูแลอวัยวะค่ะ';
+    }
+    if (q.includes('น้ำเสียง') || q.includes('อัดเสียง') || q.includes('ฟังเสียงตัวเอง') || q.includes('tone')) {
+      return 'ระบบใช้ Web Audio API บนอุปกรณ์ของคุณวัดความนุ่มนวลและจังหวะน้ำเสียงแบบเรียลไทม์ พร้อมบันทึกเสียงพูดของคุณชั่วคราวในหน่วยความจำ (RAM) เพื่อกดฟังเสียงตัวเองย้อนหลังในหน้าสรุปผล 5 แกน โดยไม่มีการอัปโหลดไฟล์เสียงขึ้นเซิร์ฟเวอร์ (ปลอดภัย PDPA 100%) และจะลบทิ้งอัตโนมัติเมื่อปิดหน้าค่ะ';
+    }
     if (q.includes('4 ด่าน') || q.includes('micro') || q.includes('คำถามหนัก')) {
       return 'โหมด Micro-Drill 4 ด่านคำถามหนัก คือการซ้อมรับมือ 4 คำถามหินยอดฮิตเรียงต่อกันอัตโนมัติ (1. หน้าอกยังขยับ → 2. ชาติหน้าไม่ครบ 32 → 3. ลัดคิว & ค่าห้อง ICU → 4. ขัดแย้ง 2 เสียง) ใช้เวลา 3 นาที ตรวจให้คะแนนและแสดงประโยคต้นแบบทันทีทุกด่านค่ะ';
     }
@@ -714,9 +700,352 @@
       return 'แต่ละเคสจะมี "ปมในใจ 3 ข้อ" ที่ซ่อนอยู่ค่ะ ค่า Trust % จะไม่กระโดดข้ามขั้น แต่จะค่อยๆ ไต่ระดับเมื่อคุณคลายปมได้ตรงจุดและเว้นความเงียบ 2.5 วินาที (และจะลดลงทันทีหากเผลอใช้คำกระทบใจ เช่น ถอดเครื่อง หรือ รีบตัดสินใจ) ค่ะ';
     }
     if (q.includes('ยากสุด') || q.includes('ยากที่สุด') || q.includes('เคสไหน')) {
-      return 'เคสที่ท้าทายที่สุดคือ "เคสที่ 3: ความขัดแย้งในครอบครัว 2 เสียง (ภรรยา vs คุณแม่)" ในระดับ Hard ค่ะ เพราะต้องฟัง 2 เสียงโต้แย้งกันจริง วางตัวเป็นกลาง และรับมือเหตุการณ์แทรกกลางห้องโดยไม่เร่งรัดค่ะ';
+      return 'เคสที่ท้าทายอารมณ์ที่สุดคือ "เคส 3 ความขัดแย้ง 2 เสียง" และ "เคส 5 พ่อแม่ผู้ป่วยเด็ก" ในระดับ Hard ส่วนเคสที่วัดความแม่นยำทางคลินิกที่สุดคือ "เคส 6 ส่งเวร SBAR กับแพทย์เวร ICU" ค่ะ';
     }
     return 'แนะนำกดปุ่ม "เลือกตามที่ AI แนะนำทันที" เพื่อให้ระบบตั้งค่ารูปแบบ ความยาก เคส และ Hologram ที่เหมาะกับประวัติการเรียนของคุณให้อัตโนมัติ หรือเลือกซ้อม "4 ด่านคำถามหนัก" ก่อนเข้าโหมด Roleplay จริงก็ได้ค่ะ';
+  }
+
+  // ==========================================================================
+  // 6.5 ZERO-COST WORLD-CLASS UPGRADES:
+  //     A) LINE / IN-APP BROWSER DETECTOR
+  //     B) PERCEIVED LATENCY MASKING CUES
+  //     C) CLIENT-SIDE VOCAL TONE MONITOR + RAM-ONLY SELF-REFLECTION REPLAY
+  //     D) RESEARCH R2R TOOLS (PRE/POST SELF-EFFICACY, SUS, BLIND TRANSCRIPT)
+  //     E) CLINICAL MASTERY BADGES CALCULATOR
+  // ==========================================================================
+
+  /**
+   * ตรวจจับว่าเปิดเว็บผ่าน In-App Browser (เช่น LINE, Facebook, Instagram) หรือไม่
+   * ซึ่งมักบล็อกไมโครโฟน Web Speech API และตัดเสียง TTS บนมือถือไทย
+   */
+  function detectInAppBrowser() {
+    const ua = typeof navigator !== 'undefined' ? String(navigator.userAgent || '') : '';
+    const isLine = /\bLine\//i.test(ua);
+    const isFb = /FBAN|FBAV/i.test(ua);
+    const isIg = /Instagram/i.test(ua);
+    const isInApp = isLine || isFb || isIg;
+    const appName = isLine ? 'LINE' : isFb ? 'Facebook' : isIg ? 'Instagram' : '';
+
+    let externalUrl = '';
+    try {
+      const u = new URL(global.location.href);
+      if (isLine) u.searchParams.set('openExternalBrowser', '1');
+      externalUrl = u.toString();
+    } catch (_) {
+      externalUrl = global.location ? String(global.location.href || '') : '';
+    }
+
+    return { isInApp: isInApp, isLine: isLine, appName: appName, externalUrl: externalUrl };
+  }
+
+  /**
+   * ข้อความภาษากายระหว่างรอ AI ประมวลผล (Perceived Latency Masking)
+   * ช่วยให้ช่วงรอ Apps Script 2–5 วินาทีรู้สึกเหมือนคนจริงกำลังตั้งสติหรือซับน้ำตาก่อนตอบ
+   */
+  const LATENCY_MASK_CUES = {
+    standard: [
+      'คุณแพรวกำลังสูดลมหายใจลึกๆ และซับน้ำตาเบาๆ...',
+      'คุณแพรวก้มมองมือตัวเอง นิ่งคิดตามคำอธิบายของคุณ...',
+      'คุณแพรวค่อยๆ เงยหน้าขึ้นเหมือนกำลังรวบรวมความกล้าถามต่อ...'
+    ],
+    belief: [
+      'คุณฝนพยักหน้าช้าๆ และครุ่นคิดถึงความรู้สึกของคุณยาย...',
+      'คุณฝนกำกระดาษทิชชูแน่นขึ้นเล็กน้อยขณะไตร่ตรองคำพูดของคุณ...',
+      'คุณฝนถอนหายใจแผ่วเบาเหมือนกำลังชั่งน้ำหนักในใจ...'
+    ],
+    conflict: [
+      'ภรรยาและคุณแม่หันสบตากันชั่วครู่ บรรยากาศในห้องเงียบลง...',
+      'คุณแม่นิ่งฟังคำพูดของคุณด้วยสีหน้าที่กำลังครุ่นคิด...',
+      'ภรรยาค่อยๆ เอื้อมมือไปแตะแขนคุณแม่เบาๆ ระหว่างรอฟัง...'
+    ],
+    distrust: [
+      'คุณนุชขมวดคิ้วเล็กน้อยและทบทวนข้อมูลที่คุณเพิ่งชี้แจง...',
+      'คุณนุชเงียบฟังอย่างตั้งใจ เหมือนกำลังประเมินความโปร่งใสของคำตอบ...',
+      'คุณนุชค่อยๆ คลายมือที่กอดอกลงเล็กน้อยขณะคิดตาม...'
+    ],
+    pediatric: [
+      'คุณแม่กอดกระเป๋านักเรียนของน้องต้นกล้าแน่นขึ้น สะอื้นแผ่วเบา...',
+      'คุณแม่หลับตาลงครู่หนึ่ง พยายามกลั้นน้ำตาก่อนจะพูดต่อ...',
+      'ความเงียบแผ่ปกคลุมห้อง คุณแม่ค่อยๆ หายใจเข้าลึกๆ...'
+    ],
+    sbar_doctor: [
+      'นพ.ภาคินกำลังก้มดูค่าความดัน ปริมาณปัสสาวะ และผลโซเดียมบนมอนิเตอร์...',
+      'นพ.ภาคินจดบันทึกข้อมูล SBAR ของคุณลงใบ Order อย่างรวดเร็ว...',
+      'นพ.ภาคินพยักหน้ารับและกำลังประเมินแนวทางการรักษาเร่งด่วน...'
+    ]
+  };
+
+  function pickLatencyMaskCue(personaId, isEn) {
+    if (isEn) {
+      return personaId === 'sbar_doctor'
+        ? 'The ICU physician is reviewing the bedside monitor and lab values...'
+        : 'The relative takes a slow breath, gently wiping away tears before responding...';
+    }
+    const list = LATENCY_MASK_CUES[personaId] || LATENCY_MASK_CUES.standard;
+    return list[Math.floor(Math.random() * list.length)];
+  }
+
+  /**
+   * Client-Side Vocal Tone Monitor + RAM-Only Self-Reflection Audio Recorder (0 THB • 100% PDPA Safe)
+   * วัดความดัง (dB), ความนุ่มนวลของน้ำเสียง และอัดเสียงพูดของผู้เรียนเก็บใน RAM ชั่วคราว
+   * เพื่อเปิดฟังทบทวนตัวเองในหน้าสรุปผล 5 แกน (ไม่มีการส่งไฟล์เสียงขึ้นเซิร์ฟเวอร์)
+   */
+  function createVocalToneRecorder() {
+    let mediaStream = null;
+    let audioCtx = null;
+    let analyser = null;
+    let mediaRecorder = null;
+    let chunks = [];
+    let sampleTimer = null;
+    let startedAt = 0;
+    let active = false;
+    let speakingFrames = 0;
+    let gentleFrames = 0;
+    let loudFrames = 0;
+    let dbSum = 0;
+    let peakDb = -60;
+    let lastLiveCb = null;
+
+    function pickSupportedMime() {
+      if (typeof MediaRecorder === 'undefined' || typeof MediaRecorder.isTypeSupported !== 'function') return '';
+      const candidates = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus'];
+      for (let i = 0; i < candidates.length; i++) {
+        try {
+          if (MediaRecorder.isTypeSupported(candidates[i])) return candidates[i];
+        } catch (_) {}
+      }
+      return '';
+    }
+
+    async function start(onLiveMetric) {
+      if (active) return true;
+      lastLiveCb = typeof onLiveMetric === 'function' ? onLiveMetric : null;
+      if (!navigator.mediaDevices || typeof navigator.mediaDevices.getUserMedia !== 'function') {
+        return false;
+      }
+      try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({
+          audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
+        });
+        const AudioCtx = global.AudioContext || global.webkitAudioContext;
+        if (AudioCtx) {
+          audioCtx = new AudioCtx();
+          if (audioCtx.state === 'suspended') audioCtx.resume().catch(function () {});
+          const src = audioCtx.createMediaStreamSource(mediaStream);
+          analyser = audioCtx.createAnalyser();
+          analyser.fftSize = 512;
+          analyser.smoothingTimeConstant = 0.72;
+          src.connect(analyser);
+        }
+
+        chunks = [];
+        if (typeof MediaRecorder !== 'undefined') {
+          const mime = pickSupportedMime();
+          mediaRecorder = mime ? new MediaRecorder(mediaStream, { mimeType: mime }) : new MediaRecorder(mediaStream);
+          mediaRecorder.ondataavailable = function (ev) {
+            if (ev.data && ev.data.size > 0) chunks.push(ev.data);
+          };
+          try { mediaRecorder.start(250); } catch (_) {}
+        }
+
+        speakingFrames = 0;
+        gentleFrames = 0;
+        loudFrames = 0;
+        dbSum = 0;
+        peakDb = -60;
+        startedAt = Date.now();
+        active = true;
+
+        const dataArr = analyser ? new Uint8Array(analyser.fftSize) : null;
+        sampleTimer = setInterval(function () {
+          if (!active || !analyser || !dataArr) return;
+          analyser.getByteTimeDomainData(dataArr);
+          let sumSq = 0;
+          for (let i = 0; i < dataArr.length; i++) {
+            const norm = (dataArr[i] - 128) / 128;
+            sumSq += norm * norm;
+          }
+          const rms = Math.sqrt(sumSq / dataArr.length);
+          const db = rms > 0.0001 ? Math.max(-60, Math.min(0, Math.round(20 * Math.log10(rms)))) : -60;
+          const level = Math.max(0, Math.min(100, Math.round(((db + 55) / 50) * 100)));
+
+          let status = 'quiet';
+          let labelTH = 'กำลังรอฟังเสียงพูด...';
+          if (db > -44) {
+            speakingFrames += 1;
+            dbSum += db;
+            if (db > peakDb) peakDb = db;
+            if (db >= -10) {
+              loudFrames += 1;
+              status = 'loud';
+              labelTH = 'เสียงค่อนข้างดัง • ผ่อนโทนให้ละมุนลงอีกนิดนะคะ';
+            } else {
+              gentleFrames += 1;
+              status = 'gentle';
+              labelTH = 'น้ำเสียงนุ่มนวลเหมาะสม ✓';
+            }
+          }
+          if (lastLiveCb) {
+            lastLiveCb({ db: db, level: level, status: status, labelTH: labelTH });
+          }
+        }, 90);
+
+        return true;
+      } catch (_) {
+        cleanupTracks();
+        return false;
+      }
+    }
+
+    function cleanupTracks() {
+      if (sampleTimer) { clearInterval(sampleTimer); sampleTimer = null; }
+      if (mediaStream) {
+        try { mediaStream.getTracks().forEach(function (t) { t.stop(); }); } catch (_) {}
+        mediaStream = null;
+      }
+      if (audioCtx) {
+        try { audioCtx.close(); } catch (_) {}
+        audioCtx = null;
+      }
+      analyser = null;
+      active = false;
+    }
+
+    function stop() {
+      return new Promise(function (resolve) {
+        if (!active) return resolve(null);
+        const durationSec = Math.max(0.5, Number(((Date.now() - startedAt) / 1000).toFixed(1)));
+        const avgDb = speakingFrames > 0 ? Math.round(dbSum / speakingFrames) : -40;
+        const gentleRatio = speakingFrames > 0 ? gentleFrames / speakingFrames : 0.85;
+        const calmScore = Math.max(45, Math.min(100, Math.round(60 + gentleRatio * 40 - (loudFrames > 6 ? 12 : 0))));
+        const toneLabel = calmScore >= 85
+          ? 'น้ำเสียงนุ่มนวล อบอุ่น สม่ำเสมอ'
+          : calmScore >= 70
+            ? 'น้ำเสียงสุภาพ ชัดเจน (มีจังหวะหนักเล็กน้อย)'
+            : 'น้ำเสียงค่อนข้างดังหรือตึงเครียด ลองผ่อนโทนลงนะคะ';
+
+        const finalize = function () {
+          let audioUrl = '';
+          try {
+            if (chunks.length > 0) {
+              const mime = (mediaRecorder && mediaRecorder.mimeType) || 'audio/webm';
+              const blob = new Blob(chunks, { type: mime });
+              if (blob.size > 400) audioUrl = URL.createObjectURL(blob);
+            }
+          } catch (_) {}
+          mediaRecorder = null;
+          chunks = [];
+          cleanupTracks();
+          resolve({
+            audioUrl: audioUrl,
+            durationSec: durationSec,
+            avgDb: avgDb,
+            peakDb: peakDb,
+            calmScore: calmScore,
+            toneLabel: toneLabel
+          });
+        };
+
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+          try {
+            mediaRecorder.onstop = finalize;
+            mediaRecorder.stop();
+            return;
+          } catch (_) {}
+        }
+        finalize();
+      });
+    }
+
+    function abort() {
+      try {
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+          mediaRecorder.onstop = null;
+          mediaRecorder.stop();
+        }
+      } catch (_) {}
+      mediaRecorder = null;
+      chunks = [];
+      cleanupTracks();
+    }
+
+    return { start: start, stop: stop, abort: abort, isActive: function () { return active; } };
+  }
+
+  /**
+   * ชุดคำถามวิจัย R2R: Pre/Post Self-Efficacy Scale (3 ข้อ สเกล 1–5)
+   */
+  const SELF_EFFICACY_ITEMS = [
+    { key: 'explainBrainDeath', labelTH: '1. ความมั่นใจในการอธิบายภาวะสมองตายและเครื่องช่วยหายใจให้ญาติเข้าใจ' },
+    { key: 'handleEmotion', labelTH: '2. ความมั่นใจในการรับมืออารมณ์ช็อก โศกเศร้า หรือความขัดแย้งในครอบครัว' },
+    { key: 'gentleApproach', labelTH: '3. ความมั่นใจในการให้ข้อมูลเรื่องการบริจาคอวัยวะอย่างอ่อนโยนและไม่เร่งรัด' }
+  ];
+
+  /**
+   * ชุดประเมินความง่ายในการใช้งานมาตรฐานสากล (Compact SUS 5 ข้อ → แปลงเป็นสเกล 0–100)
+   */
+  const SUS_ITEMS = [
+    { key: 's1', positive: true, labelTH: '1. ฉันอยากกลับมาใช้ระบบนี้เพื่อฝึกทบทวนอีกอย่างสม่ำเสมอ' },
+    { key: 's2', positive: false, labelTH: '2. ฉันรู้สึกว่าระบบมีความซับซ้อนเกินความจำเป็น' },
+    { key: 's3', positive: true, labelTH: '3. ฉันรู้สึกว่าระบบนี้ใช้งานง่ายและเข้าใจขั้นตอนได้ทันที' },
+    { key: 's4', positive: false, labelTH: '4. ฉันรู้สึกว่าต้องให้ผู้เชี่ยวชาญช่วยสอนจึงจะใช้งานระบบนี้ได้' },
+    { key: 's5', positive: true, labelTH: '5. ฉันรู้สึกมั่นใจขณะใช้งานระบบนี้บนอุปกรณ์ของฉัน' }
+  ];
+
+  function computeSusScore(answersObj) {
+    const a = answersObj || {};
+    let sum = 0;
+    let count = 0;
+    SUS_ITEMS.forEach(function (item) {
+      const val = Number(a[item.key]);
+      if (val >= 1 && val <= 5) {
+        sum += item.positive ? (val - 1) : (5 - val);
+        count += 1;
+      }
+    });
+    if (count === 0) return null;
+    return Math.round((sum / (count * 4)) * 100);
+  }
+
+  /**
+   * แปลงบทสนทนาเป็นรูปแบบไม่ระบุตัวตน (Blind Transcript) สำหรับอาจารย์ TC ประเมินเทียบ AI (ICC / Kappa)
+   */
+  function buildBlindTranscript(messages, learnerName) {
+    const cleanName = String(learnerName || '').replace(/^(พว\.|นพ\.|พญ\.|คุณ)/, '').trim();
+    const esc = cleanName ? cleanName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') : '';
+    const nameRx = esc && esc.length >= 2 ? new RegExp(esc, 'gi') : null;
+    return (Array.isArray(messages) ? messages : [])
+      .map(function (m, idx) {
+        let txt = String(m.text || '').replace(/\s+/g, ' ').trim();
+        if (nameRx) txt = txt.replace(nameRx, '[LEARNER]');
+        return {
+          turn: idx + 1,
+          role: m.role === 'user' ? 'LEARNER' : 'RELATIVE',
+          emotion: m.emotion || '',
+          text: txt.slice(0, 500)
+        };
+      })
+      .slice(0, 24);
+  }
+
+  /**
+   * คำนวณเหรียญตราสมรรถนะคลินิก (Clinical Mastery Badges) จากประวัติ AI Skill Lab จริง
+   */
+  function computeClinicalBadges(userObj) {
+    const hist = Array.isArray(userObj && userObj.skillLabHistory) ? userObj.skillLabHistory : [];
+    const hasSilence = hist.some(function (h) { return Number(h.silenceCount || 0) >= 2; });
+    const hasGentle = hist.some(function (h) { return Number(h.triggerTotal || 0) === 0 && Number(h.score || 0) >= 75; });
+    const hasDual = hist.some(function (h) { return h.personaId === 'conflict' && Number(h.score || 0) >= 85; });
+    const hasHard = hist.some(function (h) { return h.difficultyId === 'hard' && Number(h.score || 0) >= 75; });
+    const hasAdv = hist.some(function (h) { return (h.personaId === 'pediatric' || h.personaId === 'sbar_doctor') && Number(h.score || 0) >= 75; });
+
+    return [
+      { id: 'master_silence', titleTH: 'Master of Silence', descTH: 'เว้นความเงียบเยียวยา 2.5 วิ ≥ 2 ครั้ง', color: '#38bdf8', earned: hasSilence },
+      { id: 'gentle_comm', titleTH: 'Gentle Communicator', descTH: 'จบเคสโดยไร้คำกระทบใจ (0 Trigger)', color: '#34d399', earned: hasGentle },
+      { id: 'dual_peacemaker', titleTH: 'Dual-Voice Peacemaker', descTH: 'ผ่านเคสขัดแย้ง 2 เสียง ≥ 85 คะแนน', color: '#f43f5e', earned: hasDual },
+      { id: 'hard_survivor', titleTH: 'Hard Mode Survivor', descTH: 'ผ่านโหมด Hard + เหตุการณ์แทรก', color: '#fbbf24', earned: hasHard },
+      { id: 'advanced_clinician', titleTH: 'Pediatric / SBAR Pro', descTH: 'ผ่านเคสผู้ป่วยเด็กหรือส่งเวร SBAR', color: '#c084fc', earned: hasAdv }
+    ];
   }
 
   // ==========================================================================
@@ -1058,6 +1387,34 @@
         osc1.start();
         osc2.start();
         this.ambientNodes = { osc1: osc1, osc2: osc2, master: master };
+      } catch (_) {}
+    },
+
+    // เสียงลมหายใจ/ขยับทิชชูแผ่วเบาขณะญาติตั้งสติก่อนตอบ (Perceived Latency Masking)
+    playThinkingCue: function () {
+      const ctx = this.ensureCtx();
+      if (!ctx) return;
+      try {
+        const dur = 0.42;
+        const bufSize = Math.floor(ctx.sampleRate * dur);
+        const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+        const ch = buf.getChannelData(0);
+        for (let i = 0; i < bufSize; i++) {
+          const env = Math.sin((i / bufSize) * Math.PI);
+          ch[i] = (Math.random() * 2 - 1) * env;
+        }
+        const src = ctx.createBufferSource();
+        src.buffer = buf;
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = 520;
+        filter.Q.value = 1.4;
+        const gain = ctx.createGain();
+        gain.gain.value = 0.014;
+        src.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+        src.start();
       } catch (_) {}
     }
   };
@@ -1567,6 +1924,8 @@
     MICRO_DRILL_STAGES: MICRO_DRILL_STAGES,
     ADVISOR_GOALS: ADVISOR_GOALS,
     ADVISOR_QUICK_QUESTIONS: ADVISOR_QUICK_QUESTIONS,
+    SELF_EFFICACY_ITEMS: SELF_EFFICACY_ITEMS,
+    SUS_ITEMS: SUS_ITEMS,
 
     getPersonas: getPersonas,
     getCaseVoices: getCaseVoices,
@@ -1575,6 +1934,13 @@
     computeInertiaTrust: computeInertiaTrust,
     pickHardCurveball: pickHardCurveball,
     evaluateMicroDrillAnswer: evaluateMicroDrillAnswer,
+
+    detectInAppBrowser: detectInAppBrowser,
+    pickLatencyMaskCue: pickLatencyMaskCue,
+    createVocalToneRecorder: createVocalToneRecorder,
+    computeSusScore: computeSusScore,
+    buildBlindTranscript: buildBlindTranscript,
+    computeClinicalBadges: computeClinicalBadges,
 
     computeLabRecommendation: computeLabRecommendation,
     answerAdvisorQuestion: answerAdvisorQuestion,
