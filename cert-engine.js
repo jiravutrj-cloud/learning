@@ -15,6 +15,8 @@
 
   const FALLBACK_TEMPLATE = {
     certPrefix: 'RJC-2027',
+    cneuActivityCode: '',
+    cneuCredits: '',
     orgTitleTH: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ',
     orgTitleEN: 'rjcloud.organ • Clinical Organ Donation & Transplantation Network',
     courseTitleTH: 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ',
