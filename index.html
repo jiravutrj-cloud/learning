@@ -2478,8 +2478,13 @@ ${roleProfile.aiPromptAddon || ''}
 
             useEffect(() => {
                 if (screen !== 'certificate' || certSubView !== 'cert' || !certCanvasRef.current || !user) return;
+                const mergedCertTpl = {
+                    ...certTemplate,
+                    cneuActivityCode: certTemplate.cneuActivityCode || cneuConfig.activityCode || '',
+                    cneuCredits: certTemplate.cneuCredits || cneuConfig.cneuCredits || ''
+                };
                 if (typeof CERT.drawMinimalistCertificate === 'function') {
-                    CERT.drawMinimalistCertificate(certCanvasRef.current, certTemplate, user, verifyUrl);
+                    CERT.drawMinimalistCertificate(certCanvasRef.current, mergedCertTpl, user, verifyUrl);
                     return;
                 }
                 // Built-in Fallback Canvas Renderer สำหรับโหมดพรีวิวไฟล์เดี่ยว
@@ -2514,10 +2519,21 @@ ${roleProfile.aiPromptAddon || ''}
                 ctx.fillText([user.hospital || '', user.license ? `เลขที่ใบอนุญาต ${user.license}` : ''].filter(Boolean).join(' • '), W / 2, 378, W - 160);
                 ctx.fillStyle = '#0f172a';
                 ctx.font = '700 22px "Prompt", sans-serif';
-                ctx.fillText(certTemplate.courseTitleTH || '', W / 2, 460, W - 180);
+                ctx.fillText(mergedCertTpl.courseTitleTH || '', W / 2, 460, W - 180);
+                const cneuCode = String(mergedCertTpl.cneuActivityCode || user.cneuActivityCode || '').trim();
+                const cneuCred = String(mergedCertTpl.cneuCredits || user.cneuCredits || '').trim();
+                if (cneuCode || cneuCred) {
+                    const cneuLine = [
+                        cneuCode ? `รหัสกิจกรรม CNEU: ${cneuCode}` : '',
+                        cneuCred ? `จำนวน ${cneuCred} หน่วยคะแนน` : ''
+                    ].filter(Boolean).join('   •   ');
+                    ctx.fillStyle = '#047857';
+                    ctx.font = '600 17px "Prompt", sans-serif';
+                    ctx.fillText(cneuLine, W / 2, 496, W - 180);
+                }
                 ctx.fillStyle = '#64748b';
                 ctx.font = '500 16px "Sarabun", sans-serif';
-                ctx.fillText(`ให้ไว้ ณ วันที่ ${formatThaiDate(user.certificateIssuedAt)}`, W / 2, 505);
+                ctx.fillText(`ให้ไว้ ณ วันที่ ${formatThaiDate(user.certificateIssuedAt)}`, W / 2, cneuCode || cneuCred ? 530 : 505);
                 ctx.fillStyle = '#1d1d1f';
                 ctx.font = '600 18px "Prompt", sans-serif';
                 ctx.fillText(certTemplate.signerName || '', W / 2, H - 115);
@@ -2540,7 +2556,7 @@ ${roleProfile.aiPromptAddon || ''}
                         }
                     } catch (_) {}
                 }
-            }, [screen, certSubView, certTemplate, user, verifyUrl]);
+            }, [screen, certSubView, certTemplate, cneuConfig, user, verifyUrl]);
 
             // ============================================================================
             // 5. AUTH WIZARD HANDLERS (STEP 1 -> STEP 2 PDPA -> STEP 3 EMAIL OTP)
