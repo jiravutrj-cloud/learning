@@ -14,7 +14,7 @@
     <script src="./learning-core.js" onerror="console.warn('learning-core.js unavailable, using fallback')"></script>
     <script src="./cert-engine.js" onerror="console.warn('cert-engine.js unavailable, using fallback')"></script>
     <script src="./ai-interactive.js" onerror="console.warn('ai-interactive.js unavailable')"></script>
-    <script src="./keynote-launch.js?v=202704" onerror="console.warn('keynote-launch.js unavailable')"></script>
+    <script src="./keynote-launch.js?v=202705" onerror="console.warn('keynote-launch.js unavailable')"></script>
 
     <!-- ซิงค์ธีมมืด/สว่างทันทีจาก localStorage ป้องกันจอกระพริบ -->
     <script>
@@ -80,7 +80,6 @@
       }
     </script>
 
-    <!-- สไตล์สำรองธีม rjcloud.organ 2.0 สำหรับโหมดพรีวิวไฟล์เดี่ยว (ทำงานประสานกับ ./styles.css) -->
     <style>
       :root, html[data-theme="dark"] {
         --bg-page: #020612; --text-main: #f8fafc; --text-secondary: #dbeafe; --text-muted: #93b4d8;
@@ -129,7 +128,6 @@
       .cneu-evidence-table th, .cneu-evidence-table td { border: 1px solid #cbd5e1; padding: 8px 10px; }
       .cneu-evidence-table th { background-color: #f1f5f9; color: #0f172a; font-weight: 700; }
 
-      /* rjcloud.organ 2.0 Hero Atmosphere, Sculpted Liquid Glass & Living Tree Fallback */
       .hero-atmosphere { background: linear-gradient(180deg, #000000 0%, #000000 25%, #030c1e 39%, #07255e 54%, #165cc4 71%, #4b98e8 85%, #a9d6f7 96%, #c4e4fb 100%); }
       .lower-atmosphere { background: linear-gradient(180deg, #c4e4fb 0%, #9ccbf2 14%, #1d4f9c 44%, #071838 78%, #030816 100%); }
       .liquid-glass-backdrop { clip-path: url(#liquidGlassClipNorm); -webkit-clip-path: url(#liquidGlassClipNorm); background: radial-gradient(circle at var(--gx, 32%) var(--gy, 28%), rgba(255,255,255,0.13) 0%, rgba(186,224,255,0.045) 38%, rgba(15,58,130,0.045) 74%, rgba(255,255,255,0.035) 100%); backdrop-filter: blur(3.5px) saturate(135%) brightness(1.04); -webkit-backdrop-filter: blur(3.5px) saturate(135%) brightness(1.04); }
@@ -344,7 +342,6 @@
             { key: 'application', title: '5. ความมั่นใจในการนำความรู้และทักษะไปประยุกต์ใช้ในงานจริง', desc: 'สามารถนำไปปรับใช้ในหน่วยงานได้จริง' }
         ];
 
-        // Core Helper Wrappers (ทำงานได้ทั้งตอนโหลด learning-core.js และโหมดพรีวิวเดี่ยว)
         const parseRawExams = CORE.parseRawExams || ((raw) => (Array.isArray(raw) ? raw : []).map((str, idx) => {
             const p = String(str).split('|').map(s => s.trim());
             return { id: idx + 1, domain: 'policy_ethics', question: p[0] || '', options: p.slice(1, Math.max(2, p.length - 1)), answer: parseInt((p[p.length - 1] || '0').replace(/[^0-9]/g, ''), 10) || 0 };
@@ -420,7 +417,6 @@
             updatedAt: new Date().toISOString()
         }));
 
-        // Firebase Initialization
         let fbApp = null, fbAuth = null, fbDb = null;
         const isCloudConfigured = Boolean(CONFIG.firebaseConfig?.apiKey && CONFIG.firebaseConfig?.projectId);
         if (isCloudConfigured) {
@@ -433,7 +429,6 @@
             }
         }
 
-        // CORS-Safe Apps Script Caller (เพิ่ม redirect: 'follow' รองรับ Google Apps Script Web App)
         async function postAppsScript(url, payload) {
             if (!url) return { status: 'no_url', message: 'ยังไม่ได้ตั้งค่า Apps Script URL' };
             try {
@@ -451,7 +446,6 @@
             }
         }
 
-        // ส่งรหัส OTP ทางอีเมลจริงผ่าน Apps Script (รองรับชื่อ action มาตรฐานและแนบฟิลด์ครบถ้วน)
         async function sendOtpViaEmail(url, email, otp, name, license) {
             if (!url || !email) return { ok: false, reason: 'ไม่พบ URL ส่งอีเมลหรือที่อยู่อีเมลปลายทาง' };
             const cleanEmail = String(email).trim();
@@ -479,7 +473,6 @@
                 }
                 const msg = String(res?.message || '');
                 if (msg) lastErr = msg;
-                // หาก error ไม่ใช่เรื่องไม่รองรับชื่อ action ให้หยุดทันที (เช่น โควต้าเต็มหรือเน็ตหลุด)
                 if (!msg.includes('ไม่รองรับ') && !msg.toLowerCase().includes('action')) {
                     break;
                 }
@@ -713,7 +706,7 @@
             const [chatInput, setChatInput] = useState('');
             const [chatMsgs, setChatMsgs] = useState([]);
             const [asking, setAsking] = useState(false);
-            const [audioPhase, setAudioPhase] = useState('idle'); // idle | loading | playing
+            const [audioPhase, setAudioPhase] = useState('idle');
             const audioElRef = useRef(null);
             const blobUrlRef = useRef(null);
 
@@ -924,7 +917,6 @@ ${roleProfile.aiPromptAddon || ''}
             const handlePickOption = (optIdx) => {
                 if (autoNextRef.current) clearTimeout(autoNextRef.current);
                 setAnswers(prev => ({ ...prev, [safeIdx]: optIdx }));
-                // เปลี่ยนไปข้อถัดไปอัตโนมัติอย่างนุ่มนวลหลังเลือกคำตอบ (ยกเว้นข้อสุดท้ายเพื่อให้ตรวจสอบหรือกดส่งได้)
                 if (safeIdx < total - 1) {
                     autoNextRef.current = setTimeout(() => {
                         setCurrentIdx(prev => Math.min(total - 1, prev + 1));
@@ -1387,7 +1379,6 @@ ${roleProfile.aiPromptAddon || ''}
                 };
             }, []);
 
-            // ระบบปล่อยออร่าเรืองแสงออกจากใบไม้ที่พริ้วไหวต่อเนื่อง + ตอบสนองสายลมจากเมาส์
             useEffect(() => {
                 const SVG_NS = 'http://www.w3.org/2000/svg';
                 const layer = particleLayerRef.current;
@@ -1474,7 +1465,6 @@ ${roleProfile.aiPromptAddon || ''}
                 };
             }, [allLeafMeta]);
 
-            // ระบบ Solar Flare Style 03: Eclipse Arc ความเข้มแสง 80% + Optical Parallax ลื่นไหล 60FPS
             useEffect(() => {
                 const canvas = flareCanvasRef.current;
                 const heroEl = heroStageRef.current;
@@ -1653,7 +1643,6 @@ ${roleProfile.aiPromptAddon || ''}
 
                     ctx.globalCompositeOperation = 'lighter';
 
-                    // Style 03: Luxury Eclipse Horizon Arc (ความเข้มแสง 80%)
                     const arcR = Math.max(w * 0.62, 540);
                     const arcCx = w * 0.5 + flareState.mouseX * 14;
                     const arcCy = h * 0.22 + arcR + flareState.mouseY * 10;
@@ -1712,7 +1701,6 @@ ${roleProfile.aiPromptAddon || ''}
                 };
             }, []);
 
-            // ระบบปรับขนาดข้อความให้เต็มความกว้างกรอบกระจก Slim ซ้าย-ขวาอัตโนมัติทั้งคอมพิวเตอร์และมือถือ
             useEffect(() => {
                 const fitLineToWidth = (el, targetW, minPx, maxPx) => {
                     if (!el || targetW <= 0) return minPx;
@@ -1789,7 +1777,6 @@ ${roleProfile.aiPromptAddon || ''}
 
             return (
                 <div className="relative z-10 flex-1 flex flex-col">
-                    {/* SVG ClipPath สำหรับกรอบกระจก Liquid Glass แบบ Slim ชิดปุ่มด้านล่าง (760x208) */}
                     <svg width="0" height="0" className="absolute pointer-events-none" aria-hidden="true">
                         <defs>
                             <clipPath id="liquidGlassClipNorm" clipPathUnits="objectBoundingBox">
@@ -1798,9 +1785,7 @@ ${roleProfile.aiPromptAddon || ''}
                         </defs>
                     </svg>
 
-                    {/* SECTION 1: HERO ATMOSPHERIC STAGE + ECLIPSE ARC SOLAR FLARE 80% */}
                     <section ref={heroStageRef} className="hero-atmosphere relative min-h-[100dvh] w-full flex flex-col justify-between overflow-hidden text-white">
-                        {/* Layer A: หมู่ดาวระยิบระยับ + ดาวตก */}
                         <div className="absolute inset-0 pointer-events-none overflow-hidden z-[5]" aria-hidden="true">
                             <span className="twinkle-star top-[6%] left-[12%] w-[2px] h-[2px]" style={{ '--tw-dur': '3.8s', '--tw-del': '0.3s' }} />
                             <span className="twinkle-star top-[11%] left-[27%] w-[1.5px] h-[1.5px]" style={{ '--tw-dur': '4.6s', '--tw-del': '1.4s' }} />
@@ -1826,13 +1811,10 @@ ${roleProfile.aiPromptAddon || ''}
                             <span className="ambient-dot absolute top-[52%] right-[14%] w-1.5 h-1.5 rounded-full bg-emerald-200 blur-[0.5px]" style={{ '--dur': '7.6s', '--del': '1.5s' }} />
                         </div>
 
-                        {/* Layer B: Cinema Optical Solar Flare (Style 03: Eclipse Arc 80%) */}
                         <canvas ref={flareCanvasRef} id="solar-flare-canvas" aria-hidden="true" />
 
-                        {/* Core Hero Composition */}
                         <main className="relative z-20 flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 flex flex-col items-center justify-end pb-4 sm:pb-6 pt-10 sm:pt-12">
                             <div className="relative w-full max-w-[1060px] flex flex-col items-center">
-                                {/* LAYER 1 + LAYER 2 (DESKTOP): ต้นไม้มีชีวิต + กรอบกระจก Slim วางอยู่ระหว่างรากต้นไม้ */}
                                 <div className="relative w-full flex flex-col items-center select-none z-10">
                                     <div className="w-[min(108vw,460px)] sm:w-[660px] md:w-[780px] lg:w-[880px] xl:w-[940px] mb-0 pointer-events-none">
                                         <svg ref={treeSvgRef} viewBox="0 0 520 374" className="w-full h-auto overflow-visible drop-shadow-[0_14px_42px_rgba(56,189,248,0.42)]" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1863,7 +1845,6 @@ ${roleProfile.aiPromptAddon || ''}
                                                 <path d="M214 364 C242 330 276 298 264 250 C252 202 260 153 260 110" stroke="url(#trunkGrad)" strokeWidth="7" strokeLinecap="round" opacity="0.84" />
                                                 <path d="M306 364 C276 332 242 296 256 246" stroke="#b66ad0" strokeWidth="5.5" strokeLinecap="round" opacity="0.74" />
 
-                                                {/* กิ่งซ้าย + ใบไม้ม่วง-ชมพู-หัวใจ */}
                                                 <g className="branch-group-left">
                                                     <g stroke="url(#leftBranchGrad)" strokeLinecap="round" opacity="0.92">
                                                         <path d="M248 240 C200 223 148 230 104 250" strokeWidth="4.5" />
@@ -1898,7 +1879,6 @@ ${roleProfile.aiPromptAddon || ''}
                                                     </g>
                                                 </g>
 
-                                                {/* กิ่งขวา + ใบไม้ฟ้า-เขียวมิ้นต์ */}
                                                 <g className="branch-group-right">
                                                     <g stroke="url(#rightBranchGrad)" strokeLinecap="round" opacity="0.92">
                                                         <path d="M272 240 C322 222 374 230 418 250" strokeWidth="4.5" />
@@ -1928,7 +1908,6 @@ ${roleProfile.aiPromptAddon || ''}
                                                     </g>
                                                 </g>
 
-                                                {/* ปุ่มโหนดดิจิทัล Cloud AI */}
                                                 <g stroke="#9ce8e6" strokeWidth="2.2" fill="rgba(56,189,248,0.26)">
                                                     <circle className="cloud-node-pulse" style={{ animationDelay: '0s' }} cx="298" cy="148" r="6" />
                                                     <circle className="cloud-node-pulse" style={{ animationDelay: '0.8s' }} cx="338" cy="166" r="5" />
@@ -1938,13 +1917,11 @@ ${roleProfile.aiPromptAddon || ''}
                                                     <circle className="cloud-node-pulse" style={{ animationDelay: '1.1s' }} cx="318" cy="216" r="4.5" />
                                                 </g>
 
-                                                {/* ชั้นปล่อยวงคลื่นและละอองออร่าลอยขึ้นจากใบไม้ที่ขยับ */}
                                                 <g ref={particleLayerRef} />
                                             </g>
                                         </svg>
                                     </div>
 
-                                    {/* LAYER 2 (DESKTOP): SLIM SCULPTED LIQUID GLASS CHAMBER (วางอยู่ระหว่างรากต้นไม้ + ชิดปุ่มด้านล่าง) */}
                                     <div
                                         ref={glassStageRef}
                                         id="liquid-glass-stage"
@@ -1977,7 +1954,6 @@ ${roleProfile.aiPromptAddon || ''}
                                         </svg>
 
                                         <div className="relative z-10 w-full h-full">
-                                            {/* โซนห้องกระจกบนแบบ Slim: ป้ายโปรแกรมและหัวข้อหลักเต็มความกว้างซ้าย-ขวา */}
                                             <div
                                                 ref={heroFitBoxRef}
                                                 id="hero-text-fit-box"
@@ -1996,7 +1972,6 @@ ${roleProfile.aiPromptAddon || ''}
                                                 </h1>
                                             </div>
 
-                                            {/* โซนแกนกลาง: "สู่มาตรฐานปี 2027" อยู่เหนือปุ่มและกึ่งกลางตรงกัน ปุ่มเข้าสู่ระบบชิดขอบกระจกล่าง */}
                                             <div
                                                 ref={heroCenterColRef}
                                                 id="hero-center-cta-col"
@@ -2018,7 +1993,6 @@ ${roleProfile.aiPromptAddon || ''}
                                                 </button>
                                             </div>
 
-                                            {/* โซนห้องกระจกล่างขวา: Beta + rjcloud.organ 2.0 + Cloud AI */}
                                             <div className="absolute top-[41%] bottom-[4.5%] right-[1.8%] w-[24.2%] border-l border-white/20 pl-2 flex flex-col items-center justify-center text-center">
                                                 <span className="beta-glow text-[30px] lg:text-[38px] leading-[0.88] select-none">Beta</span>
                                                 <span className="font-display font-medium text-[12.5px] lg:text-[14px] text-white tracking-wide mt-1 drop-shadow">
@@ -2032,7 +2006,6 @@ ${roleProfile.aiPromptAddon || ''}
                                     </div>
                                 </div>
 
-                                {/* LAYER 2 (MOBILE): SLIM LIQUID GLASS CARD วางอยู่ระหว่างรากต้นไม้ */}
                                 <div className="md:hidden relative z-20 -mt-16 sm:-mt-20 w-full max-w-[350px] liquid-glass-mobile rounded-[1.5rem] px-3.5 pt-3.5 pb-2.5 text-center space-y-2">
                                     <div className="flex justify-center">
                                         <span className="hero-eyebrow inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10.5px] font-medium text-cyan-50/95">
@@ -2062,7 +2035,6 @@ ${roleProfile.aiPromptAddon || ''}
                                     </div>
                                 </div>
 
-                                {/* LAYER 3: RAJAVITHI HOSPITAL HORIZON WATERMARK */}
                                 <div className="relative z-10 text-center mt-1.5 sm:mt-2 md:mt-2.5 select-none">
                                     <p className="rajavithi-watermark font-display font-bold text-2xl sm:text-4xl md:text-[42px] leading-none">
                                         RAJAVITHI HOSPITAL
@@ -2082,7 +2054,6 @@ ${roleProfile.aiPromptAddon || ''}
                         </div>
                     </section>
 
-                    {/* SECTION 2: 5-STEP AI-GUIDED PATHWAY & FOOTER */}
                     <section id="pathway" className="lower-atmosphere relative w-full py-12 sm:py-16 px-4 sm:px-6">
                         <div className="max-w-5xl mx-auto space-y-8">
                             <div className="text-center space-y-2">
@@ -2144,7 +2115,6 @@ ${roleProfile.aiPromptAddon || ''}
             }, []);
             const isAdminPreview = Boolean(adminPreviewParam);
 
-            // Adaptive Theme
             const [theme, setTheme] = useState(() => {
                 try {
                     const saved = localStorage.getItem(THEME_KEY);
@@ -2162,7 +2132,6 @@ ${roleProfile.aiPromptAddon || ''}
 
             const toggleTheme = useCallback(() => setTheme(p => (p === 'dark' ? 'light' : 'dark')), []);
 
-            // App State
             const [user, setUser] = useState(() => {
                 if (isAdminPreview) {
                     return {
@@ -2204,7 +2173,6 @@ ${roleProfile.aiPromptAddon || ''}
                 return 'lessons';
             });
 
-            // Cloud Config & Content
             const [lessons, setLessons] = useState(() => (Array.isArray(window.INITIAL_LESSONS) && window.INITIAL_LESSONS.length > 0 ? window.INITIAL_LESSONS : FALLBACK_LESSONS));
             const [questionSets, setQuestionSets] = useState(() => [parseRawExams(window.QUIZ_QUESTIONS_RAW || FALLBACK_QUIZ_RAW)]);
             const [liveConfig, setLiveConfig] = useState({ status: 'offline', days: 1, hours: 8, allowPosttest: false, topic: 'การบรรยายพิเศษด้านการรับบริจาคและปลูกถ่ายอวัยวะ 2027', url: '', documentUrl: '' });
@@ -2213,11 +2181,9 @@ ${roleProfile.aiPromptAddon || ''}
             const [appsScriptUrl, setAppsScriptUrl] = useState(CONFIG.appsScriptUrl || '');
             const [isCloudReady, setIsCloudReady] = useState(false);
 
-            // Lesson & Timer States
             const [currentLessonId, setCurrentLessonId] = useState(() => Number(user?.lastVideoId || 1));
             const [studySeconds, setStudySeconds] = useState(() => Number(user?.studySeconds || 0));
 
-            // Auth Wizard 3-Step States
             const [authStep, setAuthStep] = useState(() => (adminPreviewParam === 'auth2' ? 2 : adminPreviewParam === 'auth3' ? 3 : 1));
             const [authBusy, setAuthBusy] = useState(false);
             const [isExistingAccount, setIsExistingAccount] = useState(false);
@@ -2229,19 +2195,16 @@ ${roleProfile.aiPromptAddon || ''}
             const [otpInput, setOtpInput] = useState('');
             const [otpCooldown, setOtpCooldown] = useState(0);
 
-            // Certificate & Evaluation States
-            const [certSubView, setCertSubView] = useState('cert'); // cert | cneu
+            const [certSubView, setCertSubView] = useState('cert');
             const [certForm, setCertForm] = useState({ name: '', nameEN: '', hospital: '', comment: '' });
             const [evalCriteria, setEvalCriteria] = useState({ content: 5, speaker: 5, platform: 5, aiLab: 5, application: 5 });
 
-            // Profile PDPA Self-Service & Warm-up States
             const [pdpaEditOpen, setPdpaEditOpen] = useState(false);
             const [pdpaDangerOpen, setPdpaDangerOpen] = useState(false);
             const [pdpaForm, setPdpaForm] = useState({ name: '', position: '', department: '', hospital: '', province: '', email: '', phone: '' });
             const [warmupTags, setWarmupTags] = useState({ age: 'วัยทำงาน (20–45 ปี)', cause: 'อุบัติเหตุทางศีรษะ (TBI)', mood: 'สับสนเรื่องเครื่องช่วยหายใจ', concern: 'กลัวร่างไม่เรียบร้อย' });
             const [warmupResult, setWarmupResult] = useState('');
 
-            // UI Feedback
             const [toast, setToast] = useState({ visible: false, text: '', type: 'success' });
             const [confirmDialog, setConfirmDialog] = useState({ open: false, title: '', message: '', danger: false, confirmText: 'ยืนยัน', onConfirm: null });
 
@@ -2263,14 +2226,12 @@ ${roleProfile.aiPromptAddon || ''}
                 if (el) el.dataset.mounted = 'true';
             }, []);
 
-            // OTP Resend Cooldown
             useEffect(() => {
                 if (otpCooldown <= 0) return;
                 const t = setTimeout(() => setOtpCooldown(c => c - 1), 1000);
                 return () => clearTimeout(t);
             }, [otpCooldown]);
 
-            // Save User Progress (รองรับ partialOnly เพื่อไม่ทับข้อมูลที่แอดมินแก้บน Cloud)
             const saveUserProgress = useCallback(async (patch, options = {}) => {
                 const cur = userRef.current;
                 if (!cur) return null;
@@ -2304,7 +2265,6 @@ ${roleProfile.aiPromptAddon || ''}
                 return merged;
             }, [isAdminPreview]);
 
-            // Firebase Auth + Settings + Content Subscriptions
             useEffect(() => {
                 if (!isCloudConfigured || !fbAuth || !fbDb) return;
                 let active = true;
@@ -2365,7 +2325,6 @@ ${roleProfile.aiPromptAddon || ''}
                 };
             }, [isAdminPreview]);
 
-            // ซิงค์ข้อมูลผู้เรียนสดจาก Cloud Firestore (ไม่ทับข้อมูลที่แอดมินปรับแก้)
             useEffect(() => {
                 if (!isCloudReady || !fbDb || isAdminPreview || !user?.id || String(user.id).startsWith('admin_preview_')) return;
                 const unsubUser = onSnapshot(
@@ -2393,7 +2352,6 @@ ${roleProfile.aiPromptAddon || ''}
                 return () => unsubUser();
             }, [isCloudReady, isAdminPreview, user?.id]);
 
-            // คำนวณเกณฑ์ความคืบหน้า 5 ขั้นตอนแบบ Real-time
             const targetHours = useMemo(() => getTargetHoursForUser(user, liveConfig), [user, liveConfig]);
             const targetSeconds = Math.max(60, targetHours * 3600);
             const liveStudyPercent = useMemo(
@@ -2406,7 +2364,6 @@ ${roleProfile.aiPromptAddon || ''}
             const isPosttestUnlocked = Boolean(isAdminPreview || liveConfig.allowPosttest || (hasDonePretest && isStudyHoursMet && isSkillLabDone));
             const isPosttestPassed = Boolean(user?.status === 'ผ่าน' || parsePosttestPercent(user) >= MIN_POSTTEST_PERCENT);
 
-            // นาฬิกาจับเวลาเรียนอัตโนมัติ (แยก Side-Effect ออกจาก setState updater เพื่อความถูกต้องตาม React 18)
             useEffect(() => {
                 if (screen !== 'dashboard' || !user || isAdminPreview) return;
                 if (!['lessons', 'live', 'clinical_cases', 'flashcards'].includes(activeTab)) return;
@@ -2431,7 +2388,6 @@ ${roleProfile.aiPromptAddon || ''}
                 return () => clearInterval(timer);
             }, [screen, activeTab, user?.id, isAdminPreview, targetSeconds, saveUserProgress]);
 
-            // เชื่อมต่อ Bridge กับไฟล์เสริม ai-interactive.js ครบทุกฟิลด์
             useEffect(() => {
                 if (window.RJCLOUD_AI_INTERACTIVE && typeof window.RJCLOUD_AI_INTERACTIVE.registerBridge === 'function') {
                     window.RJCLOUD_AI_INTERACTIVE.registerBridge({
@@ -2457,7 +2413,6 @@ ${roleProfile.aiPromptAddon || ''}
                 }
             }, [screen, activeTab, user, lessons, currentLessonId, studySeconds, liveStudyPercent, targetSeconds, hasDonePretest, isAdminPreview, appsScriptUrl, toggleTheme, showToast, saveUserProgress]);
 
-            // เชื่อมต่อโมดูลเปิดตัว Keynote พิธีกรคู่ ชาย–หญิง + เพลง Epic (keynote-launch.js)
             useEffect(() => {
                 if (window.RJCLOUD_KEYNOTE && typeof window.RJCLOUD_KEYNOTE.sync === 'function') {
                     window.RJCLOUD_KEYNOTE.sync({
@@ -2474,7 +2429,6 @@ ${roleProfile.aiPromptAddon || ''}
                 }
             }, []);
 
-            // เตรียมฟอร์มยืนยันใบประกาศฯ เมื่อเข้าหน้า cert_confirm
             useEffect(() => {
                 if (screen === 'cert_confirm' && user) {
                     setCertForm({
@@ -2486,7 +2440,6 @@ ${roleProfile.aiPromptAddon || ''}
                 }
             }, [screen, user]);
 
-            // วาดใบประกาศนียบัตรลง Canvas เมื่อเข้าหน้า certificate (พร้อม Fallback กรณีพรีวิวไฟล์เดี่ยวไม่มี cert-engine.js)
             const verifyUrl = useMemo(() => {
                 const code = user?.certificateCode || `${certTemplate.certPrefix || 'RJC-2027'}-DEMO01`;
                 return typeof CERT.buildVerifyUrl === 'function'
@@ -2505,7 +2458,6 @@ ${roleProfile.aiPromptAddon || ''}
                     CERT.drawMinimalistCertificate(certCanvasRef.current, mergedCertTpl, user, verifyUrl);
                     return;
                 }
-                // Built-in Fallback Canvas Renderer สำหรับโหมดพรีวิวไฟล์เดี่ยว
                 const canvas = certCanvasRef.current;
                 const W = 1200, H = 848;
                 canvas.width = W;
@@ -2610,7 +2562,6 @@ ${roleProfile.aiPromptAddon || ''}
                     const isContinuing = found.userType === 'เรียนต่อเนื่อง' || Boolean(found.pdpaAccepted);
                     setIsExistingAccount(true);
                     setExistingRegisteredEmail(hasRegEmail ? regEmail : '');
-                    // บัญชีเดิมที่เคยลงทะเบียนไว้แล้ว ไม่ต้องติ๊ก PDPA ซ้ำ
                     setPdpaAgreed(true);
                     setAuthForm({
                         ...DEFAULT_AUTH_FORM,
@@ -2627,7 +2578,6 @@ ${roleProfile.aiPromptAddon || ''}
                         'info'
                     );
                 } else {
-                    // รีเซ็ตฟอร์มสะอาดทั้งอ็อบเจกต์ ป้องกันข้อมูลรั่วข้ามบัญชีเมื่อกดย้อนกลับ
                     setIsExistingAccount(false);
                     setExistingRegisteredEmail('');
                     setPdpaAgreed(false);
@@ -2637,14 +2587,12 @@ ${roleProfile.aiPromptAddon || ''}
                 setAuthStep(2);
             };
 
-            // ผู้เรียนใหม่ที่ยังไม่เคยลงทะเบียนหรือยังไม่เคยยินยอม PDPA ต้องติ๊กยินยอม 1 ครั้งเสมอ
             const needsPdpaCheckbox = !(isExistingAccount || authForm.pdpaAccepted);
 
             const handleRequestOtp = async (e) => {
                 if (e) e.preventDefault();
                 if (!authForm.name.trim()) { showToast('กรุณากรอกชื่อ–นามสกุลค่ะ', 'error'); return; }
 
-                // บังคับส่ง OTP ไปยังอีเมลที่ลงทะเบียนไว้เดิมเท่านั้นสำหรับบัญชีเก่า (ป้องกันการยึดบัญชีและเผยอีเมลก่อน OTP)
                 const targetEmail = (isExistingAccount && existingRegisteredEmail)
                     ? existingRegisteredEmail
                     : String(authForm.email || '').trim();
@@ -3012,7 +2960,6 @@ ${roleProfile.aiPromptAddon || ''}
                                             </div>
                                         </div>
 
-                                        {/* PDPA Pre-OTP Lock: บัญชีเดิมที่มีอีเมลแล้วจะไม่เปิดเผยหรือให้แก้ไขอีเมลก่อนยืนยัน OTP */}
                                         {isExistingAccount && existingRegisteredEmail ? (
                                             <div className="spatial-soft p-3.5 rounded-2xl space-y-1 text-xs">
                                                 <span className="font-bold text-accent-adaptive flex items-center gap-1.5">
@@ -3038,7 +2985,6 @@ ${roleProfile.aiPromptAddon || ''}
                                             </div>
                                         )}
 
-                                        {/* เงื่อนไข PDPA: ผู้เรียนใหม่ต้องติ๊กยินยอมครั้งแรก ส่วนบัญชีเดิมที่เคยยินยอมแล้วไม่ต้องติ๊กซ้ำ */}
                                         {needsPdpaCheckbox ? (
                                             <div className="p-3.5 rounded-2xl bg-aurora-500/10 border border-aurora-400/35 space-y-2">
                                                 <p className="text-xs font-bold text-primary-adaptive leading-relaxed">
@@ -3077,7 +3023,6 @@ ${roleProfile.aiPromptAddon || ''}
                                             <p className="text-xs text-muted-adaptive mt-1">หากไม่พบในกล่องขาเข้า กรุณาตรวจสอบโฟลเดอร์อีเมลขยะ (Spam/Junk)</p>
                                         </div>
 
-                                        {/* ลบกล่องตัวอย่างรหัส OTP ออก 100% + ปรับช่องกรอกไม่ให้ภาษาไทยยืดห่าง */}
                                         <input
                                             type="text"
                                             inputMode="numeric"
@@ -3124,7 +3069,6 @@ ${roleProfile.aiPromptAddon || ''}
                     {/* ==================== SCREEN 5: MAIN CLASSROOM DASHBOARD (5 MENUS) ==================== */}
                     {screen === 'dashboard' && user && (
                         <div className="relative z-10 flex-1 flex flex-col pb-dock-safe lg:pb-10">
-                            {/* Top Header (โครงสร้าง Selector ตรงกับ ai-interactive.js 100%) */}
                             <header className="sticky top-0 z-30 spatial-header no-print">
                                 <div className="max-w-7xl mx-auto px-3.5 sm:px-6 h-14 md:h-16 flex items-center justify-between gap-2">
                                     <div className="flex items-center gap-2.5 min-w-0">
@@ -3141,7 +3085,6 @@ ${roleProfile.aiPromptAddon || ''}
                                         </div>
                                     </div>
 
-                                    {/* Desktop 5 Menus + ปุ่มออกจากระบบ (ปกติกลมกลืนไม่ดึงสายตา เปลี่ยนเป็นสีแดงเมื่อชี้/แตะ) */}
                                     <div className="hidden lg:flex items-center gap-1.5">
                                         {dashboardTabs.map(t => (
                                             <button
@@ -3165,7 +3108,6 @@ ${roleProfile.aiPromptAddon || ''}
                                         </button>
                                     </div>
 
-                                    {/* Right Actions (matches header .max-w-7xl > div:last-child) */}
                                     <div className="flex items-center gap-1.5 shrink-0">
                                         <ThemeToggleButton theme={theme} onToggle={toggleTheme} compact />
                                     </div>
@@ -3173,7 +3115,6 @@ ${roleProfile.aiPromptAddon || ''}
                             </header>
 
                             <main className="w-full max-w-7xl mx-auto px-3.5 sm:px-6 pt-4 md:pt-6 space-y-5">
-                                {/* First Child inside <main>: 5-Step Progress Strip (matches main > div:first-child) */}
                                 <div className="spatial-card rounded-[1.5rem] p-3.5 sm:p-4 grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs">
                                     <button type="button" onClick={() => setScreen('pretest')} className={`p-2.5 rounded-xl border text-left ${hasDonePretest ? 'bg-aurora-500/15 border-aurora-400/40' : 'spatial-soft'}`}>
                                         <span className="font-mono text-[10px] font-bold text-muted-adaptive block">1. PRE-TEST</span>
@@ -3215,10 +3156,8 @@ ${roleProfile.aiPromptAddon || ''}
                                     </button>
                                 </div>
 
-                                {/* TAB 1: LESSONS + AI STUDY COMPANION */}
                                 {activeTab === 'lessons' && activeLesson && (
                                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-                                        {/* Left Column (8 cols — target for ai-interactive.js Smart Resume 20-lesson panel) */}
                                         <div className="lg:col-span-8 space-y-4">
                                             <div className="spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3.5">
                                                 <div className="flex flex-wrap items-start justify-between gap-2">
@@ -3278,20 +3217,15 @@ ${roleProfile.aiPromptAddon || ''}
                                             </div>
                                         </div>
 
-                                        {/* Right Column (4 cols): AI Study Companion */}
                                         <div className="lg:col-span-4">
                                             <AiStudyCompanion lesson={activeLesson} user={user} appsScriptUrl={appsScriptUrl} showToast={showToast} />
                                         </div>
                                     </div>
                                 )}
 
-                                {/* TAB 2: CLINICAL CASES */}
                                 {activeTab === 'clinical_cases' && <ClinicalCaseSimulator />}
-
-                                {/* TAB 3: FLASHCARDS */}
                                 {activeTab === 'flashcards' && <SpacedFlashcardsDeck aiRoadmap={user.aiRoadmap} />}
 
-                                {/* TAB 4: LIVE STREAM + CHECK-IN */}
                                 {activeTab === 'live' && (
                                     <div className="max-w-4xl mx-auto spatial-card rounded-[1.75rem] p-5 sm:p-7 space-y-4">
                                         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -3333,10 +3267,8 @@ ${roleProfile.aiPromptAddon || ''}
                                     </div>
                                 )}
 
-                                {/* TAB 5: PROFILE, PRE-APPROACH WARM-UP & PDPA SELF-SERVICE */}
                                 {activeTab === 'profile' && (
                                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-                                        {/* Left 6 cols: Profile Summary + PDPA Self-Service (ตรวจสอบ แก้ไข ลบข้อมูลส่วนตัว) */}
                                         <div className="lg:col-span-6 space-y-4">
                                             <div className="spatial-card rounded-[1.75rem] p-5 sm:p-6 space-y-4">
                                                 <div className="flex items-start justify-between gap-3">
@@ -3376,7 +3308,6 @@ ${roleProfile.aiPromptAddon || ''}
                                                     </button>
                                                 )}
 
-                                                {/* สิทธิ์เจ้าของข้อมูลส่วนบุคคล (PDPA Self-Service — ตรงตามนโยบายข้อ 4) */}
                                                 <div className="pt-3 border-t border-white/10 space-y-3">
                                                     <div className="flex items-center justify-between gap-2">
                                                         <div>
@@ -3420,7 +3351,6 @@ ${roleProfile.aiPromptAddon || ''}
                                                     )}
                                                 </div>
 
-                                                {/* โซนลบข้อมูลถาวร (Danger Zone): พับเก็บไว้ด้านล่างสุดแยกขาดจากปุ่มออกจากระบบ */}
                                                 <div className="pt-2 border-t border-dashed border-slate-500/25">
                                                     <button
                                                         type="button"
@@ -3452,7 +3382,6 @@ ${roleProfile.aiPromptAddon || ''}
                                             </div>
                                         </div>
 
-                                        {/* Right 6 cols: โหมดอุ่นเครื่อง 30 วิก่อนพบญาติจริง (PDPA Zero-PII) */}
                                         <div className="lg:col-span-6 spatial-card rounded-[1.75rem] p-5 sm:p-6 space-y-4">
                                             <div>
                                                 <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">PDPA ZERO-PII • PRE-APPROACH WARM-UP</span>
@@ -3497,7 +3426,6 @@ ${roleProfile.aiPromptAddon || ''}
                                 )}
                             </main>
 
-                            {/* Mobile Bottom Dock (5 Menus + ปุ่มออกจากระบบสีแดงต่อจากโปรไฟล์) */}
                             <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 spatial-dock px-1.5 pt-1.5 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] no-print">
                                 <div className="grid grid-cols-6 gap-1 max-w-xl mx-auto">
                                     {dashboardTabs.map(t => {
