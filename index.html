@@ -228,9 +228,12 @@
       @keyframes nodePulseGlow { 0%, 100% { opacity: 0.65; transform: scale(1); } 50% { opacity: 1; transform: scale(1.24); } }
       @keyframes twinkleStar { 0%, 100% { opacity: 0.16; transform: scale(0.85); } 50% { opacity: 0.92; transform: scale(1.28); } }
       @keyframes meteorStreak { 0% { opacity: 0; transform: rotate(var(--ang, -32deg)) translateX(130px) scaleX(0.35); } 4% { opacity: 1; } 16% { opacity: 0.95; transform: rotate(var(--ang, -32deg)) translateX(-380px) scaleX(1.1); } 25%, 100% { opacity: 0; transform: rotate(var(--ang, -32deg)) translateX(-640px) scaleX(0.55); } }
+      @keyframes cloudDriftAcross { 0% { transform: translate3d(-42vw, 0, 0); } 100% { transform: translate3d(118vw, 0, 0); } }
+      @keyframes cloudBankFloat { 0%, 100% { transform: translate3d(0, 0, 0) scale(1); } 50% { transform: translate3d(18px, -10px, 0) scale(1.035); } }
+      @keyframes cloudBankFloatAlt { 0%, 100% { transform: translate3d(0, 0, 0) scale(1); } 50% { transform: translate3d(-20px, -8px, 0) scale(1.03); } }
       @keyframes rjcSpin { to { transform: rotate(360deg); } }
 
-      .tree-living-root { transform-origin: 260px 362px; animation: treeCanopySway 9.5s ease-in-out infinite; }
+      .tree-living-root { transform-origin: 260px 398px; animation: treeCanopySway 9.5s ease-in-out infinite; }
       .branch-group-left { transform-origin: 252px 236px; animation: branchSwayLeft 6.8s ease-in-out infinite; }
       .branch-group-right { transform-origin: 268px 236px; animation: branchSwayRight 7.4s ease-in-out infinite; animation-delay: -1.4s; }
       .living-leaf { transform-box: fill-box; transform-origin: center; animation: leafFlutterOrganic var(--dur, 4.4s) ease-in-out infinite; animation-delay: var(--del, 0s); }
@@ -238,6 +241,13 @@
       .cloud-node-pulse { transform-box: fill-box; transform-origin: center; animation: nodePulseGlow 3.6s ease-in-out infinite; }
       .twinkle-star { position: absolute; border-radius: 9999px; background: #ffffff; box-shadow: 0 0 6px rgba(186, 230, 253, 0.85); animation: twinkleStar var(--tw-dur, 4s) ease-in-out infinite; animation-delay: var(--tw-del, 0s); }
       .shooting-star { position: absolute; width: var(--len, 155px); height: 2px; border-radius: 9999px; opacity: 0; background: linear-gradient(90deg, rgba(255,255,255,0.98) 0%, var(--trail-col, rgba(125,211,252,0.72)) 28%, rgba(192,132,252,0.18) 65%, rgba(255,255,255,0) 100%); animation: meteorStreak var(--m-dur, 7.5s) cubic-bezier(0.2, 0.6, 0.35, 1) infinite; animation-delay: var(--m-del, 0s); }
+      .hero-cloud-drift { position: absolute; left: 0; will-change: transform; animation: cloudDriftAcross var(--c-dur, 92s) linear infinite; animation-delay: var(--c-del, 0s); }
+      .hero-cloud-bank-l { position: absolute; will-change: transform; animation: cloudBankFloat 16s ease-in-out infinite; }
+      .hero-cloud-bank-r { position: absolute; will-change: transform; animation: cloudBankFloatAlt 19s ease-in-out infinite; }
+      .hero-cloud-haze { background: radial-gradient(ellipse 85% 58% at 50% 100%, rgba(255, 255, 255, 0.56) 0%, rgba(224, 242, 254, 0.32) 45%, rgba(125, 211, 252, 0) 78%); }
+      @media (prefers-reduced-motion: reduce) {
+        .hero-cloud-drift, .hero-cloud-bank-l, .hero-cloud-bank-r { animation: none !important; }
+      }
 
       @media print {
         body.printing-cneu-letter * { visibility: hidden !important; }
@@ -791,10 +801,10 @@
 
                     const arcR = Math.max(w * 0.62, 540);
                     const arcCx = w * 0.5 + mx * 14;
-                    const arcCy = h * 0.22 + arcR + my * 10;
+                    const arcCy = h * 0.11 + arcR + my * 10;
 
                     ctx.save();
-                    const g = ctx.createLinearGradient(w * 0.14, h * 0.22, w * 0.86, h * 0.22);
+                    const g = ctx.createLinearGradient(w * 0.14, h * 0.11, w * 0.86, h * 0.11);
                     g.addColorStop(0, 'rgba(56,189,248,0)');
                     g.addColorStop(0.25, `rgba(56,189,248,${(0.32 * k).toFixed(3)})`);
                     g.addColorStop(0.52, `rgba(255,250,215,${(0.95 * k).toFixed(3)})`);
@@ -860,15 +870,82 @@
                             <span className="shooting-star top-[12%] left-[92%]" style={{ '--len': '185px', '--ang': '-34deg', '--m-dur': '8.4s', '--m-del': '2.7s', '--trail-col': 'rgba(110,231,183,0.78)' }} />
                         </div>
 
+                        {/* Atmospheric Volumetric Clouds Behind Living Tree (z-11: หลังต้นไม้และแสง Eclipse Arc) */}
+                        <div className="absolute inset-0 pointer-events-none overflow-hidden z-[11]" aria-hidden="true">
+                            <svg width="0" height="0" className="absolute">
+                                <defs>
+                                    <linearGradient id="cloudSilverGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" stopColor="#ffffff" stopOpacity="0.82" />
+                                        <stop offset="48%" stopColor="#e0f2fe" stopOpacity="0.46" />
+                                        <stop offset="100%" stopColor="#60a5fa" stopOpacity="0" />
+                                    </linearGradient>
+                                    <linearGradient id="cloudWarmRimGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" stopColor="#fffbeb" stopOpacity="0.72" />
+                                        <stop offset="40%" stopColor="#dbeafe" stopOpacity="0.4" />
+                                        <stop offset="100%" stopColor="#38bdf8" stopOpacity="0" />
+                                    </linearGradient>
+                                    <linearGradient id="cloudSoftHorizonGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" stopColor="#ffffff" stopOpacity="0.68" />
+                                        <stop offset="60%" stopColor="#bae6fd" stopOpacity="0.32" />
+                                        <stop offset="100%" stopColor="#93c5fd" stopOpacity="0" />
+                                    </linearGradient>
+                                    <filter id="cloudSoftBlur" x="-15%" y="-20%" width="130%" height="145%">
+                                        <feGaussianBlur stdDeviation="5.5" />
+                                    </filter>
+                                </defs>
+                            </svg>
+
+                            {/* เมฆลอยผ่านหลังพุ่มต้นไม้ 4 กลุ่ม (ความเร็วและระดับลึกต่างกัน) */}
+                            <div className="hero-cloud-drift top-[44%] sm:top-[42%] w-[46vw] max-w-[540px] min-w-[230px] opacity-50" style={{ '--c-dur': '108s', '--c-del': '-22s' }}>
+                                <svg viewBox="0 0 420 140" className="w-full h-auto overflow-visible" filter="url(#cloudSoftBlur)">
+                                    <path d="M40 112 C28 112 20 100 28 90 C34 82 48 80 58 82 C68 58 98 46 126 56 C144 30 192 22 226 42 C252 34 286 44 298 68 C318 64 342 74 348 90 C366 90 380 100 376 112 Z" fill="url(#cloudWarmRimGrad)" />
+                                </svg>
+                            </div>
+
+                            <div className="hero-cloud-drift top-[54%] sm:top-[52%] w-[56vw] max-w-[660px] min-w-[260px] opacity-65" style={{ '--c-dur': '86s', '--c-del': '-54s' }}>
+                                <svg viewBox="0 0 480 160" className="w-full h-auto overflow-visible" filter="url(#cloudSoftBlur)">
+                                    <path d="M36 128 C20 128 16 112 30 102 C40 94 58 92 72 96 C84 64 124 46 160 60 C186 24 248 18 286 48 C318 38 358 54 370 82 C398 78 426 90 434 108 C452 108 462 120 452 128 Z" fill="url(#cloudSilverGrad)" />
+                                </svg>
+                            </div>
+
+                            <div className="hero-cloud-drift top-[64%] sm:top-[61%] w-[52vw] max-w-[620px] min-w-[250px] opacity-55" style={{ '--c-dur': '124s', '--c-del': '-84s' }}>
+                                <svg viewBox="0 0 460 150" className="w-full h-auto overflow-visible" filter="url(#cloudSoftBlur)">
+                                    <path d="M44 122 C26 122 22 106 38 96 C52 88 70 88 86 92 C104 64 148 54 182 68 C210 38 264 36 298 62 C328 54 364 68 376 92 C402 90 426 102 422 122 Z" fill="url(#cloudSoftHorizonGrad)" />
+                                </svg>
+                            </div>
+
+                            <div className="hero-cloud-drift top-[48%] sm:top-[47%] w-[38vw] max-w-[440px] min-w-[190px] opacity-40" style={{ '--c-dur': '74s', '--c-del': '-38s' }}>
+                                <svg viewBox="0 0 380 125" className="w-full h-auto overflow-visible" filter="url(#cloudSoftBlur)">
+                                    <path d="M34 102 C22 102 18 90 30 82 C44 74 64 74 78 78 C96 52 138 44 170 58 C196 34 246 36 272 60 C298 56 328 68 336 86 C352 86 360 96 350 102 Z" fill="url(#cloudWarmRimGrad)" />
+                                </svg>
+                            </div>
+
+                            {/* ก้อนเมฆโอบขอบฟ้าซ้าย–ขวาด้านล่าง (พริ้วเบาๆ ตลอดเวลา ไม่ให้ท้องฟ้าโล่ง) */}
+                            <div className="hero-cloud-bank-l bottom-[8%] sm:bottom-[10%] -left-[12%] sm:-left-[6%] w-[58vw] max-w-[620px] opacity-70">
+                                <svg viewBox="0 0 520 180" className="w-full h-auto overflow-visible" filter="url(#cloudSoftBlur)">
+                                    <path d="M10 164 C10 126 42 104 82 108 C100 68 154 48 202 68 C236 32 308 26 354 60 C392 52 436 70 452 104 C484 104 510 124 510 164 Z" fill="url(#cloudSoftHorizonGrad)" />
+                                </svg>
+                            </div>
+
+                            <div className="hero-cloud-bank-r bottom-[7%] sm:bottom-[9%] -right-[12%] sm:-right-[6%] w-[60vw] max-w-[640px] opacity-70">
+                                <svg viewBox="0 0 540 185" className="w-full h-auto overflow-visible" filter="url(#cloudSoftBlur)">
+                                    <path d="M24 168 C16 130 48 106 90 110 C112 72 166 56 214 74 C252 34 328 28 378 64 C418 54 468 72 486 108 C516 110 534 132 530 168 Z" fill="url(#cloudSilverGrad)" />
+                                </svg>
+                            </div>
+
+                            {/* หมอกเมฆเรืองรองตรงขอบฟ้าล่างรับฐานต้นไม้ */}
+                            <div className="hero-cloud-haze absolute inset-x-0 bottom-0 h-[34%]" />
+                        </div>
+
                         <canvas id="solar-flare-canvas" ref={canvasRef} aria-hidden="true" />
 
-                        <main className="relative z-20 flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 flex flex-col items-center justify-end pb-5 sm:pb-7 pt-12">
-                            <div className="relative w-full max-w-[1060px] flex flex-col items-center">
+                        <main className="relative z-20 flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 flex flex-col items-center justify-end pb-4 sm:pb-6 pt-4 sm:pt-6">
+                            <div className="relative w-full max-w-[1240px] flex flex-col items-center">
                                 <div className="relative w-full flex flex-col items-center select-none z-10">
-                                    <div className="w-[min(106vw,450px)] sm:w-[660px] md:w-[780px] lg:w-[880px] xl:w-[940px] pointer-events-none">
-                                        <svg viewBox="0 0 520 374" className="w-full h-auto overflow-visible drop-shadow-[0_14px_42px_rgba(56,189,248,0.42)]" fill="none">
+                                    <div className="w-[min(118vw,500px)] sm:w-[720px] md:w-[min(92vw,88dvh,880px)] lg:w-[min(90vw,92dvh,980px)] xl:w-[min(88vw,94dvh,1060px)] md:pb-6 lg:pb-7 pointer-events-none">
+                                        <svg viewBox="30 14 460 394" className="w-full h-auto overflow-visible drop-shadow-[0_14px_42px_rgba(56,189,248,0.42)]" fill="none">
                                             <defs>
-                                                <linearGradient id="trunkGrad" x1="170" y1="365" x2="350" y2="170" gradientUnits="userSpaceOnUse">
+                                                <linearGradient id="trunkGrad" x1="170" y1="400" x2="350" y2="170" gradientUnits="userSpaceOnUse">
                                                     <stop offset="0%" stopColor="#c064c9" /><stop offset="45%" stopColor="#7c7ce8" /><stop offset="100%" stopColor="#48b8d0" />
                                                 </linearGradient>
                                                 <linearGradient id="leftBranchGrad" x1="80" y1="240" x2="260" y2="60" gradientUnits="userSpaceOnUse">
@@ -881,10 +958,10 @@
                                                 <radialGradient id="auraCyanGrad" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="#ccfbf1" stopOpacity="0.95" /><stop offset="100%" stopColor="#38bdf8" stopOpacity="0" /></radialGradient>
                                             </defs>
                                             <g className="tree-living-root">
-                                                <path d="M168 368 C215 350 246 316 252 258 C258 210 228 176 190 152" stroke="url(#trunkGrad)" strokeWidth="8" strokeLinecap="round" opacity="0.9" />
-                                                <path d="M352 368 C305 350 272 316 266 258 C260 208 292 176 332 150" stroke="url(#trunkGrad)" strokeWidth="8" strokeLinecap="round" opacity="0.9" />
-                                                <path d="M214 364 C242 330 276 298 264 250 C252 202 260 153 260 110" stroke="url(#trunkGrad)" strokeWidth="7" strokeLinecap="round" opacity="0.84" />
-                                                <path d="M306 364 C276 332 242 296 256 246" stroke="#b66ad0" strokeWidth="5.5" strokeLinecap="round" opacity="0.74" />
+                                                <path d="M160 400 C212 378 246 334 252 258 C258 210 228 176 190 152" stroke="url(#trunkGrad)" strokeWidth="8.5" strokeLinecap="round" opacity="0.92" />
+                                                <path d="M360 400 C308 378 272 334 266 258 C260 208 292 176 332 150" stroke="url(#trunkGrad)" strokeWidth="8.5" strokeLinecap="round" opacity="0.92" />
+                                                <path d="M210 396 C240 356 276 312 264 250 C252 202 260 153 260 110" stroke="url(#trunkGrad)" strokeWidth="7.2" strokeLinecap="round" opacity="0.86" />
+                                                <path d="M310 396 C278 356 242 310 256 246" stroke="#b66ad0" strokeWidth="5.8" strokeLinecap="round" opacity="0.76" />
                                                 <g className="branch-group-left">
                                                     <g stroke="url(#leftBranchGrad)" strokeLinecap="round" opacity="0.92">
                                                         <path d="M248 240 C200 223 148 230 104 250" strokeWidth="4.5" />
@@ -933,7 +1010,7 @@
                                     </div>
 
                                     {/* Desktop Slim Sculpted Liquid Glass Chamber */}
-                                    <div id="liquid-glass-stage" className="hidden md:block absolute bottom-[1.5%] lg:bottom-[2%] left-[50.5%] -translate-x-1/2 z-20 w-[90%] max-w-[740px] aspect-[760/208] pointer-events-auto">
+                                    <div id="liquid-glass-stage" className="hidden md:block absolute bottom-0 left-[50.5%] -translate-x-1/2 z-20 w-[90%] max-w-[720px] aspect-[760/208] pointer-events-auto">
                                         <div className="liquid-glass-backdrop absolute inset-0" />
                                         <svg viewBox="0 0 760 208" className="absolute inset-0 w-full h-full pointer-events-none" fill="none" preserveAspectRatio="none">
                                             <defs>
@@ -969,7 +1046,7 @@
                                 </div>
 
                                 {/* Mobile Slim Liquid Glass Card */}
-                                <div className="md:hidden relative z-20 -mt-16 w-full max-w-[350px] liquid-glass-mobile rounded-[1.5rem] px-3.5 pt-3.5 pb-2.5 text-center space-y-2">
+                                <div className="md:hidden relative z-20 -mt-14 w-full max-w-[350px] liquid-glass-mobile rounded-[1.5rem] px-3.5 pt-3.5 pb-2.5 text-center space-y-2">
                                     <div className="flex justify-center">
                                         <span className="hero-eyebrow inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10.5px] font-medium text-cyan-50/95">
                                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-300" />
