@@ -7,13 +7,13 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>AI Skill Lab 3D — rjcloud.organ 2.0</title>
+    <link rel="manifest" href="./manifest.json">
 
     <!-- โหลดไฟล์สไตล์และโมดูลกลาง (วางในโฟลเดอร์เดียวกันบน GitHub Pages) -->
     <link rel="stylesheet" href="./styles.css">
     <script src="./data.js" onerror="console.warn('data.js not loaded, using built-in defaults')"></script>
     <script src="./learning-core.js" onerror="console.warn('learning-core.js not loaded, using built-in defaults')"></script>
-    <script src="./skilllab-engine.js?v=202705" onerror="console.warn('skilllab-engine.js not loaded')"></script>
-
+    <script src="./skilllab-engine.js?v=202706" onerror="console.warn('skilllab-engine.js not loaded')"></script>
     <!-- ซิงค์โหมดมืด/สว่างทันทีจาก localStorage ป้องกันจอกระพริบ -->
     <script>
       (function () {
@@ -435,6 +435,28 @@
             }
         }
 
+        function copyTextSafe(text) {
+            try {
+                const ta = document.createElement('textarea');
+                ta.value = String(text || '');
+                ta.setAttribute('readonly', '');
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                const ok = document.execCommand('copy');
+                document.body.removeChild(ta);
+                if (ok) return true;
+            } catch (_) {}
+            try {
+                if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+                    navigator.clipboard.writeText(String(text || '')).catch(() => {});
+                    return true;
+                }
+            } catch (_) {}
+            return false;
+        }
+
         function getDefaultAddressName(userObj, isEn) {
             const raw = String(userObj?.name || '').replace(/\(.*?\)/g, '').trim();
             if (!raw || raw === 'ผู้เรียน') return isEn ? 'Nurse' : 'คุณพยาบาล';
@@ -503,6 +525,18 @@
                     'ส่วนค่าใช้จ่ายหลังยืนยันการบริจาค ครอบครัวผู้บริจาคไม่มีค่าใช้จ่ายเพิ่มเติมเลยค่ะ ขอให้ครอบครัวค่อยๆ ปรึกษากันโดยไม่เร่งรัดนะคะ'
                 ];
             }
+            if (personaId === 'pediatric') {
+                return [
+                    'ขอแสดงความเสียใจอย่างสุดซึ้งกับคุณแม่นะคะ หัวอกคนเป็นแม่เจ็บปวดที่สุดเลยค่ะ ตอนนี้ไม่ต้องรีบพูดอะไรเลยนะคะ ดิฉันจะนั่งอยู่เป็นเพื่อนตรงนี้ ให้เวลาคุณแม่เต็มที่ค่ะ',
+                    'ทีมแพทย์และพยาบาลดูแลน้องต้นกล้าอย่างสุดความสามารถแล้วค่ะ หากคุณแม่พร้อมเมื่อไหร่ค่อยคุยกับคุณพ่อและครอบครัวได้เลย ไม่เร่งรัด และเราจะดูแลร่างน้องอย่างทะนุถนอมที่สุดค่ะ'
+                ];
+            }
+            if (personaId === 'sbar_doctor') {
+                return [
+                    'S: เคสเตียง 1 ผู้ป่วยชาย 38 ปี GCS เท่ากับ 3 ม่านตาขยายคงที่ 6 มม. B: อุบัติเหตุทางศีรษะรุนแรง (TBI) ค่ะ A: ประเมินเข้าข่าย Potential Donor ร่วมกับความดันตก 78/46 และปัสสาวะใสออก 640 mL/hr โซเดียม 154 สงสัยภาวะเบาจืด (DI) ค่ะ R: ขอเสนอพยุงความดันด้วยสารน้ำ/Vasopressor พิจารณายา DDAVP และวางแผนตรวจยืนยันสมองตายค่ะ',
+                    'A: จากปริมาณปัสสาวะ 640 mL/hr และ Na 154 mEq/L สงสัยภาวะ Diabetes Insipidus ค่ะ R: เสนอให้ DDAVP คุมสมดุลน้ำ-เกลือแร่ พยุง BP ให้คงที่เพื่อรักษาคุณภาพอวัยวะ และประสานทีมตรวจสมองตาย 2 ครั้งห่าง 6 ชม. ร่วมกับศูนย์ ODC ค่ะ'
+                ];
+            }
             return [
                 'เข้าใจเลยค่ะว่าเห็นหน้าอกคุณพ่อยังขยับและตัวอุ่นแล้วทำใจเชื่อยากมาก จริงๆ แล้วเกิดจากเครื่องช่วยหายใจที่เป่าลมและยาพยุงความดันไว้ แต่ก้านสมองหยุดทำงานถาวรซึ่งแพทย์ 3 ท่านตรวจยืนยันครบ 2 ครั้งแล้วค่ะ',
                 'ขอให้ครอบครัวมีเวลาส่วนตัวค่อยๆ ปรึกษากันก่อนได้เลยนะคะ ไม่เร่งรัดค่ะ และรับรองว่าเราจะดูแลตกแต่งร่างของคุณพ่ออย่างประณีตสมเกียรติที่สุดค่ะ'
@@ -524,6 +558,34 @@
                     emotion: emo,
                     actionCue: emo === 'CALM' ? 'Takes a deep breath and nods gently with softening eyes.' : 'Wipes a tear and listens carefully.',
                     coachHint: 'สื่อสารด้วยน้ำเสียงนุ่มนวลและเปิดพื้นที่ให้ครอบครัวตัดสินใจโดยไม่กดดันค่ะ',
+                    outcome
+                };
+            }
+
+            if (persona.id === 'sbar_doctor') {
+                return {
+                    speech: isLast
+                        ? (outcome === 'CONSENT'
+                            ? `รายงาน SBAR ชัดเจนและครบถ้วนมากครับ${addrName} ผมสั่งสารน้ำ ปรับ Vasopressor และให้ DDAVP ทันทีเลยครับ เดี๋ยวประสานทีมตรวจสมองตาย 2 ครั้งห่าง 6 ชั่วโมงและแจ้งศูนย์ ODC ต่อ ขอบคุณมากครับ`
+                            : `รับทราบครับ${addrName} เดี๋ยวผมเร่งจัดการพยุงความดันและติดตามปัสสาวะกับค่าโซเดียมใกล้ชิดก่อนนะครับ ถ้ามีค่า Lab เปลี่ยนแปลงรายงานผมเพิ่มได้เลย`)
+                        : `รับทราบครับ${addrName} ขอเช็กเพิ่มนิดนึงครับ จากปัสสาวะที่ออก 640 mL/hr และโซเดียม 154 คุณพยาบาลประเมินว่าเกิดภาวะอะไร และเสนอแผนการให้ยากับการประสานตรวจสมองตายอย่างไรบ้างครับ?`,
+                    emotion: emo,
+                    actionCue: emo === 'CALM' ? 'นพ.ภาคินพยักหน้าอย่างมั่นใจและรีบเซ็นใบ Order พยุงอวัยวะทันที' : 'นพ.ภาคินจ้องจอ Monitor พร้อมรอรับข้อมูลประเมิน (A) และข้อเสนอ (R)',
+                    coachHint: 'รายงานให้ครบ A (Potential Donor + Hypotension + เบาจืด DI) และ R (Fluid/Vasopressor + DDAVP + แผนตรวจสมองตาย/ODC) ค่ะ',
+                    outcome
+                };
+            }
+
+            if (persona.id === 'pediatric') {
+                return {
+                    speech: isLast
+                        ? (outcome === 'CONSENT'
+                            ? `ขอบคุณ${addrName}มากนะคะที่อยู่ข้างแม่และไม่เร่งรัดเลย น้องต้นกล้าเป็นเด็กใจดีชอบช่วยเหลือเพื่อนเสมอ ถ้าอวัยวะของน้องช่วยต่อชีวิตเด็กคนอื่นได้ แม่กับพ่ออยากทำบุญใหญ่ให้น้องค่ะ`
+                            : `ขอบคุณ${addrName}มากนะคะที่เข้าใจหัวอกแม่ ขอเวลาให้แม่กับคุณพ่อนั่งกอดและบอกลาน้องต้นกล้ากันเงียบๆ สักพักก่อนนะคะ`)
+                        : `ขอบคุณ${addrName}นะคะที่นั่งอยู่เป็นเพื่อน... แม่ยังทำใจไม่ได้เลยค่ะ แล้วน้องต้นกล้าจะไม่เจ็บใช่ไหมคะ แม่ขออยู่กับน้องนานๆ ก่อนได้ไหมคะ?`,
+                    emotion: emo,
+                    actionCue: emo === 'CALM' ? 'คุณแม่กอดกระเป๋านักเรียนของลูกเบาลง สบตาด้วยความอบอุ่นใจขึ้น' : 'คุณแม่สะอื้นเบาๆ ซับน้ำตาและพยักหน้ารับฟังอย่างตั้งใจ',
+                    coachHint: 'ยืนยันว่าน้องไม่เจ็บปวด ให้เวลาพ่อแม่บอกลาเต็มที่ และดูแลร่างน้องอย่างทะนุถนอมที่สุดค่ะ',
                     outcome
                 };
             }
@@ -711,7 +773,12 @@
             const MICRO_DRILL_STAGES = SL.MICRO_DRILL_STAGES;
             const ADVISOR_GOALS = SL.ADVISOR_GOALS;
             const ADVISOR_QUICK_QUESTIONS = SL.ADVISOR_QUICK_QUESTIONS;
+            const SELF_EFFICACY_ITEMS = SL.SELF_EFFICACY_ITEMS || [];
             const PERSONAS = useMemo(() => SL.getPersonas(), []);
+            const inAppInfo = useMemo(
+                () => (typeof SL.detectInAppBrowser === 'function' ? SL.detectInAppBrowser() : { isInApp: false, appName: '', externalUrl: '' }),
+                []
+            );
 
             const isAdminPreview = useMemo(() => {
                 try { return new URLSearchParams(window.location.search).get('admin_preview') === '1'; }
@@ -792,6 +859,7 @@
             const [pendingDrillReview, setPendingDrillReview] = useState(null);
 
             const [isThinking, setIsThinking] = useState(false);
+            const [thinkingCue, setThinkingCue] = useState('');
             const [isSpeaking, setIsSpeaking] = useState(false);
             const [voiceEnabled, setVoiceEnabled] = useState(true);
             const [ambientOn, setAmbientOn] = useState(false);
@@ -806,10 +874,18 @@
             const [isPttHolding, setIsPttHolding] = useState(false);
             const [pttAutoSend, setPttAutoSend] = useState(true);
             const [paceHint, setPaceHint] = useState('');
+            const [liveVocalMetric, setLiveVocalMetric] = useState(null);
+            const [selfRecordings, setSelfRecordings] = useState([]);
             const [silenceElapsed, setSilenceElapsed] = useState(0);
             const [silenceCount, setSilenceCount] = useState(0);
             const [triggerTotal, setTriggerTotal] = useState(0);
             const [triggerWarning, setTriggerWarning] = useState(null);
+
+            // R2R Pre/Post Self-Efficacy Scale (3 items, 1–5)
+            const [preConfidence, setPreConfidence] = useState({ explainBrainDeath: 3, handleEmotion: 3, gentleApproach: 3 });
+            const [preConfidenceTouched, setPreConfidenceTouched] = useState(false);
+            const [postConfidence, setPostConfidence] = useState({ explainBrainDeath: 4, handleEmotion: 4, gentleApproach: 4 });
+            const [postConfidenceSaved, setPostConfidenceSaved] = useState(false);
 
             const [isEvaluating, setIsEvaluating] = useState(false);
             const [evalReport, setEvalReport] = useState(null);
@@ -831,6 +907,9 @@
             const sharedAudioRef = useRef(null);
             const activeAudioUrlRef = useRef(null);
             const recRef = useRef(null);
+            const vocalRecorderRef = useRef(null);
+            const selfRecordingsRef = useRef([]);
+            const userTurnsRef = useRef(0);
             const pttStartRef = useRef(0);
             const pttHoldingRef = useRef(false);
             const lastTouchRef = useRef(0);
@@ -851,6 +930,33 @@
             const activeHoloMeta = useMemo(() => HOLOGRAM_STYLES.find(s => s.id === hologramStyle) || HOLOGRAM_STYLES[0], [hologramStyle]);
             const emotionMeta = EMOTIONS[relativeEmotion] || EMOTIONS.CONFUSED;
             const userTurns = useMemo(() => messages.filter(m => m.role === 'user').length, [messages]);
+            useEffect(() => { userTurnsRef.current = userTurns; }, [userTurns]);
+            useEffect(() => { selfRecordingsRef.current = selfRecordings; }, [selfRecordings]);
+
+            const clearSelfRecordings = useCallback(() => {
+                (selfRecordingsRef.current || []).forEach(r => {
+                    if (r && r.audioUrl) { try { URL.revokeObjectURL(r.audioUrl); } catch (_) {} }
+                });
+                selfRecordingsRef.current = [];
+                setSelfRecordings([]);
+            }, []);
+
+            const avgVocalCalmScore = useMemo(() => {
+                if (!selfRecordings.length) return null;
+                return Math.round(selfRecordings.reduce((s, r) => s + Number(r.calmScore || 0), 0) / selfRecordings.length);
+            }, [selfRecordings]);
+
+            const avgScaleScore = useCallback((obj) => {
+                const vals = Object.values(obj || {}).map(Number).filter(n => n >= 1 && n <= 5);
+                if (!vals.length) return null;
+                return Number((vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(2));
+            }, []);
+
+            const earnedBadges = useMemo(
+                () => (typeof SL.computeClinicalBadges === 'function' ? SL.computeClinicalBadges(learner) : []),
+                [learner]
+            );
+
             const maxTurns = selectedMode.maxTurns || 6;
             const activeDrillStage = MICRO_DRILL_STAGES[drillIdx] || MICRO_DRILL_STAGES[0];
             const latestRelativeMsg = useMemo(() => {
@@ -1011,7 +1117,9 @@
                 stopAiVoice();
                 stopAdvisorVoice();
                 SL.SoundFX.setAmbient(false);
-            }, [stopAiVoice, stopAdvisorVoice]);
+                if (vocalRecorderRef.current) { try { vocalRecorderRef.current.abort(); } catch (_) {} }
+                clearSelfRecordings();
+            }, [stopAiVoice, stopAdvisorVoice, clearSelfRecordings]);
 
             const handleApplyRec = useCallback(() => {
                 setModeId(activeRec.mode);
@@ -1264,7 +1372,9 @@
                 autoSendOnEndRef.current = false;
                 setIsPttHolding(false);
                 setIsListening(false);
+                setLiveVocalMetric(null);
                 if (recRef.current) { try { recRef.current.abort(); } catch (_) {} }
+                if (vocalRecorderRef.current) { try { vocalRecorderRef.current.abort(); } catch (_) {} }
             }, []);
 
             useEffect(() => {
@@ -1296,16 +1406,34 @@
                     }
                     setIsListening(false);
                     setIsPttHolding(false);
+                    setLiveVocalMetric(null);
                     pttHoldingRef.current = false;
                     autoSendOnEndRef.current = false;
+                    if (vocalRecorderRef.current) { try { vocalRecorderRef.current.abort(); } catch (_) {} }
                 };
 
                 rec.onend = () => {
                     setIsListening(false);
                     setIsPttHolding(false);
+                    setLiveVocalMetric(null);
                     pttHoldingRef.current = false;
                     const spoken = (pttTranscriptRef.current || finalTranscriptRef.current || '').trim();
                     const dur = Math.max(0.8, (Date.now() - pttStartRef.current) / 1000);
+                    const turnIdxSnap = userTurnsRef.current + 1;
+
+                    if (vocalRecorderRef.current && vocalRecorderRef.current.isActive()) {
+                        vocalRecorderRef.current.stop().then((recData) => {
+                            if (recData && (recData.audioUrl || recData.calmScore)) {
+                                setSelfRecordings(prev => [...prev, {
+                                    id: Date.now(),
+                                    turn: turnIdxSnap,
+                                    text: spoken || '(บันทึกเสียงพูดในรอบนี้)',
+                                    ...recData
+                                }]);
+                            }
+                        }).catch(() => {});
+                    }
+
                     if (spoken.length > 0 && (spoken.length / dur) > (isEn ? 17 : 14)) {
                         setPaceHint(isEn ? 'Gentle tip: Slow down slightly so the family can absorb your words.' : 'คำแนะนำนุ่มๆ: จังหวะพูดค่อนข้างเร็ว ลองผ่อนความเร็วลงอีกนิดเพื่อให้ญาติซึมซับคำพูดได้สบายขึ้นนะคะ');
                     } else {
@@ -1347,8 +1475,21 @@
                 setChatInput('');
                 setIsPttHolding(true);
                 setIsListening(true);
-                try { recRef.current.start(); }
-                catch (_) { pttHoldingRef.current = false; setIsPttHolding(false); setIsListening(false); }
+                try {
+                    recRef.current.start();
+                    if (!vocalRecorderRef.current && typeof SL.createVocalToneRecorder === 'function') {
+                        vocalRecorderRef.current = SL.createVocalToneRecorder();
+                    }
+                    if (vocalRecorderRef.current) {
+                        vocalRecorderRef.current.start((metric) => setLiveVocalMetric(metric)).catch(() => {});
+                    }
+                } catch (_) {
+                    pttHoldingRef.current = false;
+                    setIsPttHolding(false);
+                    setIsListening(false);
+                    setLiveVocalMetric(null);
+                    if (vocalRecorderRef.current) { try { vocalRecorderRef.current.abort(); } catch (_) {} }
+                }
             };
 
             const handleMicUp = (e, isTouch = false) => {
@@ -1366,6 +1507,7 @@
                 SL.SoundFX.playDoorKnock();
                 stopAiVoice();
                 stopMicCompletely();
+                clearSelfRecordings();
 
                 const defaultAddr = getDefaultAddressName(learner, isEn);
                 setLearnerAddressName(defaultAddr);
@@ -1375,8 +1517,10 @@
                 setTriggerTotal(0);
                 setTriggerWarning(null);
                 setPaceHint('');
+                setThinkingCue('');
                 setCoachWhisper('');
                 setEvalReport(null);
+                setPostConfidenceSaved(false);
                 setShowToolsSheet(false);
                 setShowChartModal(false);
                 setAudioBlockedRetry(null);
@@ -1522,6 +1666,12 @@
                 const nextMsgs = [...messages, { id: `u-${Date.now()}`, role: 'user', text }];
                 setMessages(nextMsgs);
                 setIsThinking(true);
+                if (typeof SL.pickLatencyMaskCue === 'function') {
+                    setThinkingCue(SL.pickLatencyMaskCue(activePersona.id, isEn));
+                }
+                if (SL.SoundFX && typeof SL.SoundFX.playThinkingCue === 'function') {
+                    SL.SoundFX.playThinkingCue();
+                }
 
                 if (difficultyId === 'hard' && nextTurnNum < maxTurns) {
                     const cb = SL.pickHardCurveball(nextTurnNum, usedCurveballIds);
@@ -1557,6 +1707,7 @@
                             unlockedSnapshot: bEval.unlockedIds
                         }]);
                         setIsThinking(false);
+                        setThinkingCue('');
                         silenceAnchorRef.current = Date.now();
                         silenceCountedRef.current = false;
                         speakRelativeSegments(cbSpeech, cb.emotion, activePersona.id);
@@ -1565,13 +1716,16 @@
                 }
                 setActiveCurveball(null);
 
-                const transcript = nextMsgs.map(m => `${m.role === 'user' ? effectiveAddr : 'ญาติ'}: ${m.text}`).join('\n');
+                const transcript = nextMsgs.map(m => `${m.role === 'user' ? effectiveAddr : (activePersona.id === 'sbar_doctor' ? 'นพ.ภาคิน' : 'ญาติ')}: ${m.text}`).join('\n');
                 const unresolved = activeBarriers.filter(b => !bEval.unlockedIds.includes(b.id)).map(b => b.titleTH);
                 const isLastTurn = nextTurnNum >= maxTurns;
 
+                const isSbarCase = activePersona.id === 'sbar_doctor';
                 const sysPrompt = isEn
-                    ? `You are roleplaying a grieving relative in an organ donation consultation.\nCase: ${activePersona.briefingEN}\nLearner address: "${effectiveAddr}".\nCurrent Trust: ${trustScore}% (Barriers resolved ${bEval.unlockedIds.length}/3).\n${isLastTurn ? 'This is the final turn: include [OUTCOME:CONSENT|CONSULT|DECLINE].' : 'Continue realistically and do NOT end early.'}\nFormat strictly: [EMOTION:SHOCK|CONFUSED|ANGRY|SAD|HESITANT|CALM] [ACTION:short body language] [COACH:1 short clinical tip] ${isLastTurn ? '[OUTCOME:CONSENT|CONSULT|DECLINE] ' : ''}followed by 2-3 natural spoken sentences.`
-                    : `คุณคือญาติผู้ป่วยในห้องให้คำปรึกษาเรื่องการบริจาคอวัยวะของโรงพยาบาล\n${activePersona.promptHintTH}\nระดับความยาก: ${difficultyId === 'hard' ? 'Hard (ซักถามเจาะลึก ไม่เปิดใจง่าย)' : 'Normal'}\nความไว้วางใจปัจจุบัน: ${trustScore}% (คลายปมในใจแล้ว ${bEval.unlockedIds.length}/3 ข้อ${unresolved.length ? ' • ปมที่ยังค้างคา: ' + unresolved.join(', ') : ''})\nกติกา:\n1. เรียกผู้เรียนว่า "${effectiveAddr}" เสมอ\n2. ${isLastTurn ? 'นี่คือรอบสุดท้าย ให้ญาติสรุปการตัดสินใจและใส่แท็ก [OUTCOME:CONSENT] หรือ [OUTCOME:CONSULT] หรือ [OUTCOME:DECLINE]' : `นี่คือรอบที่ ${nextTurnNum}/${maxTurns} ห้ามรีบจบก่อนรอบสุดท้าย ให้ถามต่อตามปมที่ยังค้างคา`}\n3. ขึ้นต้นด้วยแท็ก [EMOTION:SHOCK|CONFUSED|ANGRY|SAD|HESITANT|CALM] [ACTION:ภาษากายสั้นๆ] [COACH:คำแนะนำโค้ช 1 ประโยค] ตามด้วยคำพูดธรรมชาติ 2-3 ประโยค${activePersona.id === 'conflict' ? ' (ใช้ [ภรรยา]: ... และ [คุณแม่]: ... ชัดเจน)' : ''}`;
+                    ? `You are roleplaying ${isSbarCase ? 'an ICU attending physician receiving an SBAR handoff for a potential organ donor' : 'a grieving relative in an organ donation consultation'}.\nCase: ${activePersona.briefingEN}\nLearner address: "${effectiveAddr}".\nCurrent Trust: ${trustScore}% (Barriers resolved ${bEval.unlockedIds.length}/3).\n${isLastTurn ? 'This is the final turn: include [OUTCOME:CONSENT|CONSULT|DECLINE].' : 'Continue realistically and do NOT end early.'}\nFormat strictly: [EMOTION:SHOCK|CONFUSED|ANGRY|SAD|HESITANT|CALM] [ACTION:short body language] [COACH:1 short clinical tip] ${isLastTurn ? '[OUTCOME:CONSENT|CONSULT|DECLINE] ' : ''}followed by 2-3 natural spoken sentences.`
+                    : isSbarCase
+                        ? `คุณคือ นพ.ภาคิน แพทย์เวร ICU ที่กำลังรับรายงานส่งเวรแบบ SBAR จากพยาบาล (${effectiveAddr}) สำหรับเคส Potential Donor\n${activePersona.promptHintTH}\nความครบถ้วนปัจจุบัน: ${trustScore}% (ครบแล้ว ${bEval.unlockedIds.length}/3 องค์ประกอบ${unresolved.length ? ' • จุดที่ยังไม่ครบ: ' + unresolved.join(', ') : ''})\nกติกา:\n1. เรียกผู้เรียนว่า "${effectiveAddr}" และพูดกระชับแบบแพทย์เวร ICU มืออาชีพ\n2. ${isLastTurn ? 'นี่คือรอบสุดท้าย ให้สรุปแผนการรักษา/Order และใส่แท็ก [OUTCOME:CONSENT] (หากรายงาน SBAR ครบถ้วน) หรือ [OUTCOME:CONSULT] (หากพอใช้ได้แต่ยังต้องติดตามเพิ่ม)' : `รอบที่ ${nextTurnNum}/${maxTurns} ซักถามเจาะจงในส่วน SBAR ที่ผู้เรียนยังไม่ได้รายงาน`}\n3. ขึ้นต้นด้วยแท็ก [EMOTION:CONFUSED|HESITANT|CALM] [ACTION:ภาษากายข้างเตียง ICU สั้นๆ] [COACH:คำแนะนำโค้ช SBAR 1 ประโยค] ตามด้วยคำพูดธรรมชาติ 2-3 ประโยค`
+                        : `คุณคือญาติผู้ป่วยในห้องให้คำปรึกษาเรื่องการบริจาคอวัยวะของโรงพยาบาล\n${activePersona.promptHintTH}\nระดับความยาก: ${difficultyId === 'hard' ? 'Hard (ซักถามเจาะลึก ไม่เปิดใจง่าย)' : 'Normal'}\nความไว้วางใจปัจจุบัน: ${trustScore}% (คลายปมในใจแล้ว ${bEval.unlockedIds.length}/3 ข้อ${unresolved.length ? ' • ปมที่ยังค้างคา: ' + unresolved.join(', ') : ''})\nกติกา:\n1. เรียกผู้เรียนว่า "${effectiveAddr}" เสมอ\n2. ${isLastTurn ? 'นี่คือรอบสุดท้าย ให้ญาติสรุปการตัดสินใจและใส่แท็ก [OUTCOME:CONSENT] หรือ [OUTCOME:CONSULT] หรือ [OUTCOME:DECLINE]' : `นี่คือรอบที่ ${nextTurnNum}/${maxTurns} ห้ามรีบจบก่อนรอบสุดท้าย ให้ถามต่อตามปมที่ยังค้างคา`}\n3. ขึ้นต้นด้วยแท็ก [EMOTION:SHOCK|CONFUSED|ANGRY|SAD|HESITANT|CALM] [ACTION:ภาษากายสั้นๆ] [COACH:คำแนะนำโค้ช 1 ประโยค] ตามด้วยคำพูดธรรมชาติ 2-3 ประโยค${activePersona.id === 'conflict' ? ' (ใช้ [ภรรยา]: ... และ [คุณแม่]: ... ชัดเจน)' : ''}`;
 
                 let parsed = null;
                 if (appsScriptUrl) {
@@ -1584,7 +1738,7 @@
                             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                             body: JSON.stringify({
                                 action: 'callGemini',
-                                prompt: `ประวัติการสนทนา:\n${transcript}\n\nตอบกลับในบทบาทญาติ:`,
+                                prompt: `ประวัติการสนทนา:\n${transcript}\n\n${isSbarCase ? 'ตอบกลับในบทบาทแพทย์เวร ICU:' : 'ตอบกลับในบทบาทญาติ:'}`,
                                 systemInstruction: sysPrompt
                             }),
                             signal: ctrl.signal
@@ -1642,6 +1796,7 @@
                     unlockedSnapshot: bEval.unlockedIds
                 }]);
                 setIsThinking(false);
+                setThinkingCue('');
                 silenceAnchorRef.current = Date.now();
                 silenceCountedRef.current = false;
                 speakRelativeSegments(parsed.speech, inertia.emotion, activePersona.id);
@@ -1649,8 +1804,15 @@
 
             useEffect(() => { sendUserMsgRef.current = handleSendUserMsg; }, [handleSendUserMsg]);
 
-            const persistLabScore = useCallback(async (report) => {
+            const persistLabScore = useCallback(async (report, postConfOverride = null) => {
                 if (!report || isAdminPreview) return;
+                const preAvg = preConfidenceTouched ? avgScaleScore(preConfidence) : null;
+                const postObj = postConfOverride || (postConfidenceSaved ? postConfidence : null);
+                const postAvg = postObj ? avgScaleScore(postObj) : null;
+                const blindTrans = typeof SL.buildBlindTranscript === 'function'
+                    ? SL.buildBlindTranscript(messages, learner?.name)
+                    : [];
+
                 const entry = {
                     at: new Date().toISOString(),
                     modeId,
@@ -1660,20 +1822,33 @@
                     outcome: finalOutcome || 'CONSULT',
                     trustScore,
                     barriersUnlocked: unlockedBarrierIds.length,
-                    radar: report.radar || []
+                    silenceCount,
+                    triggerTotal,
+                    avgVocalCalm: avgVocalCalmScore,
+                    preSelfEfficacy: preConfidenceTouched ? preConfidence : null,
+                    preSelfEfficacyAvg: preAvg,
+                    postSelfEfficacy: postObj,
+                    postSelfEfficacyAvg: postAvg,
+                    radar: report.radar || [],
+                    blindTranscript: blindTrans
                 };
                 try {
                     const savedRaw = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
                     const curUser = savedRaw.user || learner;
                     if (curUser && curUser.id && !String(curUser.id).startsWith('guest_')) {
-                        const nextHist = [...(Array.isArray(curUser.skillLabHistory) ? curUser.skillLabHistory : []), entry].slice(-20);
+                        const prevHist = Array.isArray(curUser.skillLabHistory) ? curUser.skillLabHistory : [];
+                        const nextHist = postConfOverride && prevHist.length > 0
+                            ? [...prevHist.slice(0, -1), { ...prevHist[prevHist.length - 1], postSelfEfficacy: postObj, postSelfEfficacyAvg: postAvg }]
+                            : [...prevHist, entry].slice(-20);
                         const bestScore = Math.max(Number(curUser.skillLabBestScore || 0), entry.score);
                         const updatedUser = {
                             ...curUser,
                             skillLabPassed: true,
                             skillLabBestScore: bestScore,
                             skillLabLatestRadar: report.radarMap || {},
-                            skillLabHistory: nextHist
+                            skillLabHistory: nextHist,
+                            ...(preAvg !== null ? { preSelfEfficacyAvg: preAvg } : {}),
+                            ...(postAvg !== null ? { postSelfEfficacyAvg: postAvg } : {})
                         };
                         localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...savedRaw, user: updatedUser }));
                         setLearner(updatedUser);
@@ -1685,7 +1860,9 @@
                                     skillLabPassed: true,
                                     skillLabBestScore: bestScore,
                                     skillLabLatestRadar: report.radarMap || {},
-                                    skillLabHistory: nextHist
+                                    skillLabHistory: nextHist,
+                                    ...(preAvg !== null ? { preSelfEfficacyAvg: preAvg } : {}),
+                                    ...(postAvg !== null ? { postSelfEfficacyAvg: postAvg } : {})
                                 },
                                 { merge: true }
                             );
@@ -1702,32 +1879,19 @@
                 } catch (err) {
                     console.warn('Lab score persist warning:', err);
                 }
-            }, [isAdminPreview, modeId, difficultyId, selectedMode.isDrill, activePersona.id, finalOutcome, trustScore, unlockedBarrierIds.length, learner]);
+            }, [isAdminPreview, preConfidenceTouched, preConfidence, postConfidenceSaved, postConfidence, avgScaleScore, messages, learner, modeId, difficultyId, selectedMode.isDrill, activePersona.id, finalOutcome, trustScore, unlockedBarrierIds.length, silenceCount, triggerTotal, avgVocalCalmScore]);
 
-            const handleForceShowEvaluation = useCallback(() => {
-                if (evalAbortRef.current) {
-                    try { evalAbortRef.current.abort(); } catch (_) {}
-                    evalAbortRef.current = null;
-                }
-                const fb = SL.evaluateConversationFallback({
-                    messages,
-                    barriersUnlocked: unlockedBarrierIds.length,
-                    silenceCount,
-                    triggerTotal,
-                    finalTrust: trustScore
-                });
-                setEvalReport(fb);
-                setIsEvaluating(false);
-                persistLabScore(fb);
-            }, [messages, unlockedBarrierIds.length, silenceCount, triggerTotal, trustScore, persistLabScore]);
+            const handleSavePostConfidence = useCallback(async () => {
+                setPostConfidenceSaved(true);
+                await persistLabScore(evalReport, postConfidence);
+                showToast('บันทึกคะแนนความมั่นใจหลังฝึก (งานวิจัย R2R) เรียบร้อยแล้วค่ะ ✨');
+            }, [evalReport, postConfidence, persistLabScore, showToast]);
 
             const handleFinishAndEvaluate = useCallback(async () => {
                 stopAiVoice();
                 stopMicCompletely();
                 SL.SoundFX.setAmbient(false);
                 setAmbientOn(false);
-                setShowToolsSheet(false);
-                setShowHistoryDrawer(false);
                 setPhase('evaluation');
                 setIsEvaluating(true);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1757,6 +1921,7 @@
                 });
 
                 let resolved = fallbackEval;
+                let wasAborted = false;
                 try {
                     const ctrl = new AbortController();
                     evalAbortRef.current = ctrl;
@@ -1769,16 +1934,44 @@
                         signal: ctrl.signal
                     });
                     clearTimeout(tm);
-                    const res = JSON.parse((await rawRes.text()) || '{}');
-                    if (res?.status === 'success' && res.text) {
-                        resolved = SL.parseSupervisorJson(res.text, fallbackEval);
+                    if (ctrl.signal.aborted) {
+                        wasAborted = true;
+                    } else {
+                        const res = JSON.parse((await rawRes.text()) || '{}');
+                        if (res?.status === 'success' && res.text) {
+                            resolved = SL.parseSupervisorJson(res.text, fallbackEval);
+                        }
                     }
-                } catch (_) {}
+                } catch (err) {
+                    if (err && err.name === 'AbortError' && evalAbortRef.current === null) {
+                        wasAborted = true;
+                    }
+                }
 
+                if (wasAborted) return;
+                evalAbortRef.current = null;
                 setEvalReport(resolved);
                 setIsEvaluating(false);
                 persistLabScore(resolved);
             }, [stopAiVoice, stopMicCompletely, messages, unlockedBarrierIds.length, silenceCount, triggerTotal, trustScore, appsScriptUrl, selectedMode.isDrill, activePersona.titleTH, persistLabScore]);
+
+            const handleForceShowEvaluation = useCallback(() => {
+                if (evalAbortRef.current) {
+                    const ctrl = evalAbortRef.current;
+                    evalAbortRef.current = null;
+                    try { ctrl.abort(); } catch (_) {}
+                }
+                const fallbackEval = SL.evaluateConversationFallback({
+                    messages,
+                    barriersUnlocked: unlockedBarrierIds.length,
+                    silenceCount,
+                    triggerTotal,
+                    finalTrust: trustScore
+                });
+                setEvalReport(fallbackEval);
+                setIsEvaluating(false);
+                persistLabScore(fallbackEval);
+            }, [messages, unlockedBarrierIds.length, silenceCount, triggerTotal, trustScore, persistLabScore]);
 
             return (
                 <div className={`min-h-dvh relative flex flex-col pt-safe ${phase === 'negotiating' ? 'holo-stage-bg' : ''}`}>
@@ -1807,6 +2000,42 @@
                             </header>
 
                             <main className="max-w-5xl w-full mx-auto px-3.5 sm:px-6 py-5 sm:py-7 pb-28 sm:pb-8 space-y-5">
+                                {inAppInfo.isInApp && (
+                                    <section className="spatial-card rounded-[1.5rem] p-4 border-amber-400/55 bg-amber-500/15 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                        <div className="flex items-start gap-2.5 text-xs sm:text-sm">
+                                            <Icon name="AlertTriangle" size={20} className="text-amber-400 shrink-0 mt-0.5" />
+                                            <div>
+                                                <p className="font-display font-extrabold text-primary-adaptive">
+                                                    ตรวจพบว่ากำลังเปิดผ่านเบราว์เซอร์ในแอป {inAppInfo.appName}
+                                                </p>
+                                                <p className="text-xs text-secondary-adaptive leading-relaxed">
+                                                    แอป {inAppInfo.appName} มักบล็อกไมโครโฟนและตัดเสียงพูด AI ค่ะ แนะนำเปิดใน <b>Safari หรือ Chrome</b> เพื่อใช้งานเต็มประสิทธิภาพ
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2 shrink-0">
+                                            <a
+                                                href={inAppInfo.externalUrl}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="rjc2-pill-btn touch-target px-4 py-2 rounded-full font-display font-extrabold text-xs inline-flex items-center gap-1.5"
+                                            >
+                                                <Icon name="ExternalLink" size={14} /> เปิดใน Safari / Chrome
+                                            </a>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    copyTextSafe(window.location.href);
+                                                    showToast('คัดลอกลิงก์แล้ว นำไปวางใน Safari หรือ Chrome ได้เลยค่ะ', 'info');
+                                                }}
+                                                className="touch-target spatial-soft px-3 py-2 rounded-full text-xs font-bold text-primary-adaptive"
+                                            >
+                                                คัดลอกลิงก์
+                                            </button>
+                                        </div>
+                                    </section>
+                                )}
+
                                 <section className="spatial-card rounded-[1.75rem] p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                     <div className="space-y-1">
                                         <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-aurora-500/20 text-accent-adaptive font-mono text-[10px] font-bold">
@@ -1816,12 +2045,12 @@
                                             ห้องฝึกสื่อสารและให้ข้อมูลญาติ 3 มิติ
                                         </h1>
                                         <p className="text-xs sm:text-sm text-secondary-adaptive">
-                                            ผู้เรียน: <b className="text-primary-adaptive">{learner?.name}</b> • ปมในใจ 3 ข้อ • 2 เสียงจริงเคส 3 • Hard Curveballs • ประเมิน 5 แกน
+                                            ผู้เรียน: <b className="text-primary-adaptive">{learner?.name}</b> • 6 เคสคลินิก (รวมเด็ก &amp; SBAR) • วัดน้ำเสียงสด + ฟังเสียงตัวเอง • ประเมิน 5 แกน
                                         </p>
                                     </div>
                                     <div className="spatial-soft px-3.5 py-2.5 rounded-2xl text-xs text-secondary-adaptive shrink-0">
-                                        <p className="font-mono text-[10px] text-prism-adaptive font-bold">MOBILE-FIRST READY</p>
-                                        <p className="font-bold text-primary-adaptive">แตะพูด / กดค้าง / แตะแนวทาง</p>
+                                        <p className="font-mono text-[10px] text-prism-adaptive font-bold">ZERO-COST WORLD-CLASS</p>
+                                        <p className="font-bold text-primary-adaptive">วัดน้ำเสียง • ฟังย้อนหลัง • วิจัย R2R</p>
                                     </div>
                                 </section>
 
@@ -1834,7 +2063,7 @@
                                                     <Icon name="Bot" size={20} />
                                                 </div>
                                                 <div className="min-w-0">
-                                                    <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase block">AI LAB ADVISOR v2</span>
+                                                    <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase block">AI LAB ADVISOR v3</span>
                                                     <h2 className="font-display font-extrabold text-sm sm:text-base text-primary-adaptive leading-snug">
                                                         AI แนะนำรูปแบบที่เหมาะกับคุณก่อนเข้าทดสอบ
                                                     </h2>
@@ -2002,7 +2231,7 @@
                                 ) : (
                                     <section className="spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3">
                                         <div className="flex flex-wrap items-center justify-between gap-2">
-                                            <h2 className="font-display font-bold text-sm sm:text-base text-primary-adaptive">3. เลือกสถานการณ์เคสญาติจำลอง (4 เคส • ปมในใจ 3 ข้อ)</h2>
+                                            <h2 className="font-display font-bold text-sm sm:text-base text-primary-adaptive">3. เลือกสถานการณ์เคสคลินิก (6 เคส • รวมผู้ป่วยเด็ก &amp; ส่งเวร SBAR)</h2>
                                             {difficultyId === 'hard' && (
                                                 <span className="px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 font-mono text-[10px] font-bold">⚡ HARD MODE: มีเหตุการณ์แทรกไม่คาดฝัน</span>
                                             )}
@@ -2183,11 +2412,50 @@
                                         <div className="p-3.5 rounded-2xl bg-prism-500/15 border border-prism-400/35 space-y-1 text-xs">
                                             <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">ภารกิจความสมจริง</span>
                                             <p className="text-secondary-adaptive leading-relaxed">
-                                                • คลาย <b className="text-primary-adaptive">ปมในใจ 3 ข้อ</b> ของญาติให้ครบและเว้นความเงียบเยียวยา 2.5 วิ เพื่อขยับค่า Trust ขึ้นอย่างเป็นธรรมชาติ
+                                                • คลาย <b className="text-primary-adaptive">ปมในใจ 3 ข้อ</b> ให้ครบและเว้นความเงียบเยียวยา 2.5 วิ เพื่อขยับค่า Trust ขึ้นอย่างเป็นธรรมชาติ
                                                 {difficultyId === 'hard' && (
                                                     <span className="block text-rose-300 font-bold mt-1">• โหมด Hard: เตรียมรับมือเหตุการณ์แทรกไม่คาดฝัน (สายพี่ชายโทรแทรก / จังหวะญาติสะอื้นเงียบ)</span>
                                                 )}
                                             </p>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {SELF_EFFICACY_ITEMS.length > 0 && (
+                                    <div className="spatial-soft p-3.5 sm:p-4 rounded-2xl space-y-2.5 border-aurora-400/30">
+                                        <div className="flex items-center justify-between gap-2">
+                                            <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">
+                                                PRE-SESSION SELF-EFFICACY (วัดความมั่นใจก่อนฝึก • R2R)
+                                            </span>
+                                            <span className="font-mono text-xs font-extrabold text-prism-adaptive">
+                                                เฉลี่ย {avgScaleScore(preConfidence)}/5
+                                            </span>
+                                        </div>
+                                        <div className="space-y-2">
+                                            {SELF_EFFICACY_ITEMS.map(item => (
+                                                <div key={item.key} className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 text-xs">
+                                                    <span className="text-secondary-adaptive leading-snug">{item.labelTH}</span>
+                                                    <div className="flex items-center gap-1 shrink-0">
+                                                        {[1, 2, 3, 4, 5].map(n => (
+                                                            <button
+                                                                key={n}
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    setPreConfidenceTouched(true);
+                                                                    setPreConfidence(p => ({ ...p, [item.key]: n }));
+                                                                }}
+                                                                className={`w-8 h-8 rounded-lg font-mono text-xs font-bold border transition-all ${
+                                                                    preConfidence[item.key] === n
+                                                                        ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 border-transparent font-extrabold'
+                                                                        : 'spatial-soft text-secondary-adaptive'
+                                                                }`}
+                                                            >
+                                                                {n}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
                                 )}
@@ -2372,7 +2640,11 @@
 
                                         {showSubtitle && (
                                             <div className="holo-obsidian-card rounded-2xl px-3.5 py-2.5 text-xs sm:text-sm text-sky-50 leading-relaxed max-h-28 overflow-y-auto custom-scrollbar">
-                                                {latestRelativeMsg.text}
+                                                {isThinking && thinkingCue ? (
+                                                    <span className="italic text-cyan-200 animate-pulse">✦ {thinkingCue}</span>
+                                                ) : (
+                                                    latestRelativeMsg.text
+                                                )}
                                             </div>
                                         )}
                                     </div>
@@ -2457,18 +2729,36 @@
                                         )}
 
                                         {isListening && (
-                                            <div className="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-rose-500/20 border border-rose-400/50 text-xs text-rose-100">
-                                                <span className="flex items-center gap-2 font-bold">
-                                                    <span className="w-2.5 h-2.5 rounded-full bg-rose-400 animate-ping" />
-                                                    {isPttHolding ? 'กำลังฟัง... ปล่อยปุ่มเพื่อส่ง' : 'กำลังฟังเสียงพูด... แตะปุ่มไมค์เมื่อพูดจบ'}
-                                                </span>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => { autoSendOnEndRef.current = true; if (recRef.current) { try { recRef.current.stop(); } catch (_) {} } }}
-                                                    className="px-2.5 py-1 rounded-lg bg-rose-500 text-white font-bold text-[11px] shrink-0"
-                                                >
-                                                    หยุด &amp; ส่ง
-                                                </button>
+                                            <div className="space-y-1.5 px-3 py-2 rounded-xl bg-rose-500/20 border border-rose-400/50 text-xs text-rose-100">
+                                                <div className="flex items-center justify-between gap-2">
+                                                    <span className="flex items-center gap-2 font-bold">
+                                                        <span className="w-2.5 h-2.5 rounded-full bg-rose-400 animate-ping" />
+                                                        {isPttHolding ? 'กำลังฟัง... ปล่อยปุ่มเพื่อส่ง' : 'กำลังฟังเสียงพูด... แตะปุ่มไมค์เมื่อพูดจบ'}
+                                                    </span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => { autoSendOnEndRef.current = true; if (recRef.current) { try { recRef.current.stop(); } catch (_) {} } }}
+                                                        className="px-2.5 py-1 rounded-lg bg-rose-500 text-white font-bold text-[11px] shrink-0"
+                                                    >
+                                                        หยุด &amp; ส่ง
+                                                    </button>
+                                                </div>
+                                                {liveVocalMetric && (
+                                                    <div className="space-y-1 pt-1 border-t border-white/10">
+                                                        <div className="flex items-center justify-between text-[10px] font-bold">
+                                                            <span className={liveVocalMetric.status === 'loud' ? 'text-amber-300' : 'text-emerald-300'}>
+                                                                {liveVocalMetric.labelTH}
+                                                            </span>
+                                                            <span className="font-mono text-sky-200">{liveVocalMetric.db} dB</span>
+                                                        </div>
+                                                        <div className="w-full h-1.5 rounded-full bg-white/15 overflow-hidden">
+                                                            <div
+                                                                className={`h-full rounded-full transition-all duration-75 ${liveVocalMetric.status === 'loud' ? 'bg-amber-400' : 'bg-emerald-400'}`}
+                                                                style={{ width: `${Math.max(8, liveVocalMetric.level)}%` }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
                                         )}
 
@@ -2497,7 +2787,7 @@
                                                 value={chatInput}
                                                 onChange={(e) => setChatInput(e.target.value)}
                                                 disabled={isThinking}
-                                                placeholder={isListening ? 'กำลังแปลงเสียงเป็นข้อความ...' : (isEn ? 'Type or tap Mic to speak...' : 'พิมพ์ หรือแตะปุ่มไมค์เพื่อพูดสื่อสารกับญาติ...')}
+                                                placeholder={isListening ? 'กำลังแปลงเสียงเป็นข้อความ...' : (isEn ? 'Type or tap Mic to speak...' : (activePersona.id === 'sbar_doctor' ? 'พิมพ์ หรือแตะปุ่มไมค์เพื่อรายงาน SBAR กับแพทย์เวร...' : 'พิมพ์ หรือแตะปุ่มไมค์เพื่อพูดสื่อสารกับญาติ...'))}
                                                 className="touch-target flex-1 min-w-0 px-3.5 sm:px-4 py-2.5 rounded-2xl bg-white/[0.09] border border-white/20 text-white placeholder-sky-200/55 text-sm focus:outline-none focus:border-cyan-400"
                                             />
 
@@ -2631,6 +2921,120 @@
                                         </div>
                                     )}
 
+                                    {/* ZERO-COST UPGRADE: SELF-REFLECTION AUDIO REPLAY & VOCAL TONE REPORT (RAM-ONLY PDPA SAFE) */}
+                                    {selfRecordings.length > 0 && (
+                                        <div className="spatial-soft rounded-2xl p-4 space-y-3 border-prism-400/35">
+                                            <div className="flex flex-wrap items-center justify-between gap-2">
+                                                <div>
+                                                    <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase block">
+                                                        SELF-REFLECTION AUDIO REPLAY • RAM-ONLY PDPA SAFE
+                                                    </span>
+                                                    <h3 className="font-display font-bold text-sm text-primary-adaptive">
+                                                        ฟังเสียงตัวเองย้อนหลัง &amp; วิเคราะห์ความนุ่มนวลน้ำเสียง ({selfRecordings.length} รอบ)
+                                                    </h3>
+                                                </div>
+                                                {avgVocalCalmScore !== null && (
+                                                    <span className="px-3 py-1 rounded-full bg-aurora-500/20 text-accent-adaptive font-mono text-xs font-extrabold">
+                                                        Vocal Calm {avgVocalCalmScore}/100
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <div className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar pr-1">
+                                                {selfRecordings.map((rec, i) => (
+                                                    <div key={rec.id || i} className="p-3 rounded-xl spatial-soft space-y-1.5 text-xs">
+                                                        <div className="flex flex-wrap items-center justify-between gap-1">
+                                                            <span className="font-mono font-bold text-prism-adaptive">รอบที่ {rec.turn} ({rec.durationSec}s)</span>
+                                                            <span className="font-bold text-accent-adaptive">{rec.toneLabel} ({rec.calmScore}/100)</span>
+                                                        </div>
+                                                        <p className="text-secondary-adaptive line-clamp-2">“{rec.text}”</p>
+                                                        {rec.audioUrl && (
+                                                            <audio controls preload="metadata" src={rec.audioUrl} className="w-full h-9" />
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <p className="text-[11px] text-muted-adaptive">
+                                                🔒 ไฟล์เสียงทั้งหมดเก็บชั่วคราวในหน่วยความจำอุปกรณ์ของคุณเท่านั้น (ไม่ส่งขึ้นเซิร์ฟเวอร์) และจะลบทิ้งอัตโนมัติเมื่อปิดหน้านี้ค่ะ
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    {/* ZERO-COST R2R RESEARCH: POST-SESSION SELF-EFFICACY COMPARISON */}
+                                    {SELF_EFFICACY_ITEMS.length > 0 && (
+                                        <div className="spatial-soft rounded-2xl p-4 space-y-3 border-aurora-400/35">
+                                            <div className="flex flex-wrap items-center justify-between gap-2">
+                                                <div>
+                                                    <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase block">
+                                                        POST-SESSION SELF-EFFICACY • R2R RESEARCH METRIC
+                                                    </span>
+                                                    <h3 className="font-display font-bold text-sm text-primary-adaptive">
+                                                        ประเมินความมั่นใจหลังฝึก (เทียบก่อนฝึก)
+                                                    </h3>
+                                                </div>
+                                                {preConfidenceTouched && (
+                                                    <span className="px-2.5 py-1 rounded-full bg-prism-500/20 text-prism-adaptive font-mono text-xs font-bold">
+                                                        ก่อนฝึก {avgScaleScore(preConfidence)} → หลังฝึก {avgScaleScore(postConfidence)} / 5
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <div className="space-y-2">
+                                                {SELF_EFFICACY_ITEMS.map(item => (
+                                                    <div key={item.key} className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 text-xs">
+                                                        <span className="text-secondary-adaptive leading-snug">{item.labelTH}</span>
+                                                        <div className="flex items-center gap-1 shrink-0">
+                                                            {[1, 2, 3, 4, 5].map(n => (
+                                                                <button
+                                                                    key={n}
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        setPostConfidenceSaved(false);
+                                                                        setPostConfidence(p => ({ ...p, [item.key]: n }));
+                                                                    }}
+                                                                    className={`w-8 h-8 rounded-lg font-mono text-xs font-bold border transition-all ${
+                                                                        postConfidence[item.key] === n
+                                                                            ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 border-transparent font-extrabold'
+                                                                            : 'spatial-soft text-secondary-adaptive'
+                                                                    }`}
+                                                                >
+                                                                    {n}
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={handleSavePostConfidence}
+                                                className={`touch-target w-full py-2.5 rounded-xl font-display font-bold text-xs ${
+                                                    postConfidenceSaved
+                                                        ? 'bg-aurora-500/20 border border-aurora-400/50 text-accent-adaptive'
+                                                        : 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold'
+                                                }`}
+                                            >
+                                                {postConfidenceSaved ? 'บันทึกผลความมั่นใจหลังฝึกแล้ว ✓' : 'บันทึกคะแนนความมั่นใจหลังฝึก (R2R) →'}
+                                            </button>
+                                        </div>
+                                    )}
+
+                                    {/* CLINICAL MASTERY BADGES STRIP */}
+                                    {earnedBadges.length > 0 && (
+                                        <div className="spatial-soft rounded-2xl p-4 space-y-2">
+                                            <p className="font-mono text-[10px] font-bold text-amber-400 uppercase">
+                                                CLINICAL MASTERY BADGES • เหรียญตราสมรรถนะคลินิก ({earnedBadges.filter(b => b.earned).length}/{earnedBadges.length})
+                                            </p>
+                                            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                                                {earnedBadges.map(b => (
+                                                    <div key={b.id} className={`p-2.5 rounded-xl border text-center space-y-1 ${b.earned ? 'bg-aurora-500/15 border-aurora-400/45' : 'spatial-soft opacity-50'}`}>
+                                                        <span className="inline-block w-2.5 h-2.5 rounded-full" style={{ backgroundColor: b.earned ? b.color : '#64748b' }} />
+                                                        <p className="font-display font-bold text-[11px] text-primary-adaptive leading-tight">{b.titleTH}</p>
+                                                        <p className="text-[10px] text-muted-adaptive leading-tight">{b.descTH}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
                                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
                                         <button type="button" onClick={() => { setDecompressSec(15); setShowDecompressModal(true); }} className="touch-target spatial-soft py-3 px-4 rounded-full text-accent-adaptive font-display font-bold text-xs flex items-center justify-center gap-1.5">
                                             <Icon name="Wind" size={16} /> พักใจ 15 วิ
@@ -2662,7 +3066,7 @@
                                     {messages.map((m, idx) => (
                                         <div key={m.id || idx} className={`p-3 rounded-2xl border space-y-1 ${m.role === 'user' ? 'bg-emerald-500/15 border-emerald-400/35' : 'bg-white/[0.06] border-white/15'}`}>
                                             <div className="flex items-center justify-between gap-2">
-                                                <span className="font-mono text-[10px] font-bold text-cyan-200">{m.role === 'user' ? learnerAddressName : 'ญาติผู้ป่วย'}</span>
+                                                <span className="font-mono text-[10px] font-bold text-cyan-200">{m.role === 'user' ? learnerAddressName : (activePersona.id === 'sbar_doctor' ? 'นพ.ภาคิน (แพทย์เวร ICU)' : 'ญาติผู้ป่วย')}</span>
                                                 {m.role === 'user' && !selectedMode.isDrill && (
                                                     <button type="button" onClick={() => handleRewindToTurn(idx)} className="px-2 py-0.5 rounded-lg bg-amber-500/20 text-amber-200 font-bold text-[10px] hover:bg-amber-500/35">↺ ย้อนแก้รอบนี้</button>
                                                 )}
