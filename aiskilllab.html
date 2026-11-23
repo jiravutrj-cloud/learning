@@ -8,10 +8,11 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>AI Skill Lab 3D — rjcloud.organ 2.0</title>
 
-    <!-- โหลดไฟล์สไตล์ธีม rjcloud.organ 2.0 และโมดูลกลาง (มีค่าสำรองในตัวกรณีเปิดพรีวิวไฟล์เดี่ยว) -->
+    <!-- โหลดไฟล์สไตล์และโมดูลกลาง (วางในโฟลเดอร์เดียวกันบน GitHub Pages) -->
     <link rel="stylesheet" href="./styles.css">
     <script src="./data.js" onerror="console.warn('data.js not loaded, using built-in defaults')"></script>
     <script src="./learning-core.js" onerror="console.warn('learning-core.js not loaded, using built-in defaults')"></script>
+    <script src="./skilllab-engine.js?v=202705" onerror="console.warn('skilllab-engine.js not loaded')"></script>
 
     <!-- ซิงค์โหมดมืด/สว่างทันทีจาก localStorage ป้องกันจอกระพริบ -->
     <script>
@@ -28,7 +29,7 @@
       })();
     </script>
 
-    <!-- Tailwind CSS, Three.js (r128) & ฟอนต์สไตล์ Apple -->
+    <!-- Tailwind CSS, Three.js (r128) & ฟอนต์ภาษาไทยสไตล์ Apple -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" onerror="console.warn('Three.js CDN unavailable')"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -107,4 +108,2690 @@
         font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Anuphan', 'Sarabun', sans-serif;
         font-size: 16px;
         line-height: 1.65;
-        background-
+        background-color: var(--bg-page);
+        color: var(--text-main);
+        margin: 0;
+        overflow-x: hidden;
+        overscroll-behavior-y: none;
+        -webkit-font-smoothing: antialiased;
+        transition: background-color 0.28s ease, color 0.28s ease;
+      }
+
+      .touch-target { min-height: 46px; touch-action: manipulation; }
+      .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+      .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+      @media (max-width: 768px) { input, select, textarea { font-size: 16px !important; } }
+
+      .spatial-aura {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background:
+          radial-gradient(ellipse 90% 55% at 50% 108%, var(--aura-1) 0%, transparent 66%),
+          radial-gradient(circle at 86% 14%, var(--aura-2) 0%, transparent 48%),
+          radial-gradient(circle at 14% 28%, var(--aura-3) 0%, transparent 46%);
+        pointer-events: none;
+      }
+      .spatial-grid {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background-image:
+          linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+          linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+        background-size: 44px 44px;
+        mask-image: radial-gradient(ellipse at center, black 42%, transparent 94%);
+        pointer-events: none;
+      }
+      .spatial-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(22px) saturate(165%);
+        -webkit-backdrop-filter: blur(22px) saturate(165%);
+        border: 1px solid var(--glass-border);
+        box-shadow: var(--glass-shadow);
+      }
+      .spatial-header {
+        background: var(--header-bg);
+        backdrop-filter: blur(22px) saturate(160%);
+        -webkit-backdrop-filter: blur(22px) saturate(160%);
+        border-bottom: 1px solid var(--surface-border);
+      }
+      .spatial-soft { background: var(--surface-soft); border: 1px solid var(--surface-border); }
+      .spatial-soft:hover { background: var(--surface-soft-hover); }
+      .spatial-input { background: var(--input-bg); border: 1px solid var(--input-border); color: var(--input-text); }
+      .spatial-input:focus { outline: none; border-color: #38bdf8; box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.22); }
+
+      .rjc2-pill-btn {
+        background: linear-gradient(95deg, #d7fbe6 0%, #c6f3f9 48%, #b3c8ff 100%);
+        color: #050b16 !important;
+        box-shadow: 0 10px 28px -6px rgba(134, 239, 172, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.72) inset;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .rjc2-pill-btn:hover { transform: translateY(-1px) scale(1.015); }
+      .rjc2-pill-btn:active { transform: scale(0.98); }
+
+      .holo-stage-bg {
+        background: radial-gradient(circle at 50% 42%, #0a1f47 0%, #030a1c 56%, #01040b 100%);
+      }
+      .holo-obsidian-card {
+        background: linear-gradient(155deg, rgba(6, 16, 38, 0.86) 0%, rgba(2, 8, 22, 0.94) 100%);
+        backdrop-filter: blur(22px) saturate(155%);
+        -webkit-backdrop-filter: blur(22px) saturate(155%);
+        border: 1px solid rgba(186, 230, 253, 0.22);
+        box-shadow: 0 24px 50px -16px rgba(0, 4, 18, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+      }
+      .holo-stage-pill {
+        background: rgba(6, 18, 44, 0.74);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(186, 230, 253, 0.22);
+      }
+
+      .text-primary-adaptive { color: var(--text-main); }
+      .text-secondary-adaptive { color: var(--text-secondary); }
+      .text-muted-adaptive { color: var(--text-muted); }
+      .text-accent-adaptive { color: var(--accent-text); }
+      .text-prism-adaptive { color: var(--accent-prism); }
+
+      .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+      .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+      .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(147, 197, 253, 0.38); border-radius: 999px; }
+
+      @keyframes pttPulse {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.65); }
+        50% { box-shadow: 0 0 0 14px rgba(244, 63, 94, 0); }
+      }
+      .ptt-recording { animation: pttPulse 1.2s ease-in-out infinite; }
+      .no-callout { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; touch-action: manipulation; }
+      .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      .hide-scrollbar::-webkit-scrollbar { display: none; }
+      .mobile-sticky-bar {
+        background: var(--header-bg);
+        backdrop-filter: blur(22px) saturate(165%);
+        -webkit-backdrop-filter: blur(22px) saturate(165%);
+        border-top: 1px solid var(--surface-border);
+      }
+      @keyframes rjcAmbientRun {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+      .rjc-ambient-bar {
+        height: 4px;
+        width: 100%;
+        background: linear-gradient(90deg, #6ee7b7, #38bdf8, #818cf8, #f0abfc, #6ee7b7);
+        background-size: 280% 100%;
+        animation: rjcAmbientRun 2s linear infinite;
+        box-shadow: 0 0 14px rgba(56, 189, 248, 0.7);
+      }
+      @keyframes labSpin { to { transform: rotate(360deg); } }
+    </style>
+
+    <!-- ESM Import Map (React 18, Lucide Icons, Firebase 11) -->
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@18.2.0",
+        "react-dom": "https://esm.sh/react-dom@18.2.0",
+        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+        "lucide-react": "https://esm.sh/lucide-react@0.344.0?external=react",
+        "firebase/app": "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"
+      }
+    }
+    </script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+    <div id="lab-root">
+        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#020612;color:#f8fafc;font-family:-apple-system,'Anuphan','Prompt',sans-serif;gap:14px;padding:24px;text-align:center;">
+            <div style="width:48px;height:48px;border:3px solid rgba(56,189,248,0.22);border-top-color:#6ee7b7;border-right-color:#38bdf8;border-radius:9999px;animation:labSpin 0.85s linear infinite;"></div>
+            <div style="font-weight:800;font-size:17px;">กำลังเปิดห้องฝึกสื่อสาร 3 มิติ AI Skill Lab...</div>
+            <div style="font-size:12px;color:#93b4d8;">rjcloud.organ 2.0 • 6 สไตล์ Hologram • ความสมจริง 3 ด้าน • AI Lab Advisor</div>
+        </div>
+    </div>
+
+    <!-- Global Error & Mount Watchdog Guard ป้องกันหน้าจอดำ -->
+    <script>
+      window.addEventListener('error', function (ev) {
+        const src = String(ev.filename || (ev.target && ev.target.src) || '');
+        if (src.includes('data.js') || src.includes('learning-core.js') || src.includes('skilllab-engine.js') || src.includes('styles.css') || src.includes('three')) return;
+        const root = document.getElementById('lab-root');
+        if (root && !root.dataset.mounted && ev.message) {
+          root.innerHTML =
+            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#020612;color:#f8fafc;font-family:Sarabun,sans-serif;">' +
+            '<div style="max-width:440px;width:100%;background:#061229;border:1px solid rgba(244,63,94,0.4);border-radius:24px;padding:24px;text-align:center;">' +
+            '<h2 style="color:#fda4af;font-weight:700;margin:0 0 8px;">ไม่สามารถเปิดห้อง AI Skill Lab ได้ชั่วคราว</h2>' +
+            '<p style="font-size:13px;color:#dbeafe;margin:0 0 16px;">' + String(ev.message || 'Unknown error') + '</p>' +
+            '<button onclick="window.location.reload()" style="padding:12px 24px;border:none;border-radius:14px;background:#34d399;color:#020612;font-weight:700;cursor:pointer;">โหลดหน้าใหม่</button>' +
+            '</div></div>';
+        }
+      });
+
+      setTimeout(function () {
+        const root = document.getElementById('lab-root');
+        if (root && !root.dataset.mounted) {
+          root.innerHTML =
+            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#020612;color:#f8fafc;font-family:Sarabun,sans-serif;">' +
+            '<div style="max-width:440px;width:100%;background:#061229;border:1px solid rgba(56,189,248,0.4);border-radius:24px;padding:24px;text-align:center;">' +
+            '<h2 style="color:#7dd3fc;font-weight:700;margin:0 0 8px;">การโหลดโมดูลใช้เวลานานกว่าปกติ</h2>' +
+            '<p style="font-size:13px;color:#dbeafe;margin:0 0 16px;">กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต หรือตรวจสอบว่าไฟล์ skilllab-engine.js อยู่ในโฟลเดอร์เดียวกันค่ะ</p>' +
+            '<button onclick="window.location.reload()" style="padding:12px 24px;border:none;border-radius:14px;background:#34d399;color:#020612;font-weight:700;cursor:pointer;">รีเฟรชหน้าเว็บ</button>' +
+            '</div></div>';
+        }
+      }, 10000);
+    </script>
+
+    <script type="text/babel" data-type="module">
+        import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+        import { createRoot } from 'react-dom/client';
+        import * as LucideIcons from 'lucide-react';
+        import { initializeApp, getApps, getApp } from 'firebase/app';
+        import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
+        import { getFirestore, doc, setDoc, onSnapshot } from 'firebase/firestore';
+
+        // ============================================================================
+        // 1. CONFIGURATION, CONSTANTS & AUDIO HELPERS (เชื่อม skilllab-engine.js 100%)
+        // ============================================================================
+        const CORE = window.RJCLOUD_CORE || {};
+        const SL = window.RJCLOUD_SKILLLAB || null;
+        const STORAGE_KEY = 'rjcloud_organ_state_v2027';
+        const HOLO_STYLE_KEY = 'rjcloud_holo_style_v2027';
+        const SILENT_UNLOCK_WAV = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
+
+        const BUILTIN_CONFIG = {
+            appName: 'rjcloud.organ',
+            themeName: 'rjcloud.organ 2.0',
+            appId: 'rjcloud-organ-2027',
+            theme: { defaultMode: 'dark', storageKey: 'rjcloud_theme' },
+            firebaseConfig: {
+                apiKey: 'AIzaSyCpvK0FCVVk9dt0ylHn_VzUStl7540UsbY',
+                authDomain: 'rj-cloud-organ.firebaseapp.com',
+                projectId: 'rj-cloud-organ',
+                storageBucket: 'rj-cloud-organ.firebasestorage.app',
+                messagingSenderId: '1030088973707',
+                appId: '1:1030088973707:web:8104bb1d90ac6a58f8e38e',
+                measurementId: 'G-X5YLDTC6V4'
+            },
+            appsScriptUrl: 'https://script.google.com/macros/s/AKfycbwuN8MeZhhhomEhpkfXtpoTP341cugDqw1DbQPK_6NSHun2pGZCE0Kfc3eH4YYJ6aWQIg/exec'
+        };
+
+        const CONFIG = typeof CORE.getResolvedConfig === 'function'
+            ? CORE.getResolvedConfig()
+            : {
+                ...BUILTIN_CONFIG,
+                ...(window.RJCLOUD_CONFIG || {}),
+                theme: { ...BUILTIN_CONFIG.theme, ...(window.RJCLOUD_CONFIG?.theme || {}) },
+                firebaseConfig: (window.RJCLOUD_CONFIG?.firebaseConfig?.apiKey)
+                    ? window.RJCLOUD_CONFIG.firebaseConfig
+                    : BUILTIN_CONFIG.firebaseConfig,
+                appsScriptUrl: window.RJCLOUD_CONFIG?.appsScriptUrl || BUILTIN_CONFIG.appsScriptUrl
+            };
+
+        const THEME_KEY = CONFIG.theme?.storageKey || 'rjcloud_theme';
+
+        const PRACTICE_MODES = [
+            { id: 'roleplay_th', badge: 'ROLEPLAY TH', label: 'สนทนาเสมือนจริง (ไทย)', desc: '6 รอบเต็ม + ปมในใจ 3 ข้อ + แรงเฉื่อย Trust', lang: 'th', speechLang: 'th-TH', maxTurns: 6, isDrill: false },
+            { id: 'micro_drill', badge: '4-STAGE DRILL', label: 'ซ้อม 4 ด่านคำถามหนัก', desc: '4 คำถามหินยอดฮิต + เฉลยประโยคต้นแบบทุกด่าน', lang: 'th', speechLang: 'th-TH', maxTurns: 4, isDrill: true },
+            { id: 'roleplay_en', badge: 'ROLEPLAY EN', label: 'International (English)', desc: 'ฝึกสื่อสารครอบครัวชาวต่างชาติตามหลัก SPIKES', lang: 'en', speechLang: 'en-US', maxTurns: 6, isDrill: false }
+        ];
+
+        const DIFFICULTIES = {
+            normal: {
+                id: 'normal',
+                badge: 'NORMAL',
+                labelTH: 'Normal (มีตัวช่วย)',
+                labelEN: 'Normal (Guided)',
+                descTH: 'มี AI Coach และปุ่มแนวทางคำพูดให้เลือกปรับใช้ เหมาะสร้างความมั่นใจ',
+                descEN: 'Includes AI Coach whispers and suggested replies.',
+                showSuggestions: true
+            },
+            hard: {
+                id: 'hard',
+                badge: 'HARD',
+                labelTH: 'Hard (+ เหตุการณ์แทรก)',
+                labelEN: 'Hard (+ Curveballs)',
+                descTH: 'ซ่อนแนวทางคำพูด 100%, Trust ไต่ยากขึ้น + สุ่มสายพี่ชายโทรแทรก / สะอื้นเงียบ',
+                descEN: 'No suggestions, stricter trust inertia, plus live interruptions.',
+                showSuggestions: false
+            }
+        };
+
+        const OUTCOME_META = {
+            CONSENT: {
+                badgeTH: 'ผลลัพธ์: ครอบครัวเปิดใจและยินยอมบริจาคอวัยวะ',
+                badgeEN: 'Outcome: Family Consents to Organ Donation',
+                descTH: 'คุณคลายปมในใจ สื่อสารอย่างอ่อนโยนโปร่งใส และให้เกียรติครอบครัวจนเกิดความไว้วางใจสูงสุด',
+                descEN: 'Your empathy and clarity built deep trust and ethical informed consent.',
+                cls: 'bg-emerald-500/20 border-emerald-400/50 text-emerald-100'
+            },
+            CONSULT: {
+                badgeTH: 'ผลลัพธ์: ครอบครัวรู้สึกสบายใจและขอกลับไปปรึกษากันต่อ',
+                badgeEN: 'Outcome: Family Requests Private Discussion Time',
+                descTH: 'เป็นผลลัพธ์ที่ถูกต้องตามหลักจริยธรรม (Zero Pressure) ญาติรู้สึกได้รับความเคารพและไม่ถูกเร่งรัด',
+                descEN: 'Ethically sound zero-pressure outcome—family feels respected and unhurried.',
+                cls: 'bg-sky-500/20 border-sky-400/50 text-sky-100'
+            },
+            DECLINE: {
+                badgeTH: 'ผลลัพธ์: ครอบครัวขอปฏิเสธการบริจาคในครั้งนี้',
+                badgeEN: 'Outcome: Family Declines Donation',
+                descTH: 'การเคารพการตัดสินใจของครอบครัวโดยไม่กดดันคือจริยธรรมสำคัญ ลองดูคำแนะนำจาก AI Supervisor เพื่อเกลาจุดพลิกผันค่ะ',
+                descEN: 'Respecting family refusal preserves dignity. Review the AI Supervisor feedback below.',
+                cls: 'bg-amber-500/20 border-amber-400/50 text-amber-100'
+            }
+        };
+
+        const STYLE_ICONS = {
+            lotus: 'Flower2',
+            liquid: 'Droplets',
+            silk: 'Waves',
+            particles: 'Atom',
+            dual: 'Orbit',
+            prism: 'Gem'
+        };
+
+        let fbApp = null, fbAuth = null, fbDb = null;
+        const isCloudConfigured = Boolean(CONFIG.firebaseConfig?.apiKey && CONFIG.firebaseConfig?.projectId);
+        if (isCloudConfigured) {
+            try {
+                fbApp = getApps().length === 0 ? initializeApp(CONFIG.firebaseConfig) : getApp();
+                fbAuth = getAuth(fbApp);
+                fbDb = getFirestore(fbApp);
+            } catch (err) {
+                console.warn('Firebase init warning:', err);
+            }
+        }
+
+        function prepareSpeechText(raw, isEn) {
+            if (!isEn && typeof CORE.prepareNaturalThaiSpeech === 'function') {
+                return CORE.prepareNaturalThaiSpeech(raw);
+            }
+            return String(raw || '').replace(/\[[^\]]+\]:?\s*/g, '').replace(/[*#_]/g, ' ').replace(/\s{2,}/g, ' ').trim();
+        }
+
+        function pcmToObjectUrl(base64PCM, sampleRate = 24000) {
+            try {
+                if (typeof CORE.pcm16ToWavBlob === 'function') {
+                    const blob = CORE.pcm16ToWavBlob(base64PCM, sampleRate);
+                    return blob && blob.size > 0 ? URL.createObjectURL(blob) : '';
+                }
+                const bin = window.atob(base64PCM);
+                const bytes = new Uint8Array(bin.length);
+                for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+                const off = (bytes.length > 44 && bytes[0] === 0x52 && bytes[1] === 0x49) ? 44 : 0;
+                const pcmLen = bytes.length - off;
+                const buf = new ArrayBuffer(44 + pcmLen);
+                const v = new DataView(buf);
+                const ws = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+                ws(0, 'RIFF'); v.setUint32(4, 36 + pcmLen, true); ws(8, 'WAVE'); ws(12, 'fmt ');
+                v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+                v.setUint32(24, sampleRate, true); v.setUint32(28, sampleRate * 2, true);
+                v.setUint16(32, 2, true); v.setUint16(34, 16, true); ws(36, 'data'); v.setUint32(40, pcmLen, true);
+                new Uint8Array(buf, 44).set(bytes.subarray(off));
+                return URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
+            } catch (_) {
+                return '';
+            }
+        }
+
+        function getDefaultAddressName(userObj, isEn) {
+            const raw = String(userObj?.name || '').replace(/\(.*?\)/g, '').trim();
+            if (!raw || raw === 'ผู้เรียน') return isEn ? 'Nurse' : 'คุณพยาบาล';
+            const first = raw.split(/\s+/)[0].replace(/^(พว\.|นพ\.|พญ\.|คุณ)/, '').trim();
+            if (!first) return isEn ? 'Nurse' : 'คุณพยาบาล';
+            return isEn ? `Nurse ${first}` : `คุณ${first}`;
+        }
+
+        function getTurnSuggestions(personaId, turnIdx, isEn, addrName, isDrill, drillIdx) {
+            if (isDrill) {
+                const drillHints = [
+                    [
+                        'เข้าใจเลยค่ะว่าเห็นหน้าอกคุณพ่อยังขยับแล้วทำใจเชื่อยาก แต่ตอนนี้เครื่องช่วยหายใจกำลังเป่าลมและยาช่วยพยุงความดันไว้ ส่วนก้านสมองหยุดทำงานถาวรซึ่งแพทย์ 3 ท่านตรวจยืนยันครบ 2 ครั้งแล้วค่ะ',
+                        'ขอแสดงความเสียใจด้วยนะคะ การที่ตัวคุณพ่อยังอุ่นเกิดจากเครื่องช่วยหายใจที่พยุงออกซิเจนไว้ค่ะ แต่ผลตรวจ Apnea Test ยืนยันภาวะสมองตายถาวรแล้วค่ะ'
+                    ],
+                    [
+                        'เข้าใจความห่วงใยของคุณยายมากเลยค่ะ ในทางพุทธศาสนาการมอบอวัยวะช่วยต่อชีวิตผู้อื่นคือทานบารมีอันยิ่งใหญ่ และทีมผ่าตัดจะตกแต่งร่างน้องชายให้เรียบร้อยสมบูรณ์เพื่อทำพิธีศาสนาได้ตามปกติค่ะ',
+                        'เคารพความเชื่อของคุณยายมากค่ะ ขอรับรองว่าร่างของน้องชายจะได้รับการดูแลเย็บแผลตกแต่งอย่างประณีตและสมเกียรติที่สุด ทำพิธีศาสนาได้เหมือนเดิมทุกประการค่ะ'
+                    ],
+                    [
+                        'ขอบคุณที่ถามตรงๆ เลยนะคะ การจัดสรรอวัยวะดำเนินการผ่านระบบคอมพิวเตอร์ของศูนย์รับบริจาคอวัยวะสภากาชาดไทย (ODC) ตามความเข้ากันได้ของเนื้อเยื่อ ไม่มีการซื้อขายหรือลัดคิว และครอบครัวไม่มีค่าใช้จ่ายเพิ่มเติมค่ะ',
+                        'เข้าใจความกังวลมากค่ะ ทุกขั้นตอนโปร่งใสตรวจสอบได้ผ่าน ODC สภากาชาดไทย และค่าใช้จ่ายหลังยืนยันการบริจาคทั้งหมดครอบครัวไม่ต้องรับผิดชอบเพิ่มเติมเลยค่ะ'
+                    ],
+                    [
+                        'สัมผัสได้ถึงความรักที่ทั้งภรรยาและคุณแม่มีให้คุณต้นค่ะ ขอยืนยันตามหลักจริยธรรมว่าเราจะไม่ฝืนใจคุณแม่หรือดำเนินการใดๆ หากครอบครัวไม่เห็นพ้องร่วมกัน ขอให้ทั้งสองท่านมีเวลาส่วนตัวคุยกันก่อนนะคะ',
+                        'เข้าใจทั้งความตั้งใจของภรรยาและความเจ็บปวดของคุณแม่ค่ะ เราเคารพความเห็นของคุณแม่และครอบครัวเป็นสำคัญ ไม่มีการบังคับหรือเร่งรัดเด็ดขาดค่ะ'
+                    ]
+                ];
+                return drillHints[drillIdx] || drillHints[0];
+            }
+
+            if (isEn) {
+                if (turnIdx === 0) {
+                    return [
+                        `Hello, I am ${addrName}, the organ donation coordinator. I am deeply sorry for what your family is going through. Thank you for sitting with me in this private room.`,
+                        'I can see how overwhelming this is. Take a moment—I am here to listen and explain clearly without any rush.'
+                    ];
+                }
+                return [
+                    'The ventilator is gently moving air and supporting circulation, which keeps the body warm, while the brainstem has permanently stopped functioning as confirmed by independent physicians.',
+                    'Please take all the private time your family needs to talk together. Whatever you decide, we will honor your wishes and care for your loved one with complete dignity.'
+                ];
+            }
+
+            if (turnIdx === 0) {
+                return [
+                    `สวัสดีค่ะ ดิฉัน${addrName} พยาบาลผู้ประสานงานค่ะ ขอแสดงความเสียใจอย่างสุดซึ้งกับเหตุการณ์ที่เกิดขึ้นนะคะ เข้าใจเลยว่าตอนนี้ใจยังสั่นและหนักมาก ดิฉันอยู่ตรงนี้รับฟังค่ะ`,
+                    `ขอแสดงความเสียใจด้วยนะคะ${personaId === 'conflict' ? ' เข้าใจความรักของทั้งภรรยาและคุณแม่มากค่ะ' : ''} เราค่อยๆ คุยกันช้าๆ ในห้องส่วนตัวนี้ได้เลยนะคะ ไม่ต้องรีบค่ะ`
+                ];
+            }
+            if (personaId === 'belief') {
+                return [
+                    'เข้าใจความห่วงใยของคุณยายมากเลยค่ะ เราเคารพความเชื่อของครอบครัวเสมอ ในทางศาสนาการต่อชีวิตเพื่อนมนุษย์ถือเป็นทานบารมีอันยิ่งใหญ่ และทีมแพทย์จะตกแต่งร่างให้เรียบร้อยสมบูรณ์ที่สุดค่ะ',
+                    'ไม่ว่าครอบครัวจะตัดสินใจอย่างไร เรายินดีเคารพและดูแลร่างของน้องชายให้ประกอบพิธีทางศาสนาได้อย่างสมเกียรติ ไม่เร่งรัดเลยค่ะ'
+                ];
+            }
+            if (personaId === 'conflict') {
+                return [
+                    'เข้าใจความตั้งใจดีของภรรยาและความเจ็บปวดของคุณแม่ทั้งสองท่านค่ะ ตามหลักจริยธรรมไทยเราจะไม่ฝืนใจคุณแม่เด็ดขาดแม้มีบัตรแสดงความจำนง เพราะสายสัมพันธ์ครอบครัวสำคัญที่สุดค่ะ',
+                    'ขอให้ทั้งสองท่านมีเวลาส่วนตัวค่อยๆ ปรึกษากันอย่างสงบนะคะ ไม่ว่าจะตัดสินใจแบบไหนทีมแพทย์ยินดีเคารพและดูแลคุณต้นอย่างดีที่สุดค่ะ'
+                ];
+            }
+            if (personaId === 'distrust') {
+                return [
+                    'ขอบคุณที่ถามอย่างตรงไปตรงมานะคะ ขอยืนยันว่าการจัดสรรอวัยวะใช้ระบบคอมพิวเตอร์ของศูนย์รับบริจาคอวัยวะสภากาชาดไทย (ODC) ตามความเข้ากันได้ของเนื้อเยื่อ ไม่มีการซื้อขายหรือลัดคิวเด็ดขาดค่ะ',
+                    'ส่วนค่าใช้จ่ายหลังยืนยันการบริจาค ครอบครัวผู้บริจาคไม่มีค่าใช้จ่ายเพิ่มเติมเลยค่ะ ขอให้ครอบครัวค่อยๆ ปรึกษากันโดยไม่เร่งรัดนะคะ'
+                ];
+            }
+            return [
+                'เข้าใจเลยค่ะว่าเห็นหน้าอกคุณพ่อยังขยับและตัวอุ่นแล้วทำใจเชื่อยากมาก จริงๆ แล้วเกิดจากเครื่องช่วยหายใจที่เป่าลมและยาพยุงความดันไว้ แต่ก้านสมองหยุดทำงานถาวรซึ่งแพทย์ 3 ท่านตรวจยืนยันครบ 2 ครั้งแล้วค่ะ',
+                'ขอให้ครอบครัวมีเวลาส่วนตัวค่อยๆ ปรึกษากันก่อนได้เลยนะคะ ไม่เร่งรัดค่ะ และรับรองว่าเราจะดูแลตกแต่งร่างของคุณพ่ออย่างประณีตสมเกียรติที่สุดค่ะ'
+            ];
+        }
+
+        function buildOfflineRelativeReply({ persona, turnIdx, maxTurns, addrName, trust, unlockedCount, isEn }) {
+            const isLast = turnIdx + 1 >= maxTurns;
+            const emo = trust >= 74 && unlockedCount >= 2 ? 'CALM' : trust >= 52 ? 'HESITANT' : trust >= 36 ? 'SAD' : 'CONFUSED';
+            const outcome = isLast ? (trust >= 76 && unlockedCount >= 2 ? 'CONSENT' : trust >= 54 ? 'CONSULT' : 'DECLINE') : '';
+
+            if (isEn) {
+                return {
+                    speech: isLast
+                        ? (outcome === 'CONSENT'
+                            ? `Thank you, ${addrName}. You explained everything so gently and gave us space. Our family feels ready to honor this gift of life.`
+                            : `Thank you for being so respectful, ${addrName}. May our family take some quiet time to discuss this together first?`)
+                        : `Thank you, ${addrName}... I appreciate your patience. Could you help me be sure there is no rush and that my loved one will be treated with dignity?`,
+                    emotion: emo,
+                    actionCue: emo === 'CALM' ? 'Takes a deep breath and nods gently with softening eyes.' : 'Wipes a tear and listens carefully.',
+                    coachHint: 'สื่อสารด้วยน้ำเสียงนุ่มนวลและเปิดพื้นที่ให้ครอบครัวตัดสินใจโดยไม่กดดันค่ะ',
+                    outcome
+                };
+            }
+
+            if (persona.id === 'conflict') {
+                return {
+                    speech: isLast
+                        ? (outcome === 'CONSENT'
+                            ? `[ภรรยา]: ขอบคุณ${addrName}มากนะคะที่รับฟังทั้งสองฝ่าย... [คุณแม่]: พอได้ยินว่า${addrName}ไม่บังคับและจะดูแลร่างต้นอย่างดีที่สุด แม่เริ่มเบาใจขึ้นแล้วค่ะ แม่ยอมทำบุญใหญ่ครั้งสุดท้ายให้ลูกค่ะ`
+                            : `[คุณแม่]: ขอบคุณ${addrName}ที่เข้าใจหัวอกคนเป็นแม่นะคะ [ภรรยา]: งั้นหนูขอเวลาคุยกับคุณแม่กันเงียบๆ สักพักก่อนตัดสินใจได้ไหมคะ?`)
+                        : `[คุณแม่]: ที่${addrName}พูดมาก็พอฟังขึ้นนะคะ แต่แม่ยังทำใจไม่ได้เลย... [ภรรยา]: เราขอคุยกันเองก่อนสักครู่ได้ไหมคะ${addrName} ไม่ต้องรีบใช่ไหมคะ?`,
+                    emotion: emo,
+                    actionCue: emo === 'CALM' ? 'คุณแม่คลายแขนที่กอดอกลงและจับมือภรรยาเบาๆ' : 'ภรรยาและคุณแม่หันสบตากันด้วยสีหน้าครุ่นคิด',
+                    coachHint: 'วางตัวเป็นกลาง ย้ำว่าไม่ฝืนใจญาติสายตรง และให้เวลาส่วนตัวค่ะ',
+                    outcome
+                };
+            }
+
+            return {
+                speech: isLast
+                    ? (outcome === 'CONSENT'
+                        ? `ขอบคุณ${addrName}มากนะคะที่อธิบายชัดเจนและไม่เร่งรัดเลย พอเข้าใจทุกอย่างแล้วครอบครัวเรารู้สึกสบายใจและอยากส่งต่อบุญใหญ่ครั้งนี้ให้เป็นประโยชน์กับผู้อื่นค่ะ`
+                        : outcome === 'CONSULT'
+                            ? `ขอบคุณ${addrName}มากค่ะที่ให้เกียรติและรับฟัง หนูขอกลับไปปรึกษาญาติผู้ใหญ่ที่บ้านให้ครบทุกคนก่อนแล้วจะแจ้งคำตอบนะคะ`
+                            : `ขอบคุณ${addrName}ที่ดูแลอย่างดีนะคะ แต่ตอนนี้ครอบครัวเรายังทำใจไม่ได้จริงๆ ขออนุญาตยังไม่บริจาคในครั้งนี้นะคะ`)
+                    : `ขอบคุณ${addrName}นะคะที่ค่อยๆ อธิบายให้ฟัง ใจหนูเริ่มสงบลงบ้างแล้วค่ะ แต่อยากขอความมั่นใจอีกนิดว่าครอบครัวเรามีเวลาปรึกษากันได้ใช่ไหมคะ แล้วร่างจะได้รับการดูแลเรียบร้อยใช่ไหมคะ?`,
+                emotion: emo,
+                actionCue: emo === 'CALM' ? 'ถอนหายใจเบาลง สบตาด้วยแววตาที่ไว้วางใจมากขึ้น' : 'ซับน้ำตาเบาๆ และตั้งใจฟังคำอธิบาย',
+                coachHint: 'ยืนยันการดูแลตกแต่งร่างอย่างสมเกียรติและให้เวลาครอบครัวตัดสินใจโดยไม่เร่งรัดค่ะ',
+                outcome
+            };
+        }
+
+        // ============================================================================
+        // 2. SHARED UI PRIMITIVES, 5-AXIS RADAR SVG & 3D HOLOGRAM WRAPPER
+        // ============================================================================
+        class LabErrorBoundary extends React.Component {
+            constructor(props) { super(props); this.state = { hasError: false, err: null }; }
+            static getDerivedStateFromError(err) { return { hasError: true, err }; }
+            render() {
+                if (this.state.hasError) {
+                    return (
+                        <div className="min-h-dvh flex items-center justify-center p-6 bg-void-950 text-white">
+                            <div className="holo-obsidian-card max-w-md w-full rounded-3xl p-6 text-center space-y-4 border-rose-500/40">
+                                <h2 className="font-display font-bold text-lg text-rose-400">พบข้อผิดพลาดชั่วคราว</h2>
+                                <p className="text-xs font-mono bg-rose-500/10 text-rose-200 p-3 rounded-xl overflow-auto">{String(this.state.err?.message || this.state.err)}</p>
+                                <button type="button" onClick={() => window.location.reload()} className="rjc2-pill-btn touch-target w-full py-3 rounded-full font-display font-bold text-sm">โหลดหน้าใหม่</button>
+                            </div>
+                        </div>
+                    );
+                }
+                return this.props.children;
+            }
+        }
+
+        function Icon({ name, size = 18, className = '' }) {
+            const Comp = LucideIcons[name] || LucideIcons.Sparkles || LucideIcons.Activity;
+            return Comp ? <Comp size={size} className={className} /> : null;
+        }
+
+        function ThemeToggleButton({ theme, onToggle }) {
+            const isDark = theme === 'dark';
+            return (
+                <button type="button" onClick={onToggle} aria-label="สลับโหมดมืดหรือสว่าง" className="spatial-soft px-2.5 sm:px-3 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5 text-primary-adaptive shrink-0">
+                    <Icon name={isDark ? 'Sun' : 'Moon'} size={15} className={isDark ? 'text-amber-300' : 'text-indigo-600'} />
+                    <span className="hidden sm:inline">{isDark ? 'โหมดสว่าง' : 'โหมดมืด'}</span>
+                </button>
+            );
+        }
+
+        function ToastBanner({ toast }) {
+            if (!toast.visible) return null;
+            return (
+                <div className="fixed top-[calc(1rem+env(safe-area-inset-top,0px))] left-1/2 -translate-x-1/2 z-[160] w-[92vw] max-w-md pointer-events-none">
+                    <div className={`px-4 py-3 rounded-2xl shadow-2xl border backdrop-blur-2xl flex items-center gap-2 text-xs sm:text-sm font-bold text-white ${
+                        toast.type === 'error' ? 'bg-rose-700/95 border-rose-400/60'
+                            : toast.type === 'info' ? 'bg-sky-700/95 border-sky-400/60'
+                                : 'bg-emerald-700/95 border-emerald-400/60'
+                    }`}>
+                        <Icon name={toast.type === 'error' ? 'AlertCircle' : toast.type === 'info' ? 'Sparkles' : 'CheckCircle2'} size={16} className="shrink-0" />
+                        <span>{toast.text}</span>
+                    </div>
+                </div>
+            );
+        }
+
+        function FiveAxisRadarSVG({ radar, axes, isEn, theme }) {
+            const isDark = theme === 'dark';
+            const w = 310, h = 264, cx = w / 2, cy = h / 2, maxR = 72;
+            const valMap = {};
+            (radar || []).forEach(r => { valMap[r.key] = Number(r.value || 0); });
+            const pt = (idx, ratio) => {
+                const ang = (Math.PI * 2 * idx) / axes.length - Math.PI / 2;
+                return [cx + Math.cos(ang) * maxR * ratio, cy + Math.sin(ang) * maxR * ratio];
+            };
+            const dataPts = axes.map((a, i) => pt(i, (valMap[a.key] || 0) / 100));
+
+            return (
+                <svg viewBox={`0 0 ${w} ${h}`} className="w-full max-w-[310px] mx-auto overflow-visible">
+                    <defs>
+                        <linearGradient id="labRadarFill" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="#34d399" stopOpacity="0.5" />
+                            <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.25" />
+                        </linearGradient>
+                    </defs>
+                    {[0.25, 0.5, 0.75, 1].map((lv, li) => (
+                        <polygon key={li} points={axes.map((_, i) => pt(i, lv).join(',')).join(' ')} fill="none" stroke={isDark ? 'rgba(147,197,253,0.24)' : 'rgba(15,58,125,0.16)'} strokeWidth="1" />
+                    ))}
+                    {axes.map((_, i) => {
+                        const [x, y] = pt(i, 1);
+                        return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke={isDark ? 'rgba(147,197,253,0.22)' : 'rgba(15,58,125,0.14)'} strokeWidth="1" />;
+                    })}
+                    <polygon points={dataPts.map(p => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ')} fill="url(#labRadarFill)" stroke="#34d399" strokeWidth="2.4" />
+                    {dataPts.map(([x, y], i) => (
+                        <circle key={i} cx={x} cy={y} r="3.8" fill="#34d399" stroke={isDark ? '#020612' : '#ffffff'} strokeWidth="1.6" />
+                    ))}
+                    {axes.map((a, i) => {
+                        const [lx, ly] = pt(i, 1.38);
+                        return (
+                            <g key={a.key}>
+                                <text x={lx} y={ly - 4} textAnchor="middle" fill={isDark ? '#dbeafe' : '#284366'} fontSize="9.4" fontWeight="700">
+                                    {isEn ? a.labelEN : a.shortTH}
+                                </text>
+                                <text x={lx} y={ly + 9} textAnchor="middle" fill={isDark ? '#6ee7b7' : '#047857'} fontSize="10" fontFamily="JetBrains Mono, monospace" fontWeight="700">
+                                    {valMap[a.key] || 0}
+                                </text>
+                            </g>
+                        );
+                    })}
+                </svg>
+            );
+        }
+
+        function ThreeHologramStage({ style, emotion, trust, isSpeaking, activeSpeaker = 'wife', compact = false }) {
+            const mountRef = useRef(null);
+            const ctrlRef = useRef(null);
+
+            useEffect(() => {
+                if (!mountRef.current || !SL || typeof SL.mountHologram3D !== 'function') return;
+                const ctrl = SL.mountHologram3D(mountRef.current, { style, emotion, trust, isSpeaking, activeSpeaker });
+                ctrlRef.current = ctrl;
+                return () => {
+                    if (ctrl && typeof ctrl.destroy === 'function') ctrl.destroy();
+                    ctrlRef.current = null;
+                };
+            }, []);
+
+            useEffect(() => {
+                if (ctrlRef.current && typeof ctrlRef.current.update === 'function') {
+                    ctrlRef.current.update({ style, emotion, trust, isSpeaking, activeSpeaker });
+                }
+            }, [style, emotion, trust, isSpeaking, activeSpeaker]);
+
+            return <div ref={mountRef} style={{ touchAction: compact ? 'pan-y' : 'none' }} className="w-full h-full cursor-grab active:cursor-grabbing" />;
+        }
+
+        // ============================================================================
+        // 3. MAIN AI SKILL LAB APPLICATION (4 PHASES • FULL SYNC WITH skilllab-engine.js)
+        // ============================================================================
+        function AiSkillLabApp() {
+            if (!SL) {
+                return (
+                    <div className="min-h-dvh flex items-center justify-center p-6 bg-void-950 text-white">
+                        <div className="holo-obsidian-card max-w-md w-full rounded-[2rem] p-6 text-center space-y-4 border-amber-400/40">
+                            <div className="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-300 flex items-center justify-center mx-auto">
+                                <Icon name="FolderOpen" size={24} />
+                            </div>
+                            <h1 className="font-display font-extrabold text-lg">ไม่พบไฟล์เสริม skilllab-engine.js</h1>
+                            <p className="text-xs sm:text-sm text-sky-100/85 leading-relaxed">
+                                กรุณาวางไฟล์ <span className="font-mono text-emerald-300 font-bold">skilllab-engine.js</span> ไว้ในโฟลเดอร์เดียวกับ <span className="font-mono text-cyan-300 font-bold">aiskilllab.html</span> แล้วโหลดหน้านี้อีกครั้งค่ะ
+                            </p>
+                            <div className="flex gap-2">
+                                <a href="./index.html" className="touch-target flex-1 py-3 rounded-full spatial-soft text-xs font-bold flex items-center justify-center">กลับหน้าหลัก</a>
+                                <button type="button" onClick={() => window.location.reload()} className="rjc2-pill-btn touch-target flex-1 py-3 rounded-full font-display font-extrabold text-xs">ลองโหลดใหม่</button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const EMOTIONS = SL.EMOTIONS;
+            const RADAR_AXES = SL.RADAR_AXES;
+            const HOLOGRAM_STYLES = SL.HOLOGRAM_STYLES;
+            const CASE_ICU_BRIEFS = SL.CASE_ICU_BRIEFS;
+            const MICRO_DRILL_STAGES = SL.MICRO_DRILL_STAGES;
+            const ADVISOR_GOALS = SL.ADVISOR_GOALS;
+            const ADVISOR_QUICK_QUESTIONS = SL.ADVISOR_QUICK_QUESTIONS;
+            const PERSONAS = useMemo(() => SL.getPersonas(), []);
+
+            const isAdminPreview = useMemo(() => {
+                try { return new URLSearchParams(window.location.search).get('admin_preview') === '1'; }
+                catch (_) { return false; }
+            }, []);
+            const hasSpeechApi = useMemo(
+                () => Boolean(typeof window !== 'undefined' && (window.SpeechRecognition || window.webkitSpeechRecognition)),
+                []
+            );
+            const isMobileDevice = useMemo(
+                () => Boolean(typeof navigator !== 'undefined' && /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || '')),
+                []
+            );
+
+            const [theme, setTheme] = useState(() => {
+                try {
+                    const saved = localStorage.getItem(THEME_KEY);
+                    if (saved === 'light' || saved === 'dark') return saved;
+                } catch (_) {}
+                return CONFIG.theme?.defaultMode === 'light' ? 'light' : 'dark';
+            });
+            useEffect(() => {
+                document.documentElement.setAttribute('data-theme', theme);
+                const meta = document.querySelector('meta[name="theme-color"]');
+                if (meta) meta.setAttribute('content', theme === 'dark' ? '#020612' : '#edf6fd');
+                try { localStorage.setItem(THEME_KEY, theme); } catch (_) {}
+            }, [theme]);
+            const toggleTheme = useCallback(() => setTheme(p => (p === 'dark' ? 'light' : 'dark')), []);
+
+            const [learner, setLearner] = useState(() => {
+                if (isAdminPreview) {
+                    return { id: 'admin_preview_2027', name: 'พว.กัญญารัตน์ วัฒนากูล', hospital: 'รพ.ราชวิถี' };
+                }
+                try {
+                    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+                    if (saved?.user) return saved.user;
+                } catch (_) {}
+                return { id: 'guest_lab', name: 'ผู้เรียน', hospital: 'เครือข่าย rjcloud.organ' };
+            });
+            const [appsScriptUrl, setAppsScriptUrl] = useState(CONFIG.appsScriptUrl || '');
+
+            const [phase, setPhase] = useState('setup');
+            const [modeId, setModeId] = useState('roleplay_th');
+            const [difficultyId, setDifficultyId] = useState('normal');
+            const [personaId, setPersonaId] = useState(PERSONAS[0].id);
+
+            const [hologramStyle, setHologramStyle] = useState(() => {
+                try {
+                    const saved = localStorage.getItem(HOLO_STYLE_KEY);
+                    if (saved && HOLOGRAM_STYLES.some(s => s.id === saved)) return saved;
+                } catch (_) {}
+                return 'lotus';
+            });
+            const [userPickedStyle, setUserPickedStyle] = useState(false);
+            const [showStyleMenu, setShowStyleMenu] = useState(false);
+            const [previewEmo, setPreviewEmo] = useState('CONFUSED');
+            const [previewTrust, setPreviewTrust] = useState(55);
+            const [previewSpeak, setPreviewSpeak] = useState(true);
+            const [previewSpeaker, setPreviewSpeaker] = useState('wife');
+
+            const [messages, setMessages] = useState([]);
+            const [chatInput, setChatInput] = useState('');
+            const [relativeEmotion, setRelativeEmotion] = useState('CONFUSED');
+            const [currentActionCue, setCurrentActionCue] = useState('');
+            const [coachWhisper, setCoachWhisper] = useState('');
+            const [activeSpeakerBadge, setActiveSpeakerBadge] = useState('');
+            const [activeSpeakerKey, setActiveSpeakerKey] = useState('wife');
+            const [learnerAddressName, setLearnerAddressName] = useState(() => getDefaultAddressName(learner, false));
+            const [finalOutcome, setFinalOutcome] = useState('');
+
+            const [trustScore, setTrustScore] = useState(36);
+            const [lastTrustDelta, setLastTrustDelta] = useState(0);
+            const [unlockedBarrierIds, setUnlockedBarrierIds] = useState([]);
+            const [activeCurveball, setActiveCurveball] = useState(null);
+            const [usedCurveballIds, setUsedCurveballIds] = useState([]);
+            const [drillIdx, setDrillIdx] = useState(0);
+            const [drillResults, setDrillResults] = useState([]);
+            const [pendingDrillReview, setPendingDrillReview] = useState(null);
+
+            const [isThinking, setIsThinking] = useState(false);
+            const [isSpeaking, setIsSpeaking] = useState(false);
+            const [voiceEnabled, setVoiceEnabled] = useState(true);
+            const [ambientOn, setAmbientOn] = useState(false);
+            const [showSuggestionsBar, setShowSuggestionsBar] = useState(true);
+            const [showSubtitle, setShowSubtitle] = useState(true);
+            const [showHistoryDrawer, setShowHistoryDrawer] = useState(false);
+            const [showToolsSheet, setShowToolsSheet] = useState(false);
+            const [showChartModal, setShowChartModal] = useState(false);
+            const [audioBlockedRetry, setAudioBlockedRetry] = useState(null);
+
+            const [isListening, setIsListening] = useState(false);
+            const [isPttHolding, setIsPttHolding] = useState(false);
+            const [pttAutoSend, setPttAutoSend] = useState(true);
+            const [paceHint, setPaceHint] = useState('');
+            const [silenceElapsed, setSilenceElapsed] = useState(0);
+            const [silenceCount, setSilenceCount] = useState(0);
+            const [triggerTotal, setTriggerTotal] = useState(0);
+            const [triggerWarning, setTriggerWarning] = useState(null);
+
+            const [isEvaluating, setIsEvaluating] = useState(false);
+            const [evalReport, setEvalReport] = useState(null);
+            const [showDecompressModal, setShowDecompressModal] = useState(false);
+            const [decompressSec, setDecompressSec] = useState(15);
+
+            const [advisorGoalId, setAdvisorGoalId] = useState('auto');
+            const [advisorExpanded, setAdvisorExpanded] = useState(true);
+            const [advisorVoicePhase, setAdvisorVoicePhase] = useState('idle');
+            const [advisorQuestion, setAdvisorQuestion] = useState('');
+            const [advisorReply, setAdvisorReply] = useState('');
+            const [advisorAsking, setAdvisorAsking] = useState(false);
+
+            const [toast, setToast] = useState({ visible: false, text: '', type: 'success' });
+
+            const voiceSessionRef = useRef(0);
+            const advisorSessionRef = useRef(0);
+            const advisorAudioUrlRef = useRef(null);
+            const sharedAudioRef = useRef(null);
+            const activeAudioUrlRef = useRef(null);
+            const recRef = useRef(null);
+            const pttStartRef = useRef(0);
+            const pttHoldingRef = useRef(false);
+            const lastTouchRef = useRef(0);
+            const pttTranscriptRef = useRef('');
+            const finalTranscriptRef = useRef('');
+            const autoSendOnEndRef = useRef(false);
+            const sendUserMsgRef = useRef(null);
+            const evalAbortRef = useRef(null);
+            const silenceAnchorRef = useRef(0);
+            const silenceCountedRef = useRef(false);
+
+            const selectedMode = useMemo(() => PRACTICE_MODES.find(m => m.id === modeId) || PRACTICE_MODES[0], [modeId]);
+            const isEn = selectedMode.lang === 'en';
+            const activeDifficulty = DIFFICULTIES[difficultyId] || DIFFICULTIES.normal;
+            const activePersona = useMemo(() => PERSONAS.find(p => p.id === personaId) || PERSONAS[0], [personaId, PERSONAS]);
+            const activeBrief = CASE_ICU_BRIEFS[activePersona.id] || CASE_ICU_BRIEFS.standard;
+            const activeBarriers = useMemo(() => SL.getCaseBarriers(activePersona.id), [activePersona.id]);
+            const activeHoloMeta = useMemo(() => HOLOGRAM_STYLES.find(s => s.id === hologramStyle) || HOLOGRAM_STYLES[0], [hologramStyle]);
+            const emotionMeta = EMOTIONS[relativeEmotion] || EMOTIONS.CONFUSED;
+            const userTurns = useMemo(() => messages.filter(m => m.role === 'user').length, [messages]);
+            const maxTurns = selectedMode.maxTurns || 6;
+            const activeDrillStage = MICRO_DRILL_STAGES[drillIdx] || MICRO_DRILL_STAGES[0];
+            const latestRelativeMsg = useMemo(() => {
+                for (let i = messages.length - 1; i >= 0; i--) {
+                    if (messages[i].role === 'relative') return messages[i];
+                }
+                return null;
+            }, [messages]);
+            const turnSuggestions = useMemo(
+                () => getTurnSuggestions(activePersona.id, userTurns, isEn, learnerAddressName, selectedMode.isDrill, drillIdx),
+                [activePersona.id, userTurns, isEn, learnerAddressName, selectedMode.isDrill, drillIdx]
+            );
+            const activeRec = useMemo(() => SL.computeLabRecommendation(learner, advisorGoalId), [learner, advisorGoalId]);
+            const isRecApplied =
+                modeId === activeRec.mode &&
+                difficultyId === activeRec.difficulty &&
+                (activeRec.mode === 'micro_drill' || personaId === activeRec.personaId) &&
+                hologramStyle === activeRec.holoStyle;
+
+            const showToast = useCallback((text, type = 'success') => {
+                setToast({ visible: true, text: String(text), type });
+                setTimeout(() => setToast(p => ({ ...p, visible: false })), 3200);
+            }, []);
+
+            useEffect(() => {
+                const el = document.getElementById('lab-root');
+                if (el) el.dataset.mounted = 'true';
+            }, []);
+
+            useEffect(() => {
+                if (!isCloudConfigured || !fbAuth || !fbDb) return;
+                let active = true;
+                let unsubSettings = null;
+                let unsubAuth = () => {};
+                try {
+                    unsubAuth = onAuthStateChanged(fbAuth, async (fbUser) => {
+                        if (!active) return;
+                        if (!fbUser && !isAdminPreview) {
+                            try { await signInAnonymously(fbAuth); } catch (_) {}
+                            return;
+                        }
+                        if (unsubSettings) unsubSettings();
+                        unsubSettings = onSnapshot(
+                            doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_config', 'settings'),
+                            (snap) => {
+                                if (snap.exists() && snap.data()?.appsScriptUrl) {
+                                    setAppsScriptUrl(snap.data().appsScriptUrl);
+                                }
+                            },
+                            () => {}
+                        );
+                    });
+                } catch (_) {}
+                return () => {
+                    active = false;
+                    try { unsubAuth(); } catch (_) {}
+                    if (unsubSettings) unsubSettings();
+                };
+            }, [isAdminPreview]);
+
+            useEffect(() => {
+                if (!showDecompressModal || decompressSec <= 0) return;
+                const t = setTimeout(() => setDecompressSec(s => Math.max(0, s - 1)), 1000);
+                return () => clearTimeout(t);
+            }, [showDecompressModal, decompressSec]);
+
+            useEffect(() => {
+                if (phase !== 'negotiating' || isSpeaking || isThinking || finalOutcome || pendingDrillReview) {
+                    setSilenceElapsed(0);
+                    return;
+                }
+                if (!silenceAnchorRef.current) silenceAnchorRef.current = Date.now();
+                const iv = setInterval(() => {
+                    const sec = (Date.now() - silenceAnchorRef.current) / 1000;
+                    setSilenceElapsed(sec);
+                    if (sec >= 2.5 && !silenceCountedRef.current) {
+                        silenceCountedRef.current = true;
+                        setSilenceCount(c => c + 1);
+                        SL.SoundFX.playChime([523.25, 659.25]);
+                    }
+                }, 150);
+                return () => clearInterval(iv);
+            }, [phase, isSpeaking, isThinking, finalOutcome, pendingDrillReview]);
+
+            const handleSelectHoloStyle = useCallback((id) => {
+                setHologramStyle(id);
+                setUserPickedStyle(true);
+                setShowStyleMenu(false);
+                try { localStorage.setItem(HOLO_STYLE_KEY, id); } catch (_) {}
+            }, []);
+
+            const unlockMobileAudio = useCallback(() => {
+                try {
+                    if (!sharedAudioRef.current) {
+                        const a = new Audio();
+                        a.playsInline = true;
+                        a.setAttribute('playsinline', '');
+                        a.preload = 'auto';
+                        sharedAudioRef.current = a;
+                    }
+                    const a = sharedAudioRef.current;
+                    if (a.paused && !a.src) {
+                        a.muted = true;
+                        a.src = SILENT_UNLOCK_WAV;
+                        const p = a.play();
+                        if (p && typeof p.then === 'function') {
+                            p.then(() => {
+                                try { a.pause(); a.currentTime = 0; } catch (_) {}
+                                a.muted = false;
+                            }).catch(() => { a.muted = false; });
+                        } else {
+                            a.muted = false;
+                        }
+                    }
+                } catch (_) {}
+            }, []);
+
+            const stopAiVoice = useCallback(() => {
+                voiceSessionRef.current += 1;
+                setAudioBlockedRetry(null);
+                if (sharedAudioRef.current) {
+                    try {
+                        sharedAudioRef.current.onended = null;
+                        sharedAudioRef.current.onerror = null;
+                        sharedAudioRef.current.pause();
+                    } catch (_) {}
+                }
+                if (activeAudioUrlRef.current) {
+                    try { URL.revokeObjectURL(activeAudioUrlRef.current); } catch (_) {}
+                    activeAudioUrlRef.current = null;
+                }
+                if ('speechSynthesis' in window) {
+                    try { window.speechSynthesis.cancel(); } catch (_) {}
+                }
+                setIsSpeaking(false);
+            }, []);
+
+            const stopAdvisorVoice = useCallback(() => {
+                advisorSessionRef.current += 1;
+                if (sharedAudioRef.current) {
+                    try {
+                        sharedAudioRef.current.onended = null;
+                        sharedAudioRef.current.onerror = null;
+                        sharedAudioRef.current.pause();
+                    } catch (_) {}
+                }
+                if (advisorAudioUrlRef.current) {
+                    try { URL.revokeObjectURL(advisorAudioUrlRef.current); } catch (_) {}
+                    advisorAudioUrlRef.current = null;
+                }
+                if ('speechSynthesis' in window) {
+                    try { window.speechSynthesis.cancel(); } catch (_) {}
+                }
+                setAdvisorVoicePhase('idle');
+            }, []);
+
+            useEffect(() => () => {
+                stopAiVoice();
+                stopAdvisorVoice();
+                SL.SoundFX.setAmbient(false);
+            }, [stopAiVoice, stopAdvisorVoice]);
+
+            const handleApplyRec = useCallback(() => {
+                setModeId(activeRec.mode);
+                setDifficultyId(activeRec.difficulty);
+                setPersonaId(activeRec.personaId);
+                handleSelectHoloStyle(activeRec.holoStyle);
+                showToast('ตั้งค่ารูปแบบ ระดับ เคส และ Hologram ตามที่ AI แนะนำแล้วค่ะ ✨');
+            }, [activeRec, handleSelectHoloStyle, showToast]);
+
+            const handleSpeakAdvisor = useCallback(async () => {
+                if (advisorVoicePhase !== 'idle') {
+                    stopAdvisorVoice();
+                    return;
+                }
+                unlockMobileAudio();
+                stopAiVoice();
+                stopAdvisorVoice();
+                const sid = advisorSessionRef.current;
+                const text = prepareSpeechText(advisorReply || activeRec.speech, false);
+                if (!text) return;
+
+                if (!sharedAudioRef.current) {
+                    const a = new Audio();
+                    a.playsInline = true;
+                    a.setAttribute('playsinline', '');
+                    sharedAudioRef.current = a;
+                }
+
+                setAdvisorVoicePhase('loading');
+                let played = false;
+                if (appsScriptUrl) {
+                    try {
+                        const ctrl = new AbortController();
+                        const tm = setTimeout(() => ctrl.abort(), 16000);
+                        const rawRes = await fetch(appsScriptUrl, {
+                            method: 'POST',
+                            redirect: 'follow',
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                            body: JSON.stringify({
+                                action: 'callGeminiTTS',
+                                text,
+                                voiceName: 'Sulafat',
+                                languageCode: 'th-TH',
+                                style: 'พูดภาษาไทยด้วยน้ำเสียงผู้หญิงที่อบอุ่น นุ่มนวล เป็นมิตร เหมือนอาจารย์ที่ปรึกษาแนะนำการฝึกสื่อสาร'
+                            }),
+                            signal: ctrl.signal
+                        });
+                        clearTimeout(tm);
+                        const res = JSON.parse((await rawRes.text()) || '{}');
+                        if (advisorSessionRef.current !== sid) return;
+                        if (res?.status === 'success' && res.inlineData?.data) {
+                            const rate = parseInt(res.inlineData.mimeType?.match(/rate=(\d+)/)?.[1] ?? '24000', 10);
+                            const url = pcmToObjectUrl(res.inlineData.data, rate);
+                            if (url) {
+                                advisorAudioUrlRef.current = url;
+                                setAdvisorVoicePhase('speaking');
+                                played = await new Promise((resolve) => {
+                                    const a = sharedAudioRef.current;
+                                    a.muted = false;
+                                    a.src = url;
+                                    a.onended = () => resolve(true);
+                                    a.onerror = () => resolve(false);
+                                    try { a.load(); } catch (_) {}
+                                    const p = a.play();
+                                    if (p && typeof p.catch === 'function') p.catch(() => resolve(false));
+                                });
+                            }
+                        }
+                    } catch (_) {}
+                }
+
+                if (!played && advisorSessionRef.current === sid && 'speechSynthesis' in window) {
+                    setAdvisorVoicePhase('speaking');
+                    await new Promise((resolve) => {
+                        try {
+                            window.speechSynthesis.cancel();
+                            const u = new SpeechSynthesisUtterance(text);
+                            u.lang = 'th-TH';
+                            u.rate = 0.96;
+                            if (typeof CORE.pickNaturalBrowserVoice === 'function') {
+                                const v = CORE.pickNaturalBrowserVoice('th');
+                                if (v) u.voice = v;
+                            }
+                            u.onend = () => resolve();
+                            u.onerror = () => resolve();
+                            window.speechSynthesis.speak(u);
+                        } catch (_) { resolve(); }
+                    });
+                }
+                if (advisorSessionRef.current === sid) setAdvisorVoicePhase('idle');
+            }, [advisorVoicePhase, stopAdvisorVoice, unlockMobileAudio, stopAiVoice, advisorReply, activeRec.speech, appsScriptUrl]);
+
+            const handleAskAdvisor = useCallback(async (e, presetQ = null) => {
+                if (e) e.preventDefault();
+                const q = String(presetQ ?? advisorQuestion).trim();
+                if (!q || advisorAsking) return;
+                stopAdvisorVoice();
+                setAdvisorQuestion('');
+                setAdvisorAsking(true);
+
+                const sys = `คุณคือ AI อาจารย์ที่ปรึกษาประจำห้องฝึกสื่อสาร 3 มิติ AI Skill Lab (rjcloud.organ 2.0)
+ช่วยแนะนำผู้เรียนก่อนเข้าทดสอบ (Normal vs Hard มีสายพี่ชายโทรแทรก/สะอื้นเงียบ, ปมในใจ 3 ข้อ + แรงเฉื่อย Trust, โหมด Micro-Drill 4 ด่านคำถามหนัก, เคส 3 มี 2 เสียงจริง)
+คำแนะนำปัจจุบัน: ${activeRec.headline}
+ตอบภาษาไทยกระชับ 2-4 บรรทัด อ่านง่าย เป็นมิตรค่ะ`;
+
+                let reply = '';
+                if (appsScriptUrl) {
+                    try {
+                        const ctrl = new AbortController();
+                        const tm = setTimeout(() => ctrl.abort(), 11000);
+                        const rawRes = await fetch(appsScriptUrl, {
+                            method: 'POST',
+                            redirect: 'follow',
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                            body: JSON.stringify({ action: 'callGemini', prompt: q, systemInstruction: sys }),
+                            signal: ctrl.signal
+                        });
+                        clearTimeout(tm);
+                        const res = JSON.parse((await rawRes.text()) || '{}');
+                        if (res?.status === 'success' && res.text) reply = res.text;
+                    } catch (_) {}
+                }
+                if (!reply) reply = SL.answerAdvisorQuestion(q);
+                setAdvisorReply(reply);
+                setAdvisorAsking(false);
+            }, [advisorQuestion, advisorAsking, stopAdvisorVoice, activeRec.headline, appsScriptUrl]);
+
+            const speakRelativeSegments = useCallback(async (rawText, emoKey, targetPersonaId) => {
+                if (!voiceEnabled) {
+                    silenceAnchorRef.current = Date.now();
+                    silenceCountedRef.current = false;
+                    return;
+                }
+                stopAiVoice();
+                const sid = voiceSessionRef.current;
+                const segments = SL.splitDualSpeakerSegments(rawText, targetPersonaId, isEn ? 'en' : 'th');
+                if (segments.length === 0) return;
+
+                const emoMeta = EMOTIONS[emoKey] || EMOTIONS.CONFUSED;
+                const ttsStyle = isEn ? emoMeta.ttsStyleEN : emoMeta.ttsStyleTH;
+
+                if (!sharedAudioRef.current) {
+                    const a = new Audio();
+                    a.playsInline = true;
+                    a.setAttribute('playsinline', '');
+                    sharedAudioRef.current = a;
+                }
+
+                setIsSpeaking(true);
+
+                for (let i = 0; i < segments.length; i++) {
+                    if (voiceSessionRef.current !== sid) return;
+                    const seg = segments[i];
+                    setActiveSpeakerBadge(seg.label || 'ญาติผู้ป่วย');
+                    setActiveSpeakerKey(seg.speaker === 'mother' ? 'mother' : 'wife');
+                    const cleanSpeech = prepareSpeechText(seg.text, isEn);
+                    if (!cleanSpeech) continue;
+
+                    let playedCloud = false;
+                    let autoplayBlocked = false;
+
+                    if (appsScriptUrl) {
+                        try {
+                            const ctrl = new AbortController();
+                            const tm = setTimeout(() => ctrl.abort(), 16000);
+                            const rawRes = await fetch(appsScriptUrl, {
+                                method: 'POST',
+                                redirect: 'follow',
+                                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                                body: JSON.stringify({
+                                    action: 'callGeminiTTS',
+                                    text: cleanSpeech,
+                                    voiceName: seg.voiceName || 'Sulafat',
+                                    languageCode: isEn ? 'en-US' : 'th-TH',
+                                    style: ttsStyle
+                                }),
+                                signal: ctrl.signal
+                            });
+                            clearTimeout(tm);
+                            const res = JSON.parse((await rawRes.text()) || '{}');
+                            if (voiceSessionRef.current !== sid) return;
+
+                            if (res?.status === 'success' && res.inlineData?.data) {
+                                const rate = parseInt(res.inlineData.mimeType?.match(/rate=(\d+)/)?.[1] ?? '24000', 10);
+                                const wavUrl = pcmToObjectUrl(res.inlineData.data, rate);
+                                if (wavUrl) {
+                                    if (activeAudioUrlRef.current) {
+                                        try { URL.revokeObjectURL(activeAudioUrlRef.current); } catch (_) {}
+                                    }
+                                    activeAudioUrlRef.current = wavUrl;
+                                    const outcome = await new Promise((resolve) => {
+                                        const a = sharedAudioRef.current;
+                                        a.muted = false;
+                                        a.src = wavUrl;
+                                        a.onended = () => resolve('ok');
+                                        a.onerror = () => resolve('err');
+                                        try { a.load(); } catch (_) {}
+                                        const p = a.play();
+                                        if (p && typeof p.then === 'function') {
+                                            p.catch((err) => {
+                                                if (err && (err.name === 'NotAllowedError' || /notallowed|autoplay|interact/i.test(String(err.message || '')))) {
+                                                    resolve('blocked');
+                                                } else {
+                                                    resolve('err');
+                                                }
+                                            });
+                                        }
+                                    });
+                                    if (outcome === 'ok') playedCloud = true;
+                                    else if (outcome === 'blocked') autoplayBlocked = true;
+                                }
+                            }
+                        } catch (_) {}
+                    }
+
+                    if (autoplayBlocked && voiceSessionRef.current === sid) {
+                        setIsSpeaking(false);
+                        setAudioBlockedRetry({ rawText, emoKey, targetPersonaId });
+                        return;
+                    }
+
+                    if (!playedCloud && voiceSessionRef.current === sid && 'speechSynthesis' in window) {
+                        await new Promise((resolve) => {
+                            try {
+                                window.speechSynthesis.cancel();
+                                const u = new SpeechSynthesisUtterance(cleanSpeech);
+                                u.lang = isEn ? 'en-US' : 'th-TH';
+                                u.rate = 0.95;
+                                if (typeof CORE.pickNaturalBrowserVoice === 'function') {
+                                    const v = CORE.pickNaturalBrowserVoice(isEn ? 'en' : 'th');
+                                    if (v) u.voice = v;
+                                }
+                                u.onend = () => resolve();
+                                u.onerror = () => resolve();
+                                window.speechSynthesis.speak(u);
+                            } catch (_) { resolve(); }
+                        });
+                    }
+                }
+
+                if (voiceSessionRef.current === sid) {
+                    setIsSpeaking(false);
+                    silenceAnchorRef.current = Date.now();
+                    silenceCountedRef.current = false;
+                }
+            }, [voiceEnabled, stopAiVoice, isEn, appsScriptUrl, EMOTIONS]);
+
+            const stopMicCompletely = useCallback(() => {
+                pttHoldingRef.current = false;
+                autoSendOnEndRef.current = false;
+                setIsPttHolding(false);
+                setIsListening(false);
+                if (recRef.current) { try { recRef.current.abort(); } catch (_) {} }
+            }, []);
+
+            useEffect(() => {
+                const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SR) { recRef.current = null; return; }
+                const rec = new SR();
+                rec.lang = selectedMode.speechLang || 'th-TH';
+                rec.continuous = !isMobileDevice;
+                rec.interimResults = true;
+
+                rec.onresult = (ev) => {
+                    let interim = '';
+                    let rebuiltFinal = '';
+                    for (let i = 0; i < ev.results.length; i++) {
+                        const t = String(ev.results[i][0]?.transcript || '').trim();
+                        if (!t) continue;
+                        if (ev.results[i].isFinal) rebuiltFinal += (rebuiltFinal ? ' ' : '') + t;
+                        else interim += (interim ? ' ' : '') + t;
+                    }
+                    if (rebuiltFinal) finalTranscriptRef.current = rebuiltFinal;
+                    const combined = [finalTranscriptRef.current, interim].filter(Boolean).join(' ').trim();
+                    pttTranscriptRef.current = combined;
+                    setChatInput(combined);
+                };
+
+                rec.onerror = (ev) => {
+                    if (ev?.error === 'not-allowed' || ev?.error === 'service-not-allowed') {
+                        showToast(isEn ? 'Mic permission denied. You can type below.' : 'ไม่ได้รับสิทธิ์ไมโครโฟน กรุณาอนุญาตการใช้ไมค์หรือพิมพ์คำพูดแทนค่ะ', 'error');
+                    }
+                    setIsListening(false);
+                    setIsPttHolding(false);
+                    pttHoldingRef.current = false;
+                    autoSendOnEndRef.current = false;
+                };
+
+                rec.onend = () => {
+                    setIsListening(false);
+                    setIsPttHolding(false);
+                    pttHoldingRef.current = false;
+                    const spoken = (pttTranscriptRef.current || finalTranscriptRef.current || '').trim();
+                    const dur = Math.max(0.8, (Date.now() - pttStartRef.current) / 1000);
+                    if (spoken.length > 0 && (spoken.length / dur) > (isEn ? 17 : 14)) {
+                        setPaceHint(isEn ? 'Gentle tip: Slow down slightly so the family can absorb your words.' : 'คำแนะนำนุ่มๆ: จังหวะพูดค่อนข้างเร็ว ลองผ่อนความเร็วลงอีกนิดเพื่อให้ญาติซึมซับคำพูดได้สบายขึ้นนะคะ');
+                    } else {
+                        setPaceHint('');
+                    }
+                    if (autoSendOnEndRef.current && spoken && sendUserMsgRef.current) {
+                        autoSendOnEndRef.current = false;
+                        pttTranscriptRef.current = '';
+                        finalTranscriptRef.current = '';
+                        sendUserMsgRef.current(spoken);
+                    } else {
+                        autoSendOnEndRef.current = false;
+                    }
+                };
+                recRef.current = rec;
+                return () => { try { rec.abort(); } catch (_) {} };
+            }, [selectedMode.speechLang, isEn, isMobileDevice, showToast]);
+
+            const handleMicDown = (e, isTouch = false) => {
+                if (isTouch) lastTouchRef.current = Date.now();
+                else if (Date.now() - lastTouchRef.current < 600) return;
+                if (isThinking || finalOutcome || pendingDrillReview) return;
+                unlockMobileAudio();
+                if (!recRef.current) {
+                    showToast('เบราว์เซอร์นี้ไม่รองรับไมค์ สามารถพิมพ์หรือแตะแนวทางคำพูดได้เลยค่ะ', 'info');
+                    return;
+                }
+                if (isListening && !pttHoldingRef.current) {
+                    autoSendOnEndRef.current = pttAutoSend;
+                    try { recRef.current.stop(); } catch (_) {}
+                    return;
+                }
+                stopAiVoice();
+                pttTranscriptRef.current = '';
+                finalTranscriptRef.current = '';
+                pttStartRef.current = Date.now();
+                pttHoldingRef.current = true;
+                autoSendOnEndRef.current = pttAutoSend;
+                setChatInput('');
+                setIsPttHolding(true);
+                setIsListening(true);
+                try { recRef.current.start(); }
+                catch (_) { pttHoldingRef.current = false; setIsPttHolding(false); setIsListening(false); }
+            };
+
+            const handleMicUp = (e, isTouch = false) => {
+                if (!isTouch && Date.now() - lastTouchRef.current < 600) return;
+                if (!pttHoldingRef.current) return;
+                const heldMs = Date.now() - pttStartRef.current;
+                pttHoldingRef.current = false;
+                setIsPttHolding(false);
+                if (heldMs < 380) return;
+                if (recRef.current) { try { recRef.current.stop(); } catch (_) {} }
+            };
+
+            const handleKnockAndEnter = () => {
+                unlockMobileAudio();
+                SL.SoundFX.playDoorKnock();
+                stopAiVoice();
+                stopMicCompletely();
+
+                const defaultAddr = getDefaultAddressName(learner, isEn);
+                setLearnerAddressName(defaultAddr);
+                setFinalOutcome('');
+                setSilenceCount(0);
+                setSilenceElapsed(0);
+                setTriggerTotal(0);
+                setTriggerWarning(null);
+                setPaceHint('');
+                setCoachWhisper('');
+                setEvalReport(null);
+                setShowToolsSheet(false);
+                setShowChartModal(false);
+                setAudioBlockedRetry(null);
+                setShowSuggestionsBar(activeDifficulty.showSuggestions);
+                setUnlockedBarrierIds([]);
+                setLastTrustDelta(0);
+                setActiveCurveball(null);
+                setUsedCurveballIds([]);
+                setDrillIdx(0);
+                setDrillResults([]);
+                setPendingDrillReview(null);
+
+                if (selectedMode.isDrill) {
+                    const st1 = MICRO_DRILL_STAGES[0];
+                    setTrustScore(42);
+                    setRelativeEmotion(st1.emotion);
+                    setCurrentActionCue(st1.actionTH);
+                    setActiveSpeakerBadge(SL.getCaseVoices(st1.personaId).labelPrimary);
+                    setMessages([{ id: 'drill-0', role: 'relative', text: st1.promptTH, emotion: st1.emotion, action: st1.actionTH, trustSnapshot: 42 }]);
+                    setPhase('negotiating');
+                    silenceAnchorRef.current = Date.now();
+                    silenceCountedRef.current = false;
+                    setTimeout(() => speakRelativeSegments(st1.promptTH, st1.emotion, st1.personaId), 360);
+                    return;
+                }
+
+                if (activePersona.id === 'conflict' && !userPickedStyle) setHologramStyle('dual');
+                const openEmo = activePersona.openingEmotion || 'CONFUSED';
+                const initTrust = EMOTIONS[openEmo]?.baseTrust || 36;
+                setTrustScore(initTrust);
+                setRelativeEmotion(openEmo);
+                setCurrentActionCue(isEn ? activePersona.openingActionEN : activePersona.openingActionTH);
+                setActiveSpeakerBadge(activePersona.id === 'conflict' ? (isEn ? 'Wife / Mother' : 'ภรรยา / คุณแม่') : (isEn ? 'Relative' : activePersona.speakerRoleTH));
+
+                const openText = isEn ? activePersona.openingEN : activePersona.openingTH;
+                setMessages([{
+                    id: 'open-0',
+                    role: 'relative',
+                    text: openText,
+                    emotion: openEmo,
+                    action: isEn ? activePersona.openingActionEN : activePersona.openingActionTH,
+                    trustSnapshot: initTrust,
+                    unlockedSnapshot: []
+                }]);
+                setPhase('negotiating');
+                silenceAnchorRef.current = Date.now();
+                silenceCountedRef.current = false;
+                setTimeout(() => speakRelativeSegments(openText, openEmo, activePersona.id), 360);
+            };
+
+            const handleRewindToTurn = (userMsgIdx) => {
+                stopAiVoice();
+                stopMicCompletely();
+                const target = messages[userMsgIdx];
+                const sliced = messages.slice(0, userMsgIdx);
+                const prevRel = [...sliced].reverse().find(m => m.role === 'relative');
+                setMessages(sliced);
+                setFinalOutcome('');
+                setActiveCurveball(null);
+                setCoachWhisper('');
+                if (prevRel?.emotion) setRelativeEmotion(prevRel.emotion);
+                if (prevRel?.action) setCurrentActionCue(prevRel.action);
+                if (typeof prevRel?.trustSnapshot === 'number') setTrustScore(prevRel.trustSnapshot);
+                if (Array.isArray(prevRel?.unlockedSnapshot)) setUnlockedBarrierIds(prevRel.unlockedSnapshot);
+                if (target?.text) setChatInput(target.text);
+                setShowHistoryDrawer(false);
+                showToast('ย้อนเวลากลับไปแก้ไขคำพูดในรอบนั้นเรียบร้อยค่ะ', 'info');
+            };
+
+            const handleAdvanceDrillStage = () => {
+                const nextIdx = drillIdx + 1;
+                setPendingDrillReview(null);
+                if (nextIdx >= MICRO_DRILL_STAGES.length) {
+                    const avg = Math.round(drillResults.reduce((s, r) => s + r.score, 0) / Math.max(1, drillResults.length));
+                    setFinalOutcome(avg >= 75 ? 'CONSENT' : 'CONSULT');
+                    setRelativeEmotion('CALM');
+                    setCurrentActionCue('ครบทั้ง 4 ด่านคำถามหนักแล้ว • พร้อมดูผลประเมินเรดาร์ 5 แกน');
+                    return;
+                }
+                const nextStage = MICRO_DRILL_STAGES[nextIdx];
+                if (nextStage.personaId === 'conflict' && !userPickedStyle) setHologramStyle('dual');
+                setDrillIdx(nextIdx);
+                setRelativeEmotion(nextStage.emotion);
+                setCurrentActionCue(nextStage.actionTH);
+                setActiveSpeakerBadge(SL.getCaseVoices(nextStage.personaId).labelPrimary);
+                setMessages(prev => [...prev, {
+                    id: `drill-s-${nextStage.stage}-${Date.now()}`,
+                    role: 'relative',
+                    text: nextStage.promptTH,
+                    emotion: nextStage.emotion,
+                    action: nextStage.actionTH,
+                    trustSnapshot: trustScore
+                }]);
+                silenceAnchorRef.current = Date.now();
+                silenceCountedRef.current = false;
+                speakRelativeSegments(nextStage.promptTH, nextStage.emotion, nextStage.personaId);
+            };
+
+            const handleSendUserMsg = useCallback(async (overrideText = null) => {
+                const text = String(overrideText ?? chatInput).trim();
+                if (!text || isThinking || finalOutcome || pendingDrillReview) return;
+
+                unlockMobileAudio();
+                stopAiVoice();
+                setChatInput('');
+                setPaceHint('');
+
+                const usedSilenceNow = silenceElapsed >= 2.5;
+                const introName = SL.extractIntroducedLearnerName(text);
+                const effectiveAddr = introName ? (isEn ? `Nurse ${introName}` : `คุณ${introName}`) : learnerAddressName;
+                if (introName) setLearnerAddressName(effectiveAddr);
+
+                const triggers = SL.detectTriggerPhrases(text, isEn ? 'en' : 'th');
+                if (triggers.length > 0) {
+                    setTriggerTotal(c => c + triggers.length);
+                    setTriggerWarning(triggers[0]);
+                } else {
+                    setTriggerWarning(null);
+                }
+
+                if (selectedMode.isDrill) {
+                    const curStage = MICRO_DRILL_STAGES[drillIdx] || MICRO_DRILL_STAGES[0];
+                    const res = SL.evaluateMicroDrillAnswer(curStage, text, triggers, usedSilenceNow);
+                    const nextResults = [...drillResults, res];
+                    setDrillResults(nextResults);
+                    const avgScore = Math.round(nextResults.reduce((s, r) => s + r.score, 0) / nextResults.length);
+                    setLastTrustDelta(avgScore - trustScore);
+                    setTrustScore(avgScore);
+                    setMessages(prev => [...prev, { id: `du-${Date.now()}`, role: 'user', text }]);
+                    setPendingDrillReview(res);
+                    if (res.passed) SL.SoundFX.playChime([587.33, 880]);
+                    return;
+                }
+
+                const bEval = SL.evaluateBarriersUnlocked(activePersona.id, text, unlockedBarrierIds);
+                setUnlockedBarrierIds(bEval.unlockedIds);
+                if (bEval.newlyUnlocked.length > 0) {
+                    SL.SoundFX.playChime([523.25, 659.25, 783.99]);
+                    showToast(`คลายปมในใจได้แล้ว: ${bEval.newlyUnlocked[0].titleTH}`, 'success');
+                }
+
+                const nextTurnNum = userTurns + 1;
+                const nextMsgs = [...messages, { id: `u-${Date.now()}`, role: 'user', text }];
+                setMessages(nextMsgs);
+                setIsThinking(true);
+
+                if (difficultyId === 'hard' && nextTurnNum < maxTurns) {
+                    const cb = SL.pickHardCurveball(nextTurnNum, usedCurveballIds);
+                    if (cb) {
+                        setUsedCurveballIds(prev => [...prev, cb.id]);
+                        setActiveCurveball(cb);
+                        if (cb.type === 'phone') SL.SoundFX.playPhoneBuzz();
+
+                        const inertia = SL.computeInertiaTrust({
+                            prevTrust: trustScore,
+                            aiEmotion: cb.emotion,
+                            newlyUnlockedCount: bEval.newlyUnlocked.length,
+                            totalUnlockedCount: bEval.unlockedIds.length,
+                            triggerCount: triggers.length,
+                            usedSilence: usedSilenceNow,
+                            difficulty: difficultyId,
+                            userText: text
+                        });
+                        setTrustScore(inertia.trust);
+                        setLastTrustDelta(inertia.delta);
+                        setRelativeEmotion(cb.emotion);
+                        const cbAction = isEn ? cb.actionEN : cb.actionTH;
+                        const cbSpeech = isEn ? cb.speechEN : cb.speechTH;
+                        setCurrentActionCue(cbAction);
+                        setCoachWhisper(cb.coachHintTH || '');
+                        setMessages(prev => [...prev, {
+                            id: `cb-${Date.now()}`,
+                            role: 'relative',
+                            text: cbSpeech,
+                            emotion: cb.emotion,
+                            action: cbAction,
+                            trustSnapshot: inertia.trust,
+                            unlockedSnapshot: bEval.unlockedIds
+                        }]);
+                        setIsThinking(false);
+                        silenceAnchorRef.current = Date.now();
+                        silenceCountedRef.current = false;
+                        speakRelativeSegments(cbSpeech, cb.emotion, activePersona.id);
+                        return;
+                    }
+                }
+                setActiveCurveball(null);
+
+                const transcript = nextMsgs.map(m => `${m.role === 'user' ? effectiveAddr : 'ญาติ'}: ${m.text}`).join('\n');
+                const unresolved = activeBarriers.filter(b => !bEval.unlockedIds.includes(b.id)).map(b => b.titleTH);
+                const isLastTurn = nextTurnNum >= maxTurns;
+
+                const sysPrompt = isEn
+                    ? `You are roleplaying a grieving relative in an organ donation consultation.\nCase: ${activePersona.briefingEN}\nLearner address: "${effectiveAddr}".\nCurrent Trust: ${trustScore}% (Barriers resolved ${bEval.unlockedIds.length}/3).\n${isLastTurn ? 'This is the final turn: include [OUTCOME:CONSENT|CONSULT|DECLINE].' : 'Continue realistically and do NOT end early.'}\nFormat strictly: [EMOTION:SHOCK|CONFUSED|ANGRY|SAD|HESITANT|CALM] [ACTION:short body language] [COACH:1 short clinical tip] ${isLastTurn ? '[OUTCOME:CONSENT|CONSULT|DECLINE] ' : ''}followed by 2-3 natural spoken sentences.`
+                    : `คุณคือญาติผู้ป่วยในห้องให้คำปรึกษาเรื่องการบริจาคอวัยวะของโรงพยาบาล\n${activePersona.promptHintTH}\nระดับความยาก: ${difficultyId === 'hard' ? 'Hard (ซักถามเจาะลึก ไม่เปิดใจง่าย)' : 'Normal'}\nความไว้วางใจปัจจุบัน: ${trustScore}% (คลายปมในใจแล้ว ${bEval.unlockedIds.length}/3 ข้อ${unresolved.length ? ' • ปมที่ยังค้างคา: ' + unresolved.join(', ') : ''})\nกติกา:\n1. เรียกผู้เรียนว่า "${effectiveAddr}" เสมอ\n2. ${isLastTurn ? 'นี่คือรอบสุดท้าย ให้ญาติสรุปการตัดสินใจและใส่แท็ก [OUTCOME:CONSENT] หรือ [OUTCOME:CONSULT] หรือ [OUTCOME:DECLINE]' : `นี่คือรอบที่ ${nextTurnNum}/${maxTurns} ห้ามรีบจบก่อนรอบสุดท้าย ให้ถามต่อตามปมที่ยังค้างคา`}\n3. ขึ้นต้นด้วยแท็ก [EMOTION:SHOCK|CONFUSED|ANGRY|SAD|HESITANT|CALM] [ACTION:ภาษากายสั้นๆ] [COACH:คำแนะนำโค้ช 1 ประโยค] ตามด้วยคำพูดธรรมชาติ 2-3 ประโยค${activePersona.id === 'conflict' ? ' (ใช้ [ภรรยา]: ... และ [คุณแม่]: ... ชัดเจน)' : ''}`;
+
+                let parsed = null;
+                if (appsScriptUrl) {
+                    try {
+                        const ctrl = new AbortController();
+                        const tm = setTimeout(() => ctrl.abort(), 16000);
+                        const rawRes = await fetch(appsScriptUrl, {
+                            method: 'POST',
+                            redirect: 'follow',
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                            body: JSON.stringify({
+                                action: 'callGemini',
+                                prompt: `ประวัติการสนทนา:\n${transcript}\n\nตอบกลับในบทบาทญาติ:`,
+                                systemInstruction: sysPrompt
+                            }),
+                            signal: ctrl.signal
+                        });
+                        clearTimeout(tm);
+                        const res = JSON.parse((await rawRes.text()) || '{}');
+                        if (res?.status === 'success' && res.text) {
+                            parsed = SL.parseRelativeResponse(res.text, relativeEmotion);
+                        }
+                    } catch (_) {}
+                }
+
+                const inertia = SL.computeInertiaTrust({
+                    prevTrust: trustScore,
+                    aiEmotion: parsed?.emotion || relativeEmotion,
+                    newlyUnlockedCount: bEval.newlyUnlocked.length,
+                    totalUnlockedCount: bEval.unlockedIds.length,
+                    triggerCount: triggers.length,
+                    usedSilence: usedSilenceNow,
+                    difficulty: difficultyId,
+                    userText: text
+                });
+
+                if (!parsed || !parsed.speech) {
+                    await new Promise(r => setTimeout(r, 360));
+                    parsed = buildOfflineRelativeReply({
+                        persona: activePersona,
+                        turnIdx: nextTurnNum - 1,
+                        maxTurns,
+                        addrName: effectiveAddr,
+                        trust: inertia.trust,
+                        unlockedCount: bEval.unlockedIds.length,
+                        isEn
+                    });
+                }
+
+                const resolvedOutcome = isLastTurn
+                    ? (parsed.outcome || (inertia.trust >= 76 && bEval.unlockedIds.length >= 2 ? 'CONSENT' : inertia.trust >= 54 ? 'CONSULT' : 'DECLINE'))
+                    : parsed.outcome;
+
+                setTrustScore(inertia.trust);
+                setLastTrustDelta(inertia.delta);
+                setRelativeEmotion(inertia.emotion);
+                setCurrentActionCue(parsed.actionCue || '');
+                if (difficultyId === 'normal' && parsed.coachHint) setCoachWhisper(parsed.coachHint);
+                if (resolvedOutcome) setFinalOutcome(resolvedOutcome);
+
+                setMessages(prev => [...prev, {
+                    id: `r-${Date.now()}`,
+                    role: 'relative',
+                    text: parsed.speech,
+                    emotion: inertia.emotion,
+                    action: parsed.actionCue || '',
+                    trustSnapshot: inertia.trust,
+                    unlockedSnapshot: bEval.unlockedIds
+                }]);
+                setIsThinking(false);
+                silenceAnchorRef.current = Date.now();
+                silenceCountedRef.current = false;
+                speakRelativeSegments(parsed.speech, inertia.emotion, activePersona.id);
+            }, [chatInput, isThinking, finalOutcome, pendingDrillReview, unlockMobileAudio, stopAiVoice, silenceElapsed, isEn, learnerAddressName, selectedMode.isDrill, drillIdx, drillResults, trustScore, activePersona, unlockedBarrierIds, showToast, userTurns, messages, difficultyId, maxTurns, usedCurveballIds, activeBarriers, appsScriptUrl, relativeEmotion, speakRelativeSegments]);
+
+            useEffect(() => { sendUserMsgRef.current = handleSendUserMsg; }, [handleSendUserMsg]);
+
+            const persistLabScore = useCallback(async (report) => {
+                if (!report || isAdminPreview) return;
+                const entry = {
+                    at: new Date().toISOString(),
+                    modeId,
+                    difficultyId,
+                    personaId: selectedMode.isDrill ? 'micro_drill_4' : activePersona.id,
+                    score: Number(report.score || 80),
+                    outcome: finalOutcome || 'CONSULT',
+                    trustScore,
+                    barriersUnlocked: unlockedBarrierIds.length,
+                    radar: report.radar || []
+                };
+                try {
+                    const savedRaw = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+                    const curUser = savedRaw.user || learner;
+                    if (curUser && curUser.id && !String(curUser.id).startsWith('guest_')) {
+                        const nextHist = [...(Array.isArray(curUser.skillLabHistory) ? curUser.skillLabHistory : []), entry].slice(-20);
+                        const bestScore = Math.max(Number(curUser.skillLabBestScore || 0), entry.score);
+                        const updatedUser = {
+                            ...curUser,
+                            skillLabPassed: true,
+                            skillLabBestScore: bestScore,
+                            skillLabLatestRadar: report.radarMap || {},
+                            skillLabHistory: nextHist
+                        };
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...savedRaw, user: updatedUser }));
+                        setLearner(updatedUser);
+
+                        if (fbDb) {
+                            await setDoc(
+                                doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', String(curUser.id)),
+                                {
+                                    skillLabPassed: true,
+                                    skillLabBestScore: bestScore,
+                                    skillLabLatestRadar: report.radarMap || {},
+                                    skillLabHistory: nextHist
+                                },
+                                { merge: true }
+                            );
+                            if (typeof CORE.buildAnonTelemetryId === 'function' && typeof CORE.buildExecutiveTelemetryPayload === 'function') {
+                                const anonId = CORE.buildAnonTelemetryId(curUser.id);
+                                await setDoc(
+                                    doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'executive_telemetry', anonId),
+                                    CORE.buildExecutiveTelemetryPayload(updatedUser),
+                                    { merge: true }
+                                );
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.warn('Lab score persist warning:', err);
+                }
+            }, [isAdminPreview, modeId, difficultyId, selectedMode.isDrill, activePersona.id, finalOutcome, trustScore, unlockedBarrierIds.length, learner]);
+
+            const handleForceShowEvaluation = useCallback(() => {
+                if (evalAbortRef.current) {
+                    try { evalAbortRef.current.abort(); } catch (_) {}
+                    evalAbortRef.current = null;
+                }
+                const fb = SL.evaluateConversationFallback({
+                    messages,
+                    barriersUnlocked: unlockedBarrierIds.length,
+                    silenceCount,
+                    triggerTotal,
+                    finalTrust: trustScore
+                });
+                setEvalReport(fb);
+                setIsEvaluating(false);
+                persistLabScore(fb);
+            }, [messages, unlockedBarrierIds.length, silenceCount, triggerTotal, trustScore, persistLabScore]);
+
+            const handleFinishAndEvaluate = useCallback(async () => {
+                stopAiVoice();
+                stopMicCompletely();
+                SL.SoundFX.setAmbient(false);
+                setAmbientOn(false);
+                setShowToolsSheet(false);
+                setShowHistoryDrawer(false);
+                setPhase('evaluation');
+                setIsEvaluating(true);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                const fallbackEval = SL.evaluateConversationFallback({
+                    messages,
+                    barriersUnlocked: unlockedBarrierIds.length,
+                    silenceCount,
+                    triggerTotal,
+                    finalTrust: trustScore
+                });
+
+                if (!appsScriptUrl || messages.filter(m => m.role === 'user').length === 0) {
+                    setEvalReport(fallbackEval);
+                    setIsEvaluating(false);
+                    persistLabScore(fallbackEval);
+                    return;
+                }
+
+                const evalPrompt = SL.buildSupervisorEvaluationPrompt({
+                    messages,
+                    personaTitle: selectedMode.isDrill ? 'Micro-Drill 4 ด่านคำถามหนัก' : activePersona.titleTH,
+                    barriersUnlocked: unlockedBarrierIds.length,
+                    silenceCount,
+                    triggerTotal,
+                    finalTrust: trustScore
+                });
+
+                let resolved = fallbackEval;
+                try {
+                    const ctrl = new AbortController();
+                    evalAbortRef.current = ctrl;
+                    const tm = setTimeout(() => ctrl.abort(), 14000);
+                    const rawRes = await fetch(appsScriptUrl, {
+                        method: 'POST',
+                        redirect: 'follow',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ action: 'callGemini', prompt: evalPrompt }),
+                        signal: ctrl.signal
+                    });
+                    clearTimeout(tm);
+                    const res = JSON.parse((await rawRes.text()) || '{}');
+                    if (res?.status === 'success' && res.text) {
+                        resolved = SL.parseSupervisorJson(res.text, fallbackEval);
+                    }
+                } catch (_) {}
+
+                setEvalReport(resolved);
+                setIsEvaluating(false);
+                persistLabScore(resolved);
+            }, [stopAiVoice, stopMicCompletely, messages, unlockedBarrierIds.length, silenceCount, triggerTotal, trustScore, appsScriptUrl, selectedMode.isDrill, activePersona.titleTH, persistLabScore]);
+
+            return (
+                <div className={`min-h-dvh relative flex flex-col pt-safe ${phase === 'negotiating' ? 'holo-stage-bg' : ''}`}>
+                    {phase !== 'negotiating' && <><div className="spatial-aura" /><div className="spatial-grid" /></>}
+
+                    {/* ==================== PHASE 1: SETUP + AI LAB ADVISOR v2 ==================== */}
+                    {phase === 'setup' && (
+                        <div className="relative z-10 flex-1 flex flex-col">
+                            <header className="sticky top-0 z-30 spatial-header">
+                                <div className="max-w-5xl mx-auto px-3.5 sm:px-6 h-14 md:h-16 flex items-center justify-between gap-2">
+                                    <div className="flex items-center gap-2.5 min-w-0">
+                                        <a href="./index.html" aria-label="กลับห้องเรียนหลัก" className="w-9 h-9 rounded-xl spatial-soft text-primary-adaptive flex items-center justify-center shrink-0">
+                                            <Icon name="ArrowLeft" size={18} />
+                                        </a>
+                                        <div className="min-w-0">
+                                            <span className="font-display font-extrabold text-sm sm:text-base text-primary-adaptive block leading-none truncate">
+                                                AI Skill Lab <span className="text-accent-adaptive">3D</span>
+                                            </span>
+                                            <span className="text-[10px] font-mono text-muted-adaptive block truncate">
+                                                rjcloud.organ 2.0 • ฝึกสื่อสารกับญาติเสมือนจริง
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <ThemeToggleButton theme={theme} onToggle={toggleTheme} />
+                                </div>
+                            </header>
+
+                            <main className="max-w-5xl w-full mx-auto px-3.5 sm:px-6 py-5 sm:py-7 pb-28 sm:pb-8 space-y-5">
+                                <section className="spatial-card rounded-[1.75rem] p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                    <div className="space-y-1">
+                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-aurora-500/20 text-accent-adaptive font-mono text-[10px] font-bold">
+                                            <Icon name="Sparkles" size={12} /> STEP 03 • CLINICAL FAMILY CONSULTATION LAB
+                                        </span>
+                                        <h1 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive">
+                                            ห้องฝึกสื่อสารและให้ข้อมูลญาติ 3 มิติ
+                                        </h1>
+                                        <p className="text-xs sm:text-sm text-secondary-adaptive">
+                                            ผู้เรียน: <b className="text-primary-adaptive">{learner?.name}</b> • ปมในใจ 3 ข้อ • 2 เสียงจริงเคส 3 • Hard Curveballs • ประเมิน 5 แกน
+                                        </p>
+                                    </div>
+                                    <div className="spatial-soft px-3.5 py-2.5 rounded-2xl text-xs text-secondary-adaptive shrink-0">
+                                        <p className="font-mono text-[10px] text-prism-adaptive font-bold">MOBILE-FIRST READY</p>
+                                        <p className="font-bold text-primary-adaptive">แตะพูด / กดค้าง / แตะแนวทาง</p>
+                                    </div>
+                                </section>
+
+                                <section className="spatial-card rounded-[1.75rem] overflow-hidden border-aurora-400/40">
+                                    <div className="rjc-ambient-bar" />
+                                    <div className="p-4 sm:p-5 space-y-3.5">
+                                        <div className="flex flex-wrap items-start justify-between gap-2.5">
+                                            <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                                                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-aurora-400 to-prism-400 text-void-950 flex items-center justify-center shrink-0 shadow-md">
+                                                    <Icon name="Bot" size={20} />
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase block">AI LAB ADVISOR v2</span>
+                                                    <h2 className="font-display font-extrabold text-sm sm:text-base text-primary-adaptive leading-snug">
+                                                        AI แนะนำรูปแบบที่เหมาะกับคุณก่อนเข้าทดสอบ
+                                                    </h2>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-1.5 shrink-0">
+                                                <button
+                                                    type="button"
+                                                    onClick={handleSpeakAdvisor}
+                                                    className={`px-3 py-1.5 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 ${
+                                                        advisorVoicePhase === 'speaking' ? 'bg-rose-500 text-white'
+                                                            : advisorVoicePhase === 'loading' ? 'bg-prism-500/25 border border-prism-400/50 text-prism-adaptive animate-pulse'
+                                                                : 'spatial-soft text-prism-adaptive'
+                                                    }`}
+                                                >
+                                                    <Icon name={advisorVoicePhase === 'speaking' ? 'Square' : 'Volume2'} size={14} />
+                                                    <span>{advisorVoicePhase === 'loading' ? 'เตรียมเสียง...' : advisorVoicePhase === 'speaking' ? 'หยุดเสียง' : 'ฟัง AI แนะนำ'}</span>
+                                                </button>
+                                                <button type="button" onClick={() => setAdvisorExpanded(v => !v)} className="spatial-soft w-8 h-8 rounded-xl text-secondary-adaptive flex items-center justify-center">
+                                                    <Icon name={advisorExpanded ? 'ChevronUp' : 'ChevronDown'} size={16} />
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {advisorExpanded && (
+                                            <div className="space-y-3">
+                                                <div className="flex gap-1.5 overflow-x-auto hide-scrollbar pb-0.5">
+                                                    {ADVISOR_GOALS.map(g => (
+                                                        <button
+                                                            key={g.id}
+                                                            type="button"
+                                                            onClick={() => { setAdvisorGoalId(g.id); setAdvisorReply(''); stopAdvisorVoice(); }}
+                                                            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-bold border inline-flex items-center gap-1.5 ${
+                                                                advisorGoalId === g.id ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 border-transparent font-extrabold' : 'spatial-soft text-secondary-adaptive'
+                                                            }`}
+                                                        >
+                                                            <Icon name={g.icon} size={13} />
+                                                            <span>{g.label}</span>
+                                                        </button>
+                                                    ))}
+                                                </div>
+
+                                                <div className="spatial-soft rounded-2xl p-3.5 sm:p-4 space-y-2 border-prism-400/30">
+                                                    <p className="font-display font-bold text-xs sm:text-sm text-accent-adaptive">✦ {activeRec.headline}</p>
+                                                    <p className="text-xs sm:text-sm text-secondary-adaptive leading-relaxed">{activeRec.reason}</p>
+                                                    <p className="text-[11px] text-prism-adaptive font-semibold">💡 เคล็ดลับ: {activeRec.tip}</p>
+                                                    <div className="flex flex-wrap items-center justify-between gap-2 pt-1.5">
+                                                        <div className="flex flex-wrap gap-1.5 text-[10px] font-mono">
+                                                            <span className="px-2 py-0.5 rounded-lg bg-prism-500/15 text-prism-adaptive font-bold">
+                                                                {PRACTICE_MODES.find(m => m.id === activeRec.mode)?.badge}
+                                                            </span>
+                                                            <span className="px-2 py-0.5 rounded-lg bg-aurora-500/15 text-accent-adaptive font-bold">
+                                                                {(DIFFICULTIES[activeRec.difficulty] || DIFFICULTIES.normal).badge}
+                                                            </span>
+                                                            <span className="px-2 py-0.5 rounded-lg bg-amber-500/15 text-amber-300 font-bold">
+                                                                HOLO: {(HOLOGRAM_STYLES.find(h => h.id === activeRec.holoStyle) || HOLOGRAM_STYLES[0]).nameTH}
+                                                            </span>
+                                                        </div>
+                                                        <button
+                                                            type="button"
+                                                            onClick={handleApplyRec}
+                                                            className={`touch-target px-4 py-2 rounded-full font-display font-extrabold text-xs inline-flex items-center gap-1.5 ${
+                                                                isRecApplied ? 'bg-emerald-500/20 border border-emerald-400/50 text-accent-adaptive' : 'rjc2-pill-btn'
+                                                            }`}
+                                                        >
+                                                            <Icon name={isRecApplied ? 'CheckCircle2' : 'Sparkles'} size={14} />
+                                                            <span>{isRecApplied ? 'เลือกตามที่ AI แนะนำแล้ว ✓' : 'เลือกตามที่ AI แนะนำทันที'}</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                <div className="space-y-2">
+                                                    <div className="flex gap-1.5 overflow-x-auto hide-scrollbar">
+                                                        {ADVISOR_QUICK_QUESTIONS.map((q, idx) => (
+                                                            <button key={idx} type="button" disabled={advisorAsking} onClick={() => handleAskAdvisor(null, q)} className="shrink-0 spatial-soft px-2.5 py-1 rounded-full text-[11px] font-bold text-muted-adaptive hover:text-prism-adaptive">
+                                                                {q}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                    {advisorReply && (
+                                                        <div className="p-3 rounded-2xl bg-aurora-500/10 border border-aurora-400/35 text-xs sm:text-sm text-primary-adaptive whitespace-pre-line leading-relaxed">
+                                                            {advisorReply}
+                                                        </div>
+                                                    )}
+                                                    <form onSubmit={(e) => handleAskAdvisor(e)} className="flex items-center gap-2">
+                                                        <input
+                                                            type="text"
+                                                            value={advisorQuestion}
+                                                            onChange={e => setAdvisorQuestion(e.target.value)}
+                                                            disabled={advisorAsking}
+                                                            placeholder="ถามข้อสงสัยก่อนเข้าห้องฝึก เช่น โหมดไหนดี หรือเกณฑ์ผ่านคืออะไร..."
+                                                            className="touch-target spatial-input flex-1 min-w-0 px-3.5 py-2 rounded-xl text-xs sm:text-sm"
+                                                        />
+                                                        <button type="submit" disabled={!advisorQuestion.trim() || advisorAsking} className="touch-target px-4 rounded-xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-xs disabled:opacity-40 shrink-0 inline-flex items-center gap-1">
+                                                            <Icon name="Send" size={14} />
+                                                            <span>{advisorAsking ? '...' : 'ถาม AI'}</span>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </section>
+
+                                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                                    <section className="lg:col-span-7 spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3">
+                                        <h2 className="font-display font-bold text-sm sm:text-base text-primary-adaptive">1. เลือกรูปแบบการฝึก</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                            {PRACTICE_MODES.map(m => (
+                                                <button
+                                                    key={m.id}
+                                                    type="button"
+                                                    onClick={() => setModeId(m.id)}
+                                                    className={`touch-target text-left p-3 rounded-2xl border transition-all ${modeId === m.id ? 'bg-aurora-500/20 border-aurora-400 text-primary-adaptive' : 'spatial-soft text-secondary-adaptive'}`}
+                                                >
+                                                    <div className="flex items-center justify-between gap-1">
+                                                        <span className="font-mono text-[10px] font-bold text-prism-adaptive">{m.badge}</span>
+                                                        {activeRec.mode === m.id && <span className="px-1.5 py-0.5 rounded-full bg-aurora-500/20 text-accent-adaptive font-bold text-[9px]">✦ AI แนะนำ</span>}
+                                                    </div>
+                                                    <span className="font-display font-bold text-xs sm:text-sm leading-snug block mt-0.5">{m.label}</span>
+                                                    <span className="text-[11px] text-muted-adaptive block mt-0.5 leading-snug">{m.desc}</span>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </section>
+
+                                    <section className="lg:col-span-5 spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3">
+                                        <h2 className="font-display font-bold text-sm sm:text-base text-primary-adaptive">2. เลือกระดับความท้าทาย</h2>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            {Object.values(DIFFICULTIES).map(d => (
+                                                <button
+                                                    key={d.id}
+                                                    type="button"
+                                                    onClick={() => setDifficultyId(d.id)}
+                                                    className={`touch-target text-left p-3 rounded-2xl border transition-all ${difficultyId === d.id ? 'bg-aurora-500/20 border-aurora-400 text-primary-adaptive' : 'spatial-soft text-secondary-adaptive'}`}
+                                                >
+                                                    <div className="flex items-center justify-between gap-1">
+                                                        <span className="font-mono text-[10px] font-bold text-accent-adaptive">{d.badge}</span>
+                                                        {activeRec.difficulty === d.id && <span className="px-1.5 py-0.5 rounded-full bg-aurora-500/20 text-accent-adaptive font-bold text-[9px]">✦ แนะนำ</span>}
+                                                    </div>
+                                                    <span className="font-display font-bold text-xs sm:text-sm block mt-0.5">{isEn ? d.labelEN : d.labelTH}</span>
+                                                    <span className="text-[11px] text-muted-adaptive leading-snug block mt-1">{isEn ? d.descEN : d.descTH}</span>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </section>
+                                </div>
+
+                                {selectedMode.isDrill ? (
+                                    <section className="spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3 border-prism-400/35">
+                                        <div className="flex flex-wrap items-center justify-between gap-2">
+                                            <h2 className="font-display font-bold text-sm sm:text-base text-primary-adaptive">3. เส้นทาง Micro-Drill 4 ด่านคำถามหนักเฉพาะจุด</h2>
+                                            <span className="px-2.5 py-0.5 rounded-full bg-prism-500/20 text-prism-adaptive font-mono text-[10px] font-bold">ตรวจเฉลยทันทีทุกด่าน</span>
+                                        </div>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                            {MICRO_DRILL_STAGES.map(st => (
+                                                <div key={st.id} className="spatial-soft p-3.5 rounded-2xl space-y-1">
+                                                    <span className="font-mono text-[10px] font-bold text-accent-adaptive">{st.badgeTH}</span>
+                                                    <h3 className="font-display font-bold text-xs sm:text-sm text-primary-adaptive">{st.titleTH}</h3>
+                                                    <p className="text-[11px] text-secondary-adaptive leading-relaxed line-clamp-2">{st.promptTH}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </section>
+                                ) : (
+                                    <section className="spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3">
+                                        <div className="flex flex-wrap items-center justify-between gap-2">
+                                            <h2 className="font-display font-bold text-sm sm:text-base text-primary-adaptive">3. เลือกสถานการณ์เคสญาติจำลอง (4 เคส • ปมในใจ 3 ข้อ)</h2>
+                                            {difficultyId === 'hard' && (
+                                                <span className="px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 font-mono text-[10px] font-bold">⚡ HARD MODE: มีเหตุการณ์แทรกไม่คาดฝัน</span>
+                                            )}
+                                        </div>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                            {PERSONAS.map(p => (
+                                                <button
+                                                    key={p.id}
+                                                    type="button"
+                                                    onClick={() => setPersonaId(p.id)}
+                                                    className={`text-left p-4 rounded-2xl border transition-all space-y-1.5 ${personaId === p.id ? 'bg-aurora-500/15 border-aurora-400 shadow-md' : 'spatial-soft'}`}
+                                                >
+                                                    <div className="flex items-center justify-between gap-2">
+                                                        <span className="inline-flex items-center gap-1.5 font-mono text-[10px] font-bold" style={{ color: p.accent }}>
+                                                            <Icon name={p.icon} size={14} /> {isEn ? p.tagEN : p.tagTH}
+                                                        </span>
+                                                        <div className="flex items-center gap-1">
+                                                            {activeRec.personaId === p.id && activeRec.mode !== 'micro_drill' && (
+                                                                <span className="px-2 py-0.5 rounded-full bg-aurora-500/20 text-accent-adaptive font-bold text-[10px]">✦ AI แนะนำ</span>
+                                                            )}
+                                                            {p.id === 'conflict' && <span className="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 font-mono text-[10px] font-bold">2 เสียงจริง</span>}
+                                                        </div>
+                                                    </div>
+                                                    <h3 className="font-display font-bold text-sm text-primary-adaptive leading-snug">{isEn ? p.titleEN : p.titleTH}</h3>
+                                                    <p className="text-xs text-secondary-adaptive leading-relaxed">{isEn ? p.descEN : p.descTH}</p>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </section>
+                                )}
+
+                                <section className="spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-4">
+                                    <div className="flex flex-wrap items-center justify-between gap-2">
+                                        <h2 className="font-display font-bold text-sm sm:text-base text-primary-adaptive">4. เลือกรูปแบบ Hologram 3 มิติ (6 สไตล์)</h2>
+                                        <span className="font-mono text-[11px] font-bold text-accent-adaptive">{activeHoloMeta.badge} {isEn ? activeHoloMeta.nameEN : activeHoloMeta.nameTH}</span>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+                                        {HOLOGRAM_STYLES.map(st => (
+                                            <button
+                                                key={st.id}
+                                                type="button"
+                                                onClick={() => handleSelectHoloStyle(st.id)}
+                                                className={`touch-target text-left p-3 rounded-2xl border transition-all space-y-1 ${hologramStyle === st.id ? 'bg-aurora-500/20 border-aurora-400 ring-2 ring-aurora-400/40 text-primary-adaptive' : 'spatial-soft text-secondary-adaptive'}`}
+                                            >
+                                                <div className="flex items-center justify-between">
+                                                    <span className="font-mono text-[11px] font-bold text-prism-adaptive">{st.badge}</span>
+                                                    <Icon name={STYLE_ICONS[st.id] || 'Sparkles'} size={15} className={hologramStyle === st.id ? 'text-accent-adaptive' : 'text-muted-adaptive'} />
+                                                </div>
+                                                <p className="font-display font-bold text-xs text-primary-adaptive leading-snug">{isEn ? st.nameEN : st.nameTH}</p>
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    <div className="holo-stage-bg rounded-[1.5rem] overflow-hidden border border-prism-300/25 relative">
+                                        <div className="h-[225px] sm:h-[260px] w-full relative">
+                                            <ThreeHologramStage
+                                                style={hologramStyle}
+                                                emotion={previewEmo}
+                                                trust={previewTrust}
+                                                isSpeaking={previewSpeak}
+                                                activeSpeaker={previewSpeaker}
+                                                compact={true}
+                                            />
+                                            <div className="absolute top-2.5 left-3 right-3 flex items-center justify-between gap-2 pointer-events-none">
+                                                <span className="holo-stage-pill px-2.5 py-1 rounded-full font-mono text-[10px] font-bold text-emerald-300">
+                                                    LIVE 3D PREVIEW • {activeHoloMeta.badge} {activeHoloMeta.nameTH}
+                                                </span>
+                                                <button type="button" onClick={() => setPreviewSpeak(v => !v)} className="pointer-events-auto holo-stage-pill px-2.5 py-1 rounded-full text-[10px] font-bold text-cyan-200 hover:bg-white/15">
+                                                    {previewSpeak ? '● จำลองพูด' : '○ โหมดเงียบ'}
+                                                </button>
+                                            </div>
+                                            <div className="absolute bottom-2.5 left-3 right-3 flex flex-wrap items-center justify-between gap-1.5 pointer-events-none">
+                                                <div className="flex flex-wrap gap-1 pointer-events-auto">
+                                                    {[
+                                                        { id: 'ANGRY', label: 'ตึงเครียด', tr: 22 },
+                                                        { id: 'CONFUSED', label: 'สับสน', tr: 42 },
+                                                        { id: 'HESITANT', label: 'ลังเล', tr: 65 },
+                                                        { id: 'CALM', label: 'สงบ / บาน', tr: 92 }
+                                                    ].map(e => (
+                                                        <button
+                                                            key={e.id}
+                                                            type="button"
+                                                            onClick={() => { setPreviewEmo(e.id); setPreviewTrust(e.tr); }}
+                                                            className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${previewEmo === e.id ? 'bg-cyan-400 text-void-950 border-transparent' : 'holo-stage-pill text-sky-100'}`}
+                                                        >
+                                                            {e.label}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                                {hologramStyle === 'dual' && (
+                                                    <div className="flex gap-1 pointer-events-auto">
+                                                        <button type="button" onClick={() => setPreviewSpeaker('wife')} className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${previewSpeaker === 'wife' ? 'bg-emerald-400 text-void-950' : 'holo-stage-pill text-sky-100'}`}>ภรรยา</button>
+                                                        <button type="button" onClick={() => setPreviewSpeaker('mother')} className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${previewSpeaker === 'mother' ? 'bg-rose-400 text-void-950' : 'holo-stage-pill text-sky-100'}`}>คุณแม่</button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                <div className="hidden sm:flex justify-center pt-1 pb-6">
+                                    <button
+                                        type="button"
+                                        onClick={() => { stopAdvisorVoice(); setPhase('briefing'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                                        className="rjc2-pill-btn touch-target px-10 py-4 rounded-full font-display font-extrabold text-sm sm:text-base flex items-center justify-center gap-2"
+                                    >
+                                        <Icon name="FolderOpen" size={19} />
+                                        <span>{selectedMode.isDrill ? 'เตรียมความพร้อม Micro-Drill 4 ด่าน →' : (isEn ? 'Open Pre-Room ICU Clinical Brief →' : 'เปิดแฟ้มส่งเวรหน้าห้องให้คำปรึกษา →')}</span>
+                                    </button>
+                                </div>
+                            </main>
+
+                            <div className="sm:hidden fixed bottom-0 left-0 right-0 z-30 mobile-sticky-bar px-3.5 pt-2.5 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))]">
+                                <div className="flex items-center justify-between gap-2.5">
+                                    <div className="min-w-0 flex-1">
+                                        <p className="text-[10px] font-mono text-accent-adaptive font-bold truncate">{activeHoloMeta.badge} {activeHoloMeta.nameTH} • {activeDifficulty.badge}</p>
+                                        <p className="text-xs font-display font-bold text-primary-adaptive truncate">{selectedMode.isDrill ? 'Micro-Drill 4 ด่านคำถามหนัก' : (isEn ? activePersona.titleEN : activePersona.titleTH)}</p>
+                                    </div>
+                                    <button type="button" onClick={() => { stopAdvisorVoice(); setPhase('briefing'); }} className="rjc2-pill-btn touch-target px-5 py-2.5 rounded-full font-display font-extrabold text-xs shrink-0">
+                                        {selectedMode.isDrill ? 'เริ่ม 4 ด่าน →' : 'เปิดแฟ้มเคส →'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* ==================== PHASE 2: PRE-ROOM ICU BRIEFING ==================== */}
+                    {phase === 'briefing' && (
+                        <div className="relative z-10 flex-1 flex items-center justify-center p-4 py-7">
+                            <div className="spatial-card w-full max-w-2xl rounded-[2rem] p-5 sm:p-7 space-y-5">
+                                <div className="flex items-center justify-between gap-2">
+                                    <button type="button" onClick={() => setPhase('setup')} className="spatial-soft px-3.5 py-2 rounded-xl text-xs font-bold text-primary-adaptive inline-flex items-center gap-1.5">
+                                        <Icon name="ArrowLeft" size={14} /> แก้ไขการตั้งค่า
+                                    </button>
+                                    <span className="px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 font-mono text-[10px] font-bold">
+                                        {selectedMode.isDrill ? '4-STAGE MICRO-DRILL' : 'PRE-ROOM ICU BRIEF'}
+                                    </span>
+                                </div>
+
+                                {selectedMode.isDrill ? (
+                                    <div className="space-y-3">
+                                        <div>
+                                            <p className="font-mono text-xs text-prism-adaptive font-bold">TARGETED GAUNTLET • 4 ด่านคำถามหนักเฉพาะจุด</p>
+                                            <h1 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive mt-0.5">ซ้อมรับมือ 4 คำถามหินพร้อมตรวจเฉลยทันที</h1>
+                                        </div>
+                                        <div className="space-y-2 text-xs sm:text-sm">
+                                            {MICRO_DRILL_STAGES.map(st => (
+                                                <div key={st.id} className="spatial-soft p-3 rounded-2xl flex items-start gap-2.5">
+                                                    <span className="w-6 h-6 rounded-lg bg-aurora-500/20 text-accent-adaptive font-mono font-extrabold text-xs flex items-center justify-center shrink-0 mt-0.5">{st.stage}</span>
+                                                    <div>
+                                                        <p className="font-display font-bold text-primary-adaptive">{st.titleTH}</p>
+                                                        <p className="text-xs text-secondary-adaptive mt-0.5">{st.actionTH}</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3 text-xs sm:text-sm">
+                                        <div>
+                                            <p className="font-mono text-xs text-prism-adaptive font-bold">{activeBrief.ward}</p>
+                                            <h1 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive mt-0.5">แฟ้มส่งเวรหน้าห้องให้คำปรึกษา</h1>
+                                        </div>
+                                        <div className="spatial-soft p-3.5 rounded-2xl space-y-1">
+                                            <span className="font-mono text-[10px] font-bold text-muted-adaptive uppercase">ข้อมูลผู้ป่วย &amp; การวินิจฉัย</span>
+                                            <p className="font-display font-bold text-primary-adaptive">{activeBrief.patient}</p>
+                                            <p className="text-secondary-adaptive">{activeBrief.diagnosis} • {activeBrief.brainDeath}</p>
+                                        </div>
+                                        <div className="spatial-soft p-3.5 rounded-2xl space-y-1">
+                                            <span className="font-mono text-[10px] font-bold text-muted-adaptive uppercase">สัญญาณชีพ ICU ปัจจุบัน</span>
+                                            <p className="font-mono font-bold text-accent-adaptive">{activeBrief.vitals}</p>
+                                        </div>
+                                        <div className="p-3.5 rounded-2xl bg-amber-500/15 border border-amber-400/35 space-y-1">
+                                            <span className="font-mono text-[10px] font-bold text-amber-400 uppercase">บันทึกส่งเวรจากพยาบาล ICU</span>
+                                            <p className="text-primary-adaptive leading-relaxed">{activeBrief.handoffNote}</p>
+                                        </div>
+                                        <div className="p-3.5 rounded-2xl bg-prism-500/15 border border-prism-400/35 space-y-1 text-xs">
+                                            <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">ภารกิจความสมจริง</span>
+                                            <p className="text-secondary-adaptive leading-relaxed">
+                                                • คลาย <b className="text-primary-adaptive">ปมในใจ 3 ข้อ</b> ของญาติให้ครบและเว้นความเงียบเยียวยา 2.5 วิ เพื่อขยับค่า Trust ขึ้นอย่างเป็นธรรมชาติ
+                                                {difficultyId === 'hard' && (
+                                                    <span className="block text-rose-300 font-bold mt-1">• โหมด Hard: เตรียมรับมือเหตุการณ์แทรกไม่คาดฝัน (สายพี่ชายโทรแทรก / จังหวะญาติสะอื้นเงียบ)</span>
+                                                )}
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <button
+                                    type="button"
+                                    onClick={handleKnockAndEnter}
+                                    className="rjc2-pill-btn touch-target w-full py-4 rounded-full font-display font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 shadow-xl"
+                                >
+                                    <Icon name="DoorOpen" size={20} />
+                                    <span>{selectedMode.isDrill ? 'เริ่มด่านที่ 1/4 ทันที →' : (isEn ? 'Knock Gently & Enter Room →' : 'เคาะประตูเบาๆ และเข้าห้องให้คำปรึกษา →')}</span>
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* ==================== PHASE 3: 3D CONSULTATION ROOM ==================== */}
+                    {phase === 'negotiating' && (
+                        <div className="relative z-10 flex-1 flex flex-col justify-between min-h-dvh p-2.5 sm:p-5 text-white overflow-hidden">
+                            <div className="fixed inset-0 z-0">
+                                <ThreeHologramStage
+                                    style={hologramStyle}
+                                    emotion={relativeEmotion}
+                                    trust={trustScore}
+                                    isSpeaking={isSpeaking}
+                                    activeSpeaker={activeSpeakerKey}
+                                    compact={false}
+                                />
+                            </div>
+
+                            <header className="relative z-20 max-w-4xl w-full mx-auto flex items-center justify-between gap-1.5">
+                                <div className="flex items-center gap-1.5 min-w-0">
+                                    <button
+                                        type="button"
+                                        onClick={() => { stopAiVoice(); stopMicCompletely(); SL.SoundFX.setAmbient(false); setAmbientOn(false); setPhase('setup'); }}
+                                        className="holo-stage-pill w-9 h-9 sm:w-auto sm:px-3 rounded-xl text-xs font-bold text-sky-100 hover:bg-white/15 inline-flex items-center justify-center gap-1 shrink-0"
+                                    >
+                                        <Icon name="ArrowLeft" size={16} /> <span className="hidden sm:inline">ออก</span>
+                                    </button>
+                                    <div className="holo-stage-pill px-2.5 sm:px-3 h-9 rounded-xl text-[11px] sm:text-xs font-bold flex items-center gap-1.5 min-w-0">
+                                        <span className="w-2 h-2 rounded-full animate-pulse shrink-0" style={{ backgroundColor: emotionMeta.colorHex }} />
+                                        <span className="truncate" style={{ color: emotionMeta.colorHex }}>
+                                            {selectedMode.isDrill ? activeDrillStage.badgeTH : (isEn ? emotionMeta.labelEN : emotionMeta.labelTH)}
+                                        </span>
+                                        {!selectedMode.isDrill && (
+                                            <>
+                                                <span className="text-white/30">•</span>
+                                                <span className="font-mono text-[10px] sm:text-[11px] text-sky-200 shrink-0">{userTurns}/{maxTurns}</span>
+                                            </>
+                                        )}
+                                    </div>
+                                    {silenceElapsed >= 0.4 && !isSpeaking && !isThinking && !finalOutcome && !pendingDrillReview && (
+                                        <div className={`hidden sm:flex holo-stage-pill px-2.5 h-9 rounded-xl text-[11px] font-mono font-bold items-center gap-1 shrink-0 ${silenceElapsed >= 2.5 ? 'border-emerald-400/60 text-emerald-300' : 'text-cyan-200'}`}>
+                                            <Icon name="PauseCircle" size={14} />
+                                            <span>{silenceElapsed >= 2.5 ? 'ความเงียบเยียวยา ✓' : `เงียบ ${silenceElapsed.toFixed(1)}/2.5s`}</span>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="flex items-center gap-1.5 shrink-0">
+                                    <div className="relative hidden sm:block">
+                                        <button type="button" onClick={() => setShowStyleMenu(v => !v)} className="holo-stage-pill px-2.5 h-9 rounded-xl text-xs font-bold text-cyan-200 hover:bg-white/15 inline-flex items-center gap-1.5">
+                                            <Icon name={STYLE_ICONS[hologramStyle] || 'Sparkles'} size={14} />
+                                            <span>{activeHoloMeta.badge}</span>
+                                        </button>
+                                        {showStyleMenu && (
+                                            <div className="absolute right-0 mt-1.5 w-52 holo-obsidian-card rounded-2xl p-1.5 space-y-1 z-40">
+                                                {HOLOGRAM_STYLES.map(st => (
+                                                    <button
+                                                        key={st.id}
+                                                        type="button"
+                                                        onClick={() => handleSelectHoloStyle(st.id)}
+                                                        className={`w-full text-left px-2.5 py-2 rounded-xl text-xs font-bold flex items-center gap-2 ${hologramStyle === st.id ? 'bg-emerald-500/25 text-emerald-200' : 'text-sky-100 hover:bg-white/10'}`}
+                                                    >
+                                                        <Icon name={STYLE_ICONS[st.id] || 'Sparkles'} size={14} />
+                                                        <span className="truncate">{st.badge} {st.nameTH}</span>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <button type="button" onClick={() => { const next = !ambientOn; setAmbientOn(next); SL.SoundFX.setAmbient(next); }} title="เสียงบรรยากาศห้องสงบ" className={`hidden sm:inline-flex holo-stage-pill w-9 h-9 rounded-xl items-center justify-center ${ambientOn ? 'bg-emerald-500/25 text-emerald-200 border-emerald-400/50' : 'text-sky-200/75'}`}>
+                                        <Icon name="Wind" size={15} />
+                                    </button>
+                                    <button type="button" onClick={() => setShowChartModal(true)} title="แฟ้มส่งเวร & ปมในใจ 3 ข้อ" className="hidden sm:inline-flex holo-stage-pill w-9 h-9 rounded-xl text-amber-200 hover:bg-white/15 items-center justify-center">
+                                        <Icon name="ClipboardList" size={16} />
+                                    </button>
+                                    <button type="button" onClick={() => setShowSubtitle(v => !v)} title="ซ่อน/แสดงซับไตเติล" className={`hidden sm:inline-flex holo-stage-pill w-9 h-9 rounded-xl items-center justify-center ${showSubtitle ? 'bg-cyan-500/25 text-cyan-200 border-cyan-400/50' : 'text-sky-100'}`}>
+                                        <Icon name="Subtitles" size={16} />
+                                    </button>
+                                    <button type="button" onClick={() => setShowHistoryDrawer(true)} title="ประวัติ & ย้อนเวลาแก้คำพูด" className="hidden sm:inline-flex holo-stage-pill w-9 h-9 rounded-xl text-sky-100 hover:bg-white/15 items-center justify-center">
+                                        <Icon name="History" size={16} />
+                                    </button>
+                                    <button type="button" onClick={() => { if (voiceEnabled) stopAiVoice(); setVoiceEnabled(v => !v); }} aria-label="เปิด/ปิดเสียงญาติ" className={`holo-stage-pill w-9 h-9 rounded-xl inline-flex items-center justify-center ${voiceEnabled ? 'text-emerald-300' : 'text-rose-300'}`}>
+                                        <Icon name={voiceEnabled ? 'Volume2' : 'VolumeX'} size={16} />
+                                    </button>
+                                    <button type="button" onClick={() => setShowToolsSheet(true)} aria-label="เครื่องมือห้องฝึก" className="sm:hidden holo-stage-pill w-9 h-9 rounded-xl text-cyan-200 inline-flex items-center justify-center">
+                                        <Icon name="SlidersHorizontal" size={16} />
+                                    </button>
+                                    {(userTurns >= 2 || finalOutcome) && (
+                                        <button type="button" onClick={handleFinishAndEvaluate} className="rjc2-pill-btn h-9 px-3 rounded-xl font-display font-extrabold text-[11px] sm:text-xs inline-flex items-center gap-1">
+                                            <Icon name="Award" size={14} /> <span>ประเมินผล</span>
+                                        </button>
+                                    )}
+                                </div>
+                            </header>
+
+                            <section className="relative z-20 max-w-4xl w-full mx-auto space-y-2 pb-safe">
+                                {audioBlockedRetry && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            const r = audioBlockedRetry;
+                                            setAudioBlockedRetry(null);
+                                            unlockMobileAudio();
+                                            speakRelativeSegments(r.rawText, r.emoKey, r.targetPersonaId);
+                                        }}
+                                        className="w-full py-2.5 px-4 rounded-2xl bg-amber-500 text-void-950 font-display font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg"
+                                    >
+                                        <Icon name="Volume2" size={16} /> แตะเพื่อเปิดเสียงพูดของญาติ (เบราว์เซอร์บล็อกเสียงอัตโนมัติ)
+                                    </button>
+                                )}
+
+                                {activeCurveball && !finalOutcome && (
+                                    <div className="holo-obsidian-card rounded-2xl px-3.5 py-2.5 border-rose-400/55 bg-rose-950/75 text-xs flex items-start gap-2 text-rose-100">
+                                        <Icon name={activeCurveball.type === 'phone' ? 'PhoneCall' : 'HeartHandshake'} size={16} className="text-rose-300 shrink-0 mt-0.5 animate-pulse" />
+                                        <div className="min-w-0">
+                                            <p className="font-mono text-[10px] font-bold text-rose-300">{isEn ? activeCurveball.badgeEN : activeCurveball.badgeTH}</p>
+                                            <p className="font-bold text-white leading-snug">{activeCurveball.titleTH}</p>
+                                            {activeCurveball.coachHintTH && <p className="text-[11px] text-rose-100/90 mt-0.5">{activeCurveball.coachHintTH}</p>}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {triggerWarning && (
+                                    <div className="holo-obsidian-card rounded-2xl px-3.5 py-2 border-amber-400/55 text-[11px] sm:text-xs text-amber-100 flex items-start justify-between gap-2">
+                                        <span>
+                                            <b className="text-amber-300">AI Polisher:</b> ตรวจพบคำว่า “{triggerWarning.flagged}” — ลองเกลาเป็น <b className="text-emerald-300">“{triggerWarning.softer}”</b> ค่ะ
+                                        </span>
+                                        <button type="button" onClick={() => setTriggerWarning(null)} className="text-white/60 hover:text-white shrink-0">✕</button>
+                                    </div>
+                                )}
+
+                                {coachWhisper && difficultyId === 'normal' && !activeCurveball && !finalOutcome && (
+                                    <div className="holo-stage-pill rounded-xl px-3 py-1.5 text-[11px] text-emerald-200 flex items-center justify-between gap-2 border-emerald-400/35">
+                                        <span>💡 <b>AI Coach:</b> {coachWhisper}</span>
+                                        <button type="button" onClick={() => setCoachWhisper('')} className="text-white/50 hover:text-white">✕</button>
+                                    </div>
+                                )}
+
+                                {latestRelativeMsg && (
+                                    <div className="space-y-1.5">
+                                        <div className="flex flex-wrap items-center justify-between gap-1.5 px-0.5">
+                                            <div className="holo-stage-pill px-2.5 py-1 rounded-full text-xs flex items-center gap-1.5 max-w-full">
+                                                <span className="font-mono text-[10px] font-bold text-cyan-200 truncate">{activeSpeakerBadge || activePersona.speakerRoleTH}</span>
+                                                {isSpeaking && <span className="text-[10px] font-bold text-emerald-300 animate-pulse shrink-0">● กำลังพูด</span>}
+                                                {isThinking && <span className="text-[10px] font-bold text-amber-300 animate-pulse shrink-0">● กำลังตอบ...</span>}
+                                                <span className="text-white/25">•</span>
+                                                <span className="font-mono text-[10px] text-sky-200 shrink-0">
+                                                    Trust {trustScore}%
+                                                    {lastTrustDelta !== 0 && (
+                                                        <span className={`ml-1 font-bold ${lastTrustDelta > 0 ? 'text-emerald-300' : 'text-rose-300'}`}>
+                                                            ({lastTrustDelta > 0 ? `+${lastTrustDelta}` : lastTrustDelta})
+                                                        </span>
+                                                    )}
+                                                </span>
+                                                {!selectedMode.isDrill && (
+                                                    <>
+                                                        <span className="text-white/25">•</span>
+                                                        <button type="button" onClick={() => setShowChartModal(true)} className="font-mono text-[10px] font-bold text-amber-200 hover:underline shrink-0">
+                                                            ปม {unlockedBarrierIds.length}/3
+                                                        </button>
+                                                    </>
+                                                )}
+                                            </div>
+                                            {currentActionCue && (
+                                                <span className="holo-stage-pill px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] italic text-amber-200/90 max-w-full truncate">
+                                                    ✦ {currentActionCue}
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        {showSubtitle && (
+                                            <div className="holo-obsidian-card rounded-2xl px-3.5 py-2.5 text-xs sm:text-sm text-sky-50 leading-relaxed max-h-28 overflow-y-auto custom-scrollbar">
+                                                {latestRelativeMsg.text}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {paceHint && (
+                                    <div className="holo-obsidian-card rounded-2xl px-3 py-2 border-cyan-400/40 text-[11px] sm:text-xs text-cyan-200 flex items-center gap-2">
+                                        <Icon name="Gauge" size={14} className="shrink-0" />
+                                        <span>{paceHint}</span>
+                                    </div>
+                                )}
+
+                                {pendingDrillReview ? (
+                                    <div className="holo-obsidian-card rounded-[1.5rem] p-4 space-y-3 border-prism-400/50 text-xs sm:text-sm">
+                                        <div className="flex items-center justify-between gap-2">
+                                            <span className={`font-display font-extrabold ${pendingDrillReview.passed ? 'text-emerald-300' : 'text-amber-300'}`}>
+                                                {pendingDrillReview.passed ? `ผ่านด่านที่ ${pendingDrillReview.stage} ✓` : `ด่านที่ ${pendingDrillReview.stage} — เสริมอีกนิดนะคะ`}
+                                            </span>
+                                            <span className="font-mono text-base font-extrabold text-cyan-200">{pendingDrillReview.score}/100</span>
+                                        </div>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                                            {pendingDrillReview.hitLabels.length > 0 && (
+                                                <div className="p-2.5 rounded-xl bg-emerald-500/15 border border-emerald-400/35 text-emerald-100">
+                                                    <p className="font-bold text-emerald-300 mb-1">✓ จุดที่ตอบได้ตรงประเด็น:</p>
+                                                    {pendingDrillReview.hitLabels.map((l, i) => <p key={i}>• {l}</p>)}
+                                                </div>
+                                            )}
+                                            {pendingDrillReview.missLabels.length > 0 && (
+                                                <div className="p-2.5 rounded-xl bg-amber-500/15 border border-amber-400/35 text-amber-100">
+                                                    <p className="font-bold text-amber-300 mb-1">✦ จุดที่ควรเติมเพิ่ม:</p>
+                                                    {pendingDrillReview.missLabels.map((l, i) => <p key={i}>• {l}</p>)}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="p-3 rounded-xl bg-white/[0.07] border border-white/15 text-xs text-sky-100 leading-relaxed">
+                                            <b className="text-cyan-300 block mb-0.5">ประโยคต้นแบบมาตรฐาน (Model Answer):</b>
+                                            “{pendingDrillReview.modelAnswerTH}”
+                                        </div>
+                                        <button type="button" onClick={handleAdvanceDrillStage} className="rjc2-pill-btn touch-target w-full py-3 rounded-full font-display font-extrabold text-xs sm:text-sm">
+                                            {drillIdx + 1 >= MICRO_DRILL_STAGES.length ? 'สรุปผล Micro-Drill ทั้ง 4 ด่าน →' : `ไปด่านที่ ${drillIdx + 2}/4 →`}
+                                        </button>
+                                    </div>
+                                ) : finalOutcome ? (
+                                    <div className="holo-obsidian-card rounded-[1.5rem] p-4 space-y-3 border-emerald-400/50">
+                                        {OUTCOME_META[finalOutcome] && (
+                                            <div className={`p-3 rounded-2xl border text-xs sm:text-sm ${OUTCOME_META[finalOutcome].cls}`}>
+                                                <p className="font-display font-extrabold">{isEn ? OUTCOME_META[finalOutcome].badgeEN : OUTCOME_META[finalOutcome].badgeTH}</p>
+                                                <p className="opacity-90 mt-0.5">{isEn ? OUTCOME_META[finalOutcome].descEN : OUTCOME_META[finalOutcome].descTH}</p>
+                                            </div>
+                                        )}
+                                        <button type="button" onClick={handleFinishAndEvaluate} className="rjc2-pill-btn touch-target w-full py-3.5 rounded-full font-display font-extrabold text-sm flex items-center justify-center gap-2">
+                                            <Icon name="Award" size={18} />
+                                            <span>ดูผลประเมินเรดาร์ 5 แกนจากอาจารย์ AI →</span>
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="holo-obsidian-card rounded-[1.5rem] sm:rounded-[1.75rem] p-3 sm:p-4 space-y-2.5">
+                                        {activeDifficulty.showSuggestions && (
+                                            <div className="space-y-1.5">
+                                                <div className="flex items-center justify-between text-[11px]">
+                                                    <span className="font-bold text-emerald-300">{isEn ? 'Suggested Replies (Tap to send)' : 'แนวทางคำพูด (แตะส่งทันที • ปัดดูเพิ่ม)'}</span>
+                                                    <button type="button" onClick={() => setShowSuggestionsBar(v => !v)} className="text-sky-300 hover:underline font-bold px-1.5 py-0.5">
+                                                        {showSuggestionsBar ? 'ซ่อน' : 'แสดง'}
+                                                    </button>
+                                                </div>
+                                                {showSuggestionsBar && (
+                                                    <div className="flex sm:grid sm:grid-cols-2 gap-2 overflow-x-auto sm:overflow-visible snap-x snap-mandatory hide-scrollbar pb-0.5">
+                                                        {turnSuggestions.map((sug, idx) => (
+                                                            <button
+                                                                key={idx}
+                                                                type="button"
+                                                                disabled={isThinking}
+                                                                onClick={() => handleSendUserMsg(sug)}
+                                                                className="shrink-0 w-[86%] sm:w-auto snap-center text-left p-2.5 sm:p-3 rounded-2xl bg-white/[0.06] hover:bg-emerald-500/20 border border-white/15 hover:border-emerald-400/50 text-xs text-sky-100 leading-relaxed transition-all active:scale-[0.98] disabled:opacity-40"
+                                                            >
+                                                                “{sug}”
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        {isListening && (
+                                            <div className="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-rose-500/20 border border-rose-400/50 text-xs text-rose-100">
+                                                <span className="flex items-center gap-2 font-bold">
+                                                    <span className="w-2.5 h-2.5 rounded-full bg-rose-400 animate-ping" />
+                                                    {isPttHolding ? 'กำลังฟัง... ปล่อยปุ่มเพื่อส่ง' : 'กำลังฟังเสียงพูด... แตะปุ่มไมค์เมื่อพูดจบ'}
+                                                </span>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => { autoSendOnEndRef.current = true; if (recRef.current) { try { recRef.current.stop(); } catch (_) {} } }}
+                                                    className="px-2.5 py-1 rounded-lg bg-rose-500 text-white font-bold text-[11px] shrink-0"
+                                                >
+                                                    หยุด &amp; ส่ง
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        <form onSubmit={(e) => { e.preventDefault(); handleSendUserMsg(); }} className="flex items-center gap-2">
+                                            {hasSpeechApi && (
+                                                <button
+                                                    type="button"
+                                                    disabled={isThinking}
+                                                    onMouseDown={(e) => handleMicDown(e, false)}
+                                                    onMouseUp={(e) => handleMicUp(e, false)}
+                                                    onMouseLeave={() => { if (pttHoldingRef.current) { pttHoldingRef.current = false; setIsPttHolding(false); try { recRef.current?.stop(); } catch (_) {} } }}
+                                                    onTouchStart={(e) => handleMicDown(e, true)}
+                                                    onTouchEnd={(e) => handleMicUp(e, true)}
+                                                    onContextMenu={(e) => e.preventDefault()}
+                                                    className={`no-callout touch-target h-12 px-3.5 sm:px-4 rounded-2xl font-display font-bold text-xs flex items-center justify-center gap-1.5 shrink-0 ${
+                                                        isListening ? 'bg-rose-600 text-white ptt-recording' : 'bg-emerald-500/25 border border-emerald-400/50 text-emerald-200 hover:bg-emerald-500/35'
+                                                    }`}
+                                                >
+                                                    <Icon name={isListening ? 'Square' : 'Mic'} size={18} />
+                                                    <span className="hidden sm:inline">{isListening ? 'หยุด' : 'พูด'}</span>
+                                                </button>
+                                            )}
+
+                                            <input
+                                                type="text"
+                                                value={chatInput}
+                                                onChange={(e) => setChatInput(e.target.value)}
+                                                disabled={isThinking}
+                                                placeholder={isListening ? 'กำลังแปลงเสียงเป็นข้อความ...' : (isEn ? 'Type or tap Mic to speak...' : 'พิมพ์ หรือแตะปุ่มไมค์เพื่อพูดสื่อสารกับญาติ...')}
+                                                className="touch-target flex-1 min-w-0 px-3.5 sm:px-4 py-2.5 rounded-2xl bg-white/[0.09] border border-white/20 text-white placeholder-sky-200/55 text-sm focus:outline-none focus:border-cyan-400"
+                                            />
+
+                                            <button type="submit" disabled={!chatInput.trim() || isThinking} className="rjc2-pill-btn touch-target h-12 px-4 sm:px-5 rounded-2xl font-display font-extrabold text-xs sm:text-sm disabled:opacity-40 shrink-0 inline-flex items-center justify-center gap-1">
+                                                <Icon name="Send" size={16} />
+                                                <span className="hidden sm:inline">{isThinking ? '...' : 'ส่ง'}</span>
+                                            </button>
+                                        </form>
+
+                                        <div className="flex items-center justify-between text-[10px] text-sky-200/70">
+                                            {hasSpeechApi ? (
+                                                <label className="inline-flex items-center gap-1.5 cursor-pointer">
+                                                    <input type="checkbox" checked={pttAutoSend} onChange={e => setPttAutoSend(e.target.checked)} className="accent-emerald-400" />
+                                                    <span>พูดจบส่งอัตโนมัติ</span>
+                                                </label>
+                                            ) : (
+                                                <span>พิมพ์หรือแตะแนวทางคำพูดได้เลยค่ะ</span>
+                                            )}
+                                            <button type="button" onClick={() => setShowSubtitle(v => !v)} className="text-sky-200 hover:text-white font-bold">
+                                                {showSubtitle ? 'ซ่อนซับไตเติล' : 'แสดงซับไตเติล'}
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => { unlockMobileAudio(); latestRelativeMsg && speakRelativeSegments(latestRelativeMsg.text, latestRelativeMsg.emotion || relativeEmotion, selectedMode.isDrill ? activeDrillStage.personaId : activePersona.id); }}
+                                                disabled={!latestRelativeMsg || isThinking}
+                                                className="text-cyan-300 font-bold disabled:opacity-40"
+                                            >
+                                                ↺ ฟังซ้ำ
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </section>
+                        </div>
+                    )}
+
+                    {/* ==================== PHASE 4: AI CLINICAL SUPERVISOR 5-AXIS REPORT ==================== */}
+                    {phase === 'evaluation' && (
+                        <div className="relative z-10 flex-1 flex items-center justify-center p-4 py-7">
+                            {isEvaluating || !evalReport ? (
+                                <div className="spatial-card max-w-md w-full rounded-[2rem] p-7 text-center space-y-4">
+                                    <div className="w-11 h-11 border-4 border-aurora-400 border-t-transparent rounded-full animate-spin mx-auto" />
+                                    <h2 className="font-display font-extrabold text-base sm:text-lg text-primary-adaptive">อาจารย์ AI กำลังวิเคราะห์บทสนทนาจริงและวาดเรดาร์ 5 แกน...</h2>
+                                    <p className="text-xs text-muted-adaptive">กำลังคัดเลือกประโยคทองและข้อแนะนำเฉพาะบุคคลค่ะ</p>
+                                    <button type="button" onClick={handleForceShowEvaluation} className="spatial-soft px-4 py-2 rounded-xl text-xs font-bold text-prism-adaptive">
+                                        แสดงผลสรุปทันที →
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="spatial-card w-full max-w-3xl rounded-[2rem] p-5 sm:p-7 space-y-5">
+                                    <div className="flex flex-wrap items-start justify-between gap-3">
+                                        <div>
+                                            <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">
+                                                AI CLINICAL SUPERVISOR • 5-AXIS REPORT ({evalReport.source === 'gemini_clinical_supervisor' ? 'GEMINI AI' : 'CLINICAL RUBRIC'})
+                                            </span>
+                                            <h1 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive mt-0.5">ผลการประเมินทักษะการสื่อสารกับครอบครัว</h1>
+                                        </div>
+                                        <div className="px-4 py-2 rounded-2xl bg-aurora-500/20 border border-aurora-400/40 text-right">
+                                            <span className="font-mono text-[10px] text-muted-adaptive block">EMPATHY INDEX</span>
+                                            <span className="font-mono text-2xl font-extrabold text-accent-adaptive">{evalReport.score}/100</span>
+                                        </div>
+                                    </div>
+
+                                    {finalOutcome && OUTCOME_META[finalOutcome] && (
+                                        <div className={`p-3.5 rounded-2xl border text-xs sm:text-sm ${OUTCOME_META[finalOutcome].cls}`}>
+                                            <p className="font-display font-extrabold">{isEn ? OUTCOME_META[finalOutcome].badgeEN : OUTCOME_META[finalOutcome].badgeTH}</p>
+                                            <p className="opacity-90 mt-0.5">{isEn ? OUTCOME_META[finalOutcome].descEN : OUTCOME_META[finalOutcome].descTH}</p>
+                                        </div>
+                                    )}
+
+                                    <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
+                                        <div className="md:col-span-6 spatial-soft rounded-2xl p-4">
+                                            <FiveAxisRadarSVG radar={evalReport.radar} axes={RADAR_AXES} isEn={isEn} theme={theme} />
+                                        </div>
+                                        <div className="md:col-span-6 space-y-3 text-xs sm:text-sm">
+                                            <div className="p-3.5 rounded-2xl bg-aurora-500/15 border border-aurora-400/35 space-y-1">
+                                                <p className="font-display font-bold text-accent-adaptive flex items-center gap-1.5">
+                                                    <Icon name="Sparkles" size={15} /> ประโยคทองที่ทำได้ดี (Golden Moment)
+                                                </p>
+                                                <p className="text-primary-adaptive leading-relaxed">{evalReport.goldenMoment}</p>
+                                            </div>
+                                            <div className="p-3.5 rounded-2xl bg-amber-500/15 border border-amber-400/35 space-y-1">
+                                                <p className="font-display font-bold text-amber-400 flex items-center gap-1.5">
+                                                    <Icon name="Lightbulb" size={15} /> จุดที่เกลาให้ละมุนขึ้นได้ (Turning Point)
+                                                </p>
+                                                <p className="text-primary-adaptive leading-relaxed">{evalReport.turningPoint}</p>
+                                            </div>
+                                            <div className="spatial-soft p-3.5 rounded-2xl text-secondary-adaptive leading-relaxed">{evalReport.summary}</div>
+                                        </div>
+                                    </div>
+
+                                    {selectedMode.isDrill && drillResults.length > 0 ? (
+                                        <div className="spatial-soft rounded-2xl p-4 space-y-2.5">
+                                            <p className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">
+                                                MICRO-DRILL 4 STATIONS • ผ่านเกณฑ์ {drillResults.filter(r => r.passed).length}/{drillResults.length} ด่าน
+                                            </p>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                                                {drillResults.map(r => (
+                                                    <div key={r.stage} className={`p-3 rounded-xl border ${r.passed ? 'bg-aurora-500/15 border-aurora-400/40' : 'bg-amber-500/10 border-amber-400/35'}`}>
+                                                        <div className="flex items-center justify-between gap-2">
+                                                            <span className="font-bold text-primary-adaptive">ด่าน {r.stage}: {r.titleTH}</span>
+                                                            <span className="font-mono font-extrabold text-accent-adaptive">{r.score}/100</span>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="spatial-soft rounded-2xl p-4 space-y-2.5">
+                                            <div className="flex flex-wrap items-center justify-between gap-2">
+                                                <p className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">
+                                                    HIDDEN BARRIERS • คลายปมในใจ ({unlockedBarrierIds.length}/3) • FINAL TRUST {trustScore}%
+                                                </p>
+                                                {usedCurveballIds.length > 0 && (
+                                                    <span className="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 font-mono text-[10px] font-bold">
+                                                        ⚡ ผ่านเหตุการณ์แทรก Hard Mode ({usedCurveballIds.length})
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+                                                {activeBarriers.map((b, idx) => {
+                                                    const done = unlockedBarrierIds.includes(b.id);
+                                                    return (
+                                                        <div key={b.id} className={`p-2.5 rounded-xl border flex items-start gap-2 ${done ? 'bg-aurora-500/15 border-aurora-400/45 text-primary-adaptive' : 'spatial-soft text-muted-adaptive'}`}>
+                                                            <span className={`font-mono font-bold shrink-0 ${done ? 'text-accent-adaptive' : 'text-muted-adaptive'}`}>{done ? '✓' : `${idx + 1}.`}</span>
+                                                            <span className="leading-snug">{b.titleTH}</span>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
+                                        <button type="button" onClick={() => { setDecompressSec(15); setShowDecompressModal(true); }} className="touch-target spatial-soft py-3 px-4 rounded-full text-accent-adaptive font-display font-bold text-xs flex items-center justify-center gap-1.5">
+                                            <Icon name="Wind" size={16} /> พักใจ 15 วิ
+                                        </button>
+                                        <button type="button" onClick={() => { setPhase('setup'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="touch-target spatial-soft py-3 px-4 rounded-full text-primary-adaptive font-display font-bold text-xs flex items-center justify-center gap-1.5">
+                                            <Icon name="RotateCcw" size={15} /> ฝึกเคสอื่นต่อ
+                                        </button>
+                                        <a href="./index.html" className="rjc2-pill-btn touch-target py-3 px-4 rounded-full font-display font-extrabold text-xs flex items-center justify-center gap-1.5">
+                                            <Icon name="CheckCircle2" size={16} /> กลับห้องเรียนหลัก →
+                                        </a>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* ==================== MODALS & MOBILE SHEETS ==================== */}
+                    {showHistoryDrawer && (
+                        <div onClick={() => setShowHistoryDrawer(false)} className="fixed inset-0 z-[125] bg-slate-950/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
+                            <div onClick={(e) => e.stopPropagation()} className="holo-obsidian-card w-full sm:max-w-lg rounded-t-[2rem] sm:rounded-[2rem] p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] space-y-3 text-white max-h-[82dvh] flex flex-col">
+                                <div className="flex items-center justify-between shrink-0">
+                                    <div>
+                                        <span className="font-mono text-[10px] font-bold text-cyan-300 uppercase">TRANSCRIPT &amp; TIME-REWIND</span>
+                                        <h3 className="font-display font-extrabold text-base">ประวัติบทสนทนา (ย้อนเวลาแก้คำพูดได้)</h3>
+                                    </div>
+                                    <button type="button" onClick={() => setShowHistoryDrawer(false)} className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center"><Icon name="X" size={17} /></button>
+                                </div>
+                                <div className="flex-1 overflow-y-auto custom-scrollbar space-y-2.5 pr-1 text-xs">
+                                    {messages.map((m, idx) => (
+                                        <div key={m.id || idx} className={`p-3 rounded-2xl border space-y-1 ${m.role === 'user' ? 'bg-emerald-500/15 border-emerald-400/35' : 'bg-white/[0.06] border-white/15'}`}>
+                                            <div className="flex items-center justify-between gap-2">
+                                                <span className="font-mono text-[10px] font-bold text-cyan-200">{m.role === 'user' ? learnerAddressName : 'ญาติผู้ป่วย'}</span>
+                                                {m.role === 'user' && !selectedMode.isDrill && (
+                                                    <button type="button" onClick={() => handleRewindToTurn(idx)} className="px-2 py-0.5 rounded-lg bg-amber-500/20 text-amber-200 font-bold text-[10px] hover:bg-amber-500/35">↺ ย้อนแก้รอบนี้</button>
+                                                )}
+                                            </div>
+                                            <p className="text-sky-100 leading-relaxed">{m.text}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {showToolsSheet && (
+                        <div onClick={() => setShowToolsSheet(false)} className="fixed inset-0 z-[125] bg-slate-950/75 backdrop-blur-md flex items-end justify-center">
+                            <div onClick={(e) => e.stopPropagation()} className="holo-obsidian-card w-full max-w-lg rounded-t-[2rem] p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] space-y-4 max-h-[85dvh] overflow-y-auto text-white border-t border-cyan-300/30">
+                                <div className="w-10 h-1 rounded-full bg-white/25 mx-auto -mt-1" />
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <span className="font-mono text-[10px] font-bold text-emerald-300 uppercase">MOBILE ROOM CONTROLS</span>
+                                        <h3 className="font-display font-extrabold text-base">เครื่องมือห้องฝึก 3 มิติ</h3>
+                                    </div>
+                                    <button type="button" onClick={() => setShowToolsSheet(false)} className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center"><Icon name="X" size={17} /></button>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <p className="text-xs font-bold text-cyan-200">สลับรูปแบบ Hologram 3 มิติสด (6 สไตล์)</p>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {HOLOGRAM_STYLES.map(st => (
+                                            <button
+                                                key={st.id}
+                                                type="button"
+                                                onClick={() => { handleSelectHoloStyle(st.id); setShowToolsSheet(false); }}
+                                                className={`touch-target px-3 py-2.5 rounded-2xl border text-left text-xs font-bold flex items-center gap-2 ${hologramStyle === st.id ? 'bg-emerald-500/25 border-emerald-400 text-emerald-200' : 'bg-white/[0.06] border-white/15 text-sky-100'}`}
+                                            >
+                                                <Icon name={STYLE_ICONS[st.id] || 'Sparkles'} size={15} className="shrink-0" />
+                                                <span className="truncate">{st.badge} {st.nameTH}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-2 pt-1">
+                                    <button type="button" onClick={() => { const next = !ambientOn; setAmbientOn(next); SL.SoundFX.setAmbient(next); setShowToolsSheet(false); }} className="touch-target px-3 py-3 rounded-2xl bg-white/[0.08] border border-white/15 text-emerald-200 text-xs font-bold flex items-center justify-center gap-1.5">
+                                        <Icon name="Wind" size={15} /> เสียงห้องสงบ: {ambientOn ? 'เปิด' : 'ปิด'}
+                                    </button>
+                                    <button type="button" onClick={() => { setShowToolsSheet(false); setShowChartModal(true); }} className="touch-target px-3 py-3 rounded-2xl bg-white/[0.08] border border-white/15 text-amber-200 text-xs font-bold flex items-center justify-center gap-1.5">
+                                        <Icon name="ClipboardList" size={15} /> แฟ้ม &amp; ปม 3 ข้อ
+                                    </button>
+                                    <button type="button" onClick={() => { setShowToolsSheet(false); setShowHistoryDrawer(true); }} className="touch-target px-3 py-3 rounded-2xl bg-white/[0.08] border border-white/15 text-sky-100 text-xs font-bold flex items-center justify-center gap-1.5">
+                                        <Icon name="History" size={15} /> ประวัติ &amp; ย้อนแก้
+                                    </button>
+                                    <button type="button" onClick={() => { setShowToolsSheet(false); setShowSubtitle(v => !v); }} className="touch-target px-3 py-3 rounded-2xl bg-white/[0.08] border border-white/15 text-cyan-200 text-xs font-bold flex items-center justify-center gap-1.5">
+                                        <Icon name="Subtitles" size={15} /> {showSubtitle ? 'ซ่อนซับไตเติล' : 'แสดงซับไตเติล'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {showChartModal && (
+                        <div onClick={() => setShowChartModal(false)} className="fixed inset-0 z-[126] bg-slate-950/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
+                            <div onClick={(e) => e.stopPropagation()} className="holo-obsidian-card w-full sm:max-w-lg rounded-t-[2rem] sm:rounded-[2rem] p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] space-y-3.5 text-white border-amber-400/35 max-h-[85dvh] overflow-y-auto">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <span className="font-mono text-[10px] font-bold text-amber-300 uppercase">{activeBrief.ward}</span>
+                                        <h3 className="font-display font-extrabold text-base">แฟ้มส่งเวร &amp; ปมในใจ 3 ข้อ (Trust {trustScore}%)</h3>
+                                    </div>
+                                    <button type="button" onClick={() => setShowChartModal(false)} className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center"><Icon name="X" size={17} /></button>
+                                </div>
+                                {!selectedMode.isDrill && (
+                                    <div className="p-3 rounded-2xl bg-cyan-500/15 border border-cyan-400/35 space-y-1.5 text-xs">
+                                        <p className="font-mono text-[10px] font-bold text-cyan-200 uppercase">ความคืบหน้าปมในใจ ({unlockedBarrierIds.length}/3)</p>
+                                        {activeBarriers.map((b, idx) => {
+                                            const done = unlockedBarrierIds.includes(b.id);
+                                            return (
+                                                <div key={b.id} className={`flex items-center gap-2 ${done ? 'text-emerald-300 font-bold' : 'text-sky-100/75'}`}>
+                                                    <span>{done ? '✓' : '○'}</span>
+                                                    <span>{idx + 1}. {b.titleTH}</span>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                                <div className="space-y-2.5 text-xs">
+                                    <div className="p-3 rounded-2xl bg-white/[0.06] border border-white/10 space-y-1">
+                                        <p className="font-bold text-cyan-200">{activeBrief.patient}</p>
+                                        <p className="text-sky-100/90">{activeBrief.diagnosis} • {activeBrief.brainDeath}</p>
+                                    </div>
+                                    <div className="p-3 rounded-2xl bg-white/[0.06] border border-white/10">
+                                        <span className="text-[10px] font-mono text-sky-200/70 block">สัญญาณชีพ ICU</span>
+                                        <p className="font-mono font-bold text-emerald-300 mt-0.5">{activeBrief.vitals}</p>
+                                    </div>
+                                    <div className="p-3 rounded-2xl bg-amber-500/15 border border-amber-400/30 space-y-1">
+                                        <p className="font-bold text-amber-200">บันทึกส่งเวร ICU</p>
+                                        <p className="text-amber-100/90 leading-relaxed">{activeBrief.handoffNote}</p>
+                                    </div>
+                                </div>
+                                <button type="button" onClick={() => setShowChartModal(false)} className="rjc2-pill-btn touch-target w-full py-3 rounded-full font-display font-extrabold text-xs">
+                                    กลับเข้าสู่บทสนทนา
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {showDecompressModal && (
+                        <div className="fixed inset-0 z-[130] bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
+                            <div className="holo-obsidian-card w-full max-w-md rounded-[2rem] p-6 text-center space-y-4 text-white border-emerald-400/40">
+                                <span className="font-mono text-[10px] font-bold text-emerald-300 uppercase">MINDFUL DECOMPRESSION</span>
+                                <h3 className="font-display font-extrabold text-lg">พักใจและผ่อนลมหายใจ 15 วินาที</h3>
+                                <div className="w-24 h-24 rounded-full bg-emerald-500/20 border-2 border-emerald-400/60 flex items-center justify-center mx-auto font-mono text-3xl font-extrabold text-emerald-300">
+                                    {decompressSec}
+                                </div>
+                                <p className="text-xs sm:text-sm text-sky-100/90 leading-relaxed">
+                                    {decompressSec > 10 ? 'หายใจเข้าช้าๆ ลึกๆ... วางความตึงเครียดจากบทสนทนาลง' : decompressSec > 5 ? 'กลั้นเบาๆ แล้วค่อยๆ ผ่อนลมหายใจออกยาวๆ...' : 'คุณทำหน้าที่ดูแลครอบครัวผู้ป่วยได้อย่างงดงามแล้วค่ะ'}
+                                </p>
+                                <button type="button" onClick={() => setShowDecompressModal(false)} className="rjc2-pill-btn touch-target w-full py-3 rounded-full font-display font-extrabold text-xs">
+                                    {decompressSec > 0 ? 'ปิดหน้าต่าง' : 'พร้อมไปต่อด้วยใจที่เบาสบาย ✓'}
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <ToastBanner toast={toast} />
+                </div>
+            );
+        }
+
+        const root = createRoot(document.getElementById('lab-root'));
+        root.render(<LabErrorBoundary><AiSkillLabApp /></LabErrorBoundary>);
+    </script>
+</body>
+</html>
