@@ -32,20 +32,24 @@
   const SESSION_DISMISS_KEY = 'rjcloud_keynote_seen_session_v1';
   const SILENT_UNLOCK_WAV = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
 
+  // โทนเสียงพิธีกรชายโทนกลาง-นุ่ม (เปลี่ยนชื่อเสียงตรงนี้ได้ทันที เช่น Sadaltager, Puck, Achird, Umbriel, Iapetus, Enceladus)
+  const MALE_VOICE_NAME = 'Sadaltager';
+  const FEMALE_VOICE_NAME = 'Sulafat';
+
   const DUAL_HOST_SCRIPT = [
     {
       id: 'k1',
       speaker: 'male',
-      voiceName: 'Charon',
+      voiceName: MALE_VOICE_NAME,
       badge: 'พิธีกรชาย • Keynote Host',
-      style: 'พูดภาษาไทยด้วยน้ำเสียงผู้ชายที่สุขุม นุ่มลึก ทรงพลัง และสร้างแรงบันดาลใจเหมือนพิธีกรงานเปิดตัวเทคโนโลยีระดับโลก มีจังหวะหยุดเว้นวรรคอย่างสง่างาม',
+      style: 'พูดภาษาไทยด้วยน้ำเสียงผู้ชายโทนกลางที่นุ่มนวล อบอุ่น เป็นมิตร ผ่อนคลาย และทันสมัยเหมือนพิธีกรงานเปิดตัวเทคโนโลยี ไม่ดุดันหรือทุ้มหนักจนเกินไป',
       display: '“เบื้องหลังทุกหนึ่งชีวิตที่ได้รับโอกาสครั้งใหม่… คือความเชี่ยวชาญ ความแม่นยำ และหัวใจของทีมบุคลากรทางการแพทย์ทุกคน”',
       speech: 'เบื้องหลังทุกหนึ่งชีวิตที่ได้รับโอกาสครั้งใหม่... คือความเชี่ยวชาญ ความแม่นยำ และหัวใจของทีมบุคลากรทางการแพทย์ทุกคนครับ'
     },
     {
       id: 'k2',
       speaker: 'female',
-      voiceName: 'Sulafat',
+      voiceName: FEMALE_VOICE_NAME,
       badge: 'พิธีกรหญิง • Keynote Host',
       style: 'พูดภาษาไทยสลับอังกฤษด้วยน้ำเสียงผู้หญิงที่อบอุ่น สง่างาม มั่นใจ และทันสมัยเหมือนพิธีกรงานเปิดตัว Apple Keynote',
       display: '“และวันนี้… Organ Transplantation Center of Rajavithi Hospital พร้อมแล้วที่จะพาท่านก้าวข้ามทุกขีดจำกัดของการฝึกอบรมเดิมๆ”',
@@ -54,16 +58,16 @@
     {
       id: 'k3',
       speaker: 'male',
-      voiceName: 'Charon',
+      voiceName: MALE_VOICE_NAME,
       badge: 'พิธีกรชาย • Keynote Host',
-      style: 'พูดด้วยน้ำเสียงตื่นเต้นอย่างสง่างาม ชัดถ้อยชัดคำ ทรงพลัง เหมือนช่วงเปิดตัวผลิตภัณฑ์เรือธงบนเวทีโลก',
+      style: 'พูดด้วยน้ำเสียงผู้ชายโทนกลางที่สดใส ชัดถ้อยชัดคำ นุ่มลื่นหู และเป็นกันเอง สไตล์งานเปิดตัวเทคโนโลยีสมัยใหม่',
       display: '“พบกับ rjcloud.organ 2.0 — Cloud AI แพลตฟอร์ม e-Learning การรับบริจาคและปลูกถ่ายอวัยวะ สู่มาตรฐานปี 2027”',
       speech: 'พบกับ อาร์เจ คลาวด์ ดอท ออร์แกน สองจุดศูนย์ คลาวด์เอไอ แพลตฟอร์มอีเลิร์นนิง การรับบริจาคและปลูกถ่ายอวัยวะ สู่มาตรฐานปีสองพันยี่สิบเจ็ดครับ'
     },
     {
       id: 'k4',
       speaker: 'female',
-      voiceName: 'Sulafat',
+      voiceName: FEMALE_VOICE_NAME,
       badge: 'พิธีกรหญิง • Keynote Host',
       style: 'พูดภาษาไทยด้วยน้ำเสียงนุ่มนวล ลื่นไหล อบอุ่น และชัดเจน น่าเชื่อถือระดับวิชาการแพทย์สากล',
       display: '“มาพร้อมผู้ช่วย AI ติวสรุปบทเรียน, ห้องฝึกสื่อสารกับญาติสามมิติ AI Skill Lab ที่ตอบโต้ด้วยเสียงและอารมณ์เสมือนจริง และระบบรับรองหน่วยคะแนน CNEU มาตรฐานสากล ภายใต้การคุ้มครองข้อมูล PDPA อย่างสูงสุด”',
@@ -72,20 +76,16 @@
     {
       id: 'k5',
       speaker: 'male',
-      voiceName: 'Charon',
+      voiceName: MALE_VOICE_NAME,
       badge: 'พิธีกรชาย • Keynote Host',
-      style: 'พูดด้วยน้ำเสียงทุ้มนุ่ม ลึกซึ้ง ทรงพลัง และสร้างความภาคภูมิใจ',
+      style: 'พูดด้วยน้ำเสียงผู้ชายที่อบอุ่น อ่อนโยน ลื่นหู และสร้างความรู้สึกเชิงบวกอย่างเป็นธรรมชาติ ไม่แข็งหรือทุ้มลึกเกินไป',
       display: '“อนาคตแห่งการเรียนรู้และการให้ชีวิตใหม่… เริ่มต้นขึ้นตรงหน้าคุณแล้ว”',
       speech: 'อนาคตแห่งการเรียนรู้และการให้ชีวิตใหม่... เริ่มต้นขึ้นตรงหน้าคุณแล้วครับ'
     },
     {
       id: 'k6',
       speaker: 'female',
-      voiceName: 'Sulafat',
-      badge: 'พิธีกรหญิง • Keynote Host',
-      style: 'พูดด้วยน้ำเสียงอบอุ่น เปี่ยมรอยยิ้ม เชิญชวนอย่างสง่างามเพื่อปิดท้ายการเปิดตัว',
-      display: '“ยินดีต้อนรับสู่ rjcloud.organ 2.0… กด ‘เข้าสู่ระบบ’ เพื่อเริ่มต้นได้เลยค่ะ”',
-      speech: 'ยินดีต้อนรับสู่ อาร์เจ คลาวด์ ดอท ออร์แกน สองจุดศูนย์... กดปุ่มเข้าสู่ระบบ เพื่อเริ่มต้นได้เลยค่ะ'
+      voiceName: FEMALE_VOICE_NAME,
     }
   ];
 
@@ -218,31 +218,6 @@
       }
       .rjkn-eq span:nth-child(2) { animation-delay: 0.16s; }
       .rjkn-eq span:nth-child(3) { animation-delay: 0.32s; }
-      .rjkn-subtitle-wrap {
-        position: fixed;
-        top: calc(58px + env(safe-area-inset-top, 0px));
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 118;
-        width: min(92vw, 680px);
-        pointer-events: none;
-        transition: opacity 0.35s ease, transform 0.35s ease;
-      }
-      .rjkn-subtitle-wrap.is-hidden {
-        opacity: 0;
-        transform: translate(-50%, -10px);
-      }
-      .rjkn-subtitle-card {
-        pointer-events: auto;
-        border-radius: 1.35rem;
-        padding: 12px 18px;
-        background: rgba(3, 12, 30, 0.76);
-        backdrop-filter: blur(18px) saturate(155%);
-        -webkit-backdrop-filter: blur(18px) saturate(155%);
-        border: 1px solid rgba(186, 230, 253, 0.28);
-        box-shadow: 0 18px 42px -12px rgba(0, 6, 24, 0.8);
-        text-align: center;
-      }
       .rjkn-flash {
         position: fixed;
         inset: 0;
@@ -683,12 +658,11 @@
     stopVoiceOnly();
     MusicEngine.stop();
     State.running = false;
-    hideSubtitle();
     updateDockUi();
   }
 
   async function fetchSegmentAudio(seg, appsScriptUrl) {
-    const cacheKey = 'keynote_v2_' + seg.id + '_' + seg.voiceName;
+    const cacheKey = 'keynote_v3_' + seg.id + '_' + seg.voiceName;
     const hit = await getCachedClip(cacheKey);
     if (hit) return hit;
     if (!appsScriptUrl) return null;
@@ -861,45 +835,6 @@
         updateDockUi();
       };
     }
-
-    // 3) Live Keynote Subtitle Pill
-    if (!State.els.subtitle) {
-      const wrap = document.createElement('div');
-      wrap.id = 'rjkn-subtitle-wrap';
-      wrap.className = 'rjkn-subtitle-wrap is-hidden';
-      wrap.innerHTML = `
-        <div class="rjkn-subtitle-card">
-          <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:4px;">
-            <span class="rjkn-eq" id="rjkn-sub-eq"><span></span><span></span><span></span></span>
-            <span id="rjkn-sub-badge" style="font-size:11px;font-weight:700;letter-spacing:0.06em;color:#6ee7b7;">KEYNOTE INTRO</span>
-            <span id="rjkn-sub-step" style="font-size:10px;color:rgba(186,230,253,0.72);font-family:monospace;"></span>
-          </div>
-          <p id="rjkn-sub-text" style="margin:0;font-size:13.5px;line-height:1.55;color:#f8fafc;font-weight:500;"></p>
-          <p style="margin:5px 0 0;font-size:10px;color:rgba(147,180,216,0.72);">${MUSIC_CREDIT}</p>
-        </div>
-      `;
-      document.body.appendChild(wrap);
-      State.els.subtitle = wrap;
-    }
-  }
-
-  function showSubtitle(badge, text, stepText, speakerType) {
-    const wrap = State.els.subtitle;
-    if (!wrap) return;
-    const badgeEl = wrap.querySelector('#rjkn-sub-badge');
-    const textEl = wrap.querySelector('#rjkn-sub-text');
-    const stepEl = wrap.querySelector('#rjkn-sub-step');
-    if (badgeEl) {
-      badgeEl.textContent = badge;
-      badgeEl.style.color = speakerType === 'male' ? '#7dd3fc' : speakerType === 'female' ? '#fde68a' : '#6ee7b7';
-    }
-    if (textEl) textEl.textContent = text;
-    if (stepEl) stepEl.textContent = stepText || '';
-    wrap.classList.remove('is-hidden');
-  }
-
-  function hideSubtitle() {
-    if (State.els.subtitle) State.els.subtitle.classList.add('is-hidden');
   }
 
   function updateDockUi() {
@@ -967,7 +902,6 @@
     // 1. เริ่มเพลง "Great" (Epic Modern Cinematic) ที่ระดับเสียง 74% ให้ความยิ่งใหญ่ช่วงเปิดตัว 2.2 วินาที
     MusicEngine.setMuted(false);
     MusicEngine.start(74);
-    showSubtitle('KEYNOTE OPENING • RJCLOUD.ORGAN 2.0', 'กำลังเปิดการนำเสนอจาก Organ Transplantation Center of Rajavithi Hospital...', 'INTRO', 'intro');
 
     // Prefetch เสียงพิธีกรประโยคที่ 1 ระหว่างดนตรีเปิดฉาก 2.2 วินาที
     const firstClipPromise = fetchSegmentAudio(DUAL_HOST_SCRIPT[0], State.appsScriptUrl);
@@ -982,14 +916,11 @@
     for (let i = 0; i < DUAL_HOST_SCRIPT.length; i++) {
       if (State.sessionId !== sid || !State.running) return;
       const seg = DUAL_HOST_SCRIPT[i];
-      const stepStr = (i + 1) + ' / ' + DUAL_HOST_SCRIPT.length;
 
       // ประโยคที่ 5-6 ค่อยๆ ยกระดับเพลงขึ้นเล็กน้อย (Swell to 30%) สร้างอารมณ์ Finale
       if (i === DUAL_HOST_SCRIPT.length - 2) {
         MusicEngine.duckTo(28, 800);
       }
-
-      showSubtitle(seg.badge, seg.display, stepStr, seg.speaker);
 
       const blob = await nextPromise;
       if (State.sessionId !== sid || !State.running) return;
@@ -1019,11 +950,9 @@
     // 3. จบบทพูด: เร่งเพลง Epic ขึ้นอย่างสง่างาม (Swell to 65%) แล้วค่อยๆ ผ่อนคลอเบาๆ
     if (State.sessionId === sid && State.running) {
       MusicEngine.duckTo(65, 900);
-      showSubtitle('RJCLOUD.ORGAN 2.0 • READY', 'พร้อมเริ่มต้นเส้นทางการเรียนรู้สู่มาตรฐานปี 2027 — แตะ “เข้าสู่ระบบ” ด้านล่างได้เลยค่ะ', 'LIVE', 'intro');
       setTimeout(function () {
         if (State.sessionId === sid && State.running) {
           MusicEngine.duckTo(34, 1800);
-          hideSubtitle();
         }
       }, 4200);
     }
