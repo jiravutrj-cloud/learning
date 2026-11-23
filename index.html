@@ -14,6 +14,7 @@
     <script src="./learning-core.js" onerror="console.warn('learning-core.js unavailable, using fallback')"></script>
     <script src="./cert-engine.js" onerror="console.warn('cert-engine.js unavailable, using fallback')"></script>
     <script src="./ai-interactive.js" onerror="console.warn('ai-interactive.js unavailable')"></script>
+    <script src="./keynote-launch.js" onerror="console.warn('keynote-launch.js unavailable')"></script>
 
     <!-- ซิงค์ธีมมืด/สว่างทันทีจาก localStorage ป้องกันจอกระพริบ -->
     <script>
@@ -210,7 +211,7 @@
     <script>
       window.addEventListener('error', function (ev) {
         const src = String(ev.filename || (ev.target && ev.target.src) || '');
-        if (src.includes('data.js') || src.includes('learning-core.js') || src.includes('cert-engine.js') || src.includes('ai-interactive.js') || src.includes('styles.css') || src.includes('qrcode') || src.includes('jspdf')) return;
+        if (src.includes('data.js') || src.includes('learning-core.js') || src.includes('cert-engine.js') || src.includes('ai-interactive.js') || src.includes('keynote-launch.js') || src.includes('styles.css') || src.includes('qrcode') || src.includes('jspdf')) return;
         const root = document.getElementById('root');
         if (root && !root.dataset.mounted && ev.message) {
           root.innerHTML =
@@ -2456,6 +2457,23 @@ ${roleProfile.aiPromptAddon || ''}
                 }
             }, [screen, activeTab, user, lessons, currentLessonId, studySeconds, liveStudyPercent, targetSeconds, hasDonePretest, isAdminPreview, appsScriptUrl, toggleTheme, showToast, saveUserProgress]);
 
+            // เชื่อมต่อโมดูลเปิดตัว Keynote พิธีกรคู่ ชาย–หญิง + เพลง Epic (keynote-launch.js)
+            useEffect(() => {
+                if (window.RJCLOUD_KEYNOTE && typeof window.RJCLOUD_KEYNOTE.sync === 'function') {
+                    window.RJCLOUD_KEYNOTE.sync({
+                        isLanding: screen === 'landing',
+                        appsScriptUrl,
+                        isAdminPreview
+                    });
+                }
+            }, [screen, appsScriptUrl, isAdminPreview]);
+
+            useEffect(() => () => {
+                if (window.RJCLOUD_KEYNOTE && typeof window.RJCLOUD_KEYNOTE.stopAll === 'function') {
+                    window.RJCLOUD_KEYNOTE.stopAll();
+                }
+            }, []);
+
             // เตรียมฟอร์มยืนยันใบประกาศฯ เมื่อเข้าหน้า cert_confirm
             useEffect(() => {
                 if (screen === 'cert_confirm' && user) {
@@ -2885,7 +2903,14 @@ ${roleProfile.aiPromptAddon || ''}
                     {/* ==================== SCREEN 1: LANDING PAGE (RJCLOUD.ORGAN 2.0) ==================== */}
                     {screen === 'landing' && (
                         <Rjcloud2LandingStage
-                            onStartLogin={() => { setAuthStep(1); setScreen('auth'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                            onStartLogin={() => {
+                                if (window.RJCLOUD_KEYNOTE && typeof window.RJCLOUD_KEYNOTE.stopAll === 'function') {
+                                    window.RJCLOUD_KEYNOTE.stopAll();
+                                }
+                                setAuthStep(1);
+                                setScreen('auth');
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
                             onOpenPdpa={() => setPdpaModalOpen(true)}
                         />
                     )}
