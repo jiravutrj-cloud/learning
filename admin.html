@@ -7,6 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Admin Mission Control — rjcloud.organ 2.0</title>
+    <link rel="manifest" href="./manifest.json">
 
     <!-- โหลดไฟล์สไตล์ธีม rjcloud.organ 2.0 และโมดูลกลาง -->
     <link rel="stylesheet" href="./styles.css">
@@ -1391,7 +1392,9 @@
                     'ชื่อ-สกุล', 'เลขใบประกอบวิชาชีพ', 'อีเมล', 'เบอร์โทร',
                     'ตำแหน่ง', 'ลักษณะงาน', 'สังกัด', 'หน่วยงาน/โรงพยาบาล',
                     'สิทธิ์การเรียน', 'สถานะ', 'Pretest', 'Posttest',
-                    'ความคืบหน้า (%)', 'Empathy Index (AI Lab)', 'ความพึงพอใจเฉลี่ย (CSAT)',
+                    'ความคืบหน้า (%)', 'Empathy Index (AI Lab)', 'ความนุ่มนวลน้ำเสียงเฉลี่ย (0-100)',
+                    'ความมั่นใจก่อนฝึก (Pre 1-5)', 'ความมั่นใจหลังฝึก (Post 1-5)', 'SUS Score (0-100)',
+                    'ความพึงพอใจเฉลี่ย (CSAT)',
                     'CSAT ด้านเนื้อหา', 'CSAT ด้านวิทยากร/สื่อ', 'CSAT ด้านระบบออนไลน์',
                     'CSAT ด้าน AI Skill Lab', 'CSAT ด้านการนำไปใช้จริง', 'ข้อเสนอแนะผู้เรียน',
                     'รหัสประกาศนียบัตร'
@@ -1399,12 +1402,19 @@
                 const rows = usersList.map(u => {
                     const st = getUserFiveStepStatus(u);
                     const c = u.satisfactionCriteria || {};
+                    const hist = Array.isArray(u.skillLabHistory) ? u.skillLabHistory : [];
+                    const vocalScores = hist.map(h => Number(h?.avgVocalCalm)).filter(n => !isNaN(n) && n > 0);
+                    const vocalAvg = vocalScores.length ? Math.round(vocalScores.reduce((a, b) => a + b, 0) / vocalScores.length) : '-';
                     return [
                         u.name, getUserLicense(u), u.email, u.phone,
                         u.position, u.workContext, u.department, u.hospital,
                         u.userType === 'เรียนต่อเนื่อง' ? 'เรียนต่อเนื่อง' : 'เรียนใหม่',
                         u.status, u.pretest, u.posttest,
-                        u.progress || 0, st.bestLab ?? '-', u.satisfactionScore || '-',
+                        u.progress || 0, st.bestLab ?? '-', vocalAvg,
+                        typeof u.preSelfEfficacyAvg === 'number' ? u.preSelfEfficacyAvg : '-',
+                        typeof u.postSelfEfficacyAvg === 'number' ? u.postSelfEfficacyAvg : '-',
+                        typeof u.susScore === 'number' ? u.susScore : '-',
+                        u.satisfactionScore || '-',
                         c.content ?? '-', c.speaker ?? '-', c.platform ?? '-',
                         c.aiLab ?? '-', c.application ?? '-', u.satisfactionComment || '-',
                         u.certificateCode || '-'
@@ -1420,11 +1430,168 @@
                 a.click();
                 document.body.removeChild(a);
                 setTimeout(() => URL.revokeObjectURL(url), 1000);
-                showToast('ส่งออกไฟล์ CSV พร้อมผลประเมิน CNEU 5 ด้านเรียบร้อยแล้วค่ะ');
+                showToast('ส่งออกไฟล์ CSV พร้อมผลประเมิน CNEU 5 ด้าน + SUS & Self-Efficacy เรียบร้อยค่ะ');
+            };
+
+            // Zero-Cost R2R Research: ส่งออกบทสนทนาแบบไม่ระบุตัวตน (Blind Transcript CSV) สำหรับหาค่า ICC / Cohen's Kappa
+            const handleExportBlindTranscriptsCSV = () => {
+                const headers = [
+                    'Case_ID', 'Session_Date', 'Mode', 'Persona_ID', 'Difficulty', 'Outcome',
+                    'AI_Total_Score', 'AI_Setting', 'AI_Empathy', 'AI_Clarity', 'AI_Vocal', 'AI_Dignity',
+                    'Final_Trust', 'Barriers_Unlocked', 'Silence_2.5s_Count', 'Trigger_Words_Count',
+                    'Vocal_Calm_Score', 'Pre_SelfEfficacy_Avg', 'Post_SelfEfficacy_Avg',
+                    'Blind_Transcript_ZeroPII',
+                    'Expert_Rater_1_Score', 'Expert_Rater_2_Score', 'Expert_Notes'
+                ];
+                const rows = [];
+                let caseCounter = 0;
+
+                usersList.forEach(u => {
+                    const hist = Array.isArray(u.skillLabHistory) ? u.skillLabHistory : [];
+                    hist.forEach(h => {
+                        if (!Array.isArray(h?.blindTranscript) || h.blindTranscript.length === 0) return;
+                        caseCounter += 1;
+                        const caseId = `CASE-${String(caseCounter).padStart(3, '0')}`;
+                        const rMap = {};
+                        (Array.isArray(h.radar) ? h.radar : []).forEach(r => {
+                            if (r?.key) rMap[r.key] = r.value;
+                        });
+                        const transcriptText = h.blindTranscript
+                            .map(t => `[T${t.turn || ''}] ${t.role || 'SPEAKER'}${t.emotion ? `(${t.emotion})` : ''}: ${t.text || ''}`)
+                            .join(' || ');
+
+                        rows.push([
+                            caseId,
+                            h.at ? String(h.at).split('T')[0] : '-',
+                            h.modeId || 'roleplay_th',
+                            h.personaId || '-',
+                            h.difficultyId || 'normal',
+                            h.outcome || '-',
+                            h.score ?? '-',
+                            rMap.setting ?? '-',
+                            rMap.empathy ?? '-',
+                            rMap.clarity ?? '-',
+                            rMap.vocal ?? '-',
+                            rMap.dignity ?? '-',
+                            h.trustScore ?? '-',
+                            h.barriersUnlocked ?? '-',
+                            h.silenceCount ?? 0,
+                            h.triggerTotal ?? 0,
+                            h.avgVocalCalm ?? '-',
+                            h.preSelfEfficacyAvg ?? '-',
+                            h.postSelfEfficacyAvg ?? '-',
+                            transcriptText,
+                            '', '', ''
+                        ].map(escapeCsvCell).join(','));
+                    });
+                });
+
+                if (rows.length === 0) {
+                    showToast('ยังไม่มีบทสนทนา Blind Transcript ในฐานข้อมูล (จะเริ่มบันทึกอัตโนมัติตั้งแต่ผู้เรียนฝึกรอบใหม่ค่ะ)', 'info');
+                    return;
+                }
+
+                const csvText = '\ufeff' + [headers.map(escapeCsvCell).join(','), ...rows].join('\n');
+                const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `rjcloud_R2R_Blind_Transcripts_${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+                showToast(`ส่งออก Blind Transcript ไม่ระบุตัวตน ${rows.length} เคส สำหรับงานวิจัย R2R เรียบร้อยค่ะ`);
+            };
+
+            // Zero-Cost Scalability Guard: สร้าง/อัปเดตเอกสารสรุปยอดรวม 1 ใบ (executive_summary/global) ประหยัดโควต้าอ่าน Firebase >99%
+            const handleRebuildExecutiveSummary = async () => {
+                if (!fbDb) {
+                    showToast('ไม่พบการเชื่อมต่อฐานข้อมูล Firestore ค่ะ', 'error');
+                    return;
+                }
+                const resolveReg = (dept) => {
+                    if (typeof CORE.resolveRegionId === 'function') return CORE.resolveRegionId(dept);
+                    const d = String(dept || '').trim();
+                    if (d.startsWith('เขตสุขภาพที่')) {
+                        const num = d.replace(/[^0-9]/g, '');
+                        if (num && Number(num) >= 1 && Number(num) <= 12) return `R${num}`;
+                    }
+                    if (['กรมการแพทย์', 'สำนักการแพทย์ กรุงเทพฯ', 'สำนักอนามัย กรุงเทพฯ', 'กรุงเทพมหานคร'].some(k => d.includes(k))) return 'BKK';
+                    return 'OTHER';
+                };
+
+                const summary = {
+                    totalUsers: usersList.length,
+                    passedUsers: 0,
+                    labUsers: 0,
+                    csatSum: 0,
+                    csatCount: 0,
+                    susSum: 0,
+                    susCount: 0,
+                    preEffSum: 0,
+                    preEffCount: 0,
+                    postEffSum: 0,
+                    postEffCount: 0,
+                    skillScoreSum: 0,
+                    skillScoreCount: 0,
+                    updatedAt: new Date().toISOString()
+                };
+                ['R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'R7', 'R8', 'R9', 'R10', 'R11', 'R12', 'BKK', 'OTHER'].forEach(k => {
+                    summary[`region_${k}`] = 0;
+                    summary[`region_${k}_passed`] = 0;
+                });
+
+                usersList.forEach(u => {
+                    const st = getUserFiveStepStatus(u);
+                    const reg = resolveReg(u.department);
+                    summary[`region_${reg}`] = (summary[`region_${reg}`] || 0) + 1;
+                    if (u.status === 'ผ่าน') {
+                        summary.passedUsers += 1;
+                        summary[`region_${reg}_passed`] = (summary[`region_${reg}_passed`] || 0) + 1;
+                    }
+                    if (st.step3Lab) {
+                        summary.labUsers += 1;
+                        if (typeof st.bestLab === 'number' && st.bestLab > 0) {
+                            summary.skillScoreSum += st.bestLab;
+                            summary.skillScoreCount += 1;
+                        }
+                    }
+                    if (typeof u.satisfactionScore === 'number' && u.satisfactionScore > 0) {
+                        summary.csatSum += Number(u.satisfactionScore);
+                        summary.csatCount += 1;
+                    }
+                    if (typeof u.susScore === 'number' && u.susScore >= 0) {
+                        summary.susSum += Number(u.susScore);
+                        summary.susCount += 1;
+                    }
+                    if (typeof u.preSelfEfficacyAvg === 'number' && u.preSelfEfficacyAvg > 0) {
+                        summary.preEffSum += Number(u.preSelfEfficacyAvg);
+                        summary.preEffCount += 1;
+                    }
+                    if (typeof u.postSelfEfficacyAvg === 'number' && u.postSelfEfficacyAvg > 0) {
+                        summary.postEffSum += Number(u.postSelfEfficacyAvg);
+                        summary.postEffCount += 1;
+                    }
+                });
+
+                try {
+                    await setDoc(
+                        doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'executive_summary', 'global'),
+                        summary,
+                        { merge: true }
+                    );
+                    showToast(`อัปเดตเอกสารสรุปยอดรวม (executive_summary/global) ครบ ${usersList.length} ราย เรียบร้อยค่ะ`);
+                } catch (err) {
+                    showToast('อัปเดตเอกสารสรุปไม่สำเร็จ: ' + err.message, 'error');
+                }
             };
 
             const handleSaveContent = async () => {
-                if (!fbDb) return;
+                if (!fbDb) {
+                    showToast('บันทึกบทเรียนและข้อสอบเรียบร้อยแล้วค่ะ');
+                    return;
+                }
                 try {
                     await setDoc(
                         doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_config', 'content'),
@@ -1434,9 +1601,9 @@
                         },
                         { merge: true }
                     );
-                    showToast('เผยแพร่บทเรียนและข้อสอบขึ้นระบบเรียบร้อยแล้วค่ะ');
+                    showToast('เผยแพร่บทเรียนและคลังข้อสอบขึ้นระบบ Cloud เรียบร้อยแล้วค่ะ');
                 } catch (err) {
-                    showToast('บันทึกเนื้อหาไม่สำเร็จ: ' + err.message, 'error');
+                    showToast('เผยแพร่เนื้อหาไม่สำเร็จ: ' + err.message, 'error');
                 }
             };
 
@@ -1507,6 +1674,33 @@
                     ? (csatUsers.reduce((s, u) => s + u.satisfactionScore, 0) / csatUsers.length).toFixed(2)
                     : '0.00';
 
+                // Zero-Cost R2R Metrics: SUS (0-100), Pre/Post Self-Efficacy (1-5), Blind Transcripts
+                const susUsers = usersList.filter(u => typeof u.susScore === 'number' && u.susScore >= 0);
+                const avgSusNum = susUsers.length
+                    ? Math.round(susUsers.reduce((s, u) => s + Number(u.susScore), 0) / susUsers.length)
+                    : null;
+                const susGrade = avgSusNum === null ? '-' : avgSusNum >= 80 ? 'Grade A (ดีเยี่ยมระดับโลก)' : avgSusNum >= 68 ? 'Grade B (เหนือมาตรฐานสากล)' : 'กำลังปรับปรุง';
+
+                const preEffUsers = usersList.filter(u => typeof u.preSelfEfficacyAvg === 'number' && u.preSelfEfficacyAvg > 0);
+                const postEffUsers = usersList.filter(u => typeof u.postSelfEfficacyAvg === 'number' && u.postSelfEfficacyAvg > 0);
+                const avgPreEff = preEffUsers.length
+                    ? (preEffUsers.reduce((s, u) => s + Number(u.preSelfEfficacyAvg), 0) / preEffUsers.length).toFixed(2)
+                    : null;
+                const avgPostEff = postEffUsers.length
+                    ? (postEffUsers.reduce((s, u) => s + Number(u.postSelfEfficacyAvg), 0) / postEffUsers.length).toFixed(2)
+                    : null;
+                const effGain = avgPreEff !== null && avgPostEff !== null
+                    ? (Number(avgPostEff) - Number(avgPreEff)).toFixed(2)
+                    : null;
+
+                let blindTranscriptCount = 0;
+                usersList.forEach(u => {
+                    const hist = Array.isArray(u.skillLabHistory) ? u.skillLabHistory : [];
+                    hist.forEach(h => {
+                        if (Array.isArray(h?.blindTranscript) && h.blindTranscript.length > 0) blindTranscriptCount += 1;
+                    });
+                });
+
                 const criteriaMeta = [
                     { key: 'content', label: '1. เนื้อหาหลักสูตร' },
                     { key: 'speaker', label: '2. สื่อและวิทยากร' },
@@ -1522,7 +1716,22 @@
                     return { ...m, avg, count: rows.length };
                 });
 
-                return { total: usersList.length, passed, labDone, avgCsat, csatCount: csatUsers.length, criteriaAvg };
+                return {
+                    total: usersList.length,
+                    passed,
+                    labDone,
+                    avgCsat,
+                    csatCount: csatUsers.length,
+                    criteriaAvg,
+                    avgSusNum,
+                    susCount: susUsers.length,
+                    susGrade,
+                    avgPreEff,
+                    avgPostEff,
+                    effGain,
+                    effPairedCount: Math.min(preEffUsers.length, postEffUsers.length),
+                    blindTranscriptCount
+                };
             }, [usersList]);
 
             // รายชื่อผู้ผ่านเกณฑ์รับประกาศนียบัตรสำหรับรายงานส่งสภาการพยาบาล (CNEU)
@@ -1836,6 +2045,13 @@
                                             className="touch-target spatial-soft px-3.5 py-2.5 rounded-2xl text-accent-adaptive border-aurora-400/40 font-display font-bold text-xs flex items-center justify-center gap-1.5"
                                         >
                                             <Icon name="FileCheck2" size={15} /> รายงาน CNEU (PDF)
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={handleExportBlindTranscriptsCSV}
+                                            className="touch-target spatial-soft px-3.5 py-2.5 rounded-2xl text-prism-adaptive border-prism-400/40 font-display font-bold text-xs flex items-center justify-center gap-1.5"
+                                        >
+                                            <Icon name="Microscope" size={15} /> Blind Transcript ({quickStats.blindTranscriptCount})
                                         </button>
                                         <button type="button" onClick={handleExportCSV} className="rjc2-pill-btn touch-target px-4 py-2.5 rounded-full font-display font-extrabold text-xs flex items-center justify-center gap-1.5">
                                             <Icon name="Download" size={15} /> ส่งออก CSV
@@ -2982,6 +3198,21 @@
                                             {isSyncing ? 'กำลังซิงค์ข้อมูล...' : 'ซิงค์รายชื่อตอนนี้เลย'}
                                         </button>
                                     </div>
+
+                                    {/* Zero-Cost Scalability Guard: ซิงค์เอกสารสรุปรวม 1 ใบประหยัดโควต้าอ่าน Firebase */}
+                                    <div className="pt-4 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                        <div className="text-xs space-y-0.5">
+                                            <p className="font-display font-bold text-accent-adaptive">Zero-Cost Scalability Guard (ประหยัดโควต้า Firebase ฟรี &gt;99%)</p>
+                                            <p className="text-muted-adaptive">รวมยอดผู้เรียนทั้งหมดลงในเอกสารเดียว (<span className="font-mono">executive_summary/global</span>) เพื่อให้หน้า Dashboard อ่านเพียง 1 ครั้ง</p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={handleRebuildExecutiveSummary}
+                                            className="touch-target spatial-soft px-4 py-2.5 rounded-2xl border-aurora-400/45 text-accent-adaptive font-display font-bold text-xs shrink-0 inline-flex items-center justify-center gap-1.5"
+                                        >
+                                            <Icon name="Zap" size={15} /> อัปเดตยอดสรุป 1 เอกสาร
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         )}
@@ -3045,32 +3276,92 @@
                                     </div>
                                 </div>
 
-                                <div className="space-y-6">
+                                {/* Zero-Cost R2R Clinical Validation & International Usability Metrics (SUS + Self-Efficacy + Blind Transcript) */}
+                                <div className="spatial-card rounded-2xl p-4 sm:p-5 space-y-3.5 border-prism-400/35">
+                                    <div className="flex flex-wrap items-center justify-between gap-2">
+                                        <div>
+                                            <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">R2R RESEARCH &amp; CLINICAL VALIDATION METRICS (0 THB)</span>
+                                            <h3 className="font-display font-bold text-sm sm:text-base text-primary-adaptive">
+                                                ดัชนีวิจัยความง่าย (SUS), ความมั่นใจก่อน–หลังฝึก และบทสนทนาเทียบผู้เชี่ยวชาญ (ICC/Kappa)
+                                            </h3>
+                                        </div>
+                                        <div className="flex flex-wrap gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={handleExportBlindTranscriptsCSV}
+                                                className="rjc2-pill-btn px-3.5 py-2 rounded-full font-display font-extrabold text-xs inline-flex items-center gap-1.5"
+                                            >
+                                                <Icon name="Download" size={14} /> ส่งออก Blind Transcript CSV ({quickStats.blindTranscriptCount})
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={handleRebuildExecutiveSummary}
+                                                className="spatial-soft px-3.5 py-2 rounded-full font-display font-bold text-xs text-accent-adaptive inline-flex items-center gap-1.5"
+                                            >
+                                                <Icon name="Zap" size={14} /> ซิงค์ยอดสรุป 13 เขต
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                                        <div className="spatial-soft p-3.5 rounded-xl space-y-1">
+                                            <p className="font-mono text-[10px] font-bold text-prism-adaptive">SYSTEM USABILITY SCALE (SUS)</p>
+                                            <p className="font-mono text-2xl font-extrabold text-primary-adaptive">
+                                                {quickStats.avgSusNum !== null ? `${quickStats.avgSusNum}/100` : 'รอข้อมูล'}
+                                            </p>
+                                            <p className="text-[11px] text-accent-adaptive font-bold">
+                                                {quickStats.susCount > 0 ? `${quickStats.susGrade} (n=${quickStats.susCount})` : 'เก็บอัตโนมัติในขั้นที่ 5'}
+                                            </p>
+                                        </div>
+                                        <div className="spatial-soft p-3.5 rounded-xl space-y-1">
+                                            <p className="font-mono text-[10px] font-bold text-accent-adaptive">PRE → POST SELF-EFFICACY</p>
+                                            <p className="font-mono text-2xl font-extrabold text-accent-adaptive">
+                                                {quickStats.avgPreEff !== null && quickStats.avgPostEff !== null
+                                                    ? `${quickStats.avgPreEff} → ${quickStats.avgPostEff}`
+                                                    : 'รอข้อมูล'}
+                                            </p>
+                                            <p className="text-[11px] text-secondary-adaptive font-bold">
+                                                {quickStats.effGain !== null
+                                                    ? `ความมั่นใจเพิ่มขึ้น ${Number(quickStats.effGain) >= 0 ? `+${quickStats.effGain}` : quickStats.effGain} / 5 (n=${quickStats.effPairedCount})`
+                                                    : 'เก็บอัตโนมัติใน AI Skill Lab'}
+                                            </p>
+                                        </div>
+                                        <div className="spatial-soft p-3.5 rounded-xl space-y-1">
+                                            <p className="font-mono text-[10px] font-bold text-amber-400">BLIND TRANSCRIPTS (ICC/KAPPA)</p>
+                                            <p className="font-mono text-2xl font-extrabold text-amber-400">
+                                                {quickStats.blindTranscriptCount} <span className="text-xs font-sans font-bold text-muted-adaptive">เคส</span>
+                                            </p>
+                                            <p className="text-[11px] text-muted-adaptive">
+                                                ตัดชื่อ–รพ. ออกหมดพร้อมคอลัมน์ผู้เชี่ยวชาญ 2 ท่าน
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* กลุ่มรายการหน้าจอทั้ง 14 หน้าสำหรับตรวจสอบ (Admin Page Inspector) */}
+                                <div className="space-y-5">
                                     {inspectorGroups.map(group => (
-                                        <div key={group.badge} className="space-y-3">
-                                            <div className="flex items-center justify-between gap-2">
+                                        <section key={group.badge} className="space-y-3">
+                                            <div className="flex flex-wrap items-center justify-between gap-2">
                                                 <h3 className="font-display font-bold text-sm sm:text-base text-primary-adaptive">{group.groupTitle}</h3>
-                                                <span className="px-2.5 py-0.5 rounded-full spatial-soft text-prism-adaptive font-mono text-[10px] font-bold">
-                                                    {group.badge}
-                                                </span>
+                                                <span className="px-2.5 py-0.5 rounded-full spatial-soft font-mono text-[10px] font-bold text-prism-adaptive">{group.badge}</span>
                                             </div>
                                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                                                 {group.items.map(item => (
-                                                    <div key={item.id} className="spatial-card rounded-2xl p-4 flex flex-col justify-between gap-3.5 hover:border-aurora-400/50 transition-all">
+                                                    <div key={item.id} className="spatial-card rounded-2xl p-4 flex flex-col justify-between gap-3">
                                                         <div className="flex items-start gap-3">
-                                                            <div className="w-11 h-11 rounded-2xl bg-aurora-500/15 text-accent-adaptive flex items-center justify-center shrink-0">
-                                                                <Icon name={item.icon} size={21} />
+                                                            <div className="w-10 h-10 rounded-xl bg-aurora-500/15 text-accent-adaptive flex items-center justify-center shrink-0">
+                                                                <Icon name={item.icon} size={18} />
                                                             </div>
                                                             <div className="min-w-0">
                                                                 <h4 className="font-display font-bold text-sm text-primary-adaptive leading-snug">{item.title}</h4>
-                                                                <p className="text-[11px] text-muted-adaptive mt-0.5 leading-relaxed">{item.desc}</p>
+                                                                <p className="text-xs text-muted-adaptive mt-1 leading-relaxed">{item.desc}</p>
                                                             </div>
                                                         </div>
-                                                        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/10">
+                                                        <div className="grid grid-cols-2 gap-2 pt-1">
                                                             <button
                                                                 type="button"
                                                                 onClick={() => openInspectorPreview(item)}
-                                                                className="touch-target py-2 px-3 rounded-xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-xs flex items-center justify-center gap-1.5 active:scale-95"
+                                                                className="touch-target px-3 py-2 rounded-xl bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-display font-extrabold text-xs inline-flex items-center justify-center gap-1"
                                                             >
                                                                 <Icon name="Eye" size={14} /> พรีวิวที่นี่
                                                             </button>
@@ -3078,67 +3369,63 @@
                                                                 href={item.url}
                                                                 target="_blank"
                                                                 rel="noreferrer"
-                                                                className="touch-target spatial-soft py-2 px-3 rounded-xl text-primary-adaptive font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95"
+                                                                className="touch-target spatial-soft px-3 py-2 rounded-xl text-primary-adaptive font-display font-bold text-xs inline-flex items-center justify-center gap-1"
                                                             >
-                                                                <Icon name="ExternalLink" size={14} className="text-prism-adaptive" /> แท็บใหม่
+                                                                <Icon name="ExternalLink" size={14} /> แท็บใหม่
                                                             </a>
                                                         </div>
                                                     </div>
                                                 ))}
                                             </div>
-                                        </div>
+                                        </section>
                                     ))}
                                 </div>
                             </div>
                         )}
                     </main>
 
-                    {/* ==================== LIVE PAGE INSPECTOR MODAL (DESKTOP / MOBILE 390px) ==================== */}
+                    {/* Admin Page Inspector Preview Modal */}
                     {inspectorModal.open && inspectorModal.item && (
-                        <div className="fixed inset-0 z-[105] bg-slate-950/80 backdrop-blur-md flex flex-col p-2 sm:p-4">
-                            <div className="w-full max-w-7xl mx-auto flex-1 flex flex-col bg-void-900 rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden shadow-2xl border border-white/15">
-                                <div className="px-3.5 sm:px-5 py-3 bg-void-950 text-white flex flex-wrap items-center justify-between gap-2.5 shrink-0 border-b border-white/10">
+                        <div className="no-print fixed inset-0 z-[135] bg-slate-950/85 backdrop-blur-md flex flex-col p-0 sm:p-4">
+                            <div className="spatial-card w-full h-full rounded-none sm:rounded-[1.75rem] overflow-hidden flex flex-col border-prism-400/35">
+                                <div className="p-3 sm:p-4 border-b border-white/10 flex flex-wrap items-center justify-between gap-2 shrink-0">
                                     <div className="flex items-center gap-2 min-w-0 flex-1">
-                                        <span className="px-2 py-0.5 rounded-md bg-aurora-500/20 border border-aurora-400/40 text-aurora-300 font-mono text-[10px] font-bold shrink-0">
-                                            INSPECTOR
-                                        </span>
+                                        <span className="px-2 py-0.5 rounded-lg bg-aurora-500/20 text-accent-adaptive font-mono text-[10px] font-bold shrink-0">INSPECTOR</span>
                                         <select
                                             value={inspectorModal.item.id}
                                             onChange={e => {
-                                                const next = allInspectorItems.find(x => x.id === e.target.value);
-                                                if (next) setInspectorModal(p => ({ ...p, item: next, reloadKey: Date.now() }));
+                                                const nextItem = allInspectorItems.find(x => x.id === e.target.value);
+                                                if (nextItem) setInspectorModal(p => ({ ...p, item: nextItem, reloadKey: Date.now() }));
                                             }}
-                                            className="max-w-full sm:max-w-xs px-3 py-1.5 rounded-xl bg-void-800 border border-white/15 text-white text-xs sm:text-sm font-bold outline-none focus:border-aurora-400"
+                                            className="spatial-input px-3 py-1.5 rounded-xl text-xs font-bold max-w-xs truncate"
                                         >
-                                            {allInspectorItems.map(opt => (
-                                                <option key={opt.id} value={opt.id}>{opt.title}</option>
+                                            {allInspectorItems.map(x => (
+                                                <option key={x.id} value={x.id}>{x.title}</option>
                                             ))}
                                         </select>
                                     </div>
-
                                     <div className="flex items-center gap-1.5 shrink-0">
-                                        <div className="hidden sm:inline-flex p-0.5 rounded-xl bg-void-800 border border-white/15">
+                                        <div className="inline-flex p-0.5 rounded-xl spatial-soft text-[11px] font-bold">
                                             <button
                                                 type="button"
                                                 onClick={() => setInspectorModal(p => ({ ...p, viewport: 'desktop' }))}
-                                                className={`px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 ${inspectorModal.viewport === 'desktop' ? 'bg-aurora-400 text-void-950' : 'text-slate-300 hover:text-white'}`}
+                                                className={`px-2.5 py-1.5 rounded-lg ${inspectorModal.viewport === 'desktop' ? 'bg-prism-400 text-void-950 font-extrabold' : 'text-secondary-adaptive'}`}
                                             >
-                                                <Icon name="Monitor" size={14} /> จอคอมฯ
+                                                คอมฯ
                                             </button>
                                             <button
                                                 type="button"
                                                 onClick={() => setInspectorModal(p => ({ ...p, viewport: 'mobile' }))}
-                                                className={`px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 ${inspectorModal.viewport === 'mobile' ? 'bg-aurora-400 text-void-950' : 'text-slate-300 hover:text-white'}`}
+                                                className={`px-2.5 py-1.5 rounded-lg ${inspectorModal.viewport === 'mobile' ? 'bg-prism-400 text-void-950 font-extrabold' : 'text-secondary-adaptive'}`}
                                             >
-                                                <Icon name="Smartphone" size={14} /> มือถือ
+                                                มือถือ
                                             </button>
                                         </div>
-
                                         <button
                                             type="button"
                                             onClick={() => setInspectorModal(p => ({ ...p, reloadKey: Date.now() }))}
-                                            className="w-9 h-9 rounded-xl bg-void-800 hover:bg-void-700 text-slate-200 flex items-center justify-center"
                                             title="รีโหลดหน้าพรีวิว"
+                                            className="spatial-soft w-9 h-9 rounded-xl text-prism-adaptive flex items-center justify-center"
                                         >
                                             <Icon name="RefreshCw" size={15} />
                                         </button>
@@ -3146,17 +3433,18 @@
                                             href={inspectorModal.item.url}
                                             target="_blank"
                                             rel="noreferrer"
-                                            className="px-3 h-9 rounded-xl bg-aurora-400 hover:bg-aurora-300 text-void-950 text-xs font-extrabold inline-flex items-center gap-1.5"
+                                            title="เปิดแท็บใหม่"
+                                            className="spatial-soft w-9 h-9 rounded-xl text-accent-adaptive flex items-center justify-center"
                                         >
-                                            <Icon name="ExternalLink" size={14} /> <span className="hidden sm:inline">แท็บใหม่</span>
+                                            <Icon name="ExternalLink" size={15} />
                                         </a>
                                         <button
                                             type="button"
                                             onClick={() => setInspectorModal(p => ({ ...p, open: false }))}
-                                            className="w-9 h-9 rounded-xl bg-rose-600 hover:bg-rose-500 text-white flex items-center justify-center"
-                                            title="ปิดหน้าต่างพรีวิว"
+                                            aria-label="ปิดหน้าต่างพรีวิว"
+                                            className="spatial-soft w-9 h-9 rounded-xl text-rose-400 flex items-center justify-center"
                                         >
-                                            <Icon name="X" size={18} />
+                                            <Icon name="X" size={16} />
                                         </button>
                                     </div>
                                 </div>
