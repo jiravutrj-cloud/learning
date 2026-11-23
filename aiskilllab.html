@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="./styles.css">
     <script src="./data.js" onerror="console.warn('data.js not loaded, using built-in defaults')"></script>
     <script src="./learning-core.js" onerror="console.warn('learning-core.js not loaded, using built-in defaults')"></script>
-    <script src="./skilllab-engine.js?v=202706" onerror="console.warn('skilllab-engine.js not loaded')"></script>
+    <script src="./skilllab-engine.js?v=202707" onerror="console.warn('skilllab-engine.js not loaded')"></script>
     <!-- ซิงค์โหมดมืด/สว่างทันทีจาก localStorage ป้องกันจอกระพริบ -->
     <script>
       (function () {
@@ -241,7 +241,7 @@
       }
     }
     </script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
 </head>
 <body>
     <div id="lab-root">
@@ -283,13 +283,13 @@
       }, 10000);
     </script>
 
-    <script type="text/babel" data-type="module">
+    <script type="text/babel" data-type="module" data-presets="react">
         import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
         import { createRoot } from 'react-dom/client';
         import * as LucideIcons from 'lucide-react';
         import { initializeApp, getApps, getApp } from 'firebase/app';
         import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
-        import { getFirestore, doc, setDoc, onSnapshot } from 'firebase/firestore';
+        import { getFirestore, doc, setDoc, onSnapshot, increment } from 'firebase/firestore';
 
         // ============================================================================
         // 1. CONFIGURATION, CONSTANTS & AUDIO HELPERS (เชื่อม skilllab-engine.js 100%)
@@ -900,6 +900,7 @@
             const [advisorAsking, setAdvisorAsking] = useState(false);
 
             const [toast, setToast] = useState({ visible: false, text: '', type: 'success' });
+            const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
 
             const voiceSessionRef = useRef(0);
             const advisorSessionRef = useRef(0);
@@ -920,6 +921,8 @@
             const evalAbortRef = useRef(null);
             const silenceAnchorRef = useRef(0);
             const silenceCountedRef = useRef(false);
+            const preSummarySentRef = useRef(false);
+            const postSummarySentRef = useRef(false);
 
             const selectedMode = useMemo(() => PRACTICE_MODES.find(m => m.id === modeId) || PRACTICE_MODES[0], [modeId]);
             const isEn = selectedMode.lang === 'en';
@@ -984,6 +987,17 @@
             useEffect(() => {
                 const el = document.getElementById('lab-root');
                 if (el) el.dataset.mounted = 'true';
+                if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost')) {
+                    navigator.serviceWorker.register('./sw.js').catch(() => {});
+                }
+                const onOn = () => setIsOnline(true);
+                const onOff = () => setIsOnline(false);
+                window.addEventListener('online', onOn);
+                window.addEventListener('offline', onOff);
+                return () => {
+                    window.removeEventListener('online', onOn);
+                    window.removeEventListener('offline', onOff);
+                };
             }, []);
 
             useEffect(() => {
@@ -1521,6 +1535,8 @@
                 setCoachWhisper('');
                 setEvalReport(null);
                 setPostConfidenceSaved(false);
+                preSummarySentRef.current = false;
+                postSummarySentRef.current = false;
                 setShowToolsSheet(false);
                 setShowChartModal(false);
                 setAudioBlockedRetry(null);
@@ -1837,6 +1853,7 @@
                     const curUser = savedRaw.user || learner;
                     if (curUser && curUser.id && !String(curUser.id).startsWith('guest_')) {
                         const prevHist = Array.isArray(curUser.skillLabHistory) ? curUser.skillLabHistory : [];
+                        const wasAlreadyLabPassed = Boolean(curUser.skillLabPassed || prevHist.length > 0);
                         const nextHist = postConfOverride && prevHist.length > 0
                             ? [...prevHist.slice(0, -1), { ...prevHist[prevHist.length - 1], postSelfEfficacy: postObj, postSelfEfficacyAvg: postAvg }]
                             : [...prevHist, entry].slice(-20);
@@ -1868,9 +1885,38 @@
                             );
                             if (typeof CORE.buildAnonTelemetryId === 'function' && typeof CORE.buildExecutiveTelemetryPayload === 'function') {
                                 const anonId = CORE.buildAnonTelemetryId(curUser.id);
+                                const telemetryBase = CORE.buildExecutiveTelemetryPayload(updatedUser);
                                 await setDoc(
                                     doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'executive_telemetry', anonId),
-                                    CORE.buildExecutiveTelemetryPayload(updatedUser),
+                                    {
+                                        ...telemetryBase,
+                                        ...(preAvg !== null ? { preSelfEfficacyAvg: preAvg } : {}),
+                                        ...(postAvg !== null ? { postSelfEfficacyAvg: postAvg } : {})
+                                    },
+                                    { merge: true }
+                                );
+                            }
+
+                            // Zero-Cost Scalability Guard: อัปเดตยอดสรุปรวม 1 ใบ (executive_summary/global)
+                            const summaryPatch = {};
+                            if (!postConfOverride) {
+                                if (!wasAlreadyLabPassed) summaryPatch.labUsers = increment(1);
+                                summaryPatch.skillScoreSum = increment(entry.score);
+                                summaryPatch.skillScoreCount = increment(1);
+                                if (preAvg !== null && !preSummarySentRef.current) {
+                                    preSummarySentRef.current = true;
+                                    summaryPatch.preEffSum = increment(preAvg);
+                                    summaryPatch.preEffCount = increment(1);
+                                }
+                            } else if (postAvg !== null && !postSummarySentRef.current) {
+                                postSummarySentRef.current = true;
+                                summaryPatch.postEffSum = increment(postAvg);
+                                summaryPatch.postEffCount = increment(1);
+                            }
+                            if (Object.keys(summaryPatch).length > 0) {
+                                await setDoc(
+                                    doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'executive_summary', 'global'),
+                                    { ...summaryPatch, updatedAt: new Date().toISOString() },
                                     { merge: true }
                                 );
                             }
@@ -1991,7 +2037,7 @@
                                                 AI Skill Lab <span className="text-accent-adaptive">3D</span>
                                             </span>
                                             <span className="text-[10px] font-mono text-muted-adaptive block truncate">
-                                                rjcloud.organ 2.0 • ฝึกสื่อสารกับญาติเสมือนจริง
+                                                rjcloud.organ 2.0 • {!isOnline ? 'โหมดออฟไลน์ ICU (สำรองในตัว)' : 'ฝึกสื่อสารกับญาติเสมือนจริง'}
                                             </span>
                                         </div>
                                     </div>
