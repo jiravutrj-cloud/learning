@@ -1,6 +1,6 @@
 /* ============================================================================
  * rjcloud.organ 2.0 — Certificate, Real QR Code & Profession-Aware Credit Engine
- * ไฟล์ที่ 1/5 (cert-engine.js • Zero-Build Standalone Module)
+ * ไฟล์ที่ 2/5 (cert-engine.js • Zero-Build Standalone Module • Clean Production Build)
  *
  * นโยบายความเท่าเทียมและความถูกต้องตามสภาวิชาชีพ (Profession-Aware Equal Honor):
  * 1. มาตรฐานและเกียรติเท่าเทียมกัน 100% ทุกกลุ่มการเรียน (ไม่ระบุแยกผู้เรียนใหม่/ต่อเนื่อง/Onsite)
@@ -243,19 +243,27 @@
 
   /**
    * สร้าง URL ตรวจสอบเอกสารจริงบนหน้า verify.html?code=...
+   * (รองรับทั้งโดเมนจริงบน GitHub Pages และ Fallback ไปยัง learn.coerj.com ในโหมดพรีวิว)
    */
   function buildVerifyUrl(certificateCode, certPrefix) {
     const code = certificateCode || ((certPrefix || 'RJC-2027') + '-DEMO01');
     try {
-      const base = global.location.href
-        .split('?')[0]
-        .split('#')[0]
-        .replace(/[^/]*\.html$/i, '');
-      const normalizedBase = base.endsWith('/') ? base : base + '/';
-      return normalizedBase + 'verify.html?code=' + encodeURIComponent(code);
-    } catch (_) {
-      return 'https://learn.coerj.com/verify.html?code=' + encodeURIComponent(code);
-    }
+      const loc = global.location;
+      const isRealHost =
+        loc &&
+        (loc.protocol === 'https:' || loc.protocol === 'http:') &&
+        loc.origin !== 'null' &&
+        !/(googleusercontent|webcontainer|stackblitz|sandbox|srcdoc|blob:)/i.test(loc.href);
+      if (isRealHost) {
+        const base = loc.href
+          .split('?')[0]
+          .split('#')[0]
+          .replace(/[^/]*\.html$/i, '');
+        const normalizedBase = base.endsWith('/') ? base : base + '/';
+        return normalizedBase + 'verify.html?code=' + encodeURIComponent(code);
+      }
+    } catch (_) {}
+    return 'https://learn.coerj.com/verify.html?code=' + encodeURIComponent(code);
   }
 
   // ============================================================================
