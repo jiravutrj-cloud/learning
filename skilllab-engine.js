@@ -1,26 +1,29 @@
 /**
  * ============================================================================
- * rjcloud.organ 2.0 — AI Skill Lab 3D Engine (skilllab-engine.js • อัปเกรด Zero-Cost 2027)
+ * rjcloud.organ 2.0 — AI Skill Lab 3D Engine (skilllab-engine.js • Anime Human Hologram Edition)
  * โมดูลกลางแบบ Zero-Build เผยแพร่ผ่าน window.RJCLOUD_SKILLLAB
  *
  * องค์ประกอบครบชุดภายในไฟล์เดียว:
- * 1. Emotion & Radar Metadata + 6 Hologram Styles Registry
- * 2. 6 Clinical Personas (รวมเคส 5 ผู้ป่วยเด็ก & เคส 6 ส่งเวร SBAR แพทย์เวร ICU) + Multi-Voice Cast
- * 3. Realism #1: 3 Hidden Barriers per Case + Emotional Inertia Trust Engine
- * 4. Realism #2: Hard Mode Real-World Curveballs (Phone Interruption & Silent Sob)
- * 5. Realism #3: Targeted 4-Stage Micro-Drill Gauntlet & Instant Evaluator
- * 6. Realism #4 (0 THB): Client-Side Vocal Tone Monitor (Web Audio API) + RAM-Only Audio Replay
- * 7. Realism #5 (0 THB): Perceived Latency Masking Cues + LINE In-App Browser Auto-Detector
- * 8. Research R2R (0 THB): Pre/Post Self-Efficacy Scale + SUS Score + Blind Transcript Builder
- * 9. AI Lab Advisor v3 + Clinical Mastery Badges Calculator
- * 10. Web Audio API Consultation Room SFX + Three.js 6-Style 3D Hologram Renderer
+ * 1. Emotion & Radar Metadata (รองรับ 6 อารมณ์คลินิกและเรดาร์ประเมินผล 5 แกน)
+ * 2. 6 Clinical Personas (เคส 1–4 ญาติผู้ป่วย, เคส 5 ผู้ป่วยเด็ก, เคส 6 ส่งเวร SBAR แพทย์เวร ICU)
+ * 3. Context-Aware 3D Anime Human Hologram Renderer (Three.js r128 • Zero-Cost):
+ *    - ปรับตัวละครอัตโนมัติตามเนื้อเรื่องและเพศ/วัยของแต่ละเคส (ไม่ต้องให้ผู้เรียนเลือกตัวอย่างเอง)
+ *    - รองรับการแสดงตัวละครหลายตัวพร้อมกันในห้อง (เช่น เคส 3 แสดงทั้ง ภรรยา และ คุณแม่ คู่กัน)
+ *    - ขยับปาก Lip-Sync แยกตามผู้พูดจริง, กะพริบตา, คิ้วขมวด/เศร้า, หยดน้ำตา และลากหมุนได้ 360°
+ * 4. Realism #1: 3 Hidden Barriers per Case + Emotional Inertia Trust Engine
+ * 5. Realism #2: Hard Mode Real-World Curveballs (Phone Interruption & Silent Sob)
+ * 6. Realism #3: Targeted 4-Stage Micro-Drill Gauntlet & Instant Evaluator
+ * 7. Realism #4 (0 THB): Client-Side Vocal Tone Monitor (Web Audio API) + RAM-Only Audio Replay
+ * 8. Realism #5 (0 THB): Perceived Latency Masking Cues + LINE In-App Browser Auto-Detector
+ * 9. Research R2R (0 THB): Pre/Post Self-Efficacy Scale + SUS Score + Blind Transcript Builder
+ * 10. AI Lab Advisor v3 + Clinical Mastery Badges + Web Audio Consultation Room SFX
  * ============================================================================
  */
 (function (global) {
   'use strict';
 
   // ==========================================================================
-  // 1. EMOTIONS, RADAR AXES & 6 HOLOGRAM STYLES
+  // 1. EMOTIONS & RADAR AXES METADATA
   // ==========================================================================
   const EMOTIONS = {
     SHOCK: {
@@ -34,6 +37,14 @@
       speed: 1.45,
       bloom: 0.18,
       tension: 0.92,
+      browY: 0.062,
+      browTilt: 0.18,
+      eyeOpen: 1.22,
+      mouthCurve: -0.022,
+      mouthBaseOpen: 0.052,
+      headPitch: -0.05,
+      headRoll: 0.03,
+      tear: 0.45,
       ttsStyleTH: 'พูดภาษาไทยด้วยน้ำเสียงตกใจ ช็อก หายใจถี่และสั่นเครือเหมือนเพิ่งได้รับข่าวร้ายกะทันหัน',
       ttsStyleEN: 'Speak in a shocked, breathless, trembling voice as if receiving sudden devastating news'
     },
@@ -48,6 +59,14 @@
       speed: 0.95,
       bloom: 0.42,
       tension: 0.65,
+      browY: 0.015,
+      browTilt: 0.10,
+      eyeOpen: 1.00,
+      mouthCurve: -0.010,
+      mouthBaseOpen: 0.008,
+      headPitch: 0.02,
+      headRoll: 0.10,
+      tear: 0.0,
       ttsStyleTH: 'พูดภาษาไทยด้วยน้ำเสียงสับสน กังวลใจ ลังเลและอยากได้คำอธิบายที่ชัดเจน',
       ttsStyleEN: 'Speak in a confused, anxious, questioning tone seeking clarity'
     },
@@ -62,6 +81,14 @@
       speed: 1.55,
       bloom: 0.12,
       tension: 1.0,
+      browY: -0.038,
+      browTilt: -0.30,
+      eyeOpen: 0.78,
+      mouthCurve: -0.032,
+      mouthBaseOpen: 0.008,
+      headPitch: 0.06,
+      headRoll: -0.04,
+      tear: 0.0,
       ttsStyleTH: 'พูดภาษาไทยด้วยน้ำเสียงตึงเครียด แข็งกร้าว ปกป้องคนรัก และมีความระแวง',
       ttsStyleEN: 'Speak in a tense, defensive, firm, and skeptical tone protecting a loved one'
     },
@@ -76,6 +103,14 @@
       speed: 0.68,
       bloom: 0.54,
       tension: 0.48,
+      browY: 0.022,
+      browTilt: 0.32,
+      eyeOpen: 0.80,
+      mouthCurve: -0.034,
+      mouthBaseOpen: 0.006,
+      headPitch: 0.13,
+      headRoll: -0.06,
+      tear: 1.0,
       ttsStyleTH: 'พูดภาษาไทยด้วยน้ำเสียงแผ่วเบา โศกเศร้า สะอื้นเล็กน้อยด้วยความอาลัยรัก',
       ttsStyleEN: 'Speak softly in a deeply grieving, tearful, tender tone'
     },
@@ -90,6 +125,14 @@
       speed: 0.82,
       bloom: 0.66,
       tension: 0.5,
+      browY: 0.004,
+      browTilt: 0.06,
+      eyeOpen: 0.94,
+      mouthCurve: -0.004,
+      mouthBaseOpen: 0.004,
+      headPitch: 0.04,
+      headRoll: 0.06,
+      tear: 0.0,
       ttsStyleTH: 'พูดภาษาไทยด้วยน้ำเสียงนุ่มลงแต่ยังลังเล ครุ่นคิดและชั่งน้ำหนักในใจ',
       ttsStyleEN: 'Speak in a softer, thoughtful, hesitant tone weighing a difficult decision'
     },
@@ -104,6 +147,14 @@
       speed: 0.6,
       bloom: 1.0,
       tension: 0.1,
+      browY: 0.026,
+      browTilt: 0.04,
+      eyeOpen: 1.04,
+      mouthCurve: 0.044,
+      mouthBaseOpen: 0.004,
+      headPitch: -0.01,
+      headRoll: 0.02,
+      tear: 0.0,
       ttsStyleTH: 'พูดภาษาไทยด้วยน้ำเสียงสงบ อ่อนโยน ผ่อนคลาย และรู้สึกไว้วางใจผู้สนทนา',
       ttsStyleEN: 'Speak calmly, gently, and warmly with growing trust'
     }
@@ -117,15 +168,6 @@
     { key: 'dignity', labelTH: 'ไม่เร่งรัด & เกียรติร่าง', shortTH: 'ให้เกียรติร่าง', labelEN: 'Zero Pressure' }
   ];
 
-  const HOLOGRAM_STYLES = [
-    { id: 'lotus', badge: '01', nameTH: 'ดอกบัวแสง (Lotus)', nameEN: 'Luminous Lotus', descTH: 'กลีบดอกบัวแสงค่อยๆ ผลิบานตามระดับความไว้วางใจ (Trust)' },
-    { id: 'liquid', badge: '02', nameTH: 'ลูกแก้วออร่า (Liquid)', nameEN: 'Liquid Aurora Orb', descTH: 'ลูกแก้วของเหลวสไตล์ Apple Intelligence พริ้วตามเสียงพูด' },
-    { id: 'silk', badge: '03', nameTH: 'คลื่นไหมแสง (Silk)', nameEN: 'Breathing Silk', descTH: 'ริ้วคลื่นไหม 3 มิติ สะท้อนจังหวะหายใจและความเงียบ 2.5 วิ' },
-    { id: 'particles', badge: '04', nameTH: 'แกนอนุภาค (Quantum)', nameEN: 'Quantum Core', descTH: 'กลุ่มอนุภาคพลังงานดิจิทัลโคจรรอบแกนแสง' },
-    { id: 'dual', badge: '05', nameTH: 'ดวงแสงคู่ (2 เสียง)', nameEN: 'Dual-Core Voices', descTH: 'แยกดวงแสง 2 ดวงสำหรับเคส 3 (ภรรยา vs คุณแม่)' },
-    { id: 'prism', badge: '06', nameTH: 'คริสตัลหัวใจ (Prism)', nameEN: 'Crystalline Prism', descTH: 'แกนผลึกคริสตัลโปร่งแสงหมุนนุ่มนวลและเรืองแสงตามอารมณ์' }
-  ];
-
   // ==========================================================================
   // 2. CLINICAL PERSONAS, MULTI-VOICE CAST & ICU BRIEFING CARDS
   // ==========================================================================
@@ -136,10 +178,10 @@
       accent: '#38bdf8',
       titleTH: '1. ญาติสับสนเรื่องภาวะสมองตาย (เคสคุณพ่อ)',
       titleEN: '1. Brain Death & Ventilator Confusion (Father)',
-      tagTH: 'มาตรฐาน',
+      tagTH: 'มาตรฐาน • 1 ตัวละครหญิง',
       tagEN: 'Standard',
       patientRoleTH: 'คุณพ่อ (อายุ 52 ปี อุบัติเหตุทางศีรษะ TBI)',
-      speakerRoleTH: 'คุณแพรว (ลูกสาวของผู้ป่วย)',
+      speakerRoleTH: 'คุณแพรว (ลูกสาวของผู้ป่วย • หญิง)',
       descTH: 'ลูกสาวเห็นหน้าอกคุณพ่อยังขยับและตัวอุ่นจากเครื่องช่วยหายใจ จึงยังเชื่อไม่ได้ว่าสมองตายถาวร',
       descEN: 'Daughter sees chest movement from ventilator support and struggles to understand brain death.',
       openingEmotion: 'CONFUSED',
@@ -157,10 +199,10 @@
       accent: '#fbbf24',
       titleTH: '2. ความเชื่อ ศาสนา และพิธีกรรม (เคสน้องชาย)',
       titleEN: '2. Cultural Beliefs & Funeral Rites (Brother)',
-      tagTH: 'บริบทไทย',
+      tagTH: 'บริบทไทย • 1 ตัวละครหญิง',
       tagEN: 'Cultural',
       patientRoleTH: 'น้องชาย (อายุ 28 ปี อุบัติเหตุจราจร)',
-      speakerRoleTH: 'คุณฝน (พี่สาว — กังวลแทนคุณยาย)',
+      speakerRoleTH: 'คุณฝน (พี่สาว — กังวลแทนคุณยาย • หญิง)',
       descTH: 'พี่สาวกังวลแทนคุณยายว่าหากบริจาคอวัยวะของน้องชายแล้วชาติหน้าอวัยวะจะไม่ครบ หรือทำพิธีศาสนาไม่ได้',
       descEN: 'Older sister worries on behalf of their grandmother about spiritual wholeness and funeral rites.',
       openingEmotion: 'HESITANT',
@@ -178,10 +220,10 @@
       accent: '#f43f5e',
       titleTH: '3. ความขัดแย้งในครอบครัว 2 เสียง (เคสคุณต้น)',
       titleEN: '3. Family Conflict — Two Voices (Husband/Son)',
-      tagTH: '2 เสียงจริง',
-      tagEN: 'Dual Voice',
+      tagTH: '2 ตัวละครหญิงในห้อง',
+      tagEN: 'Dual Character',
       patientRoleTH: 'คุณต้น (อายุ 36 ปี เลือดออกในสมอง)',
-      speakerRoleTH: 'ภรรยา และ คุณแม่ของผู้ป่วย (2 เสียง)',
+      speakerRoleTH: 'ภรรยา และ คุณแม่ของผู้ป่วย (2 ตัวละครหญิง)',
       descTH: 'ภรรยาอยากทำตามบัตรบริจาคของคุณต้น แต่คุณแม่คัดค้านอย่างรุนแรง ฝึกวางตัวเป็นกลางไม่ฝืนใจครอบครัว',
       descEN: 'Wife wants to honor her husband’s donor card while his mother strongly objects.',
       openingEmotion: 'ANGRY',
@@ -199,10 +241,10 @@
       accent: '#c084fc',
       titleTH: '4. ญาติระแวงระบบและกลัวค่าใช้จ่าย (เคสคุณแม่)',
       titleEN: '4. System Distrust & Cost Concerns (Mother)',
-      tagTH: 'โปร่งใส ODC',
+      tagTH: 'โปร่งใส ODC • 1 ตัวละครหญิง',
       tagEN: 'Transparency',
       patientRoleTH: 'คุณแม่ (อายุ 58 ปี หลอดเลือดสมองแตก)',
-      speakerRoleTH: 'คุณนุช (ลูกสาวของผู้ป่วย)',
+      speakerRoleTH: 'คุณนุช (ลูกสาวของผู้ป่วย • หญิง)',
       descTH: 'ลูกสาวระแวงเรื่องการลัดคิวให้คนรวย การซื้อขายอวัยวะ และกลัวครอบครัวต้องจ่ายค่าห้อง ICU เพิ่ม',
       descEN: 'Daughter suspects queue-jumping for wealthy patients or extra ICU costs.',
       openingEmotion: 'ANGRY',
@@ -220,11 +262,11 @@
       accent: '#f472b6',
       titleTH: '5. พ่อแม่ผู้ป่วยเด็ก/วัยรุ่น (เคสน้องต้นกล้า)',
       titleEN: '5. Pediatric Donor — Grieving Parents (14yo Son)',
-      tagTH: 'อ่อนไหวสูงสุด',
+      tagTH: 'อ่อนไหวสูงสุด • คุณแม่ (หญิง)',
       tagEN: 'Pediatric',
       patientRoleTH: 'น้องต้นกล้า (อายุ 14 ปี อุบัติเหตุจักรยานยนต์ TBI)',
-      speakerRoleTH: 'คุณแม่น้องต้นกล้า (อารมณ์ช็อกและอาลัยรุนแรง)',
-      descTH: 'เคสผู้ป่วยเยาวชนอายุ 14 ปี ที่พ่อแม่เพิ่งสูญเสียกะทันหัน ฝึกการปลอบประโลมความโศกเศร้ารุนแรงและการเว้นความเงียบเยียวยา',
+      speakerRoleTH: 'คุณแม่น้องต้นกล้า (อารมณ์ช็อกและอาลัยรุนแรง • หญิง)',
+      descTH: 'เคสผู้ป่วยเยาวชนอายุ 14 ปี ที่คุณแม่เพิ่งสูญเสียกะทันหัน ฝึกการปลอบประโลมความโศกเศร้ารุนแรงและการเว้นความเงียบเยียวยา',
       descEN: 'Sudden loss of a 14-year-old boy; practice deep bereavement support, pacing, and gentle pediatric family communication.',
       openingEmotion: 'SHOCK',
       openingActionTH: 'กอดกระเป๋านักเรียนของลูกไว้แนบอก น้ำตาไหลไม่หยุด มือสั่นและหายใจสะอื้นถี่',
@@ -241,10 +283,10 @@
       accent: '#2dd4bf',
       titleTH: '6. ส่งเวร SBAR แพทย์เวร ICU (Potential Donor)',
       titleEN: '6. ICU SBAR Handoff with Attending Physician',
-      tagTH: 'ทีมสหสาขา SBAR',
+      tagTH: 'ทีมสหสาขา SBAR • แพทย์ชาย',
       tagEN: 'SBAR Team',
       patientRoleTH: 'ผู้ป่วยชาย 38 ปี TBI • GCS 3 • BP 78/46 • UO 640 mL/hr',
-      speakerRoleTH: 'นพ.ภาคิน (แพทย์เวร ICU • สื่อสารสหสาขาวิชาชีพ)',
+      speakerRoleTH: 'นพ.ภาคิน (แพทย์เวร ICU • ชาย)',
       descTH: 'ฝึกการรายงานเคส Potential Donor แบบ SBAR กับแพทย์เวร ICU เมื่อพบ GCS = 3, ความดันตก และปัสสาวะออกมาก (สงสัยเบาจืด DI)',
       descEN: 'Practice concise SBAR clinical handoff with the ICU physician for an unstable potential donor (GCS 3, hypotension, polyuria/DI).',
       openingEmotion: 'CONFUSED',
@@ -315,7 +357,6 @@
         const fb = FALLBACK_PERSONAS.find(function (x) { return x.id === p.id; }) || FALLBACK_PERSONAS[0];
         return Object.assign({}, fb, p);
       });
-      // เติมเคสระดับสูงใหม่ (เคส 5 ผู้ป่วยเด็ก และเคส 6 ส่งเวร SBAR) หากยังไม่มีใน data.js
       FALLBACK_PERSONAS.forEach(function (fb) {
         if (!merged.some(function (m) { return m.id === fb.id; })) {
           merged.push(fb);
@@ -455,9 +496,6 @@
     return CASE_HIDDEN_BARRIERS[personaId] || CASE_HIDDEN_BARRIERS.standard;
   }
 
-  /**
-   * ตรวจว่าข้อความล่าสุดของผู้เรียนคลายปมในใจข้อใดของเคสนี้ได้บ้าง
-   */
   function evaluateBarriersUnlocked(personaId, userText, currentUnlockedIds) {
     const barriers = getCaseBarriers(personaId);
     const unlocked = new Set(Array.isArray(currentUnlockedIds) ? currentUnlockedIds : []);
@@ -478,12 +516,6 @@
     };
   }
 
-  /**
-   * ระบบแรงเฉื่อยความไว้วางใจ (Emotional Inertia):
-   * - Trust ค่อยๆ ขยับตามการคลายปมจริง + เว้นความเงียบ 2.5 วิ + ไม่มีคำกระทบใจ
-   * - หากมีคำกระทบใจ Trust ลดลงทันที
-   * - ป้องกันไม่ให้ AI กระโดดไป CALM ทันทีถ้ายังคลายปมไม่ถึง 2/3 หรือ Trust < 72
-   */
   function computeInertiaTrust(params) {
     const prevTrust = typeof params.prevTrust === 'number' ? params.prevTrust : 30;
     const aiEmotion = EMOTIONS[params.aiEmotion] ? params.aiEmotion : 'CONFUSED';
@@ -494,28 +526,22 @@
     const isHard = params.difficulty === 'hard';
 
     let delta = 0;
-    // แรงบวกจากการคลายปมในใจจริง
     delta += newlyUnlockedCount * (isHard ? 14 : 18);
-    // แรงบวกจากการเว้นความเงียบเยียวยา 2.5 วินาที
     if (usedSilence) delta += 7;
-    // แรงดึงเล็กน้อยตามทิศทางอารมณ์ที่ AI ประเมิน (จำกัดไม่ให้กระโดดพรวด)
     const emoTarget = EMOTIONS[aiEmotion].baseTrust;
     const softPull = Math.max(-6, Math.min(8, Math.round((emoTarget - prevTrust) * 0.22)));
     delta += softPull;
 
-    // แรงลบหากเผลอใช้คำกระทบใจ
     if (triggerCount > 0) {
       delta -= triggerCount * (isHard ? 15 : 11);
     }
 
-    // ข้อความสั้นมากเกินไป (< 18 ตัวอักษร) ไม่เพิ่ม Trust
     if (String(params.userText || '').trim().length < 18 && newlyUnlockedCount === 0) {
       delta = Math.min(delta, 1);
     }
 
     const nextTrust = Math.max(10, Math.min(96, Math.round(prevTrust + delta)));
 
-    // ควบคุมอารมณ์ไม่ให้กระโดดไป CALM เร็วเกินจริง
     let effectiveEmotion = aiEmotion;
     if (triggerCount > 0 && (effectiveEmotion === 'CALM' || effectiveEmotion === 'HESITANT')) {
       effectiveEmotion = 'ANGRY';
@@ -584,7 +610,7 @@
       stage: 1,
       personaId: 'standard',
       emotion: 'CONFUSED',
-      badgeTH: 'ด่าน 1/4 • หน้าอกยังขยับ',
+      badgeTH: 'ด่าน 1/4 • คุณแพรว (ลูกสาว)',
       titleTH: 'ตอบคำถามเรื่องเครื่องช่วยหายใจกับภาวะสมองตาย',
       actionTH: 'จับแขนคุณเบาๆ แววตาสับสนและเต็มไปด้วยความหวัง',
       promptTH: 'เมื่อกี้หนูเพิ่งไปจับมือคุณพ่อ ตัวพ่อก็ยังอุ่น หน้าอกก็ยังขยับขึ้นลงอยู่เลย ทำไมคุณหมอบอกว่าคุณพ่อเสียชีวิตแล้วล่ะคะ?',
@@ -600,7 +626,7 @@
       stage: 2,
       personaId: 'belief',
       emotion: 'HESITANT',
-      badgeTH: 'ด่าน 2/4 • ชาติหน้าไม่ครบ 32',
+      badgeTH: 'ด่าน 2/4 • คุณฝน (พี่สาว)',
       titleTH: 'ตอบคำถามความเชื่อ ศาสนา และการดูแลร่าง',
       actionTH: 'กำทิชชูแน่น สีหน้ากังวลแทนคุณยายที่บ้าน',
       promptTH: 'คุณยายท่านกลัวมากค่ะว่าถ้าบริจาคอวัยวะของน้องชายไปแล้ว ชาติหน้าอวัยวะจะไม่ครบ 32 แล้วจะแต่งตัวทำพิธีศาสนาได้เหมือนเดิมไหมคะ?',
@@ -616,7 +642,7 @@
       stage: 3,
       personaId: 'distrust',
       emotion: 'ANGRY',
-      badgeTH: 'ด่าน 3/4 • ลัดคิว & ค่า ICU',
+      badgeTH: 'ด่าน 3/4 • คุณนุช (ลูกสาว)',
       titleTH: 'ชี้แจงความโปร่งใส ODC และยืนยันไม่มีค่าใช้จ่ายเพิ่ม',
       actionTH: 'จ้องมองตรงๆ ด้วยสีหน้าระแวดระวัง',
       promptTH: 'ถามตรงๆ เลยนะคะ อวัยวะคุณแม่จะถูกเอาไปขายให้คนรวยลัดคิวใช่ไหมคะ? แล้วระหว่างรอผ่าตัด ครอบครัวต้องเสียค่าห้อง ICU เพิ่มหรือเปล่า?',
@@ -632,7 +658,7 @@
       stage: 4,
       personaId: 'conflict',
       emotion: 'ANGRY',
-      badgeTH: 'ด่าน 4/4 • ขัดแย้ง 2 เสียง',
+      badgeTH: 'ด่าน 4/4 • ภรรยา & คุณแม่',
       titleTH: 'วางตัวเป็นกลางระหว่างภรรยาและคุณแม่',
       actionTH: 'ภรรยามองขอความช่วยเหลือ ส่วนคุณแม่กอดอกแน่นและเสียงสั่น',
       promptTH: '[ภรรยา]: พี่ต้นทำบัตรบริจาคไว้ หนูอยากทำตามเจตนาพี่เขาค่ะ... [คุณแม่]: แม่ไม่ยอมเด็ดขาด! ตกลงคุณพยาบาลจะเอาตามบัตรหรือเอาตามใจแม่คะ?!',
@@ -675,14 +701,14 @@
   }
 
   // ==========================================================================
-  // 6. AI LAB ADVISOR v3 (วิเคราะห์ประวัติจริง + รองรับ 6 เคส + แนะนำฟีเจอร์ 0 บาท)
+  // 6. AI LAB ADVISOR v3 (วิเคราะห์ประวัติจริง + รองรับ 6 เคส + ตัวละครอนิเมะตามบริบท)
   // ==========================================================================
   const ADVISOR_GOALS = [
     { id: 'auto', label: 'AI วิเคราะห์ให้', icon: 'Sparkles' },
     { id: 'first', label: 'เพิ่งฝึกครั้งแรก', icon: 'HeartHandshake' },
     { id: 'drill4', label: 'ซ้อม 4 ด่านคำถามหนัก', icon: 'Zap' },
     { id: 'hard_challenge', label: 'ท้าทาย Hard + เหตุการณ์แทรก', icon: 'Flame' },
-    { id: 'conflict2', label: 'ฝึกเคสหิน 2 เสียง', icon: 'Users' },
+    { id: 'conflict2', label: 'ฝึกเคสหิน 2 ตัวละครในห้อง', icon: 'Users' },
     { id: 'pediatric', label: 'เคสผู้ป่วยเด็ก (อ่อนไหวสูง)', icon: 'Baby' },
     { id: 'sbar_team', label: 'ฝึกส่งเวร SBAR แพทย์เวร ICU', icon: 'Stethoscope' },
     { id: 'english', label: 'ฝึกภาษาอังกฤษ', icon: 'Globe' }
@@ -702,7 +728,6 @@
     const latestRadar = u.skillLabLatestRadar || null;
     const nameShort = String(u.name || 'ผู้เรียน').trim();
 
-    // หาแกนที่คะแนนน้อยที่สุดจากเรดาร์เดิม (ถ้ามี)
     let weakestAxis = null;
     if (latestRadar && typeof latestRadar === 'object') {
       let minVal = 999;
@@ -715,34 +740,33 @@
       });
     }
 
-    // เคสที่ยังไม่เคยฝึก (รวมเคส 5 และเคส 6)
     const practicedIds = new Set(hist.map(function (h) { return h.personaId; }).filter(Boolean));
     const unpracticed = ['standard', 'belief', 'conflict', 'distrust', 'pediatric', 'sbar_doctor']
       .find(function (id) { return !practicedIds.has(id); }) || 'pediatric';
 
     if (goalId === 'first') {
       return {
-        mode: 'roleplay_th', difficulty: 'normal', personaId: 'standard', holoStyle: 'lotus',
-        headline: 'ชุดเริ่มต้นสร้างความมั่นใจ (Roleplay ไทย • Normal)',
-        reason: 'เหมาะสำหรับผู้เพิ่งเข้าห้องฝึกครั้งแรกค่ะ เคสคุณพ่อมีปมในใจ 3 ข้อที่ชัดเจน พร้อม AI Coach แนะนำประโยคและดอกบัวแสงที่ค่อยๆ ผลิบานตามความไว้วางใจ',
-        tip: 'เริ่มด้วยการแนะนำตัว แสดงความเสียใจ และเว้นความเงียบ 2.5 วินาทีหลังญาติพูดจบนะคะ',
-        speech: 'สวัสดีค่ะคุณ' + nameShort + ' สำหรับการฝึกครั้งแรก แนะนำโหมดโรลเพลย์ภาษาไทย ระดับนอร์มอล เคสคุณพ่อ พร้อมดอกบัวแสงค่ะ จะมีแนวทางคำพูดและเอไอโค้ชช่วยนำทางให้มั่นใจขึ้นค่ะ'
+        mode: 'roleplay_th', difficulty: 'normal', personaId: 'standard',
+        headline: 'ชุดเริ่มต้นสร้างความมั่นใจ (Roleplay ไทย • เคสคุณแพรว)',
+        reason: 'เหมาะสำหรับผู้เพิ่งเข้าห้องฝึกครั้งแรกค่ะ พบกับตัวละครคุณแพรว (ลูกสาว) ที่มีปมในใจ 3 ข้อชัดเจน พร้อม AI Coach แนะนำประโยคและสีหน้าอารมณ์เสมือนจริง',
+        tip: 'เริ่มด้วยการแนะนำตัว แสดงความเสียใจ และเว้นความเงียบ 2.5 วินาทีหลังคุณแพรวพูดจบนะคะ',
+        speech: 'สวัสดีค่ะคุณ' + nameShort + ' สำหรับการฝึกครั้งแรก แนะนำโหมดโรลเพลย์ภาษาไทย ระดับนอร์มอล เคสคุณแพรวลูกสาวค่ะ จะมีแนวทางคำพูดและเอไอโค้ชช่วยนำทางให้มั่นใจขึ้นค่ะ'
       };
     }
 
     if (goalId === 'drill4') {
       return {
-        mode: 'micro_drill', difficulty: 'normal', personaId: 'standard', holoStyle: 'liquid',
+        mode: 'micro_drill', difficulty: 'normal', personaId: 'standard',
         headline: 'โหมด Micro-Drill 4 ด่านคำถามหนักเฉพาะจุด (ซ้อมไว 3 นาที)',
-        reason: 'ซ้อมรับมือ 4 คำถามหินที่พยาบาล TC เจอบ่อยที่สุดเรียงต่อกัน: หน้าอกยังขยับ → ชาติหน้าไม่ครบ 32 → ลัดคิว & ค่า ICU → ขัดแย้ง 2 เสียง พร้อมตรวจและให้ประโยคต้นแบบทันทีทุกด่าน',
+        reason: 'ซ้อมรับมือ 4 คำถามหินที่พยาบาล TC เจอบ่อยที่สุดเรียงต่อกัน พร้อมเปลี่ยนตัวละครญาติอัตโนมัติทุกด่าน และตรวจให้ประโยคต้นแบบทันที',
         tip: 'ตอบให้ครบทั้งการรับฟังอารมณ์และข้อเท็จจริงคลินิกในแต่ละด่านเพื่อผ่าน 65% ขึ้นไปค่ะ',
-        speech: 'แนะนำโหมดไมโครดริลล์สี่ด่านคำถามหนักค่ะ ใช้เวลาเพียงสามนาที จะได้ซ้อมตอบคำถามหินยอดฮิตทั้งสี่ด่านพร้อมดูเฉลยประโยคต้นแบบทันทีค่ะ'
+        speech: 'แนะนำโหมดไมโครดริลล์สี่ด่านคำถามหนักค่ะ ใช้เวลาเพียงสามนาที ระบบจะเปลี่ยนตัวละครญาติให้ตรงกับแต่ละคำถามพร้อมเฉลยประโยคต้นแบบทันทีค่ะ'
       };
     }
 
     if (goalId === 'hard_challenge') {
       return {
-        mode: 'roleplay_th', difficulty: 'hard', personaId: 'distrust', holoStyle: 'silk',
+        mode: 'roleplay_th', difficulty: 'hard', personaId: 'distrust',
         headline: 'โหมดท้าทาย Hard + เหตุการณ์ไม่คาดฝันกลางห้อง (Curveballs)',
         reason: 'ซ่อนปุ่มแนวทางคำพูด 100% เพิ่มแรงเฉื่อย Trust และสุ่มเหตุการณ์หน้างานจริงกลางห้อง เช่น สายโทรศัพท์พี่ชายโทรแทรกมาค้าน หรือญาติสะอื้นเงียบทดสอบการเว้นความเงียบ 2.5 วิ',
         tip: 'เมื่อญาติสะอื้นเงียบ อย่ารีบพูดแทรกนะคะ รอให้ครบ 2.5 วิ แล้วค่อยปลอบอย่างนุ่มนวลค่ะ',
@@ -752,37 +776,37 @@
 
     if (goalId === 'conflict2') {
       return {
-        mode: 'roleplay_th', difficulty: bestScore && bestScore >= 82 ? 'hard' : 'normal', personaId: 'conflict', holoStyle: 'dual',
-        headline: 'เคสหิน 2 เสียงจริง (ภรรยา vs คุณแม่) + ดวงแสงคู่ Dual-Core',
-        reason: 'ฝึกวางตัวเป็นกลางเมื่อในห้องมีเสียงคัดค้านรุนแรง ระบบแยกเสียงพูด 2 ตัวละครจริงพร้อมดวงแสงคู่ที่จะค่อยๆ เคลื่อนเข้าหากันเมื่อคุณประคับประคองทั้งสองฝ่ายได้สำเร็จ',
+        mode: 'roleplay_th', difficulty: bestScore && bestScore >= 82 ? 'hard' : 'normal', personaId: 'conflict',
+        headline: 'เคสหิน 2 ตัวละครในห้อง (ภรรยา + คุณแม่ของคุณต้น)',
+        reason: 'ฝึกวางตัวเป็นกลางเมื่อในห้องมีตัวละครญาติ 2 คน (ภรรยา และ คุณแม่) ที่เห็นต่างกันอย่างรุนแรง โดยแต่ละตัวละครจะขยับปากและแสดงสีหน้าแยกตามผู้พูดจริง',
         tip: 'ยืนยันหลักจริยธรรมไทยว่าจะไม่ฝืนใจคุณแม่แม้มีบัตรบริจาค แล้วให้เวลาครอบครัวปรึกษากันค่ะ',
-        speech: 'แนะนำเคสความขัดแย้งสองเสียงจริง พร้อมดวงแสงคู่ค่ะ คุณจะได้ฝึกวางตัวเป็นกลางระหว่างภรรยาและคุณแม่ด้วยเสียงสองตัวละครจริงในห้องเดียวกันค่ะ'
+        speech: 'แนะนำเคสความขัดแย้งในครอบครัวค่ะ ห้องนี้จะมีตัวละครญาติสองคนคือภรรยาและคุณแม่อยู่ร่วมกัน เพื่อฝึกวางตัวเป็นกลางและประสานใจทั้งสองฝ่ายค่ะ'
       };
     }
 
     if (goalId === 'pediatric') {
       return {
-        mode: 'roleplay_th', difficulty: bestScore && bestScore >= 84 ? 'hard' : 'normal', personaId: 'pediatric', holoStyle: 'lotus',
-        headline: 'เคสระดับสูงที่ 5: พ่อแม่ผู้ป่วยเด็กอายุ 14 ปี (Bereavement Sensitivity)',
-        reason: 'สถานการณ์ที่ละเอียดอ่อนและท้าทายหัวใจที่สุด ฝึกการอยู่เคียงข้าง การคุมความนุ่มนวลของน้ำเสียง และการเว้นความเงียบเยียวยา 2.5 วิ ก่อนพูดถึงทางเลือกใดๆ',
+        mode: 'roleplay_th', difficulty: bestScore && bestScore >= 84 ? 'hard' : 'normal', personaId: 'pediatric',
+        headline: 'เคสระดับสูงที่ 5: คุณแม่ผู้ป่วยเด็กอายุ 14 ปี (Bereavement Sensitivity)',
+        reason: 'สถานการณ์ที่ละเอียดอ่อนและท้าทายหัวใจที่สุด ฝึกการอยู่เคียงข้างคุณแม่น้องต้นกล้า การคุมความนุ่มนวลของน้ำเสียง และการเว้นความเงียบเยียวยา 2.5 วิ',
         tip: 'สังเกตมาตรวัดน้ำเสียงสดขณะพูด และลองกดฟังเสียงตัวเองย้อนหลังในหน้าประเมินผลนะคะ',
-        speech: 'แนะนำเคสที่ห้า เคสพ่อแม่ผู้ป่วยเด็กอายุสิบสี่ปีค่ะ เคสนี้ละเอียดอ่อนมาก เน้นการประคับประคองความรู้สึก การคุมความนุ่มนวลของน้ำเสียง และการเว้นความเงียบเยียวยาค่ะ'
+        speech: 'แนะนำเคสที่ห้า เคสคุณแม่ผู้ป่วยเด็กอายุสิบสี่ปีค่ะ เคสนี้ละเอียดอ่อนมาก เน้นการประคับประคองความรู้สึก การคุมความนุ่มนวลของน้ำเสียง และการเว้นความเงียบเยียวยาค่ะ'
       };
     }
 
     if (goalId === 'sbar_team') {
       return {
-        mode: 'roleplay_th', difficulty: 'normal', personaId: 'sbar_doctor', holoStyle: 'prism',
-        headline: 'เคสระดับสูงที่ 6: ส่งเวร SBAR กับแพทย์เวร ICU (Potential Donor + DI)',
-        reason: 'ฝึกสื่อสารทีมสหสาขาวิชาชีพแบบ SBAR เมื่อพบ Potential Donor (GCS 3, BP 78/46, ปัสสาวะ 640 mL/hr) ให้ครบทั้ง S-B-A-R พร้อมเสนอแผนพยุงความดันและ DDAVP',
+        mode: 'roleplay_th', difficulty: 'normal', personaId: 'sbar_doctor',
+        headline: 'เคสระดับสูงที่ 6: ส่งเวร SBAR กับ นพ.ภาคิน แพทย์เวร ICU',
+        reason: 'ฝึกสื่อสารทีมสหสาขาวิชาชีพแบบ SBAR กับตัวละคร นพ.ภาคิน เมื่อพบ Potential Donor (GCS 3, BP 78/46, ปัสสาวะ 640 mL/hr) ให้ครบทั้ง S-B-A-R',
         tip: 'เริ่มรายงานให้กระชับตามลำดับ S (ผู้ป่วย/GCS 3) → B (TBI) → A (สงสัย DI) → R (DDAVP/พยุง BP/เตรียมตรวจสมองตาย) ค่ะ',
-        speech: 'แนะนำเคสที่หก ฝึกส่งเวรแบบเอสบาร์กับแพทย์เวรไอซียูค่ะ เพื่อฝึกสื่อสารข้อมูลคลินิกผู้บริจาคอวัยวะให้กระชับ แม่นยำ และครบถ้วนค่ะ'
+        speech: 'แนะนำเคสที่หก ฝึกส่งเวรแบบเอสบาร์กับนายแพทย์ภาคิน แพทย์เวรไอซียูค่ะ เพื่อฝึกสื่อสารข้อมูลคลินิกผู้บริจาคอวัยวะให้กระชับ แม่นยำ และครบถ้วนค่ะ'
       };
     }
 
     if (goalId === 'english') {
       return {
-        mode: 'roleplay_en', difficulty: 'normal', personaId: 'standard', holoStyle: 'liquid',
+        mode: 'roleplay_en', difficulty: 'normal', personaId: 'standard',
         headline: 'International English Family Approach (Roleplay EN)',
         reason: 'ฝึกสื่อสารกับครอบครัวผู้ป่วยชาวต่างชาติด้วยหลัก SPIKES และ Decoupling ภาษาอังกฤษพร้อมเสียงพูดธรรมชาติและตัวตรวจคำกระทบใจภาษาอังกฤษ',
         tip: 'หลีกเลี่ยงคำว่า pull the plug หรือ harvest และใช้ withdraw life-sustaining support แทนค่ะ',
@@ -790,14 +814,13 @@
       };
     }
 
-    // AUTO: วิเคราะห์จากประวัติจริงของผู้เรียน
     if (hist.length === 0) {
       return {
-        mode: 'roleplay_th', difficulty: 'normal', personaId: 'standard', holoStyle: 'lotus',
-        headline: 'AI วิเคราะห์ให้: เริ่มที่เคสคุณพ่อ (Normal + ดอกบัวแสง)',
-        reason: 'ยังไม่พบประวัติการฝึกใน AI Skill Lab ค่ะ แนะนำเริ่มต้นด้วยเคสคุณพ่อระดับ Normal เพื่อจับจังหวะคลายปมในใจ 3 ข้อและเว้นความเงียบ 2.5 วินาทีก่อนขยับสู่ระดับ Hard ค่ะ',
-        tip: 'เมื่อคลายปมในใจได้ครบ 3 ข้อ ดอกบัวแสงจะผลิบานเต็มที่และ Trust จะพุ่งสูงขึ้นค่ะ',
-        speech: 'สวัสดีค่ะคุณ' + nameShort + ' จากประวัติพบว่านี่เป็นการเข้าฝึกครั้งแรก แนะนำเริ่มที่โหมดโรลเพลย์ภาษาไทย ระดับนอร์มอล เคสคุณพ่อ พร้อมดอกบัวแสง เพื่อสร้างความมั่นใจก่อนนะคะ'
+        mode: 'roleplay_th', difficulty: 'normal', personaId: 'standard',
+        headline: 'AI วิเคราะห์ให้: เริ่มที่เคสคุณแพรว (ลูกสาว • Normal)',
+        reason: 'ยังไม่พบประวัติการฝึกใน AI Skill Lab ค่ะ แนะนำเริ่มต้นด้วยเคสคุณแพรวระดับ Normal เพื่อจับจังหวะคลายปมในใจ 3 ข้อและเว้นความเงียบ 2.5 วินาทีก่อนขยับสู่ระดับ Hard ค่ะ',
+        tip: 'สังเกตสีหน้าและแววตาของคุณแพรวที่จะค่อยๆ ผ่อนคลายลงเมื่อคุณคลายปมในใจได้ครบ 3 ข้อค่ะ',
+        speech: 'สวัสดีค่ะคุณ' + nameShort + ' จากประวัติพบว่านี่เป็นการเข้าฝึกครั้งแรก แนะนำเริ่มที่โหมดโรลเพลย์ภาษาไทย ระดับนอร์มอล เคสคุณแพรว เพื่อสร้างความมั่นใจก่อนนะคะ'
       };
     }
 
@@ -806,8 +829,7 @@
         mode: 'roleplay_th',
         difficulty: 'hard',
         personaId: unpracticed,
-        holoStyle: unpracticed === 'conflict' ? 'dual' : 'silk',
-        headline: 'AI วิเคราะห์ให้: อัปเกรดสู่ระดับ Hard + เหตุการณ์แทรก (' + (unpracticed === 'conflict' ? 'เคส 2 เสียง' : 'เคสใหม่ที่ยังไม่เคยฝึก') + ')',
+        headline: 'AI วิเคราะห์ให้: อัปเกรดสู่ระดับ Hard + เหตุการณ์แทรก (' + (unpracticed === 'conflict' ? 'เคส 2 ตัวละครในห้อง' : 'เคสใหม่ที่ยังไม่เคยฝึก') + ')',
         reason: 'คุณทำคะแนนสูงสุดได้ถึง ' + bestScore + '/100 แล้วค่ะ! พร้อมท้าทายระดับ Hard ที่มีสายโทรศัพท์แทรก/จังหวะสะอื้นเงียบ' + (weakestAxis ? ' และช่วยเสริมแกน "' + weakestAxis.label + '" (' + weakestAxis.score + '/100)' : ''),
         tip: 'คุมจังหวะการพูดไม่ให้เร็วเกินไป และรักษาความสงบเมื่อเกิดเหตุการณ์ไม่คาดฝันกลางห้องค่ะ',
         speech: 'ยินดีด้วยค่ะคุณ' + nameShort + ' คะแนนเดิมของคุณสูงถึง ' + bestScore + ' คะแนนแล้ว รอบนี้แนะนำท้าทายระดับฮาร์ดพร้อมเหตุการณ์ไม่คาดฝันกลางห้อง เพื่อยกระดับทักษะให้เชี่ยวชาญยิ่งขึ้นค่ะ'
@@ -818,7 +840,6 @@
       mode: 'micro_drill',
       difficulty: 'normal',
       personaId: unpracticed,
-      holoStyle: 'liquid',
       headline: 'AI วิเคราะห์ให้: ซ้อมเจาะจุดอ่อนด้วย Micro-Drill 4 ด่านคำถามหนัก',
       reason: 'เคยฝึกมาแล้ว ' + hist.length + ' ครั้ง' + (weakestAxis ? ' พบว่าแกน "' + weakestAxis.label + '" (' + weakestAxis.score + '/100) ยังเสริมได้อีก' : '') + ' แนะนำซ้อม 4 ด่านคำถามหนักเพื่อเก็บคำตอบมาตรฐานให้แม่นก่อนสอบจริงค่ะ',
       tip: 'ดูประโยคต้นแบบที่ระบบเฉลยหลังจบแต่ละด่านแล้วนำไปปรับใช้ในโหมด Roleplay ได้เลยค่ะ',
@@ -832,36 +853,23 @@
       return '• ระดับ Normal: มี AI Coach และปุ่มแนวทางคำพูดให้เลือกปรับใช้ เหมาะสำหรับสร้างความมั่นใจ\n• ระดับ Hard: ซ่อนตัวช่วยคำพูด 100%, ค่า Trust ไต่ขึ้นยากกว่า และมี "เหตุการณ์ไม่คาดฝันกลางห้อง" เช่น สายพี่ชายโทรแทรกมาค้าน หรือจังหวะญาติสะอื้นเงียบ 3 วิ ให้รับมือเหมือนหน้างานจริงค่ะ';
     }
     if (q.includes('เด็ก') || q.includes('sbar') || q.includes('แพทย์')) {
-      return '• เคส 5 (ผู้ป่วยเด็กอายุ 14 ปี): อ่อนไหวสูงสุด เน้นการปลอบโยนหัวอกคนเป็นแม่ คุมน้ำเสียงให้นุ่มนวล และใช้หลัก Decoupling ไม่เร่งรัดค่ะ\n• เคส 6 (ส่งเวร SBAR แพทย์เวร ICU): ฝึกสื่อสารสหสาขาวิชาชีพเมื่อพบ Potential Donor (GCS 3, BP ตก, ปัสสาวะออกมากสงสัย DI) ให้รายงานครบ S-B-A-R และเสนอแผนดูแลอวัยวะค่ะ';
+      return '• เคส 5 (คุณแม่ผู้ป่วยเด็กอายุ 14 ปี): อ่อนไหวสูงสุด เน้นการปลอบโยนหัวอกคนเป็นแม่ คุมน้ำเสียงให้นุ่มนวล และใช้หลัก Decoupling ไม่เร่งรัดค่ะ\n• เคส 6 (ส่งเวร SBAR กับ นพ.ภาคิน แพทย์เวร ICU): ฝึกสื่อสารสหสาขาวิชาชีพเมื่อพบ Potential Donor (GCS 3, BP ตก, ปัสสาวะออกมากสงสัย DI) ให้รายงานครบ S-B-A-R และเสนอแผนดูแลอวัยวะค่ะ';
     }
     if (q.includes('น้ำเสียง') || q.includes('อัดเสียง') || q.includes('ฟังเสียงตัวเอง') || q.includes('tone')) {
       return 'ระบบใช้ Web Audio API บนอุปกรณ์ของคุณวัดความนุ่มนวลและจังหวะน้ำเสียงแบบเรียลไทม์ พร้อมบันทึกเสียงพูดของคุณชั่วคราวในหน่วยความจำ (RAM) เพื่อกดฟังเสียงตัวเองย้อนหลังในหน้าสรุปผล 5 แกน โดยไม่มีการอัปโหลดไฟล์เสียงขึ้นเซิร์ฟเวอร์ (ปลอดภัย PDPA 100%) และจะลบทิ้งอัตโนมัติเมื่อปิดหน้าค่ะ';
     }
     if (q.includes('4 ด่าน') || q.includes('micro') || q.includes('คำถามหนัก')) {
-      return 'โหมด Micro-Drill 4 ด่านคำถามหนัก คือการซ้อมรับมือ 4 คำถามหินยอดฮิตเรียงต่อกันอัตโนมัติ (1. หน้าอกยังขยับ → 2. ชาติหน้าไม่ครบ 32 → 3. ลัดคิว & ค่าห้อง ICU → 4. ขัดแย้ง 2 เสียง) ใช้เวลา 3 นาที ตรวจให้คะแนนและแสดงประโยคต้นแบบทันทีทุกด่านค่ะ';
+      return 'โหมด Micro-Drill 4 ด่านคำถามหนัก คือการซ้อมรับมือ 4 คำถามหินยอดฮิตเรียงต่อกันอัตโนมัติ โดยเปลี่ยนตัวละครญาติให้ตรงกับแต่ละคำถาม ใช้เวลา 3 นาที ตรวจให้คะแนนและแสดงประโยคต้นแบบทันทีทุกด่านค่ะ';
     }
     if (q.includes('ปม') || q.includes('trust') || q.includes('ความไว้วางใจ')) {
       return 'แต่ละเคสจะมี "ปมในใจ 3 ข้อ" ที่ซ่อนอยู่ค่ะ ค่า Trust % จะไม่กระโดดข้ามขั้น แต่จะค่อยๆ ไต่ระดับเมื่อคุณคลายปมได้ตรงจุดและเว้นความเงียบ 2.5 วินาที (และจะลดลงทันทีหากเผลอใช้คำกระทบใจ เช่น ถอดเครื่อง หรือ รีบตัดสินใจ) ค่ะ';
     }
-    if (q.includes('ยากสุด') || q.includes('ยากที่สุด') || q.includes('เคสไหน')) {
-      return 'เคสที่ท้าทายอารมณ์ที่สุดคือ "เคส 3 ความขัดแย้ง 2 เสียง" และ "เคส 5 พ่อแม่ผู้ป่วยเด็ก" ในระดับ Hard ส่วนเคสที่วัดความแม่นยำทางคลินิกที่สุดคือ "เคส 6 ส่งเวร SBAR กับแพทย์เวร ICU" ค่ะ';
-    }
-    return 'แนะนำกดปุ่ม "เลือกตามที่ AI แนะนำทันที" เพื่อให้ระบบตั้งค่ารูปแบบ ความยาก เคส และ Hologram ที่เหมาะกับประวัติการเรียนของคุณให้อัตโนมัติ หรือเลือกซ้อม "4 ด่านคำถามหนัก" ก่อนเข้าโหมด Roleplay จริงก็ได้ค่ะ';
+    return 'แนะนำกดปุ่ม "เลือกตามที่ AI แนะนำทันที" เพื่อให้ระบบตั้งค่ารูปแบบ ความยาก และสถานการณ์คลินิกที่เหมาะกับประวัติการเรียนของคุณให้อัตโนมัติ ตัวละครโฮโลแกรม 3 มิติในห้องจะปรับตามเพศและบทบาทของเคสนั้นโดยอัตโนมัติค่ะ';
   }
 
   // ==========================================================================
-  // 6.5 ZERO-COST WORLD-CLASS UPGRADES:
-  //     A) LINE / IN-APP BROWSER DETECTOR
-  //     B) PERCEIVED LATENCY MASKING CUES
-  //     C) CLIENT-SIDE VOCAL TONE MONITOR + RAM-ONLY SELF-REFLECTION REPLAY
-  //     D) RESEARCH R2R TOOLS (PRE/POST SELF-EFFICACY, SUS, BLIND TRANSCRIPT)
-  //     E) CLINICAL MASTERY BADGES CALCULATOR
+  // 6.5 ZERO-COST WORLD-CLASS UPGRADES (LINE DETECTOR, LATENCY MASK, VOCAL, R2R)
   // ==========================================================================
-
-  /**
-   * ตรวจจับว่าเปิดเว็บผ่าน In-App Browser (เช่น LINE, Facebook, Instagram) หรือไม่
-   * ซึ่งมักบล็อกไมโครโฟน Web Speech API และตัดเสียง TTS บนมือถือไทย
-   */
   function detectInAppBrowser() {
     const ua = typeof navigator !== 'undefined' ? String(navigator.userAgent || '') : '';
     const isLine = /\bLine\//i.test(ua);
@@ -882,10 +890,6 @@
     return { isInApp: isInApp, isLine: isLine, appName: appName, externalUrl: externalUrl };
   }
 
-  /**
-   * ข้อความภาษากายระหว่างรอ AI ประมวลผล (Perceived Latency Masking)
-   * ช่วยให้ช่วงรอ Apps Script 2–5 วินาทีรู้สึกเหมือนคนจริงกำลังตั้งสติหรือซับน้ำตาก่อนตอบ
-   */
   const LATENCY_MASK_CUES = {
     standard: [
       'คุณแพรวกำลังสูดลมหายใจลึกๆ และซับน้ำตาเบาๆ...',
@@ -929,11 +933,6 @@
     return list[Math.floor(Math.random() * list.length)];
   }
 
-  /**
-   * Client-Side Vocal Tone Monitor + RAM-Only Self-Reflection Audio Recorder (0 THB • 100% PDPA Safe)
-   * วัดความดัง (dB), ความนุ่มนวลของน้ำเสียง และอัดเสียงพูดของผู้เรียนเก็บใน RAM ชั่วคราว
-   * เพื่อเปิดฟังทบทวนตัวเองในหน้าสรุปผล 5 แกน (ไม่มีการส่งไฟล์เสียงขึ้นเซิร์ฟเวอร์)
-   */
   function createVocalToneRecorder() {
     let mediaStream = null;
     let audioCtx = null;
@@ -1116,18 +1115,12 @@
     return { start: start, stop: stop, abort: abort, isActive: function () { return active; } };
   }
 
-  /**
-   * ชุดคำถามวิจัย R2R: Pre/Post Self-Efficacy Scale (3 ข้อ สเกล 1–5)
-   */
   const SELF_EFFICACY_ITEMS = [
     { key: 'explainBrainDeath', labelTH: '1. ความมั่นใจในการอธิบายภาวะสมองตายและเครื่องช่วยหายใจให้ญาติเข้าใจ' },
     { key: 'handleEmotion', labelTH: '2. ความมั่นใจในการรับมืออารมณ์ช็อก โศกเศร้า หรือความขัดแย้งในครอบครัว' },
     { key: 'gentleApproach', labelTH: '3. ความมั่นใจในการให้ข้อมูลเรื่องการบริจาคอวัยวะอย่างอ่อนโยนและไม่เร่งรัด' }
   ];
 
-  /**
-   * ชุดประเมินความง่ายในการใช้งานมาตรฐานสากล (Compact SUS 5 ข้อ → แปลงเป็นสเกล 0–100)
-   */
   const SUS_ITEMS = [
     { key: 's1', positive: true, labelTH: '1. ฉันอยากกลับมาใช้ระบบนี้เพื่อฝึกทบทวนอีกอย่างสม่ำเสมอ' },
     { key: 's2', positive: false, labelTH: '2. ฉันรู้สึกว่าระบบมีความซับซ้อนเกินความจำเป็น' },
@@ -1151,9 +1144,6 @@
     return Math.round((sum / (count * 4)) * 100);
   }
 
-  /**
-   * แปลงบทสนทนาเป็นรูปแบบไม่ระบุตัวตน (Blind Transcript) สำหรับอาจารย์ TC ประเมินเทียบ AI (ICC / Kappa)
-   */
   function buildBlindTranscript(messages, learnerName) {
     const cleanName = String(learnerName || '').replace(/^(พว\.|นพ\.|พญ\.|คุณ)/, '').trim();
     const esc = cleanName ? cleanName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') : '';
@@ -1172,9 +1162,6 @@
       .slice(0, 24);
   }
 
-  /**
-   * คำนวณเหรียญตราสมรรถนะคลินิก (Clinical Mastery Badges) จากประวัติ AI Skill Lab จริง
-   */
   function computeClinicalBadges(userObj) {
     const hist = Array.isArray(userObj && userObj.skillLabHistory) ? userObj.skillLabHistory : [];
     const hasSilence = hist.some(function (h) { return Number(h.silenceCount || 0) >= 2; });
@@ -1219,9 +1206,6 @@
     return hits;
   }
 
-  /**
-   * แกะแท็ก [EMOTION: ...] [ACTION: ...] [COACH: ...] [OUTCOME: ...] ออกจากคำตอบ Gemini
-   */
   function parseRelativeResponse(rawText, fallbackEmotion) {
     let text = String(rawText || '').trim();
     let emotion = fallbackEmotion || 'CONFUSED';
@@ -1253,7 +1237,6 @@
       text = text.replace(outM[0], '').trim();
     }
 
-    // ล้างแท็กตกค้าง
     text = text.replace(/\[(EMOTION|ACTION|COACH|OUTCOME)[^\]]*\]/gi, '').trim();
 
     return {
@@ -1265,9 +1248,6 @@
     };
   }
 
-  /**
-   * แยกบทสนทนา 2 เสียงจริงสำหรับเคสที่ 3 ([ภรรยา]: ... [คุณแม่]: ...)
-   */
   function splitDualSpeakerSegments(speechText, personaId, lang) {
     const voices = getCaseVoices(personaId);
     const clean = String(speechText || '').trim();
@@ -1305,9 +1285,6 @@
       : [{ speaker: 'wife', label: voices.labelPrimary, voiceName: voices.primary, text: clean }];
   }
 
-  /**
-   * ตรวจจับชื่อที่ผู้เรียนแนะนำตัวกลางห้อง เพื่อเปลี่ยนชื่อเรียกในรอบถัดไปอย่างสมจริง
-   */
   function extractIntroducedLearnerName(userText) {
     const s = String(userText || '');
     const m = s.match(/(?:ดิฉัน|ผม|หนู|กระผม|พี่)?\s*(?:ชื่อ|คือ)\s*(?:พว\.|พยาบาล|คุณ|พี่|หมอ)?\s*([ก-๙A-Za-z]{2,16})/);
@@ -1317,9 +1294,6 @@
     return candidate;
   }
 
-  /**
-   * ประเมินผล 5 แกนสำรอง (กรณีออฟไลน์หรือ Gemini Supervisor ตอบช้า)
-   */
   function evaluateConversationFallback(params) {
     const msgs = Array.isArray(params.messages) ? params.messages : [];
     const userMsgs = msgs.filter(function (m) { return m.role === 'user'; });
@@ -1353,13 +1327,13 @@
       radar: radar,
       radarMap: { setting: settingScore, empathy: empathyScore, clarity: clarityScore, vocal: vocalScore, dignity: dignityScore },
       goldenMoment: bestUserMsg && bestUserMsg.text
-        ? '“' + bestUserMsg.text.slice(0, 120) + (bestUserMsg.text.length > 120 ? '...' : '') + '” — แสดงความตั้งใจสื่อสารและประคับประคองความรู้สึกญาติได้ดีค่ะ'
+        ? '“' + bestUserMsg.text.slice(0, 120) + (bestUserMsg.text.length > 120 ? '...' : '') + '” — แสดงความตั้งใจสื่อสารและประคับประคองความรู้สึกได้ดีค่ะ'
         : 'เริ่มต้นบทสนทนาได้อย่างสุภาพและเป็นระบบค่ะ',
       turningPoint: triggerTotal > 0
         ? 'พบการใช้คำที่อาจกระทบใจญาติ ' + triggerTotal + ' ครั้ง ลองเปลี่ยนไปใช้ถ้อยคำที่นุ่มนวลกว่าและเน้นหลักไม่เร่งรัดนะคะ'
         : silenceCount === 0
           ? 'ลองเพิ่มจังหวะเว้นความเงียบ 2.5 วินาที (Therapeutic Silence) หลังญาติแสดงความโศกเศร้า เพื่อให้ญาติรู้สึกว่ามีพื้นที่ปลอดภัยค่ะ'
-          : 'ทำได้ดีมากค่ะ ลองท้าทายระดับ Hard หรือเคสความขัดแย้ง 2 เสียงเพื่อเพิ่มความชำนาญหน้างานจริงค่ะ',
+          : 'ทำได้ดีมากค่ะ ลองท้าทายระดับ Hard หรือเคสความขัดแย้ง 2 ตัวละครเพื่อเพิ่มความชำนาญหน้างานจริงค่ะ',
       summary: 'ความไว้วางใจสุดท้าย ' + finalTrust + '% • คลายปมในใจได้ ' + barriersUnlocked + '/3 ข้อ • เว้นความเงียบเยียวยา ' + silenceCount + ' ครั้ง',
       source: 'local_clinical_rubric'
     };
@@ -1367,7 +1341,7 @@
 
   function buildSupervisorEvaluationPrompt(params) {
     const transcript = (params.messages || [])
-      .map(function (m) { return (m.role === 'user' ? 'ผู้เรียน: ' : 'ญาติ: ') + (m.text || ''); })
+      .map(function (m) { return (m.role === 'user' ? 'ผู้เรียน: ' : 'คู่สนทนา: ') + (m.text || ''); })
       .join('\n');
     return 'คุณคืออาจารย์พยาบาลผู้เชี่ยวชาญด้าน Family Approach (AI Clinical Supervisor)\n' +
       'ประเมินบทสนทนาจริงต่อไปนี้ในเคส: ' + (params.personaTitle || '') + '\n' +
@@ -1429,7 +1403,6 @@
       }
     },
 
-    // เสียงเคาะประตูไม้เบาๆ 2 ครั้งก่อนเข้าห้องให้คำปรึกษา
     playDoorKnock: function () {
       const ctx = this.ensureCtx();
       if (!ctx) return;
@@ -1452,7 +1425,6 @@
       } catch (_) {}
     },
 
-    // เสียงสั่นโทรศัพท์เบาๆ สำหรับเหตุการณ์สายแทรกในโหมด Hard
     playPhoneBuzz: function () {
       const ctx = this.ensureCtx();
       if (!ctx) return;
@@ -1475,7 +1447,6 @@
       } catch (_) {}
     },
 
-    // เสียงระฆังออร่าอ่อนโยนเมื่อคลายปมในใจหรือครบความเงียบ 2.5 วิ
     playChime: function (freqs) {
       const ctx = this.ensureCtx();
       if (!ctx) return;
@@ -1498,7 +1469,6 @@
       } catch (_) {}
     },
 
-    // เสียงบรรยากาศห้องสงบแผ่วเบา (Soft Consultation Room Tone)
     setAmbient: function (enabled) {
       if (!enabled) {
         if (this.ambientNodes) {
@@ -1534,7 +1504,6 @@
       } catch (_) {}
     },
 
-    // เสียงลมหายใจ/ขยับทิชชูแผ่วเบาขณะญาติตั้งสติก่อนตอบ (Perceived Latency Masking)
     playThinkingCue: function () {
       const ctx = this.ensureCtx();
       if (!ctx) return;
@@ -1564,85 +1533,819 @@
   };
 
   // ==========================================================================
-  // 9. THREE.JS ULTRA-SMOOTH 6-STYLE 3D HOLOGRAM ENGINE (mountHologram3D)
+  // 9. CONTEXT-AWARE 3D ANIME HUMAN HOLOGRAM ENGINE (SINGLE & MULTI-CHARACTER)
   // ==========================================================================
-  function createLiquidShaderMaterial(THREE) {
+  const ANIME_RIG_PROFILES = {
+    // คุณแพรว (ลูกสาว • หญิงสาว • ผมหน้าม้าซีทรู + ปอยผมยาวประบ่า)
+    daughter_praew: {
+      gender: 'female',
+      headWidth: 0.72,
+      headDepth: 0.78,
+      jawTaper: 0.48,
+      jawSquare: 0.0,
+      browRidge: 0.006,
+      cheekFullness: 0.052,
+      noseWidth: 0.036,
+      noseLen: 0.095,
+      chinWidth: 0.085,
+      chinProminence: 0.022,
+      lipFullness: 0.72,
+      neckWidth: 0.20,
+      shoulderWidth: 0.96,
+      eyeScale: 1.48,
+      browThickness: 0.011,
+      hairType: 'long',
+      hasCollar: false,
+      tintShift: 0.0
+    },
+    // คุณฝน (พี่สาว • หญิง • ผมหน้าม้าปัดนุ่ม + ผมประบ่าปลายงุ้ม)
+    sister_fon: {
+      gender: 'female',
+      headWidth: 0.72,
+      headDepth: 0.79,
+      jawTaper: 0.45,
+      jawSquare: 0.004,
+      browRidge: 0.008,
+      cheekFullness: 0.056,
+      noseWidth: 0.038,
+      noseLen: 0.098,
+      chinWidth: 0.092,
+      chinProminence: 0.024,
+      lipFullness: 0.70,
+      neckWidth: 0.205,
+      shoulderWidth: 0.98,
+      eyeScale: 1.44,
+      browThickness: 0.0115,
+      hairType: 'sister',
+      hasCollar: false,
+      tintShift: 0.14
+    },
+    // คุณนุช (ลูกสาววัยทำงาน • หญิง • ผมบ๊อบสั้นประคางปัดข้างคมสวย)
+    career_nuch: {
+      gender: 'female',
+      headWidth: 0.71,
+      headDepth: 0.78,
+      jawTaper: 0.47,
+      jawSquare: 0.006,
+      browRidge: 0.009,
+      cheekFullness: 0.048,
+      noseWidth: 0.037,
+      noseLen: 0.10,
+      chinWidth: 0.088,
+      chinProminence: 0.024,
+      lipFullness: 0.68,
+      neckWidth: 0.20,
+      shoulderWidth: 0.97,
+      eyeScale: 1.42,
+      browThickness: 0.012,
+      hairType: 'career',
+      hasCollar: false,
+      tintShift: 0.22
+    },
+    // คุณแม่ (มารดาอาวุโส / คุณแม่น้องต้นกล้า • หญิง • หน้าม้าปัดเรียบร้อย + มวยผม)
+    mother_bun: {
+      gender: 'female',
+      headWidth: 0.74,
+      headDepth: 0.80,
+      jawTaper: 0.40,
+      jawSquare: 0.008,
+      browRidge: 0.010,
+      cheekFullness: 0.064,
+      noseWidth: 0.042,
+      noseLen: 0.105,
+      chinWidth: 0.105,
+      chinProminence: 0.026,
+      lipFullness: 0.68,
+      neckWidth: 0.22,
+      shoulderWidth: 1.04,
+      eyeScale: 1.34,
+      browThickness: 0.0125,
+      hairType: 'bun',
+      hasCollar: false,
+      tintShift: 0.32
+    },
+    // นพ.ภาคิน (แพทย์เวร ICU • ชาย • กรามเรียวคมอนิเมะ + หน้าม้าปัดชาย + ปกเสื้อกาวน์แพทย์)
+    doctor_male: {
+      gender: 'male',
+      headWidth: 0.75,
+      headDepth: 0.82,
+      jawTaper: 0.36,
+      jawSquare: 0.042,
+      browRidge: 0.026,
+      cheekFullness: 0.032,
+      noseWidth: 0.045,
+      noseLen: 0.125,
+      chinWidth: 0.125,
+      chinProminence: 0.044,
+      lipFullness: 0.58,
+      neckWidth: 0.27,
+      shoulderWidth: 1.32,
+      eyeScale: 1.24,
+      browThickness: 0.017,
+      hairType: 'short',
+      hasCollar: true,
+      tintShift: 0.08
+    }
+  };
+
+  function getCaseRigCast(personaId) {
+    switch (personaId) {
+      case 'belief':
+        return [{ key: 'primary', profileKey: 'sister_fon', x: 0, y: 0, z: 0, scale: 1.0, yaw: 0 }];
+      case 'distrust':
+        return [{ key: 'primary', profileKey: 'career_nuch', x: 0, y: 0, z: 0, scale: 1.0, yaw: 0 }];
+      case 'pediatric':
+        return [{ key: 'primary', profileKey: 'mother_bun', x: 0, y: 0, z: 0, scale: 1.0, yaw: 0 }];
+      case 'sbar_doctor':
+        return [{ key: 'primary', profileKey: 'doctor_male', x: 0, y: 0, z: 0, scale: 1.0, yaw: 0 }];
+      case 'conflict':
+        // เคสความขัดแย้งในครอบครัว: แสดงตัวละคร 2 คนพร้อมกันในห้อง (ซ้าย: ภรรยาหญิง • ขวา: คุณแม่หญิงอาวุโส)
+        return [
+          { key: 'wife', profileKey: 'daughter_praew', x: -0.78, y: -0.02, z: 0.05, scale: 0.82, yaw: 0.16 },
+          { key: 'mother', profileKey: 'mother_bun', x: 0.78, y: 0.0, z: -0.04, scale: 0.84, yaw: -0.16 }
+        ];
+      default:
+        return [{ key: 'primary', profileKey: 'daughter_praew', x: 0, y: 0, z: 0, scale: 1.0, yaw: 0 }];
+    }
+  }
+
+  function gauss(v, mean, sigma) {
+    const d = (v - mean) / sigma;
+    return Math.exp(-0.5 * d * d);
+  }
+  function gauss2D(x, y, mx, my, sx, sy) {
+    const dx = (x - mx) / sx;
+    const dy = (y - my) / sy;
+    return Math.exp(-0.5 * (dx * dx + dy * dy));
+  }
+  function smoothstep(edge0, edge1, x) {
+    const t = Math.max(0, Math.min(1, (x - edge0) / (edge1 - edge0)));
+    return t * t * (3 - 2 * t);
+  }
+
+  function computeAnimeHeadVertex(sx, sy, sz, p, jawOpen) {
+    const frontMask = smoothstep(-0.06, 0.42, sz);
+    const absX = Math.abs(sx);
+
+    let x = sx * p.headWidth;
+    let y = sy * 0.96;
+    let z = sz * p.headDepth;
+
+    if (sz < 0) {
+      const backBump = gauss(sy, 0.16, 0.48) * (-sz);
+      z -= 0.095 * backBump;
+    }
+
+    if (sy < 0.06) {
+      const t = Math.min(1, Math.max(0, (0.06 - sy) / 1.06));
+      const taper = p.jawTaper * Math.pow(t, 1.24);
+      x *= (1 - taper);
+
+      const jawAngle = gauss2D(absX, sy, 0.58, -0.46, 0.20, 0.16) * smoothstep(-0.15, 0.45, sz);
+      x += Math.sign(sx) * p.jawSquare * jawAngle;
+      z += p.jawSquare * 0.35 * jawAngle;
+
+      const chinTip = Math.pow(t, 2.1) * gauss(sx, 0, 0.48);
+      y -= 0.075 * chinTip * frontMask;
+      z -= 0.05 * Math.pow(t, 1.6) * frontMask;
+    }
+
+    if (sz > 0.30) {
+      z -= 0.105 * (sz - 0.30) * gauss(sy, -0.06, 0.68);
+    }
+
+    const brow = gauss(sy, 0.23, 0.065) * gauss(sx, 0, 0.36) * frontMask;
+    z += p.browRidge * brow;
+
+    const orbit = (gauss2D(sx, sy, -0.275, 0.025, 0.165, 0.115) + gauss2D(sx, sy, 0.275, 0.025, 0.165, 0.115)) * frontMask;
+    z -= 0.042 * orbit;
+
+    const cheek = (gauss2D(sx, sy, -0.39, -0.17, 0.19, 0.15) + gauss2D(sx, sy, 0.39, -0.17, 0.19, 0.15)) * frontMask;
+    z += p.cheekFullness * cheek;
+    x += Math.sign(sx) * (p.cheekFullness * 0.35) * cheek;
+
+    const noseSpan = smoothstep(-0.28, -0.19, sy) * (1 - smoothstep(0.02, 0.12, sy));
+    const noseProg = Math.max(0, Math.min(1, (0.09 - sy) / 0.31));
+    const noseBridge = noseSpan * (0.018 + p.noseLen * Math.pow(noseProg, 1.15)) * gauss(sx, 0, p.noseWidth) * frontMask;
+    const noseTip = 0.042 * gauss2D(sx, sy, 0, -0.215, p.noseWidth * 0.95, 0.036) * frontMask;
+    z += noseBridge + noseTip;
+
+    const lipOpenDrop = (jawOpen || 0) * 0.08;
+    const upperLip = (0.024 * p.lipFullness) * gauss2D(sx, sy, 0, -0.40, 0.135, 0.028) * frontMask;
+    const mouthIndent = -(0.018 + lipOpenDrop * 0.4) * gauss2D(sx, sy, 0, -0.435 - lipOpenDrop * 0.3, 0.14, 0.018 + lipOpenDrop * 0.25) * frontMask;
+    const lowerLip = (0.028 * p.lipFullness) * gauss2D(sx, sy, 0, -0.472 - lipOpenDrop * 0.72, 0.115, 0.030) * frontMask;
+    z += upperLip + mouthIndent + lowerLip;
+
+    const chinBump = p.chinProminence * gauss2D(sx, sy, 0, -0.72 - lipOpenDrop * 0.65, p.chinWidth, 0.095) * frontMask;
+    z += chinBump;
+
+    if (jawOpen > 0.001 && sy < -0.42 && sz > 0.15) {
+      const jawInfluence = smoothstep(-0.42, -0.78, sy) * smoothstep(0.15, 0.55, sz) * gauss(sx, 0, 0.38);
+      y -= jawOpen * 0.078 * jawInfluence;
+      z -= jawOpen * 0.02 * jawInfluence;
+    }
+
+    const ear = gauss2D(sy, sz, -0.06, -0.08, 0.14, 0.085) * smoothstep(0.87, 0.99, absX);
+    x += Math.sign(sx) * 0.058 * ear;
+
+    return { x: x, y: y, z: z };
+  }
+
+  function createAnimeHoloGlassMat(THREE, baseOpacity) {
     return new THREE.ShaderMaterial({
       transparent: true,
-      depthWrite: false,
-      blending: THREE.NormalBlending,
+      depthWrite: true,
+      side: THREE.FrontSide,
       uniforms: {
         uTime: { value: 0 },
-        uSpeak: { value: 0 },
-        uTension: { value: 0.5 },
         uColor1: { value: new THREE.Color(0x38bdf8) },
-        uColor2: { value: new THREE.Color(0x818cf8) }
+        uColor2: { value: new THREE.Color(0x818cf8) },
+        uOpacity: { value: baseOpacity || 0.92 }
       },
       vertexShader: [
-        'uniform float uTime;',
-        'uniform float uSpeak;',
-        'uniform float uTension;',
         'varying vec3 vNormal;',
         'varying vec3 vViewPos;',
-        'varying float vDisp;',
+        'varying vec3 vLocalPos;',
         'void main() {',
-        '  vec3 p = position;',
-        '  float freq = 2.0 + uTension * 1.4;',
-        '  float w1 = sin(p.x * freq + uTime * 1.3) * cos(p.y * freq - uTime * 1.1);',
-        '  float w2 = sin(p.z * (freq * 1.2) - uTime * 1.6) * cos(p.x * 1.6 + uTime * 0.9);',
-        '  float disp = (w1 * 0.55 + w2 * 0.45) * (0.08 + uSpeak * 0.095 + uTension * 0.045);',
-        '  vec3 displaced = p + normal * disp;',
-        '  vDisp = disp;',
-        '  vec4 mvPos = modelViewMatrix * vec4(displaced, 1.0);',
+        '  vLocalPos = position;',
+        '  vec4 mvPos = modelViewMatrix * vec4(position, 1.0);',
         '  vNormal = normalize(normalMatrix * normal);',
         '  vViewPos = -mvPos.xyz;',
         '  gl_Position = projectionMatrix * mvPos;',
         '}'
       ].join('\n'),
       fragmentShader: [
+        'uniform float uTime;',
         'uniform vec3 uColor1;',
         'uniform vec3 uColor2;',
-        'uniform float uTime;',
-        'uniform float uSpeak;',
+        'uniform float uOpacity;',
         'varying vec3 vNormal;',
         'varying vec3 vViewPos;',
-        'varying float vDisp;',
+        'varying vec3 vLocalPos;',
         'void main() {',
         '  vec3 N = normalize(vNormal);',
         '  vec3 V = normalize(vViewPos);',
+        '  vec3 L1 = normalize(vec3(0.38, 0.65, 0.92));',
+        '  float ndotl = max(dot(N, L1), 0.0);',
+        '  float celBand = mix(0.46, 1.0, smoothstep(0.18, 0.58, ndotl));',
         '  float ndotv = clamp(dot(N, V), 0.0, 1.0);',
-        '  float fresnel = pow(1.0 - ndotv, 2.3);',
-        '  float swirl = 0.5 + 0.5 * sin(vDisp * 12.0 + N.y * 2.3 + uTime * 0.7);',
-        '  vec3 baseCol = mix(uColor1, uColor2, swirl);',
-        '  vec3 pearlescent = mix(baseCol, vec3(0.95, 0.99, 1.0), fresnel * 0.84);',
-        '  float coreGlow = pow(ndotv, 1.7) * (0.34 + uSpeak * 0.22);',
-        '  vec3 finalCol = pearlescent + baseCol * coreGlow;',
-        '  float alpha = clamp(0.28 + fresnel * 0.75 + coreGlow * 0.32, 0.22, 0.95);',
+        '  float fresnel = pow(1.0 - ndotv, 2.05);',
+        '  float cheekL = exp(-pow((vLocalPos.x + 0.30) / 0.14, 2.0) - pow((vLocalPos.y + 0.19) / 0.09, 2.0));',
+        '  float cheekR = exp(-pow((vLocalPos.x - 0.30) / 0.14, 2.0) - pow((vLocalPos.y + 0.19) / 0.09, 2.0));',
+        '  float blush = clamp(cheekL + cheekR, 0.0, 1.0) * smoothstep(0.35, 0.72, vLocalPos.z);',
+        '  float scan = 0.97 + 0.03 * sin(vLocalPos.y * 44.0 - uTime * 2.0);',
+        '  vec3 baseTint = mix(uColor2 * 0.45, uColor1 * 0.80, clamp(vLocalPos.y * 0.45 + 0.58, 0.0, 1.0));',
+        '  vec3 lit = baseTint * celBand + vec3(1.0, 0.56, 0.78) * blush * 0.24;',
+        '  vec3 rim = mix(uColor1, vec3(0.95, 0.99, 1.0), 0.64) * fresnel * 1.18;',
+        '  vec3 spec = vec3(0.92, 0.98, 1.0) * pow(max(dot(reflect(-L1, N), V), 0.0), 26.0) * 0.32;',
+        '  vec3 finalCol = (lit + rim + spec) * scan;',
+        '  float alpha = clamp((0.36 + fresnel * 0.62 + celBand * 0.22) * uOpacity, 0.22, 0.95);',
         '  gl_FragColor = vec4(finalCol, alpha);',
         '}'
       ].join('\n')
     });
   }
 
-  function buildPetalGeometry(THREE, w, h) {
-    const geo = new THREE.PlaneGeometry(w, h, 8, 14);
+  function addAnimeHairLock(THREE, parent, points, baseRadius, mat) {
+    const curve = new THREE.CatmullRomCurve3(points);
+    const geo = new THREE.TubeGeometry(curve, 16, baseRadius, 7, false);
     const pos = geo.attributes.position;
-    for (let i = 0; i < pos.count; i++) {
-      const x = pos.getX(i);
-      const y = pos.getY(i) + h * 0.5;
-      const ny = y / h;
-      const taper = Math.sin(ny * Math.PI);
-      const nx = x * (0.25 + taper * 0.92);
-      const cupZ = Math.pow(Math.abs(x / (w * 0.5)), 2) * 0.22 * taper + Math.sin(ny * Math.PI) * 0.2;
-      pos.setXYZ(i, nx, y, cupZ);
+    for (let i = 0; i <= 16; i++) {
+      const u = i / 16;
+      const taper = Math.sin(Math.pow(u, 0.65) * Math.PI * 0.96);
+      const center = curve.getPointAt(u);
+      for (let j = 0; j <= 7; j++) {
+        const idx = i * 8 + j;
+        if (idx < pos.count) {
+          const vx = pos.getX(idx) - center.x;
+          const vy = pos.getY(idx) - center.y;
+          const vz = pos.getZ(idx) - center.z;
+          pos.setXYZ(
+            idx,
+            center.x + vx * (0.35 + taper * 0.85),
+            center.y + vy * (0.35 + taper * 0.85),
+            center.z + vz * (0.25 + taper * 0.6)
+          );
+        }
+      }
     }
     geo.computeVertexNormals();
-    return geo;
+    parent.add(new THREE.Mesh(geo, mat));
   }
 
   /**
-   * ติดตั้งเวที Hologram 3 มิติ 6 สไตล์ลงใน container ที่กำหนด
-   * คืนค่า controller { update(state), destroy() }
+   * สร้างตัวละครอนิเมะโฮโลแกรม 3 มิติ 1 ตัว (รองรับทั้งชาย/หญิง/อาวุโส และขยับปาก Lip-Sync แยกตัว)
+   */
+  function createAnimeCharacterRig(THREE, glowTex, initialProfileKey, seedOffset) {
+    const rigGroup = new THREE.Group();
+    const avatarGroup = new THREE.Group();
+    avatarGroup.position.y = 0.06;
+    rigGroup.add(avatarGroup);
+
+    const headGroup = new THREE.Group();
+    headGroup.position.y = 0.34;
+    avatarGroup.add(headGroup);
+
+    const headGeo = new THREE.SphereGeometry(1, 48, 38);
+    const headPosAttr = headGeo.attributes.position;
+    const baseSphereCoords = new Float32Array(headPosAttr.count * 3);
+    for (let i = 0; i < headPosAttr.count; i++) {
+      baseSphereCoords[i * 3] = headPosAttr.getX(i);
+      baseSphereCoords[i * 3 + 1] = headPosAttr.getY(i);
+      baseSphereCoords[i * 3 + 2] = headPosAttr.getZ(i);
+    }
+
+    const startProf = ANIME_RIG_PROFILES[initialProfileKey] || ANIME_RIG_PROFILES.daughter_praew;
+    const currentProfile = Object.assign({}, startProf);
+
+    function updateHeadGeometry(profile, jawOpen) {
+      const pos = headGeo.attributes.position;
+      for (let i = 0; i < pos.count; i++) {
+        const v = computeAnimeHeadVertex(
+          baseSphereCoords[i * 3],
+          baseSphereCoords[i * 3 + 1],
+          baseSphereCoords[i * 3 + 2],
+          profile,
+          jawOpen
+        );
+        pos.setXYZ(i, v.x, v.y, v.z);
+      }
+      pos.needsUpdate = true;
+      headGeo.computeVertexNormals();
+    }
+    updateHeadGeometry(currentProfile, 0);
+
+    const headGlassMat = createAnimeHoloGlassMat(THREE, 0.92);
+    const headMesh = new THREE.Mesh(headGeo, headGlassMat);
+    headGroup.add(headMesh);
+
+    const headWireMat = new THREE.MeshBasicMaterial({
+      color: 0x7dd3fc,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.11,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
+    const headWire = new THREE.Mesh(headGeo, headWireMat);
+    headWire.scale.setScalar(1.004);
+    headGroup.add(headWire);
+
+    // ดวงตาอนิเมะกลมโต + ประกายแสงคู่ + หางขนตา + หยดน้ำตา
+    const featureColorMat = new THREE.MeshBasicMaterial({
+      color: 0xe0f2fe,
+      transparent: true,
+      opacity: 0.96,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
+
+    function createEyeAssembly(sideSign) {
+      const g = new THREE.Group();
+      const scleraGeo = new THREE.CircleGeometry(0.088, 28);
+      scleraGeo.scale(1.05, 0.88, 1);
+      const sclera = new THREE.Mesh(scleraGeo, new THREE.MeshBasicMaterial({
+        color: 0xe0f2fe, transparent: true, opacity: 0.24, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false
+      }));
+
+      const irisOuterGeo = new THREE.CircleGeometry(0.062, 28);
+      irisOuterGeo.scale(0.88, 1.08, 1);
+      const irisOuterMat = new THREE.MeshBasicMaterial({
+        color: 0x38bdf8, transparent: true, opacity: 0.78, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false
+      });
+      const irisOuter = new THREE.Mesh(irisOuterGeo, irisOuterMat);
+      irisOuter.position.z = 0.002;
+
+      const irisRingGeo = new THREE.RingGeometry(0.028, 0.056, 28);
+      irisRingGeo.scale(0.88, 1.08, 1);
+      const irisRing = new THREE.Mesh(irisRingGeo, new THREE.MeshBasicMaterial({
+        color: 0xbae6fd, transparent: true, opacity: 0.92, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false
+      }));
+      irisRing.position.z = 0.004;
+
+      const pupilGeo = new THREE.CircleGeometry(0.027, 22);
+      pupilGeo.scale(0.86, 1.06, 1);
+      const pupil = new THREE.Mesh(pupilGeo, new THREE.MeshBasicMaterial({
+        color: 0x041028, transparent: true, opacity: 0.9, side: THREE.DoubleSide
+      }));
+      pupil.position.z = 0.005;
+
+      const sparkleBig = new THREE.Mesh(new THREE.CircleGeometry(0.017, 14), new THREE.MeshBasicMaterial({
+        color: 0xffffff, transparent: true, opacity: 0.98, side: THREE.DoubleSide, blending: THREE.AdditiveBlending
+      }));
+      sparkleBig.position.set(-0.016, 0.024, 0.008);
+
+      const sparkleSmall = new THREE.Mesh(new THREE.CircleGeometry(0.009, 12), new THREE.MeshBasicMaterial({
+        color: 0xe0f2fe, transparent: true, opacity: 0.92, side: THREE.DoubleSide, blending: THREE.AdditiveBlending
+      }));
+      sparkleSmall.position.set(0.018, -0.022, 0.008);
+
+      const lidPts = [];
+      for (let i = 0; i <= 16; i++) {
+        const u = (i / 16) * 2 - 1;
+        const wingLift = u * sideSign > 0.65 ? Math.pow((u * sideSign - 0.65) / 0.35, 1.6) * 0.022 : 0;
+        lidPts.push(new THREE.Vector3(u * 0.105, (1 - u * u) * 0.046 + 0.036 + wingLift, -u * u * 0.022 + 0.009));
+      }
+      const upperLid = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(lidPts), 20, 0.0125, 7, false), featureColorMat);
+
+      const lowPts = [];
+      for (let i = 0; i <= 10; i++) {
+        const u = (i / 10) * 2 - 1;
+        lowPts.push(new THREE.Vector3(u * 0.072, -(1 - u * u) * 0.018 - 0.056, -u * u * 0.015 + 0.007));
+      }
+      const lowerLid = new THREE.Mesh(
+        new THREE.TubeGeometry(new THREE.CatmullRomCurve3(lowPts), 12, 0.0045, 6, false),
+        new THREE.MeshBasicMaterial({ color: 0xbae6fd, transparent: true, opacity: 0.45, blending: THREE.AdditiveBlending, depthWrite: false })
+      );
+
+      const tearMat = new THREE.SpriteMaterial({ map: glowTex, color: 0xe0f2fe, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
+      const tearDrop = new THREE.Sprite(tearMat);
+      tearDrop.scale.set(0.068, 0.10, 1);
+      tearDrop.position.set(sideSign * 0.022, -0.072, 0.014);
+
+      const irisContainer = new THREE.Group();
+      irisContainer.add(sclera, irisOuter, irisRing, pupil, sparkleBig, sparkleSmall);
+      g.add(irisContainer, upperLid, lowerLid, tearDrop);
+
+      return { group: g, irisContainer: irisContainer, irisRingMat: irisOuterMat, upperLid: upperLid, tearDrop: tearDrop, tearMat: tearMat };
+    }
+
+    const leftEye = createEyeAssembly(-1);
+    const rightEye = createEyeAssembly(1);
+    headGroup.add(leftEye.group, rightEye.group);
+
+    function createEyebrow(sideSign) {
+      const pts = [];
+      for (let i = 0; i <= 12; i++) {
+        const u = i / 12;
+        const x = sideSign * (0.095 + u * 0.21);
+        const arch = Math.sin(u * Math.PI) * 0.032;
+        const zCurve = -Math.pow(u, 1.8) * 0.075;
+        pts.push(new THREE.Vector3(x, arch, zCurve));
+      }
+      const curve = new THREE.CatmullRomCurve3(pts);
+      const mat = new THREE.MeshBasicMaterial({ color: 0xbae6fd, transparent: true, opacity: 0.84, blending: THREE.AdditiveBlending, depthWrite: false });
+      const mesh = new THREE.Mesh(new THREE.TubeGeometry(curve, 16, 0.012, 7, false), mat);
+      const pivot = new THREE.Group();
+      pivot.add(mesh);
+      return { pivot: pivot, mesh: mesh, mat: mat };
+    }
+
+    const leftBrow = createEyebrow(-1);
+    const rightBrow = createEyebrow(1);
+    headGroup.add(leftBrow.pivot, rightBrow.pivot);
+
+    const LIP_SEGS = 22;
+    function buildLipLine(colorHex, opacity) {
+      const arr = new Float32Array((LIP_SEGS + 1) * 3);
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(arr, 3));
+      const mat = new THREE.LineBasicMaterial({ color: colorHex, transparent: true, opacity: opacity, blending: THREE.AdditiveBlending });
+      return { line: new THREE.Line(geo, mat), geo: geo, mat: mat };
+    }
+    const upperLipOuter = buildLipLine(0xe0f2fe, 0.86);
+    const upperLipInner = buildLipLine(0x67e8f9, 0.56);
+    const lowerLipOuter = buildLipLine(0xbae6fd, 0.84);
+    const lowerLipInner = buildLipLine(0x67e8f9, 0.52);
+    headGroup.add(upperLipOuter.line, upperLipInner.line, lowerLipOuter.line, lowerLipInner.line);
+
+    // คอ & ไหล่ & ปกเสื้อกาวน์แพทย์ (สำหรับ นพ.ภาคิน)
+    const bustGroup = new THREE.Group();
+    avatarGroup.add(bustGroup);
+
+    const neckGeo = new THREE.CylinderGeometry(0.20, 0.25, 0.62, 28, 6, true);
+    const neckMat = createAnimeHoloGlassMat(THREE, 0.75);
+    const neckMesh = new THREE.Mesh(neckGeo, neckMat);
+    neckMesh.position.y = -0.66;
+    bustGroup.add(neckMesh);
+
+    const shoulderGeo = new THREE.SphereGeometry(1, 38, 20, 0, Math.PI * 2, 0, Math.PI * 0.44);
+    const shoulderMat = createAnimeHoloGlassMat(THREE, 0.78);
+    const shoulderMesh = new THREE.Mesh(shoulderGeo, shoulderMat);
+    shoulderMesh.position.set(0, -1.46, -0.06);
+    shoulderMesh.scale.set(1.0, 0.64, 0.48);
+    bustGroup.add(shoulderMesh);
+
+    const shoulderWireMat = new THREE.MeshBasicMaterial({ color: 0x7dd3fc, wireframe: true, transparent: true, opacity: 0.1, blending: THREE.AdditiveBlending, depthWrite: false });
+    const shoulderWire = new THREE.Mesh(shoulderGeo, shoulderWireMat);
+    shoulderWire.position.copy(shoulderMesh.position);
+    shoulderWire.scale.copy(shoulderMesh.scale).multiplyScalar(1.005);
+    bustGroup.add(shoulderWire);
+
+    const collarGroup = new THREE.Group();
+    const collarPtsL = [new THREE.Vector3(-0.30, -0.76, 0.12), new THREE.Vector3(-0.44, -0.94, 0.24), new THREE.Vector3(-0.18, -1.30, 0.36), new THREE.Vector3(0, -1.24, 0.38)];
+    const collarPtsR = collarPtsL.map(function (v) { return new THREE.Vector3(-v.x, v.y, v.z); });
+    const collarMat = new THREE.MeshBasicMaterial({ color: 0x6ee7b7, transparent: true, opacity: 0.72, blending: THREE.AdditiveBlending, depthWrite: false });
+    collarGroup.add(
+      new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(collarPtsL), 18, 0.016, 7, false), collarMat),
+      new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(collarPtsR), 18, 0.016, 7, false), collarMat)
+    );
+    collarGroup.visible = Boolean(startProf.hasCollar);
+    bustGroup.add(collarGroup);
+
+    const hairGlassMat = createAnimeHoloGlassMat(THREE, 0.62);
+    const hairLineMat = new THREE.LineBasicMaterial({ color: 0x7dd3fc, transparent: true, opacity: 0.38, blending: THREE.AdditiveBlending, depthWrite: false });
+
+    // ทรงผม 1: 'long' (คุณแพรว / ภรรยา — หน้าม้าซีทรู + ปอยผมคลอแก้ม + ผมประบ่า)
+    const hairLongGroup = new THREE.Group();
+    const crownLong = new THREE.Mesh(new THREE.SphereGeometry(0.79, 28, 20, 0, Math.PI * 2, 0, Math.PI * 0.56), hairGlassMat);
+    crownLong.position.set(0, 0.22, -0.04);
+    crownLong.scale.set(0.98, 1.02, 1.06);
+    hairLongGroup.add(crownLong);
+    [
+      { x0: -0.24, x1: -0.34, yEnd: 0.14, zEnd: 0.72, r: 0.058 },
+      { x0: -0.10, x1: -0.14, yEnd: 0.22, zEnd: 0.77, r: 0.050 },
+      { x0: 0.02, x1: 0.04, yEnd: 0.24, zEnd: 0.78, r: 0.046 },
+      { x0: 0.14, x1: 0.20, yEnd: 0.20, zEnd: 0.76, r: 0.052 },
+      { x0: 0.28, x1: 0.38, yEnd: 0.12, zEnd: 0.70, r: 0.058 }
+    ].forEach(function (b) {
+      addAnimeHairLock(THREE, hairLongGroup, [new THREE.Vector3(b.x0 * 0.5, 0.94, 0.18), new THREE.Vector3(b.x0, 0.68, 0.68), new THREE.Vector3(b.x1, b.yEnd, b.zEnd)], b.r, hairGlassMat);
+    });
+    [-1, 1].forEach(function (s) {
+      addAnimeHairLock(THREE, hairLongGroup, [new THREE.Vector3(s * 0.36, 0.86, 0.26), new THREE.Vector3(s * 0.66, 0.24, 0.46), new THREE.Vector3(s * 0.54, -0.42, 0.42), new THREE.Vector3(s * 0.40, -0.94, 0.26)], 0.075, hairGlassMat);
+      addAnimeHairLock(THREE, hairLongGroup, [new THREE.Vector3(s * 0.48, 0.82, 0.05), new THREE.Vector3(s * 0.78, 0.12, 0.18), new THREE.Vector3(s * 0.72, -0.62, 0.12), new THREE.Vector3(s * 0.62, -1.14, 0.04)], 0.088, hairGlassMat);
+    });
+    for (let i = 0; i < 9; i++) {
+      const ang = ((i / 8) * 1.1 - 0.55) * Math.PI + Math.PI;
+      addAnimeHairLock(THREE, hairLongGroup, [new THREE.Vector3(Math.sin(ang) * 0.35, 0.88, Math.cos(ang) * 0.38 - 0.05), new THREE.Vector3(Math.sin(ang) * 0.74, 0.16, Math.cos(ang) * 0.74 - 0.06), new THREE.Vector3(Math.sin(ang) * 0.92, -0.96, Math.cos(ang) * 0.92 - 0.08)], 0.105, hairGlassMat);
+    }
+    headGroup.add(hairLongGroup);
+
+    // ทรงผม 2: 'sister' (คุณฝน — หน้าม้าปัดข้างนุ่ม + ผมประบ่าปลายงุ้มเข้ากรอบหน้า)
+    const hairSisterGroup = new THREE.Group();
+    const crownSister = new THREE.Mesh(new THREE.SphereGeometry(0.79, 28, 20, 0, Math.PI * 2, 0, Math.PI * 0.56), hairGlassMat);
+    crownSister.position.set(0, 0.22, -0.04);
+    crownSister.scale.set(0.98, 1.02, 1.06);
+    hairSisterGroup.add(crownSister);
+    [
+      { x0: -0.26, x1: -0.42, yEnd: 0.10, zEnd: 0.68, r: 0.062 },
+      { x0: -0.08, x1: -0.22, yEnd: 0.20, zEnd: 0.76, r: 0.056 },
+      { x0: 0.08, x1: -0.02, yEnd: 0.22, zEnd: 0.78, r: 0.052 },
+      { x0: 0.24, x1: 0.42, yEnd: 0.12, zEnd: 0.68, r: 0.062 }
+    ].forEach(function (b) {
+      addAnimeHairLock(THREE, hairSisterGroup, [new THREE.Vector3(b.x0 * 0.4, 0.94, 0.18), new THREE.Vector3(b.x0, 0.68, 0.68), new THREE.Vector3(b.x1, b.yEnd, b.zEnd)], b.r, hairGlassMat);
+    });
+    [-1, 1].forEach(function (s) {
+      addAnimeHairLock(THREE, hairSisterGroup, [new THREE.Vector3(s * 0.40, 0.85, 0.22), new THREE.Vector3(s * 0.72, 0.18, 0.36), new THREE.Vector3(s * 0.52, -0.58, 0.32)], 0.085, hairGlassMat);
+    });
+    for (let i = 0; i < 9; i++) {
+      const ang = ((i / 8) * 1.15 - 0.575) * Math.PI + Math.PI;
+      addAnimeHairLock(THREE, hairSisterGroup, [new THREE.Vector3(Math.sin(ang) * 0.36, 0.88, Math.cos(ang) * 0.38 - 0.05), new THREE.Vector3(Math.sin(ang) * 0.76, 0.14, Math.cos(ang) * 0.76 - 0.06), new THREE.Vector3(Math.sin(ang) * 0.78, -0.76, Math.cos(ang) * 0.78 - 0.04)], 0.105, hairGlassMat);
+    }
+    headGroup.add(hairSisterGroup);
+
+    // ทรงผม 3: 'career' (คุณนุช — ผมบ๊อบสั้นประคางปัดข้างเฉียบคม)
+    const hairCareerGroup = new THREE.Group();
+    const crownCareer = new THREE.Mesh(new THREE.SphereGeometry(0.79, 28, 20, 0, Math.PI * 2, 0, Math.PI * 0.56), hairGlassMat);
+    crownCareer.position.set(0, 0.22, -0.04);
+    crownCareer.scale.set(0.98, 1.02, 1.06);
+    hairCareerGroup.add(crownCareer);
+    [
+      { x0: -0.22, x1: 0.12, yEnd: 0.22, zEnd: 0.76, r: 0.064 },
+      { x0: -0.04, x1: 0.30, yEnd: 0.16, zEnd: 0.72, r: 0.060 },
+      { x0: -0.32, x1: -0.48, yEnd: 0.08, zEnd: 0.64, r: 0.062 }
+    ].forEach(function (b) {
+      addAnimeHairLock(THREE, hairCareerGroup, [new THREE.Vector3(-0.15, 0.94, 0.20), new THREE.Vector3(b.x0, 0.66, 0.68), new THREE.Vector3(b.x1, b.yEnd, b.zEnd)], b.r, hairGlassMat);
+    });
+    [-1, 1].forEach(function (s) {
+      addAnimeHairLock(THREE, hairCareerGroup, [new THREE.Vector3(s * 0.42, 0.84, 0.18), new THREE.Vector3(s * 0.74, 0.14, 0.30), new THREE.Vector3(s * 0.44, -0.52, 0.34)], 0.09, hairGlassMat);
+    });
+    for (let i = 0; i < 8; i++) {
+      const ang = ((i / 7) * 1.1 - 0.55) * Math.PI + Math.PI;
+      addAnimeHairLock(THREE, hairCareerGroup, [new THREE.Vector3(Math.sin(ang) * 0.36, 0.88, Math.cos(ang) * 0.38 - 0.05), new THREE.Vector3(Math.sin(ang) * 0.75, 0.14, Math.cos(ang) * 0.75 - 0.06), new THREE.Vector3(Math.sin(ang) * 0.68, -0.56, Math.cos(ang) * 0.68 - 0.04)], 0.105, hairGlassMat);
+    }
+    headGroup.add(hairCareerGroup);
+
+    // ทรงผม 4: 'bun' (คุณแม่ — หน้าม้าปัดเรียบร้อย + มวยผมด้านหลัง)
+    const hairBunGroup = new THREE.Group();
+    const bunCap = new THREE.Mesh(new THREE.SphereGeometry(0.82, 28, 22, 0, Math.PI * 2, 0, Math.PI * 0.56), hairGlassMat);
+    bunCap.position.set(0, 0.22, -0.06);
+    bunCap.scale.set(0.96, 1.0, 1.06);
+    addAnimeHairLock(THREE, hairBunGroup, [new THREE.Vector3(-0.18, 0.92, 0.24), new THREE.Vector3(0.18, 0.62, 0.70), new THREE.Vector3(0.56, 0.16, 0.48)], 0.072, hairGlassMat);
+    addAnimeHairLock(THREE, hairBunGroup, [new THREE.Vector3(-0.22, 0.90, 0.22), new THREE.Vector3(-0.48, 0.54, 0.56), new THREE.Vector3(-0.62, 0.02, 0.36)], 0.065, hairGlassMat);
+    const bunSphere = new THREE.Mesh(new THREE.SphereGeometry(0.36, 24, 24), createAnimeHoloGlassMat(THREE, 0.72));
+    bunSphere.position.set(0, 0.22, -0.96);
+    const bunWire = new THREE.Mesh(new THREE.SphereGeometry(0.37, 14, 12), new THREE.MeshBasicMaterial({ color: 0xc084fc, wireframe: true, transparent: true, opacity: 0.26, blending: THREE.AdditiveBlending }));
+    bunWire.position.copy(bunSphere.position);
+    hairBunGroup.add(bunCap, bunSphere, bunWire);
+    headGroup.add(hairBunGroup);
+
+    // ทรงผม 5: 'short' (นพ.ภาคิน — หน้าม้าปัดชายอนิเมะ + ช่อผมสั้น)
+    const hairShortGroup = new THREE.Group();
+    const maleCrown = new THREE.Mesh(new THREE.SphereGeometry(0.81, 28, 20, 0, Math.PI * 2, 0, Math.PI * 0.52), hairGlassMat);
+    maleCrown.position.set(0, 0.24, -0.05);
+    maleCrown.scale.set(1.0, 1.02, 1.08);
+    hairShortGroup.add(maleCrown);
+    [
+      { x0: -0.34, x1: -0.48, yEnd: 0.14, zEnd: 0.66, r: 0.064 },
+      { x0: -0.14, x1: -0.26, yEnd: 0.18, zEnd: 0.76, r: 0.060 },
+      { x0: 0.04, x1: -0.04, yEnd: 0.22, zEnd: 0.79, r: 0.056 },
+      { x0: 0.22, x1: 0.34, yEnd: 0.18, zEnd: 0.74, r: 0.062 },
+      { x0: 0.38, x1: 0.56, yEnd: 0.08, zEnd: 0.56, r: 0.065 }
+    ].forEach(function (b) {
+      addAnimeHairLock(THREE, hairShortGroup, [new THREE.Vector3(b.x0 * 0.4, 0.96, 0.16), new THREE.Vector3(b.x0, 0.70, 0.68), new THREE.Vector3(b.x1, b.yEnd, b.zEnd)], b.r, hairGlassMat);
+    });
+    for (let i = 0; i < 14; i++) {
+      const frac = (i / 13) * 2 - 1;
+      const pts = [];
+      for (let j = 0; j <= 8; j++) {
+        const u = j / 8;
+        const phi = 0.08 + u * 1.15;
+        pts.push(new THREE.Vector3(frac * 0.72 * Math.sin(phi * 1.15), 0.26 + Math.cos(phi) * 0.84, 0.44 - u * 1.30));
+      }
+      hairShortGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(new THREE.CatmullRomCurve3(pts).getPoints(12)), hairLineMat));
+    }
+    headGroup.add(hairShortGroup);
+
+    const hairGroups = {
+      long: hairLongGroup,
+      sister: hairSisterGroup,
+      career: hairCareerGroup,
+      bun: hairBunGroup,
+      short: hairShortGroup
+    };
+
+    function applyHairType(hType) {
+      Object.keys(hairGroups).forEach(function (k) {
+        hairGroups[k].visible = k === hType;
+      });
+    }
+    applyHairType(startProf.hairType);
+
+    const baseRingMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.30, blending: THREE.AdditiveBlending });
+    const baseRing = new THREE.Mesh(new THREE.TorusGeometry(1.12, 0.008, 10, 72), baseRingMat);
+    baseRing.rotation.x = Math.PI * 0.5;
+    baseRing.position.y = -1.36;
+    avatarGroup.add(baseRing);
+
+    const numericKeys = ['headWidth', 'headDepth', 'jawTaper', 'jawSquare', 'browRidge', 'cheekFullness', 'noseWidth', 'noseLen', 'chinWidth', 'chinProminence', 'lipFullness', 'neckWidth', 'shoulderWidth', 'eyeScale', 'browThickness'];
+    const curC1 = new THREE.Color(0x38bdf8);
+    const curC2 = new THREE.Color(0x818cf8);
+    const tgtC1 = new THREE.Color();
+    const tgtC2 = new THREE.Color();
+    const smoothEmo = { browY: 0.015, browTilt: 0.10, eyeOpen: 1.0, mouthCurve: -0.01, mouthBaseOpen: 0.008, headPitch: 0.02, headRoll: 0.10, tear: 0 };
+
+    let blinkTimer = 2.2 + seedOffset * 1.3;
+    let smoothJaw = 0;
+
+    function syncFeatures(profile, emo, jawOpen, blinkScale, gazeX, gazeY, ph, isConfused) {
+      const lEyeSurf = computeAnimeHeadVertex(-0.275, 0.025, 0.95, profile, 0);
+      const rEyeSurf = computeAnimeHeadVertex(0.275, 0.025, 0.95, profile, 0);
+
+      leftEye.group.position.set(lEyeSurf.x, lEyeSurf.y, lEyeSurf.z + 0.026);
+      rightEye.group.position.set(rEyeSurf.x, rEyeSurf.y, rEyeSurf.z + 0.026);
+      leftEye.group.rotation.y = -0.20;
+      rightEye.group.rotation.y = 0.20;
+
+      const eyeYScale = Math.max(0.06, emo.eyeOpen * blinkScale);
+      leftEye.irisContainer.scale.set(profile.eyeScale, profile.eyeScale * eyeYScale, 1);
+      rightEye.irisContainer.scale.set(profile.eyeScale, profile.eyeScale * eyeYScale, 1);
+      leftEye.irisContainer.position.set(gazeX * 0.015, gazeY * 0.01, 0);
+      rightEye.irisContainer.position.set(gazeX * 0.015, gazeY * 0.01, 0);
+      leftEye.upperLid.position.y = (1 - eyeYScale) * -0.028;
+      rightEye.upperLid.position.y = (1 - eyeYScale) * -0.028;
+      leftEye.upperLid.scale.set(profile.eyeScale * 0.82, profile.eyeScale * 0.82, 1);
+      rightEye.upperLid.scale.set(profile.eyeScale * 0.82, profile.eyeScale * 0.82, 1);
+
+      const tearOp = emo.tear * (0.45 + 0.45 * Math.sin(ph * 2.2));
+      leftEye.tearMat.opacity = tearOp;
+      rightEye.tearMat.opacity = tearOp;
+      const tearSlide = (ph * 0.14) % 1;
+      leftEye.tearDrop.position.y = -0.072 - tearSlide * 0.12;
+      rightEye.tearDrop.position.y = -0.072 - ((tearSlide + 0.45) % 1) * 0.12;
+
+      const browRefZ = computeAnimeHeadVertex(0, 0.23, 0.96, profile, 0).z + 0.032;
+      const confusedAsym = isConfused ? 0.024 : 0;
+      leftBrow.pivot.position.set(0, 0.245 + emo.browY, browRefZ);
+      rightBrow.pivot.position.set(0, 0.245 + emo.browY + confusedAsym, browRefZ);
+      leftBrow.pivot.rotation.z = -emo.browTilt;
+      rightBrow.pivot.rotation.z = emo.browTilt;
+      const bThickScale = profile.browThickness / 0.012;
+      leftBrow.mesh.scale.set(1, bThickScale, 1);
+      rightBrow.mesh.scale.set(1, bThickScale, 1);
+
+      const mouthHalfW = 0.135 + (profile.gender === 'male' ? 0.024 : 0);
+      const totalOpen = emo.mouthBaseOpen + jawOpen * 0.088;
+      const uArr = upperLipOuter.geo.attributes.position.array;
+      const uInArr = upperLipInner.geo.attributes.position.array;
+      const lArr = lowerLipOuter.geo.attributes.position.array;
+      const lInArr = lowerLipInner.geo.attributes.position.array;
+
+      for (let i = 0; i <= LIP_SEGS; i++) {
+        const u = (i / LIP_SEGS) * 2 - 1;
+        const env = Math.cos(u * Math.PI * 0.5);
+        const sx = u * mouthHalfW;
+        const cornerCurve = emo.mouthCurve * (u * u);
+
+        const pTop = computeAnimeHeadVertex(sx, -0.415 + cornerCurve + 0.012 * env + totalOpen * 0.16 * env, 0.96, profile, jawOpen);
+        uArr[i * 3] = pTop.x; uArr[i * 3 + 1] = pTop.y; uArr[i * 3 + 2] = pTop.z + 0.016;
+
+        const pTopIn = computeAnimeHeadVertex(sx, -0.432 + cornerCurve + totalOpen * 0.22 * env, 0.96, profile, jawOpen);
+        uInArr[i * 3] = pTopIn.x; uInArr[i * 3 + 1] = pTopIn.y; uInArr[i * 3 + 2] = pTopIn.z + 0.014;
+
+        const pBotIn = computeAnimeHeadVertex(sx, -0.436 + cornerCurve - totalOpen * 0.85 * env, 0.96, profile, jawOpen);
+        lInArr[i * 3] = pBotIn.x; lInArr[i * 3 + 1] = pBotIn.y; lInArr[i * 3 + 2] = pBotIn.z + 0.014;
+
+        const pBot = computeAnimeHeadVertex(sx, -0.462 + cornerCurve - 0.014 * env - totalOpen * 0.92 * env, 0.96, profile, jawOpen);
+        lArr[i * 3] = pBot.x; lArr[i * 3 + 1] = pBot.y; lArr[i * 3 + 2] = pBot.z + 0.016;
+      }
+      upperLipOuter.geo.attributes.position.needsUpdate = true;
+      upperLipInner.geo.attributes.position.needsUpdate = true;
+      lowerLipOuter.geo.attributes.position.needsUpdate = true;
+      lowerLipInner.geo.attributes.position.needsUpdate = true;
+
+      neckMesh.scale.set(profile.neckWidth / 0.20, 1, profile.neckWidth / 0.20);
+      shoulderMesh.scale.set(profile.shoulderWidth, 0.64, 0.48);
+      shoulderWire.scale.copy(shoulderMesh.scale).multiplyScalar(1.005);
+    }
+
+    return {
+      group: rigGroup,
+      update: function (dt, phase, params) {
+        const targetProf = ANIME_RIG_PROFILES[params.profileKey] || ANIME_RIG_PROFILES.daughter_praew;
+        const targetEmo = EMOTIONS[params.emotion] || EMOTIONS.CONFUSED;
+        const dLerp = 1 - Math.exp(-dt * 5.2);
+        const dCol = 1 - Math.exp(-dt * 3.0);
+
+        let profChanged = false;
+        numericKeys.forEach(function (k) {
+          const diff = targetProf[k] - currentProfile[k];
+          if (Math.abs(diff) > 0.0004) {
+            currentProfile[k] += diff * dLerp;
+            profChanged = true;
+          }
+        });
+        currentProfile.gender = targetProf.gender;
+        applyHairType(targetProf.hairType);
+        collarGroup.visible = Boolean(targetProf.hasCollar);
+
+        Object.keys(smoothEmo).forEach(function (k) {
+          smoothEmo[k] += (targetEmo[k] - smoothEmo[k]) * dLerp;
+        });
+
+        tgtC1.setHex(targetEmo.c1);
+        tgtC2.setHex(targetEmo.c2);
+        if (targetProf.tintShift > 0) {
+          tgtC1.lerp(new THREE.Color(0xc084fc), targetProf.tintShift * 0.45);
+        }
+        curC1.lerp(tgtC1, dCol);
+        curC2.lerp(tgtC2, dCol);
+
+        blinkTimer -= dt;
+        if (blinkTimer <= 0) blinkTimer = 2.8 + Math.random() * 2.6;
+        const blinkScale = blinkTimer < 0.14 ? Math.abs((blinkTimer / 0.14) * 2 - 1) : 1;
+
+        let targetJaw = 0;
+        if (params.isCharacterSpeaking) {
+          const syll = 0.5 + 0.5 * Math.sin((phase + seedOffset) * 11.5) * Math.cos((phase + seedOffset) * 4.3 + 0.7);
+          targetJaw = 0.18 + syll * 0.64;
+        }
+        smoothJaw += (targetJaw - smoothJaw) * (1 - Math.exp(-dt * 16));
+
+        if (profChanged || smoothJaw > 0.002) {
+          updateHeadGeometry(currentProfile, smoothJaw);
+        }
+
+        const focusOp = params.dimmed ? 0.64 : 0.92;
+        [headGlassMat, neckMat, shoulderMat].forEach(function (m) {
+          m.uniforms.uTime.value = phase + seedOffset;
+          m.uniforms.uColor1.value.copy(curC1);
+          m.uniforms.uColor2.value.copy(curC2);
+          m.uniforms.uOpacity.value = focusOp;
+        });
+        hairGlassMat.uniforms.uTime.value = phase + seedOffset;
+        hairGlassMat.uniforms.uColor1.value.copy(curC1);
+        hairGlassMat.uniforms.uColor2.value.copy(curC2);
+        hairGlassMat.uniforms.uOpacity.value = params.dimmed ? 0.44 : 0.62;
+
+        headWireMat.color.copy(curC1).lerp(new THREE.Color(0xffffff), 0.35);
+        shoulderWireMat.color.copy(curC1);
+        hairLineMat.color.copy(curC1).lerp(curC2, 0.4);
+        baseRingMat.color.copy(curC1);
+        baseRingMat.opacity = params.isCharacterSpeaking ? 0.48 : 0.24;
+        leftEye.irisRingMat.color.copy(curC1).lerp(new THREE.Color(0xffffff), 0.4);
+        rightEye.irisRingMat.color.copy(curC1).lerp(new THREE.Color(0xffffff), 0.4);
+        leftBrow.mat.color.copy(curC1).lerp(new THREE.Color(0xffffff), 0.45);
+        rightBrow.mat.color.copy(curC1).lerp(new THREE.Color(0xffffff), 0.45);
+
+        const gazeX = Math.sin((phase + seedOffset) * 0.55) * 0.65;
+        const gazeY = Math.cos((phase + seedOffset) * 0.42) * 0.35;
+        syncFeatures(currentProfile, smoothEmo, smoothJaw, blinkScale, gazeX, gazeY, phase + seedOffset, params.emotion === 'CONFUSED');
+
+        avatarGroup.position.y = 0.06 + Math.sin((phase + seedOffset) * 1.45) * 0.024;
+        headGroup.rotation.x = smoothEmo.headPitch + Math.sin((phase + seedOffset) * 1.1) * 0.025 + smoothJaw * 0.03;
+        headGroup.rotation.z = smoothEmo.headRoll + Math.sin((phase + seedOffset) * 0.72) * 0.022;
+        headGroup.rotation.y = Math.sin((phase + seedOffset) * 0.48) * 0.05;
+        if (hairLongGroup.visible) hairLongGroup.rotation.z = Math.sin((phase + seedOffset) * 1.1) * 0.018;
+        if (hairSisterGroup.visible) hairSisterGroup.rotation.z = Math.sin((phase + seedOffset) * 1.05) * 0.016;
+        baseRing.rotation.z = (phase + seedOffset) * 0.22;
+      }
+    };
+  }
+
+  /**
+   * ติดตั้งเวทีตัวละครอนิเมะโฮโลแกรม 3 มิติลงใน container ที่กำหนด
+   * ปรับจำนวนตัวละคร (1 หรือ 2 คน), เพศ และบทบาทอัตโนมัติตาม st.personaId
    */
   function mountHologram3D(container, initialState) {
     const THREE = global.THREE;
@@ -1651,15 +2354,35 @@
     }
 
     const st = Object.assign(
-      { style: 'lotus', emotion: 'CONFUSED', trust: 40, isSpeaking: false, activeSpeaker: 'wife' },
+      { personaId: 'standard', emotion: 'CONFUSED', trust: 40, isSpeaking: false, activeSpeaker: 'wife' },
       initialState || {}
     );
 
     const w0 = Math.max(1, container.clientWidth);
     const h0 = Math.max(1, container.clientHeight);
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(44, w0 / h0, 0.1, 100);
-    camera.position.set(0, 0.15, w0 < 520 ? 6.6 : 5.4);
+    const camera = new THREE.PerspectiveCamera(38, w0 / h0, 0.1, 100);
+
+    const fitCameraToFocalPoint = function (w, h) {
+      const safeW = Math.max(1, w);
+      const safeH = Math.max(1, h);
+      const aspect = safeW / safeH;
+      const tanHalfV = Math.tan((camera.fov * Math.PI) / 360);
+      const isPortrait = aspect < 0.85;
+      const isDualCast = getCaseRigCast(st.personaId).length > 1;
+
+      const desiredVisW = isDualCast ? (isPortrait ? 3.55 : 4.8) : (isPortrait ? 2.75 : 3.6);
+      const desiredVisH = isPortrait ? 5.2 : 4.1;
+      const zForW = desiredVisW / (2 * tanHalfV * Math.max(0.32, aspect));
+      const zForH = desiredVisH / (2 * tanHalfV);
+      const nextZ = Math.max(zForW, zForH);
+
+      camera.aspect = aspect;
+      camera.position.z = nextZ;
+      camera.position.y = isPortrait ? -(nextZ * tanHalfV * 0.18) - 0.16 : -0.28;
+      camera.updateProjectionMatrix();
+    };
+    fitCameraToFocalPoint(w0, h0);
 
     let renderer = null;
     try {
@@ -1682,8 +2405,8 @@
     const pCtx = pCan.getContext('2d');
     const pGrad = pCtx.createRadialGradient(32, 32, 0, 32, 32, 32);
     pGrad.addColorStop(0, 'rgba(255,255,255,1)');
-    pGrad.addColorStop(0.34, 'rgba(255,255,255,0.78)');
-    pGrad.addColorStop(0.72, 'rgba(255,255,255,0.16)');
+    pGrad.addColorStop(0.38, 'rgba(255,255,255,0.75)');
+    pGrad.addColorStop(0.75, 'rgba(255,255,255,0.12)');
     pGrad.addColorStop(1, 'rgba(255,255,255,0)');
     pCtx.fillStyle = pGrad;
     pCtx.fillRect(0, 0, 64, 64);
@@ -1692,154 +2415,19 @@
     const root = new THREE.Group();
     scene.add(root);
 
-    // 1. LOTUS BLOOM
-    const lotusGroup = new THREE.Group();
-    lotusGroup.position.y = -0.62;
-    root.add(lotusGroup);
-    const lotusPetals = [];
-    [
-      { count: 6, w: 0.54, h: 1.24, baseTilt: 0.18, openTilt: 0.68 },
-      { count: 9, w: 0.66, h: 1.56, baseTilt: 0.28, openTilt: 1.02 },
-      { count: 12, w: 0.76, h: 1.8, baseTilt: 0.36, openTilt: 1.3 }
-    ].forEach(function (ly, li) {
-      const geo = buildPetalGeometry(THREE, ly.w, ly.h);
-      const edgeGeo = new THREE.EdgesGeometry(geo, 24);
-      for (let k = 0; k < ly.count; k++) {
-        const pivot = new THREE.Group();
-        pivot.rotation.y = (k / ly.count) * Math.PI * 2 + li * 0.35;
-        const holder = new THREE.Group();
-        const mat = new THREE.MeshBasicMaterial({
-          color: 0x38bdf8, transparent: true, opacity: 0.22 + (2 - li) * 0.08,
-          side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false
-        });
-        const rimMat = new THREE.LineBasicMaterial({
-          color: 0xbae6fd, transparent: true, opacity: 0.38, blending: THREE.AdditiveBlending
-        });
-        holder.add(new THREE.Mesh(geo, mat));
-        holder.add(new THREE.LineSegments(edgeGeo, rimMat));
-        pivot.add(holder);
-        lotusGroup.add(pivot);
-        lotusPetals.push({ holder: holder, mat: mat, rimMat: rimMat, layerIdx: li, baseTilt: ly.baseTilt, openTilt: ly.openTilt, seed: k * 0.7 + li * 1.9 });
-      }
-    });
-    const lotusCoreMat = new THREE.MeshBasicMaterial({ color: 0xa7f3d0, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending });
-    const lotusCore = new THREE.Mesh(new THREE.SphereGeometry(0.32, 28, 28), lotusCoreMat);
-    lotusCore.position.y = 0.38;
-    lotusGroup.add(lotusCore);
+    // สร้างตัวละคร 2 Rigs (Rig 0 ใช้ทุกเคส, Rig 1 เปิดแสดงเพิ่มอัตโนมัติเมื่อเคสมีญาติ 2 คน เช่น เคสความขัดแย้งในครอบครัว)
+    const primaryRig = createAnimeCharacterRig(THREE, glowTex, 'daughter_praew', 0.0);
+    const secondaryRig = createAnimeCharacterRig(THREE, glowTex, 'mother_bun', 1.85);
+    secondaryRig.group.visible = false;
+    root.add(primaryRig.group, secondaryRig.group);
 
-    // 2. LIQUID GLASS AURORA ORB
-    const liquidGroup = new THREE.Group();
-    root.add(liquidGroup);
-    const liquidMat = createLiquidShaderMaterial(THREE);
-    const liquidOrb = new THREE.Mesh(new THREE.SphereGeometry(1.4, 72, 72), liquidMat);
-    liquidGroup.add(liquidOrb);
-    const innerCoreMat = new THREE.MeshBasicMaterial({ color: 0xbae6fd, transparent: true, opacity: 0.22, blending: THREE.AdditiveBlending, depthWrite: false });
-    const innerCore = new THREE.Mesh(new THREE.SphereGeometry(0.84, 32, 32), innerCoreMat);
-    liquidGroup.add(innerCore);
-
-    // 3. BREATHING SILK WAVES
-    const silkGroup = new THREE.Group();
-    root.add(silkGroup);
-    const SILK_LINES = 20;
-    const SILK_PTS = 96;
-    const silkItems = [];
-    for (let l = 0; l < SILK_LINES; l++) {
-      const arr = new Float32Array(SILK_PTS * 3);
-      const geo = new THREE.BufferGeometry();
-      geo.setAttribute('position', new THREE.BufferAttribute(arr, 3));
-      const t = l / (SILK_LINES - 1);
-      const mat = new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.16 + Math.sin(t * Math.PI) * 0.65, blending: THREE.AdditiveBlending, depthWrite: false });
-      silkGroup.add(new THREE.Line(geo, mat));
-      silkItems.push({ geo: geo, mat: mat, t: t, phaseOffset: l * 0.28 });
-    }
-
-    // 4. QUANTUM PARTICLE CORE
-    const particleGroup = new THREE.Group();
-    root.add(particleGroup);
-    const P_COUNT = 380;
-    const pPos = new Float32Array(P_COUNT * 3);
-    const pBase = new Float32Array(P_COUNT * 3);
-    for (let i = 0; i < P_COUNT; i++) {
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
-      const r = 1.05 + Math.random() * 1.1;
-      pBase[i * 3] = Math.sin(phi) * Math.cos(theta) * r;
-      pBase[i * 3 + 1] = Math.cos(phi) * r;
-      pBase[i * 3 + 2] = Math.sin(phi) * Math.sin(theta) * r;
-      pPos[i * 3] = pBase[i * 3];
-      pPos[i * 3 + 1] = pBase[i * 3 + 1];
-      pPos[i * 3 + 2] = pBase[i * 3 + 2];
-    }
-    const pGeo = new THREE.BufferGeometry();
-    pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-    const pMat = new THREE.PointsMaterial({ size: 0.16, map: glowTex, color: 0x38bdf8, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending, depthWrite: false });
-    particleGroup.add(new THREE.Points(pGeo, pMat));
-    const qRingMat = new THREE.MeshBasicMaterial({ color: 0x6ee7b7, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending });
-    const qRing1 = new THREE.Mesh(new THREE.TorusGeometry(1.75, 0.015, 16, 100), qRingMat);
-    const qRing2 = new THREE.Mesh(new THREE.TorusGeometry(1.5, 0.012, 16, 100), qRingMat);
-    qRing2.rotation.x = Math.PI * 0.5;
-    particleGroup.add(qRing1);
-    particleGroup.add(qRing2);
-
-    // 5. DUAL-CORE RESONANCE (CASE 3: WIFE + MOTHER)
-    const dualGroup = new THREE.Group();
-    root.add(dualGroup);
-    const wifeMat = createLiquidShaderMaterial(THREE);
-    const wifeOrb = new THREE.Mesh(new THREE.SphereGeometry(0.88, 56, 56), wifeMat);
-    dualGroup.add(wifeOrb);
-    const motherMat = createLiquidShaderMaterial(THREE);
-    const motherOrb = new THREE.Mesh(new THREE.SphereGeometry(0.94, 56, 56), motherMat);
-    dualGroup.add(motherOrb);
-    const bridgeLines = [];
-    const B_PTS = 44;
-    for (let b = 0; b < 6; b++) {
-      const arr = new Float32Array(B_PTS * 3);
-      const geo = new THREE.BufferGeometry();
-      geo.setAttribute('position', new THREE.BufferAttribute(arr, 3));
-      const mat = new THREE.LineBasicMaterial({ color: 0x67e8f9, transparent: true, opacity: 0.45, blending: THREE.AdditiveBlending });
-      dualGroup.add(new THREE.Line(geo, mat));
-      bridgeLines.push({ geo: geo, mat: mat, idx: b });
-    }
-
-    // 6. CRYSTALLINE PRISM
-    const prismGroup = new THREE.Group();
-    root.add(prismGroup);
-    const prismGeo = new THREE.OctahedronGeometry(1.38, 1);
-    const prismFillMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.24, blending: THREE.AdditiveBlending, depthWrite: false });
-    const prismWireMat = new THREE.LineBasicMaterial({ color: 0xbae6fd, transparent: true, opacity: 0.72, blending: THREE.AdditiveBlending });
-    const prismMesh = new THREE.Mesh(prismGeo, prismFillMat);
-    const prismWire = new THREE.LineSegments(new THREE.EdgesGeometry(prismGeo), prismWireMat);
-    const prismHaloMat = new THREE.MeshBasicMaterial({ color: 0x6ee7b7, transparent: true, opacity: 0.3, blending: THREE.AdditiveBlending });
-    const prismHalo = new THREE.Mesh(new THREE.TorusGeometry(2.05, 0.015, 16, 100), prismHaloMat);
-    prismHalo.rotation.x = Math.PI * 0.42;
-    prismGroup.add(prismMesh);
-    prismGroup.add(prismWire);
-    prismGroup.add(prismHalo);
-
-    const groups = {
-      lotus: lotusGroup,
-      liquid: liquidGroup,
-      silk: silkGroup,
-      particles: particleGroup,
-      dual: dualGroup,
-      prism: prismGroup
-    };
-
-    function applyVisibility() {
-      Object.keys(groups).forEach(function (k) {
-        groups[k].visible = k === st.style;
-      });
-    }
-    applyVisibility();
-
-    // Drag to rotate camera smoothly
     let dragging = false, lx = 0, ly = 0;
-    let targetRY = 0, targetRX = 0, smoothRY = 0, smoothRX = 0;
+    let targetRY = 0.04, targetRX = 0.0, smoothRY = 0.04, smoothRX = 0.0;
     const onDown = function (x, y) { dragging = true; lx = x; ly = y; };
     const onMove = function (x, y) {
       if (!dragging) return;
-      targetRY += (x - lx) * 0.006;
-      targetRX = Math.max(-0.52, Math.min(0.52, targetRX + (y - ly) * 0.0045));
+      targetRY = Math.max(-1.45, Math.min(1.45, targetRY + (x - lx) * 0.007));
+      targetRX = Math.max(-0.42, Math.min(0.42, targetRX + (y - ly) * 0.005));
       lx = x; ly = y;
     };
     const onUp = function () { dragging = false; };
@@ -1858,9 +2446,7 @@
     const handleResize = function () {
       const w = Math.max(1, container.clientWidth);
       const h = Math.max(1, container.clientHeight);
-      camera.aspect = w / h;
-      camera.position.z = w < 520 ? 6.6 : 5.4;
-      camera.updateProjectionMatrix();
+      fitCameraToFocalPoint(w, h);
       renderer.setSize(w, h);
     };
     global.addEventListener('resize', handleResize);
@@ -1870,16 +2456,11 @@
       ro.observe(container);
     }
 
-    const curC1 = new THREE.Color(0x38bdf8);
-    const curC2 = new THREE.Color(0x818cf8);
-    const tgtC1 = new THREE.Color();
-    const tgtC2 = new THREE.Color();
-    const tmpCol = new THREE.Color();
-
-    let phase = 0, smoothSpeak = 0, smoothBloom = 0.4, smoothTension = 0.6, smoothWife = 1;
+    let phase = 0;
     let lastTime = performance.now();
     let rafId = null;
     let alive = true;
+    let lastPersonaId = st.personaId;
 
     function animate(now) {
       if (!alive) return;
@@ -1887,145 +2468,62 @@
       if (document.hidden) return;
       const dt = Math.min(0.033, Math.max(0.001, (now - lastTime) / 1000));
       lastTime = now;
+      phase += dt;
 
-      const emo = EMOTIONS[st.emotion] || EMOTIONS.CONFUSED;
-      const trustRatio = Math.max(0, Math.min(1, Number(st.trust || 40) / 100));
-      const dCol = 1 - Math.exp(-dt * 2.5);
-      const dVal = 1 - Math.exp(-dt * 3.0);
-      const dDrag = 1 - Math.exp(-dt * 6.5);
+      if (lastPersonaId !== st.personaId) {
+        lastPersonaId = st.personaId;
+        fitCameraToFocalPoint(container.clientWidth, container.clientHeight);
+      }
 
-      tgtC1.setHex(emo.c1);
-      tgtC2.setHex(emo.c2);
-      curC1.lerp(tgtC1, dCol);
-      curC2.lerp(tgtC2, dCol);
+      const cast = getCaseRigCast(st.personaId);
+      const isDual = cast.length > 1;
+      const c0 = cast[0];
 
-      const targetBloom = Math.max(emo.bloom * 0.45, trustRatio);
-      const targetTension = Math.max(0.08, emo.tension * (1.1 - trustRatio * 0.65));
+      primaryRig.group.visible = true;
+      primaryRig.group.position.set(c0.x, c0.y, c0.z);
+      primaryRig.group.scale.setScalar(c0.scale);
+      primaryRig.group.rotation.y = c0.yaw;
 
-      smoothSpeak += ((st.isSpeaking ? 1 : 0) - smoothSpeak) * dVal;
-      smoothBloom += (targetBloom - smoothBloom) * dVal;
-      smoothTension += (targetTension - smoothTension) * dVal;
-      smoothWife += ((st.activeSpeaker !== 'mother' ? 1 : 0) - smoothWife) * dVal;
-      smoothRX += (targetRX - smoothRX) * dDrag;
+      if (isDual) {
+        const c1 = cast[1];
+        const wifeSpeaking = Boolean(st.isSpeaking && st.activeSpeaker !== 'mother');
+        const motherSpeaking = Boolean(st.isSpeaking && st.activeSpeaker === 'mother');
+
+        // ในเคส 2 คน: ภรรยามีอารมณ์กังวล/ขอความช่วยเหลือ ส่วนคุณแม่สะท้อนอารมณ์หลักของสถานการณ์
+        const wifeEmotion = st.emotion === 'CALM' ? 'CALM' : (st.emotion === 'ANGRY' ? 'SAD' : st.emotion);
+
+        primaryRig.update(dt, phase, {
+          profileKey: c0.profileKey,
+          emotion: wifeEmotion,
+          isCharacterSpeaking: wifeSpeaking,
+          dimmed: motherSpeaking
+        });
+
+        secondaryRig.group.visible = true;
+        secondaryRig.group.position.set(c1.x, c1.y, c1.z);
+        secondaryRig.group.scale.setScalar(c1.scale);
+        secondaryRig.group.rotation.y = c1.yaw;
+        secondaryRig.update(dt, phase, {
+          profileKey: c1.profileKey,
+          emotion: st.emotion,
+          isCharacterSpeaking: motherSpeaking,
+          dimmed: wifeSpeaking
+        });
+      } else {
+        secondaryRig.group.visible = false;
+        primaryRig.update(dt, phase, {
+          profileKey: c0.profileKey,
+          emotion: st.emotion,
+          isCharacterSpeaking: Boolean(st.isSpeaking),
+          dimmed: false
+        });
+      }
+
+      const dDrag = 1 - Math.exp(-dt * 7);
       smoothRY += (targetRY - smoothRY) * dDrag;
-
-      phase += dt * (0.72 + emo.speed * 0.5 + smoothSpeak * 0.62);
+      smoothRX += (targetRX - smoothRX) * dDrag;
       root.rotation.y = smoothRY;
       root.rotation.x = smoothRX;
-
-      if (lotusGroup.visible) {
-        lotusGroup.rotation.y = phase * 0.14;
-        lotusPetals.forEach(function (p) {
-          const breath = Math.sin(phase * 1.1 + p.seed) * 0.035 + smoothSpeak * 0.048 * Math.sin(phase * 3.2 + p.seed);
-          p.holder.rotation.x = p.baseTilt + (p.openTilt - p.baseTilt) * smoothBloom + breath;
-          tmpCol.copy(curC1).lerp(curC2, p.layerIdx / 2);
-          p.mat.color.copy(tmpCol);
-          p.rimMat.color.copy(curC2).lerp(new THREE.Color(0xffffff), 0.35);
-        });
-        lotusCoreMat.color.copy(curC1).lerp(new THREE.Color(0xffffff), 0.45);
-        lotusCore.scale.setScalar(0.86 + smoothBloom * 0.32 + smoothSpeak * 0.14 * Math.sin(phase * 4.0));
-      }
-
-      if (liquidGroup.visible) {
-        liquidMat.uniforms.uTime.value = phase;
-        liquidMat.uniforms.uSpeak.value = smoothSpeak;
-        liquidMat.uniforms.uTension.value = smoothTension;
-        liquidMat.uniforms.uColor1.value.copy(curC1);
-        liquidMat.uniforms.uColor2.value.copy(curC2);
-        innerCoreMat.color.copy(curC1);
-        innerCore.scale.setScalar(1 + Math.sin(phase * 1.4) * 0.05 + smoothSpeak * 0.09 * Math.sin(phase * 3.8));
-        liquidOrb.rotation.y = phase * 0.14;
-      }
-
-      if (silkGroup.visible) {
-        silkItems.forEach(function (item) {
-          const arr = item.geo.attributes.position.array;
-          const spreadY = (item.t - 0.5) * 1.65;
-          const spreadZ = (item.t - 0.5) * 1.15;
-          const amp = 0.2 + smoothSpeak * (0.42 + 0.18 * Math.sin(phase * 2.4 + item.phaseOffset)) + smoothTension * 0.12;
-          for (let j = 0; j < SILK_PTS; j++) {
-            const u = j / (SILK_PTS - 1);
-            const env = Math.sin(u * Math.PI);
-            arr[j * 3] = (u - 0.5) * 6.2;
-            arr[j * 3 + 1] = spreadY * (0.5 + env * 0.7) + Math.sin(u * 6.8 - phase * 1.6 + item.phaseOffset) * amp * env;
-            arr[j * 3 + 2] = spreadZ * env + Math.cos(u * 5.2 + phase * 1.15 + item.phaseOffset) * 0.42 * env;
-          }
-          item.geo.attributes.position.needsUpdate = true;
-          tmpCol.copy(curC1).lerp(curC2, item.t);
-          item.mat.color.copy(tmpCol);
-        });
-        silkGroup.rotation.y = Math.sin(phase * 0.22) * 0.24;
-      }
-
-      if (particleGroup.visible) {
-        pMat.color.copy(curC1);
-        qRingMat.color.copy(curC2);
-        const arr = pGeo.attributes.position.array;
-        for (let i = 0; i < P_COUNT; i++) {
-          const i3 = i * 3;
-          const pulse = 1 + Math.sin(phase * 1.2 + i * 0.15) * (0.06 + smoothSpeak * 0.1);
-          arr[i3] = pBase[i3] * pulse;
-          arr[i3 + 1] = pBase[i3 + 1] * pulse;
-          arr[i3 + 2] = pBase[i3 + 2] * pulse;
-        }
-        pGeo.attributes.position.needsUpdate = true;
-        particleGroup.rotation.y = phase * 0.18;
-        qRing1.rotation.z = phase * 0.25;
-        qRing2.rotation.y = -phase * 0.3;
-      }
-
-      if (dualGroup.visible) {
-        const sep = 1.0 + smoothTension * 0.72;
-        const ang = phase * 0.18;
-        const wx = -Math.cos(ang) * sep, wz = -Math.sin(ang) * sep * 0.42;
-        const mx = Math.cos(ang) * sep, mz = Math.sin(ang) * sep * 0.42;
-        const wSpeak = smoothSpeak * smoothWife;
-        const mSpeak = smoothSpeak * (1 - smoothWife);
-
-        wifeOrb.position.set(wx, Math.sin(phase * 1.1) * 0.08, wz);
-        wifeOrb.scale.setScalar(0.88 + wSpeak * 0.22);
-        wifeMat.uniforms.uTime.value = phase;
-        wifeMat.uniforms.uSpeak.value = wSpeak;
-        wifeMat.uniforms.uTension.value = smoothTension * 0.65;
-        wifeMat.uniforms.uColor1.value.setHex(0x38bdf8).lerp(curC1, 0.35);
-        wifeMat.uniforms.uColor2.value.setHex(0x6ee7b7);
-
-        motherOrb.position.set(mx, Math.cos(phase * 0.95) * 0.08, mz);
-        motherOrb.scale.setScalar(0.88 + mSpeak * 0.22);
-        motherMat.uniforms.uTime.value = phase * 1.05 + 1.3;
-        motherMat.uniforms.uSpeak.value = mSpeak;
-        motherMat.uniforms.uTension.value = smoothTension;
-        motherMat.uniforms.uColor1.value.setHex(0xf43f5e).lerp(curC1, (1 - smoothTension) * 0.7);
-        motherMat.uniforms.uColor2.value.setHex(0xfbbf24).lerp(curC2, (1 - smoothTension) * 0.7);
-
-        bridgeLines.forEach(function (b) {
-          const arr = b.geo.attributes.position.array;
-          const arcSpread = (b.idx - 2.5) * 0.2;
-          for (let j = 0; j < B_PTS; j++) {
-            const u = j / (B_PTS - 1);
-            const env = Math.sin(u * Math.PI);
-            arr[j * 3] = wx + (mx - wx) * u;
-            arr[j * 3 + 1] = (wifeOrb.position.y * (1 - u) + motherOrb.position.y * u) + arcSpread * env + Math.sin(u * 7 + phase * 2 + b.idx) * (0.07 + smoothSpeak * 0.08) * env;
-            arr[j * 3 + 2] = wz + (mz - wz) * u + Math.cos(u * 5 - phase * 1.4 + b.idx) * 0.2 * env;
-          }
-          b.geo.attributes.position.needsUpdate = true;
-          b.mat.color.copy(curC1);
-          b.mat.opacity = 0.2 + (1 - smoothTension) * 0.55;
-        });
-      }
-
-      if (prismGroup.visible) {
-        prismFillMat.color.copy(curC1);
-        prismWireMat.color.copy(curC2).lerp(new THREE.Color(0xffffff), 0.3);
-        prismHaloMat.color.copy(curC1);
-        prismMesh.rotation.y = phase * 0.25;
-        prismMesh.rotation.x = Math.sin(phase * 0.4) * 0.22;
-        prismWire.rotation.copy(prismMesh.rotation);
-        const s = 0.94 + smoothSpeak * 0.14 * Math.sin(phase * 3.8) + smoothBloom * 0.12;
-        prismMesh.scale.setScalar(s);
-        prismWire.scale.setScalar(s * 1.03);
-        prismHalo.rotation.z += dt * 0.14;
-      }
 
       renderer.render(scene, camera);
     }
@@ -2035,7 +2533,6 @@
     return {
       update: function (nextState) {
         Object.assign(st, nextState || {});
-        applyVisibility();
       },
       destroy: function () {
         alive = false;
@@ -2062,7 +2559,6 @@
   global.RJCLOUD_SKILLLAB = {
     EMOTIONS: EMOTIONS,
     RADAR_AXES: RADAR_AXES,
-    HOLOGRAM_STYLES: HOLOGRAM_STYLES,
     CASE_ICU_BRIEFS: CASE_ICU_BRIEFS,
     HARD_MODE_CURVEBALLS: HARD_MODE_CURVEBALLS,
     MICRO_DRILL_STAGES: MICRO_DRILL_STAGES,
