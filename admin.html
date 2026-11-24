@@ -108,6 +108,7 @@
         --aura-3: rgba(192, 132, 252, 0.14);
       }
 
+      * { box-sizing: border-box; }
       html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
       body {
         margin: 0;
@@ -167,6 +168,7 @@
         color: #050b16 !important;
         box-shadow: 0 10px 28px -6px rgba(134, 239, 172, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.72) inset;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
+        text-decoration: none;
       }
       .rjc2-pill-btn:hover { transform: translateY(-1px) scale(1.015); }
       .rjc2-pill-btn:active { transform: scale(0.98); }
@@ -217,7 +219,6 @@
       }
     }
     </script>
-    <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
 </head>
 <body>
     <!-- หน้าจอโหลดเริ่มต้น -->
@@ -225,7 +226,7 @@
         <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#020612;color:#f8fafc;font-family:-apple-system,'Anuphan','Prompt',sans-serif;gap:14px;padding:24px;text-align:center;">
             <div style="width:46px;height:46px;border:3px solid rgba(56,189,248,0.22);border-top-color:#6ee7b7;border-right-color:#38bdf8;border-radius:9999px;animation:adminSpin 0.85s linear infinite;"></div>
             <div style="font-weight:800;font-size:17px;">กำลังเปิดศูนย์ควบคุม Admin Mission Control...</div>
-            <div style="font-size:12px;color:#93b4d8;">rjcloud.organ 2.0 • Fast-Track, Onsite Cohort &amp; CNEU Studio</div>
+            <div style="font-size:12px;color:#93b4d8;">rjcloud.organ 2.0 • Fast-Track, Onsite QR Hub &amp; CNEU Studio</div>
         </div>
     </div>
 
@@ -236,11 +237,12 @@
         if (src.includes('data.js') || src.includes('learning-core.js') || src.includes('cert-engine.js') || src.includes('styles.css') || src.includes('qrcode')) return;
         const root = document.getElementById('admin-root');
         if (root && !root.dataset.mounted && ev.message) {
+          const safeMsg = String(ev.message || 'Unknown error').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
           root.innerHTML =
             '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#020612;color:#f8fafc;font-family:Sarabun,sans-serif;">' +
             '<div style="max-width:440px;width:100%;background:#061229;border:1px solid rgba(244,63,94,0.4);border-radius:24px;padding:24px;text-align:center;">' +
             '<h2 style="color:#fda4af;font-weight:700;margin:0 0 8px;">ไม่สามารถเปิดระบบหลังบ้านได้ชั่วคราว</h2>' +
-            '<p style="font-size:13px;color:#dbeafe;margin:0 0 16px;">' + String(ev.message || 'Unknown error') + '</p>' +
+            '<p style="font-size:13px;color:#dbeafe;margin:0 0 16px;">' + safeMsg + '</p>' +
             '<button onclick="window.location.reload()" style="padding:12px 24px;border:none;border-radius:14px;background:#34d399;color:#020612;font-weight:700;cursor:pointer;">โหลดหน้าใหม่</button>' +
             '</div></div>';
         }
@@ -258,8 +260,8 @@
         // ============================================================================
         // 1. CONFIGURATION, DEFAULTS & STATUS ENGINE
         // ============================================================================
-        const CORE = window.RJCLOUD_CORE || {};
-        const CERT = window.RJCLOUD_CERT || {};
+        const CORE = window['RJCLOUD_CORE'] || {};
+        const CERT = window['RJCLOUD_CERT'] || {};
 
         const BUILTIN_CONFIG = {
             appName: 'rjcloud.organ',
@@ -352,7 +354,6 @@
             documentUrl: ''
         };
 
-        // ข้อมูลตัวอย่างสำหรับโหมด Preview (ไม่กระทบฐานข้อมูลจริง)
         function buildDemoUsers(onsiteCfg) {
             return [
                 {
@@ -412,7 +413,7 @@
         }
 
         // ============================================================================
-        // 2. FIREBASE INITIALIZATION & HELPERS
+        // 2. FIREBASE INITIALIZATION, QR GENERATOR & UTILITY HELPERS
         // ============================================================================
         let fbApp = null, fbAuth = null, fbDb = null;
         const isCloudConfigured = Boolean(CONFIG.firebaseConfig?.apiKey && CONFIG.firebaseConfig?.projectId);
@@ -424,16 +425,162 @@
             } catch (err) { console.warn('Firebase init warning:', err); }
         }
 
+        function resolveOnsitePublicUrl() {
+            try {
+                const loc = window.location;
+                if (loc && (loc.protocol === 'https:' || loc.protocol === 'http:') && !loc.hostname.includes('usercontent') && !loc.hostname.includes('sandbox')) {
+                    return new URL('./onsite.html', loc.href).toString();
+                }
+            } catch (_) {}
+            return 'https://learn.coerj.com/onsite.html';
+        }
+
+        function copyTextSafe(text) {
+            try {
+                const ta = document.createElement('textarea');
+                ta.value = String(text || '');
+                ta.setAttribute('readonly', '');
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                const ok = document.execCommand('copy');
+                document.body.removeChild(ta);
+                if (ok) return true;
+            } catch (_) {}
+            try {
+                if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+                    navigator.clipboard.writeText(String(text || '')).catch(() => {});
+                    return true;
+                }
+            } catch (_) {}
+            return false;
+        }
+
+        function drawQrToCanvas(ctx, url, x, y, size, darkHex = '#0f172a') {
+            if (!ctx || !url || typeof window.qrcode !== 'function') return false;
+            try {
+                const qr = window.qrcode(0, 'M');
+                qr.addData(String(url));
+                qr.make();
+                const count = qr.getModuleCount();
+                const cell = size / count;
+                ctx.fillStyle = darkHex;
+                for (let r = 0; r < count; r++) {
+                    const py = Math.floor(y + r * cell);
+                    const ph = Math.ceil(y + (r + 1) * cell) - py;
+                    for (let c = 0; c < count; c++) {
+                        if (qr.isDark(r, c)) {
+                            const px = Math.floor(x + c * cell);
+                            const pw = Math.ceil(x + (c + 1) * cell) - px;
+                            ctx.fillRect(px, py, pw, ph);
+                        }
+                    }
+                }
+                return true;
+            } catch (_) { return false; }
+        }
+
+        /**
+         * ดาวน์โหลด QR Code สำหรับลงทะเบียน Onsite เป็นไฟล์ PNG ความละเอียดสูง
+         * (mode: 'poster' = การ์ดพร้อมชื่อกิจกรรมและลิงก์แนบหนังสือเชิญประชุม | 'raw' = QR ล้วนพื้นขาว)
+         */
+        function downloadOnsiteQrPng({ url, onsiteCfg, mode = 'poster' }) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return false;
+
+            const safeEventId = String(onsiteCfg?.eventId || 'ONSITE').replace(/[^a-zA-Z0-9_-]/g, '');
+
+            if (mode === 'raw') {
+                canvas.width = 900;
+                canvas.height = 900;
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, 900, 900);
+                const drawn = drawQrToCanvas(ctx, url, 70, 70, 760, '#0f172a');
+                if (!drawn) return false;
+            } else {
+                canvas.width = 1000;
+                canvas.height = 1240;
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, 1000, 1240);
+
+                // กรอบเส้นคู่สีเขียวมรกต-น้ำเงิน
+                ctx.strokeStyle = '#0f766e';
+                ctx.lineWidth = 6;
+                ctx.strokeRect(28, 28, 944, 1184);
+                ctx.strokeStyle = '#cbd5e1';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(42, 42, 916, 1156);
+
+                // หัวการ์ด
+                ctx.textAlign = 'center';
+                ctx.fillStyle = '#047857';
+                ctx.font = '700 22px "Prompt", sans-serif';
+                ctx.fillText('สแกน QR CODE เพื่อลงทะเบียนอบรม ONSITE', 500, 104);
+
+                ctx.fillStyle = '#0f172a';
+                ctx.font = '700 28px "Prompt", sans-serif';
+                const title = String(onsiteCfg?.activityTitle || 'ลงทะเบียนอบรม Onsite (rjcloud.organ 2.0)');
+                if (title.length > 42) {
+                    const mid = title.lastIndexOf(' ', Math.floor(title.length / 2));
+                    const cut = mid > 15 ? mid : Math.floor(title.length / 2);
+                    ctx.fillText(title.slice(0, cut).trim(), 500, 152, 860);
+                    ctx.fillText(title.slice(cut).trim(), 500, 190, 860);
+                } else {
+                    ctx.fillText(title, 500, 162, 860);
+                }
+
+                ctx.fillStyle = '#475569';
+                ctx.font = '600 21px "Sarabun", sans-serif';
+                ctx.fillText(`วันที่จัดกิจกรรม: ${onsiteCfg?.eventDate || '-'}`, 500, 234, 860);
+
+                // กรอบ QR Code ตรงกลางขนาดใหญ่คมชัด
+                const qrSize = 680;
+                const qrX = (1000 - qrSize) / 2;
+                const qrY = 274;
+                ctx.fillStyle = '#ffffff';
+                ctx.strokeStyle = '#e2e8f0';
+                ctx.lineWidth = 3;
+                ctx.fillRect(qrX - 24, qrY - 24, qrSize + 48, qrSize + 48);
+                ctx.strokeRect(qrX - 24, qrY - 24, qrSize + 48, qrSize + 48);
+
+                const drawn = drawQrToCanvas(ctx, url, qrX, qrY, qrSize, '#0f172a');
+                if (!drawn) return false;
+
+                // ข้อความด้านล่างการ์ด
+                ctx.fillStyle = '#0f172a';
+                ctx.font = '700 22px "JetBrains Mono", monospace';
+                ctx.fillText(url, 500, 1042, 860);
+
+                ctx.fillStyle = '#0369a1';
+                ctx.font = '600 20px "Sarabun", sans-serif';
+                ctx.fillText('เปิดรับสมัครล่วงหน้า • ซิงค์สิทธิ์เข้า rjcloud.organ 2.0 อัตโนมัติตามกำหนดเวลา', 500, 1094, 860);
+
+                ctx.fillStyle = '#64748b';
+                ctx.font = '600 18px "Prompt", sans-serif';
+                ctx.fillText('ORGAN TRANSPLANTATION CENTER OF RAJAVITHI HOSPITAL', 500, 1148, 860);
+            }
+
+            try {
+                const a = document.createElement('a');
+                a.href = canvas.toDataURL('image/png', 1.0);
+                a.download = mode === 'raw' ? `QR_Onsite_Raw_${safeEventId}.png` : `QR_Onsite_Poster_${safeEventId}.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                return true;
+            } catch (_) { return false; }
+        }
+
         function getUserLicense(u) {
             return String(u?.license || u?.id || '-').trim();
         }
 
         function parsePosttestScorePct(posttestStr) {
-            const s = String(posttestStr || '');
-            const m = s.match(/(\d+)\s*\/\s*(\d+)/);
+            const m = String(posttestStr || '').match(/(\d+)\s*\/\s*(\d+)/);
             if (!m) return 0;
-            const total = Number(m[2]) || 40;
-            return Math.round((Number(m[1]) / total) * 100);
+            return Math.round((Number(m[1]) / (Number(m[2]) || 40)) * 100);
         }
 
         function parsePosttestPassed(u) {
@@ -447,9 +594,6 @@
             return Boolean(u.studyHoursExempt || u.userType === 'เรียนต่อเนื่อง');
         }
 
-        /**
-         * คำนวณชื่อสถานะภาษาไทยสุภาพล้วนๆ (ตรงกับ index.html 100% ไม่มีสัญลักษณ์/ป้ายกลุ่ม)
-         */
         function resolveLearnerStatusInfo(u) {
             if (!u) {
                 return { statusLabel: 'ลงทะเบียนแล้ว', hoursLabel: 'กำลังสะสมชั่วโมง', activityName: '', activityMeta: '', isExempt: false, isStudyEnough: false };
@@ -500,13 +644,6 @@
                 const d = new Date(isoStr);
                 if (isNaN(d.getTime())) return '-';
                 return `${d.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })} เวลา ${d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })} น.`;
-            } catch (_) { return '-'; }
-        }
-
-        function formatThaiDateOnly(isoStr) {
-            try {
-                const d = isoStr ? new Date(isoStr) : new Date();
-                return isNaN(d.getTime()) ? '-' : d.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' });
             } catch (_) { return '-'; }
         }
 
@@ -573,7 +710,7 @@
         }
 
         // ============================================================================
-        // 3. UI PRIMITIVES
+        // 3. UI PRIMITIVES & LIVE QR PREVIEW COMPONENT
         // ============================================================================
         class AdminErrorBoundary extends React.Component {
             constructor(props) { super(props); this.state = { hasError: false, err: null }; }
@@ -616,6 +753,22 @@
                     <input {...props} className="touch-target spatial-input w-full px-3.5 py-2 rounded-xl text-sm" />
                 </div>
             );
+        }
+
+        function LiveQrCanvas({ url, size = 168 }) {
+            const ref = useRef(null);
+            useEffect(() => {
+                const canvas = ref.current;
+                if (!canvas || !url) return;
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                if (!ctx) return;
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, size, size);
+                drawQrToCanvas(ctx, url, 10, 10, size - 20, '#0f172a');
+            }, [url, size]);
+            return <canvas ref={ref} width={size} height={size} className="rounded-2xl bg-white shadow-lg border border-white/80 block" />;
         }
 
         function ToastBanner({ toast }) {
@@ -708,21 +861,22 @@
             const toggleTheme = useCallback(() => setTheme(p => (p === 'dark' ? 'light' : 'dark')), []);
 
             // Auth Session State
-            const [adminSession, setAdminSession] = useState(null); // { email, isDemo }
+            const [adminSession, setAdminSession] = useState(null);
             const [loginEmail, setLoginEmail] = useState(CONFIG.contactEmail || 'rjcloud.organ@gmail.com');
             const [loginPassword, setLoginPassword] = useState('');
             const [loginBusy, setLoginBusy] = useState(false);
 
             // Navigation State
             const [activeTab, setActiveTab] = useState('users'); // users | onsite | cert | live | content | sync | overview
-            const [certSubTab, setCertSubTab] = useState('designer'); // designer | cneu
-            const [contentSubTab, setContentSubTab] = useState('lessons'); // lessons | quiz
+            const [certSubTab, setCertSubTab] = useState('designer');
+            const [contentSubTab, setContentSubTab] = useState('lessons');
 
             // Data States
             const [usersList, setUsersList] = useState([]);
             const [onsiteConfig, setOnsiteConfig] = useState(() => ({ ...DEFAULT_ONSITE_CONFIG }));
             const [onsiteDraft, setOnsiteDraft] = useState(() => ({ ...DEFAULT_ONSITE_CONFIG }));
             const [onsiteRegistrants, setOnsiteRegistrants] = useState([]);
+            const [onsiteLinkCopied, setOnsiteLinkCopied] = useState(false);
             const [certTemplate, setCertTemplate] = useState(() => ({ ...DEFAULT_CERT_TEMPLATE }));
             const [cneuConfig, setCneuConfig] = useState(() => ({ ...DEFAULT_CNEU_CONFIG }));
             const [liveConfig, setLiveConfig] = useState(() => ({ ...DEFAULT_LIVE_CONFIG }));
@@ -760,6 +914,8 @@
             const [toast, setToast] = useState({ visible: false, text: '', type: 'success' });
             const [confirmDialog, setConfirmDialog] = useState({ open: false, title: '', message: '', danger: false, confirmText: 'ยืนยัน', onConfirm: null });
             const certPreviewCanvasRef = useRef(null);
+
+            const onsitePublicUrl = useMemo(() => resolveOnsitePublicUrl(), []);
 
             const showToast = useCallback((text, type = 'success') => {
                 setToast({ visible: true, text: String(text), type });
@@ -894,8 +1050,24 @@
             }, [activeTab, certSubTab, certTemplate, cneuConfig]);
 
             // ============================================================================
-            // 5. ACTION HANDLERS (AUTH, USERS, ONSITE, CERT, CONTENT, R2R EXPORTS)
+            // 5. ACTION HANDLERS (AUTH, USERS, ONSITE LINK/QR, CERT, CONTENT, R2R)
             // ============================================================================
+            const handleCopyOnsiteLink = () => {
+                copyTextSafe(onsitePublicUrl);
+                setOnsiteLinkCopied(true);
+                showToast('คัดลอกลิงก์รับสมัคร Onsite สำหรับแนบหนังสือเชิญประชุมเรียบร้อยค่ะ');
+                setTimeout(() => setOnsiteLinkCopied(false), 2400);
+            };
+
+            const handleDownloadOnsiteQr = (mode = 'poster') => {
+                const ok = downloadOnsiteQrPng({ url: onsitePublicUrl, onsiteCfg: onsiteConfig, mode });
+                if (ok) {
+                    showToast(mode === 'raw' ? 'ดาวน์โหลดไฟล์ QR Code ล้วน (PNG) เรียบร้อยค่ะ' : 'ดาวน์โหลดการ์ด QR Code พร้อมหัวข้อกิจกรรม (PNG) เรียบร้อยค่ะ');
+                } else {
+                    showToast('ไม่สามารถสร้างไฟล์ QR Code ได้ในขณะนี้ กรุณาลองใหม่อีกครั้งค่ะ', 'error');
+                }
+            };
+
             const handleAdminLogin = async (e) => {
                 e.preventDefault();
                 if (!isCloudConfigured || !fbAuth) {
@@ -1190,7 +1362,6 @@
                 }
             };
 
-            // CSV Exports (Learners + R2R Blind Transcript for Expert TC Raters)
             const handleExportCSV = () => {
                 const headers = [
                     'ชื่อ-สกุล', 'เลขใบประกอบวิชาชีพ', 'กลุ่มวิชาชีพ', 'อีเมล', 'เบอร์โทร',
@@ -1322,7 +1493,7 @@
                     groupTitle: '1. หน้าแรก & ระบบลงทะเบียน (Auth Wizard 3 ขั้น + Onsite)',
                     items: [
                         { id: 'landing', title: 'หน้าแรกผู้เรียน (Landing 2.0)', desc: 'กรอบกระจก Liquid Glass, ต้นไม้มีชีวิตออร่า และเส้นทาง 5 ขั้นตอน', url: './index.html?admin_preview=landing', icon: 'Home' },
-                        { id: 'onsite', title: 'รับสมัครอบรม Onsite & พิมพ์ใบเซ็นชื่อ PDF', desc: 'รับสมัครล่วงหน้า, หัวข้อกิจกรรมมาตรฐาน และตัวคัดกรอง PDF ใบเซ็นชื่อหน้างาน', url: './onsite.html?admin_preview=1', icon: 'ClipboardList' },
+                        { id: 'onsite', title: 'รับสมัครอบรม Onsite & พิมพ์ใบเซ็นชื่อ PDF', desc: 'รับสมัครล่วงหน้า, ตรวจสอบ/แก้ไขรายชื่อตนเอง และตัวคัดกรอง PDF ใบเซ็นชื่อหน้างาน', url: './onsite.html?admin_preview=1', icon: 'ClipboardList' },
                         { id: 'auth1', title: 'ลงทะเบียน ขั้นที่ 1/3', desc: 'หน้ากรอกและตรวจสอบเลขที่ใบประกอบวิชาชีพ', url: './index.html?admin_preview=auth1', icon: 'UserCheck' },
                         { id: 'auth2', title: 'ลงทะเบียน ขั้นที่ 2/3', desc: 'หน้ายืนยันข้อมูลผู้เรียนและเลือกกลุ่มการเรียน', url: './index.html?admin_preview=auth2', icon: 'FileText' },
                         { id: 'auth3', title: 'ลงทะเบียน ขั้นที่ 3/3 (OTP)', desc: 'หน้ากรอกรหัสยืนยันตัวตน OTP 6 หลัก', url: './index.html?admin_preview=auth3', icon: 'ShieldCheck' }
@@ -1335,7 +1506,7 @@
                         { id: 'dashboard', title: 'ห้องเรียน 20 บท + AI Study Companion', desc: 'วิดีโอ, สรุปเสียง AI สตูดิโอ และ Fast-Track เทียบโอน', url: './index.html?admin_preview=dashboard', icon: 'MonitorPlay' },
                         { id: 'live', title: 'ห้องถ่ายทอดสด (Live Stream)', desc: 'หน้ารับชมบรรยายสดและดาวน์โหลดเอกสาร', url: './index.html?admin_preview=live', icon: 'Radio' },
                         { id: 'profile', title: 'โปรไฟล์ผู้เรียน & PDPA Self-Service', desc: 'สถานะภาษาไทย, กิจกรรมอ้างอิง, Phrasebook & แก้ไข/ลบข้อมูลเอง', url: './index.html?admin_preview=profile', icon: 'User' },
-                        { id: 'skilllab', title: 'ห้องฝึกสื่อสาร 3 มิติ AI Skill Lab', desc: 'Hologram 3 มิติ 6 สไตล์, 6 เคสคลินิก + เสียง AI สตูดิโอ', url: './aiskilllab.html?admin_preview=1', icon: 'Bot' },
+                        { id: 'skilllab', title: 'ห้องฝึกสื่อสาร 3 มิติ AI Skill Lab', desc: 'ตัวอย่าง Hologram 3 มิติสด 6 สไตล์, 6 เคสคลินิก + เสียง AI สตูดิโอ', url: './aiskilllab.html?admin_preview=1', icon: 'Bot' },
                         { id: 'posttest', title: 'แบบทดสอบหลังเรียน (Post-test ≥ 80%)', desc: 'วัดผลหลังเรียนพร้อมวิเคราะห์จุดอ่อน', url: './index.html?admin_preview=posttest', icon: 'FileCheck2' },
                         { id: 'cert_confirm', title: 'ประเมินผล CNEU & SUS Score (R2R)', desc: 'ยืนยันชื่อและทำแบบประเมินความพึงพอใจ + SUS', url: './index.html?admin_preview=cert_confirm', icon: 'Star' },
                         { id: 'certificate', title: 'ประกาศนียบัตรดิจิทัล & หนังสือรับรอง CNEU', desc: 'Canvas PDF/PNG + หนังสือรับรองสิทธิ์เท่าเทียมทุกประเภท', url: './index.html?admin_preview=certificate', icon: 'Award' }
@@ -1352,7 +1523,7 @@
 
             const navItems = [
                 { id: 'users', label: 'ผู้เรียน', fullLabel: 'ผู้เรียน 5 ขั้นตอน', icon: 'Users' },
-                { id: 'onsite', label: 'Onsite', fullLabel: 'รุ่นอบรม Onsite', icon: 'ClipboardList' },
+                { id: 'onsite', label: 'Onsite', fullLabel: 'ลงทะเบียน Onsite & QR', icon: 'ClipboardList' },
                 { id: 'cert', label: 'ประกาศฯ', fullLabel: 'ประกาศฯ & CNEU', icon: 'Award' },
                 { id: 'live', label: 'Live สด', fullLabel: 'ควบคุม Live สด', icon: 'Radio' },
                 { id: 'content', label: 'บทเรียน', fullLabel: 'บทเรียน & ข้อสอบ', icon: 'BookOpen' },
@@ -1379,7 +1550,7 @@
                                     <Icon name="ShieldCheck" size={24} />
                                 </div>
                                 <h1 className="font-display font-extrabold text-xl text-primary-adaptive">Admin Mission Control</h1>
-                                <p className="text-xs text-secondary-adaptive">rjcloud.organ 2.0 • จัดการผู้เรียน รุ่นอบรม Onsite ประกาศนียบัตร และข้อมูลวิจัย R2R</p>
+                                <p className="text-xs text-secondary-adaptive">rjcloud.organ 2.0 • จัดการผู้เรียน ลิงก์/QR รับสมัคร Onsite ประกาศนียบัตร และข้อมูลวิจัย R2R</p>
                             </div>
                             <form onSubmit={handleAdminLogin} className="space-y-3.5">
                                 <FieldInput label="อีเมลผู้ดูแลระบบ (Firebase Auth)" type="email" required value={loginEmail} onChange={e => setLoginEmail(e.target.value)} />
@@ -1458,6 +1629,9 @@
                                         <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive">จัดการผู้เรียน สิทธิ์เทียบโอนชั่วโมง และข้อมูลวิจัย R2R</h2>
                                     </div>
                                     <div className="flex flex-wrap gap-2">
+                                        <button type="button" onClick={() => setActiveTab('onsite')} className="spatial-soft touch-target px-3.5 py-2 rounded-full text-xs font-bold text-accent-adaptive border-aurora-400/45 inline-flex items-center gap-1.5">
+                                            <Icon name="QrCode" size={15} /> ลิงก์ &amp; QR รับสมัคร Onsite
+                                        </button>
                                         <button type="button" onClick={() => setShowAddUser(v => !v)} className="rjc2-pill-btn touch-target px-4 py-2 rounded-full font-display font-extrabold text-xs inline-flex items-center gap-1.5">
                                             <Icon name="UserPlus" size={15} /> เพิ่มผู้เรียน
                                         </button>
@@ -1654,23 +1828,91 @@
                             </div>
                         )}
 
-                        {/* ==================== TAB 2: ONSITE COHORT & SCHEDULED AUTO-UNLOCK ==================== */}
+                        {/* ==================== TAB 2: ONSITE REGISTRATION HUB (COPY LINK + DOWNLOAD QR + SCHEDULED AUTO-UNLOCK) ==================== */}
                         {activeTab === 'onsite' && (
                             <div className="space-y-5">
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <div>
                                         <span className="px-2.5 py-0.5 rounded-full bg-aurora-500/20 text-accent-adaptive font-mono text-[10px] font-bold">
-                                            GOVERNMENT ONSITE COHORT • SCHEDULED AUTO-UNLOCK
+                                            ONSITE REGISTRATION HUB • INVITATION LINK &amp; QR CODE
                                         </span>
                                         <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive mt-1">
-                                            จัดการรุ่นอบรม Onsite &amp; กำหนดเวลาเปิดสิทธิ์เข้า rjcloud.organ 2.0
+                                            ลงทะเบียนอบรม Onsite, ลิงก์ &amp; QR Code แนบหนังสือเชิญประชุม
                                         </h2>
                                     </div>
-                                    <a href="./onsite.html" target="_blank" rel="noreferrer" className="rjc2-pill-btn touch-target px-5 py-2.5 rounded-full font-display font-extrabold text-xs inline-flex items-center justify-center gap-1.5 shrink-0">
-                                        <Icon name="Printer" size={15} /> เปิดหน้า onsite.html (พิมพ์ใบเซ็นชื่อ PDF)
-                                    </a>
+                                    <div className="flex flex-wrap gap-2 shrink-0">
+                                        <a href="./onsite.html" target="_blank" rel="noreferrer" className="spatial-soft touch-target px-4 py-2.5 rounded-full font-display font-bold text-xs text-primary-adaptive inline-flex items-center gap-1.5">
+                                            <Icon name="ExternalLink" size={14} className="text-prism-adaptive" /> เปิดหน้าลงทะเบียน (onsite.html)
+                                        </a>
+                                        <a href="./onsite.html?mode=organizer" target="_blank" rel="noreferrer" className="rjc2-pill-btn touch-target px-5 py-2.5 rounded-full font-display font-extrabold text-xs inline-flex items-center justify-center gap-1.5">
+                                            <Icon name="Printer" size={15} /> พิมพ์ใบเซ็นชื่อหน้างาน (PDF)
+                                        </a>
+                                    </div>
                                 </div>
 
+                                {/* กล่องทางเข้าลงทะเบียน Onsite พร้อม Copy Link และดาวน์โหลด QR Code (ย้ายมาจากหน้าแรก) */}
+                                <section className="spatial-card rounded-[1.75rem] p-5 sm:p-6 border-aurora-400/45 grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
+                                    <div className="lg:col-span-8 space-y-3.5">
+                                        <div>
+                                            <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">INVITATION DISTRIBUTION • ย้ายจากหน้าแรกมาควบคุมเฉพาะผู้จัด</span>
+                                            <h3 className="font-display font-extrabold text-lg text-primary-adaptive mt-0.5">
+                                                ช่องทางส่งต่อให้ผู้เข้าอบรมลงทะเบียนล่วงหน้า (`onsite.html`)
+                                            </h3>
+                                            <p className="text-xs text-secondary-adaptive mt-1 leading-relaxed">
+                                                คัดลอกลิงก์หรือดาวน์โหลดไฟล์ <b>QR Code (PNG ความละเอียดสูง)</b> เพื่อนำไปวางในหนังสือเชิญประชุมราชการ โปสเตอร์ หรือกลุ่ม LINE เครือข่าย ผู้เข้าอบรมที่ลงทะเบียนจะได้รับสิทธิ์เทียบโอนชั่วโมงและเปิดเข้า <b>rjcloud.organ 2.0</b> อัตโนมัติตามเวลาที่กำหนดค่ะ
+                                            </p>
+                                        </div>
+
+                                        {/* ช่อง URL + ปุ่ม Copy Link */}
+                                        <div className="flex flex-col sm:flex-row gap-2">
+                                            <input
+                                                readOnly
+                                                value={onsitePublicUrl}
+                                                onFocus={e => e.target.select()}
+                                                className="touch-target spatial-input flex-1 px-3.5 py-2.5 rounded-xl font-mono text-xs sm:text-sm font-bold text-prism-adaptive"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={handleCopyOnsiteLink}
+                                                className={`touch-target px-5 py-2.5 rounded-xl font-display font-extrabold text-xs inline-flex items-center justify-center gap-1.5 shrink-0 transition-all ${
+                                                    onsiteLinkCopied
+                                                        ? 'bg-emerald-500 text-void-950 shadow-lg'
+                                                        : 'rjc2-pill-btn'
+                                                }`}
+                                            >
+                                                <Icon name={onsiteLinkCopied ? 'Check' : 'Copy'} size={15} />
+                                                <span>{onsiteLinkCopied ? 'คัดลอกลิงก์แล้ว ✓' : 'Copy Link รับสมัคร'}</span>
+                                            </button>
+                                        </div>
+
+                                        {/* ปุ่มดาวน์โหลด QR Code (Poster พร้อมชื่อกิจกรรม & Raw QR ล้วน) */}
+                                        <div className="flex flex-wrap gap-2 pt-1">
+                                            <button
+                                                type="button"
+                                                onClick={() => handleDownloadOnsiteQr('poster')}
+                                                className="rjc2-pill-btn touch-target px-4 py-2.5 rounded-full font-display font-extrabold text-xs inline-flex items-center gap-1.5"
+                                            >
+                                                <Icon name="Download" size={15} /> ดาวน์โหลด QR Code พร้อมหัวข้อกิจกรรม (PNG)
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleDownloadOnsiteQr('raw')}
+                                                className="spatial-soft touch-target px-4 py-2.5 rounded-full font-display font-bold text-xs text-prism-adaptive inline-flex items-center gap-1.5"
+                                            >
+                                                <Icon name="QrCode" size={15} /> ดาวน์โหลดเฉพาะ QR ล้วน (PNG)
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Live QR Code Preview Box */}
+                                    <div className="lg:col-span-4 flex flex-col items-center justify-center gap-2 p-4 rounded-2xl spatial-soft text-center">
+                                        <LiveQrCanvas url={onsitePublicUrl} size={172} />
+                                        <span className="font-mono text-[10px] font-bold text-accent-adaptive">{onsiteConfig.eventId}</span>
+                                        <span className="text-[11px] text-muted-adaptive leading-tight">สแกนทดสอบหรือกดดาวน์โหลด PNG เพื่อวางในหนังสือเชิญประชุม</span>
+                                    </div>
+                                </section>
+
+                                {/* สถิติผู้สมัคร Onsite แยกตามกลุ่มวิชาชีพ */}
                                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 text-center text-xs">
                                     <div className="spatial-card rounded-2xl p-3.5"><span className="text-muted-adaptive block">ผู้สมัครใช้งานสิทธิ์</span><span className="font-mono text-2xl font-extrabold text-primary-adaptive">{onsiteStats.total}</span></div>
                                     <div className="spatial-card rounded-2xl p-3.5"><span className="text-muted-adaptive block">แพทย์</span><span className="font-mono text-2xl font-extrabold text-prism-adaptive">{onsiteStats.doctor}</span></div>
@@ -1679,11 +1921,12 @@
                                     <div className="col-span-2 sm:col-span-1 spatial-card rounded-2xl p-3.5"><span className="text-muted-adaptive block">ยกเลิก (No-show)</span><span className="font-mono text-2xl font-extrabold text-rose-400">{onsiteStats.revoked}</span></div>
                                 </div>
 
+                                {/* ตั้งค่าหัวข้อกิจกรรมมาตรฐาน & วัน-เวลาเปิดสิทธิ์อัตโนมัติ */}
                                 <div className="spatial-card rounded-[1.75rem] p-5 sm:p-6 space-y-4 border-prism-400/35">
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                         <FieldInput label="รหัสกิจกรรม / รุ่น (Event ID)" value={onsiteDraft.eventId} onChange={e => setOnsiteDraft(p => ({ ...p, eventId: e.target.value }))} />
                                         <FieldInput label="วัน/เดือน/ปี ที่จัดกิจกรรม" value={onsiteDraft.eventDate} onChange={e => setOnsiteDraft(p => ({ ...p, eventDate: e.target.value }))} />
-                                        <FieldInput className="sm:col-span-2" label="ชื่อกิจกรรมมาตรฐาน (ใช้อ้างอิงในโปรไฟล์และใบเซ็นชื่อหน้างาน)" value={onsiteDraft.activityTitle} onChange={e => setOnsiteDraft(p => ({ ...p, activityTitle: e.target.value }))} />
+                                        <FieldInput className="sm:col-span-2" label="ชื่อกิจกรรมมาตรฐาน (ใช้อ้างอิงในโปรไฟล์, การ์ด QR และใบเซ็นชื่อหน้างาน)" value={onsiteDraft.activityTitle} onChange={e => setOnsiteDraft(p => ({ ...p, activityTitle: e.target.value }))} />
                                         <FieldInput className="sm:col-span-2" label="สถานที่ / หน่วยงานที่จัด" value={onsiteDraft.venueAndOrganizer} onChange={e => setOnsiteDraft(p => ({ ...p, venueAndOrganizer: e.target.value }))} />
                                         <div className="sm:col-span-2 p-4 rounded-2xl bg-prism-500/15 border border-prism-400/35 space-y-2">
                                             <label className="block text-xs font-bold text-prism-adaptive">วันและเวลาที่เปิดสิทธิ์ให้ผู้สมัคร Onsite เข้า rjcloud.organ 2.0 อัตโนมัติ</label>
@@ -1713,6 +1956,7 @@
                                     </div>
                                 </div>
 
+                                {/* ตารางรายชื่อผู้สมัคร Onsite & จัดการ No-show */}
                                 <div className="spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3.5">
                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                                         <div className="relative flex-1">
@@ -1826,7 +2070,6 @@
                                             </div>
                                         </div>
 
-                                        {/* A4 CNEU Report Printable Area */}
                                         <article id="cneu-print-root" className="cneu-paper rounded-2xl p-6 sm:p-10 space-y-5 max-w-4xl mx-auto">
                                             <div className="text-center border-b-2 border-slate-800 pb-4 space-y-1">
                                                 <p className="text-xs font-bold text-emerald-800 uppercase">รายงานสรุปรายชื่อผู้สำเร็จการอบรมเพื่อขอรับรองหน่วยคะแนนการศึกษาต่อเนื่อง (CNEU)</p>
@@ -1951,7 +2194,7 @@
                                                 <span className="sm:col-span-1 font-mono font-bold text-prism-adaptive">#{l.id}</span>
                                                 <input value={l.title || ''} onChange={e => { const next = [...contentConfig.lessons]; next[idx] = { ...l, title: e.target.value }; setContentConfig(p => ({ ...p, lessons: next })); }} placeholder="ชื่อบทเรียน" className="sm:col-span-5 spatial-input px-3 py-2 rounded-xl" />
                                                 <input value={l.videoId || ''} onChange={e => { const next = [...contentConfig.lessons]; next[idx] = { ...l, videoId: e.target.value }; setContentConfig(p => ({ ...p, lessons: next })); }} placeholder="Google Drive Video ID" className="sm:col-span-3 spatial-input px-3 py-2 rounded-xl font-mono" />
-                                                <input value={l.documentUrl || ''} onChange={e => { const next = [...contentConfig.lessons]; next[idx] = { ...l, documentUrl: e.target.value }; setContentConfig(p => ({ ...p, lessons: next })); }} placeholder="URL เอกสาร PDF" className="sm:col-span-3 spatial-input px-3 py-2 rounded-xl" />
+                                                <input value={l.documentUrl || ''} onChange={e => { const next = [...contentConfig.lessons]; next[idx] = { ...l, documentUrl: e.target.value }; setContentConfig(p => ({ ...p, documentUrl: e.target.value })); }} placeholder="URL เอกสาร PDF" className="sm:col-span-3 spatial-input px-3 py-2 rounded-xl" />
                                             </div>
                                         ))}
                                         <button type="button" onClick={() => setContentConfig(p => ({ ...p, lessons: [...p.lessons, { id: p.lessons.length + 1, title: `บทเรียนที่ ${p.lessons.length + 1}`, videoId: '', documentUrl: '' }] }))} className="spatial-soft px-4 py-2 rounded-xl text-xs font-bold text-accent-adaptive">
@@ -2105,5 +2348,7 @@
         const root = createRoot(document.getElementById('admin-root'));
         root.render(<AdminErrorBoundary><AdminApp /></AdminErrorBoundary>);
     </script>
+    <!-- โหลด Babel ท้ายสุดหลังสคริปต์ทั้งหมด เพื่อให้แน่ใจว่าโค้ดครบ 100% ก่อนคอมไพล์ -->
+    <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
 </body>
 </html>
