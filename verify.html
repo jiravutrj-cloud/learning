@@ -654,7 +654,6 @@
                 isDemo: true
             }
         };
-        // รองรับรหัสตัวอย่างสำรองจาก admin.html
         DEMO_CERTIFICATES['RJC-2027-NURSE01'] = { ...DEMO_CERTIFICATES['RJC-2027-DEMO01'], code: 'RJC-2027-NURSE01' };
         DEMO_CERTIFICATES['RJC-2027-NURSE03'] = {
             ...DEMO_CERTIFICATES['RJC-2027-DEMO01'],
@@ -830,7 +829,6 @@
                     return;
                 } catch (_) {}
             }
-            // Fallback graphic if CDN blocked
             ctx.strokeStyle = '#0f172a';
             ctx.lineWidth = 2;
             ctx.strokeRect(10, 10, size - 20, size - 20);
@@ -889,7 +887,6 @@
             resultWrap.classList.add('hidden');
             loadingSec.classList.remove('hidden');
 
-            // อัปเดต URL โดยไม่รีเฟรชหน้า (เฉพาะกรณีเบราว์เซอร์อนุญาต)
             try {
                 const nextUrl = new URL(window.location.href);
                 nextUrl.searchParams.set('code', code);
@@ -898,7 +895,6 @@
 
             let certData = null;
 
-            // 1) ค้นหาจากทะเบียนสาธารณะ Firebase Firestore (certificates/{code}) ก่อนเสมอเมื่อออนไลน์และไม่ใช่รหัสตัวอย่างล้วน
             const isKnownDemo = Boolean(DEMO_CERTIFICATES[code]);
             if (navigator.onLine && !isKnownDemo) {
                 try {
@@ -919,7 +915,6 @@
                 }
             }
 
-            // 2) หากตรงกับรหัสตัวอย่าง 3 กลุ่มวิชาชีพ ให้แสดงข้อมูลตัวอย่างทันที
             if (!certData && isKnownDemo) {
                 await new Promise((r) => setTimeout(r, 220));
                 certData = DEMO_CERTIFICATES[code];
@@ -962,7 +957,6 @@
             $('res-prof-pill').textContent = `กลุ่มวิชาชีพ: ${meta.professionGroup}`;
             $('res-demo-tag').classList.toggle('hidden', !cert.isDemo);
 
-            // สีของตราโฮโลแกรม 3 มิติและกล่องรับรองสิทธิ์แยกตามวิชาชีพด้วยเกียรติเท่าเทียมกัน
             const sealCore = $('holo-seal-core');
             const creditBox = $('res-credit-box');
             const creditHeading = $('res-credit-heading');
@@ -1010,7 +1004,6 @@
             $('res-org-title').textContent = cert.orgTitleTH || 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ โรงพยาบาลราชวิถี';
             $('res-signer').textContent = [cert.signerName || '', cert.signerPosition ? `(${cert.signerPosition})` : ''].filter(Boolean).join(' ');
 
-            // วาด QR Code ตรงสู่หน้านี้
             const directUrl = buildVerifyShareUrl(cert.code);
             drawDirectQr(directUrl);
 
@@ -1049,7 +1042,6 @@
             syncThemeButton();
         });
 
-        // 3D Tilt Effect บนการ์ดประกาศนียบัตรโฮโลแกรม
         function applyHoloTilt(clientX, clientY) {
             if (!holoCard || resultWrap.classList.contains('hidden')) return;
             const rect = holoCard.getBoundingClientRect();
@@ -1077,7 +1069,6 @@
         }, { passive: true });
         holoCard.addEventListener('touchend', resetHoloTilt);
 
-        // Search Form & Demo Chips
         searchForm.addEventListener('submit', (e) => {
             e.preventDefault();
             lookupCertificate(codeInput.value);
@@ -1099,7 +1090,6 @@
             window.print();
         });
 
-        // Initial Load: Sync Theme & Auto-Lookup ?code=... (หรือเปิดตัวอย่างแรกในโหมดพรีวิว)
         syncThemeButton();
         const urlCode = new URLSearchParams(window.location.search).get('code');
         if (urlCode) {
