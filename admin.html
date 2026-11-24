@@ -7,25 +7,43 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Admin Mission Control — rjcloud.organ 2.0</title>
-    <link rel="manifest" href="./manifest.json">
 
-    <!-- โหลดไฟล์สไตล์และโมดูลกลาง (มีค่าสำรองครบในตัวเมื่อเปิดพรีวิวเดี่ยว) -->
-    <link rel="stylesheet" href="./styles.css">
-    <script src="./data.js" onerror="console.warn('data.js not loaded, using built-in defaults')"></script>
-    <script src="./learning-core.js" onerror="console.warn('learning-core.js not loaded, using built-in defaults')"></script>
-    <script src="./cert-engine.js" onerror="console.warn('cert-engine.js not loaded, using built-in fallback')"></script>
-
-    <!-- ซิงค์โหมดมืด/สว่างทันทีจาก localStorage ป้องกันจอกระพริบ -->
+    <!-- ซิงค์โหมดมืด/สว่างทันที + โหลดไฟล์ร่วมเฉพาะเมื่ออยู่บนโดเมนเว็บจริง (ป้องกัน 404 ในโหมดพรีวิว) -->
     <script>
       (function () {
         try {
-          const key = (window.RJCLOUD_CONFIG && window.RJCLOUD_CONFIG.theme && window.RJCLOUD_CONFIG.theme.storageKey) || 'rjcloud_theme';
-          const def = (window.RJCLOUD_CONFIG && window.RJCLOUD_CONFIG.theme && window.RJCLOUD_CONFIG.theme.defaultMode) || 'dark';
-          const saved = localStorage.getItem(key) || def;
+          const saved = localStorage.getItem('rjcloud_theme') || 'dark';
           const mode = saved === 'light' ? 'light' : 'dark';
           document.documentElement.setAttribute('data-theme', mode);
           const meta = document.querySelector('meta[name="theme-color"]');
           if (meta) meta.setAttribute('content', mode === 'dark' ? '#020612' : '#edf6fd');
+        } catch (_) {}
+
+        try {
+          const loc = window.location;
+          const isRealHost =
+            (loc.protocol === 'https:' || loc.protocol === 'http:') &&
+            loc.origin !== 'null' &&
+            !/(googleusercontent|webcontainer|stackblitz|sandbox|srcdoc|blob:)/i.test(loc.href);
+          if (isRealHost) {
+            const manifest = document.createElement('link');
+            manifest.rel = 'manifest';
+            manifest.href = './manifest.json';
+            document.head.appendChild(manifest);
+
+            const css = document.createElement('link');
+            css.rel = 'stylesheet';
+            css.href = './styles.css';
+            document.head.appendChild(css);
+
+            ['./data.js', './learning-core.js', './cert-engine.js'].forEach(function (src) {
+              const s = document.createElement('script');
+              s.src = src;
+              s.async = false;
+              s.onerror = function () {};
+              document.head.appendChild(s);
+            });
+          }
         } catch (_) {}
       })();
     </script>
@@ -1535,7 +1553,7 @@
                 {
                     groupTitle: '1. หน้าแรก & ระบบลงทะเบียน (คัดกรอง CNEU ตามวิชาชีพ + Onsite)',
                     items: [
-                        { id: 'landing', title: 'หน้าแรกผู้เรียน (Landing 2.0)', desc: 'กรอบกระจก Liquid Glass, ต้นไม้มีชีวิตออร่า และเส้นทาง 5 ขั้นตอน', url: './index.html?admin_preview=landing', icon: 'Home' },
+                        { id: 'landing', title: 'หน้าแรกผู้เรียน (Landing 2.0)', desc: 'กรอบกระจก Liquid Glass แสงคริสตัล, ต้นไม้มีชีวิต (ชีพจรแสง+ออโรรา+หิ่งห้อย) และลิงก์บริการสาธารณะ', url: './index.html?admin_preview=landing', icon: 'Home' },
                         { id: 'onsite', title: 'รับสมัครอบรม Onsite & พิมพ์ใบเซ็นชื่อ PDF', desc: 'แสดง CNEU เฉพาะพยาบาล, ตรวจ/แก้ไขรายชื่อเอง และคัดกรอง PDF หน้างาน', url: './onsite.html?admin_preview=1', icon: 'ClipboardList' },
                         { id: 'auth1', title: 'ลงทะเบียน ขั้นที่ 1/3', desc: 'หน้ากรอกเลขที่ใบอนุญาต + ปุ่มทดลอง 3 กลุ่มวิชาชีพ', url: './index.html?admin_preview=auth1', icon: 'UserCheck' },
                         { id: 'auth2', title: 'ลงทะเบียน ขั้นที่ 2/3', desc: 'เลือก พยาบาล -> แสดงกล่อง CNEU ทันที / แพทย์ & สหวิชาชีพไม่แสดง CNEU', url: './index.html?admin_preview=auth2', icon: 'FileText' },
@@ -1549,7 +1567,7 @@
                         { id: 'dashboard', title: 'ห้องเรียน 20 บท + AI Study Companion', desc: 'วิดีโอ, สรุปเสียง AI สตูดิโอ และ Fast-Track เทียบโอน', url: './index.html?admin_preview=dashboard', icon: 'MonitorPlay' },
                         { id: 'live', title: 'ห้องถ่ายทอดสด (Live Stream)', desc: 'หน้ารับชมบรรยายสดและดาวน์โหลดเอกสาร', url: './index.html?admin_preview=live', icon: 'Radio' },
                         { id: 'profile', title: 'โปรไฟล์ผู้เรียน & PDPA Self-Service', desc: 'แสดงกลุ่มวิชาชีพ, สิทธิ์ CNEU/ชม.อบรม และแก้ไข/ลบข้อมูลเอง', url: './index.html?admin_preview=profile', icon: 'User' },
-                        { id: 'skilllab', title: 'ห้องฝึกสื่อสาร 3 มิติ AI Skill Lab', desc: 'ตัวอย่าง Hologram 3 มิติสด 6 สไตล์, 6 เคสคลินิก + เสียง AI สตูดิโอ', url: './aiskilllab.html?admin_preview=1', icon: 'Bot' },
+                        { id: 'skilllab', title: 'ห้องฝึกสื่อสาร 3 มิติ AI Skill Lab', desc: 'ตัวละครโฮโลแกรมอนิเมะ 3 มิติปรับเพศ/จำนวนคนอัตโนมัติ (เคส 3 มี 2 คน), Real Audio Lip-Sync, ปุ่ม CC, คำใบ้เจาะปม & เรดาร์ SBAR', url: './aiskilllab.html?admin_preview=1', icon: 'Bot' },
                         { id: 'posttest', title: 'แบบทดสอบหลังเรียน (Post-test ≥ 80%)', desc: 'วัดผลหลังเรียนพร้อมวิเคราะห์จุดอ่อน', url: './index.html?admin_preview=posttest', icon: 'FileCheck2' },
                         { id: 'cert_confirm', title: 'ประเมินผล & SUS Score (R2R)', desc: 'ยืนยันชื่อและทำแบบประเมินความพึงพอใจ + SUS', url: './index.html?admin_preview=cert_confirm', icon: 'Star' },
                         { id: 'certificate', title: 'ประกาศนียบัตรดิจิทัล & หนังสือรับรองรายบุคคล', desc: 'Canvas PDF/PNG + หนังสือรับรองตรงตามวิชาชีพ (CNEU / ชั่วโมงอบรม)', url: './index.html?admin_preview=certificate', icon: 'Award' }
