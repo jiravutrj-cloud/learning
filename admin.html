@@ -183,7 +183,7 @@
       .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
       .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(147, 197, 253, 0.38); border-radius: 999px; }
 
-      /* สไตล์รายงาน CNEU สภาการพยาบาล (A4 Print / Export PDF) */
+      /* สไตล์เอกสารรายงาน CNEU & รายงานแยกวิชาชีพ (A4 Print / Export PDF) */
       .cneu-paper {
         background: #ffffff;
         color: #0f172a;
@@ -226,7 +226,7 @@
         <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#020612;color:#f8fafc;font-family:-apple-system,'Anuphan','Prompt',sans-serif;gap:14px;padding:24px;text-align:center;">
             <div style="width:46px;height:46px;border:3px solid rgba(56,189,248,0.22);border-top-color:#6ee7b7;border-right-color:#38bdf8;border-radius:9999px;animation:adminSpin 0.85s linear infinite;"></div>
             <div style="font-weight:800;font-size:17px;">กำลังเปิดศูนย์ควบคุม Admin Mission Control...</div>
-            <div style="font-size:12px;color:#93b4d8;">rjcloud.organ 2.0 • Fast-Track, Onsite QR Hub &amp; CNEU Studio</div>
+            <div style="font-size:12px;color:#93b4d8;">rjcloud.organ 2.0 • Profession-Filtered CNEU, Onsite QR Hub &amp; R2R Studio</div>
         </div>
     </div>
 
@@ -258,7 +258,7 @@
         import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
 
         // ============================================================================
-        // 1. CONFIGURATION, DEFAULTS & STATUS ENGINE
+        // 1. CONFIGURATION, DEFAULTS & PROFESSION-AWARE CNEU ENGINE
         // ============================================================================
         const CORE = window['RJCLOUD_CORE'] || {};
         const CERT = window['RJCLOUD_CERT'] || {};
@@ -297,6 +297,7 @@
         const MIN_STUDY_PERCENT = Number(CONFIG.learningRules?.minStudyPercent || 80);
         const MIN_POSTTEST_PERCENT = Number(CONFIG.learningRules?.minPosttestPercent || 80);
         const DEFAULT_ONLINE_COURSE_NAME = 'หลักสูตรออนไลน์การรับบริจาคและปลูกถ่ายอวัยวะ (rjcloud.organ 2.0)';
+        const PROFESSION_LIST = ['พยาบาล', 'แพทย์', 'บุคลากรสหวิชาชีพ'];
 
         const DEFAULT_CERT_TEMPLATE = window.DEFAULT_CERT_TEMPLATE || {
             certPrefix: 'RJC-2027',
@@ -319,6 +320,9 @@
             activityCode: 'CNEU-2027-0148',
             batchLabel: 'รุ่นที่ 1 ประจำปีงบประมาณ 2570',
             cneuCredits: '8.0',
+            trainingHours: '8',
+            cmeActivityCode: '',
+            cmeCredits: '',
             dateRange: '1 – 31 มกราคม 2570',
             criteriaText: 'ยืนยันตัวตน OTP + ผ่านเกณฑ์ชั่วโมงอบรม + AI Skill Lab + Post-test ≥ 80%',
             reporterName: 'พว.ผู้ประสานงานโครงการ (ศูนย์รับบริจาคอวัยวะ)',
@@ -354,10 +358,45 @@
             documentUrl: ''
         };
 
+        function resolveProfessionGroupSafe(u) {
+            if (typeof CERT.resolveProfessionGroup === 'function') return CERT.resolveProfessionGroup(u);
+            const explicit = String(u?.professionGroup || '').trim();
+            if (explicit === 'พยาบาล' || explicit === 'แพทย์' || explicit === 'บุคลากรสหวิชาชีพ') return explicit;
+            const txt = `${u?.name || ''} ${u?.position || ''}`;
+            if (/(นพ\.|พญ\.|แพทย์|หมอ|doctor|\bm\.?d\.?\b)/i.test(txt) && !/(พยาบาล|ผู้ช่วยแพทย์)/i.test(txt)) return 'แพทย์';
+            if (/(พว\.|พยาบาล|nurse|\brn\b)/i.test(txt)) return 'พยาบาล';
+            return 'บุคลากรสหวิชาชีพ';
+        }
+
+        function isNurseCneuUser(u) {
+            if (typeof CERT.isNurseCneuEligible === 'function') return CERT.isNurseCneuEligible(u);
+            if (typeof u?.cneuEligible === 'boolean') return u.cneuEligible;
+            return resolveProfessionGroupSafe(u) === 'พยาบาล';
+        }
+
+        function resolveCreditLineForAdmin(u, cneuCfg) {
+            if (typeof CERT.getCertificateCreditMeta === 'function') {
+                return CERT.getCertificateCreditMeta(u, cneuCfg, cneuCfg).lineTextTH;
+            }
+            const prof = resolveProfessionGroupSafe(u);
+            const hrs = String(cneuCfg?.trainingHours || '8');
+            if (isNurseCneuUser(u)) {
+                return `CNEU ${cneuCfg?.activityCode || '-'} (${cneuCfg?.cneuCredits || '-'} หน่วยคะแนน)`;
+            }
+            if (prof === 'แพทย์') {
+                if (cneuCfg?.cmeActivityCode || cneuCfg?.cmeCredits) {
+                    return `CME ${cneuCfg.cmeActivityCode || '-'} (${cneuCfg.cmeCredits || '-'} หน่วยคะแนน)`;
+                }
+                return `${hrs} ชม. ฝึกอบรมวิชาการทางการแพทย์`;
+            }
+            return `${hrs} ชม. พัฒนาสมรรถนะวิชาชีพ`;
+        }
+
         function buildDemoUsers(onsiteCfg) {
             return [
                 {
-                    id: '4511128901', license: '4511128901', name: 'พว.กัญญารัตน์ วัฒนากูล', professionGroup: 'พยาบาล',
+                    id: '4511128901', license: '4511128901', name: 'พว.กัญญารัตน์ วัฒนากูล', nameEN: 'Kanyarat Wattanakul, RN',
+                    professionGroup: 'พยาบาล', cneuEligible: true,
                     email: 'kanyarat@demo.go.th', phone: '0812345678', position: 'พยาบาลวิชาชีพชำนาญการ (TC)',
                     department: 'กรมการแพทย์', hospital: 'รพ.ราชวิถี', province: 'กรุงเทพมหานคร',
                     userType: 'เรียนต่อเนื่อง', studyHoursExempt: true, progress: 100,
@@ -366,8 +405,7 @@
                     status: 'ผ่าน', pretest: '28/40', posttest: '37/40',
                     skillLabPassed: true, skillLabBestScore: 92,
                     preSelfEfficacyAvg: 3.0, postSelfEfficacyAvg: 4.67, susScore: 90, satisfactionScore: 4.9,
-                    satisfactionCriteria: { content: 5, speaker: 5, platform: 5, aiLab: 5, application: 4.5 },
-                    certificateClaimed: true, certificateCode: 'RJC-2027-DEMO01', certificateIssuedAt: new Date().toISOString(),
+                    certificateClaimed: true, certificateCode: 'RJC-2027-NURSE01', certificateIssuedAt: new Date().toISOString(),
                     skillLabHistory: [{
                         at: new Date().toISOString(), personaId: 'conflict', difficultyId: 'hard', score: 92,
                         silenceCount: 3, triggerTotal: 0, avgVocalCalm: 91,
@@ -378,19 +416,22 @@
                     }]
                 },
                 {
-                    id: '4511128902', license: '4511128902', name: 'นพ.กิตติพงษ์ สุวรรณภูมิ', professionGroup: 'แพทย์',
+                    id: '1100123456', license: '1100123456', name: 'นพ.กิตติพงษ์ สุวรรณภูมิ', nameEN: 'Kittipong Suwannaphum, MD',
+                    professionGroup: 'แพทย์', cneuEligible: false,
                     email: 'kittipong@demo.go.th', phone: '0823456789', position: 'นายแพทย์ชำนาญการพิเศษ',
                     department: 'เขตสุขภาพที่ 1', hospital: 'รพ.นครพิงค์', province: 'เชียงใหม่',
                     userType: 'เรียนต่อเนื่อง', studyHoursExempt: true, progress: 100,
                     hoursStatusLabel: 'ชั่วโมงครบ (เทียบโอน)', hoursActivityName: onsiteCfg.activityTitle,
                     hoursActivityDate: onsiteCfg.eventDate, hoursActivityVenue: onsiteCfg.venueAndOrganizer,
-                    status: 'กำลังเรียน', pretest: '31/40', posttest: '-',
-                    skillLabPassed: true, skillLabBestScore: 86,
-                    preSelfEfficacyAvg: 3.33, postSelfEfficacyAvg: 4.33,
-                    skillLabHistory: [{ at: new Date().toISOString(), personaId: 'sbar_doctor', difficultyId: 'normal', score: 86, silenceCount: 1, triggerTotal: 0 }]
+                    status: 'ผ่าน', pretest: '31/40', posttest: '38/40',
+                    skillLabPassed: true, skillLabBestScore: 88,
+                    preSelfEfficacyAvg: 3.33, postSelfEfficacyAvg: 4.67, susScore: 88, satisfactionScore: 4.8,
+                    certificateClaimed: true, certificateCode: 'RJC-2027-MD0002', certificateIssuedAt: new Date().toISOString(),
+                    skillLabHistory: [{ at: new Date().toISOString(), personaId: 'sbar_doctor', difficultyId: 'normal', score: 88, silenceCount: 1, triggerTotal: 0 }]
                 },
                 {
-                    id: '4511128903', license: '4511128903', name: 'พว.สุกัญญา แสงจันทร์', professionGroup: 'พยาบาล',
+                    id: '4511128903', license: '4511128903', name: 'พว.สุกัญญา แสงจันทร์', nameEN: 'Sukanya Saengchan, RN',
+                    professionGroup: 'พยาบาล', cneuEligible: true,
                     email: 'sukanya@demo.go.th', phone: '0834567890', position: 'พยาบาลวิชาชีพ ICU',
                     department: 'เขตสุขภาพที่ 7', hospital: 'รพ.ขอนแก่น', province: 'ขอนแก่น',
                     userType: 'เรียนใหม่', studyHoursExempt: false, progress: 88,
@@ -398,17 +439,30 @@
                     status: 'ผ่าน', pretest: '24/40', posttest: '35/40',
                     skillLabPassed: true, skillLabBestScore: 84,
                     preSelfEfficacyAvg: 2.67, postSelfEfficacyAvg: 4.33, susScore: 85, satisfactionScore: 4.8,
-                    certificateClaimed: true, certificateCode: 'RJC-2027-DEMO03', certificateIssuedAt: new Date().toISOString(),
+                    certificateClaimed: true, certificateCode: 'RJC-2027-NURSE03', certificateIssuedAt: new Date().toISOString(),
                     skillLabHistory: [{ at: new Date().toISOString(), personaId: 'standard', difficultyId: 'normal', score: 84, silenceCount: 2, triggerTotal: 0 }]
+                },
+                {
+                    id: '7700128904', license: '7700128904', name: 'ภญ.ปิยะนุช ศรีสวัสดิ์', nameEN: 'Piyanuch Srisawat, PharmD',
+                    professionGroup: 'บุคลากรสหวิชาชีพ', cneuEligible: false,
+                    email: 'piyanuch@demo.go.th', phone: '0845678901', position: 'เภสัชกรคลินิก',
+                    department: 'กรมการแพทย์', hospital: 'รพ.นพรัตนราชธานี', province: 'กรุงเทพมหานคร',
+                    userType: 'เรียนต่อเนื่อง', studyHoursExempt: true, progress: 100,
+                    hoursStatusLabel: 'ชั่วโมงครบ (เทียบโอน)', hoursActivityName: onsiteCfg.activityTitle,
+                    status: 'ผ่าน', pretest: '26/40', posttest: '36/40',
+                    skillLabPassed: true, skillLabBestScore: 86,
+                    preSelfEfficacyAvg: 3.0, postSelfEfficacyAvg: 4.5, susScore: 90, satisfactionScore: 4.9,
+                    certificateClaimed: true, certificateCode: 'RJC-2027-ALLIED4', certificateIssuedAt: new Date().toISOString(),
+                    skillLabHistory: [{ at: new Date().toISOString(), personaId: 'distrust', difficultyId: 'normal', score: 86, silenceCount: 2, triggerTotal: 0 }]
                 }
             ];
         }
 
         function buildDemoOnsiteRegistrants(onsiteCfg) {
             return [
-                { id: '4511128901', license: '4511128901', name: 'พว.กัญญารัตน์ วัฒนากูล', professionGroup: 'พยาบาล', position: 'พยาบาลวิชาชีพชำนาญการ (TC)', region: 'เขตสุขภาพที่ 13 (กทม. / กรมการแพทย์)', province: 'กรุงเทพมหานคร', hospital: 'รพ.ราชวิถี', email: 'kanyarat@demo.go.th', phone: '0812345678', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: onsiteCfg.unlockAt },
-                { id: '4511128902', license: '4511128902', name: 'นพ.กิตติพงษ์ สุวรรณภูมิ', professionGroup: 'แพทย์', position: 'นายแพทย์ชำนาญการพิเศษ', region: 'เขตสุขภาพที่ 1', province: 'เชียงใหม่', hospital: 'รพ.นครพิงค์', email: 'kittipong@demo.go.th', phone: '0823456789', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: onsiteCfg.unlockAt },
-                { id: '4511128904', license: '4511128904', name: 'ภญ.ปิยะนุช ศรีสวัสดิ์', professionGroup: 'บุคลากรสหวิชาชีพ', position: 'เภสัชกรคลินิก', region: 'เขตสุขภาพที่ 13 (กทม. / กรมการแพทย์)', province: 'กรุงเทพมหานคร', hospital: 'รพ.นพรัตนราชธานี', email: 'piyanuch@demo.go.th', phone: '0845678901', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: onsiteCfg.unlockAt }
+                { id: '4511128901', license: '4511128901', name: 'พว.กัญญารัตน์ วัฒนากูล', professionGroup: 'พยาบาล', cneuEligible: true, position: 'พยาบาลวิชาชีพชำนาญการ (TC)', region: 'เขตสุขภาพที่ 13 (กทม. / กรมการแพทย์)', province: 'กรุงเทพมหานคร', hospital: 'รพ.ราชวิถี', email: 'kanyarat@demo.go.th', phone: '0812345678', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: onsiteCfg.unlockAt },
+                { id: '1100123456', license: '1100123456', name: 'นพ.กิตติพงษ์ สุวรรณภูมิ', professionGroup: 'แพทย์', cneuEligible: false, position: 'นายแพทย์ชำนาญการพิเศษ', region: 'เขตสุขภาพที่ 1', province: 'เชียงใหม่', hospital: 'รพ.นครพิงค์', email: 'kittipong@demo.go.th', phone: '0823456789', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: onsiteCfg.unlockAt },
+                { id: '7700128904', license: '7700128904', name: 'ภญ.ปิยะนุช ศรีสวัสดิ์', professionGroup: 'บุคลากรสหวิชาชีพ', cneuEligible: false, position: 'เภสัชกรคลินิก', region: 'เขตสุขภาพที่ 13 (กทม. / กรมการแพทย์)', province: 'กรุงเทพมหานคร', hospital: 'รพ.นพรัตนราชธานี', email: 'piyanuch@demo.go.th', phone: '0845678901', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: onsiteCfg.unlockAt }
             ];
         }
 
@@ -448,12 +502,6 @@
                 document.body.removeChild(ta);
                 if (ok) return true;
             } catch (_) {}
-            try {
-                if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
-                    navigator.clipboard.writeText(String(text || '')).catch(() => {});
-                    return true;
-                }
-            } catch (_) {}
             return false;
         }
 
@@ -481,46 +529,27 @@
             } catch (_) { return false; }
         }
 
-        /**
-         * ดาวน์โหลด QR Code สำหรับลงทะเบียน Onsite เป็นไฟล์ PNG ความละเอียดสูง
-         * (mode: 'poster' = การ์ดพร้อมชื่อกิจกรรมและลิงก์แนบหนังสือเชิญประชุม | 'raw' = QR ล้วนพื้นขาว)
-         */
         function downloadOnsiteQrPng({ url, onsiteCfg, mode = 'poster' }) {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             if (!ctx) return false;
-
             const safeEventId = String(onsiteCfg?.eventId || 'ONSITE').replace(/[^a-zA-Z0-9_-]/g, '');
 
             if (mode === 'raw') {
-                canvas.width = 900;
-                canvas.height = 900;
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, 900, 900);
-                const drawn = drawQrToCanvas(ctx, url, 70, 70, 760, '#0f172a');
-                if (!drawn) return false;
+                canvas.width = 900; canvas.height = 900;
+                ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, 900, 900);
+                if (!drawQrToCanvas(ctx, url, 70, 70, 760, '#0f172a')) return false;
             } else {
-                canvas.width = 1000;
-                canvas.height = 1240;
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, 1000, 1240);
+                canvas.width = 1000; canvas.height = 1240;
+                ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, 1000, 1240);
+                ctx.strokeStyle = '#0f766e'; ctx.lineWidth = 6; ctx.strokeRect(28, 28, 944, 1184);
+                ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 2; ctx.strokeRect(42, 42, 916, 1156);
 
-                // กรอบเส้นคู่สีเขียวมรกต-น้ำเงิน
-                ctx.strokeStyle = '#0f766e';
-                ctx.lineWidth = 6;
-                ctx.strokeRect(28, 28, 944, 1184);
-                ctx.strokeStyle = '#cbd5e1';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(42, 42, 916, 1156);
-
-                // หัวการ์ด
                 ctx.textAlign = 'center';
-                ctx.fillStyle = '#047857';
-                ctx.font = '700 22px "Prompt", sans-serif';
+                ctx.fillStyle = '#047857'; ctx.font = '700 22px "Prompt", sans-serif';
                 ctx.fillText('สแกน QR CODE เพื่อลงทะเบียนอบรม ONSITE', 500, 104);
 
-                ctx.fillStyle = '#0f172a';
-                ctx.font = '700 28px "Prompt", sans-serif';
+                ctx.fillStyle = '#0f172a'; ctx.font = '700 28px "Prompt", sans-serif';
                 const title = String(onsiteCfg?.activityTitle || 'ลงทะเบียนอบรม Onsite (rjcloud.organ 2.0)');
                 if (title.length > 42) {
                     const mid = title.lastIndexOf(' ', Math.floor(title.length / 2));
@@ -530,74 +559,46 @@
                 } else {
                     ctx.fillText(title, 500, 162, 860);
                 }
-
-                ctx.fillStyle = '#475569';
-                ctx.font = '600 21px "Sarabun", sans-serif';
+                ctx.fillStyle = '#475569'; ctx.font = '600 21px "Sarabun", sans-serif';
                 ctx.fillText(`วันที่จัดกิจกรรม: ${onsiteCfg?.eventDate || '-'}`, 500, 234, 860);
 
-                // กรอบ QR Code ตรงกลางขนาดใหญ่คมชัด
-                const qrSize = 680;
-                const qrX = (1000 - qrSize) / 2;
-                const qrY = 274;
-                ctx.fillStyle = '#ffffff';
-                ctx.strokeStyle = '#e2e8f0';
-                ctx.lineWidth = 3;
+                const qrSize = 680, qrX = 160, qrY = 274;
+                ctx.fillStyle = '#ffffff'; ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 3;
                 ctx.fillRect(qrX - 24, qrY - 24, qrSize + 48, qrSize + 48);
                 ctx.strokeRect(qrX - 24, qrY - 24, qrSize + 48, qrSize + 48);
+                if (!drawQrToCanvas(ctx, url, qrX, qrY, qrSize, '#0f172a')) return false;
 
-                const drawn = drawQrToCanvas(ctx, url, qrX, qrY, qrSize, '#0f172a');
-                if (!drawn) return false;
-
-                // ข้อความด้านล่างการ์ด
-                ctx.fillStyle = '#0f172a';
-                ctx.font = '700 22px "JetBrains Mono", monospace';
+                ctx.fillStyle = '#0f172a'; ctx.font = '700 22px "JetBrains Mono", monospace';
                 ctx.fillText(url, 500, 1042, 860);
-
-                ctx.fillStyle = '#0369a1';
-                ctx.font = '600 20px "Sarabun", sans-serif';
+                ctx.fillStyle = '#0369a1'; ctx.font = '600 20px "Sarabun", sans-serif';
                 ctx.fillText('เปิดรับสมัครล่วงหน้า • ซิงค์สิทธิ์เข้า rjcloud.organ 2.0 อัตโนมัติตามกำหนดเวลา', 500, 1094, 860);
-
-                ctx.fillStyle = '#64748b';
-                ctx.font = '600 18px "Prompt", sans-serif';
+                ctx.fillStyle = '#64748b'; ctx.font = '600 18px "Prompt", sans-serif';
                 ctx.fillText('ORGAN TRANSPLANTATION CENTER OF RAJAVITHI HOSPITAL', 500, 1148, 860);
             }
-
             try {
                 const a = document.createElement('a');
                 a.href = canvas.toDataURL('image/png', 1.0);
                 a.download = mode === 'raw' ? `QR_Onsite_Raw_${safeEventId}.png` : `QR_Onsite_Poster_${safeEventId}.png`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
+                document.body.appendChild(a); a.click(); document.body.removeChild(a);
                 return true;
             } catch (_) { return false; }
         }
 
-        function getUserLicense(u) {
-            return String(u?.license || u?.id || '-').trim();
-        }
-
+        function getUserLicense(u) { return String(u?.license || u?.id || '-').trim(); }
         function parsePosttestScorePct(posttestStr) {
             const m = String(posttestStr || '').match(/(\d+)\s*\/\s*(\d+)/);
-            if (!m) return 0;
-            return Math.round((Number(m[1]) / (Number(m[2]) || 40)) * 100);
+            return m ? Math.round((Number(m[1]) / (Number(m[2]) || 40)) * 100) : 0;
         }
-
         function parsePosttestPassed(u) {
             if (!u) return false;
-            if (u.status === 'ผ่าน') return true;
-            return parsePosttestScorePct(u.posttest) >= MIN_POSTTEST_PERCENT;
+            return u.status === 'ผ่าน' || parsePosttestScorePct(u.posttest) >= MIN_POSTTEST_PERCENT;
         }
-
         function isHoursExemptUser(u) {
-            if (!u) return false;
-            return Boolean(u.studyHoursExempt || u.userType === 'เรียนต่อเนื่อง');
+            return Boolean(u && (u.studyHoursExempt || u.userType === 'เรียนต่อเนื่อง'));
         }
 
         function resolveLearnerStatusInfo(u) {
-            if (!u) {
-                return { statusLabel: 'ลงทะเบียนแล้ว', hoursLabel: 'กำลังสะสมชั่วโมง', activityName: '', activityMeta: '', isExempt: false, isStudyEnough: false };
-            }
+            if (!u) return { statusLabel: 'ลงทะเบียนแล้ว', hoursLabel: 'กำลังสะสมชั่วโมง', activityName: '', isExempt: false };
             const exempt = isHoursExemptUser(u);
             const studyEnough = exempt || Number(u.progress || 0) >= MIN_STUDY_PERCENT;
             const labDone = Boolean(u.skillLabPassed || (Array.isArray(u.skillLabHistory) && u.skillLabHistory.length > 0));
@@ -608,11 +609,7 @@
             const activityName = exempt
                 ? (u.hoursActivityName || 'ผู้เรียนต่อเนื่อง / ผ่านการอบรมมาตรฐานมาก่อนแล้ว')
                 : (studyEnough ? (u.hoursActivityName || DEFAULT_ONLINE_COURSE_NAME) : '');
-            const activityMeta = [u.hoursActivityDate, u.hoursActivityVenue].filter(Boolean).join(' • ');
-
-            const hoursLabel = exempt
-                ? 'ชั่วโมงครบ (เทียบโอน)'
-                : (studyEnough ? 'ชั่วโมงครบ' : `กำลังสะสมชั่วโมง (${Math.round(Number(u.progress || 0))}%)`);
+            const hoursLabel = exempt ? 'ชั่วโมงครบ (เทียบโอน)' : (studyEnough ? 'ชั่วโมงครบ' : `กำลังสะสมชั่วโมง (${Math.round(Number(u.progress || 0))}%)`);
 
             let statusLabel = 'ลงทะเบียนแล้ว';
             if (passed && bestLab >= 85) statusLabel = 'ผู้เชี่ยวชาญคลินิก';
@@ -622,7 +619,7 @@
             else if (studyEnough) statusLabel = 'ชั่วโมงครบ';
             else if (hasPre || Number(u.progress || 0) > 0) statusLabel = 'กำลังสะสมชั่วโมง';
 
-            return { statusLabel, hoursLabel, activityName, activityMeta, isExempt: exempt, isStudyEnough: studyEnough };
+            return { statusLabel, hoursLabel, activityName, isExempt: exempt };
         }
 
         function getUserFiveStepStatus(u) {
@@ -701,11 +698,8 @@
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            a.href = url; a.download = filename;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
             setTimeout(() => URL.revokeObjectURL(url), 1000);
         }
 
@@ -760,12 +754,10 @@
             useEffect(() => {
                 const canvas = ref.current;
                 if (!canvas || !url) return;
-                canvas.width = size;
-                canvas.height = size;
+                canvas.width = size; canvas.height = size;
                 const ctx = canvas.getContext('2d');
                 if (!ctx) return;
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, size, size);
+                ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, size, size);
                 drawQrToCanvas(ctx, url, 10, 10, size - 20, '#0f172a');
             }, [url, size]);
             return <canvas ref={ref} width={size} height={size} className="rounded-2xl bg-white shadow-lg border border-white/80 block" />;
@@ -810,12 +802,7 @@
             const info = resolveLearnerStatusInfo(u);
             const pills = [
                 { key: 'pre', label: 'Pre', done: st.step1Pre, title: `Pre-test: ${u.pretest || '-'}` },
-                {
-                    key: 'hr',
-                    label: info.isExempt ? 'เทียบโอน' : `${u.progress || 0}%`,
-                    done: st.step2Hours,
-                    title: info.activityName ? `${info.hoursLabel} — ${info.activityName}` : `เวลาเรียนสะสม (เกณฑ์ ≥${MIN_STUDY_PERCENT}%)`
-                },
+                { key: 'hr', label: info.isExempt ? 'เทียบโอน' : `${u.progress || 0}%`, done: st.step2Hours, title: info.activityName ? `${info.hoursLabel} — ${info.activityName}` : `เวลาเรียนสะสม (เกณฑ์ ≥${MIN_STUDY_PERCENT}%)` },
                 { key: 'lab', label: st.bestLab ? `Lab ${st.bestLab}` : 'Lab', done: st.step3Lab, clickable: true, title: 'คลิกเพื่อสลับสถานะการผ่าน AI Skill Lab' },
                 { key: 'post', label: 'Post', done: st.step4Post, title: `Post-test: ${u.posttest || '-'}` },
                 { key: 'cert', label: 'Cert', done: st.step5Cert, title: u.certificateCode ? `รหัส: ${u.certificateCode}` : 'ยังไม่ออกใบประกาศฯ' }
@@ -829,9 +816,7 @@
                             title={p.title}
                             onClick={p.clickable ? onToggleLab : undefined}
                             className={`px-2 py-0.5 rounded-lg font-mono text-[10px] font-bold border transition-all ${
-                                p.done
-                                    ? 'bg-aurora-500/20 border-aurora-400/45 text-accent-adaptive'
-                                    : 'spatial-soft text-muted-adaptive'
+                                p.done ? 'bg-aurora-500/20 border-aurora-400/45 text-accent-adaptive' : 'spatial-soft text-muted-adaptive'
                             } ${p.clickable ? 'cursor-pointer hover:border-prism-400' : 'cursor-default'}`}
                         >
                             {p.done ? '✓ ' : ''}{p.label}
@@ -868,7 +853,9 @@
 
             // Navigation State
             const [activeTab, setActiveTab] = useState('users'); // users | onsite | cert | live | content | sync | overview
-            const [certSubTab, setCertSubTab] = useState('designer');
+            const [certSubTab, setCertSubTab] = useState('cneu'); // designer | cneu
+            const [certPreviewProf, setCertPreviewProf] = useState('พยาบาล'); // พยาบาล | แพทย์ | บุคลากรสหวิชาชีพ
+            const [reportMode, setReportMode] = useState('nurse_cneu'); // nurse_cneu | doctor_hours | allied_hours | all_exec
             const [contentSubTab, setContentSubTab] = useState('lessons');
 
             // Data States
@@ -895,10 +882,11 @@
             // Filters & Forms State
             const [searchTerm, setSearchTerm] = useState('');
             const [filterType, setFilterType] = useState('ALL');
+            const [filterProf, setFilterProf] = useState('ALL');
             const [showAddUser, setShowAddUser] = useState(false);
             const [manualForm, setManualForm] = useState({
-                name: '', license: '', userType: 'เรียนใหม่', hospital: 'รพ.ราชวิถี',
-                department: 'กรมการแพทย์', email: '', phone: '', hoursActivityName: ''
+                name: '', license: '', professionGroup: 'พยาบาล', userType: 'เรียนใหม่',
+                hospital: 'รพ.ราชวิถี', department: 'กรมการแพทย์', email: '', phone: '', hoursActivityName: ''
             });
             const [transferModal, setTransferModal] = useState({
                 open: false, user: null, studyHoursExempt: true,
@@ -914,7 +902,6 @@
             const [toast, setToast] = useState({ visible: false, text: '', type: 'success' });
             const [confirmDialog, setConfirmDialog] = useState({ open: false, title: '', message: '', danger: false, confirmText: 'ยืนยัน', onConfirm: null });
             const certPreviewCanvasRef = useRef(null);
-
             const onsitePublicUrl = useMemo(() => resolveOnsitePublicUrl(), []);
 
             const showToast = useCallback((text, type = 'success') => {
@@ -1009,26 +996,31 @@
                     (err) => console.warn('Content snapshot error:', err)
                 );
 
-                return () => {
-                    unsubUsers();
-                    unsubOnsite();
-                    unsubSettings();
-                    unsubContent();
-                };
+                return () => { unsubUsers(); unsubOnsite(); unsubSettings(); unsubContent(); };
             }, [adminSession]);
 
-            // Redraw Certificate Preview Canvas
+            // Redraw Profession-Aware Certificate Preview Canvas
             useEffect(() => {
                 if (activeTab !== 'cert' || certSubTab !== 'designer' || !certPreviewCanvasRef.current) return;
+                const isNurse = certPreviewProf === 'พยาบาล';
                 const sampleUser = {
-                    name: 'พว.กัญญารัตน์ วัฒนากูล',
-                    nameEN: 'Kanyarat Wattanakul, RN',
+                    name: isNurse ? 'พว.กัญญารัตน์ วัฒนากูล' : (certPreviewProf === 'แพทย์' ? 'นพ.กิตติพงษ์ สุวรรณภูมิ' : 'ภญ.ปิยะนุช ศรีสวัสดิ์'),
+                    nameEN: isNurse ? 'Kanyarat Wattanakul, RN' : (certPreviewProf === 'แพทย์' ? 'Kittipong Suwannaphum, MD' : 'Piyanuch Srisawat, PharmD'),
+                    professionGroup: certPreviewProf,
+                    cneuEligible: isNurse,
                     hospital: 'โรงพยาบาลราชวิถี',
-                    license: '4511128901',
-                    certificateCode: `${certTemplate.certPrefix || 'RJC-2027'}-DEMO01`,
+                    license: isNurse ? '4511128901' : (certPreviewProf === 'แพทย์' ? '1100123456' : '7700128904'),
+                    certificateCode: `${certTemplate.certPrefix || 'RJC-2027'}-${isNurse ? 'NURSE01' : (certPreviewProf === 'แพทย์' ? 'MD0001' : 'ALLIED1')}`,
                     certificateIssuedAt: new Date().toISOString()
                 };
-                const mergedTpl = { ...certTemplate, cneuActivityCode: cneuConfig.activityCode, cneuCredits: cneuConfig.cneuCredits };
+                const mergedTpl = {
+                    ...certTemplate,
+                    cneuActivityCode: cneuConfig.activityCode,
+                    cneuCredits: cneuConfig.cneuCredits,
+                    cmeActivityCode: cneuConfig.cmeActivityCode,
+                    cmeCredits: cneuConfig.cmeCredits,
+                    trainingHours: String(cneuConfig.trainingHours || liveConfig.hours || 8)
+                };
                 if (typeof CERT.drawMinimalistCertificate === 'function') {
                     CERT.drawMinimalistCertificate(certPreviewCanvasRef.current, mergedTpl, sampleUser, `${window.location.origin}/verify.html?code=${sampleUser.certificateCode}`);
                 } else {
@@ -1036,21 +1028,24 @@
                     canvas.width = 1200; canvas.height = 848;
                     const ctx = canvas.getContext('2d');
                     if (ctx) {
+                        const creditLine = resolveCreditLineForAdmin(sampleUser, cneuConfig);
                         ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, 1200, 848);
                         ctx.strokeStyle = '#c5a059'; ctx.lineWidth = 4; ctx.strokeRect(32, 32, 1136, 784);
                         ctx.fillStyle = '#1d1d1f'; ctx.textAlign = 'center';
-                        ctx.font = '700 28px Prompt, sans-serif'; ctx.fillText(mergedTpl.orgTitleTH || '', 600, 140);
-                        ctx.font = '700 44px Prompt, sans-serif'; ctx.fillText('ประกาศนียบัตร', 600, 250);
-                        ctx.font = '700 42px Prompt, sans-serif'; ctx.fillText(sampleUser.name, 600, 360);
-                        ctx.fillStyle = '#475569'; ctx.font = '500 22px Sarabun, sans-serif'; ctx.fillText(mergedTpl.courseTitleTH || '', 600, 450);
-                        ctx.fillStyle = '#047857'; ctx.font = '700 20px Prompt, sans-serif'; ctx.fillText(`รหัสกิจกรรม CNEU: ${cneuConfig.activityCode} • ${cneuConfig.cneuCredits} หน่วยคะแนน`, 600, 510);
+                        ctx.font = '700 26px Prompt, sans-serif'; ctx.fillText(mergedTpl.orgTitleTH || '', 600, 130);
+                        ctx.font = '700 44px Prompt, sans-serif'; ctx.fillText('ประกาศนียบัตร', 600, 240);
+                        ctx.font = '700 42px Prompt, sans-serif'; ctx.fillText(sampleUser.name, 600, 350);
+                        ctx.fillStyle = '#475569'; ctx.font = '500 22px Sarabun, sans-serif'; ctx.fillText(mergedTpl.courseTitleTH || '', 600, 440);
+                        ctx.fillStyle = isNurse ? '#047857' : '#0369a1';
+                        ctx.font = '700 20px Prompt, sans-serif';
+                        ctx.fillText(creditLine, 600, 500);
                         ctx.fillStyle = '#1d1d1f'; ctx.font = '600 22px Prompt, sans-serif'; ctx.fillText(mergedTpl.signerName || '', 600, 690);
                     }
                 }
-            }, [activeTab, certSubTab, certTemplate, cneuConfig]);
+            }, [activeTab, certSubTab, certPreviewProf, certTemplate, cneuConfig, liveConfig.hours]);
 
             // ============================================================================
-            // 5. ACTION HANDLERS (AUTH, USERS, ONSITE LINK/QR, CERT, CONTENT, R2R)
+            // 5. ACTION HANDLERS (AUTH, USERS, ONSITE LINK/QR, CERT, REPORTS, R2R)
             // ============================================================================
             const handleCopyOnsiteLink = () => {
                 copyTextSafe(onsitePublicUrl);
@@ -1061,11 +1056,10 @@
 
             const handleDownloadOnsiteQr = (mode = 'poster') => {
                 const ok = downloadOnsiteQrPng({ url: onsitePublicUrl, onsiteCfg: onsiteConfig, mode });
-                if (ok) {
-                    showToast(mode === 'raw' ? 'ดาวน์โหลดไฟล์ QR Code ล้วน (PNG) เรียบร้อยค่ะ' : 'ดาวน์โหลดการ์ด QR Code พร้อมหัวข้อกิจกรรม (PNG) เรียบร้อยค่ะ');
-                } else {
-                    showToast('ไม่สามารถสร้างไฟล์ QR Code ได้ในขณะนี้ กรุณาลองใหม่อีกครั้งค่ะ', 'error');
-                }
+                showToast(
+                    ok ? (mode === 'raw' ? 'ดาวน์โหลดไฟล์ QR Code ล้วน (PNG) เรียบร้อยค่ะ' : 'ดาวน์โหลดการ์ด QR Code พร้อมหัวข้อกิจกรรม (PNG) เรียบร้อยค่ะ') : 'ไม่สามารถสร้างไฟล์ QR Code ได้ในขณะนี้ค่ะ',
+                    ok ? 'success' : 'error'
+                );
             };
 
             const handleAdminLogin = async (e) => {
@@ -1095,14 +1089,12 @@
                 setAdminSession({ email: 'demo-preview@rjcloud.organ', isDemo: true });
                 setUsersList(buildDemoUsers(onsiteConfig));
                 setOnsiteRegistrants(buildDemoOnsiteRegistrants(onsiteConfig));
-                showToast('เข้าสู่โหมดพรีวิวตัวอย่างครบทั้ง 7 แท็บเรียบร้อยค่ะ', 'info');
+                showToast('เข้าสู่โหมดพรีวิวตัวอย่าง (มีครบทั้ง พยาบาล แพทย์ และสหวิชาชีพ ให้ทดสอบคัดกรอง CNEU ได้ทันทีค่ะ)', 'info');
             };
 
             const handleAdminLogout = () => {
                 if (!adminSession?.isDemo && fbAuth) signOut(fbAuth).catch(() => {});
-                setAdminSession(null);
-                setUsersList([]);
-                setOnsiteRegistrants([]);
+                setAdminSession(null); setUsersList([]); setOnsiteRegistrants([]);
                 showToast('ออกจากระบบผู้ดูแลแล้วค่ะ');
             };
 
@@ -1179,48 +1171,35 @@
                     return;
                 }
                 const isExempt = manualForm.userType === 'เรียนต่อเนื่อง';
+                const prof = manualForm.professionGroup || 'พยาบาล';
                 const newUser = {
-                    id: cleanLic,
-                    license: cleanLic,
-                    name: manualForm.name.trim(),
-                    email: manualForm.email.trim(),
-                    phone: manualForm.phone.trim(),
-                    department: manualForm.department.trim(),
-                    hospital: manualForm.hospital.trim(),
+                    id: cleanLic, license: cleanLic, name: manualForm.name.trim(),
+                    professionGroup: prof, cneuEligible: prof === 'พยาบาล',
+                    email: manualForm.email.trim(), phone: manualForm.phone.trim(),
+                    department: manualForm.department.trim(), hospital: manualForm.hospital.trim(),
                     userType: isExempt ? 'เรียนต่อเนื่อง' : 'เรียนใหม่',
                     studyHoursExempt: isExempt,
                     hoursStatusLabel: isExempt ? 'ชั่วโมงครบ (เทียบโอน)' : 'กำลังสะสมชั่วโมง',
                     hoursActivityName: isExempt ? (manualForm.hoursActivityName.trim() || onsiteConfig.activityTitle || 'ผู้เรียนต่อเนื่อง / ผ่านการอบรมมาตรฐานมาก่อนแล้ว') : '',
                     hoursActivityDate: isExempt ? (onsiteConfig.eventDate || '') : '',
                     hoursActivityVenue: isExempt ? (onsiteConfig.venueAndOrganizer || '') : '',
-                    status: 'กำลังเรียน',
-                    progress: isExempt ? 100 : 0,
-                    studySeconds: 0,
-                    pretest: '-',
-                    posttest: '-',
-                    skillLabPassed: false,
-                    skillLabHistory: [],
-                    lastVideoId: 1
+                    status: 'กำลังเรียน', progress: isExempt ? 100 : 0, studySeconds: 0,
+                    pretest: '-', posttest: '-', skillLabPassed: false, skillLabHistory: [], lastVideoId: 1
                 };
                 setUsersList(prev => [newUser, ...prev.filter(x => (x.id || getUserLicense(x)) !== cleanLic)]);
                 if (!adminSession?.isDemo && fbDb) {
                     try {
                         await setDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', cleanLic), newUser, { merge: true });
-                    } catch (err) {
-                        showToast('เพิ่มผู้เรียนไม่สำเร็จ: ' + err.message, 'error');
-                        return;
-                    }
+                    } catch (err) { showToast('เพิ่มผู้เรียนไม่สำเร็จ: ' + err.message, 'error'); return; }
                 }
                 showToast('เพิ่มผู้เรียนใหม่เข้าฐานข้อมูลเรียบร้อยแล้วค่ะ');
-                setManualForm({ name: '', license: '', userType: 'เรียนใหม่', hospital: 'รพ.ราชวิถี', department: 'กรมการแพทย์', email: '', phone: '', hoursActivityName: '' });
+                setManualForm({ name: '', license: '', professionGroup: 'พยาบาล', userType: 'เรียนใหม่', hospital: 'รพ.ราชวิถี', department: 'กรมการแพทย์', email: '', phone: '', hoursActivityName: '' });
                 setShowAddUser(false);
             };
 
             const handleOpenTransferModal = (u) => {
                 setTransferModal({
-                    open: true,
-                    user: u,
-                    studyHoursExempt: true,
+                    open: true, user: u, studyHoursExempt: true,
                     hoursActivityName: u.hoursActivityName || onsiteConfig.activityTitle || 'ผู้เรียนต่อเนื่อง / ผ่านการอบรมมาตรฐานมาก่อนแล้ว',
                     hoursActivityDate: u.hoursActivityDate || onsiteConfig.eventDate || '',
                     hoursActivityVenue: u.hoursActivityVenue || onsiteConfig.venueAndOrganizer || ''
@@ -1248,8 +1227,7 @@
                 const dt = new Date(onsiteDraft.unlockAtLocal || buildDefaultOnsiteUnlockLocal());
                 const unlockIso = isNaN(dt.getTime()) ? new Date().toISOString() : dt.toISOString();
                 const nextCfg = { ...onsiteDraft, unlockAt: unlockIso, forceUnlocked: Boolean(onsiteDraft.forceUnlocked) };
-                setOnsiteConfig(nextCfg);
-                setOnsiteDraft(nextCfg);
+                setOnsiteConfig(nextCfg); setOnsiteDraft(nextCfg);
                 await persistSettings({ onsiteConfig: nextCfg });
             };
 
@@ -1257,7 +1235,7 @@
                 const activeList = onsiteRegistrants.filter(r => !r.revoked);
                 if (activeList.length === 0) { showToast('ยังไม่มีผู้สมัคร Onsite ที่พร้อมซิงค์ค่ะ', 'info'); return; }
                 if (adminSession?.isDemo || !fbDb) {
-                    showToast(`จำลองซิงค์กำหนดเวลาและสิทธิ์เทียบโอนครบ ${activeList.length} รายเรียบร้อยค่ะ`);
+                    showToast(`จำลองซิงค์กำหนดเวลา สิทธิ์เทียบโอน และกลุ่มวิชาชีพครบ ${activeList.length} รายเรียบร้อยค่ะ`);
                     return;
                 }
                 setOnsiteSyncing(true);
@@ -1266,10 +1244,14 @@
                     for (const r of activeList) {
                         const lic = String(r.license || r.id || '').trim();
                         if (!lic) continue;
+                        const prof = resolveProfessionGroupSafe(r);
+                        const isNurse = prof === 'พยาบาล';
                         await setDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', lic), {
                             id: lic, license: lic, name: r.name, email: r.email || '', phone: r.phone || '',
-                            position: r.position || r.professionGroup || 'บุคลากรทางการแพทย์',
-                            professionGroup: r.professionGroup || 'พยาบาล',
+                            position: r.position || prof, professionGroup: prof, cneuEligible: isNurse,
+                            trainingHours: String(cneuConfig.trainingHours || '8'),
+                            cneuActivityCode: isNurse ? (cneuConfig.activityCode || '') : '',
+                            cneuCredits: isNurse ? (cneuConfig.cneuCredits || '') : '',
                             department: r.region || 'กรมการแพทย์', hospital: r.hospital || '', province: r.province || '',
                             userType: 'เรียนต่อเนื่อง', studyHoursExempt: true, progress: 100,
                             hoursStatusLabel: 'ชั่วโมงครบ (เทียบโอน)',
@@ -1282,7 +1264,7 @@
                         }, { merge: true });
                         okCount += 1;
                     }
-                    showToast(`ซิงค์กำหนดเวลาและสิทธิ์เทียบโอนเข้า rjcloud.organ 2.0 ครบ ${okCount} รายเรียบร้อยค่ะ`);
+                    showToast(`ซิงค์กำหนดเวลาและสิทธิ์แยกตามวิชาชีพเข้า rjcloud.organ 2.0 ครบ ${okCount} รายเรียบร้อยค่ะ`);
                 } catch (err) {
                     showToast('ซิงค์ไม่สำเร็จบางรายการ: ' + err.message, 'error');
                 } finally {
@@ -1295,8 +1277,8 @@
                 askConfirm({
                     title: nextRevoked ? 'ยกเลิกสิทธิ์เทียบโอน (ไม่มาเซ็นชื่อหน้างาน)' : 'คืนสิทธิ์เทียบโอน Onsite',
                     message: nextRevoked
-                        ? `ต้องการยกเลิกสิทธิ์เทียบโอนของ "${reg.name}" (${reg.license}) หรือไม่? ผู้เรียนจะกลับไปสะสมชั่วโมงตามปกติ`
-                        : `ต้องการคืนสิทธิ์ "ชั่วโมงครบ (เทียบโอน)" พร้อมกำหนดเวลาเปิดระบบให้ "${reg.name}" หรือไม่?`,
+                        ? `ต้องการยกเลิกสิทธิ์เทียบโอนของ "${reg.name}" (${reg.license}) หรือไม่?`
+                        : `ต้องการคืนสิทธิ์ "ชั่วโมงครบ (เทียบโอน)" ให้ "${reg.name}" หรือไม่?`,
                     danger: nextRevoked,
                     confirmText: nextRevoked ? 'ยกเลิกสิทธิ์เทียบโอน' : 'คืนสิทธิ์เทียบโอน',
                     onConfirm: async () => {
@@ -1309,16 +1291,7 @@
                                     doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', lic),
                                     nextRevoked
                                         ? { studyHoursExempt: false, userType: 'เรียนใหม่', hoursStatusLabel: 'กำลังสะสมชั่วโมง', progress: 0 }
-                                        : {
-                                            studyHoursExempt: true, userType: 'เรียนต่อเนื่อง', progress: 100,
-                                            hoursStatusLabel: 'ชั่วโมงครบ (เทียบโอน)',
-                                            hoursActivityName: onsiteConfig.activityTitle,
-                                            hoursActivityDate: onsiteConfig.eventDate,
-                                            hoursActivityVenue: onsiteConfig.venueAndOrganizer,
-                                            onsiteEventId: onsiteConfig.eventId,
-                                            onsiteUnlockAt: onsiteConfig.unlockAt,
-                                            onsiteForceUnlocked: Boolean(onsiteConfig.forceUnlocked)
-                                        },
+                                        : { studyHoursExempt: true, userType: 'เรียนต่อเนื่อง', progress: 100, hoursStatusLabel: 'ชั่วโมงครบ (เทียบโอน)', hoursActivityName: onsiteConfig.activityTitle, onsiteUnlockAt: onsiteConfig.unlockAt, onsiteForceUnlocked: Boolean(onsiteConfig.forceUnlocked) },
                                     { merge: true }
                                 );
                             } catch (err) { showToast('อัปเดตไม่สำเร็จ: ' + err.message, 'error'); return; }
@@ -1364,26 +1337,24 @@
 
             const handleExportCSV = () => {
                 const headers = [
-                    'ชื่อ-สกุล', 'เลขใบประกอบวิชาชีพ', 'กลุ่มวิชาชีพ', 'อีเมล', 'เบอร์โทร',
+                    'ชื่อ-สกุล', 'กลุ่มวิชาชีพ', 'สิทธิ์ CNEU', 'เลขใบประกอบวิชาชีพ', 'อีเมล', 'เบอร์โทร',
                     'ตำแหน่ง', 'สังกัด', 'หน่วยงาน/โรงพยาบาล', 'สิทธิ์การเรียน',
                     'สถานะปัจจุบัน', 'สถานะชั่วโมงอบรม', 'กิจกรรมอ้างอิงชั่วโมง',
                     'สถานะสอบ', 'Pretest', 'Posttest', 'ความคืบหน้า (%)',
-                    'Empathy Index (AI Lab)', 'ความมั่นใจก่อนฝึก (Pre 1-5)', 'ความมั่นใจหลังฝึก (Post 1-5)',
+                    'Empathy Index (AI Lab)', 'ความมั่นใจก่อนฝึก (1-5)', 'ความมั่นใจหลังฝึก (1-5)',
                     'SUS Score (0-100)', 'CSAT เฉลี่ย', 'รหัสประกาศนียบัตร'
                 ];
                 const rows = usersList.map(u => {
                     const st = getUserFiveStepStatus(u);
                     const info = resolveLearnerStatusInfo(u);
+                    const prof = resolveProfessionGroupSafe(u);
                     return [
-                        u.name, getUserLicense(u), u.professionGroup || '-', u.email, u.phone,
+                        u.name, prof, isNurseCneuUser(u) ? 'ใช่ (พยาบาล)' : 'ไม่ใช่', getUserLicense(u), u.email, u.phone,
                         u.position, u.department, u.hospital, isHoursExemptUser(u) ? 'เรียนต่อเนื่อง' : 'เรียนใหม่',
                         info.statusLabel, info.hoursLabel, info.activityName || '-',
                         u.status, u.pretest, u.posttest, isHoursExemptUser(u) ? 100 : (u.progress || 0),
-                        st.bestLab ?? '-',
-                        typeof u.preSelfEfficacyAvg === 'number' ? u.preSelfEfficacyAvg : '-',
-                        typeof u.postSelfEfficacyAvg === 'number' ? u.postSelfEfficacyAvg : '-',
-                        typeof u.susScore === 'number' ? u.susScore : '-',
-                        u.satisfactionScore || '-', u.certificateCode || '-'
+                        st.bestLab ?? '-', u.preSelfEfficacyAvg ?? '-', u.postSelfEfficacyAvg ?? '-',
+                        u.susScore ?? '-', u.satisfactionScore || '-', u.certificateCode || '-'
                     ].map(escapeCsvCell).join(',');
                 });
                 triggerCsvDownload(`rjcloud_learners_${new Date().toISOString().split('T')[0]}.csv`, headers, rows);
@@ -1391,24 +1362,18 @@
             };
 
             const handleExportBlindTranscriptCsv = () => {
-                const headers = [
-                    'Blind_Case_ID', 'Persona', 'Difficulty', 'AI_Supervisor_Score', 'Silence_2_5s_Count',
-                    'Trigger_Words', 'Vocal_Calm_Score', 'Pre_SelfEfficacy', 'Post_SelfEfficacy',
-                    'Blind_Transcript_ZeroPII', 'Expert_Rater_1_Score', 'Expert_Rater_2_Score', 'Expert_Notes'
-                ];
+                const headers = ['Blind_Case_ID', 'Persona', 'Difficulty', 'AI_Supervisor_Score', 'Silence_2_5s_Count', 'Trigger_Words', 'Vocal_Calm_Score', 'Pre_SelfEfficacy', 'Post_SelfEfficacy', 'Blind_Transcript_ZeroPII', 'Expert_Rater_1_Score', 'Expert_Rater_2_Score', 'Expert_Notes'];
                 const rows = [];
                 let caseNo = 0;
                 usersList.forEach(u => {
-                    const hist = Array.isArray(u.skillLabHistory) ? u.skillLabHistory : [];
-                    hist.forEach(h => {
+                    (Array.isArray(u.skillLabHistory) ? u.skillLabHistory : []).forEach(h => {
                         if (!Array.isArray(h?.blindTranscript) || h.blindTranscript.length === 0) return;
                         caseNo += 1;
-                        const transcriptText = h.blindTranscript.map(t => `[T${t.turn} ${t.role}]: ${t.text}`).join(' | ');
                         rows.push([
                             `CASE-${String(caseNo).padStart(3, '0')}`, h.personaId || '-', h.difficultyId || 'normal',
                             h.score ?? '-', h.silenceCount ?? 0, h.triggerTotal ?? 0, h.avgVocalCalm ?? '-',
                             h.preSelfEfficacyAvg ?? u.preSelfEfficacyAvg ?? '-', h.postSelfEfficacyAvg ?? u.postSelfEfficacyAvg ?? '-',
-                            transcriptText, '', '', ''
+                            h.blindTranscript.map(t => `[T${t.turn} ${t.role}]: ${t.text}`).join(' | '), '', '', ''
                         ].map(escapeCsvCell).join(','));
                     });
                 });
@@ -1418,7 +1383,7 @@
             };
 
             // ============================================================================
-            // 6. COMPUTED STATS & FILTERS
+            // 6. COMPUTED STATS & PROFESSION-FILTERED CNEU / ACADEMIC REPORTS
             // ============================================================================
             const quickStats = useMemo(() => {
                 let passed = 0, lab = 0, exempt = 0, csatSum = 0, csatN = 0, susSum = 0, susN = 0;
@@ -1445,6 +1410,8 @@
                 const q = searchTerm.trim().toLowerCase();
                 return usersList.filter(u => {
                     const exempt = isHoursExemptUser(u);
+                    const prof = resolveProfessionGroupSafe(u);
+                    if (filterProf !== 'ALL' && prof !== filterProf) return false;
                     const matchFilter =
                         filterType === 'ALL' ||
                         (filterType === 'เรียนใหม่' && !exempt) ||
@@ -1456,10 +1423,11 @@
                         String(u.name || '').toLowerCase().includes(q) ||
                         String(u.hospital || '').toLowerCase().includes(q) ||
                         String(u.hoursActivityName || '').toLowerCase().includes(q) ||
+                        prof.toLowerCase().includes(q) ||
                         getUserLicense(u).toLowerCase().includes(q)
                     );
                 });
-            }, [usersList, searchTerm, filterType]);
+            }, [usersList, searchTerm, filterType, filterProf]);
 
             const filteredOnsiteRegistrants = useMemo(() => {
                 const q = onsiteSearch.trim().toLowerCase();
@@ -1486,16 +1454,91 @@
                 };
             }, [onsiteRegistrants]);
 
-            const cneuPassedUsers = useMemo(() => usersList.filter(parsePosttestPassed), [usersList]);
+            // แยกผู้สอบผ่านตามกลุ่มวิชาชีพอย่างเคร่งครัด (CNEU คัดเฉพาะพยาบาลวิชาชีพ 100%)
+            const passedBreakdown = useMemo(() => {
+                const allPassed = usersList.filter(parsePosttestPassed);
+                const nurses = allPassed.filter(isNurseCneuUser);
+                const doctors = allPassed.filter(u => !isNurseCneuUser(u) && resolveProfessionGroupSafe(u) === 'แพทย์');
+                const allied = allPassed.filter(u => !isNurseCneuUser(u) && resolveProfessionGroupSafe(u) !== 'แพทย์');
+                return { allPassed, nurses, doctors, allied };
+            }, [usersList]);
+
+            const activeReportMeta = useMemo(() => {
+                const hrs = String(cneuConfig.trainingHours || liveConfig.hours || 8);
+                if (reportMode === 'nurse_cneu') {
+                    return {
+                        id: 'nurse_cneu',
+                        fileTag: 'CNEU_Nurses_Only',
+                        badgeColor: 'text-emerald-800',
+                        topHeading: 'รายงานสรุปรายชื่อผู้สำเร็จการอบรมเพื่อขอรับรองหน่วยคะแนนการศึกษาต่อเนื่อง (CNEU • เฉพาะพยาบาลวิชาชีพ)',
+                        creditSummary: `รหัสกิจกรรม CNEU: ${cneuConfig.activityCode || '-'} • จำนวน ${cneuConfig.cneuCredits || '-'} หน่วยคะแนน • ${cneuConfig.batchLabel} • ${cneuConfig.dateRange}`,
+                        licenseCol: 'เลขที่ใบอนุญาตฯ การพยาบาล',
+                        rows: passedBreakdown.nurses,
+                        certifyText: `ข้าพเจ้าขอรับรองว่ารายชื่อพยาบาลวิชาชีพผู้สำเร็จการอบรมจำนวน ${passedBreakdown.nurses.length} ราย ข้างต้น (คัดกรองเฉพาะผู้มีสิทธิ์รับหน่วยคะแนน CNEU ตามระเบียบสภาการพยาบาลแล้ว) เป็นผู้ผ่านการยืนยันตัวตนด้วยรหัส OTP ผ่านเกณฑ์ชั่วโมงการอบรม ผ่าน AI Skill Lab และสอบวัดผลหลังเรียน (Post-test) ≥ 80% ถูกต้องตรงตามฐานข้อมูล rjcloud.organ`
+                    };
+                }
+                if (reportMode === 'doctor_hours') {
+                    const hasCme = Boolean(cneuConfig.cmeActivityCode || cneuConfig.cmeCredits);
+                    return {
+                        id: 'doctor_hours',
+                        fileTag: 'Doctors_Training_Hours',
+                        badgeColor: 'text-sky-800',
+                        topHeading: 'รายงานสรุปรายชื่อแพทย์ผู้สำเร็จการอบรมและรับรองชั่วโมงการฝึกอบรมวิชาการ',
+                        creditSummary: hasCme
+                            ? `รหัสกิจกรรม CME: ${cneuConfig.cmeActivityCode || '-'} • จำนวน ${cneuConfig.cmeCredits || '-'} หน่วยคะแนน • ${cneuConfig.batchLabel} • ${cneuConfig.dateRange}`
+                            : `รับรองจำนวน ${hrs} ชั่วโมงการฝึกอบรมวิชาการทางการแพทย์ • ${cneuConfig.batchLabel} • ${cneuConfig.dateRange}`,
+                        licenseCol: 'เลขที่ใบอนุญาตฯ เวชกรรม',
+                        rows: passedBreakdown.doctors,
+                        certifyText: `ข้าพเจ้าขอรับรองว่ารายชื่อแพทย์ผู้สำเร็จการอบรมจำนวน ${passedBreakdown.doctors.length} ราย ข้างต้น เป็นผู้ผ่านเกณฑ์ชั่วโมงการฝึกอบรมวิชาการ ผ่าน AI Skill Lab และสอบวัดผลหลังเรียน (Post-test) ≥ 80% ถูกต้องตรงตามฐานข้อมูล rjcloud.organ เพื่อใช้เป็นหลักฐานพัฒนาสมรรถนะและประกอบการพิจารณาทางวิชาชีพ`
+                    };
+                }
+                if (reportMode === 'allied_hours') {
+                    return {
+                        id: 'allied_hours',
+                        fileTag: 'Allied_Health_Hours',
+                        badgeColor: 'text-indigo-800',
+                        topHeading: 'รายงานสรุปรายชื่อบุคลากรสหวิชาชีพผู้สำเร็จการอบรมและรับรองชั่วโมงพัฒนาบุคลากร',
+                        creditSummary: `รับรองจำนวน ${hrs} ชั่วโมงการพัฒนาสมรรถนะวิชาชีพ • ${cneuConfig.batchLabel} • ${cneuConfig.dateRange}`,
+                        licenseCol: 'เลขใบอนุญาต / รหัสบุคลากร',
+                        rows: passedBreakdown.allied,
+                        certifyText: `ข้าพเจ้าขอรับรองว่ารายชื่อบุคลากรสหวิชาชีพผู้สำเร็จการอบรมจำนวน ${passedBreakdown.allied.length} ราย ข้างต้น เป็นผู้ผ่านเกณฑ์ชั่วโมงการอบรม ผ่าน AI Skill Lab และสอบวัดผลหลังเรียน (Post-test) ≥ 80% ถูกต้องตรงตามฐานข้อมูล rjcloud.organ`
+                    };
+                }
+                return {
+                    id: 'all_exec',
+                    fileTag: 'All_Professions_Summary',
+                    badgeColor: 'text-slate-800',
+                    topHeading: 'รายงานสรุปรายชื่อผู้สำเร็จการอบรมทั้งหมดแยกตามกลุ่มวิชาชีพ (สำหรับผู้บริหารและต้นสังกัด)',
+                    creditSummary: `รวมทุกกลุ่มวิชาชีพ ${passedBreakdown.allPassed.length} ราย (พยาบาล ${passedBreakdown.nurses.length} • แพทย์ ${passedBreakdown.doctors.length} • สหวิชาชีพ ${passedBreakdown.allied.length}) • ${cneuConfig.batchLabel} • ${cneuConfig.dateRange}`,
+                    licenseCol: 'เลขใบอนุญาต / รหัส',
+                    rows: passedBreakdown.allPassed,
+                    certifyText: `รายงานฉบับนี้สรุปรายชื่อผู้สำเร็จการอบรมทุกกลุ่มวิชาชีพจำนวน ${passedBreakdown.allPassed.length} ราย โดยมอบเกียรติและมาตรฐานการประเมินเท่าเทียมกันทุกวิชาชีพ (ทั้งนี้การขอรับรองหน่วยคะแนน CNEU จะจัดส่งเฉพาะรายชื่อพยาบาลวิชาชีพจำนวน ${passedBreakdown.nurses.length} ราย ไปยังสภาการพยาบาล)`
+                };
+            }, [reportMode, passedBreakdown, cneuConfig, liveConfig.hours]);
+
+            const handleExportActiveReportCsv = () => {
+                const headers = ['ลำดับ', 'ชื่อ-นามสกุล', 'กลุ่มวิชาชีพ', activeReportMeta.licenseCol, 'หน่วยงาน/โรงพยาบาล', 'การรับรอง/หน่วยคะแนน', 'Post-test', 'AI Lab', 'รหัสประกาศนียบัตร'];
+                const rows = activeReportMeta.rows.map((u, idx) => {
+                    const st = getUserFiveStepStatus(u);
+                    return [
+                        idx + 1, u.name, resolveProfessionGroupSafe(u), getUserLicense(u), u.hospital || '-',
+                        resolveCreditLineForAdmin(u, cneuConfig), u.posttest || '-',
+                        st.bestLab !== null ? `${st.bestLab}/100` : (st.step3Lab ? 'ผ่าน' : '-'),
+                        u.certificateCode || '-'
+                    ].map(escapeCsvCell).join(',');
+                });
+                triggerCsvDownload(`rjcloud_${activeReportMeta.fileTag}_${new Date().toISOString().split('T')[0]}.csv`, headers, rows);
+                showToast(`ส่งออก CSV "${activeReportMeta.fileTag}" จำนวน ${activeReportMeta.rows.length} รายเรียบร้อยค่ะ`);
+            };
 
             const inspectorGroups = useMemo(() => ([
                 {
-                    groupTitle: '1. หน้าแรก & ระบบลงทะเบียน (Auth Wizard 3 ขั้น + Onsite)',
+                    groupTitle: '1. หน้าแรก & ระบบลงทะเบียน (คัดกรอง CNEU ตามวิชาชีพ + Onsite)',
                     items: [
                         { id: 'landing', title: 'หน้าแรกผู้เรียน (Landing 2.0)', desc: 'กรอบกระจก Liquid Glass, ต้นไม้มีชีวิตออร่า และเส้นทาง 5 ขั้นตอน', url: './index.html?admin_preview=landing', icon: 'Home' },
-                        { id: 'onsite', title: 'รับสมัครอบรม Onsite & พิมพ์ใบเซ็นชื่อ PDF', desc: 'รับสมัครล่วงหน้า, ตรวจสอบ/แก้ไขรายชื่อตนเอง และตัวคัดกรอง PDF ใบเซ็นชื่อหน้างาน', url: './onsite.html?admin_preview=1', icon: 'ClipboardList' },
-                        { id: 'auth1', title: 'ลงทะเบียน ขั้นที่ 1/3', desc: 'หน้ากรอกและตรวจสอบเลขที่ใบประกอบวิชาชีพ', url: './index.html?admin_preview=auth1', icon: 'UserCheck' },
-                        { id: 'auth2', title: 'ลงทะเบียน ขั้นที่ 2/3', desc: 'หน้ายืนยันข้อมูลผู้เรียนและเลือกกลุ่มการเรียน', url: './index.html?admin_preview=auth2', icon: 'FileText' },
+                        { id: 'onsite', title: 'รับสมัครอบรม Onsite & พิมพ์ใบเซ็นชื่อ PDF', desc: 'แสดง CNEU เฉพาะพยาบาล, ตรวจ/แก้ไขรายชื่อเอง และคัดกรอง PDF หน้างาน', url: './onsite.html?admin_preview=1', icon: 'ClipboardList' },
+                        { id: 'auth1', title: 'ลงทะเบียน ขั้นที่ 1/3', desc: 'หน้ากรอกเลขที่ใบอนุญาต + ปุ่มทดลอง 3 กลุ่มวิชาชีพ', url: './index.html?admin_preview=auth1', icon: 'UserCheck' },
+                        { id: 'auth2', title: 'ลงทะเบียน ขั้นที่ 2/3', desc: 'เลือก พยาบาล -> แสดงกล่อง CNEU ทันที / แพทย์ & สหวิชาชีพไม่แสดง CNEU', url: './index.html?admin_preview=auth2', icon: 'FileText' },
                         { id: 'auth3', title: 'ลงทะเบียน ขั้นที่ 3/3 (OTP)', desc: 'หน้ากรอกรหัสยืนยันตัวตน OTP 6 หลัก', url: './index.html?admin_preview=auth3', icon: 'ShieldCheck' }
                     ]
                 },
@@ -1505,11 +1548,11 @@
                         { id: 'pretest', title: 'แบบทดสอบก่อนเรียน (Pre-test)', desc: 'วัดพื้นฐาน 4 หมวดคลินิก + AI Roadmap', url: './index.html?admin_preview=pretest', icon: 'ClipboardCheck' },
                         { id: 'dashboard', title: 'ห้องเรียน 20 บท + AI Study Companion', desc: 'วิดีโอ, สรุปเสียง AI สตูดิโอ และ Fast-Track เทียบโอน', url: './index.html?admin_preview=dashboard', icon: 'MonitorPlay' },
                         { id: 'live', title: 'ห้องถ่ายทอดสด (Live Stream)', desc: 'หน้ารับชมบรรยายสดและดาวน์โหลดเอกสาร', url: './index.html?admin_preview=live', icon: 'Radio' },
-                        { id: 'profile', title: 'โปรไฟล์ผู้เรียน & PDPA Self-Service', desc: 'สถานะภาษาไทย, กิจกรรมอ้างอิง, Phrasebook & แก้ไข/ลบข้อมูลเอง', url: './index.html?admin_preview=profile', icon: 'User' },
+                        { id: 'profile', title: 'โปรไฟล์ผู้เรียน & PDPA Self-Service', desc: 'แสดงกลุ่มวิชาชีพ, สิทธิ์ CNEU/ชม.อบรม และแก้ไข/ลบข้อมูลเอง', url: './index.html?admin_preview=profile', icon: 'User' },
                         { id: 'skilllab', title: 'ห้องฝึกสื่อสาร 3 มิติ AI Skill Lab', desc: 'ตัวอย่าง Hologram 3 มิติสด 6 สไตล์, 6 เคสคลินิก + เสียง AI สตูดิโอ', url: './aiskilllab.html?admin_preview=1', icon: 'Bot' },
                         { id: 'posttest', title: 'แบบทดสอบหลังเรียน (Post-test ≥ 80%)', desc: 'วัดผลหลังเรียนพร้อมวิเคราะห์จุดอ่อน', url: './index.html?admin_preview=posttest', icon: 'FileCheck2' },
-                        { id: 'cert_confirm', title: 'ประเมินผล CNEU & SUS Score (R2R)', desc: 'ยืนยันชื่อและทำแบบประเมินความพึงพอใจ + SUS', url: './index.html?admin_preview=cert_confirm', icon: 'Star' },
-                        { id: 'certificate', title: 'ประกาศนียบัตรดิจิทัล & หนังสือรับรอง CNEU', desc: 'Canvas PDF/PNG + หนังสือรับรองสิทธิ์เท่าเทียมทุกประเภท', url: './index.html?admin_preview=certificate', icon: 'Award' }
+                        { id: 'cert_confirm', title: 'ประเมินผล & SUS Score (R2R)', desc: 'ยืนยันชื่อและทำแบบประเมินความพึงพอใจ + SUS', url: './index.html?admin_preview=cert_confirm', icon: 'Star' },
+                        { id: 'certificate', title: 'ประกาศนียบัตรดิจิทัล & หนังสือรับรองรายบุคคล', desc: 'Canvas PDF/PNG + หนังสือรับรองตรงตามวิชาชีพ (CNEU / ชั่วโมงอบรม)', url: './index.html?admin_preview=certificate', icon: 'Award' }
                     ]
                 },
                 {
@@ -1522,13 +1565,13 @@
             ]), []);
 
             const navItems = [
-                { id: 'users', label: 'ผู้เรียน', fullLabel: 'ผู้เรียน 5 ขั้นตอน', icon: 'Users' },
-                { id: 'onsite', label: 'Onsite', fullLabel: 'ลงทะเบียน Onsite & QR', icon: 'ClipboardList' },
-                { id: 'cert', label: 'ประกาศฯ', fullLabel: 'ประกาศฯ & CNEU', icon: 'Award' },
-                { id: 'live', label: 'Live สด', fullLabel: 'ควบคุม Live สด', icon: 'Radio' },
-                { id: 'content', label: 'บทเรียน', fullLabel: 'บทเรียน & ข้อสอบ', icon: 'BookOpen' },
-                { id: 'sync', label: 'Cloud', fullLabel: 'Cloud & Summary', icon: 'Database' },
-                { id: 'overview', label: 'ตรวจหน้า', fullLabel: 'ตรวจครบ 15 หน้า', icon: 'Eye' }
+                { id: 'users', label: 'ผู้เรียน', icon: 'Users' },
+                { id: 'onsite', label: 'Onsite', icon: 'ClipboardList' },
+                { id: 'cert', label: 'ประกาศฯ', icon: 'Award' },
+                { id: 'live', label: 'Live สด', icon: 'Radio' },
+                { id: 'content', label: 'บทเรียน', icon: 'BookOpen' },
+                { id: 'sync', label: 'Cloud', icon: 'Database' },
+                { id: 'overview', label: 'ตรวจหน้า', icon: 'Eye' }
             ];
 
             // ============================================================================
@@ -1550,7 +1593,7 @@
                                     <Icon name="ShieldCheck" size={24} />
                                 </div>
                                 <h1 className="font-display font-extrabold text-xl text-primary-adaptive">Admin Mission Control</h1>
-                                <p className="text-xs text-secondary-adaptive">rjcloud.organ 2.0 • จัดการผู้เรียน ลิงก์/QR รับสมัคร Onsite ประกาศนียบัตร และข้อมูลวิจัย R2R</p>
+                                <p className="text-xs text-secondary-adaptive">rjcloud.organ 2.0 • จัดการผู้เรียน คัดกรอง CNEU เฉพาะพยาบาล ลิงก์/QR Onsite และวิจัย R2R</p>
                             </div>
                             <form onSubmit={handleAdminLogin} className="space-y-3.5">
                                 <FieldInput label="อีเมลผู้ดูแลระบบ (Firebase Auth)" type="email" required value={loginEmail} onChange={e => setLoginEmail(e.target.value)} />
@@ -1620,13 +1663,13 @@
 
                     <main className="relative z-10 max-w-7xl w-full mx-auto px-3.5 sm:px-6 pt-5 space-y-5">
 
-                        {/* ==================== TAB 1: USERS 5-STEP TELEMETRY & FAST-TRACK ==================== */}
+                        {/* ==================== TAB 1: USERS 5-STEP TELEMETRY & PROFESSION FILTER ==================== */}
                         {activeTab === 'users' && (
                             <div className="space-y-5">
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <div>
-                                        <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">5-STEP TELEMETRY • FAST-TRACK &amp; R2R EXPORTS</span>
-                                        <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive">จัดการผู้เรียน สิทธิ์เทียบโอนชั่วโมง และข้อมูลวิจัย R2R</h2>
+                                        <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">5-STEP TELEMETRY • PROFESSION &amp; R2R EXPORTS</span>
+                                        <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive">จัดการผู้เรียน กลุ่มวิชาชีพ สิทธิ์เทียบโอน และข้อมูลวิจัย R2R</h2>
                                     </div>
                                     <div className="flex flex-wrap gap-2">
                                         <button type="button" onClick={() => setActiveTab('onsite')} className="spatial-soft touch-target px-3.5 py-2 rounded-full text-xs font-bold text-accent-adaptive border-aurora-400/45 inline-flex items-center gap-1.5">
@@ -1644,17 +1687,15 @@
                                     </div>
                                 </div>
 
-                                {/* KPI Summary Cards */}
                                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 text-center text-xs">
                                     <div className="spatial-card rounded-2xl p-3.5"><span className="text-muted-adaptive block">ผู้เรียนทั้งหมด</span><span className="font-mono text-2xl font-extrabold text-primary-adaptive">{quickStats.total}</span></div>
-                                    <div className="spatial-card rounded-2xl p-3.5"><span className="text-muted-adaptive block">เทียบโอน 100%</span><span className="font-mono text-2xl font-extrabold text-prism-adaptive">{quickStats.exempt}</span></div>
-                                    <div className="spatial-card rounded-2xl p-3.5"><span className="text-muted-adaptive block">ผ่าน AI Lab 3D</span><span className="font-mono text-2xl font-extrabold text-violet-400">{quickStats.lab}</span></div>
+                                    <div className="spatial-card rounded-2xl p-3.5"><span className="text-muted-adaptive block">พยาบาล (CNEU)</span><span className="font-mono text-2xl font-extrabold text-accent-adaptive">{usersList.filter(isNurseCneuUser).length}</span></div>
+                                    <div className="spatial-card rounded-2xl p-3.5"><span className="text-muted-adaptive block">แพทย์ / สหวิชาชีพ</span><span className="font-mono text-2xl font-extrabold text-prism-adaptive">{usersList.filter(u => !isNurseCneuUser(u)).length}</span></div>
                                     <div className="spatial-card rounded-2xl p-3.5"><span className="text-muted-adaptive block">สำเร็จหลักสูตร</span><span className="font-mono text-2xl font-extrabold text-accent-adaptive">{quickStats.passed}</span></div>
                                     <div className="spatial-card rounded-2xl p-3.5"><span className="text-muted-adaptive block">SUS / CSAT</span><span className="font-mono text-lg font-extrabold text-amber-400">{quickStats.avgSus} / {quickStats.avgCsat}</span></div>
                                     <div className="spatial-card rounded-2xl p-3.5"><span className="text-muted-adaptive block">ความมั่นใจ Pre→Post</span><span className="font-mono text-lg font-extrabold text-accent-adaptive">{quickStats.preEff}→{quickStats.postEff}</span></div>
                                 </div>
 
-                                {/* Add Manual User Form */}
                                 {showAddUser && (
                                     <form onSubmit={handleAddManualUser} className="spatial-card rounded-[1.75rem] p-5 space-y-3 border-aurora-400/40">
                                         <h3 className="font-display font-bold text-sm text-accent-adaptive">เพิ่มผู้เรียนรายบุคคล</h3>
@@ -1662,7 +1703,15 @@
                                             <FieldInput label="คำนำหน้า ชื่อ–นามสกุล *" required value={manualForm.name} onChange={e => setManualForm(p => ({ ...p, name: e.target.value }))} />
                                             <FieldInput label="เลขที่ใบอนุญาตประกอบวิชาชีพ *" required value={manualForm.license} onChange={e => setManualForm(p => ({ ...p, license: e.target.value }))} />
                                             <div>
-                                                <label className="block text-xs font-bold text-secondary-adaptive mb-1 ml-1">สิทธิ์การเรียน</label>
+                                                <label className="block text-xs font-bold text-secondary-adaptive mb-1 ml-1">กลุ่มวิชาชีพ *</label>
+                                                <select value={manualForm.professionGroup} onChange={e => setManualForm(p => ({ ...p, professionGroup: e.target.value }))} className="touch-target spatial-input w-full px-3.5 py-2 rounded-xl text-sm font-bold">
+                                                    <option value="พยาบาล">พยาบาล (รับหน่วยคะแนน CNEU)</option>
+                                                    <option value="แพทย์">แพทย์ (รับรองชั่วโมงฝึกอบรมวิชาการ)</option>
+                                                    <option value="บุคลากรสหวิชาชีพ">บุคลากรสหวิชาชีพ (รับรองชั่วโมงพัฒนาสมรรถนะ)</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-bold text-secondary-adaptive mb-1 ml-1">สิทธิ์ชั่วโมงการเรียน</label>
                                                 <select value={manualForm.userType} onChange={e => setManualForm(p => ({ ...p, userType: e.target.value }))} className="touch-target spatial-input w-full px-3.5 py-2 rounded-xl text-sm">
                                                     <option value="เรียนใหม่">เรียนใหม่ (สะสมชั่วโมง ≥ 80%)</option>
                                                     <option value="เรียนต่อเนื่อง">เทียบโอน (ชั่วโมงครบ 100%)</option>
@@ -1672,13 +1721,7 @@
                                             <FieldInput label="สังกัด / เขตสุขภาพ" value={manualForm.department} onChange={e => setManualForm(p => ({ ...p, department: e.target.value }))} />
                                             <FieldInput label="อีเมล" type="email" value={manualForm.email} onChange={e => setManualForm(p => ({ ...p, email: e.target.value }))} placeholder="name@hospital.go.th" />
                                             {manualForm.userType === 'เรียนต่อเนื่อง' && (
-                                                <FieldInput
-                                                    className="sm:col-span-2 lg:col-span-3"
-                                                    label="ชื่อกิจกรรมอ้างอิงสิทธิ์ ชั่วโมงครบ (เทียบโอน)"
-                                                    value={manualForm.hoursActivityName}
-                                                    onChange={e => setManualForm(p => ({ ...p, hoursActivityName: e.target.value }))}
-                                                    placeholder={onsiteConfig.activityTitle}
-                                                />
+                                                <FieldInput className="sm:col-span-2" label="ชื่อกิจกรรมอ้างอิงสิทธิ์ ชั่วโมงครบ (เทียบโอน)" value={manualForm.hoursActivityName} onChange={e => setManualForm(p => ({ ...p, hoursActivityName: e.target.value }))} placeholder={onsiteConfig.activityTitle} />
                                             )}
                                         </div>
                                         <div className="flex justify-end gap-2 pt-1">
@@ -1688,17 +1731,19 @@
                                     </form>
                                 )}
 
-                                {/* Search & Filter Bar */}
                                 <div className="spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-4">
-                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-2.5">
                                         <div className="relative flex-1">
                                             <Icon name="Search" size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-adaptive" />
-                                            <input value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder="ค้นหาชื่อ, เลขใบอนุญาต, โรงพยาบาล หรือชื่อกิจกรรม..." className="touch-target spatial-input w-full pl-10 pr-4 py-2 rounded-2xl text-sm" />
+                                            <input value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder="ค้นหาชื่อ, เลขใบอนุญาต, กลุ่มวิชาชีพ, โรงพยาบาล หรือชื่อกิจกรรม..." className="touch-target spatial-input w-full pl-10 pr-4 py-2 rounded-2xl text-sm" />
                                         </div>
-                                        <div className="flex gap-1.5 overflow-x-auto pb-0.5">
+                                        <div className="flex flex-wrap gap-1.5">
+                                            <select value={filterProf} onChange={e => setFilterProf(e.target.value)} className="spatial-input px-3 py-2 rounded-xl text-xs font-bold">
+                                                <option value="ALL">ทุกกลุ่มวิชาชีพ</option>
+                                                {PROFESSION_LIST.map(p => <option key={p} value={p}>{p}</option>)}
+                                            </select>
                                             {[
                                                 { id: 'ALL', label: `ทั้งหมด (${usersList.length})` },
-                                                { id: 'เรียนใหม่', label: 'เรียนใหม่' },
                                                 { id: 'EXEMPT', label: `เทียบโอน (${quickStats.exempt})` },
                                                 { id: 'PASSED', label: `ผ่าน (${quickStats.passed})` }
                                             ].map(f => (
@@ -1709,13 +1754,12 @@
                                         </div>
                                     </div>
 
-                                    {/* Desktop Table */}
                                     <div className="hidden md:block overflow-x-auto custom-scrollbar">
                                         <table className="w-full text-left border-collapse">
                                             <thead className="spatial-thead font-mono text-[10px] uppercase text-muted-adaptive">
                                                 <tr>
                                                     <th className="py-3 px-4">ผู้เรียน / สถานะปัจจุบัน / กิจกรรมอ้างอิง</th>
-                                                    <th className="py-3 px-3">สิทธิ์ชั่วโมง</th>
+                                                    <th className="py-3 px-3">กลุ่มวิชาชีพ &amp; CNEU</th>
                                                     <th className="py-3 px-3">ความคืบหน้า 5 ขั้นตอน</th>
                                                     <th className="py-3 px-3">Pre / Post</th>
                                                     <th className="py-3 px-4 text-right">จัดการ</th>
@@ -1726,6 +1770,8 @@
                                                     const lic = getUserLicense(u);
                                                     const st = getUserFiveStepStatus(u);
                                                     const info = resolveLearnerStatusInfo(u);
+                                                    const prof = resolveProfessionGroupSafe(u);
+                                                    const isNurse = isNurseCneuUser(u);
                                                     return (
                                                         <tr key={u.id || lic} className="hover:bg-white/[0.03] transition-colors">
                                                             <td className="py-3.5 px-4">
@@ -1741,45 +1787,29 @@
                                                             </td>
                                                             <td className="py-3.5 px-3">
                                                                 <select
-                                                                    value={info.isExempt ? 'เรียนต่อเนื่อง' : 'เรียนใหม่'}
+                                                                    value={prof}
                                                                     onChange={e => {
-                                                                        const nextExempt = e.target.value === 'เรียนต่อเนื่อง';
-                                                                        handleUpdateUser(u, {
-                                                                            userType: nextExempt ? 'เรียนต่อเนื่อง' : 'เรียนใหม่',
-                                                                            studyHoursExempt: nextExempt,
-                                                                            progress: nextExempt ? 100 : Number(u.progress || 0),
-                                                                            hoursStatusLabel: nextExempt ? 'ชั่วโมงครบ (เทียบโอน)' : 'กำลังสะสมชั่วโมง',
-                                                                            hoursActivityName: nextExempt ? (u.hoursActivityName || onsiteConfig.activityTitle || 'ผู้เรียนต่อเนื่อง / ผ่านการอบรมมาตรฐานมาก่อนแล้ว') : ''
-                                                                        });
+                                                                        const nextProf = e.target.value;
+                                                                        handleUpdateUser(u, { professionGroup: nextProf, cneuEligible: nextProf === 'พยาบาล' });
                                                                     }}
-                                                                    className="spatial-input px-2.5 py-1.5 rounded-xl text-xs font-bold"
+                                                                    className="spatial-input px-2.5 py-1.5 rounded-xl text-xs font-bold block"
                                                                 >
-                                                                    <option value="เรียนใหม่">เรียนใหม่</option>
-                                                                    <option value="เรียนต่อเนื่อง">เทียบโอน (100%)</option>
+                                                                    {PROFESSION_LIST.map(p => <option key={p} value={p}>{p}</option>)}
                                                                 </select>
+                                                                <span className={`font-mono text-[10px] font-bold block mt-1 ${isNurse ? 'text-accent-adaptive' : 'text-muted-adaptive'}`}>
+                                                                    {isNurse ? '● รับสิทธิ์ CNEU' : '○ ชั่วโมงอบรมมาตรฐาน'}
+                                                                </span>
                                                             </td>
                                                             <td className="py-3.5 px-3">
                                                                 <FiveStepTelemetryPills u={u} onToggleLab={() => handleUpdateUser(u, { skillLabPassed: !st.step3Lab })} />
                                                             </td>
                                                             <td className="py-3.5 px-3 font-mono font-bold text-secondary-adaptive">
-                                                                <span>{u.pretest || '-'}</span>
-                                                                <span className="mx-1 text-muted-adaptive">/</span>
-                                                                <span className={st.step4Post ? 'text-accent-adaptive' : ''}>{u.posttest || '-'}</span>
+                                                                <span>{u.pretest || '-'}</span><span className="mx-1 text-muted-adaptive">/</span><span className={st.step4Post ? 'text-accent-adaptive' : ''}>{u.posttest || '-'}</span>
                                                             </td>
                                                             <td className="py-3.5 px-4 text-right">
                                                                 <div className="inline-flex items-center gap-1.5">
-                                                                    <button type="button" onClick={() => handleOpenTransferModal(u)} className="px-2.5 py-1.5 rounded-xl spatial-soft text-prism-adaptive hover:border-prism-400 font-bold text-[11px]">
-                                                                        กิจกรรม/เทียบโอน
-                                                                    </button>
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => handleUpdateUser(u, { status: u.status === 'ผ่าน' ? 'กำลังเรียน' : 'ผ่าน' })}
-                                                                        className={`px-2.5 py-1.5 rounded-xl font-bold text-[11px] border ${
-                                                                            u.status === 'ผ่าน'
-                                                                                ? 'bg-aurora-500/20 border-aurora-400/40 text-accent-adaptive'
-                                                                                : 'spatial-soft text-secondary-adaptive'
-                                                                        }`}
-                                                                    >
+                                                                    <button type="button" onClick={() => handleOpenTransferModal(u)} className="px-2.5 py-1.5 rounded-xl spatial-soft text-prism-adaptive hover:border-prism-400 font-bold text-[11px]">กิจกรรม/เทียบโอน</button>
+                                                                    <button type="button" onClick={() => handleUpdateUser(u, { status: u.status === 'ผ่าน' ? 'กำลังเรียน' : 'ผ่าน' })} className={`px-2.5 py-1.5 rounded-xl font-bold text-[11px] border ${u.status === 'ผ่าน' ? 'bg-aurora-500/20 border-aurora-400/40 text-accent-adaptive' : 'spatial-soft text-secondary-adaptive'}`}>
                                                                         {u.status === 'ผ่าน' ? 'ผ่านแล้ว ✓' : 'กำลังเรียน'}
                                                                     </button>
                                                                     <button type="button" onClick={() => handleDeleteUser(u)} className="p-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-400" title="ลบผู้เรียน">
@@ -1797,19 +1827,19 @@
                                         </table>
                                     </div>
 
-                                    {/* Mobile Cards */}
                                     <div className="md:hidden divide-y divide-white/10">
                                         {visibleUsers.map(u => {
                                             const lic = getUserLicense(u);
                                             const st = getUserFiveStepStatus(u);
                                             const info = resolveLearnerStatusInfo(u);
+                                            const prof = resolveProfessionGroupSafe(u);
                                             return (
                                                 <div key={u.id || lic} className="py-3.5 space-y-2.5">
                                                     <div className="flex items-start justify-between gap-2">
                                                         <div className="min-w-0">
                                                             <p className="font-display font-bold text-sm text-primary-adaptive truncate">{u.name || 'ไม่ระบุชื่อ'}</p>
-                                                            <p className="text-xs text-muted-adaptive truncate"><span className="font-mono text-prism-adaptive">{lic}</span> • {u.hospital || '-'}</p>
-                                                            <p className="text-[11px] font-semibold text-accent-adaptive truncate">สถานะ: {info.statusLabel}{info.activityName ? ` — ${info.activityName}` : ''}</p>
+                                                            <p className="text-xs text-muted-adaptive truncate"><span className="font-mono text-prism-adaptive">{lic}</span> • {prof} • {u.hospital || '-'}</p>
+                                                            <p className="text-[11px] font-semibold text-accent-adaptive truncate">สถานะ: {info.statusLabel}</p>
                                                         </div>
                                                         <button type="button" onClick={() => handleDeleteUser(u)} className="p-2 rounded-xl bg-rose-500/15 text-rose-400 shrink-0"><Icon name="Trash2" size={14} /></button>
                                                     </div>
@@ -1828,17 +1858,13 @@
                             </div>
                         )}
 
-                        {/* ==================== TAB 2: ONSITE REGISTRATION HUB (COPY LINK + DOWNLOAD QR + SCHEDULED AUTO-UNLOCK) ==================== */}
+                        {/* ==================== TAB 2: ONSITE REGISTRATION HUB (LINK + QR + AUTO-UNLOCK) ==================== */}
                         {activeTab === 'onsite' && (
                             <div className="space-y-5">
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <div>
-                                        <span className="px-2.5 py-0.5 rounded-full bg-aurora-500/20 text-accent-adaptive font-mono text-[10px] font-bold">
-                                            ONSITE REGISTRATION HUB • INVITATION LINK &amp; QR CODE
-                                        </span>
-                                        <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive mt-1">
-                                            ลงทะเบียนอบรม Onsite, ลิงก์ &amp; QR Code แนบหนังสือเชิญประชุม
-                                        </h2>
+                                        <span className="px-2.5 py-0.5 rounded-full bg-aurora-500/20 text-accent-adaptive font-mono text-[10px] font-bold">ONSITE REGISTRATION HUB • INVITATION LINK &amp; QR CODE</span>
+                                        <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive mt-1">ลงทะเบียนอบรม Onsite, ลิงก์ &amp; QR Code แนบหนังสือเชิญประชุม</h2>
                                     </div>
                                     <div className="flex flex-wrap gap-2 shrink-0">
                                         <a href="./onsite.html" target="_blank" rel="noreferrer" className="spatial-soft touch-target px-4 py-2.5 rounded-full font-display font-bold text-xs text-primary-adaptive inline-flex items-center gap-1.5">
@@ -1850,61 +1876,34 @@
                                     </div>
                                 </div>
 
-                                {/* กล่องทางเข้าลงทะเบียน Onsite พร้อม Copy Link และดาวน์โหลด QR Code (ย้ายมาจากหน้าแรก) */}
                                 <section className="spatial-card rounded-[1.75rem] p-5 sm:p-6 border-aurora-400/45 grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
                                     <div className="lg:col-span-8 space-y-3.5">
                                         <div>
-                                            <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">INVITATION DISTRIBUTION • ย้ายจากหน้าแรกมาควบคุมเฉพาะผู้จัด</span>
-                                            <h3 className="font-display font-extrabold text-lg text-primary-adaptive mt-0.5">
-                                                ช่องทางส่งต่อให้ผู้เข้าอบรมลงทะเบียนล่วงหน้า (`onsite.html`)
-                                            </h3>
+                                            <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">INVITATION DISTRIBUTION • คัดกรอง CNEU อัตโนมัติตั้งแต่หน้าสมัคร</span>
+                                            <h3 className="font-display font-extrabold text-lg text-primary-adaptive mt-0.5">ช่องทางส่งต่อให้ผู้เข้าอบรมลงทะเบียนล่วงหน้า (`onsite.html`)</h3>
                                             <p className="text-xs text-secondary-adaptive mt-1 leading-relaxed">
-                                                คัดลอกลิงก์หรือดาวน์โหลดไฟล์ <b>QR Code (PNG ความละเอียดสูง)</b> เพื่อนำไปวางในหนังสือเชิญประชุมราชการ โปสเตอร์ หรือกลุ่ม LINE เครือข่าย ผู้เข้าอบรมที่ลงทะเบียนจะได้รับสิทธิ์เทียบโอนชั่วโมงและเปิดเข้า <b>rjcloud.organ 2.0</b> อัตโนมัติตามเวลาที่กำหนดค่ะ
+                                                คัดลอกลิงก์หรือดาวน์โหลดไฟล์ <b>QR Code (PNG ความละเอียดสูง)</b> แนบหนังสือเชิญประชุมราชการ เมื่อผู้สมัครเลือก <b>พยาบาล</b> ระบบจะแสดงรหัสกิจกรรม CNEU ล่วงหน้าทันที ส่วน <b>แพทย์ / สหวิชาชีพ</b> จะไม่ขึ้นข้อความ CNEU และได้รับรองชั่วโมงการฝึกอบรมมาตรฐานแทนค่ะ
                                             </p>
                                         </div>
 
-                                        {/* ช่อง URL + ปุ่ม Copy Link */}
                                         <div className="flex flex-col sm:flex-row gap-2">
-                                            <input
-                                                readOnly
-                                                value={onsitePublicUrl}
-                                                onFocus={e => e.target.select()}
-                                                className="touch-target spatial-input flex-1 px-3.5 py-2.5 rounded-xl font-mono text-xs sm:text-sm font-bold text-prism-adaptive"
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={handleCopyOnsiteLink}
-                                                className={`touch-target px-5 py-2.5 rounded-xl font-display font-extrabold text-xs inline-flex items-center justify-center gap-1.5 shrink-0 transition-all ${
-                                                    onsiteLinkCopied
-                                                        ? 'bg-emerald-500 text-void-950 shadow-lg'
-                                                        : 'rjc2-pill-btn'
-                                                }`}
-                                            >
+                                            <input readOnly value={onsitePublicUrl} onFocus={e => e.target.select()} className="touch-target spatial-input flex-1 px-3.5 py-2.5 rounded-xl font-mono text-xs sm:text-sm font-bold text-prism-adaptive" />
+                                            <button type="button" onClick={handleCopyOnsiteLink} className={`touch-target px-5 py-2.5 rounded-xl font-display font-extrabold text-xs inline-flex items-center justify-center gap-1.5 shrink-0 ${onsiteLinkCopied ? 'bg-emerald-500 text-void-950 shadow-lg' : 'rjc2-pill-btn'}`}>
                                                 <Icon name={onsiteLinkCopied ? 'Check' : 'Copy'} size={15} />
                                                 <span>{onsiteLinkCopied ? 'คัดลอกลิงก์แล้ว ✓' : 'Copy Link รับสมัคร'}</span>
                                             </button>
                                         </div>
 
-                                        {/* ปุ่มดาวน์โหลด QR Code (Poster พร้อมชื่อกิจกรรม & Raw QR ล้วน) */}
                                         <div className="flex flex-wrap gap-2 pt-1">
-                                            <button
-                                                type="button"
-                                                onClick={() => handleDownloadOnsiteQr('poster')}
-                                                className="rjc2-pill-btn touch-target px-4 py-2.5 rounded-full font-display font-extrabold text-xs inline-flex items-center gap-1.5"
-                                            >
+                                            <button type="button" onClick={() => handleDownloadOnsiteQr('poster')} className="rjc2-pill-btn touch-target px-4 py-2.5 rounded-full font-display font-extrabold text-xs inline-flex items-center gap-1.5">
                                                 <Icon name="Download" size={15} /> ดาวน์โหลด QR Code พร้อมหัวข้อกิจกรรม (PNG)
                                             </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => handleDownloadOnsiteQr('raw')}
-                                                className="spatial-soft touch-target px-4 py-2.5 rounded-full font-display font-bold text-xs text-prism-adaptive inline-flex items-center gap-1.5"
-                                            >
+                                            <button type="button" onClick={() => handleDownloadOnsiteQr('raw')} className="spatial-soft touch-target px-4 py-2.5 rounded-full font-display font-bold text-xs text-prism-adaptive inline-flex items-center gap-1.5">
                                                 <Icon name="QrCode" size={15} /> ดาวน์โหลดเฉพาะ QR ล้วน (PNG)
                                             </button>
                                         </div>
                                     </div>
 
-                                    {/* Live QR Code Preview Box */}
                                     <div className="lg:col-span-4 flex flex-col items-center justify-center gap-2 p-4 rounded-2xl spatial-soft text-center">
                                         <LiveQrCanvas url={onsitePublicUrl} size={172} />
                                         <span className="font-mono text-[10px] font-bold text-accent-adaptive">{onsiteConfig.eventId}</span>
@@ -1912,7 +1911,6 @@
                                     </div>
                                 </section>
 
-                                {/* สถิติผู้สมัคร Onsite แยกตามกลุ่มวิชาชีพ */}
                                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 text-center text-xs">
                                     <div className="spatial-card rounded-2xl p-3.5"><span className="text-muted-adaptive block">ผู้สมัครใช้งานสิทธิ์</span><span className="font-mono text-2xl font-extrabold text-primary-adaptive">{onsiteStats.total}</span></div>
                                     <div className="spatial-card rounded-2xl p-3.5"><span className="text-muted-adaptive block">แพทย์</span><span className="font-mono text-2xl font-extrabold text-prism-adaptive">{onsiteStats.doctor}</span></div>
@@ -1921,12 +1919,11 @@
                                     <div className="col-span-2 sm:col-span-1 spatial-card rounded-2xl p-3.5"><span className="text-muted-adaptive block">ยกเลิก (No-show)</span><span className="font-mono text-2xl font-extrabold text-rose-400">{onsiteStats.revoked}</span></div>
                                 </div>
 
-                                {/* ตั้งค่าหัวข้อกิจกรรมมาตรฐาน & วัน-เวลาเปิดสิทธิ์อัตโนมัติ */}
                                 <div className="spatial-card rounded-[1.75rem] p-5 sm:p-6 space-y-4 border-prism-400/35">
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                         <FieldInput label="รหัสกิจกรรม / รุ่น (Event ID)" value={onsiteDraft.eventId} onChange={e => setOnsiteDraft(p => ({ ...p, eventId: e.target.value }))} />
                                         <FieldInput label="วัน/เดือน/ปี ที่จัดกิจกรรม" value={onsiteDraft.eventDate} onChange={e => setOnsiteDraft(p => ({ ...p, eventDate: e.target.value }))} />
-                                        <FieldInput className="sm:col-span-2" label="ชื่อกิจกรรมมาตรฐาน (ใช้อ้างอิงในโปรไฟล์, การ์ด QR และใบเซ็นชื่อหน้างาน)" value={onsiteDraft.activityTitle} onChange={e => setOnsiteDraft(p => ({ ...p, activityTitle: e.target.value }))} />
+                                        <FieldInput className="sm:col-span-2" label="ชื่อกิจกรรมมาตรฐาน" value={onsiteDraft.activityTitle} onChange={e => setOnsiteDraft(p => ({ ...p, activityTitle: e.target.value }))} />
                                         <FieldInput className="sm:col-span-2" label="สถานที่ / หน่วยงานที่จัด" value={onsiteDraft.venueAndOrganizer} onChange={e => setOnsiteDraft(p => ({ ...p, venueAndOrganizer: e.target.value }))} />
                                         <div className="sm:col-span-2 p-4 rounded-2xl bg-prism-500/15 border border-prism-400/35 space-y-2">
                                             <label className="block text-xs font-bold text-prism-adaptive">วันและเวลาที่เปิดสิทธิ์ให้ผู้สมัคร Onsite เข้า rjcloud.organ 2.0 อัตโนมัติ</label>
@@ -1934,7 +1931,6 @@
                                             <p className="text-[11px] text-secondary-adaptive">ปัจจุบันตั้งไว้: <b className="text-accent-adaptive">{formatThaiDateTimeFull(onsiteConfig.unlockAt)}</b></p>
                                         </div>
                                     </div>
-
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
                                         <label className="spatial-soft p-3.5 rounded-2xl flex items-center justify-between gap-2 cursor-pointer">
                                             <span className="font-bold text-primary-adaptive">เปิดรับสมัครออนไลน์บน onsite.html</span>
@@ -1945,23 +1941,19 @@
                                             <input type="checkbox" checked={Boolean(onsiteDraft.forceUnlocked)} onChange={e => setOnsiteDraft(p => ({ ...p, forceUnlocked: e.target.checked }))} className="w-5 h-5 accent-aurora-500" />
                                         </label>
                                     </div>
-
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                                        <button type="button" onClick={handleSaveOnsiteConfig} className="rjc2-pill-btn touch-target py-3.5 rounded-full font-display font-extrabold text-xs sm:text-sm">
-                                            บันทึกหัวข้อกิจกรรม &amp; กำหนดเวลาขึ้น Cloud
-                                        </button>
+                                        <button type="button" onClick={handleSaveOnsiteConfig} className="rjc2-pill-btn touch-target py-3.5 rounded-full font-display font-extrabold text-xs sm:text-sm">บันทึกหัวข้อกิจกรรม &amp; กำหนดเวลาขึ้น Cloud</button>
                                         <button type="button" disabled={onsiteSyncing} onClick={handleBatchSyncOnsiteToLearners} className="spatial-soft touch-target py-3.5 rounded-full font-display font-bold text-xs sm:text-sm text-accent-adaptive border-aurora-400/45 disabled:opacity-50">
-                                            {onsiteSyncing ? 'กำลังซิงค์ข้อมูลเข้า rjcloud 2.0...' : `ซิงค์กำหนดเวลาให้ผู้สมัครทุกคน (${onsiteStats.total} ราย)`}
+                                            {onsiteSyncing ? 'กำลังซิงค์...' : `ซิงค์กำหนดเวลาให้ผู้สมัครทุกคน (${onsiteStats.total} ราย)`}
                                         </button>
                                     </div>
                                 </div>
 
-                                {/* ตารางรายชื่อผู้สมัคร Onsite & จัดการ No-show */}
                                 <div className="spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3.5">
                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                                         <div className="relative flex-1">
                                             <Icon name="Search" size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-adaptive" />
-                                            <input value={onsiteSearch} onChange={e => setOnsiteSearch(e.target.value)} placeholder="ค้นหารายชื่อผู้สมัคร Onsite (ชื่อ, รพ., จังหวัด, เขต, เลขใบอนุญาต)..." className="touch-target spatial-input w-full pl-10 pr-4 py-2 rounded-2xl text-xs sm:text-sm" />
+                                            <input value={onsiteSearch} onChange={e => setOnsiteSearch(e.target.value)} placeholder="ค้นหารายชื่อผู้สมัคร Onsite..." className="touch-target spatial-input w-full pl-10 pr-4 py-2 rounded-2xl text-xs sm:text-sm" />
                                         </div>
                                         <div className="flex gap-1.5 overflow-x-auto">
                                             {['ALL', 'แพทย์', 'พยาบาล', 'บุคลากรสหวิชาชีพ'].map(pg => (
@@ -1971,7 +1963,6 @@
                                             ))}
                                         </div>
                                     </div>
-
                                     <div className="overflow-x-auto custom-scrollbar">
                                         <table className="w-full text-left border-collapse text-xs">
                                             <thead className="spatial-thead font-mono text-[10px] uppercase text-muted-adaptive">
@@ -2001,9 +1992,6 @@
                                                         </td>
                                                     </tr>
                                                 ))}
-                                                {filteredOnsiteRegistrants.length === 0 && (
-                                                    <tr><td colSpan="5" className="py-8 text-center text-muted-adaptive">ยังไม่มีรายชื่อผู้สมัคร Onsite ตามเงื่อนไขที่เลือกค่ะ</td></tr>
-                                                )}
                                             </tbody>
                                         </table>
                                     </div>
@@ -2011,25 +1999,35 @@
                             </div>
                         )}
 
-                        {/* ==================== TAB 3: CERTIFICATE DESIGNER & CNEU REPORT STUDIO ==================== */}
+                        {/* ==================== TAB 3: CERTIFICATE DESIGNER & PROFESSION-FILTERED CNEU / ACADEMIC REPORT STUDIO ==================== */}
                         {activeTab === 'cert' && (
                             <div className="space-y-5">
                                 <div className="no-print flex flex-wrap items-center justify-between gap-2">
                                     <div className="inline-flex p-1 rounded-2xl spatial-soft gap-1">
-                                        <button type="button" onClick={() => setCertSubTab('designer')} className={`px-4 py-2 rounded-xl text-xs font-bold ${certSubTab === 'designer' ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'text-secondary-adaptive'}`}>ออกแบบประกาศนียบัตร</button>
-                                        <button type="button" onClick={() => setCertSubTab('cneu')} className={`px-4 py-2 rounded-xl text-xs font-bold ${certSubTab === 'cneu' ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'text-secondary-adaptive'}`}>รายงาน CNEU สภาการพยาบาล (PDF)</button>
-                                    </div>
-                                    {certSubTab === 'cneu' && (
-                                        <button type="button" onClick={() => window.print()} className="rjc2-pill-btn px-5 py-2.5 rounded-full font-display font-extrabold text-xs inline-flex items-center gap-1.5">
-                                            <Icon name="Printer" size={15} /> พิมพ์ / Export PDF รายงาน CNEU ({cneuPassedUsers.length} ราย)
+                                        <button type="button" onClick={() => setCertSubTab('cneu')} className={`px-4 py-2 rounded-xl text-xs font-bold ${certSubTab === 'cneu' ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'text-secondary-adaptive'}`}>
+                                            รายงาน CNEU (เฉพาะพยาบาล) &amp; แยกวิชาชีพ
                                         </button>
+                                        <button type="button" onClick={() => setCertSubTab('designer')} className={`px-4 py-2 rounded-xl text-xs font-bold ${certSubTab === 'designer' ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'text-secondary-adaptive'}`}>
+                                            ออกแบบประกาศนียบัตร
+                                        </button>
+                                    </div>
+
+                                    {certSubTab === 'cneu' && (
+                                        <div className="flex flex-wrap gap-2">
+                                            <button type="button" onClick={handleExportActiveReportCsv} className="spatial-soft px-4 py-2.5 rounded-full text-xs font-bold text-accent-adaptive inline-flex items-center gap-1.5">
+                                                <Icon name="FileSpreadsheet" size={14} /> ส่งออก CSV กลุ่มนี้ ({activeReportMeta.rows.length})
+                                            </button>
+                                            <button type="button" onClick={() => window.print()} className="rjc2-pill-btn px-5 py-2.5 rounded-full font-display font-extrabold text-xs inline-flex items-center gap-1.5">
+                                                <Icon name="Printer" size={15} /> พิมพ์ / Export PDF ({activeReportMeta.rows.length} ราย)
+                                            </button>
+                                        </div>
                                     )}
                                 </div>
 
                                 {certSubTab === 'designer' && (
                                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
                                         <div className="lg:col-span-5 spatial-card rounded-[1.75rem] p-5 space-y-3">
-                                            <h3 className="font-display font-bold text-base text-primary-adaptive">ตั้งค่าข้อความประกาศนียบัตร (มาตรฐานเท่าเทียมทุกประเภท)</h3>
+                                            <h3 className="font-display font-bold text-base text-primary-adaptive">ตั้งค่าข้อความประกาศนียบัตร (ปรับหน่วยคะแนน/ชั่วโมงตามวิชาชีพอัตโนมัติ)</h3>
                                             <FieldInput label="รหัสนำหน้า (Prefix)" value={certTemplate.certPrefix} onChange={e => setCertTemplate(p => ({ ...p, certPrefix: e.target.value }))} />
                                             <FieldInput label="ชื่อหน่วยงาน (ไทย)" value={certTemplate.orgTitleTH} onChange={e => setCertTemplate(p => ({ ...p, orgTitleTH: e.target.value }))} />
                                             <FieldInput label="ชื่อหลักสูตร (ไทย)" value={certTemplate.courseTitleTH} onChange={e => setCertTemplate(p => ({ ...p, courseTitleTH: e.target.value }))} />
@@ -2042,8 +2040,17 @@
                                                 บันทึกแม่แบบประกาศนียบัตรขึ้น Cloud
                                             </button>
                                         </div>
-                                        <div className="lg:col-span-7 spatial-card rounded-[1.75rem] p-4 space-y-2">
-                                            <p className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">LIVE CERTIFICATE PREVIEW</p>
+                                        <div className="lg:col-span-7 spatial-card rounded-[1.75rem] p-4 space-y-3">
+                                            <div className="flex flex-wrap items-center justify-between gap-2">
+                                                <p className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">LIVE CERTIFICATE PREVIEW BY PROFESSION</p>
+                                                <div className="flex gap-1">
+                                                    {PROFESSION_LIST.map(p => (
+                                                        <button key={p} type="button" onClick={() => setCertPreviewProf(p)} className={`px-2.5 py-1 rounded-full text-[11px] font-bold ${certPreviewProf === p ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'spatial-soft text-secondary-adaptive'}`}>
+                                                            {p === 'พยาบาล' ? 'พยาบาล (CNEU)' : p}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
                                             <div className="w-full aspect-[1.414/1] rounded-2xl overflow-hidden bg-white shadow-xl">
                                                 <canvas ref={certPreviewCanvasRef} className="w-full h-full object-contain block" />
                                             </div>
@@ -2053,52 +2060,104 @@
 
                                 {certSubTab === 'cneu' && (
                                     <div className="space-y-5">
-                                        <div className="no-print spatial-card rounded-[1.75rem] p-5 space-y-3">
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                                                <FieldInput label="รหัสกิจกรรม CNEU" value={cneuConfig.activityCode} onChange={e => setCneuConfig(p => ({ ...p, activityCode: e.target.value }))} />
-                                                <FieldInput label="หน่วยคะแนน (Credits)" value={cneuConfig.cneuCredits} onChange={e => setCneuConfig(p => ({ ...p, cneuCredits: e.target.value }))} />
+                                        {/* ตัวตั้งค่า CNEU ล่วงหน้า (แสดงเฉพาะตอนผู้เรียนเลือกพยาบาล) + ชั่วโมงมาตรฐานสำหรับแพทย์/สหวิชาชีพ */}
+                                        <div className="no-print spatial-card rounded-[1.75rem] p-5 space-y-4">
+                                            <div className="flex flex-wrap items-center justify-between gap-2">
+                                                <div>
+                                                    <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">PRE-CONFIGURED CNEU &amp; TRAINING HOURS SETTINGS</span>
+                                                    <h3 className="font-display font-extrabold text-base text-primary-adaptive">ตั้งค่ารหัสกิจกรรม CNEU ล่วงหน้า &amp; ชั่วโมงการอบรมมาตรฐาน</h3>
+                                                </div>
+                                                <button type="button" onClick={() => persistSettings({ cneuConfig })} className="rjc2-pill-btn px-5 py-2 rounded-full font-display font-extrabold text-xs">
+                                                    บันทึกข้อมูล CNEU / ชม.อบรม ขึ้น Cloud
+                                                </button>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                                                <FieldInput label="รหัสกิจกรรม CNEU (แสดงเฉพาะพยาบาล)" value={cneuConfig.activityCode} onChange={e => setCneuConfig(p => ({ ...p, activityCode: e.target.value }))} />
+                                                <FieldInput label="หน่วยคะแนน CNEU (เฉพาะพยาบาล)" value={cneuConfig.cneuCredits} onChange={e => setCneuConfig(p => ({ ...p, cneuCredits: e.target.value }))} />
+                                                <FieldInput label="ชั่วโมงอบรมมาตรฐาน (แพทย์/สหวิชาชีพ)" type="number" min="1" max="100" value={cneuConfig.trainingHours || '8'} onChange={e => setCneuConfig(p => ({ ...p, trainingHours: e.target.value }))} />
                                                 <FieldInput label="รุ่น / ปีงบประมาณ" value={cneuConfig.batchLabel} onChange={e => setCneuConfig(p => ({ ...p, batchLabel: e.target.value }))} />
-                                                <FieldInput className="sm:col-span-2" label="ชื่อหลักสูตร" value={cneuConfig.courseName} onChange={e => setCneuConfig(p => ({ ...p, courseName: e.target.value }))} />
+                                                <FieldInput className="sm:col-span-2" label="ชื่อหลักสูตรบนเอกสารรับรอง" value={cneuConfig.courseName} onChange={e => setCneuConfig(p => ({ ...p, courseName: e.target.value }))} />
+                                                <FieldInput label="รหัส CME แพทย์ (ถ้ามี)" value={cneuConfig.cmeActivityCode || ''} onChange={e => setCneuConfig(p => ({ ...p, cmeActivityCode: e.target.value }))} placeholder="เว้นว่าง = รับรองชั่วโมง" />
                                                 <FieldInput label="ช่วงวันที่จัดอบรม" value={cneuConfig.dateRange} onChange={e => setCneuConfig(p => ({ ...p, dateRange: e.target.value }))} />
                                             </div>
-                                            <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
-                                                <label className="text-xs font-bold text-secondary-adaptive inline-flex items-center gap-2 cursor-pointer">
-                                                    <input type="checkbox" checked={cneuIncludeScores} onChange={e => setCneuIncludeScores(e.target.checked)} className="accent-aurora-500" />
-                                                    <span>แสดงคอลัมน์ผลประเมิน (ชั่วโมง • Post-test • AI Lab)</span>
-                                                </label>
-                                                <button type="button" onClick={() => persistSettings({ cneuConfig })} className="rjc2-pill-btn px-5 py-2 rounded-full font-display font-extrabold text-xs">บันทึกข้อมูล CNEU ขึ้น Cloud</button>
+
+                                            {/* ปุ่มสลับชุดรายงานแยกตามวิชาชีพ (CNEU คัดเฉพาะพยาบาล 100%) */}
+                                            <div className="pt-3 border-t border-white/10 space-y-2.5">
+                                                <div className="flex flex-wrap items-center justify-between gap-2">
+                                                    <span className="text-xs font-bold text-prism-adaptive">เลือกชุดรายงานที่ต้องการตรวจสอบ / พิมพ์ PDF / ส่งออก CSV:</span>
+                                                    <label className="text-xs font-bold text-secondary-adaptive inline-flex items-center gap-2 cursor-pointer">
+                                                        <input type="checkbox" checked={cneuIncludeScores} onChange={e => setCneuIncludeScores(e.target.checked)} className="accent-aurora-500" />
+                                                        <span>แสดงคอลัมน์ผลประเมิน (ชั่วโมง • Post-test • AI Lab)</span>
+                                                    </label>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs">
+                                                    {[
+                                                        { id: 'nurse_cneu', title: '1. ส่งสภาการพยาบาล (CNEU)', sub: `เฉพาะพยาบาลวิชาชีพ (${passedBreakdown.nurses.length} ราย)`, accent: 'border-aurora-400 bg-aurora-500/20' },
+                                                        { id: 'doctor_hours', title: '2. รายงานกลุ่มแพทย์', sub: `รับรองชั่วโมงวิชาการ (${passedBreakdown.doctors.length} ราย)`, accent: 'border-prism-400 bg-prism-500/20' },
+                                                        { id: 'allied_hours', title: '3. บุคลากรสหวิชาชีพ', sub: `รับรองชั่วโมงพัฒนาสมรรถนะ (${passedBreakdown.allied.length} ราย)`, accent: 'border-indigo-400 bg-indigo-500/20' },
+                                                        { id: 'all_exec', title: '4. รวมทุกวิชาชีพ (ผู้บริหาร)', sub: `สรุปทั้งหมด (${passedBreakdown.allPassed.length} ราย)`, accent: 'border-amber-400 bg-amber-500/20' }
+                                                    ].map(tab => (
+                                                        <button
+                                                            key={tab.id}
+                                                            type="button"
+                                                            onClick={() => setReportMode(tab.id)}
+                                                            className={`text-left p-3 rounded-2xl border transition-all ${reportMode === tab.id ? tab.accent : 'spatial-soft'}`}
+                                                        >
+                                                            <p className="font-display font-extrabold text-primary-adaptive">{tab.title}</p>
+                                                            <p className="text-[11px] text-secondary-adaptive mt-0.5">{tab.sub}</p>
+                                                        </button>
+                                                    ))}
+                                                </div>
+
+                                                {reportMode === 'nurse_cneu' && (passedBreakdown.doctors.length > 0 || passedBreakdown.allied.length > 0) && (
+                                                    <div className="p-3 rounded-xl bg-aurora-500/15 border border-aurora-400/40 text-xs text-accent-adaptive font-bold flex items-center gap-2">
+                                                        <Icon name="ShieldCheck" size={16} className="shrink-0" />
+                                                        <span>
+                                                            ระบบคัดกรองเฉพาะพยาบาลวิชาชีพให้แล้ว 100% — แยกกลุ่มแพทย์ ({passedBreakdown.doctors.length} ราย) และบุคลากรสหวิชาชีพ ({passedBreakdown.allied.length} ราย) ไปไว้ในชุดรายงานเฉพาะวิชาชีพของตนเองโดยไม่ปะปนในเอกสารส่งสภาการพยาบาลค่ะ
+                                                        </span>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
 
+                                        {/* เอกสาร A4 พร้อมพิมพ์ / Export PDF */}
                                         <article id="cneu-print-root" className="cneu-paper rounded-2xl p-6 sm:p-10 space-y-5 max-w-4xl mx-auto">
                                             <div className="text-center border-b-2 border-slate-800 pb-4 space-y-1">
-                                                <p className="text-xs font-bold text-emerald-800 uppercase">รายงานสรุปรายชื่อผู้สำเร็จการอบรมเพื่อขอรับรองหน่วยคะแนนการศึกษาต่อเนื่อง (CNEU)</p>
+                                                <p className={`text-xs font-bold uppercase ${activeReportMeta.badgeColor}`}>{activeReportMeta.topHeading}</p>
                                                 <h2 className="font-display text-lg font-extrabold text-slate-900">{cneuConfig.orgName}</h2>
                                                 <p className="text-sm font-bold text-slate-800">{cneuConfig.courseName}</p>
-                                                <p className="text-xs text-slate-600">
-                                                    รหัสกิจกรรม: <b>{cneuConfig.activityCode}</b> • จำนวน <b>{cneuConfig.cneuCredits} หน่วยคะแนน</b> • {cneuConfig.batchLabel} • {cneuConfig.dateRange}
-                                                </p>
+                                                <p className="text-xs text-slate-600">{activeReportMeta.creditSummary}</p>
                                             </div>
 
                                             <table className="cneu-table">
                                                 <thead>
                                                     <tr>
-                                                        <th style={{ width: '42px' }}>ลำดับ</th>
+                                                        <th style={{ width: '40px' }}>ลำดับ</th>
                                                         <th>ชื่อ – นามสกุล</th>
-                                                        <th>เลขที่ใบอนุญาตฯ</th>
+                                                        {reportMode === 'all_exec' && <th>กลุ่มวิชาชีพ / การรับรอง</th>}
+                                                        <th>{activeReportMeta.licenseCol}</th>
                                                         <th>หน่วยงาน / โรงพยาบาล</th>
                                                         {cneuIncludeScores && <th>ผลการประเมิน</th>}
                                                         <th>รหัสประกาศนียบัตร</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {cneuPassedUsers.map((u, idx) => {
+                                                    {activeReportMeta.rows.map((u, idx) => {
                                                         const st = getUserFiveStepStatus(u);
                                                         const postPct = parsePosttestScorePct(u.posttest);
+                                                        const prof = resolveProfessionGroupSafe(u);
                                                         return (
                                                             <tr key={u.id || idx}>
                                                                 <td className="text-center font-mono font-bold">{idx + 1}</td>
                                                                 <td className="font-bold">{u.name}</td>
+                                                                {reportMode === 'all_exec' && (
+                                                                    <td>
+                                                                        <div className="font-bold text-slate-900">{prof}</div>
+                                                                        <div className="text-[10px] text-slate-600">{resolveCreditLineForAdmin(u, cneuConfig)}</div>
+                                                                    </td>
+                                                                )}
                                                                 <td className="text-center font-mono">{getUserLicense(u)}</td>
                                                                 <td>{u.hospital || '-'}</td>
                                                                 {cneuIncludeScores && (
@@ -2115,15 +2174,15 @@
                                                             </tr>
                                                         );
                                                     })}
-                                                    {cneuPassedUsers.length === 0 && (
-                                                        <tr><td colSpan={cneuIncludeScores ? 6 : 5} className="text-center py-6 text-slate-500">ยังไม่มีรายชื่อผู้สอบผ่านเกณฑ์ ≥80%</td></tr>
+                                                    {activeReportMeta.rows.length === 0 && (
+                                                        <tr><td colSpan={6 + (reportMode === 'all_exec' ? 1 : 0)} className="text-center py-6 text-slate-500">ยังไม่มีรายชื่อผู้สอบผ่านเกณฑ์ในกลุ่มรายงานนี้</td></tr>
                                                     )}
                                                 </tbody>
                                             </table>
 
                                             <div className="signature-block pt-3 space-y-6">
                                                 <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-700 leading-relaxed">
-                                                    <b>คำรับรองความถูกต้องของข้อมูล:</b> ข้าพเจ้าขอรับรองว่ารายชื่อผู้สำเร็จการอบรมจำนวน <b>{cneuPassedUsers.length} ราย</b> ข้างต้น เป็นผู้ผ่านการยืนยันตัวตนด้วยรหัส OTP ผ่านเกณฑ์ชั่วโมงการอบรมตามมาตรฐานหลักสูตร ผ่านการฝึกปฏิบัติการสื่อสารใน AI Skill Lab และสอบวัดผลหลังเรียน (Post-test) ได้คะแนนไม่น้อยกว่าร้อยละ 80 ถูกต้องตรงตามฐานข้อมูลระบบ <span className="font-mono font-bold">rjcloud.organ</span> โดยมอบสิทธิ์และเกียรติเท่าเทียมกันทุกราย และสามารถตรวจสอบรหัสประกาศนียบัตรย้อนกลับได้ผ่าน <span className="font-mono">verify.html</span>
+                                                    <b>คำรับรองความถูกต้องของข้อมูล:</b> {activeReportMeta.certifyText} และสามารถตรวจสอบรหัสประกาศนียบัตรย้อนกลับได้ผ่าน <span className="font-mono">verify.html</span>
                                                 </div>
                                                 <div className="grid grid-cols-2 gap-8 text-center text-xs pt-4">
                                                     <div className="space-y-1">
@@ -2194,7 +2253,7 @@
                                                 <span className="sm:col-span-1 font-mono font-bold text-prism-adaptive">#{l.id}</span>
                                                 <input value={l.title || ''} onChange={e => { const next = [...contentConfig.lessons]; next[idx] = { ...l, title: e.target.value }; setContentConfig(p => ({ ...p, lessons: next })); }} placeholder="ชื่อบทเรียน" className="sm:col-span-5 spatial-input px-3 py-2 rounded-xl" />
                                                 <input value={l.videoId || ''} onChange={e => { const next = [...contentConfig.lessons]; next[idx] = { ...l, videoId: e.target.value }; setContentConfig(p => ({ ...p, lessons: next })); }} placeholder="Google Drive Video ID" className="sm:col-span-3 spatial-input px-3 py-2 rounded-xl font-mono" />
-                                                <input value={l.documentUrl || ''} onChange={e => { const next = [...contentConfig.lessons]; next[idx] = { ...l, documentUrl: e.target.value }; setContentConfig(p => ({ ...p, documentUrl: e.target.value })); }} placeholder="URL เอกสาร PDF" className="sm:col-span-3 spatial-input px-3 py-2 rounded-xl" />
+                                                <input value={l.documentUrl || ''} onChange={e => { const next = [...contentConfig.lessons]; next[idx] = { ...l, documentUrl: e.target.value }; setContentConfig(p => ({ ...p, lessons: next })); }} placeholder="URL เอกสาร PDF" className="sm:col-span-3 spatial-input px-3 py-2 rounded-xl" />
                                             </div>
                                         ))}
                                         <button type="button" onClick={() => setContentConfig(p => ({ ...p, lessons: [...p.lessons, { id: p.lessons.length + 1, title: `บทเรียนที่ ${p.lessons.length + 1}`, videoId: '', documentUrl: '' }] }))} className="spatial-soft px-4 py-2 rounded-xl text-xs font-bold text-accent-adaptive">
@@ -2254,9 +2313,7 @@
                             <div className="space-y-5">
                                 <div>
                                     <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">SYSTEM QUALITY ASSURANCE</span>
-                                    <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive mt-1">
-                                        ศูนย์ตรวจสอบทุกหน้าจอในระบบ (ครบทั้ง 15 หน้า)
-                                    </h2>
+                                    <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive mt-1">ศูนย์ตรวจสอบทุกหน้าจอในระบบ (ครบทั้ง 15 หน้า)</h2>
                                 </div>
                                 {inspectorGroups.map(grp => (
                                     <div key={grp.groupTitle} className="spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3">
