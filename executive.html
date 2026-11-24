@@ -178,6 +178,53 @@
       .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
       .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(147, 197, 253, 0.38); border-radius: 999px; }
 
+      /* แถบไฟแอมเบียน + คลื่นเสียง Equalizer สไตล์ Apple Intelligence */
+      @keyframes rjcAmbientRun {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+      @keyframes rjcAmbientGlowPulse {
+        0%, 100% { box-shadow: 0 0 0 1px rgba(110, 231, 183, 0.45), 0 0 28px -4px rgba(56, 189, 248, 0.5), 0 0 54px -10px rgba(192, 132, 252, 0.38); }
+        50% { box-shadow: 0 0 0 1.5px rgba(103, 232, 249, 0.85), 0 0 42px -2px rgba(110, 231, 183, 0.68), 0 0 68px -8px rgba(56, 189, 248, 0.52); }
+      }
+      @keyframes rjcWaveBar {
+        0%, 100% { transform: scaleY(0.28); opacity: 0.65; }
+        50% { transform: scaleY(1); opacity: 1; }
+      }
+      .rjc-ambient-bar {
+        height: 4px;
+        width: 100%;
+        background: linear-gradient(90deg, #6ee7b7, #38bdf8, #818cf8, #f0abfc, #fde68a, #6ee7b7);
+        background-size: 300% 100%;
+        animation: rjcAmbientRun 2s linear infinite;
+        box-shadow: 0 0 18px rgba(56, 189, 248, 0.85);
+      }
+      .rjc-ambient-card-active {
+        animation: rjcAmbientGlowPulse 2.4s ease-in-out infinite;
+        border-color: rgba(110, 231, 183, 0.68) !important;
+      }
+      .rjc-wave-eq {
+        display: inline-flex;
+        align-items: center;
+        gap: 2.5px;
+        height: 15px;
+      }
+      .rjc-wave-eq span {
+        width: 2.5px;
+        height: 100%;
+        border-radius: 9999px;
+        background: linear-gradient(180deg, #fde68a, #6ee7b7, #38bdf8);
+        animation: rjcWaveBar 0.82s ease-in-out infinite;
+      }
+      .rjc-wave-eq span:nth-child(2) { animation-delay: 0.14s; }
+      .rjc-wave-eq span:nth-child(3) { animation-delay: 0.28s; }
+      .rjc-wave-eq span:nth-child(4) { animation-delay: 0.42s; }
+      .rjc-wave-eq span:nth-child(5) { animation-delay: 0.56s; }
+      @media (prefers-reduced-motion: reduce) {
+        .rjc-ambient-bar, .rjc-wave-eq span { animation: none !important; }
+      }
+
       @keyframes execSpin { to { transform: rotate(360deg); } }
     </style>
 
@@ -478,6 +525,122 @@
         }
 
         // ============================================================================
+        // STUDIO-GRADE CHUNKED AI VOICE HELPERS (24kHz PCM WAV • ZERO BROWSER VOICE)
+        // ============================================================================
+        const SILENT_UNLOCK_WAV = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
+
+        /**
+         * แปลง Base64 PCM16 เป็น WAV Blob คุณภาพสตูดิโอ (รองรับทำงานเดี่ยวได้แม้ learning-core.js ไม่โหลด)
+         */
+        function pcmToWavBlobSafe(base64PCM, sampleRate = 24000) {
+            try {
+                if (typeof CORE.pcm16ToWavBlob === 'function') {
+                    return CORE.pcm16ToWavBlob(base64PCM, sampleRate);
+                }
+                const bin = window.atob(base64PCM);
+                const bytes = new Uint8Array(bin.length);
+                for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+                const off = (bytes.length > 44 && bytes[0] === 0x52 && bytes[1] === 0x49) ? 44 : 0;
+                const pcmLen = Math.max(0, bytes.length - off);
+                const buf = new ArrayBuffer(44 + pcmLen);
+                const v = new DataView(buf);
+                const ws = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+                ws(0, 'RIFF'); v.setUint32(4, 36 + pcmLen, true); ws(8, 'WAVE'); ws(12, 'fmt ');
+                v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+                v.setUint32(24, sampleRate, true); v.setUint32(28, sampleRate * 2, true);
+                v.setUint16(32, 2, true); v.setUint16(34, 16, true); ws(36, 'data'); v.setUint32(40, pcmLen, true);
+                new Uint8Array(buf, 44).set(bytes.subarray(off));
+                return new Blob([buf], { type: 'audio/wav' });
+            } catch (_) {
+                return null;
+            }
+        }
+
+        /**
+         * แบ่งรายงานผู้บริหารเป็นช่วงประโยคธรรมชาติ (ไม่ใช้ Lookbehind Regex เพื่อรองรับ Safari/iOS ทุกรุ่น)
+         */
+        function splitExecutiveSpeechChunks(rawText, maxChars = 190) {
+            let clean = String(rawText || '')
+                .replace(/[*#_📊\[\]]/g, ' ')
+                .replace(/•/g, ' ')
+                .replace(/→/g, ' ถึง ')
+                .replace(/\|/g, ' ')
+                .replace(/≥/g, 'ตั้งแต่ ')
+                .replace(/\s{2,}/g, ' ')
+                .trim();
+            if (typeof CORE.prepareNaturalThaiSpeech === 'function') {
+                clean = CORE.prepareNaturalThaiSpeech(clean);
+            }
+            if (!clean) return [];
+            if (clean.length <= maxChars) return [clean];
+
+            const marked = clean.replace(/([.!?。\n]|ค่ะ|ครับ)\s+/g, '$1\u0001');
+            const pieces = marked.split('\u0001').map(s => s.trim()).filter(Boolean);
+            const chunks = [];
+            let buf = '';
+            pieces.forEach((p) => {
+                if ((buf + ' ' + p).trim().length <= maxChars) {
+                    buf = (buf ? `${buf} ${p}` : p).trim();
+                } else {
+                    if (buf) chunks.push(buf);
+                    buf = p.trim();
+                }
+            });
+            if (buf) chunks.push(buf);
+            return chunks.filter(Boolean);
+        }
+
+        /**
+         * โหลดไฟล์เสียง AI คุณภาพสตูดิโอ 24kHz PCM WAV (รอสูงสุด 45 วิ/ช่วง + ลองใหม่อัตโนมัติ 2 รอบ)
+         * ไม่สลับไปใช้เสียงหุ่นยนต์จากเบราว์เซอร์เด็ดขาด
+         */
+        async function fetchStudioExecutiveTtsChunk({ appsScriptUrl, text, signal }) {
+            if (!appsScriptUrl || !navigator.onLine) return null;
+            for (let attempt = 0; attempt < 2; attempt++) {
+                if (signal && signal.aborted) return null;
+                const ctrl = new AbortController();
+                const onExtAbort = () => ctrl.abort();
+                if (signal) signal.addEventListener('abort', onExtAbort, { once: true });
+                const tm = setTimeout(() => ctrl.abort(), 45000);
+
+                try {
+                    const rawRes = await fetch(appsScriptUrl, {
+                        method: 'POST',
+                        redirect: 'follow',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({
+                            action: 'callGeminiTTS',
+                            text,
+                            voiceName: 'Sulafat',
+                            languageCode: 'th-TH',
+                            style: 'พูดภาษาไทยด้วยน้ำเสียงผู้หญิงที่อบอุ่น สุภาพ มั่นใจ คมชัดระดับสตูดิโอ เป็นทางการระดับผู้บริหารสาธารณสุข'
+                        }),
+                        signal: ctrl.signal
+                    });
+                    clearTimeout(tm);
+                    if (signal) signal.removeEventListener('abort', onExtAbort);
+                    if (signal && signal.aborted) return null;
+
+                    const res = JSON.parse((await rawRes.text()) || '{}');
+                    if (res && res.status === 'success' && res.inlineData && res.inlineData.data) {
+                        const rateMatch = String(res.inlineData.mimeType || '').match(/rate=(\d+)/);
+                        const rate = parseInt(rateMatch ? rateMatch[1] : '24000', 10);
+                        const blob = pcmToWavBlobSafe(res.inlineData.data, rate);
+                        if (blob && blob.size > 0) return blob;
+                    }
+                } catch (_) {
+                    clearTimeout(tm);
+                    if (signal) signal.removeEventListener('abort', onExtAbort);
+                }
+
+                if (attempt === 0 && !(signal && signal.aborted)) {
+                    await new Promise(r => setTimeout(r, 1100));
+                }
+            }
+            return null;
+        }
+
+        // ============================================================================
         // 2. SHARED UI PRIMITIVES & 5-AXIS RADAR SVG
         // ============================================================================
         class ExecutiveErrorBoundary extends React.Component {
@@ -610,11 +773,13 @@
             const [aiQuestion, setAiQuestion] = useState('');
             const [aiAnswer, setAiAnswer] = useState('');
             const [aiBusy, setAiBusy] = useState(false);
-            const [isSpeaking, setIsSpeaking] = useState(false);
+            const [voiceState, setVoiceState] = useState({ phase: 'idle', chunkIdx: 0, totalChunks: 0, note: '' });
             const [toast, setToast] = useState({ visible: false, text: '', type: 'success' });
 
-            const ttsAudioRef = useRef(null);
+            const sharedAudioRef = useRef(null);
             const ttsUrlRef = useRef(null);
+            const voiceSessionRef = useRef(0);
+            const voiceAbortRef = useRef(null);
 
             const showToast = useCallback((text, type = 'success') => {
                 setToast({ visible: true, text: String(text), type });
@@ -624,6 +789,9 @@
             useEffect(() => {
                 const el = document.getElementById('executive-root');
                 if (el) el.dataset.mounted = 'true';
+                if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost')) {
+                    navigator.serviceWorker.register('./sw.js').catch(() => {});
+                }
             }, []);
 
             // 1A. Firebase Anonymous Auth Verification
@@ -806,6 +974,7 @@
                     };
                 }
 
+                // โหมดเจาะลึก (Deep Telemetry / Preview Mode)
                 const makeAcc = () => ({
                     radarSum: { setting: 0, empathy: 0, clarity: 0, vocal: 0, dignity: 0 },
                     radarCount: 0,
@@ -843,61 +1012,91 @@
                         totalLab++;
                         if (typeof row.skillLabBestScore === 'number' && row.skillLabBestScore > 0) {
                             skillScoreSum += row.skillLabBestScore;
-                            skillScoreCount++;
+                            skillScoreCount += 1;
                         }
                     }
-                    if (typeof row.satisfactionScore === 'number' && row.satisfactionScore > 0) { csatSum += row.satisfactionScore; csatCount++; }
-                    if (typeof row.susScore === 'number' && row.susScore >= 0) { susSum += row.susScore; susCount++; }
-                    if (typeof row.preSelfEfficacyAvg === 'number' && row.preSelfEfficacyAvg > 0) { preEffSum += row.preSelfEfficacyAvg; preEffCount++; }
-                    if (typeof row.postSelfEfficacyAvg === 'number' && row.postSelfEfficacyAvg > 0) { postEffSum += row.postSelfEfficacyAvg; postEffCount++; }
+                    if (typeof row.satisfactionScore === 'number' && row.satisfactionScore > 0) {
+                        csatSum += row.satisfactionScore;
+                        csatCount += 1;
+                    }
+                    if (typeof row.susScore === 'number' && row.susScore >= 0) {
+                        susSum += row.susScore;
+                        susCount += 1;
+                    }
+                    if (typeof row.preSelfEfficacyAvg === 'number' && row.preSelfEfficacyAvg > 0) {
+                        preEffSum += row.preSelfEfficacyAvg;
+                        preEffCount += 1;
+                    }
+                    if (typeof row.postSelfEfficacyAvg === 'number' && row.postSelfEfficacyAvg > 0) {
+                        postEffSum += row.postSelfEfficacyAvg;
+                        postEffCount += 1;
+                    }
 
                     accumulate(natAcc, row);
-                    if (statsMap[row.regionId]) {
-                        statsMap[row.regionId].users += 1;
-                        if (!isPassed) statsMap[row.regionId].learning += 1;
-                        if (row.hasLab) statsMap[row.regionId].lab += 1;
-                        if (isPassed) statsMap[row.regionId].passed += 1;
-                        accumulate(statsMap[row.regionId].acc, row);
+
+                    const regEntry = statsMap[row.regionId];
+                    if (regEntry) {
+                        regEntry.users += 1;
+                        if (isPassed) regEntry.passed += 1; else regEntry.learning += 1;
+                        if (row.hasLab) regEntry.lab += 1;
+                        accumulate(regEntry.acc, row);
                     } else {
                         unmappedCount += 1;
                     }
                 });
 
-                const finRadar = (acc) => {
-                    const out = {};
-                    RADAR_AXES.forEach(a => { out[a.key] = acc.radarCount > 0 ? Math.round(acc.radarSum[a.key] / acc.radarCount) : 0; });
-                    return out;
-                };
-                const finDomains = (acc) => DOMAIN_LIST.map(d => ({ ...d, avg: acc.domainCount[d.id] > 0 ? Math.round(acc.domainSum[d.id] / acc.domainCount[d.id]) : 0 }));
+                const finalizeAcc = (acc) => {
+                    const hasRadar = acc.radarCount > 0;
+                    const radar = {};
+                    RADAR_AXES.forEach(a => {
+                        radar[a.key] = hasRadar ? Math.round(acc.radarSum[a.key] / acc.radarCount) : 0;
+                    });
+                    const domains = DOMAIN_LIST.map(d => {
+                        const cnt = acc.domainCount[d.id] || 0;
+                        return { ...d, avg: cnt > 0 ? Math.round(acc.domainSum[d.id] / cnt) : 0, count: cnt };
+                    });
+                    const hasDomains = domains.some(d => d.count > 0);
+                    const sortedDomains = [...domains].sort((a, b) => a.avg - b.avg);
+                    const axisEntries = RADAR_AXES.map(a => ({ ...a, avg: radar[a.key] || 0 })).sort((a, b) => a.avg - b.avg);
+                    const avgEmpathy = hasRadar
+                        ? Math.round(RADAR_AXES.reduce((s, a) => s + (radar[a.key] || 0), 0) / RADAR_AXES.length)
+                        : 0;
 
-                const hasNationalRadar = natAcc.radarCount > 0;
-                const hasNationalDomains = DOMAIN_LIST.some(d => natAcc.domainCount[d.id] > 0);
-                const nationalRadar = finRadar(natAcc);
-                const nationalDomains = finDomains(natAcc);
-                const nationalWeakestDomain = [...nationalDomains].sort((a, b) => a.avg - b.avg)[0];
-                const nationalWeakestAxis = RADAR_AXES.map(a => ({ ...a, avg: nationalRadar[a.key] })).sort((a, b) => a.avg - b.avg)[0];
-
-                const regionList = Object.values(statsMap).map(r => {
-                    const radar = finRadar(r.acc);
-                    const domains = finDomains(r.acc);
-                    const hasRadarData = r.acc.radarCount > 0;
-                    const hasDomainData = DOMAIN_LIST.some(d => r.acc.domainCount[d.id] > 0);
                     return {
-                        ...r,
                         radar,
                         domains,
-                        hasRadarData,
-                        hasDomainData,
-                        weakestDomain: [...domains].sort((a, b) => a.avg - b.avg)[0],
-                        weakestAxis: RADAR_AXES.map(a => ({ ...a, avg: radar[a.key] })).sort((a, b) => a.avg - b.avg)[0],
-                        avgEmpathy: hasRadarData ? Math.round(RADAR_AXES.reduce((s, a) => s + (radar[a.key] || 0), 0) / RADAR_AXES.length) : 0,
-                        passPct: r.users > 0 ? Math.round((r.passed / r.users) * 100) : 0
+                        hasRadar,
+                        hasDomains,
+                        weakestDomain: sortedDomains[0] || domains[0],
+                        weakestAxis: axisEntries[0] || { ...RADAR_AXES[0], avg: 0 },
+                        avgEmpathy
+                    };
+                };
+
+                const natFinal = finalizeAcc(natAcc);
+                const regionList = BASE_REGIONS.map(r => {
+                    const entry = statsMap[r.id];
+                    const fin = finalizeAcc(entry.acc);
+                    return {
+                        ...r,
+                        users: entry.users,
+                        learning: entry.learning,
+                        lab: entry.lab,
+                        passed: entry.passed,
+                        radar: fin.radar,
+                        domains: fin.domains,
+                        hasRadarData: fin.hasRadar,
+                        hasDomainData: fin.hasDomains,
+                        weakestDomain: fin.weakestDomain,
+                        weakestAxis: fin.weakestAxis,
+                        avgEmpathy: fin.avgEmpathy,
+                        passPct: entry.users > 0 ? Math.round((entry.passed / entry.users) * 100) : 0
                     };
                 });
 
+                const totalUsers = activeStatsRows.length;
                 const regionalOnly = regionList.filter(r => r.id !== 'BKK');
                 const sortedByUsers = [...regionalOnly].sort((a, b) => b.users - a.users);
-                const totalUsers = activeStatsRows.length;
 
                 return {
                     total: { users: totalUsers, learning: totalLearning, lab: totalLab, passed: totalPassed, unmapped: unmappedCount },
@@ -907,88 +1106,173 @@
                     passRate: totalUsers > 0 ? Math.round((totalPassed / totalUsers) * 100) : 0,
                     avgCsat: csatCount > 0 ? (csatSum / csatCount).toFixed(1) : '0.0',
                     csatCount,
-                    avgSkillScore: skillScoreCount > 0
-                        ? Math.round(skillScoreSum / skillScoreCount)
-                        : (hasNationalRadar ? Math.round(RADAR_AXES.reduce((s, a) => s + nationalRadar[a.key], 0) / RADAR_AXES.length) : 0),
-                    hasNationalRadar,
-                    hasNationalDomains,
-                    nationalRadar,
-                    nationalDomains,
-                    nationalWeakestDomain,
-                    nationalWeakestAxis,
+                    avgSkillScore: skillScoreCount > 0 ? Math.round(skillScoreSum / skillScoreCount) : natFinal.avgEmpathy,
+                    hasNationalRadar: natFinal.hasRadar,
+                    hasNationalDomains: natFinal.hasDomains,
+                    nationalRadar: natFinal.radar,
+                    nationalDomains: natFinal.domains,
+                    nationalWeakestDomain: natFinal.weakestDomain,
+                    nationalWeakestAxis: natFinal.weakestAxis,
                     ...buildSusMeta(susSum, susCount),
                     ...buildEffMeta(preEffSum, preEffCount, postEffSum, postEffCount)
                 };
             }, [isEcoSummaryMode, globalSummaryDoc, activeStatsRows]);
 
-            const activeRegion = useMemo(
-                () => analytics.regionList.find(r => r.id === selectedRegionId) || analytics.regionList[analytics.regionList.length - 1],
-                [analytics.regionList, selectedRegionId]
-            );
-            const maxRegionUsers = useMemo(
-                () => Math.max(1, ...analytics.regionList.map(r => r.users || 0)),
-                [analytics.regionList]
-            );
+            const activeRegion = useMemo(() => {
+                return analytics.regionList.find(r => r.id === selectedRegionId) || analytics.regionList[0] || null;
+            }, [analytics.regionList, selectedRegionId]);
 
-            // 3. AI Executive Policy Brief & TTS Readout
+            const maxRegionUsers = useMemo(() => {
+                return Math.max(1, ...analytics.regionList.map(r => Number(r.users || 0)));
+            }, [analytics.regionList]);
+
+            // 3. AI Executive Policy Brief & Studio 24kHz Chunked Prefetching TTS (Zero Browser Speech)
+            const unlockMobileAudio = useCallback(() => {
+                try {
+                    if (!sharedAudioRef.current) {
+                        const a = new Audio();
+                        a.playsInline = true;
+                        a.setAttribute('playsinline', '');
+                        a.preload = 'auto';
+                        sharedAudioRef.current = a;
+                    }
+                    const a = sharedAudioRef.current;
+                    if (a.paused && !a.src) {
+                        a.muted = true;
+                        a.src = SILENT_UNLOCK_WAV;
+                        const p = a.play();
+                        if (p && typeof p.then === 'function') {
+                            p.then(() => { try { a.pause(); a.currentTime = 0; } catch (_) {} a.muted = false; })
+                             .catch(() => { a.muted = false; });
+                        } else {
+                            a.muted = false;
+                        }
+                    }
+                } catch (_) {}
+            }, []);
+
             const stopVoice = useCallback(() => {
-                if (ttsAudioRef.current) { try { ttsAudioRef.current.pause(); } catch (_) {} ttsAudioRef.current = null; }
-                if (ttsUrlRef.current) { try { URL.revokeObjectURL(ttsUrlRef.current); } catch (_) {} ttsUrlRef.current = null; }
-                if ('speechSynthesis' in window) { try { window.speechSynthesis.cancel(); } catch (_) {} }
-                setIsSpeaking(false);
+                voiceSessionRef.current += 1;
+                if (voiceAbortRef.current) {
+                    try { voiceAbortRef.current.abort(); } catch (_) {}
+                    voiceAbortRef.current = null;
+                }
+                if (sharedAudioRef.current) {
+                    try {
+                        sharedAudioRef.current.onended = null;
+                        sharedAudioRef.current.onerror = null;
+                        sharedAudioRef.current.pause();
+                    } catch (_) {}
+                }
+                if (ttsUrlRef.current) {
+                    try { URL.revokeObjectURL(ttsUrlRef.current); } catch (_) {}
+                    ttsUrlRef.current = null;
+                }
+                // สั่งตัดเสียงพูดเบราว์เซอร์ทิ้งเสมอ เพื่อไม่ให้มีเสียงหุ่นยนต์แทรกรบกวน
+                if ('speechSynthesis' in window) {
+                    try { window.speechSynthesis.cancel(); } catch (_) {}
+                }
+                setVoiceState({ phase: 'idle', chunkIdx: 0, totalChunks: 0, note: '' });
             }, []);
             useEffect(() => () => stopVoice(), [stopVoice]);
 
             const handleSpeakExecutiveSummary = async (textToRead) => {
-                if (isSpeaking) { stopVoice(); return; }
-                const clean = String(textToRead || '').replace(/[*#•📊]/g, ' ').replace(/\s{2,}/g, ' ').trim();
-                if (!clean) return;
-                setIsSpeaking(true);
+                if (voiceState.phase !== 'idle') {
+                    stopVoice();
+                    return;
+                }
+                unlockMobileAudio();
+                stopVoice();
 
-                if (appsScriptUrl && navigator.onLine) {
-                    try {
-                        const ctrl = new AbortController();
-                        const tm = setTimeout(() => ctrl.abort(), 16000);
-                        const rawRes = await fetch(appsScriptUrl, {
-                            method: 'POST',
-                            redirect: 'follow',
-                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                            body: JSON.stringify({
-                                action: 'callGeminiTTS',
-                                text: clean.slice(0, 700),
-                                voiceName: 'Sulafat',
-                                languageCode: 'th-TH',
-                                style: 'พูดภาษาไทยด้วยน้ำเสียงสุภาพ มั่นใจ เป็นทางการระดับผู้บริหารสาธารณสุข'
-                            }),
-                            signal: ctrl.signal
-                        });
-                        clearTimeout(tm);
-                        const res = JSON.parse((await rawRes.text()) || '{}');
-                        if (res?.status === 'success' && res.inlineData?.data && typeof CORE.pcm16ToWavBlob === 'function') {
-                            const rate = parseInt(res.inlineData.mimeType?.match(/rate=(\d+)/)?.[1] ?? '24000', 10);
-                            const blob = CORE.pcm16ToWavBlob(res.inlineData.data, rate);
-                            if (blob && blob.size > 0) {
-                                const url = URL.createObjectURL(blob);
-                                ttsUrlRef.current = url;
-                                const a = new Audio(url);
-                                ttsAudioRef.current = a;
-                                a.onended = () => stopVoice();
-                                a.onerror = () => stopVoice();
-                                a.play().catch(() => stopVoice());
-                                return;
-                            }
-                        }
-                    } catch (_) {}
+                const chunks = splitExecutiveSpeechChunks(textToRead, 190);
+                if (chunks.length === 0) return;
+
+                const sid = voiceSessionRef.current;
+                const ctrl = new AbortController();
+                voiceAbortRef.current = ctrl;
+
+                if (!sharedAudioRef.current) {
+                    const a = new Audio();
+                    a.playsInline = true;
+                    a.setAttribute('playsinline', '');
+                    sharedAudioRef.current = a;
                 }
 
-                if ('speechSynthesis' in window) {
-                    const u = new SpeechSynthesisUtterance(clean.slice(0, 700));
-                    u.lang = 'th-TH';
-                    u.rate = 0.96;
-                    u.onend = () => stopVoice();
-                    u.onerror = () => stopVoice();
-                    window.speechSynthesis.speak(u);
-                } else {
+                setVoiceState({
+                    phase: 'loading',
+                    chunkIdx: 1,
+                    totalChunks: chunks.length,
+                    note: 'กำลังรอเสียง AI คุณภาพสตูดิโอ (ไม่ใช้เสียงเบราว์เซอร์แทรก)...'
+                });
+
+                // Lookahead Prefetching: โหลดช่วงถัดไปล่วงหน้าระหว่างที่ช่วงปัจจุบันกำลังเล่น
+                let currentPromise = fetchStudioExecutiveTtsChunk({ appsScriptUrl, text: chunks[0], signal: ctrl.signal });
+                let playedAny = false;
+
+                for (let i = 0; i < chunks.length; i++) {
+                    if (voiceSessionRef.current !== sid || ctrl.signal.aborted) return;
+
+                    setVoiceState({
+                        phase: 'loading',
+                        chunkIdx: i + 1,
+                        totalChunks: chunks.length,
+                        note: i === 0
+                            ? `กำลังเตรียมเสียง AI คุณภาพสตูดิโอ (ช่วงที่ 1/${chunks.length})...`
+                            : `กำลังเตรียมเสียง AI ช่วงที่ ${i + 1}/${chunks.length}...`
+                    });
+
+                    const blob = await currentPromise;
+                    if (voiceSessionRef.current !== sid || ctrl.signal.aborted) return;
+
+                    if (i + 1 < chunks.length) {
+                        currentPromise = fetchStudioExecutiveTtsChunk({ appsScriptUrl, text: chunks[i + 1], signal: ctrl.signal });
+                    } else {
+                        currentPromise = null;
+                    }
+
+                    if (!blob || blob.size === 0) {
+                        if (!playedAny) {
+                            showToast(
+                                navigator.onLine
+                                    ? 'เซิร์ฟเวอร์เสียง AI กำลังใช้งานหนาแน่น กรุณากดฟังสรุปใหม่อีกครั้งค่ะ (ไม่ใช้เสียงเบราว์เซอร์แทรก)'
+                                    : 'ขณะนี้ออฟไลน์ ไม่สามารถโหลดเสียง AI คุณภาพสตูดิโอได้ค่ะ',
+                                'error'
+                            );
+                        }
+                        break;
+                    }
+
+                    playedAny = true;
+                    setVoiceState({
+                        phase: 'speaking',
+                        chunkIdx: i + 1,
+                        totalChunks: chunks.length,
+                        note: chunks.length > 1
+                            ? `กำลังบรรยายสรุปผู้บริหารด้วยเสียง AI สตูดิโอ (ช่วงที่ ${i + 1}/${chunks.length}) • โหลดช่วงถัดไปล่วงหน้าแล้ว`
+                            : 'กำลังบรรยายสรุปผู้บริหารด้วยเสียง AI คุณภาพสตูดิโอ'
+                    });
+
+                    if (ttsUrlRef.current) {
+                        try { URL.revokeObjectURL(ttsUrlRef.current); } catch (_) {}
+                    }
+                    const url = URL.createObjectURL(blob);
+                    ttsUrlRef.current = url;
+
+                    const ok = await new Promise((resolve) => {
+                        const a = sharedAudioRef.current;
+                        a.muted = false;
+                        a.src = url;
+                        a.onended = () => resolve(true);
+                        a.onerror = () => resolve(false);
+                        try { a.load(); } catch (_) {}
+                        const p = a.play();
+                        if (p && typeof p.catch === 'function') p.catch(() => resolve(false));
+                    });
+
+                    if (!ok || voiceSessionRef.current !== sid) break;
+                }
+
+                if (voiceSessionRef.current === sid) {
                     stopVoice();
                 }
             };
@@ -1067,6 +1351,11 @@
             return (
                 <div className="min-h-dvh relative flex flex-col pt-safe pb-safe">
                     <div className="spatial-aura" /><div className="spatial-grid" />
+                    {voiceState.phase !== 'idle' && (
+                        <div className="fixed top-0 left-0 right-0 z-50 pointer-events-none" aria-hidden="true">
+                            <div className="rjc-ambient-bar" />
+                        </div>
+                    )}
 
                     {/* Top Header */}
                     <header className="sticky top-0 z-30 spatial-header">
@@ -1342,32 +1631,59 @@
 
                                 {/* 4. AI Executive Policy Brief & Interactive Q&A */}
                                 <section className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-                                    <div className="lg:col-span-5 spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3">
-                                        <div className="flex items-center justify-between gap-2">
-                                            <div>
-                                                <span className="font-mono text-[10px] font-bold text-amber-400 uppercase">AUTO POLICY BRIEF</span>
-                                                <h3 className="font-display font-extrabold text-base text-primary-adaptive">รายงานสรุปผู้บริหารพร้อมส่งต่อ</h3>
+                                    <div className={`lg:col-span-5 spatial-card rounded-[1.75rem] overflow-hidden transition-all duration-300 ${voiceState.phase !== 'idle' ? 'rjc-ambient-card-active' : ''}`}>
+                                        {voiceState.phase !== 'idle' && <div className="rjc-ambient-bar" />}
+                                        <div className="p-4 sm:p-5 space-y-3">
+                                            <div className="flex items-center justify-between gap-2">
+                                                <div>
+                                                    <span className="font-mono text-[10px] font-bold text-amber-400 uppercase">AUTO POLICY BRIEF • STUDIO AI VOICE</span>
+                                                    <h3 className="font-display font-extrabold text-base text-primary-adaptive">รายงานสรุปผู้บริหารพร้อมส่งต่อ</h3>
+                                                </div>
+                                                <div className="flex items-center gap-1.5">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleSpeakExecutiveSummary(aiAnswer || policyBriefText)}
+                                                        className={`px-3 py-1.5 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 transition-all ${
+                                                            voiceState.phase === 'speaking'
+                                                                ? 'bg-rose-500 text-white'
+                                                                : voiceState.phase === 'loading'
+                                                                    ? 'bg-prism-500/25 border border-prism-400/50 text-prism-adaptive animate-pulse'
+                                                                    : 'spatial-soft text-prism-adaptive'
+                                                        }`}
+                                                    >
+                                                        <Icon name={voiceState.phase !== 'idle' ? 'Square' : 'Volume2'} size={14} />
+                                                        <span>
+                                                            {voiceState.phase === 'loading'
+                                                                ? 'รอเสียง AI...'
+                                                                : voiceState.phase === 'speaking'
+                                                                    ? 'หยุดเสียง'
+                                                                    : 'ฟังสรุป AI'}
+                                                        </span>
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => { copyTextSafe(aiAnswer || policyBriefText); showToast('คัดลอกรายงาน Policy Brief เรียบร้อยค่ะ'); }}
+                                                        className="spatial-soft px-3 py-1.5 rounded-xl text-xs font-bold text-accent-adaptive inline-flex items-center gap-1"
+                                                    >
+                                                        <Icon name="Copy" size={14} /> คัดลอก
+                                                    </button>
+                                                </div>
                                             </div>
-                                            <div className="flex items-center gap-1.5">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleSpeakExecutiveSummary(aiAnswer || policyBriefText)}
-                                                    className={`px-3 py-1.5 rounded-xl text-xs font-bold inline-flex items-center gap-1 ${isSpeaking ? 'bg-rose-500 text-white' : 'spatial-soft text-prism-adaptive'}`}
-                                                >
-                                                    <Icon name={isSpeaking ? 'Square' : 'Volume2'} size={14} /> {isSpeaking ? 'หยุด' : 'ฟังสรุป'}
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => { copyTextSafe(aiAnswer || policyBriefText); showToast('คัดลอกรายงาน Policy Brief เรียบร้อยค่ะ'); }}
-                                                    className="spatial-soft px-3 py-1.5 rounded-xl text-xs font-bold text-accent-adaptive inline-flex items-center gap-1"
-                                                >
-                                                    <Icon name="Copy" size={14} /> คัดลอก
-                                                </button>
-                                            </div>
+
+                                            {voiceState.phase !== 'idle' && (
+                                                <div className="spatial-soft rounded-2xl px-3.5 py-2 border-prism-400/45 flex flex-wrap items-center justify-between gap-2 text-xs">
+                                                    <div className="flex items-center gap-2 text-primary-adaptive font-bold min-w-0">
+                                                        <span className="rjc-wave-eq shrink-0"><span /><span /><span /><span /><span /></span>
+                                                        <span className="truncate">{voiceState.note}</span>
+                                                    </div>
+                                                    <span className="font-mono text-[10px] font-bold text-prism-adaptive shrink-0">24kHz STUDIO PCM • NO BROWSER VOICE</span>
+                                                </div>
+                                            )}
+
+                                            <pre className="spatial-soft p-3.5 rounded-2xl text-xs text-secondary-adaptive whitespace-pre-wrap font-sans leading-relaxed">
+                                                {policyBriefText}
+                                            </pre>
                                         </div>
-                                        <pre className="spatial-soft p-3.5 rounded-2xl text-xs text-secondary-adaptive whitespace-pre-wrap font-sans leading-relaxed">
-                                            {policyBriefText}
-                                        </pre>
                                     </div>
 
                                     <div className="lg:col-span-7 spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3.5">
