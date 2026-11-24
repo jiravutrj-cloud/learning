@@ -3,17 +3,15 @@
  * rjcloud.organ 2.0 — World-Class Keynote Launch Module (keynote-launch.js)
  * เชื่อมต่อหน้าแรกต้นไม้ (index.html) ผ่าน window.RJCLOUD_KEYNOTE
  *
- * ความสามารถครบชุด:
+ * ความสามารถครบชุด (อัปเกรด Studio-Grade AI Voice 2027 • ไฟล์ 3/4):
  * 1. ม่านเปิดตัวแบบแตะ 1 ครั้ง (ป้าย "สู่มาตรฐานปี 2027") ปลดล็อกเสียงบน iOS/Android/Desktop 100%
  * 2. เพลงประกอบฟรีไม่มีลิขสิทธิ์จาก YouTube: "Great (Epic Modern Cinematic)" — Alex-Productions
  *    (Video ID: TTwfAUzEHrM • CC BY 3.0) พร้อมดนตรีซินธ์ Cinematic สำรองในตัวขณะบัฟเฟอร์หรือออฟไลน์
  * 3. ระบบ Auto-Ducking หรี่เสียงเพลงอัตโนมัติ (~19%) ตอนพิธีกรพูด และเร่งเพลงขึ้น (~74%) ช่วงเปิด–ปิด
- * 4. พิธีกรคู่ ชาย–หญิง สลับประโยคตามบทพูดฉบับแก้ไข:
- *    - พิธีกรชาย: Gemini 3.8 Flash TTS (voice: Puck — โทนกลางโปร่ง สดใส นุ่มสบายหู)
- *    - พิธีกรหญิง: Gemini 3.8 Flash TTS (voice: Sulafat — โทนอบอุ่น สง่างาม)
- *    พร้อมระบบ Prefetch ประโยคถัดไปล่วงหน้า + IndexedDB Voice Cache v5
- * 5. ไม่มีกรอบข้อความซับไตเติลบังต้นไม้ เหลือเฉพาะปุ่มควบคุมเล็กๆ มุมขวาบน
- *    และหยุดเสียงอัตโนมัติเมื่อผู้เรียนกดปุ่ม "เข้าสู่ระบบ"
+ * 4. พิธีกรคู่ ชาย–หญิง คุณภาพสตูดิโอ 24kHz PCM WAV (Puck + Sulafat) แบบแบ่งช่วงโหลดล่วงหน้า
+ *    (Lookahead Prefetching + Timeout 45 วิ + ลองใหม่อัตโนมัติ 2 รอบ + แคช IndexedDB v5)
+ * 5. ตัดเสียงหุ่นยนต์จากเบราว์เซอร์ (speechSynthesis) ออก 100% รอจนเสียง AI สตูดิโอพร้อมจริง
+ * 6. แสดงแถบไฟแอมเบียนวิ่งด้านบนสุด + สถานะบนปุ่มมุมขวาบน โดยไม่มีกรอบซับไตเติลบังต้นไม้
  * ============================================================================
  */
 (function (global) {
@@ -23,7 +21,7 @@
   global.RJCLOUD_KEYNOTE_LOADED = true;
 
   // ==========================================================================
-  // 1. CONSTANTS, YOUTUBE TRACK & DUAL-HOST SCRIPT (ฉบับแก้ไขล่าสุด)
+  // 1. CONSTANTS, YOUTUBE TRACK & DUAL-HOST SCRIPT (6 ช่วงฉบับสมบูรณ์)
   // ==========================================================================
   const YOUTUBE_VIDEO_ID = 'TTwfAUzEHrM'; // Great (Epic Modern Cinematic) — Alex-Productions (Audio Library)
   const MUSIC_CREDIT = 'Music: "Great" by Alex-Productions (CC BY 3.0)';
@@ -40,60 +38,54 @@
       id: 'k1',
       speaker: 'male',
       voiceName: MALE_VOICE_NAME,
-      badge: 'พิธีกรชาย • Keynote Host',
-      style: 'พูดภาษาไทยด้วยน้ำเสียงผู้ชายวัยทำงานโทนกลางโปร่ง สดใส นุ่มสบายหู ผ่อนคลายและเป็นกันเองแบบพิธีกรงานเทคโนโลยีสมัยใหม่ ไม่ทุ้มลึกหรือหนักแน่นจนเกินไป',
-      display: '“เบื้องหลังทุกหนึ่งชีวิตที่ได้รับโอกาสครั้งใหม่… คือความเชี่ยวชาญ ความแม่นยำ และหัวใจของทีมบุคลากรทางการแพทย์ทุกคนครับ”',
+      badge: 'พิธีกรชาย',
+      style: 'พูดภาษาไทยด้วยน้ำเสียงผู้ชายวัยทำงานโทนกลางโปร่ง สดใส นุ่มสบายหู คมชัดระดับสตูดิโอ ผ่อนคลายและเป็นกันเองแบบพิธีกรงานเทคโนโลยีสมัยใหม่ ไม่ทุ้มลึกหรือหนักแน่นจนเกินไป',
       speech: 'เบื้องหลังทุกหนึ่งชีวิตที่ได้รับโอกาสครั้งใหม่... คือความเชี่ยวชาญ ความแม่นยำ และหัวใจของทีมบุคลากรทางการแพทย์ทุกคนครับ'
     },
     {
       id: 'k2',
       speaker: 'female',
       voiceName: FEMALE_VOICE_NAME,
-      badge: 'พิธีกรหญิง • Keynote Host',
-      style: 'พูดภาษาไทยสลับอังกฤษด้วยน้ำเสียงผู้หญิงที่อบอุ่น สง่างาม มั่นใจ และทันสมัยเหมือนพิธีกรงานเปิดตัว Apple Keynote',
-      display: '“และวันนี้… Organ Transplantation Center of Rajavithi Hospital พร้อมแล้วที่จะพาท่านก้าวข้ามทุกขีดจำกัดของการฝึกอบรมเดิมๆ ค่ะ”',
+      badge: 'พิธีกรหญิง',
+      style: 'พูดภาษาไทยสลับอังกฤษด้วยน้ำเสียงผู้หญิงที่อบอุ่น สง่างาม มั่นใจ คมชัดระดับสตูดิโอ และทันสมัยเหมือนพิธีกรงานเปิดตัว Apple Keynote',
       speech: 'และวันนี้... Organ Transplantation Center of ราชวิถี Hospital พร้อมแล้วที่จะพาท่านก้าวข้ามทุกขีดจำกัดของการฝึกอบรมเดิมๆ ค่ะ'
     },
     {
       id: 'k3',
       speaker: 'male',
       voiceName: MALE_VOICE_NAME,
-      badge: 'พิธีกรชาย • Keynote Host',
-      style: 'พูดด้วยน้ำเสียงผู้ชายโทนกลางโปร่งที่สดใส ชัดถ้อยชัดคำ ลื่นหู ทันสมัย และเป็นมิตร สไตล์งานเปิดตัวเทคโนโลยี',
-      display: '“พบกับ rjcloud.organ 2.0 — Cloud AI แพลตฟอร์ม e-Learning การรับบริจาคและปลูกถ่ายอวัยวะ สู่มาตรฐานปี 2027 ครับ”',
+      badge: 'พิธีกรชาย',
+      style: 'พูดด้วยน้ำเสียงผู้ชายโทนกลางโปร่งที่สดใส ชัดถ้อยชัดคำ ลื่นหู คมชัดระดับสตูดิโอ ทันสมัย และเป็นมิตร สไตล์งานเปิดตัวเทคโนโลยี',
       speech: 'พบกับ อาร์เจ คลาวด์ ออร์แกน สองจุดศูนย์ คลาวด์เอไอ แพลตฟอร์มอีเลิร์นนิง การรับบริจาคและปลูกถ่ายอวัยวะ สู่มาตรฐานปีสองพันยี่สิบเจ็ดครับ'
     },
     {
       id: 'k4',
       speaker: 'female',
       voiceName: FEMALE_VOICE_NAME,
-      badge: 'พิธีกรหญิง • Keynote Host',
-      style: 'พูดภาษาไทยด้วยน้ำเสียงนุ่มนวล ลื่นไหล อบอุ่น และชัดเจน น่าเชื่อถือระดับวิชาการแพทย์สากล',
-      display: '“มาพร้อมผู้ช่วย AI ติวสรุปบทเรียน, ห้องฝึกสื่อสารกับญาติ AI Skill Lab ที่ตอบโต้ด้วยเสียงและอารมณ์เสมือนจริง และระบบรับรองหน่วยคะแนน CNEU มาตรฐานสภาการพยาบาล ภายใต้การคุ้มครองข้อมูล PDPA อย่างสูงสุดค่ะ”',
+      badge: 'พิธีกรหญิง',
+      style: 'พูดภาษาไทยด้วยน้ำเสียงนุ่มนวล ลื่นไหล อบอุ่น คมชัดระดับสตูดิโอ และชัดเจน น่าเชื่อถือระดับวิชาการแพทย์สากล',
       speech: 'มาพร้อมผู้ช่วยเอไอติวสรุปบทเรียน, ห้องฝึกสื่อสารกับญาติ เอไอสกิลแล็บ ที่ตอบโต้ด้วยเสียงและอารมณ์เสมือนจริง และระบบรับรองหน่วยคะแนนซีเอ็นอียู มาตรฐานสภาการพยาบาล ภายใต้การคุ้มครองข้อมูลพีดีพีเอ อย่างสูงสุดค่ะ'
     },
     {
       id: 'k5',
       speaker: 'male',
       voiceName: MALE_VOICE_NAME,
-      badge: 'พิธีกรชาย • Keynote Host',
-      style: 'พูดด้วยน้ำเสียงผู้ชายโทนกลางที่อบอุ่น เบาสบาย นุ่มนวล และสร้างแรงบันดาลใจอย่างเป็นธรรมชาติ ไม่ทุ้มหนักหรือแข็งกร้าว',
-      display: '“อนาคตแห่งการเรียนรู้และการให้ชีวิตใหม่…”',
+      badge: 'พิธีกรชาย',
+      style: 'พูดด้วยน้ำเสียงผู้ชายโทนกลางที่อบอุ่น เบาสบาย นุ่มนวล คมชัดระดับสตูดิโอ และสร้างแรงบันดาลใจอย่างเป็นธรรมชาติ ไม่ทุ้มหนักหรือแข็งกร้าว',
       speech: 'อนาคตแห่งการเรียนรู้และการให้ชีวิตใหม่...'
     },
     {
       id: 'k6',
       speaker: 'female',
       voiceName: FEMALE_VOICE_NAME,
-      badge: 'พิธีกรหญิง • Keynote Host',
-      style: 'พูดภาษาไทยด้วยน้ำเสียงผู้หญิงที่อบอุ่น สดใส ชวนเชิญ และน่าประทับใจเหมือนประโยคปิดงานเปิดตัวเทคโนโลยีระดับโลก',
-      display: '“ยินดีต้อนรับสู่ rjcloud.organ 2.0… กดปุ่ม ‘เข้าสู่ระบบ’ เพื่อเริ่มต้นได้เลยค่ะ”',
+      badge: 'พิธีกรหญิง',
+      style: 'พูดภาษาไทยด้วยน้ำเสียงผู้หญิงที่อบอุ่น สดใส คมชัดระดับสตูดิโอ ชวนเชิญ และน่าประทับใจเหมือนประโยคปิดงานเปิดตัวเทคโนโลยีระดับโลก',
       speech: 'ยินดีต้อนรับสู่ อาร์เจ คลาวด์ ออร์แกน สองจุดศูนย์... กดปุ่มเข้าสู่ระบบ เพื่อเริ่มต้นได้เลยค่ะ'
     }
   ];
 
   // ==========================================================================
-  // 2. STYLES INJECTION (CURTAIN & FLOATING CONTROL DOCK)
+  // 2. STYLES INJECTION (CURTAIN, AMBIENT LIGHT BAR & FLOATING CONTROL DOCK)
   // ==========================================================================
   function injectKeynoteStyles() {
     if (document.getElementById('rjcloud-keynote-styles')) return;
@@ -103,6 +95,11 @@
       @keyframes rjknEqBounce {
         0%, 100% { transform: scaleY(0.28); }
         50% { transform: scaleY(1); }
+      }
+      @keyframes rjknAmbientRun {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
       }
       @keyframes rjknPulseHalo {
         0%, 100% { box-shadow: 0 0 0 0 rgba(110, 231, 183, 0.45), 0 0 36px rgba(56, 189, 248, 0.35); }
@@ -116,6 +113,24 @@
         0% { opacity: 0; }
         20% { opacity: 0.55; }
         100% { opacity: 0; }
+      }
+      .rjkn-ambient-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        z-index: 148;
+        pointer-events: none;
+        opacity: 0;
+        background: linear-gradient(90deg, #6ee7b7, #38bdf8, #818cf8, #f0abfc, #fde68a, #6ee7b7);
+        background-size: 300% 100%;
+        animation: rjknAmbientRun 2s linear infinite;
+        box-shadow: 0 0 20px rgba(56, 189, 248, 0.9), 0 2px 14px rgba(110, 231, 183, 0.65);
+        transition: opacity 0.35s ease;
+      }
+      .rjkn-ambient-bar.is-visible {
+        opacity: 1;
       }
       .rjkn-curtain {
         position: fixed;
@@ -177,6 +192,8 @@
         display: flex;
         align-items: center;
         gap: 6px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
       }
       .rjkn-pill {
         display: inline-flex;
@@ -202,8 +219,14 @@
         transform: translateY(-1px);
       }
       .rjkn-pill.is-live {
-        border-color: rgba(110, 231, 183, 0.75);
+        border-color: rgba(110, 231, 183, 0.8);
         background: linear-gradient(95deg, rgba(16, 185, 129, 0.24), rgba(14, 165, 233, 0.26));
+        box-shadow: 0 0 22px rgba(56, 189, 248, 0.42);
+      }
+      .rjkn-pill.is-loading {
+        border-color: rgba(103, 232, 249, 0.85);
+        background: linear-gradient(95deg, rgba(14, 165, 233, 0.26), rgba(129, 140, 248, 0.26));
+        box-shadow: 0 0 22px rgba(103, 232, 249, 0.45);
       }
       .rjkn-eq {
         display: inline-flex;
@@ -229,12 +252,15 @@
         background: radial-gradient(circle at 50% 24%, rgba(254, 240, 178, 0.85) 0%, rgba(56, 189, 248, 0.32) 38%, transparent 72%);
         animation: rjknFlashBurst 1.15s ease-out forwards;
       }
+      @media (prefers-reduced-motion: reduce) {
+        .rjkn-ambient-bar, .rjkn-eq span, .rjkn-launch-btn { animation: none !important; }
+      }
     `;
     document.head.appendChild(style);
   }
 
   // ==========================================================================
-  // 3. INDEXEDDB VOICE CACHE + WAV CONVERTER
+  // 3. INDEXEDDB VOICE CACHE + 24kHz PCM WAV CONVERTER
   // ==========================================================================
   let idbPromise = null;
 
@@ -275,7 +301,7 @@
   }
 
   async function setCachedClip(key, blob) {
-    if (!blob) return;
+    if (!blob || blob.size === 0) return;
     const db = await openVoiceDb();
     if (!db) return;
     return new Promise(function (resolve) {
@@ -294,21 +320,25 @@
     if (global.RJCLOUD_CORE && typeof global.RJCLOUD_CORE.pcm16ToWavBlob === 'function') {
       return global.RJCLOUD_CORE.pcm16ToWavBlob(base64PCM, sampleRate || 24000);
     }
-    const rate = sampleRate || 24000;
-    const bin = global.atob(base64PCM);
-    const raw = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; i++) raw[i] = bin.charCodeAt(i);
-    const off = (raw.length > 44 && raw[0] === 0x52 && raw[1] === 0x49 && raw[2] === 0x46 && raw[3] === 0x46) ? 44 : 0;
-    const pcmLen = Math.max(0, raw.length - off);
-    const buf = new ArrayBuffer(44 + pcmLen);
-    const v = new DataView(buf);
-    const ws = function (o, s) { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
-    ws(0, 'RIFF'); v.setUint32(4, 36 + pcmLen, true); ws(8, 'WAVE'); ws(12, 'fmt ');
-    v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
-    v.setUint32(24, rate, true); v.setUint32(28, rate * 2, true);
-    v.setUint16(32, 2, true); v.setUint16(34, 16, true); ws(36, 'data'); v.setUint32(40, pcmLen, true);
-    new Uint8Array(buf, 44).set(raw.subarray(off));
-    return new Blob([buf], { type: 'audio/wav' });
+    try {
+      const rate = sampleRate || 24000;
+      const bin = global.atob(base64PCM);
+      const raw = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) raw[i] = bin.charCodeAt(i);
+      const off = (raw.length > 44 && raw[0] === 0x52 && raw[1] === 0x49 && raw[2] === 0x46 && raw[3] === 0x46) ? 44 : 0;
+      const pcmLen = Math.max(0, raw.length - off);
+      const buf = new ArrayBuffer(44 + pcmLen);
+      const v = new DataView(buf);
+      const ws = function (o, s) { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+      ws(0, 'RIFF'); v.setUint32(4, 36 + pcmLen, true); ws(8, 'WAVE'); ws(12, 'fmt ');
+      v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+      v.setUint32(24, rate, true); v.setUint32(28, rate * 2, true);
+      v.setUint16(32, 2, true); v.setUint16(34, 16, true); ws(36, 'data'); v.setUint32(40, pcmLen, true);
+      new Uint8Array(buf, 44).set(raw.subarray(off));
+      return new Blob([buf], { type: 'audio/wav' });
+    } catch (_) {
+      return null;
+    }
   }
 
   // ==========================================================================
@@ -593,7 +623,7 @@
   };
 
   // ==========================================================================
-  // 5. MAIN KEYNOTE CONTROLLER & UI OVERLAYS
+  // 5. MAIN KEYNOTE CONTROLLER (STUDIO 24kHz AI VOICE • ZERO BROWSER SPEECH)
   // ==========================================================================
   const State = {
     mounted: false,
@@ -601,6 +631,8 @@
     appsScriptUrl: '',
     sessionId: 0,
     running: false,
+    voicePhase: 'idle', // idle | loading | speaking | music_only
+    statusLabel: '',
     musicMuted: false,
     sharedAudio: null,
     activeBlobUrl: null,
@@ -649,9 +681,12 @@
       try { URL.revokeObjectURL(State.activeBlobUrl); } catch (_) {}
       State.activeBlobUrl = null;
     }
+    // ตัดเสียงรบกวนจากเบราว์เซอร์ทิ้งเสมอ (ไม่ใช้เสียงหุ่นยนต์เบราว์เซอร์ 100%)
     if ('speechSynthesis' in global) {
       try { global.speechSynthesis.cancel(); } catch (_) {}
     }
+    State.voicePhase = 'idle';
+    State.statusLabel = '';
   }
 
   function stopAll() {
@@ -661,43 +696,59 @@
     updateDockUi();
   }
 
-  async function fetchSegmentAudio(seg, appsScriptUrl) {
+  /**
+   * โหลดเสียงพิธีกร AI คุณภาพสตูดิโอ 24kHz PCM WAV (รอสูงสุด 45 วิ/รอบ + ลองใหม่อัตโนมัติ 2 รอบ + แคช IndexedDB)
+   * ไม่ลดทอนคุณภาพเสียงและไม่สลับไปใช้เสียงเบราว์เซอร์เด็ดขาด
+   */
+  async function fetchSegmentAudio(seg, appsScriptUrl, sid) {
     const cacheKey = 'keynote_v5_' + seg.id + '_' + seg.voiceName;
     const hit = await getCachedClip(cacheKey);
-    if (hit) return hit;
-    if (!appsScriptUrl) return null;
+    if (hit && hit.size > 0) return hit;
+    if (!appsScriptUrl || (typeof navigator !== 'undefined' && !navigator.onLine)) return null;
 
-    const ctrl = new AbortController();
-    State.activeControllers.add(ctrl);
-    const tm = setTimeout(function () { ctrl.abort(); }, 20000);
+    for (let attempt = 0; attempt < 2; attempt++) {
+      if (State.sessionId !== sid) return null;
+      const ctrl = new AbortController();
+      State.activeControllers.add(ctrl);
+      const tm = setTimeout(function () { ctrl.abort(); }, 45000);
 
-    try {
-      const rawRes = await fetch(appsScriptUrl, {
-        method: 'POST',
-        redirect: 'follow',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({
-          action: 'callGeminiTTS',
-          text: seg.speech,
-          voiceName: seg.voiceName,
-          languageCode: 'th-TH',
-          style: seg.style
-        }),
-        signal: ctrl.signal
-      });
-      const txt = await rawRes.text();
-      const res = JSON.parse(txt || '{}');
-      if (res && res.status === 'success' && res.inlineData && res.inlineData.data) {
-        const rateMatch = String(res.inlineData.mimeType || '').match(/rate=(\d+)/);
-        const rate = rateMatch ? parseInt(rateMatch[1], 10) : 24000;
-        const blob = base64PcmToWavBlob(res.inlineData.data, rate);
-        await setCachedClip(cacheKey, blob);
-        return blob;
+      try {
+        const rawRes = await fetch(appsScriptUrl, {
+          method: 'POST',
+          redirect: 'follow',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({
+            action: 'callGeminiTTS',
+            text: seg.speech,
+            voiceName: seg.voiceName,
+            languageCode: 'th-TH',
+            style: seg.style
+          }),
+          signal: ctrl.signal
+        });
+        clearTimeout(tm);
+        State.activeControllers.delete(ctrl);
+        if (State.sessionId !== sid) return null;
+
+        const txt = await rawRes.text();
+        const res = JSON.parse(txt || '{}');
+        if (res && res.status === 'success' && res.inlineData && res.inlineData.data) {
+          const rateMatch = String(res.inlineData.mimeType || '').match(/rate=(\d+)/);
+          const rate = rateMatch ? parseInt(rateMatch[1], 10) : 24000;
+          const blob = base64PcmToWavBlob(res.inlineData.data, rate);
+          if (blob && blob.size > 0) {
+            await setCachedClip(cacheKey, blob);
+            return blob;
+          }
+        }
+      } catch (_) {
+        clearTimeout(tm);
+        State.activeControllers.delete(ctrl);
       }
-    } catch (_) {
-    } finally {
-      clearTimeout(tm);
-      State.activeControllers.delete(ctrl);
+
+      if (attempt === 0 && State.sessionId === sid) {
+        await new Promise(function (r) { setTimeout(r, 1100); });
+      }
     }
     return null;
   }
@@ -730,36 +781,24 @@
     });
   }
 
-  function playBrowserSpeechFallback(seg, sid) {
-    return new Promise(function (resolve) {
-      if (State.sessionId !== sid || !('speechSynthesis' in global)) return resolve();
-      try {
-        global.speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(seg.speech);
-        u.lang = 'th-TH';
-        u.rate = 0.96;
-        u.pitch = seg.speaker === 'male' ? 0.86 : 1.06;
-        if (global.RJCLOUD_CORE && typeof global.RJCLOUD_CORE.pickNaturalBrowserVoice === 'function') {
-          const v = global.RJCLOUD_CORE.pickNaturalBrowserVoice('th');
-          if (v) u.voice = v;
-        }
-        u.onend = function () { resolve(); };
-        u.onerror = function () { resolve(); };
-        global.speechSynthesis.speak(u);
-      } catch (_) {
-        resolve();
-      }
-    });
-  }
-
   // ==========================================================================
-  // 6. UI BUILDERS (LAUNCH CURTAIN & FLOATING CONTROL DOCK)
+  // 6. UI BUILDERS (AMBIENT LIGHT BAR, LAUNCH CURTAIN & FLOATING CONTROL DOCK)
   // ==========================================================================
   function ensureDomOverlays() {
     injectKeynoteStyles();
 
     const legacySub = document.getElementById('rjkn-subtitle');
     if (legacySub && legacySub.parentNode) legacySub.parentNode.removeChild(legacySub);
+
+    // 0) Top Ambient Glow Bar แสดงสถานะรอเสียง AI พร้อมและขณะพิธีกร AI พูด (ไม่บังต้นไม้)
+    if (!State.els.ambientBar) {
+      const bar = document.createElement('div');
+      bar.id = 'rjkn-ambient-bar';
+      bar.className = 'rjkn-ambient-bar';
+      bar.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(bar);
+      State.els.ambientBar = bar;
+    }
 
     // 1) One-Tap Keynote Launch Curtain (ป้าย "สู่มาตรฐานปี 2027")
     if (!State.els.curtain) {
@@ -779,11 +818,11 @@
             rjcloud.organ 2.0
           </h2>
           <p style="margin:0 0 22px;font-size:14px;line-height:1.65;color:#dbeafe;">
-            สัมผัสการเปิดตัวระบบ e-Learning แห่งอนาคต พร้อมเสียงพิธีกรคู่ AI (ชาย–หญิง) และดนตรีประกอบ Epic Cinematic
+            สัมผัสการเปิดตัวระบบ e-Learning แห่งอนาคต พร้อมเสียงพิธีกรคู่ AI คุณภาพสตูดิโอ (ชาย–หญิง) และดนตรีประกอบ Epic Cinematic
           </p>
           <button type="button" id="rjkn-btn-start-show" class="rjkn-launch-btn">
             <span style="font-size:17px;">▶</span>
-            <span>เปิดประสบการณ์เปิดตัว (เปิดเสียง)</span>
+            <span>เปิดประสบการณ์เปิดตัว (เสียง AI สตูดิโอ)</span>
           </button>
           <div style="margin-top:16px;display:flex;flex-direction:column;align-items:center;gap:8px;">
             <button type="button" id="rjkn-btn-skip-show" style="background:none;border:none;color:rgba(219,234,254,0.75);font-size:13px;cursor:pointer;text-decoration:underline;padding:6px 12px;">
@@ -814,7 +853,7 @@
       dock.className = 'rjkn-dock';
       dock.style.display = 'none';
       dock.innerHTML = `
-        <button type="button" id="rjkn-dock-play" class="rjkn-pill" title="เปิดการนำเสนอเปิดตัวด้วยเสียงพิธีกรคู่ AI และดนตรี">
+        <button type="button" id="rjkn-dock-play" class="rjkn-pill" title="เปิดการนำเสนอเปิดตัวด้วยเสียงพิธีกรคู่ AI คุณภาพสตูดิโอ">
           <span id="rjkn-dock-icon">▶</span>
           <span id="rjkn-dock-label">เปิดตัว AI Keynote</span>
         </button>
@@ -841,6 +880,11 @@
   }
 
   function updateDockUi() {
+    if (State.els.ambientBar) {
+      const showAmbient = State.isLanding && State.running && (State.voicePhase === 'loading' || State.voicePhase === 'speaking');
+      State.els.ambientBar.classList.toggle('is-visible', showAmbient);
+    }
+
     if (!State.els.dock) return;
     State.els.dock.style.display = State.isLanding ? 'flex' : 'none';
     const playBtn = State.els.dock.querySelector('#rjkn-dock-play');
@@ -849,14 +893,15 @@
     const muteBtn = State.els.dock.querySelector('#rjkn-dock-mute');
     const muteLabel = State.els.dock.querySelector('#rjkn-mute-label');
 
+    playBtn.classList.remove('is-live', 'is-loading');
+
     if (State.running) {
-      playBtn.classList.add('is-live');
+      playBtn.classList.add(State.voicePhase === 'loading' ? 'is-loading' : 'is-live');
       iconEl.innerHTML = '<span class="rjkn-eq"><span></span><span></span><span></span></span>';
-      labelEl.textContent = 'หยุด Keynote';
+      labelEl.textContent = State.statusLabel || 'หยุด Keynote';
       muteBtn.style.display = 'inline-flex';
       muteLabel.textContent = State.musicMuted ? '🔇 เพลง: ปิด' : '🎵 เพลง: เปิด';
     } else {
-      playBtn.classList.remove('is-live');
       iconEl.textContent = '▶';
       labelEl.textContent = 'เปิดตัว AI Keynote';
       muteBtn.style.display = 'none';
@@ -889,7 +934,7 @@
   }
 
   // ==========================================================================
-  // 7. DUAL-HOST KEYNOTE SHOW RUNNER (WITH PREFETCH + AUTO-DUCKING)
+  // 7. DUAL-HOST KEYNOTE SHOW RUNNER (LOOKAHEAD PREFETCH + ZERO BROWSER VOICE)
   // ==========================================================================
   async function startExperience() {
     ensureDomOverlays();
@@ -899,44 +944,58 @@
     const sid = State.sessionId;
     State.running = true;
     State.musicMuted = false;
+    State.voicePhase = 'loading';
+    State.statusLabel = 'กำลังรอเสียง AI สตูดิโอ (1/' + DUAL_HOST_SCRIPT.length + ')...';
     updateDockUi();
     triggerLaunchFlash();
 
     MusicEngine.setMuted(false);
     MusicEngine.start(74);
 
-    const firstClipPromise = fetchSegmentAudio(DUAL_HOST_SCRIPT[0], State.appsScriptUrl);
+    // เริ่มโหลดเสียงช่วงที่ 1 ล่วงหน้าทันทีระหว่างที่เพลงบรรเลงอินโทร 2.2 วินาที
+    const firstClipPromise = fetchSegmentAudio(DUAL_HOST_SCRIPT[0], State.appsScriptUrl, sid);
     await new Promise(function (r) { setTimeout(r, 2200); });
     if (State.sessionId !== sid || !State.running) return;
 
-    MusicEngine.duckTo(19, 750);
-
     let nextPromise = firstClipPromise;
+    let ducked = false;
 
     for (let i = 0; i < DUAL_HOST_SCRIPT.length; i++) {
       if (State.sessionId !== sid || !State.running) return;
       const seg = DUAL_HOST_SCRIPT[i];
+      const stepTag = (i + 1) + '/' + DUAL_HOST_SCRIPT.length;
 
-      if (i === DUAL_HOST_SCRIPT.length - 2) {
-        MusicEngine.duckTo(28, 800);
-      }
+      State.voicePhase = 'loading';
+      State.statusLabel = 'รอเสียง AI ' + seg.badge + ' (' + stepTag + ')...';
+      updateDockUi();
 
       const blob = await nextPromise;
       if (State.sessionId !== sid || !State.running) return;
 
+      // Lookahead Prefetching: โหลดช่วงถัดไปล่วงหน้าทันทีขณะที่ช่วงนี้กำลังเล่น (รักษาคุณภาพ 24kHz เต็ม 100%)
       if (i + 1 < DUAL_HOST_SCRIPT.length) {
-        nextPromise = fetchSegmentAudio(DUAL_HOST_SCRIPT[i + 1], State.appsScriptUrl);
+        nextPromise = fetchSegmentAudio(DUAL_HOST_SCRIPT[i + 1], State.appsScriptUrl, sid);
       } else {
         nextPromise = null;
       }
 
-      let played = false;
-      if (blob) {
-        played = await playBlobOnSharedAudio(blob, sid);
+      // ไม่สลับไปใช้เสียงหุ่นยนต์จากเบราว์เซอร์เด็ดขาด หากช่วงใดโหลดไม่สำเร็จให้ข้ามอย่างนุ่มนวล
+      if (!blob || blob.size === 0) {
+        continue;
       }
-      if (!played && State.sessionId === sid && State.running) {
-        await playBrowserSpeechFallback(seg, sid);
+
+      if (!ducked) {
+        ducked = true;
+        MusicEngine.duckTo(19, 750);
+      } else if (i === DUAL_HOST_SCRIPT.length - 2) {
+        MusicEngine.duckTo(28, 800);
       }
+
+      State.voicePhase = 'speaking';
+      State.statusLabel = seg.badge + ' AI (' + stepTag + ') • หยุด';
+      updateDockUi();
+
+      await playBlobOnSharedAudio(blob, sid);
 
       if (State.sessionId !== sid || !State.running) return;
       if (i + 1 < DUAL_HOST_SCRIPT.length) {
@@ -945,6 +1004,9 @@
     }
 
     if (State.sessionId === sid && State.running) {
+      State.voicePhase = 'music_only';
+      State.statusLabel = 'หยุดเพลง Keynote';
+      updateDockUi();
       MusicEngine.duckTo(65, 900);
       setTimeout(function () {
         if (State.sessionId === sid && State.running) {
