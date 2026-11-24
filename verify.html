@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="./styles.css">
     <script src="./data.js" onerror="console.warn('data.js not loaded, using built-in defaults')"></script>
     <script src="./learning-core.js" onerror="console.warn('learning-core.js not loaded, using built-in defaults')"></script>
+    <script src="./cert-engine.js" onerror="console.warn('cert-engine.js not loaded, using built-in fallback')"></script>
 
     <!-- ซิงค์โหมดมืด/สว่างทันทีจาก localStorage ป้องกันจอกระพริบ -->
     <script>
@@ -103,6 +104,7 @@
         --aura-3: rgba(192, 132, 252, 0.14);
       }
 
+      * { box-sizing: border-box; }
       html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
       body {
         margin: 0;
@@ -242,7 +244,6 @@
       }
     }
     </script>
-    <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
 </head>
 <body>
     <!-- หน้าจอโหลดเริ่มต้น -->
@@ -250,7 +251,7 @@
         <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#020612;color:#f8fafc;font-family:-apple-system,'Anuphan','Prompt',sans-serif;gap:14px;padding:24px;text-align:center;">
             <div style="width:46px;height:46px;border:3px solid rgba(56,189,248,0.22);border-top-color:#6ee7b7;border-right-color:#38bdf8;border-radius:9999px;animation:verifySpin 0.85s linear infinite;"></div>
             <div style="font-weight:800;font-size:17px;">กำลังเปิดระบบตรวจสอบประกาศนียบัตรดิจิทัล...</div>
-            <div style="font-size:12px;color:#93b4d8;">rjcloud.organ 2.0 • Public Verification &amp; 3D Hologram Anti-Counterfeit Seal</div>
+            <div style="font-size:12px;color:#93b4d8;">rjcloud.organ 2.0 • Profession-Aware Verification &amp; 3D Hologram Seal</div>
         </div>
     </div>
 
@@ -258,14 +259,15 @@
     <script>
       window.addEventListener('error', function (ev) {
         const src = String(ev.filename || (ev.target && ev.target.src) || '');
-        if (src.includes('data.js') || src.includes('learning-core.js') || src.includes('styles.css') || src.includes('qrcode')) return;
+        if (src.includes('data.js') || src.includes('learning-core.js') || src.includes('cert-engine.js') || src.includes('styles.css') || src.includes('qrcode')) return;
         const root = document.getElementById('verify-root');
         if (root && !root.dataset.mounted && ev.message) {
+          const safeMsg = String(ev.message || 'Unknown error').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
           root.innerHTML =
             '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#020612;color:#f8fafc;font-family:Sarabun,sans-serif;">' +
             '<div style="max-width:440px;width:100%;background:#061229;border:1px solid rgba(244,63,94,0.4);border-radius:24px;padding:24px;text-align:center;">' +
             '<h2 style="color:#fda4af;font-weight:700;margin:0 0 8px;">ไม่สามารถเปิดระบบตรวจสอบได้ชั่วคราว</h2>' +
-            '<p style="font-size:13px;color:#dbeafe;margin:0 0 16px;">' + String(ev.message || 'Unknown error') + '</p>' +
+            '<p style="font-size:13px;color:#dbeafe;margin:0 0 16px;">' + safeMsg + '</p>' +
             '<button onclick="window.location.reload()" style="padding:12px 24px;border:none;border-radius:14px;background:#34d399;color:#020612;font-weight:700;cursor:pointer;">โหลดหน้าใหม่</button>' +
             '</div></div>';
         }
@@ -281,9 +283,11 @@
         import { getFirestore, doc, getDoc } from 'firebase/firestore';
 
         // ============================================================================
-        // 1. CONFIGURATION, DEMO CERTIFICATE & HELPERS (EQUAL HONOR • PDPA SAFE)
+        // 1. CONFIGURATION, PROFESSION-AWARE CREDIT RESOLVER & 3-PROFESSION SAMPLES
         // ============================================================================
-        const CORE = window.RJCLOUD_CORE || {};
+        const CORE = window['RJCLOUD_CORE'] || {};
+        const CERT = window['RJCLOUD_CERT'] || {};
+
         const BUILTIN_CONFIG = {
             appName: 'rjcloud.organ',
             appId: 'rjcloud-organ-2027',
@@ -312,29 +316,159 @@
 
         const THEME_KEY = CONFIG.theme?.storageKey || 'rjcloud_theme';
 
-        // ตัวอย่างประกาศนียบัตรมาตรฐานสำหรับทดสอบพรีวิว (ไม่ระบุแยกประเภทผู้เรียน มอบเกียรติเท่าเทียมทุกประเภท)
-        const DEMO_CERT_RECORD = {
-            code: 'RJC-2027-DEMO01',
-            name: 'พว.กัญญารัตน์ วัฒนากูล',
-            nameEN: 'Kanyarat Wattanakul, RN',
-            license: '4511128901',
-            position: 'พยาบาลวิชาชีพชำนาญการ',
-            hospital: 'โรงพยาบาลราชวิถี',
-            department: 'กรมการแพทย์',
-            province: 'กรุงเทพมหานคร',
-            orgTitleTH: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ',
-            courseTitleTH: 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ',
-            courseTitleEN: 'Organ Donation & Transplantation Clinical Coordination Program',
-            signerName: 'ผู้อำนวยการศูนย์ความเป็นเลิศทางการแพทย์',
-            signerPosition: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ',
-            posttestScore: '37/40 (93%)',
-            skillLabBestScore: 92,
-            cneuActivityCode: 'CNEU-2027-0148',
-            cneuCredits: '8.0',
-            issuedAt: '2027-01-20T09:30:00.000Z',
-            status: 'valid',
-            isDemoSample: true
+        // ชุดรหัสตัวอย่างครบ 3 กลุ่มวิชาชีพ สำหรับกดทดสอบเปรียบเทียบในหน้า Preview ทันที
+        // (ไม่ระบุแยกประเภทผู้เรียน มอบสิทธิ์และเกียรติเท่าเทียมกัน 100%)
+        const DEMO_CERT_RECORDS = {
+            'RJC-2027-DEMO01': {
+                code: 'RJC-2027-DEMO01',
+                name: 'พว.กัญญารัตน์ วัฒนากูล',
+                nameEN: 'Kanyarat Wattanakul, RN',
+                license: '4511128901',
+                position: 'พยาบาลวิชาชีพชำนาญการ',
+                professionGroup: 'พยาบาล',
+                cneuEligible: true,
+                creditType: 'CNEU',
+                trainingHours: '8',
+                cneuActivityCode: 'CNEU-2027-0148',
+                cneuCredits: '8.0',
+                hospital: 'โรงพยาบาลราชวิถี',
+                department: 'กรมการแพทย์',
+                province: 'กรุงเทพมหานคร',
+                orgTitleTH: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ',
+                courseTitleTH: 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ',
+                courseTitleEN: 'Organ Donation & Transplantation Clinical Coordination Program',
+                signerName: 'ผู้อำนวยการศูนย์ความเป็นเลิศทางการแพทย์',
+                signerPosition: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ',
+                issuedAt: '2027-01-20T09:30:00.000Z',
+                status: 'valid',
+                isDemoSample: true
+            },
+            'RJC-2027-MD0002': {
+                code: 'RJC-2027-MD0002',
+                name: 'นพ.กิตติพงษ์ สุวรรณภูมิ',
+                nameEN: 'Kittipong Suwannaphum, MD',
+                license: '1100123456',
+                position: 'นายแพทย์ชำนาญการพิเศษ',
+                professionGroup: 'แพทย์',
+                cneuEligible: false,
+                creditType: 'HOURS',
+                trainingHours: '8',
+                cneuActivityCode: '',
+                cneuCredits: '',
+                hospital: 'โรงพยาบาลนครพิงค์',
+                department: 'เขตสุขภาพที่ 1',
+                province: 'เชียงใหม่',
+                orgTitleTH: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ',
+                courseTitleTH: 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ',
+                courseTitleEN: 'Organ Donation & Transplantation Clinical Coordination Program',
+                signerName: 'ผู้อำนวยการศูนย์ความเป็นเลิศทางการแพทย์',
+                signerPosition: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ',
+                issuedAt: '2027-01-20T09:30:00.000Z',
+                status: 'valid',
+                isDemoSample: true
+            },
+            'RJC-2027-ALLIED4': {
+                code: 'RJC-2027-ALLIED4',
+                name: 'ภญ.ปิยะนุช ศรีสวัสดิ์',
+                nameEN: 'Piyanuch Srisawat, PharmD',
+                license: '7700128904',
+                position: 'เภสัชกรคลินิก',
+                professionGroup: 'บุคลากรสหวิชาชีพ',
+                cneuEligible: false,
+                creditType: 'HOURS',
+                trainingHours: '8',
+                cneuActivityCode: '',
+                cneuCredits: '',
+                hospital: 'โรงพยาบาลนพรัตนราชธานี',
+                department: 'กรมการแพทย์',
+                province: 'กรุงเทพมหานคร',
+                orgTitleTH: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ',
+                courseTitleTH: 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ',
+                courseTitleEN: 'Organ Donation & Transplantation Clinical Coordination Program',
+                signerName: 'ผู้อำนวยการศูนย์ความเป็นเลิศทางการแพทย์',
+                signerPosition: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ',
+                issuedAt: '2027-01-20T09:30:00.000Z',
+                status: 'valid',
+                isDemoSample: true
+            }
         };
+
+        /**
+         * วิเคราะห์กลุ่มวิชาชีพและข้อมูลการรับรองของใบประกาศฯ (รองรับทั้งเอกสารใหม่และเอกสารเก่า)
+         * - พยาบาล: แสดงกล่องหน่วยคะแนน CNEU (สภาการพยาบาล)
+         * - แพทย์: ไม่แสดงคำว่า CNEU แสดงชั่วโมงการฝึกอบรมวิชาการทางการแพทย์ (หรือ CME หากระบุ)
+         * - บุคลากรสหวิชาชีพ: ไม่แสดงคำว่า CNEU แสดงชั่วโมงการพัฒนาสมรรถนะวิชาชีพ
+         */
+        function resolveVerifyCreditMeta(rec) {
+            if (!rec) return null;
+            if (typeof CERT.getCertificateCreditMeta === 'function') {
+                return CERT.getCertificateCreditMeta(rec, rec, {
+                    activityCode: rec.cneuActivityCode,
+                    cneuCredits: rec.cneuCredits,
+                    cmeActivityCode: rec.cmeActivityCode,
+                    cmeCredits: rec.cmeCredits,
+                    trainingHours: rec.trainingHours || '8'
+                });
+            }
+
+            const explicit = String(rec.professionGroup || '').trim();
+            const txt = `${rec.name || ''} ${rec.position || ''}`;
+            const professionGroup = (explicit === 'พยาบาล' || explicit === 'แพทย์' || explicit === 'บุคลากรสหวิชาชีพ')
+                ? explicit
+                : (/(นพ\.|พญ\.|แพทย์|หมอ|doctor|\bm\.?d\.?\b)/i.test(txt) && !/พยาบาล/.test(txt)
+                    ? 'แพทย์'
+                    : (/(พว\.|พยาบาล|nurse|\brn\b)/i.test(txt) ? 'พยาบาล' : 'บุคลากรสหวิชาชีพ'));
+
+            const isNurseCneu = typeof rec.cneuEligible === 'boolean'
+                ? rec.cneuEligible
+                : (professionGroup === 'พยาบาล');
+            const trainingHours = String(rec.trainingHours || '8').trim() || '8';
+
+            if (isNurseCneu) {
+                const rawCode = String(rec.cneuActivityCode || '').trim();
+                const rawCredits = String(rec.cneuCredits || '').trim();
+                const lineTextTH = (rawCode || rawCredits)
+                    ? [rawCode ? `รหัสกิจกรรม ${rawCode}` : '', rawCredits ? `จำนวน ${rawCredits} หน่วยคะแนน` : ''].filter(Boolean).join(' • ')
+                    : `จำนวน ${trainingHours} ชั่วโมงการฝึกอบรมมาตรฐานวิชาชีพ`;
+                return {
+                    professionGroup: 'พยาบาล',
+                    isNurseCneu: true,
+                    creditType: 'CNEU',
+                    badgeLabelTH: 'หน่วยคะแนนการศึกษาต่อเนื่องทางการพยาบาล (CNEU • สภาการพยาบาล)',
+                    licenseLabelTH: 'เลขที่ใบอนุญาตประกอบวิชาชีพการพยาบาล',
+                    lineTextTH,
+                    trainingHours
+                };
+            }
+
+            if (professionGroup === 'แพทย์') {
+                const cmeCode = String(rec.cmeActivityCode || '').trim();
+                const cmeCredits = String(rec.cmeCredits || '').trim();
+                const hasCme = Boolean(cmeCode || cmeCredits);
+                const lineTextTH = hasCme
+                    ? [cmeCode ? `รหัสกิจกรรม CME ${cmeCode}` : '', cmeCredits ? `จำนวน ${cmeCredits} หน่วยคะแนน` : ''].filter(Boolean).join(' • ')
+                    : `จำนวน ${trainingHours} ชั่วโมงการฝึกอบรมวิชาการทางการแพทย์`;
+                return {
+                    professionGroup: 'แพทย์',
+                    isNurseCneu: false,
+                    creditType: hasCme ? 'CME' : 'HOURS',
+                    badgeLabelTH: hasCme ? 'หน่วยคะแนนการศึกษาต่อเนื่องแพทย์ (CME)' : 'การรับรองชั่วโมงการฝึกอบรมวิชาการทางการแพทย์',
+                    licenseLabelTH: 'เลขที่ใบอนุญาตประกอบวิชาชีพเวชกรรม',
+                    lineTextTH,
+                    trainingHours
+                };
+            }
+
+            return {
+                professionGroup: 'บุคลากรสหวิชาชีพ',
+                isNurseCneu: false,
+                creditType: 'HOURS',
+                badgeLabelTH: 'การรับรองชั่วโมงการพัฒนาสมรรถนะบุคลากรทางการแพทย์',
+                licenseLabelTH: 'เลขที่ใบอนุญาตวิชาชีพ / รหัสประจำตัวบุคลากร',
+                lineTextTH: `จำนวน ${trainingHours} ชั่วโมงการพัฒนาสมรรถนะวิชาชีพ`,
+                trainingHours
+            };
+        }
 
         let fbApp = null, fbAuth = null, fbDb = null;
         const isCloudConfigured = Boolean(CONFIG.firebaseConfig?.apiKey && CONFIG.firebaseConfig?.projectId);
@@ -370,7 +504,7 @@
         }
 
         // ============================================================================
-        // 2. UI PRIMITIVES & 3D HOLOGRAPHIC SEAL
+        // 2. UI PRIMITIVES & MINI QR CANVAS
         // ============================================================================
         class VerifyErrorBoundary extends React.Component {
             constructor(props) { super(props); this.state = { hasError: false, err: null }; }
@@ -450,7 +584,7 @@
         }
 
         // ============================================================================
-        // 3. MAIN CERTIFICATE VERIFICATION APPLICATION
+        // 3. MAIN CERTIFICATE VERIFICATION APPLICATION (PROFESSION-AWARE • EQUAL HONOR)
         // ============================================================================
         function VerifyApp() {
             const initialCode = useMemo(() => {
@@ -534,9 +668,9 @@
                     window.history.replaceState({}, '', nextUrl.toString());
                 } catch (_) {}
 
-                // รหัสตัวอย่างพรีวิวมาตรฐาน
-                if (cleanCode === DEMO_CERT_RECORD.code) {
-                    setCertRecord(DEMO_CERT_RECORD);
+                // รหัสตัวอย่างพรีวิวครบทั้ง 3 กลุ่มวิชาชีพ
+                if (DEMO_CERT_RECORDS[cleanCode]) {
+                    setCertRecord(DEMO_CERT_RECORDS[cleanCode]);
                     setLookupStatus('valid');
                     return;
                 }
@@ -547,7 +681,7 @@
                         const snap = await getDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'certificates', cleanCode));
                         if (snap.exists()) {
                             const data = snap.data() || {};
-                            // ล้างฟิลด์ประเภทผู้เรียน (หากมีข้อมูลเก่าค้างอยู่) เพื่อคงมาตรฐานสิทธิ์และเกียรติเท่าเทียมกัน 100%
+                            // ล้างฟิลด์ประเภทการเรียนและ PII ออกเสมอ เพื่อคุ้มครอง PDPA และคงมาตรฐานสิทธิ์/เกียรติเท่าเทียมกัน 100%
                             const sanitized = { ...data, code: data.code || cleanCode };
                             delete sanitized.userType;
                             delete sanitized.email;
@@ -571,6 +705,8 @@
                     performVerify(initialCode);
                 }
             }, [authReady, initialCode, performVerify]);
+
+            const creditMeta = useMemo(() => resolveVerifyCreditMeta(certRecord), [certRecord]);
 
             const handleCardPointerMove = (e) => {
                 const rect = e.currentTarget.getBoundingClientRect();
@@ -647,14 +783,20 @@
                                 </button>
                             </form>
 
-                            <div className="flex flex-wrap items-center justify-center gap-2 text-xs">
-                                <button
-                                    type="button"
-                                    onClick={() => performVerify(DEMO_CERT_RECORD.code)}
-                                    className="spatial-soft px-3.5 py-1.5 rounded-full text-prism-adaptive font-bold hover:border-prism-400"
-                                >
-                                    ทดลองตรวจรหัสตัวอย่าง ({DEMO_CERT_RECORD.code}) →
-                                </button>
+                            {/* ปุ่มทดลองเทียบใบรับรองครบทั้ง 3 กลุ่มวิชาชีพทันทีใน Preview */}
+                            <div className="space-y-1.5 pt-1 text-center">
+                                <p className="text-[11px] font-mono text-muted-adaptive">ทดลองตรวจสอบตัวอย่างแยกตามวิชาชีพ (Preview Mode):</p>
+                                <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs">
+                                    <button type="button" onClick={() => performVerify('RJC-2027-DEMO01')} className="spatial-soft px-3 py-1.5 rounded-full text-accent-adaptive font-bold hover:border-aurora-400">
+                                        พยาบาล • CNEU (DEMO01)
+                                    </button>
+                                    <button type="button" onClick={() => performVerify('RJC-2027-MD0002')} className="spatial-soft px-3 py-1.5 rounded-full text-prism-adaptive font-bold hover:border-prism-400">
+                                        แพทย์ • ชม.อบรม (MD0002)
+                                    </button>
+                                    <button type="button" onClick={() => performVerify('RJC-2027-ALLIED4')} className="spatial-soft px-3 py-1.5 rounded-full text-secondary-adaptive font-bold hover:border-indigo-400">
+                                        สหวิชาชีพ • ชม.พัฒนา (ALLIED4)
+                                    </button>
+                                </div>
                             </div>
                         </section>
 
@@ -666,8 +808,8 @@
                             </section>
                         )}
 
-                        {/* State: Valid Certificate (3D Hologram Seal Card — Equal Honor, No UserType Separation) */}
-                        {lookupStatus === 'valid' && certRecord && (
+                        {/* State: Valid Certificate (3D Hologram Seal Card — Profession-Aware & Equal Honor 100%) */}
+                        {lookupStatus === 'valid' && certRecord && creditMeta && (
                             <div className="holo-card-wrapper">
                                 <article
                                     onMouseMove={handleCardPointerMove}
@@ -682,8 +824,13 @@
                                     {/* Verified Top Banner + 3D Hologram Seal */}
                                     <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/15 pb-5">
                                         <div className="space-y-1.5">
-                                            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-aurora-500/20 border border-aurora-400/55 text-accent-adaptive font-display font-extrabold text-xs">
-                                                <Icon name="BadgeCheck" size={16} /> เอกสารรับรองของแท้ (VERIFIED AUTHENTIC)
+                                            <div className="flex flex-wrap items-center gap-1.5">
+                                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-aurora-500/20 border border-aurora-400/55 text-accent-adaptive font-display font-extrabold text-xs">
+                                                    <Icon name="BadgeCheck" size={16} /> เอกสารรับรองของแท้ (VERIFIED AUTHENTIC)
+                                                </span>
+                                                <span className="inline-flex items-center px-2.5 py-1 rounded-full spatial-soft text-[11px] font-bold text-prism-adaptive">
+                                                    กลุ่มวิชาชีพ: {creditMeta.professionGroup}
+                                                </span>
                                             </div>
                                             <p className="font-mono text-xs font-bold text-prism-adaptive">
                                                 CERTIFICATE NO: {certRecord.code}
@@ -708,7 +855,7 @@
                                         </div>
                                     </div>
 
-                                    {/* Holder Identity & Course Info (มาตรฐานและเกียรติเท่าเทียมกันทุกประเภท) */}
+                                    {/* Holder Identity & Course Info (มาตรฐานและเกียรติเท่าเทียมกันทุกวิชาชีพ) */}
                                     <div className="relative z-10 text-center space-y-1.5 py-1">
                                         <p className="text-xs font-semibold text-muted-adaptive">รับรองว่าบุคคลดังต่อไปนี้ได้สำเร็จการอบรมตามเกณฑ์มาตรฐานหลักสูตร</p>
                                         <h2 className="font-display font-extrabold text-2xl sm:text-3xl text-primary-adaptive">{certRecord.name}</h2>
@@ -721,7 +868,7 @@
 
                                     <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                                         <div className="spatial-soft p-3.5 rounded-2xl space-y-1">
-                                            <span className="font-mono text-[10px] text-muted-adaptive block">เลขที่ใบอนุญาตประกอบวิชาชีพ</span>
+                                            <span className="font-mono text-[10px] text-muted-adaptive block">{creditMeta.licenseLabelTH}</span>
                                             <span className="font-mono font-extrabold text-sm text-prism-adaptive">{certRecord.license || '-'}</span>
                                         </div>
                                         <div className="spatial-soft p-3.5 rounded-2xl space-y-1">
@@ -733,14 +880,17 @@
                                             <span className="font-display font-bold text-sm text-primary-adaptive block">{certRecord.courseTitleTH}</span>
                                             {certRecord.courseTitleEN && <span className="text-[11px] text-muted-adaptive block">{certRecord.courseTitleEN}</span>}
                                         </div>
-                                        {(certRecord.cneuActivityCode || certRecord.cneuCredits) && (
-                                            <div className="spatial-soft p-3.5 rounded-2xl space-y-1 sm:col-span-2 border-aurora-400/40">
-                                                <span className="font-mono text-[10px] text-accent-adaptive font-bold block">หน่วยคะแนนการศึกษาต่อเนื่อง (CNEU)</span>
-                                                <span className="font-display font-extrabold text-sm text-accent-adaptive">
-                                                    รหัสกิจกรรม {certRecord.cneuActivityCode || '-'} • จำนวน {certRecord.cneuCredits || '-'} หน่วยคะแนน
-                                                </span>
-                                            </div>
-                                        )}
+
+                                        {/* กล่องการรับรองตรงตามกลุ่มวิชาชีพ (แสดง CNEU เฉพาะพยาบาล • แพทย์/สหวิชาชีพแสดงชั่วโมงอบรมมาตรฐาน) */}
+                                        <div className={`spatial-soft p-3.5 rounded-2xl space-y-1 sm:col-span-2 ${creditMeta.isNurseCneu ? 'border-aurora-400/50 bg-aurora-500/10' : 'border-prism-400/45 bg-prism-500/10'}`}>
+                                            <span className={`font-mono text-[10px] font-bold block ${creditMeta.isNurseCneu ? 'text-accent-adaptive' : 'text-prism-adaptive'}`}>
+                                                {creditMeta.badgeLabelTH}
+                                            </span>
+                                            <span className={`font-display font-extrabold text-sm block ${creditMeta.isNurseCneu ? 'text-accent-adaptive' : 'text-primary-adaptive'}`}>
+                                                {creditMeta.lineTextTH}
+                                            </span>
+                                        </div>
+
                                         <div className="spatial-soft p-3.5 rounded-2xl space-y-1">
                                             <span className="font-mono text-[10px] text-muted-adaptive block">หน่วยงานผู้ออกเอกสาร</span>
                                             <span className="font-bold text-primary-adaptive">{certRecord.orgTitleTH || 'ศูนย์ความเป็นเลิศทางการแพทย์ฯ โรงพยาบาลราชวิถี'}</span>
@@ -806,5 +956,7 @@
         const root = createRoot(document.getElementById('verify-root'));
         root.render(<VerifyErrorBoundary><VerifyApp /></VerifyErrorBoundary>);
     </script>
+    <!-- โหลด Babel ท้ายสุดหลังสคริปต์ทั้งหมด เพื่อให้แน่ใจว่าโค้ดครบ 100% ก่อนคอมไพล์ -->
+    <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
 </body>
 </html>
