@@ -414,6 +414,12 @@
             maxSeats: 0
         };
 
+        const DEFAULT_CNEU_PREVIEW = {
+            activityCode: 'CNEU-2027-0148',
+            cneuCredits: '8.0',
+            trainingHours: '8'
+        };
+
         function buildPreviewSampleRegistrants(cfg) {
             return [
                 { id: '1100123456', license: '1100123456', eventId: cfg.eventId, name: 'นพ.กิตติพงษ์ สุวรรณภูมิ', professionGroup: 'แพทย์', position: 'นายแพทย์ชำนาญการพิเศษ', region: 'เขตสุขภาพที่ 1', province: 'เชียงใหม่', hospital: 'รพ.นครพิงค์', email: 'kittipong@demo.go.th', phone: '0811112233', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: cfg.unlockAt },
@@ -533,8 +539,15 @@
             const regKey = normalizeRegionLabel(rec.region || rec.department);
             const mappedList = HOSPITAL_MAPPING[regKey] || [];
             const hasInList = mappedList.some(h => h.name === rec.hospital);
+            const rawProf = String(rec.professionGroup || '').trim();
+            const txt = `${rec.name || ''} ${rec.position || ''}`;
+            const detectedProf = (rawProf === 'แพทย์' || rawProf === 'พยาบาล' || rawProf === 'บุคลากรสหวิชาชีพ')
+                ? rawProf
+                : (/(นพ\.|พญ\.|แพทย์|doctor|\bm\.?d\.?\b)/i.test(txt) && !/พยาบาล/.test(txt)
+                    ? 'แพทย์'
+                    : (/(พว\.|พยาบาล|nurse|\brn\b)/i.test(txt) ? 'พยาบาล' : 'บุคลากรสหวิชาชีพ'));
             return {
-                professionGroup: rec.professionGroup || 'พยาบาล',
+                professionGroup: detectedProf,
                 name: rec.name || '',
                 position: rec.position || '',
                 region: HOSPITAL_MAPPING[regKey] ? regKey : 'เขตสุขภาพที่ 13 (กทม. / กรมการแพทย์)',
@@ -687,6 +700,7 @@
             // Live Activity Config & Registrants
             const [activityConfig, setActivityConfig] = useState(() => ({ ...DEFAULT_ONSITE_CONFIG }));
             const [configDraft, setConfigDraft] = useState(() => ({ ...DEFAULT_ONSITE_CONFIG }));
+            const [cneuConfig, setCneuConfig] = useState(() => ({ ...DEFAULT_CNEU_PREVIEW }));
             const [registrants, setRegistrants] = useState([]);
             const [authReady, setAuthReady] = useState(!isCloudConfigured);
 
@@ -698,9 +712,9 @@
             const [confirmedRecord, setConfirmedRecord] = useState(null);
             const [nowMs, setNowMs] = useState(Date.now());
             const [form, setForm] = useState({
-                professionGroup: 'พยาบาล',
+                professionGroup: '',
                 name: '',
-                position: 'พยาบาลวิชาชีพชำนาญการ',
+                position: '',
                 region: 'เขตสุขภาพที่ 13 (กทม. / กรมการแพทย์)',
                 hospital: 'รพ.ราชวิถี',
                 customHospital: '',
@@ -795,11 +809,16 @@
                     unsubSettings = onSnapshot(
                         doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_config', 'settings'),
                         (snap) => {
-                            if (snap.exists() && snap.data()?.onsiteConfig) {
-                                const merged = { ...DEFAULT_ONSITE_CONFIG, ...snap.data().onsiteConfig };
+                            if (!snap.exists()) return;
+                            const d = snap.data() || {};
+                            if (d.onsiteConfig) {
+                                const merged = { ...DEFAULT_ONSITE_CONFIG, ...d.onsiteConfig };
                                 merged.unlockAtLocal = isoToLocalInputValue(merged.unlockAt);
                                 setActivityConfig(merged);
                                 setConfigDraft(merged);
+                            }
+                            if (d.cneuConfig) {
+                                setCneuConfig(prev => ({ ...prev, ...d.cneuConfig }));
                             }
                         },
                         () => {}
@@ -905,6 +924,10 @@
                 const cleanLic = lookupLicense.replace(/[^a-zA-Z0-9]/g, '').trim();
                 const finalHospital = form.hospital === '__CUSTOM__' ? form.customHospital.trim() : form.hospital.trim();
 
+                if (!form.professionGroup) {
+                    showToast('กรุณาเลือกกลุ่มวิชาชีพ (แพทย์ / พยาบาล / บุคลากรสหวิชาชีพ) ก่อนยืนยันค่ะ', 'error');
+                    return;
+                }
                 if (!cleanLic || !form.name.trim() || !finalHospital || !form.province.trim()) {
                     showToast('กรุณากรอกชื่อ–นามสกุล โรงพยาบาล และจังหวัดให้ครบถ้วนค่ะ', 'error');
                     return;
@@ -920,6 +943,8 @@
 
                 setSubmitting(true);
                 const nowIso = new Date().toISOString();
+                const isNurseCneu = form.professionGroup === 'พยาบาล';
+                const trainingHours = String(cneuConfig.trainingHours || '8');
 
                 const regPayload = {
                     id: cleanLic,
@@ -929,6 +954,10 @@
                     eventDate: activityConfig.eventDate,
                     venueAndOrganizer: activityConfig.venueAndOrganizer,
                     professionGroup: form.professionGroup,
+                    cneuEligible: isNurseCneu,
+                    trainingHours,
+                    cneuActivityCode: isNurseCneu ? (cneuConfig.activityCode || '') : '',
+                    cneuCredits: isNurseCneu ? (cneuConfig.cneuCredits || '') : '',
                     name: form.name.trim(),
                     position: form.position.trim() || form.professionGroup,
                     region: form.region,
@@ -949,6 +978,10 @@
                     phone: regPayload.phone,
                     position: regPayload.position,
                     professionGroup: regPayload.professionGroup,
+                    cneuEligible: isNurseCneu,
+                    trainingHours,
+                    cneuActivityCode: isNurseCneu ? (cneuConfig.activityCode || '') : '',
+                    cneuCredits: isNurseCneu ? (cneuConfig.cneuCredits || '') : '',
                     department: regPayload.region,
                     hospital: regPayload.hospital,
                     province: regPayload.province,
@@ -1066,9 +1099,15 @@
                 }
 
                 setSelfEditSaving(true);
+                const isNurseCneu = selfEditForm.professionGroup === 'พยาบาล';
+                const trainingHours = String(cneuConfig.trainingHours || '8');
                 const updatedRec = {
                     ...checkedRecord,
                     professionGroup: selfEditForm.professionGroup,
+                    cneuEligible: isNurseCneu,
+                    trainingHours,
+                    cneuActivityCode: isNurseCneu ? (cneuConfig.activityCode || '') : '',
+                    cneuCredits: isNurseCneu ? (cneuConfig.cneuCredits || '') : '',
                     name: selfEditForm.name.trim(),
                     position: selfEditForm.position.trim() || selfEditForm.professionGroup,
                     region: selfEditForm.region,
@@ -1092,6 +1131,10 @@
                                 name: updatedRec.name,
                                 position: updatedRec.position,
                                 professionGroup: updatedRec.professionGroup,
+                                cneuEligible: isNurseCneu,
+                                trainingHours,
+                                cneuActivityCode: isNurseCneu ? (cneuConfig.activityCode || '') : '',
+                                cneuCredits: isNurseCneu ? (cneuConfig.cneuCredits || '') : '',
                                 department: updatedRec.region,
                                 hospital: updatedRec.hospital,
                                 province: updatedRec.province,
@@ -1239,11 +1282,18 @@
                     for (const r of activeList) {
                         const lic = String(r.license || r.id || '').trim();
                         if (!lic) continue;
+                        const prof = r.professionGroup || 'พยาบาล';
+                        const isNurseCneu = prof === 'พยาบาล';
+                        const trainingHours = String(cneuConfig.trainingHours || '8');
                         await setDoc(
                             doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', lic),
                             {
                                 id: lic, license: lic, name: r.name, email: r.email || '', phone: r.phone || '',
-                                position: r.position || r.professionGroup, professionGroup: r.professionGroup || 'พยาบาล',
+                                position: r.position || prof, professionGroup: prof,
+                                cneuEligible: isNurseCneu,
+                                trainingHours,
+                                cneuActivityCode: isNurseCneu ? (cneuConfig.activityCode || '') : '',
+                                cneuCredits: isNurseCneu ? (cneuConfig.cneuCredits || '') : '',
                                 department: r.region, hospital: r.hospital, province: r.province,
                                 userType: 'เรียนต่อเนื่อง', studyHoursExempt: true, progress: 100,
                                 hoursStatusLabel: 'ชั่วโมงครบ (เทียบโอน)',
@@ -1591,7 +1641,7 @@
 
                                     <div className="space-y-2">
                                         <label className="block text-xs font-bold text-secondary-adaptive">
-                                            1. เลือกกลุ่มวิชาชีพ * <span className="text-muted-adaptive font-normal">(ใช้จัดกลุ่มใบเซ็นชื่อลงทะเบียนหน้างาน)</span>
+                                            1. เลือกกลุ่มวิชาชีพ * <span className="text-muted-adaptive font-normal">(ใช้จัดกลุ่มใบเซ็นชื่อลงทะเบียนหน้างานและเอกสารรับรอง)</span>
                                         </label>
                                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                                             {PROFESSION_GROUPS.map(pg => {
@@ -1600,7 +1650,10 @@
                                                     <button
                                                         key={pg.id}
                                                         type="button"
-                                                        onClick={() => setForm(p => ({ ...p, professionGroup: pg.id, position: p.position || pg.defaultPos }))}
+                                                        onClick={() => setForm(p => {
+                                                            const isDefPos = !p.position || PROFESSION_GROUPS.some(o => o.defaultPos === p.position);
+                                                            return { ...p, professionGroup: pg.id, position: isDefPos ? pg.defaultPos : p.position };
+                                                        })}
                                                         className={`text-left p-3.5 rounded-2xl border transition-all space-y-1 ${active ? 'bg-aurora-500/20 border-aurora-400 shadow-md' : 'spatial-soft'}`}
                                                     >
                                                         <div className="flex items-center justify-between">
@@ -1612,6 +1665,22 @@
                                                 );
                                             })}
                                         </div>
+
+                                        {/* แสดงข้อความ CNEU เฉพาะเมื่อเลือก "พยาบาล" เท่านั้น (แพทย์/สหวิชาชีพไม่มีข้อความ CNEU แสดงต่อ) */}
+                                        {form.professionGroup === 'พยาบาล' && (cneuConfig.activityCode || cneuConfig.cneuCredits) && (
+                                            <div className="p-3.5 rounded-2xl bg-aurora-500/15 border border-aurora-400/50 space-y-1">
+                                                <div className="flex items-center gap-1.5 text-accent-adaptive font-mono text-[10px] font-bold uppercase">
+                                                    <Icon name="Award" size={14} /> สิทธิ์รับหน่วยคะแนนการศึกษาต่อเนื่องทางการพยาบาล (CNEU • สภาการพยาบาล)
+                                                </div>
+                                                <p className="font-display font-extrabold text-sm text-primary-adaptive">
+                                                    รหัสกิจกรรม CNEU: <span className="text-accent-adaptive font-mono">{cneuConfig.activityCode || '-'}</span>
+                                                    {cneuConfig.cneuCredits && <> • จำนวน <span className="text-accent-adaptive font-mono">{cneuConfig.cneuCredits}</span> หน่วยคะแนน</>}
+                                                </p>
+                                                <p className="text-[11px] text-secondary-adaptive leading-relaxed">
+                                                    ระบบจะใช้เลขที่ใบอนุญาตประกอบวิชาชีพการพยาบาลของท่านในการรับรองหน่วยคะแนน CNEU บนประกาศนียบัตรและรายงานส่งสภาการพยาบาลโดยอัตโนมัติค่ะ
+                                                </p>
+                                            </div>
+                                        )}
                                     </div>
 
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
@@ -1691,7 +1760,9 @@
                                     <label className="spatial-soft p-3.5 rounded-2xl flex items-start gap-2.5 text-xs cursor-pointer">
                                         <input type="checkbox" checked={form.pdpaAccepted} onChange={e => setForm(p => ({ ...p, pdpaAccepted: e.target.checked }))} className="mt-0.5 w-4 h-4 accent-aurora-500 shrink-0" />
                                         <span className="text-secondary-adaptive leading-relaxed">
-                                            ยินยอมให้จัดเก็บข้อมูลเพื่อการจัดทำบัญชีลงทะเบียนหน้างาน ซิงค์สิทธิ์การอบรมเข้าสู่ <b>rjcloud.organ 2.0</b> และการออกประกาศนียบัตรรับรองหน่วยคะแนน CNEU ตามนโยบาย PDPA (สามารถตรวจสอบ แก้ไข หรือลบข้อมูลได้ด้วยตนเองที่เมนู “ตรวจสอบรายชื่อ”)
+                                            {form.professionGroup === 'พยาบาล'
+                                                ? <>ยินยอมให้จัดเก็บข้อมูลเพื่อการจัดทำบัญชีลงทะเบียนหน้างาน ซิงค์สิทธิ์การอบรมเข้าสู่ <b>rjcloud.organ 2.0</b> และการออกประกาศนียบัตรรับรองหน่วยคะแนน CNEU ตามนโยบาย PDPA (สามารถตรวจสอบ แก้ไข หรือลบข้อมูลได้ด้วยตนเองที่เมนู “ตรวจสอบรายชื่อ”)</>
+                                                : <>ยินยอมให้จัดเก็บข้อมูลเพื่อการจัดทำบัญชีลงทะเบียนหน้างาน ซิงค์สิทธิ์การอบรมเข้าสู่ <b>rjcloud.organ 2.0</b> และการออกประกาศนียบัตรรับรองชั่วโมงการฝึกอบรมตามนโยบาย PDPA (สามารถตรวจสอบ แก้ไข หรือลบข้อมูลได้ด้วยตนเองที่เมนู “ตรวจสอบรายชื่อ”)</>}
                                         </span>
                                     </label>
 
@@ -1716,6 +1787,21 @@
                                     <div className="spatial-soft rounded-2xl p-4 text-left space-y-2 text-xs sm:text-sm">
                                         <div className="flex justify-between gap-2 border-b border-white/10 pb-2"><span className="text-muted-adaptive">ผู้ลงทะเบียน:</span><span className="font-bold text-primary-adaptive text-right">{confirmedRecord.name}</span></div>
                                         <div className="flex justify-between gap-2 border-b border-white/10 pb-2"><span className="text-muted-adaptive">กลุ่มวิชาชีพ / เลขที่ใบอนุญาต:</span><span className="font-bold text-prism-adaptive text-right">{confirmedRecord.professionGroup} • <span className="font-mono">{confirmedRecord.license}</span></span></div>
+                                        {confirmedRecord.professionGroup === 'พยาบาล' ? (
+                                            <div className="flex justify-between gap-2 border-b border-white/10 pb-2">
+                                                <span className="text-muted-adaptive">สิทธิ์หน่วยคะแนน CNEU:</span>
+                                                <span className="font-bold text-accent-adaptive text-right">
+                                                    รหัสกิจกรรม {confirmedRecord.cneuActivityCode || cneuConfig.activityCode || '-'} • {confirmedRecord.cneuCredits || cneuConfig.cneuCredits || '-'} หน่วยคะแนน
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            <div className="flex justify-between gap-2 border-b border-white/10 pb-2">
+                                                <span className="text-muted-adaptive">การรับรองมาตรฐาน:</span>
+                                                <span className="font-bold text-prism-adaptive text-right">
+                                                    จำนวน {confirmedRecord.trainingHours || cneuConfig.trainingHours || '8'} ชั่วโมงการฝึกอบรมวิชาการ / พัฒนาสมรรถนะ
+                                                </span>
+                                            </div>
+                                        )}
                                         <div className="flex justify-between gap-2 border-b border-white/10 pb-2"><span className="text-muted-adaptive">สังกัด / โรงพยาบาล:</span><span className="font-semibold text-secondary-adaptive text-right">{confirmedRecord.hospital} ({confirmedRecord.province}) • {confirmedRecord.region}</span></div>
                                         <div className="flex justify-between gap-2 border-b border-white/10 pb-2"><span className="text-muted-adaptive">สถานะชั่วโมงอบรม:</span><span className="font-bold text-accent-adaptive text-right">ชั่วโมงครบ (เทียบโอน)</span></div>
                                         <div className="flex justify-between gap-2"><span className="text-muted-adaptive">กิจกรรมอ้างอิง:</span><span className="font-semibold text-primary-adaptive text-right">{activityConfig.activityTitle}</span></div>
@@ -1856,6 +1942,15 @@
                                                     <div className="sm:col-span-2 spatial-soft p-3.5 rounded-2xl">
                                                         <span className="text-[10px] font-mono text-muted-adaptive block">กิจกรรมอ้างอิง &amp; สถานะเทียบโอน</span>
                                                         <span className="font-bold text-accent-adaptive block">ชั่วโมงครบ (เทียบโอน) — {checkedRecord.activityTitle || activityConfig.activityTitle}</span>
+                                                        {checkedRecord.professionGroup === 'พยาบาล' ? (
+                                                            <span className="text-[11px] font-semibold text-prism-adaptive block mt-1">
+                                                                สิทธิ์ CNEU: รหัสกิจกรรม {checkedRecord.cneuActivityCode || cneuConfig.activityCode || '-'} • จำนวน {checkedRecord.cneuCredits || cneuConfig.cneuCredits || '-'} หน่วยคะแนน
+                                                            </span>
+                                                        ) : (
+                                                            <span className="text-[11px] font-semibold text-prism-adaptive block mt-1">
+                                                                การรับรองมาตรฐาน: จำนวน {checkedRecord.trainingHours || cneuConfig.trainingHours || '8'} ชั่วโมงการฝึกอบรมวิชาการ / พัฒนาสมรรถนะ
+                                                            </span>
+                                                        )}
                                                     </div>
                                                 </div>
 
@@ -1889,6 +1984,12 @@
                                                         </button>
                                                     ))}
                                                 </div>
+
+                                                {selfEditForm.professionGroup === 'พยาบาล' && (cneuConfig.activityCode || cneuConfig.cneuCredits) && (
+                                                    <div className="p-3 rounded-xl bg-aurora-500/15 border border-aurora-400/45 text-accent-adaptive font-bold">
+                                                        สิทธิ์ CNEU: รหัสกิจกรรม <span className="font-mono">{cneuConfig.activityCode || '-'}</span> • จำนวน <span className="font-mono">{cneuConfig.cneuCredits || '-'}</span> หน่วยคะแนน
+                                                    </div>
+                                                )}
 
                                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                                     <div>
