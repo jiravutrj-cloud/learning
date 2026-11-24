@@ -882,7 +882,6 @@
             const [voiceEnabled, setVoiceEnabled] = useState(true);
             const [ambientOn, setAmbientOn] = useState(false);
             const [showSuggestionsBar, setShowSuggestionsBar] = useState(true);
-            const [showSubtitle, setShowSubtitle] = useState(true);
             const [showHistoryDrawer, setShowHistoryDrawer] = useState(false);
             const [showToolsSheet, setShowToolsSheet] = useState(false);
             const [showChartModal, setShowChartModal] = useState(false);
@@ -2648,9 +2647,6 @@
                                     <button type="button" onClick={() => setShowChartModal(true)} title="แฟ้มส่งเวร & ปมในใจ 3 ข้อ" className="hidden sm:inline-flex holo-stage-pill w-9 h-9 rounded-xl text-amber-200 hover:bg-white/15 items-center justify-center">
                                         <Icon name="ClipboardList" size={16} />
                                     </button>
-                                    <button type="button" onClick={() => setShowSubtitle(v => !v)} title="ซ่อน/แสดงซับไตเติล" className={`hidden sm:inline-flex holo-stage-pill w-9 h-9 rounded-xl items-center justify-center ${showSubtitle ? 'bg-cyan-500/25 text-cyan-200 border-cyan-400/50' : 'text-sky-100'}`}>
-                                        <Icon name="Subtitles" size={16} />
-                                    </button>
                                     <button type="button" onClick={() => setShowHistoryDrawer(true)} title="ประวัติ & ย้อนเวลาแก้คำพูด" className="hidden sm:inline-flex holo-stage-pill w-9 h-9 rounded-xl text-sky-100 hover:bg-white/15 items-center justify-center">
                                         <Icon name="History" size={16} />
                                     </button>
@@ -2712,45 +2708,33 @@
                                 )}
 
                                 {latestRelativeMsg && (
-                                    <div className="space-y-1.5">
-                                        <div className="flex flex-wrap items-center justify-between gap-1.5 px-0.5">
-                                            <div className="holo-stage-pill px-2.5 py-1 rounded-full text-xs flex items-center gap-1.5 max-w-full">
-                                                <span className="font-mono text-[10px] font-bold text-cyan-200 truncate">{activeSpeakerBadge || activePersona.speakerRoleTH}</span>
-                                                {isSpeaking && <span className="text-[10px] font-bold text-emerald-300 animate-pulse shrink-0">● กำลังพูด</span>}
-                                                {isThinking && <span className="text-[10px] font-bold text-amber-300 animate-pulse shrink-0">● กำลังตอบ...</span>}
-                                                <span className="text-white/25">•</span>
-                                                <span className="font-mono text-[10px] text-sky-200 shrink-0">
-                                                    Trust {trustScore}%
-                                                    {lastTrustDelta !== 0 && (
-                                                        <span className={`ml-1 font-bold ${lastTrustDelta > 0 ? 'text-emerald-300' : 'text-rose-300'}`}>
-                                                            ({lastTrustDelta > 0 ? `+${lastTrustDelta}` : lastTrustDelta})
-                                                        </span>
-                                                    )}
-                                                </span>
-                                                {!selectedMode.isDrill && (
-                                                    <>
-                                                        <span className="text-white/25">•</span>
-                                                        <button type="button" onClick={() => setShowChartModal(true)} className="font-mono text-[10px] font-bold text-amber-200 hover:underline shrink-0">
-                                                            ปม {unlockedBarrierIds.length}/3
-                                                        </button>
-                                                    </>
+                                    <div className="flex flex-wrap items-center justify-between gap-1.5 px-0.5">
+                                        <div className="holo-stage-pill px-2.5 py-1 rounded-full text-xs flex items-center gap-1.5 max-w-full">
+                                            <span className="font-mono text-[10px] font-bold text-cyan-200 truncate">{activeSpeakerBadge || activePersona.speakerRoleTH}</span>
+                                            {isSpeaking && <span className="text-[10px] font-bold text-emerald-300 animate-pulse shrink-0">● กำลังพูด</span>}
+                                            {isThinking && <span className="text-[10px] font-bold text-amber-300 animate-pulse shrink-0">● กำลังตอบ...</span>}
+                                            <span className="text-white/25">•</span>
+                                            <span className="font-mono text-[10px] text-sky-200 shrink-0">
+                                                Trust {trustScore}%
+                                                {lastTrustDelta !== 0 && (
+                                                    <span className={`ml-1 font-bold ${lastTrustDelta > 0 ? 'text-emerald-300' : 'text-rose-300'}`}>
+                                                        ({lastTrustDelta > 0 ? `+${lastTrustDelta}` : lastTrustDelta})
+                                                    </span>
                                                 )}
-                                            </div>
-                                            {currentActionCue && (
-                                                <span className="holo-stage-pill px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] italic text-amber-200/90 max-w-full truncate">
-                                                    ✦ {currentActionCue}
-                                                </span>
+                                            </span>
+                                            {!selectedMode.isDrill && (
+                                                <>
+                                                    <span className="text-white/25">•</span>
+                                                    <button type="button" onClick={() => setShowChartModal(true)} className="font-mono text-[10px] font-bold text-amber-200 hover:underline shrink-0">
+                                                        ปม {unlockedBarrierIds.length}/3
+                                                    </button>
+                                                </>
                                             )}
                                         </div>
-
-                                        {showSubtitle && (
-                                            <div className="holo-obsidian-card rounded-2xl px-3.5 py-2.5 text-xs sm:text-sm text-sky-50 leading-relaxed max-h-28 overflow-y-auto custom-scrollbar">
-                                                {isThinking && thinkingCue ? (
-                                                    <span className="italic text-cyan-200 animate-pulse">✦ {thinkingCue}</span>
-                                                ) : (
-                                                    latestRelativeMsg.text
-                                                )}
-                                            </div>
+                                        {(isThinking && thinkingCue ? thinkingCue : currentActionCue) && (
+                                            <span className={`holo-stage-pill px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] italic max-w-full truncate ${isThinking && thinkingCue ? 'text-cyan-200 animate-pulse' : 'text-amber-200/90'}`}>
+                                                ✦ {isThinking && thinkingCue ? thinkingCue : currentActionCue}
+                                            </span>
                                         )}
                                     </div>
                                 )}
@@ -2911,8 +2895,8 @@
                                             ) : (
                                                 <span>พิมพ์หรือแตะแนวทางคำพูดได้เลยค่ะ</span>
                                             )}
-                                            <button type="button" onClick={() => setShowSubtitle(v => !v)} className="text-sky-200 hover:text-white font-bold">
-                                                {showSubtitle ? 'ซ่อนซับไตเติล' : 'แสดงซับไตเติล'}
+                                            <button type="button" onClick={() => setShowHistoryDrawer(true)} className="text-sky-200 hover:text-white font-bold">
+                                                ดูประวัติสนทนา
                                             </button>
                                             <button
                                                 type="button"
@@ -2920,7 +2904,7 @@
                                                 disabled={!latestRelativeMsg || isThinking}
                                                 className="text-cyan-300 font-bold disabled:opacity-40"
                                             >
-                                                ↺ ฟังซ้ำ
+                                                ↺ ฟังเสียงญาติซ้ำ
                                             </button>
                                         </div>
                                     </div>
@@ -3223,8 +3207,23 @@
                                     <button type="button" onClick={() => { setShowToolsSheet(false); setShowHistoryDrawer(true); }} className="touch-target px-3 py-3 rounded-2xl bg-white/[0.08] border border-white/15 text-sky-100 text-xs font-bold flex items-center justify-center gap-1.5">
                                         <Icon name="History" size={15} /> ประวัติ &amp; ย้อนแก้
                                     </button>
-                                    <button type="button" onClick={() => { setShowToolsSheet(false); setShowSubtitle(v => !v); }} className="touch-target px-3 py-3 rounded-2xl bg-white/[0.08] border border-white/15 text-cyan-200 text-xs font-bold flex items-center justify-center gap-1.5">
-                                        <Icon name="Subtitles" size={15} /> {showSubtitle ? 'ซ่อนซับไตเติล' : 'แสดงซับไตเติล'}
+                                    <button
+                                        type="button"
+                                        disabled={!latestRelativeMsg || isThinking}
+                                        onClick={() => {
+                                            setShowToolsSheet(false);
+                                            unlockMobileAudio();
+                                            if (latestRelativeMsg) {
+                                                speakRelativeSegments(
+                                                    latestRelativeMsg.text,
+                                                    latestRelativeMsg.emotion || relativeEmotion,
+                                                    selectedMode.isDrill ? activeDrillStage.personaId : activePersona.id
+                                                );
+                                            }
+                                        }}
+                                        className="touch-target px-3 py-3 rounded-2xl bg-white/[0.08] border border-white/15 text-cyan-200 text-xs font-bold flex items-center justify-center gap-1.5 disabled:opacity-40"
+                                    >
+                                        <Icon name="Volume2" size={15} /> ฟังเสียงญาติซ้ำ
                                     </button>
                                 </div>
                             </div>
