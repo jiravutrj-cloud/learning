@@ -561,7 +561,8 @@
          */
         function splitExecutiveSpeechChunks(rawText, maxChars = 190) {
             let clean = String(rawText || '')
-                .replace(/[*#_📊\[\]]/g, ' ')
+                .replace(/📊/g, ' ')
+                .replace(/[*#_\[\]]/g, ' ')
                 .replace(/•/g, ' ')
                 .replace(/→/g, ' ถึง ')
                 .replace(/\|/g, ' ')
@@ -789,12 +790,15 @@
             useEffect(() => {
                 const el = document.getElementById('executive-root');
                 if (el) el.dataset.mounted = 'true';
-                if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost')) {
-                    navigator.serviceWorker.register('./sw.js').catch(() => {});
-                }
+                try {
+                    const isLocalOrHttps = window.location.protocol === 'https:' || window.location.hostname === 'localhost';
+                    if ('serviceWorker' in navigator && isLocalOrHttps && window.location.href.startsWith('http')) {
+                        navigator.serviceWorker.register('./sw.js').catch(() => {});
+                    }
+                } catch (_) {}
             }, []);
 
-            // 1A. Firebase Anonymous Auth Verification
+            // 1A. Firebase Anonymous Auth Verification (+ Safety Timeout ป้องกันโหลดค้าง)
             useEffect(() => {
                 if (isAdminPreview || !isCloudConfigured || !fbAuth || !fbDb) {
                     setAuthReady(true);
@@ -803,54 +807,88 @@
                 }
                 let active = true;
                 let anonAttempted = false;
-                const unsubAuth = onAuthStateChanged(fbAuth, async (fbUser) => {
-                    if (!active) return;
-                    if (!fbUser) {
-                        if (!anonAttempted) {
-                            anonAttempted = true;
-                            try { await signInAnonymously(fbAuth); }
-                            catch (_) {
-                                if (active) { setAuthReady(true); setIsLoadingCloud(false); }
-                            }
-                        }
-                        return;
+                const safetyTimer = setTimeout(() => {
+                    if (active) {
+                        setAuthReady(true);
+                        setIsLoadingCloud(false);
                     }
-                    setAuthReady(true);
-                });
-                return () => { active = false; unsubAuth(); };
+                }, 6000);
+
+                let unsubAuth = () => {};
+                try {
+                    unsubAuth = onAuthStateChanged(
+                        fbAuth,
+                        async (fbUser) => {
+                            if (!active) return;
+                            if (!fbUser) {
+                                if (!anonAttempted) {
+                                    anonAttempted = true;
+                                    try { await signInAnonymously(fbAuth); }
+                                    catch (_) {
+                                        if (active) { setAuthReady(true); setIsLoadingCloud(false); }
+                                    }
+                                }
+                                return;
+                            }
+                            setAuthReady(true);
+                        },
+                        () => {
+                            if (active) { setAuthReady(true); setIsLoadingCloud(false); }
+                        }
+                    );
+                } catch (_) {
+                    if (active) { setAuthReady(true); setIsLoadingCloud(false); }
+                }
+                return () => {
+                    active = false;
+                    clearTimeout(safetyTimer);
+                    try { unsubAuth(); } catch (_) {}
+                };
             }, [isAdminPreview]);
 
             // 1B. Zero-Cost Scalability Guard: อ่านเอกสารสรุปรวม 1 ใบ (executive_summary/global)
             useEffect(() => {
                 if (isAdminPreview || !authReady || !fbDb) return;
-                const unsubSummary = onSnapshot(
-                    doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'executive_summary', 'global'),
-                    (docSnap) => {
-                        if (docSnap.exists() && Number(docSnap.data()?.totalUsers || 0) > 0) {
-                            setGlobalSummaryDoc(docSnap.data());
-                            setAutoFallbackDeep(false);
-                            setIsLoadingCloud(false);
-                        } else {
+                let unsubSummary = () => {};
+                let unsubSettings = () => {};
+                try {
+                    unsubSummary = onSnapshot(
+                        doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'executive_summary', 'global'),
+                        (docSnap) => {
+                            if (docSnap.exists() && Number(docSnap.data()?.totalUsers || 0) > 0) {
+                                setGlobalSummaryDoc(docSnap.data());
+                                setAutoFallbackDeep(false);
+                                setIsLoadingCloud(false);
+                            } else {
+                                setGlobalSummaryDoc(null);
+                                setAutoFallbackDeep(true);
+                            }
+                        },
+                        () => {
                             setGlobalSummaryDoc(null);
                             setAutoFallbackDeep(true);
+                            setIsLoadingCloud(false);
                         }
-                    },
-                    () => {
-                        setGlobalSummaryDoc(null);
-                        setAutoFallbackDeep(true);
-                    }
-                );
+                    );
 
-                const unsubSettings = onSnapshot(
-                    doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_config', 'settings'),
-                    (docSnap) => {
-                        if (docSnap.exists() && docSnap.data()?.appsScriptUrl) {
-                            setAppsScriptUrl(docSnap.data().appsScriptUrl);
-                        }
-                    },
-                    () => {}
-                );
-                return () => { unsubSummary(); unsubSettings(); };
+                    unsubSettings = onSnapshot(
+                        doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_config', 'settings'),
+                        (docSnap) => {
+                            if (docSnap.exists() && docSnap.data()?.appsScriptUrl) {
+                                setAppsScriptUrl(docSnap.data().appsScriptUrl);
+                            }
+                        },
+                        () => {}
+                    );
+                } catch (_) {
+                    setGlobalSummaryDoc(null);
+                    setAutoFallbackDeep(true);
+                    setIsLoadingCloud(false);
+                }
+                return () => {
+                    try { unsubSummary(); } catch (_) {}
+                    try { unsubSettings(); } catch (_) {}
+                };
             }, [authReady, isAdminPreview]);
 
             // 1C. On-Demand Deep Telemetry (เมื่อผู้ใช้กดเจาะลึกเรดาร์ 5 แกน หรือยังไม่มีเอกสารสรุป 1 ใบ)
@@ -862,37 +900,47 @@
                 }
                 setIsLoadingDeep(true);
 
-                const unsubTelemetry = onSnapshot(
-                    collection(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'executive_telemetry'),
-                    (snap) => {
-                        const cleaned = [];
-                        snap.forEach(d => {
-                            const item = sanitizeToStatsOnly(d.data());
-                            if (item) cleaned.push(item);
-                        });
-                        setTelemetryStats(cleaned);
-                        setIsLoadingCloud(false);
-                        setIsLoadingDeep(false);
-                    },
-                    () => { setIsLoadingCloud(false); setIsLoadingDeep(false); }
-                );
+                let unsubTelemetry = () => {};
+                let unsubFallback = () => {};
+                try {
+                    unsubTelemetry = onSnapshot(
+                        collection(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'executive_telemetry'),
+                        (snap) => {
+                            const cleaned = [];
+                            snap.forEach(d => {
+                                const item = sanitizeToStatsOnly(d.data());
+                                if (item) cleaned.push(item);
+                            });
+                            setTelemetryStats(cleaned);
+                            setIsLoadingCloud(false);
+                            setIsLoadingDeep(false);
+                        },
+                        () => { setIsLoadingCloud(false); setIsLoadingDeep(false); }
+                    );
 
-                const unsubFallback = onSnapshot(
-                    collection(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users'),
-                    (snap) => {
-                        const cleaned = [];
-                        snap.forEach(d => {
-                            const item = sanitizeToStatsOnly(d.data());
-                            if (item) cleaned.push(item);
-                        });
-                        setFallbackStats(cleaned);
-                        setIsLoadingCloud(false);
-                        setIsLoadingDeep(false);
-                    },
-                    () => { setIsLoadingCloud(false); setIsLoadingDeep(false); }
-                );
+                    unsubFallback = onSnapshot(
+                        collection(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users'),
+                        (snap) => {
+                            const cleaned = [];
+                            snap.forEach(d => {
+                                const item = sanitizeToStatsOnly(d.data());
+                                if (item) cleaned.push(item);
+                            });
+                            setFallbackStats(cleaned);
+                            setIsLoadingCloud(false);
+                            setIsLoadingDeep(false);
+                        },
+                        () => { setIsLoadingCloud(false); setIsLoadingDeep(false); }
+                    );
+                } catch (_) {
+                    setIsLoadingCloud(false);
+                    setIsLoadingDeep(false);
+                }
 
-                return () => { unsubTelemetry(); unsubFallback(); };
+                return () => {
+                    try { unsubTelemetry(); } catch (_) {}
+                    try { unsubFallback(); } catch (_) {}
+                };
             }, [shouldLoadDeepCollection]);
 
             const isEcoSummaryMode = Boolean(
