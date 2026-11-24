@@ -1,12 +1,18 @@
 /* ============================================================================
- * rjcloud.organ — Certificate, Real QR Code & Export Engine (cert-engine.js)
- * แยกออกมาจาก index.html ตามแนวทาง Modular Zero-Build (ไฟล์ที่ 4/6 สะอาดพร้อมใช้งาน)
+ * rjcloud.organ 2.0 — Certificate, Real QR Code & Export Engine (cert-engine.js)
+ * โมดูลกลางแบบ Zero-Build (ไฟล์ 4/4 • สะอาดพร้อมใช้งาน 100%)
+ *
+ * นโยบายความเท่าเทียม (Equal Rights & Honor Standard):
+ * - ประกาศนียบัตร, หนังสือรับรอง CNEU และทะเบียนสาธารณะ certificates/{code}
+ *   ไม่ระบุแยกประเภทผู้เรียน (ผู้เรียนใหม่ / ผู้เรียนต่อเนื่อง / ผู้เข้าอบรม Onsite)
+ *   เพื่อมอบสิทธิ์และเกียรติเท่าเทียมกันทุกประการ
+ * - คุ้มครองข้อมูลส่วนบุคคล PDPA: ไม่เก็บอีเมลและเบอร์โทรศัพท์ในทะเบียนสาธารณะ
  *
  * โครงสร้างภายในไฟล์ (เผยแพร่ผ่าน window.RJCLOUD_CERT):
  * 1. Safe Image Loader, Font Ready Guard, Verify URL Builder & Thai Date Formatter
  * 2. Pixel-Perfect Real QR Code Canvas Renderer (qrcode-generator + CORS Fallback)
- * 3. Apple-Minimalist Certificate Canvas Renderer (1600×1131 px • A4 Landscape)
- * 4. Public Certificate Registry Payload Builder (PDPA-Safe: No Email/Phone)
+ * 3. Apple-Minimalist Certificate Canvas Renderer (1600x1131 px • A4 Landscape)
+ * 4. Equal-Honor Public Certificate Registry Payload Builder (PDPA-Safe)
  * 5. PNG / PDF Exporters & Individual A4 CNEU Print Controller
  * ============================================================================ */
 
@@ -35,7 +41,7 @@
   // ============================================================================
 
   /**
-   * โหลดรูปภาพภายนอก (โลโก้/ลายเซ็น/QR สำรอง) แบบปลอดภัย ไม่ทำให้ Canvas ค้างหรือติด Tainted Canvas
+   * โหลดรูปภาพภายนอก (โลโก้/ลายเซ็น/QR สำรอง) แบบปลอดภัย ป้องกัน Canvas ค้างหรือติด Tainted Canvas
    */
   function loadImageSafe(url) {
     return new Promise(function (resolve) {
@@ -58,7 +64,7 @@
 
   /**
    * รอให้ฟอนต์เว็บ (Prompt / Sarabun / JetBrains Mono) พร้อมก่อนวาดลง Canvas
-   * จำกัดเวลารอสูงสุด 1.5 วินาที เพื่อไม่ให้หน้าเว็บค้างหากเชื่อมต่อฟอนต์ช้า
+   * จำกัดเวลารอสูงสุด 1.5 วินาที เพื่อไม่ให้หน้าเว็บค้างหากเครือข่ายช้า
    */
   function waitFontsReadySafe(timeoutMs) {
     const limit = timeoutMs || 1500;
@@ -74,7 +80,7 @@
   }
 
   /**
-   * แปลงวันที่เป็นรูปแบบภาษาไทยเต็ม (ใช้ร่วมกับ window.RJCLOUD_CORE หากโหลดแล้ว)
+   * แปลงวันที่เป็นรูปแบบภาษาไทยเต็ม
    */
   function formatThaiDateSafe(isoStr) {
     if (global.RJCLOUD_CORE && typeof global.RJCLOUD_CORE.formatThaiDate === 'function') {
@@ -98,7 +104,7 @@
       const base = global.location.href
         .split('?')[0]
         .split('#')[0]
-        .replace(/index\.html$/i, '');
+        .replace(/[^/]*\.html$/i, '');
       const normalizedBase = base.endsWith('/') ? base : base + '/';
       return normalizedBase + 'verify.html?code=' + encodeURIComponent(code);
     } catch (_) {
@@ -155,19 +161,21 @@
   }
 
   // ============================================================================
-  // 3. APPLE-MINIMALIST CERTIFICATE CANVAS RENDERER (1600×1131 • A4 LANDSCAPE)
+  // 3. APPLE-MINIMALIST CERTIFICATE CANVAS RENDERER (1600x1131 • A4 LANDSCAPE)
   // ============================================================================
 
   /**
-   * วาดใบประกาศนียบัตรสไตล์มินิมอลเรียบหรู (พื้นสีขาวบริสุทธิ์ ตัดเส้นทองเมทัลลิกบางเฉียบ + QR Code จริง)
+   * วาดใบประกาศนียบัตรสไตล์มินิมอลเรียบหรูมาตรฐานเดียวกันทุกประเภทผู้เรียน
+   * (พื้นสีขาวบริสุทธิ์ ตัดเส้นทองเมทัลลิกบางเฉียบ + รหัสกิจกรรม/หน่วยคะแนน CNEU + QR Code จริง)
    */
   async function drawMinimalistCertificate(canvas, tplInput, userObj, verifyUrl) {
     if (!canvas) return false;
-    const tpl = {
-      ...FALLBACK_TEMPLATE,
-      ...(global.RJCLOUD_CORE ? global.RJCLOUD_CORE.DEFAULT_CERT_TEMPLATE : {}),
-      ...(tplInput || {})
-    };
+    const tpl = Object.assign(
+      {},
+      FALLBACK_TEMPLATE,
+      global.RJCLOUD_CORE && global.RJCLOUD_CORE.DEFAULT_CERT_TEMPLATE ? global.RJCLOUD_CORE.DEFAULT_CERT_TEMPLATE : {},
+      tplInput || {}
+    );
     const u = userObj || {};
 
     const W = 1600;
@@ -261,7 +269,7 @@
     ctx.font = '500 22px "Sarabun", sans-serif';
     ctx.fillText(tpl.subtitleTH || '', W / 2, topY + 196, SAFE_TEXT_W);
 
-    // 6. ชื่อผู้สำเร็จการอบรม (รองรับทั้งชื่อไทยและชื่อภาษาอังกฤษแบบไม่บังคับ)
+    // 6. ชื่อผู้สำเร็จการอบรม (รองรับทั้งชื่อไทยและชื่อภาษาอังกฤษ)
     ctx.fillStyle = '#1d1d1f';
     ctx.font = '700 56px "Prompt", sans-serif';
     ctx.fillText(u.name || 'ผู้สำเร็จการอบรม', W / 2, topY + 272, SAFE_TEXT_W);
@@ -288,7 +296,7 @@
       .join('   •   ');
     ctx.fillText(orgMeta, W / 2, ruleY + 38, SAFE_TEXT_W);
 
-    // 7. ข้อความรับรอง ชื่อหลักสูตร และวันที่ออกเอกสาร
+    // 7. ข้อความรับรอง ชื่อหลักสูตร หน่วยคะแนน CNEU และวันที่ออกเอกสาร (มาตรฐานเท่าเทียมกันทุกประเภท)
     ctx.fillStyle = '#424245';
     ctx.font = '500 23px "Sarabun", sans-serif';
     ctx.fillText(tpl.completionTextTH || '', W / 2, ruleY + 92, SAFE_TEXT_W);
@@ -382,33 +390,35 @@
   }
 
   // ============================================================================
-  // 4. PUBLIC CERTIFICATE REGISTRY PAYLOAD BUILDER (PDPA-SAFE)
+  // 4. EQUAL-HONOR PUBLIC CERTIFICATE REGISTRY PAYLOAD BUILDER (PDPA-SAFE)
   // ============================================================================
 
   /**
    * สร้างก้อนข้อมูลสำหรับบันทึกในทะเบียนสาธารณะ certificates/{code}
-   * คุ้มครอง PDPA: ไม่เก็บอีเมลและเบอร์โทรศัพท์ในคอลเลกชันสาธารณะเด็ดขาด
+   * - ไม่ระบุแยกประเภทผู้เรียน (ตัด userType / กลุ่มเรียน ออก 100% เพื่อสิทธิ์และเกียรติเท่าเทียมกันทุกประเภท)
+   * - คุ้มครอง PDPA: ไม่เก็บอีเมลและเบอร์โทรศัพท์ในคอลเลกชันสาธารณะเด็ดขาด
    */
   function buildPublicCertPayload(params) {
     const p = params || {};
     const u = p.user || {};
-    const tpl = { ...FALLBACK_TEMPLATE, ...(p.certTemplate || {}) };
+    const tpl = Object.assign({}, FALLBACK_TEMPLATE, p.certTemplate || {});
     const cneu = p.cneuConfig || {};
+
     return {
       code: p.code,
       name: p.finalName || u.name || 'ผู้สำเร็จการอบรม',
       nameEN: p.nameEN || u.nameEN || '',
       license: p.license || u.license || u.id || '',
-      position: u.position || 'พยาบาลวิชาชีพ',
+      position: u.position || 'บุคลากรทางการแพทย์',
       hospital: p.finalHospital || u.hospital || '',
       department: u.department || '',
       province: u.province || '',
-      userType: u.userType || 'เรียนใหม่',
       courseTitleTH: tpl.courseTitleTH,
+      courseTitleEN: tpl.courseTitleEN || '',
       orgTitleTH: tpl.orgTitleTH,
       signerName: tpl.signerName,
       signerPosition: tpl.signerPosition,
-      posttestScore: u.posttest || 'ผ่านเกณฑ์ (≥ 80%)',
+      posttestScore: u.posttest || 'ผ่านเกณฑ์มาตรฐาน (≥ 80%)',
       skillLabBestScore: typeof u.skillLabBestScore === 'number' ? u.skillLabBestScore : null,
       cneuActivityCode: cneu.activityCode || '',
       cneuCredits: cneu.cneuCredits || '',
@@ -465,7 +475,6 @@
 
   /**
    * สั่งพิมพ์หรือบันทึก PDF หนังสือรับรอง CNEU รายบุคคล (A4 แนวตั้ง)
-   * คงคลาส printing-cneu-letter ไว้จนกว่าหน้าต่างพิมพ์จะปิดลงจริง
    */
   function printIndividualCneuLetter() {
     if (!global.document || !global.document.body) return;
