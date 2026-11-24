@@ -114,6 +114,43 @@
         20% { opacity: 0.55; }
         100% { opacity: 0; }
       }
+      @keyframes rjknTextVaporize {
+        0% {
+          opacity: 1;
+          filter: blur(0px);
+          transform: translate3d(0, 0, 0) scale(1);
+        }
+        45% {
+          opacity: 0.62;
+          filter: blur(7px) brightness(1.35);
+          transform: translate3d(0, -8px, 0) scale(1.03);
+        }
+        100% {
+          opacity: 0;
+          filter: blur(22px) brightness(1.6);
+          transform: translate3d(0, -22px, 0) scale(1.09);
+        }
+      }
+      @keyframes rjknGlassToMist {
+        0% {
+          opacity: 1;
+          filter: blur(0px) brightness(1);
+          transform: translate3d(0, 0, 0) scale(1);
+          border-color: rgba(186, 230, 253, 0.34);
+        }
+        38% {
+          opacity: 0.72;
+          filter: blur(10px) brightness(1.28);
+          transform: translate3d(0, -6px, 0) scale(1.06);
+          border-color: rgba(224, 242, 254, 0.65);
+        }
+        100% {
+          opacity: 0;
+          filter: blur(34px) brightness(1.55);
+          transform: translate3d(0, -24px, 0) scale(1.22);
+          border-color: rgba(255, 255, 255, 0);
+        }
+      }
       .rjkn-ambient-bar {
         position: fixed;
         top: 0;
@@ -149,6 +186,36 @@
       .rjkn-curtain.is-hidden {
         opacity: 0;
         visibility: hidden;
+        pointer-events: none;
+      }
+      .rjkn-curtain.is-dissolving {
+        pointer-events: none;
+        opacity: 0;
+        backdrop-filter: blur(0px) saturate(100%);
+        -webkit-backdrop-filter: blur(0px) saturate(100%);
+        transition: opacity 1.5s cubic-bezier(0.22, 1, 0.36, 1) 0.12s,
+                    backdrop-filter 1.35s ease-out,
+                    -webkit-backdrop-filter 1.35s ease-out;
+      }
+      .rjkn-curtain.is-dissolving .rjkn-curtain-card {
+        animation: rjknGlassToMist 1.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        will-change: transform, opacity, filter;
+      }
+      .rjkn-curtain.is-dissolving .rjkn-curtain-card > * {
+        animation: rjknTextVaporize 0.98s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        will-change: transform, opacity, filter;
+      }
+      .rjkn-curtain.is-dissolving .rjkn-curtain-card > *:nth-child(2) { animation-delay: 0.04s; }
+      .rjkn-curtain.is-dissolving .rjkn-curtain-card > *:nth-child(3) { animation-delay: 0.07s; }
+      .rjkn-curtain.is-dissolving .rjkn-curtain-card > *:nth-child(4) { animation-delay: 0.1s; }
+      .rjkn-curtain.is-dissolving .rjkn-curtain-card > *:nth-child(5) { animation-delay: 0.13s; }
+      .rjkn-curtain.is-dissolving .rjkn-curtain-card > *:nth-child(6) { animation-delay: 0.16s; }
+      .rjkn-mist-canvas {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 156;
         pointer-events: none;
       }
       .rjkn-curtain-card {
@@ -254,6 +321,12 @@
       }
       @media (prefers-reduced-motion: reduce) {
         .rjkn-ambient-bar, .rjkn-eq span, .rjkn-launch-btn { animation: none !important; }
+        .rjkn-curtain.is-dissolving .rjkn-curtain-card,
+        .rjkn-curtain.is-dissolving .rjkn-curtain-card > * {
+          animation: none !important;
+          opacity: 0;
+          transition: opacity 0.35s ease;
+        }
       }
     `;
     document.head.appendChild(style);
@@ -820,9 +893,9 @@
           <p style="margin:0 0 22px;font-size:14px;line-height:1.65;color:#dbeafe;">
             สัมผัสการเปิดตัวระบบ e-Learning แห่งอนาคต พร้อมเสียงพิธีกรคู่ AI คุณภาพสตูดิโอ (ชาย–หญิง) และดนตรีประกอบ Epic Cinematic
           </p>
-          <button type="button" id="rjkn-btn-start-show" class="rjkn-launch-btn">
-            <span style="font-size:17px;">▶</span>
-            <span>เปิดประสบการณ์เปิดตัว (เสียง AI สตูดิโอ)</span>
+          <button type="button" id="rjkn-btn-start-show" class="rjkn-launch-btn" style="letter-spacing:0.04em;">
+            <span style="font-size:15px;">▶</span>
+            <span>Welcome</span>
           </button>
           <div style="margin-top:16px;display:flex;flex-direction:column;align-items:center;gap:8px;">
             <button type="button" id="rjkn-btn-skip-show" style="background:none;border:none;color:rgba(219,234,254,0.75);font-size:13px;cursor:pointer;text-decoration:underline;padding:6px 12px;">
@@ -837,12 +910,12 @@
 
       curtain.querySelector('#rjkn-btn-start-show').onclick = function () {
         markSessionSeen();
-        hideCurtain();
+        dissolveCurtainToClouds();
         startExperience();
       };
       curtain.querySelector('#rjkn-btn-skip-show').onclick = function () {
         markSessionSeen();
-        hideCurtain();
+        dissolveCurtainToClouds();
       };
     }
 
@@ -909,11 +982,172 @@
   }
 
   function showCurtain() {
-    if (State.els.curtain) State.els.curtain.classList.remove('is-hidden');
+    if (!State.els.curtain) return;
+    if (State.dissolveTimer) {
+      clearTimeout(State.dissolveTimer);
+      State.dissolveTimer = null;
+    }
+    State.els.curtain.classList.remove('is-dissolving');
+    State.els.curtain.classList.remove('is-hidden');
   }
 
   function hideCurtain() {
-    if (State.els.curtain) State.els.curtain.classList.add('is-hidden');
+    if (!State.els.curtain) return;
+    if (State.dissolveTimer) {
+      clearTimeout(State.dissolveTimer);
+      State.dissolveTimer = null;
+    }
+    State.els.curtain.classList.remove('is-dissolving');
+    State.els.curtain.classList.add('is-hidden');
+  }
+
+  /**
+   * สร้างปุยเมฆและละอองหมอกสีขาว–ฟ้าออร่าจากตำแหน่งกรอบกระจกจริง (60fps GPU Canvas)
+   * เพื่อให้กรอบกระจกและข้อความสลายตัวกลายเป็นเมฆลอยกระจายออกไปอย่างนุ่มนวล
+   */
+  function spawnCloudMistDissolve(originRect) {
+    if (!originRect || originRect.width <= 0) return;
+    if (global.matchMedia && global.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    try {
+      const vw = Math.max(1, global.innerWidth);
+      const vh = Math.max(1, global.innerHeight);
+      const dpr = Math.min(global.devicePixelRatio || 1, 2);
+
+      const canvas = document.createElement('canvas');
+      canvas.className = 'rjkn-mist-canvas';
+      canvas.width = Math.round(vw * dpr);
+      canvas.height = Math.round(vh * dpr);
+      document.body.appendChild(canvas);
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
+        return;
+      }
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      // เตรียม Sprite ปุยเมฆนุ่ม 3 โทนสี (ขาวมุก / หมอกฟ้าอ่อน / ออร่ามิ้นต์) สำหรับวาดลื่น 60fps
+      const palettes = [
+        ['rgba(255,255,255,0.68)', 'rgba(224,242,254,0.34)', 'rgba(186,230,253,0.1)', 'rgba(186,230,253,0)'],
+        ['rgba(240,249,255,0.62)', 'rgba(186,230,253,0.3)', 'rgba(125,211,252,0.08)', 'rgba(56,189,248,0)'],
+        ['rgba(236,253,245,0.52)', 'rgba(167,243,208,0.24)', 'rgba(125,211,252,0.07)', 'rgba(56,189,248,0)']
+      ];
+      const sprites = palettes.map(function (stops) {
+        const sc = document.createElement('canvas');
+        sc.width = 160;
+        sc.height = 160;
+        const sctx = sc.getContext('2d');
+        const g = sctx.createRadialGradient(80, 80, 4, 80, 80, 78);
+        g.addColorStop(0, stops[0]);
+        g.addColorStop(0.36, stops[1]);
+        g.addColorStop(0.72, stops[2]);
+        g.addColorStop(1, stops[3]);
+        sctx.fillStyle = g;
+        sctx.fillRect(0, 0, 160, 160);
+        return sc;
+      });
+
+      const cx = originRect.left + originRect.width * 0.5;
+      const cy = originRect.top + originRect.height * 0.5;
+      const puffCount = vw < 640 ? 34 : 46;
+      const puffs = [];
+
+      for (let i = 0; i < puffCount; i++) {
+        // กระจายจุดกำเนิดทั้งตามขอบกรอบกระจกและบริเวณข้อความตรงกลาง
+        const onEdge = i < Math.floor(puffCount * 0.48);
+        let px, py;
+        if (onEdge) {
+          const side = i % 4;
+          const u = Math.random();
+          if (side === 0) { px = originRect.left + u * originRect.width; py = originRect.top + (Math.random() - 0.5) * 18; }
+          else if (side === 1) { px = originRect.left + u * originRect.width; py = originRect.bottom + (Math.random() - 0.5) * 18; }
+          else if (side === 2) { px = originRect.left + (Math.random() - 0.5) * 18; py = originRect.top + u * originRect.height; }
+          else { px = originRect.right + (Math.random() - 0.5) * 18; py = originRect.top + u * originRect.height; }
+        } else {
+          px = originRect.left + (0.12 + Math.random() * 0.76) * originRect.width;
+          py = originRect.top + (0.14 + Math.random() * 0.72) * originRect.height;
+        }
+
+        const dx = px - cx;
+        const dy = py - cy;
+        const dist = Math.max(18, Math.hypot(dx, dy));
+        const outSpeed = 28 + Math.random() * 58;
+        puffs.push({
+          x: px,
+          y: py,
+          vx: (dx / dist) * outSpeed + (Math.random() - 0.5) * 28,
+          vy: (dy / dist) * (outSpeed * 0.55) - (22 + Math.random() * 44), // ลอยขึ้นด้านบนอย่างอ่อนโยนแบบปุยเมฆ
+          baseR: 46 + Math.random() * 72,
+          grow: 1.55 + Math.random() * 0.95,
+          delay: Math.random() * 0.22,
+          life: 1.45 + Math.random() * 0.65,
+          maxAlpha: 0.42 + Math.random() * 0.34,
+          swirlSeed: Math.random() * Math.PI * 2,
+          sprite: sprites[i % sprites.length]
+        });
+      }
+
+      const startTs = performance.now();
+      const totalDurationMs = 2250;
+
+      function frame(now) {
+        const elapsed = (now - startTs) / 1000;
+        ctx.clearRect(0, 0, vw, vh);
+        ctx.globalCompositeOperation = 'screen';
+
+        let anyAlive = false;
+        for (let i = 0; i < puffs.length; i++) {
+          const p = puffs[i];
+          const localT = elapsed - p.delay;
+          if (localT < 0) { anyAlive = true; continue; }
+          const prog = localT / p.life;
+          if (prog >= 1) continue;
+          anyAlive = true;
+
+          // Ease-out ธรรมชาติของหมอกที่ค่อยๆ ฟุ้งขึ้นแล้วจางหายไปในอากาศ
+          const ease = 1 - Math.pow(1 - prog, 2.4);
+          const fadeIn = Math.min(1, prog / 0.22);
+          const fadeOut = 1 - Math.pow(Math.max(0, (prog - 0.24) / 0.76), 1.65);
+          const alpha = Math.max(0, p.maxAlpha * fadeIn * fadeOut);
+          const radius = p.baseR * (0.72 + ease * p.grow);
+          const driftX = Math.sin(elapsed * 1.4 + p.swirlSeed) * 16 * prog;
+          const x = p.x + p.vx * ease * 1.45 + driftX;
+          const y = p.y + p.vy * ease * 1.35;
+
+          ctx.globalAlpha = alpha;
+          ctx.drawImage(p.sprite, x - radius, y - radius, radius * 2, radius * 2);
+        }
+
+        if (anyAlive && (now - startTs) < totalDurationMs) {
+          requestAnimationFrame(frame);
+        } else if (canvas.parentNode) {
+          canvas.parentNode.removeChild(canvas);
+        }
+      }
+
+      requestAnimationFrame(frame);
+    } catch (_) {}
+  }
+
+  function dissolveCurtainToClouds() {
+    if (!State.els.curtain) return;
+    if (State.els.curtain.classList.contains('is-dissolving')) return;
+
+    const card = State.els.curtain.querySelector('.rjkn-curtain-card');
+    if (card) {
+      spawnCloudMistDissolve(card.getBoundingClientRect());
+    }
+
+    State.els.curtain.classList.add('is-dissolving');
+    if (State.dissolveTimer) clearTimeout(State.dissolveTimer);
+    State.dissolveTimer = setTimeout(function () {
+      if (State.els.curtain) {
+        State.els.curtain.classList.add('is-hidden');
+        State.els.curtain.classList.remove('is-dissolving');
+      }
+      State.dissolveTimer = null;
+    }, 1680);
   }
 
   function triggerLaunchFlash() {
