@@ -15,7 +15,7 @@
     <script src="./learning-core.js" onerror="console.warn('learning-core.js not loaded, using built-in defaults')"></script>
     <script src="./cert-engine.js" onerror="console.warn('cert-engine.js not loaded, using built-in fallback')"></script>
     <script src="./ai-interactive.js" onerror="console.warn('ai-interactive.js not loaded')"></script>
-    <script src="./keynote-launch.js?v=202705" onerror="console.warn('keynote-launch.js not loaded')"></script>
+    <script src="./keynote-launch.js?v=202706" onerror="console.warn('keynote-launch.js not loaded')"></script>
 
     <!-- ซิงค์โหมดมืด/สว่างทันทีจาก localStorage ป้องกันจอกระพริบ -->
     <script>
@@ -220,6 +220,50 @@
       .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
       .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(147, 197, 253, 0.38); border-radius: 999px; }
 
+      /* แถบไฟแอมเบียน + คลื่นเสียง AI สไตล์ Apple Intelligence */
+      @keyframes rjcAmbientFlow {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+      @keyframes rjcAmbientGlowPulse {
+        0%, 100% { box-shadow: 0 0 0 1px rgba(110, 231, 183, 0.45), 0 0 28px -4px rgba(56, 189, 248, 0.5), 0 0 54px -10px rgba(192, 132, 252, 0.38); }
+        50% { box-shadow: 0 0 0 1.5px rgba(103, 232, 249, 0.8), 0 0 42px -2px rgba(110, 231, 183, 0.65), 0 0 68px -8px rgba(56, 189, 248, 0.5); }
+      }
+      @keyframes rjcWaveBar {
+        0%, 100% { transform: scaleY(0.28); opacity: 0.65; }
+        50% { transform: scaleY(1); opacity: 1; }
+      }
+      .rjc-ambient-bar {
+        height: 4px;
+        width: 100%;
+        background: linear-gradient(90deg, #6ee7b7, #38bdf8, #818cf8, #f0abfc, #fde68a, #6ee7b7);
+        background-size: 300% 100%;
+        animation: rjcAmbientFlow 2.1s linear infinite;
+        box-shadow: 0 0 18px rgba(56, 189, 248, 0.85);
+      }
+      .rjc-ambient-card-active {
+        animation: rjcAmbientGlowPulse 2.4s ease-in-out infinite;
+        border-color: rgba(110, 231, 183, 0.65) !important;
+      }
+      .rjc-wave-eq {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        height: 18px;
+      }
+      .rjc-wave-eq span {
+        width: 3px;
+        height: 100%;
+        border-radius: 9999px;
+        background: linear-gradient(180deg, #fde68a, #6ee7b7, #38bdf8);
+        animation: rjcWaveBar 0.85s ease-in-out infinite;
+      }
+      .rjc-wave-eq span:nth-child(2) { animation-delay: 0.14s; }
+      .rjc-wave-eq span:nth-child(3) { animation-delay: 0.28s; }
+      .rjc-wave-eq span:nth-child(4) { animation-delay: 0.42s; }
+      .rjc-wave-eq span:nth-child(5) { animation-delay: 0.56s; }
+
       @keyframes treeCanopySway { 0%, 100% { transform: rotate(0deg) scale(1); } 32% { transform: rotate(1.15deg) scale(1.008); } 68% { transform: rotate(-1.05deg) scale(1.004); } }
       @keyframes branchSwayLeft { 0%, 100% { transform: rotate(0deg); } 40% { transform: rotate(-2.2deg); } 75% { transform: rotate(1.3deg); } }
       @keyframes branchSwayRight { 0%, 100% { transform: rotate(0deg); } 38% { transform: rotate(2.1deg); } 76% { transform: rotate(-1.35deg); } }
@@ -246,7 +290,7 @@
       .hero-cloud-bank-r { position: absolute; will-change: transform; animation: cloudBankFloatAlt 19s ease-in-out infinite; }
       .hero-cloud-haze { background: radial-gradient(ellipse 85% 58% at 50% 100%, rgba(255, 255, 255, 0.56) 0%, rgba(224, 242, 254, 0.32) 45%, rgba(125, 211, 252, 0) 78%); }
       @media (prefers-reduced-motion: reduce) {
-        .hero-cloud-drift, .hero-cloud-bank-l, .hero-cloud-bank-r { animation: none !important; }
+        .hero-cloud-drift, .hero-cloud-bank-l, .hero-cloud-bank-r, .rjc-ambient-bar, .rjc-wave-eq span { animation: none !important; }
       }
 
       @media print {
@@ -271,7 +315,7 @@
       }
     }
     </script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
 </head>
 <body>
     <!-- หน้าจอโหลดเริ่มต้น -->
@@ -301,7 +345,7 @@
       });
     </script>
 
-    <script type="text/babel" data-type="module">
+    <script type="text/babel" data-type="module" data-presets="react">
         import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
         import { createRoot } from 'react-dom/client';
         import * as LucideIcons from 'lucide-react';
@@ -315,6 +359,7 @@
         const CORE = window.RJCLOUD_CORE || {};
         const CERT = window.RJCLOUD_CERT || {};
         const STORAGE_KEY = 'rjcloud_organ_state_v2027';
+        const SILENT_UNLOCK_WAV = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
 
         const BUILTIN_CONFIG = {
             appName: 'rjcloud.organ',
@@ -393,7 +438,6 @@
             { key: 'application', title: '5. ความมั่นใจในการนำความรู้และทักษะไปประยุกต์ใช้ในงานจริง', desc: 'สามารถนำไปปรับใช้ในหน่วยงานได้จริง' }
         ];
 
-        // Zero-Cost R2R Research: Compact SUS (0–100)
         const SUS_USABILITY_ITEMS = [
             { key: 's1', positive: true, title: '1. ฉันอยากกลับมาใช้ระบบนี้เพื่อฝึกทบทวนอีกอย่างสม่ำเสมอ' },
             { key: 's2', positive: false, title: '2. ฉันรู้สึกว่าระบบมีความซับซ้อนเกินความจำเป็น' },
@@ -402,7 +446,6 @@
             { key: 's5', positive: true, title: '5. ฉันรู้สึกมั่นใจขณะใช้งานระบบนี้บนอุปกรณ์ของฉัน' }
         ];
 
-        // Zero-Cost Bedside Tool: Pocket Phrasebook (TH-EN + Voice • Offline Ready)
         const POCKET_PHRASEBOOK = [
             {
                 id: 'pb_open', catLabel: 'เปิดบทสนทนา',
@@ -475,7 +518,7 @@
         };
 
         // ============================================================================
-        // 2. HELPERS, FIREBASE & APPS SCRIPT BRIDGE
+        // 2. HELPERS, FIREBASE & STUDIO-GRADE CHUNKED AI VOICE HELPERS
         // ============================================================================
         let fbApp = null, fbAuth = null, fbDb = null;
         const isCloudConfigured = Boolean(CONFIG.firebaseConfig?.apiKey && CONFIG.firebaseConfig?.projectId);
@@ -619,6 +662,35 @@
             return String(raw || '').replace(/[*#_]/g, ' ').replace(/\s{2,}/g, ' ').trim();
         }
 
+        /**
+         * แบ่งบทพูดเป็นช่วงธรรมชาติ (Chunking) เพื่อโหลดล่วงหน้าทีละช่วงโดยไม่ลดทอนคุณภาพเสียง 24kHz PCM
+         */
+        function splitSpeechIntoNaturalChunks(input, lang = 'th', maxChars = 190) {
+            const rawList = Array.isArray(input)
+                ? input.map(s => (lang === 'en' ? String(s || '').trim() : prepareSpeechSafe(s))).filter(Boolean)
+                : [lang === 'en' ? String(input || '').trim() : prepareSpeechSafe(input)].filter(Boolean);
+
+            const chunks = [];
+            rawList.forEach((segment) => {
+                if (segment.length <= maxChars) {
+                    chunks.push(segment);
+                    return;
+                }
+                const pieces = segment.split(/(?<=[.!?。\n]|ค่ะ|ครับ)\s+/g).filter(Boolean);
+                let buf = '';
+                pieces.forEach((p) => {
+                    if ((buf + ' ' + p).trim().length <= maxChars) {
+                        buf = (buf ? `${buf} ${p}` : p).trim();
+                    } else {
+                        if (buf) chunks.push(buf);
+                        buf = p.trim();
+                    }
+                });
+                if (buf) chunks.push(buf);
+            });
+            return chunks.filter(Boolean);
+        }
+
         function pcm16ToWavBlobSafe(base64, rate = 24000) {
             if (typeof CORE.pcm16ToWavBlob === 'function') return CORE.pcm16ToWavBlob(base64, rate);
             const bin = window.atob(base64);
@@ -637,9 +709,14 @@
             return new Blob([buf], { type: 'audio/wav' });
         }
 
-        async function postAppsScript(url, bodyObj, timeoutMs = 18000) {
+        async function postAppsScript(url, bodyObj, timeoutMs = 18000, externalSignal = null) {
             if (!url) return null;
             const ctrl = new AbortController();
+            const onAbort = () => ctrl.abort();
+            if (externalSignal) {
+                if (externalSignal.aborted) return null;
+                externalSignal.addEventListener('abort', onAbort, { once: true });
+            }
             const tm = setTimeout(() => ctrl.abort(), timeoutMs);
             try {
                 const rawRes = await fetch(url, {
@@ -650,9 +727,11 @@
                     signal: ctrl.signal
                 });
                 clearTimeout(tm);
+                if (externalSignal) externalSignal.removeEventListener('abort', onAbort);
                 return JSON.parse((await rawRes.text()) || '{}');
             } catch (_) {
                 clearTimeout(tm);
+                if (externalSignal) externalSignal.removeEventListener('abort', onAbort);
                 return null;
             }
         }
@@ -728,7 +807,7 @@
             );
         }
 
-        // Landing Hero Stage (Atmospheric Horizon + Eclipse Arc + Living Tree + Slim Liquid Glass)
+        // Landing Hero Stage (Atmospheric Horizon + Volumetric Clouds + Eclipse Arc + Living Tree + Slim Liquid Glass)
         function LandingHeroStage({ onStartLogin, onOpenPdpa, pwaPrompt, onInstallPwa }) {
             const canvasRef = useRef(null);
             const heroRef = useRef(null);
@@ -843,7 +922,7 @@
 
             const steps = [
                 { no: '01', title: 'Pre-test & AI Map', desc: 'วัดพื้นฐาน 4 หมวดคลินิกพร้อมแผนติวอัจฉริยะ', icon: 'ClipboardCheck' },
-                { no: '02', title: '20 บทเรียน + AI ติว', desc: 'สะสมเวลา ≥80% พร้อมสรุป 1 นาที & เสียงบรรยาย', icon: 'MonitorPlay' },
+                { no: '02', title: '20 บทเรียน + AI ติว', desc: 'สะสมเวลา ≥80% พร้อมสรุป 1 นาทีเสียง AI สตูดิโอ', icon: 'MonitorPlay' },
                 { no: '03', title: 'AI Skill Lab 3 มิติ', desc: 'ฝึกสื่อสาร 6 เคส (รวมเด็ก/SBAR) + วัดน้ำเสียงสด', icon: 'Bot' },
                 { no: '04', title: 'Post-test ≥ 80%', desc: 'ประเมินความรู้หลังเรียนพร้อม AI วิเคราะห์จุดพลาด', icon: 'FileCheck2' },
                 { no: '05', title: 'ประกาศฯ + CNEU QR', desc: 'ออกใบประกาศฯ PDF/PNG + ตราโฮโลแกรมกันปลอม', icon: 'Award' }
@@ -870,7 +949,7 @@
                             <span className="shooting-star top-[12%] left-[92%]" style={{ '--len': '185px', '--ang': '-34deg', '--m-dur': '8.4s', '--m-del': '2.7s', '--trail-col': 'rgba(110,231,183,0.78)' }} />
                         </div>
 
-                        {/* Atmospheric Volumetric Clouds Behind Living Tree (z-11: หลังต้นไม้และแสง Eclipse Arc) */}
+                        {/* Atmospheric Volumetric Clouds Behind Living Tree */}
                         <div className="absolute inset-0 pointer-events-none overflow-hidden z-[11]" aria-hidden="true">
                             <svg width="0" height="0" className="absolute">
                                 <defs>
@@ -895,45 +974,36 @@
                                 </defs>
                             </svg>
 
-                            {/* เมฆลอยผ่านหลังพุ่มต้นไม้ 4 กลุ่ม (ความเร็วและระดับลึกต่างกัน) */}
                             <div className="hero-cloud-drift top-[44%] sm:top-[42%] w-[46vw] max-w-[540px] min-w-[230px] opacity-50" style={{ '--c-dur': '108s', '--c-del': '-22s' }}>
                                 <svg viewBox="0 0 420 140" className="w-full h-auto overflow-visible" filter="url(#cloudSoftBlur)">
                                     <path d="M40 112 C28 112 20 100 28 90 C34 82 48 80 58 82 C68 58 98 46 126 56 C144 30 192 22 226 42 C252 34 286 44 298 68 C318 64 342 74 348 90 C366 90 380 100 376 112 Z" fill="url(#cloudWarmRimGrad)" />
                                 </svg>
                             </div>
-
                             <div className="hero-cloud-drift top-[54%] sm:top-[52%] w-[56vw] max-w-[660px] min-w-[260px] opacity-65" style={{ '--c-dur': '86s', '--c-del': '-54s' }}>
                                 <svg viewBox="0 0 480 160" className="w-full h-auto overflow-visible" filter="url(#cloudSoftBlur)">
                                     <path d="M36 128 C20 128 16 112 30 102 C40 94 58 92 72 96 C84 64 124 46 160 60 C186 24 248 18 286 48 C318 38 358 54 370 82 C398 78 426 90 434 108 C452 108 462 120 452 128 Z" fill="url(#cloudSilverGrad)" />
                                 </svg>
                             </div>
-
                             <div className="hero-cloud-drift top-[64%] sm:top-[61%] w-[52vw] max-w-[620px] min-w-[250px] opacity-55" style={{ '--c-dur': '124s', '--c-del': '-84s' }}>
                                 <svg viewBox="0 0 460 150" className="w-full h-auto overflow-visible" filter="url(#cloudSoftBlur)">
                                     <path d="M44 122 C26 122 22 106 38 96 C52 88 70 88 86 92 C104 64 148 54 182 68 C210 38 264 36 298 62 C328 54 364 68 376 92 C402 90 426 102 422 122 Z" fill="url(#cloudSoftHorizonGrad)" />
                                 </svg>
                             </div>
-
                             <div className="hero-cloud-drift top-[48%] sm:top-[47%] w-[38vw] max-w-[440px] min-w-[190px] opacity-40" style={{ '--c-dur': '74s', '--c-del': '-38s' }}>
                                 <svg viewBox="0 0 380 125" className="w-full h-auto overflow-visible" filter="url(#cloudSoftBlur)">
                                     <path d="M34 102 C22 102 18 90 30 82 C44 74 64 74 78 78 C96 52 138 44 170 58 C196 34 246 36 272 60 C298 56 328 68 336 86 C352 86 360 96 350 102 Z" fill="url(#cloudWarmRimGrad)" />
                                 </svg>
                             </div>
-
-                            {/* ก้อนเมฆโอบขอบฟ้าซ้าย–ขวาด้านล่าง (พริ้วเบาๆ ตลอดเวลา ไม่ให้ท้องฟ้าโล่ง) */}
                             <div className="hero-cloud-bank-l bottom-[8%] sm:bottom-[10%] -left-[12%] sm:-left-[6%] w-[58vw] max-w-[620px] opacity-70">
                                 <svg viewBox="0 0 520 180" className="w-full h-auto overflow-visible" filter="url(#cloudSoftBlur)">
                                     <path d="M10 164 C10 126 42 104 82 108 C100 68 154 48 202 68 C236 32 308 26 354 60 C392 52 436 70 452 104 C484 104 510 124 510 164 Z" fill="url(#cloudSoftHorizonGrad)" />
                                 </svg>
                             </div>
-
                             <div className="hero-cloud-bank-r bottom-[7%] sm:bottom-[9%] -right-[12%] sm:-right-[6%] w-[60vw] max-w-[640px] opacity-70">
                                 <svg viewBox="0 0 540 185" className="w-full h-auto overflow-visible" filter="url(#cloudSoftBlur)">
                                     <path d="M24 168 C16 130 48 106 90 110 C112 72 166 56 214 74 C252 34 328 28 378 64 C418 54 468 72 486 108 C516 110 534 132 530 168 Z" fill="url(#cloudSilverGrad)" />
                                 </svg>
                             </div>
-
-                            {/* หมอกเมฆเรืองรองตรงขอบฟ้าล่างรับฐานต้นไม้ */}
                             <div className="hero-cloud-haze absolute inset-x-0 bottom-0 h-[34%]" />
                         </div>
 
@@ -1133,7 +1203,7 @@
         }
 
         // ============================================================================
-        // 4. MAIN LEARNER APPLICATION (5-STEP JOURNEY + ALL 5 ZERO-COST UPGRADES)
+        // 4. MAIN LEARNER APPLICATION (5-STEP JOURNEY + STUDIO CHUNKED AI VOICE)
         // ============================================================================
         function LearnerApp() {
             const previewParam = useMemo(() => {
@@ -1157,7 +1227,7 @@
             }, [theme]);
             const toggleTheme = useCallback(() => setTheme(p => (p === 'dark' ? 'light' : 'dark')), []);
 
-            // PWA Install & Offline Status (Zero-Cost Upgrade #5)
+            // PWA Install & Offline Status
             const [pwaPrompt, setPwaPrompt] = useState(null);
             const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
             useEffect(() => {
@@ -1179,10 +1249,7 @@
 
             const handleInstallPwa = async () => {
                 if (!pwaPrompt) return;
-                try {
-                    pwaPrompt.prompt();
-                    await pwaPrompt.userChoice;
-                } catch (_) {}
+                try { pwaPrompt.prompt(); await pwaPrompt.userChoice; } catch (_) {}
                 setPwaPrompt(null);
             };
 
@@ -1249,7 +1316,7 @@
             const [aiLessonChat, setAiLessonChat] = useState([]);
             const [aiLessonInput, setAiLessonInput] = useState('');
             const [aiLessonBusy, setAiLessonBusy] = useState(false);
-            const [ttsState, setTtsState] = useState({ activeKey: '', status: 'idle' });
+            const [ttsState, setTtsState] = useState({ activeKey: '', status: 'idle', chunkIdx: 0, totalChunks: 0, note: '' });
 
             // Interactive Tabs: Clinical Cases, Flashcards, Pocket Phrasebook & 30s Warm-up
             const [caseIdx, setCaseIdx] = useState(0);
@@ -1277,8 +1344,10 @@
             const [confirmDialog, setConfirmDialog] = useState({ open: false, title: '', message: '', danger: false, confirmText: 'ยืนยัน', onConfirm: null });
 
             const certCanvasRef = useRef(null);
-            const ttsAudioRef = useRef(null);
+            const sharedTtsAudioRef = useRef(null);
             const ttsUrlRef = useRef(null);
+            const ttsSessionRef = useRef(0);
+            const ttsAbortRef = useRef(null);
             const studySecondsRef = useRef(studySeconds);
             useEffect(() => { studySecondsRef.current = studySeconds; }, [studySeconds]);
 
@@ -1292,7 +1361,7 @@
                 if (el) el.dataset.mounted = 'true';
             }, []);
 
-            // Keynote Launch Sync (เฉพาะหน้าแรกต้นไม้)
+            // Keynote Launch Sync
             useEffect(() => {
                 if (window.RJCLOUD_KEYNOTE && typeof window.RJCLOUD_KEYNOTE.sync === 'function') {
                     window.RJCLOUD_KEYNOTE.sync({
@@ -1364,7 +1433,6 @@
             const activeLessonGuide = (window.LESSON_AI_GUIDES && window.LESSON_AI_GUIDES[activeLesson.id]) || { keyPoints: ['ทบทวนหลักการสำคัญจากวิดีโอและเอกสารประกอบบทเรียนนี้'], microCheck: null };
             const clinicalBadges = useMemo(() => computeClinicalBadgesForProfile(user), [user]);
 
-            // Prioritized Flashcards (จุดอ่อนจาก Pre-test ขึ้นก่อน)
             const sortedFlashcards = useMemo(() => {
                 const weakId = user?.aiRoadmap?.weakestId;
                 if (!weakId) return SPACED_FLASHCARDS;
@@ -1394,7 +1462,7 @@
                 } catch (err) { console.warn('Cloud save warning:', err); }
             }, [isAdminPreview]);
 
-            // Study Timer (นับเวลาเรียนจริงเมื่ออยู่หน้าบทเรียนหรือ Live)
+            // Study Timer
             useEffect(() => {
                 if (screen !== 'dashboard' || !user || isAdminPreview) return;
                 if (activeTab !== 'lessons' && activeTab !== 'live') return;
@@ -1445,62 +1513,200 @@
                 }
             }, [screen, user, certTemplate, cneuConfig]);
 
-            // Natural Voice TTS Player (Lesson Cheat Sheet & Pocket Phrasebook)
+            // ============================================================================
+            // STUDIO-GRADE CHUNKED AI VOICE ENGINE (ZERO BROWSER SPEECHSYNTHESIS NOISE!)
+            // โหลดเสียง AI คุณภาพสูงสุด (24kHz PCM WAV) แบ่งช่วงล่วงหน้า (Lookahead Prefetch)
+            // ตัดเสียงรบกวนจากเบราว์เซอร์ออก 100% รอจนเสียง AI พร้อมจริง
+            // ============================================================================
+            const unlockMobileAudio = useCallback(() => {
+                try {
+                    if (!sharedTtsAudioRef.current) {
+                        const a = new Audio();
+                        a.playsInline = true;
+                        a.setAttribute('playsinline', '');
+                        a.preload = 'auto';
+                        sharedTtsAudioRef.current = a;
+                    }
+                    const a = sharedTtsAudioRef.current;
+                    if (a.paused && !a.src) {
+                        a.muted = true;
+                        a.src = SILENT_UNLOCK_WAV;
+                        const p = a.play();
+                        if (p && typeof p.then === 'function') {
+                            p.then(() => {
+                                try { a.pause(); a.currentTime = 0; } catch (_) {}
+                                a.muted = false;
+                            }).catch(() => { a.muted = false; });
+                        } else {
+                            a.muted = false;
+                        }
+                    }
+                } catch (_) {}
+            }, []);
+
             const stopTts = useCallback(() => {
-                if (ttsAudioRef.current) { try { ttsAudioRef.current.pause(); } catch (_) {} ttsAudioRef.current = null; }
-                if (ttsUrlRef.current) { try { URL.revokeObjectURL(ttsUrlRef.current); } catch (_) {} ttsUrlRef.current = null; }
-                if ('speechSynthesis' in window) { try { window.speechSynthesis.cancel(); } catch (_) {} }
-                setTtsState({ activeKey: '', status: 'idle' });
+                ttsSessionRef.current += 1;
+                if (ttsAbortRef.current) {
+                    try { ttsAbortRef.current.abort(); } catch (_) {}
+                    ttsAbortRef.current = null;
+                }
+                if (sharedTtsAudioRef.current) {
+                    try {
+                        sharedTtsAudioRef.current.onended = null;
+                        sharedTtsAudioRef.current.onerror = null;
+                        sharedTtsAudioRef.current.pause();
+                    } catch (_) {}
+                }
+                if (ttsUrlRef.current) {
+                    try { URL.revokeObjectURL(ttsUrlRef.current); } catch (_) {}
+                    ttsUrlRef.current = null;
+                }
+                // สั่งตัดเสียงพูดเบราว์เซอร์ทิ้งเสมอ เพื่อไม่ให้มีเสียงหุ่นยนต์แทรกรบกวน
+                if ('speechSynthesis' in window) {
+                    try { window.speechSynthesis.cancel(); } catch (_) {}
+                }
+                setTtsState({ activeKey: '', status: 'idle', chunkIdx: 0, totalChunks: 0, note: '' });
             }, []);
             useEffect(() => () => stopTts(), [stopTts]);
 
-            const playNaturalTts = useCallback(async (key, rawText, lang = 'th') => {
-                if (ttsState.activeKey === key && ttsState.status !== 'idle') { stopTts(); return; }
-                stopTts();
-                const text = lang === 'en' ? String(rawText || '').trim() : prepareSpeechSafe(rawText);
-                if (!text) return;
-                setTtsState({ activeKey: key, status: 'loading' });
+            const fetchStudioTtsChunk = useCallback(async (cacheKey, chunkText, lang, signal) => {
+                const cached = typeof CORE.getCachedAudio === 'function' ? await CORE.getCachedAudio(cacheKey) : null;
+                if (cached && cached.size > 0) return cached;
+                if (!appsScriptUrl || !navigator.onLine) return null;
 
-                let blob = typeof CORE.getCachedAudio === 'function' ? await CORE.getCachedAudio(key) : null;
-                if (!blob && appsScriptUrl && navigator.onLine) {
+                // ลองโหลดเสียง AI คุณภาพสูงสุดสูงสุด 2 รอบ (Timeout 45 วิ/รอบ) ไม่ลดทอนคุณภาพ
+                for (let attempt = 0; attempt < 2; attempt++) {
+                    if (signal?.aborted) return null;
                     const res = await postAppsScript(appsScriptUrl, {
                         action: 'callGeminiTTS',
-                        text,
+                        text: chunkText,
                         voiceName: 'Sulafat',
                         languageCode: lang === 'en' ? 'en-US' : 'th-TH',
                         style: lang === 'en'
-                            ? 'Speak gently, warmly, and clearly like a compassionate clinical educator.'
-                            : 'พูดภาษาไทยด้วยน้ำเสียงผู้หญิงที่อบอุ่น นุ่มนวล ชัดถ้อยชัดคำ เหมือนอาจารย์พยาบาลอธิบายอย่างใจเย็น'
-                    }, 18000);
+                            ? 'Speak gently, warmly, and clearly like a compassionate senior clinical educator in a studio recording.'
+                            : 'พูดภาษาไทยด้วยน้ำเสียงผู้หญิงที่อบอุ่น นุ่มนวล คมชัดระดับสตูดิโอ เป็นธรรมชาติเหมือนอาจารย์พยาบาลผู้เชี่ยวชาญกำลังสรุปบทเรียนอย่างใจเย็น'
+                    }, 45000, signal);
+
+                    if (signal?.aborted) return null;
                     if (res?.status === 'success' && res.inlineData?.data) {
                         const rate = parseInt(res.inlineData.mimeType?.match(/rate=(\d+)/)?.[1] ?? '24000', 10);
-                        blob = pcm16ToWavBlobSafe(res.inlineData.data, rate);
-                        if (typeof CORE.setCachedAudio === 'function') CORE.setCachedAudio(key, blob).catch(() => {});
+                        const blob = pcm16ToWavBlobSafe(res.inlineData.data, rate);
+                        if (blob && blob.size > 0) {
+                            if (typeof CORE.setCachedAudio === 'function') CORE.setCachedAudio(cacheKey, blob).catch(() => {});
+                            return blob;
+                        }
+                    }
+                    if (attempt === 0 && !signal?.aborted) {
+                        await new Promise(r => setTimeout(r, 1100));
                     }
                 }
-                if (blob && blob.size > 0) {
+                return null;
+            }, [appsScriptUrl]);
+
+            const playNaturalTts = useCallback(async (key, rawInput, lang = 'th') => {
+                if (ttsState.activeKey === key && ttsState.status !== 'idle') {
+                    stopTts();
+                    return;
+                }
+                unlockMobileAudio();
+                stopTts();
+
+                const chunks = splitSpeechIntoNaturalChunks(rawInput, lang, 190);
+                if (chunks.length === 0) return;
+
+                const sid = ttsSessionRef.current;
+                const ctrl = new AbortController();
+                ttsAbortRef.current = ctrl;
+
+                if (!sharedTtsAudioRef.current) {
+                    const a = new Audio();
+                    a.playsInline = true;
+                    a.setAttribute('playsinline', '');
+                    sharedTtsAudioRef.current = a;
+                }
+
+                setTtsState({
+                    activeKey: key,
+                    status: 'loading',
+                    chunkIdx: 1,
+                    totalChunks: chunks.length,
+                    note: 'กำลังเตรียมเสียง AI คุณภาพสูงสุด (รอจน AI พร้อม)...'
+                });
+
+                // เริ่มโหลดช่วงที่ 1 ทันที และใช้ Lookahead Prefetching โหลดช่วงถัดไประหว่างที่ช่วงปัจจุบันกำลังเล่น
+                let currentPromise = fetchStudioTtsChunk(`${key}_hq_c0`, chunks[0], lang, ctrl.signal);
+                let playedAny = false;
+
+                for (let i = 0; i < chunks.length; i++) {
+                    if (ttsSessionRef.current !== sid || ctrl.signal.aborted) return;
+
+                    setTtsState(prev => ({
+                        ...prev,
+                        status: 'loading',
+                        chunkIdx: i + 1,
+                        totalChunks: chunks.length,
+                        note: i === 0
+                            ? 'กำลังเตรียมเสียง AI คุณภาพสตูดิโอ (รอสักครู่)...'
+                            : `กำลังเตรียมเสียง AI ช่วงที่ ${i + 1}/${chunks.length}...`
+                    }));
+
+                    const blob = await currentPromise;
+                    if (ttsSessionRef.current !== sid || ctrl.signal.aborted) return;
+
+                    // โหลดช่วงถัดไปล่วงหน้าทันทีขณะที่ช่วงนี้กำลังเล่น (รักษาคุณภาพ 100% ไร้รอยต่อ)
+                    if (i + 1 < chunks.length) {
+                        currentPromise = fetchStudioTtsChunk(`${key}_hq_c${i + 1}`, chunks[i + 1], lang, ctrl.signal);
+                    } else {
+                        currentPromise = null;
+                    }
+
+                    if (!blob || blob.size === 0) {
+                        if (!playedAny) {
+                            showToast(
+                                navigator.onLine
+                                    ? 'เซิร์ฟเวอร์เสียง AI กำลังใช้งานหนาแน่น กรุณากดฟังใหม่อีกครั้งค่ะ (ไม่ใช้เสียงเบราว์เซอร์แทรก)'
+                                    : 'ขณะนี้ออฟไลน์และยังไม่มีไฟล์เสียง AI แคชไว้ในเครื่องค่ะ',
+                                'info'
+                            );
+                        }
+                        break;
+                    }
+
+                    playedAny = true;
+                    setTtsState({
+                        activeKey: key,
+                        status: 'speaking',
+                        chunkIdx: i + 1,
+                        totalChunks: chunks.length,
+                        note: chunks.length > 1
+                            ? `กำลังบรรยายเสียง AI คุณภาพสตูดิโอ (ช่วงที่ ${i + 1}/${chunks.length})`
+                            : 'กำลังบรรยายเสียง AI คุณภาพสตูดิโอ'
+                    });
+
+                    if (ttsUrlRef.current) {
+                        try { URL.revokeObjectURL(ttsUrlRef.current); } catch (_) {}
+                    }
                     const url = URL.createObjectURL(blob);
                     ttsUrlRef.current = url;
-                    const a = new Audio(url);
-                    ttsAudioRef.current = a;
-                    setTtsState({ activeKey: key, status: 'speaking' });
-                    a.onended = () => stopTts();
-                    a.onerror = () => stopTts();
-                    a.play().catch(() => stopTts());
-                    return;
+
+                    const ok = await new Promise((resolve) => {
+                        const a = sharedTtsAudioRef.current;
+                        a.muted = false;
+                        a.src = url;
+                        a.onended = () => resolve(true);
+                        a.onerror = () => resolve(false);
+                        try { a.load(); } catch (_) {}
+                        const p = a.play();
+                        if (p && typeof p.catch === 'function') p.catch(() => resolve(false));
+                    });
+
+                    if (!ok || ttsSessionRef.current !== sid) break;
                 }
-                if ('speechSynthesis' in window) {
-                    setTtsState({ activeKey: key, status: 'speaking' });
-                    const u = new SpeechSynthesisUtterance(text);
-                    u.lang = lang === 'en' ? 'en-US' : 'th-TH';
-                    u.rate = 0.95;
-                    u.onend = () => stopTts();
-                    u.onerror = () => stopTts();
-                    window.speechSynthesis.speak(u);
-                    return;
+
+                if (ttsSessionRef.current === sid) {
+                    stopTts();
                 }
-                stopTts();
-            }, [ttsState, stopTts, appsScriptUrl]);
+            }, [ttsState, unlockMobileAudio, stopTts, fetchStudioTtsChunk, showToast]);
 
             // ============================================================================
             // 5. AUTH WIZARD HANDLERS (3 STEPS WITH REAL EMAIL OTP)
@@ -1802,6 +2008,9 @@
                 );
             }
 
+            const summaryAudioKey = `lesson_summary_${activeLesson.id}`;
+            const isSummaryActive = ttsState.activeKey === summaryAudioKey && ttsState.status !== 'idle';
+
             return (
                 <div className="min-h-dvh relative flex flex-col pt-safe">
                     <div className="spatial-aura" /><div className="spatial-grid" />
@@ -2097,7 +2306,7 @@
                                     </button>
                                 </div>
 
-                                {/* TAB 1: LESSONS + AI STUDY COMPANION */}
+                                {/* TAB 1: LESSONS + AUDIO-FIRST 1-MINUTE SUMMARY + AI STUDY COMPANION */}
                                 {activeTab === 'lessons' && (
                                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
                                         <div className="lg:col-span-8 space-y-4">
@@ -2127,38 +2336,91 @@
                                                 </div>
                                             </div>
 
-                                            {/* 1-Minute Clinical Cheat Sheet + Micro-Check (Offline Ready) */}
-                                            <div className="spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3">
-                                                <div className="flex flex-wrap items-center justify-between gap-2">
-                                                    <h3 className="font-display font-bold text-sm sm:text-base text-primary-adaptive flex items-center gap-2">
-                                                        <Icon name="Sparkles" size={17} className="text-accent-adaptive" /> สรุปคลินิก 1 นาที (อ่านได้แม้ไม่มีเน็ตใน ICU)
-                                                    </h3>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => playNaturalTts(`lesson_summary_${activeLesson.id}`, `สรุปบทที่ ${activeLesson.id} ${activeLesson.title}: ${(activeLessonGuide.keyPoints || []).join(' ')}`)}
-                                                        className={`px-3 py-1.5 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 ${ttsState.activeKey === `lesson_summary_${activeLesson.id}` ? 'bg-rose-500 text-white' : 'spatial-soft text-prism-adaptive'}`}
-                                                    >
-                                                        <Icon name={ttsState.activeKey === `lesson_summary_${activeLesson.id}` ? 'Square' : 'Volume2'} size={14} />
-                                                        {ttsState.activeKey === `lesson_summary_${activeLesson.id}` ? 'หยุดเสียง' : 'ฟังสรุปเสียง AI'}
-                                                    </button>
-                                                </div>
-                                                <ul className="space-y-1.5 text-xs sm:text-sm text-secondary-adaptive list-disc pl-5">
-                                                    {(activeLessonGuide.keyPoints || []).map((kp, i) => <li key={i}>{kp}</li>)}
-                                                </ul>
-
-                                                {activeLessonGuide.microCheck && (
-                                                    <div className="spatial-soft p-3.5 rounded-2xl space-y-2 text-xs">
-                                                        <p className="font-bold text-primary-adaptive">⚡ Micro-Check: {activeLessonGuide.microCheck.q}</p>
-                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                                            {activeLessonGuide.microCheck.options.map((op, i) => (
-                                                                <button key={i} type="button" onClick={() => setMicroAnswer(i)} className={`text-left p-2.5 rounded-xl border ${microAnswer === i ? (i === activeLessonGuide.microCheck.answer ? 'bg-emerald-500/20 border-emerald-400 text-accent-adaptive font-bold' : 'bg-rose-500/20 border-rose-400 text-rose-300') : 'spatial-soft text-secondary-adaptive'}`}>
-                                                                    {op}
-                                                                </button>
-                                                            ))}
+                                            {/* 1-Minute Clinical Audio Summary (ไร้ซับไตเติล + ไฟแอมเบียน + รอเสียง AI คุณภาพสตูดิโอแบบแบ่งช่วง) */}
+                                            <div className={`spatial-card rounded-[1.75rem] overflow-hidden transition-all duration-300 ${isSummaryActive ? 'rjc-ambient-card-active' : ''}`}>
+                                                {isSummaryActive && <div className="rjc-ambient-bar" />}
+                                                <div className="p-4 sm:p-5 space-y-3.5">
+                                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                                        <div className="flex items-start gap-3">
+                                                            <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 transition-all ${
+                                                                isSummaryActive
+                                                                    ? 'bg-gradient-to-br from-aurora-400 via-prism-400 to-violet-400 text-void-950 shadow-lg'
+                                                                    : 'bg-aurora-500/15 border border-aurora-400/35 text-accent-adaptive'
+                                                            }`}>
+                                                                {isSummaryActive ? (
+                                                                    <span className="rjc-wave-eq"><span /><span /><span /><span /><span /></span>
+                                                                ) : (
+                                                                    <Icon name="Headphones" size={20} />
+                                                                )}
+                                                            </div>
+                                                            <div>
+                                                                <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase block">
+                                                                    STUDIO AI VOICE • AUDIO-ONLY SUMMARY
+                                                                </span>
+                                                                <h3 className="font-display font-extrabold text-sm sm:text-base text-primary-adaptive leading-snug">
+                                                                    สรุปคลินิก 1 นาทีประจำบทที่ {activeLesson.id} (เน้นฟังเสียง AI)
+                                                                </h3>
+                                                                <p className="text-xs text-muted-adaptive mt-0.5">
+                                                                    {isSummaryActive
+                                                                        ? ttsState.note
+                                                                        : 'กดปุ่มเพื่อฟังสรุปประเด็นสำคัญด้วยเสียง AI คุณภาพสูงสุด (ไม่มีซับไตเติล • ตัดเสียงเบราว์เซอร์ 100%)'}
+                                                                </p>
+                                                            </div>
                                                         </div>
-                                                        {microAnswer !== null && <p className="text-accent-adaptive font-semibold pt-1">💡 {activeLessonGuide.microCheck.explain}</p>}
+
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                const pts = Array.isArray(activeLessonGuide.keyPoints) ? activeLessonGuide.keyPoints : [];
+                                                                const segments = [
+                                                                    `สรุปคลินิกหนึ่งนาที ประจำบทที่ ${activeLesson.id} เรื่อง ${activeLesson.title} ค่ะ`,
+                                                                    ...pts
+                                                                ];
+                                                                playNaturalTts(summaryAudioKey, segments, 'th');
+                                                            }}
+                                                            className={`touch-target px-5 py-2.5 rounded-full font-display font-extrabold text-xs sm:text-sm inline-flex items-center justify-center gap-2 shrink-0 transition-all ${
+                                                                isSummaryActive
+                                                                    ? 'bg-rose-600 hover:bg-rose-500 text-white shadow-lg'
+                                                                    : 'rjc2-pill-btn'
+                                                            }`}
+                                                        >
+                                                            <Icon name={isSummaryActive ? 'Square' : 'Volume2'} size={16} />
+                                                            <span>
+                                                                {isSummaryActive
+                                                                    ? (ttsState.status === 'loading' ? 'กำลังเตรียมเสียง • แตะเพื่อหยุด' : 'หยุดฟังสรุป')
+                                                                    : 'ฟังสรุปเสียง AI คุณภาพสูง'}
+                                                            </span>
+                                                        </button>
                                                     </div>
-                                                )}
+
+                                                    {isSummaryActive && (
+                                                        <div className="spatial-soft rounded-2xl px-3.5 py-2.5 border-prism-400/40 flex flex-wrap items-center justify-between gap-2 text-xs">
+                                                            <div className="flex items-center gap-2 text-primary-adaptive font-bold">
+                                                                <span className={`w-2.5 h-2.5 rounded-full ${ttsState.status === 'speaking' ? 'bg-emerald-400 animate-pulse' : 'bg-cyan-400 animate-ping'}`} />
+                                                                <span>
+                                                                    {ttsState.status === 'loading'
+                                                                        ? `กำลังรอเสียง AI คุณภาพสตูดิโอ (ช่วงที่ ${ttsState.chunkIdx}/${ttsState.totalChunks})...`
+                                                                        : `กำลังบรรยายสรุป (ช่วงที่ ${ttsState.chunkIdx}/${ttsState.totalChunks}) • โหลดช่วงถัดไปล่วงหน้าแล้ว`}
+                                                                </span>
+                                                            </div>
+                                                            <span className="font-mono text-[10px] font-bold text-prism-adaptive">24kHz STUDIO PCM • NO BROWSER VOICE</span>
+                                                        </div>
+                                                    )}
+
+                                                    {activeLessonGuide.microCheck && (
+                                                        <div className="spatial-soft p-3.5 rounded-2xl space-y-2 text-xs">
+                                                            <p className="font-bold text-primary-adaptive">⚡ Micro-Check: {activeLessonGuide.microCheck.q}</p>
+                                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                                                {activeLessonGuide.microCheck.options.map((op, i) => (
+                                                                    <button key={i} type="button" onClick={() => setMicroAnswer(i)} className={`text-left p-2.5 rounded-xl border ${microAnswer === i ? (i === activeLessonGuide.microCheck.answer ? 'bg-emerald-500/20 border-emerald-400 text-accent-adaptive font-bold' : 'bg-rose-500/20 border-rose-400 text-rose-300') : 'spatial-soft text-secondary-adaptive'}`}>
+                                                                        {op}
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                            {microAnswer !== null && <p className="text-accent-adaptive font-semibold pt-1">💡 {activeLessonGuide.microCheck.explain}</p>}
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
 
@@ -2189,7 +2451,7 @@
                                             <div className="spatial-card rounded-[1.75rem] p-4 space-y-2 max-h-[380px] overflow-y-auto custom-scrollbar">
                                                 <p className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">สารบัญ {lessons.length} บทเรียน</p>
                                                 {lessons.map(l => (
-                                                    <button key={l.id} type="button" onClick={() => { setCurrentLessonId(l.id); setMicroAnswer(null); }} className={`w-full text-left p-2.5 rounded-xl border text-xs transition-all ${Number(l.id) === Number(activeLesson.id) ? 'bg-aurora-500/20 border-aurora-400 text-primary-adaptive font-bold' : 'spatial-soft text-secondary-adaptive'}`}>
+                                                    <button key={l.id} type="button" onClick={() => { stopTts(); setCurrentLessonId(l.id); setMicroAnswer(null); }} className={`w-full text-left p-2.5 rounded-xl border text-xs transition-all ${Number(l.id) === Number(activeLesson.id) ? 'bg-aurora-500/20 border-aurora-400 text-primary-adaptive font-bold' : 'spatial-soft text-secondary-adaptive'}`}>
                                                         <span className="font-mono text-prism-adaptive mr-1.5">{String(l.id).padStart(2, '0')}</span>{l.title}
                                                     </button>
                                                 ))}
@@ -2247,7 +2509,7 @@
                                     );
                                 })()}
 
-                                {/* TAB 3: SPACED-REPETITION SMART FLASHCARDS (OFFLINE READY) */}
+                                {/* TAB 3: SPACED-REPETITION SMART FLASHCARDS */}
                                 {activeTab === 'flashcards' && sortedFlashcards.length > 0 && (() => {
                                     const card = sortedFlashcards[fcIdx % sortedFlashcards.length];
                                     return (
@@ -2298,7 +2560,6 @@
                                 {/* TAB 5: PROFILE + CLINICAL BADGES + POCKET PHRASEBOOK + 30S WARM-UP + PDPA */}
                                 {activeTab === 'profile' && (
                                     <div className="space-y-5">
-                                        {/* Profile Summary + Zero-Cost Upgrade #1: Clinical Mastery Badges */}
                                         <section className="spatial-card rounded-[1.75rem] p-5 space-y-4">
                                             <div className="flex flex-wrap items-start justify-between gap-3">
                                                 <div>
@@ -2315,11 +2576,9 @@
                                             </div>
 
                                             <div className="space-y-2 pt-2 border-t border-white/10">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="font-mono text-[10px] font-bold text-amber-400 uppercase">
-                                                        CLINICAL MASTERY BADGES • เหรียญตราสมรรถนะคลินิก ({clinicalBadges.filter(b => b.earned).length}/{clinicalBadges.length})
-                                                    </span>
-                                                </div>
+                                                <span className="font-mono text-[10px] font-bold text-amber-400 uppercase block">
+                                                    CLINICAL MASTERY BADGES • เหรียญตราสมรรถนะคลินิก ({clinicalBadges.filter(b => b.earned).length}/{clinicalBadges.length})
+                                                </span>
                                                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
                                                     {clinicalBadges.map(b => (
                                                         <div key={b.id} className={`p-3 rounded-2xl border text-center space-y-1.5 transition-all ${b.earned ? 'bg-aurora-500/15 border-aurora-400/50' : 'spatial-soft opacity-55'}`}>
@@ -2334,39 +2593,54 @@
                                             </div>
                                         </section>
 
-                                        {/* Zero-Cost Upgrade #2: Pocket Phrasebook (TH-EN + Voice • Offline Ready) */}
-                                        <section className="spatial-card rounded-[1.75rem] p-5 space-y-3.5">
-                                            <div className="flex flex-wrap items-center justify-between gap-2">
-                                                <div>
-                                                    <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">BEDSIDE POCKET PHRASEBOOK • OFFLINE READY</span>
-                                                    <h3 className="font-display font-extrabold text-base text-primary-adaptive">คลังคำพูดพกพาหน้างานจริง (ไทย–อังกฤษ + ฟังเสียงตัวอย่าง)</h3>
-                                                </div>
-                                                <div className="flex gap-1 overflow-x-auto">
-                                                    {['ALL', 'เปิดบทสนทนา', 'สมองตาย vs เครื่องช่วยหายใจ', 'ความเชื่อ & เกียรติร่าง', 'ความโปร่งใส ODC & ค่าใช้จ่าย'].map(cat => (
-                                                        <button key={cat} type="button" onClick={() => setPhraseFilter(cat)} className={`px-2.5 py-1 rounded-full text-[10px] font-bold shrink-0 ${phraseFilter === cat ? 'bg-prism-400 text-void-950' : 'spatial-soft text-secondary-adaptive'}`}>
-                                                            {cat === 'ALL' ? 'ทั้งหมด' : cat}
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                            <div className="space-y-2.5">
-                                                {POCKET_PHRASEBOOK.filter(p => phraseFilter === 'ALL' || p.catLabel === phraseFilter).map(p => (
-                                                    <div key={p.id} className="spatial-soft p-4 rounded-2xl space-y-2 text-xs">
-                                                        <div className="flex flex-wrap items-center justify-between gap-2">
-                                                            <span className="font-display font-bold text-prism-adaptive">{p.catLabel} — <span className="text-muted-adaptive font-normal">{p.situation}</span></span>
-                                                            <div className="flex gap-1.5">
-                                                                <button type="button" onClick={() => playNaturalTts(`${p.id}_th`, p.textTH, 'th')} className={`px-2.5 py-1 rounded-lg font-bold text-[11px] ${ttsState.activeKey === `${p.id}_th` ? 'bg-rose-500 text-white' : 'bg-aurora-500/20 text-accent-adaptive'}`}>
-                                                                    {ttsState.activeKey === `${p.id}_th` ? '⏹ หยุด' : '🔊 ไทย'}
-                                                                </button>
-                                                                <button type="button" onClick={() => playNaturalTts(`${p.id}_en`, p.textEN, 'en')} className={`px-2.5 py-1 rounded-lg font-bold text-[11px] ${ttsState.activeKey === `${p.id}_en` ? 'bg-rose-500 text-white' : 'bg-prism-500/20 text-prism-adaptive'}`}>
-                                                                    {ttsState.activeKey === `${p.id}_en` ? '⏹ Stop' : '🔊 EN'}
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                        <p className="text-primary-adaptive leading-relaxed">“{p.textTH}”</p>
-                                                        <p className="text-muted-adaptive italic leading-relaxed">“{p.textEN}”</p>
+                                        {/* Pocket Phrasebook (Studio AI Voice + Ambient Status) */}
+                                        <section className={`spatial-card rounded-[1.75rem] overflow-hidden transition-all ${ttsState.activeKey.startsWith('pb_') && ttsState.status !== 'idle' ? 'rjc-ambient-card-active' : ''}`}>
+                                            {ttsState.activeKey.startsWith('pb_') && ttsState.status !== 'idle' && <div className="rjc-ambient-bar" />}
+                                            <div className="p-5 space-y-3.5">
+                                                <div className="flex flex-wrap items-center justify-between gap-2">
+                                                    <div>
+                                                        <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">BEDSIDE POCKET PHRASEBOOK • STUDIO AI VOICE</span>
+                                                        <h3 className="font-display font-extrabold text-base text-primary-adaptive">คลังคำพูดพกพาหน้างานจริง (ไทย–อังกฤษ + เสียง AI สตูดิโอ)</h3>
                                                     </div>
-                                                ))}
+                                                    <div className="flex gap-1 overflow-x-auto">
+                                                        {['ALL', 'เปิดบทสนทนา', 'สมองตาย vs เครื่องช่วยหายใจ', 'ความเชื่อ & เกียรติร่าง', 'ความโปร่งใส ODC & ค่าใช้จ่าย'].map(cat => (
+                                                            <button key={cat} type="button" onClick={() => setPhraseFilter(cat)} className={`px-2.5 py-1 rounded-full text-[10px] font-bold shrink-0 ${phraseFilter === cat ? 'bg-prism-400 text-void-950' : 'spatial-soft text-secondary-adaptive'}`}>
+                                                                {cat === 'ALL' ? 'ทั้งหมด' : cat}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                {ttsState.activeKey.startsWith('pb_') && ttsState.status !== 'idle' && (
+                                                    <div className="spatial-soft rounded-xl px-3.5 py-2 border-prism-400/40 flex items-center justify-between gap-2 text-xs">
+                                                        <span className="font-bold text-prism-adaptive">{ttsState.note}</span>
+                                                        <button type="button" onClick={stopTts} className="px-2.5 py-1 rounded-lg bg-rose-600 text-white font-bold text-[11px]">หยุดเสียง</button>
+                                                    </div>
+                                                )}
+
+                                                <div className="space-y-2.5">
+                                                    {POCKET_PHRASEBOOK.filter(p => phraseFilter === 'ALL' || p.catLabel === phraseFilter).map(p => {
+                                                        const isThActive = ttsState.activeKey === `${p.id}_th` && ttsState.status !== 'idle';
+                                                        const isEnActive = ttsState.activeKey === `${p.id}_en` && ttsState.status !== 'idle';
+                                                        return (
+                                                            <div key={p.id} className="spatial-soft p-4 rounded-2xl space-y-2 text-xs">
+                                                                <div className="flex flex-wrap items-center justify-between gap-2">
+                                                                    <span className="font-display font-bold text-prism-adaptive">{p.catLabel} — <span className="text-muted-adaptive font-normal">{p.situation}</span></span>
+                                                                    <div className="flex gap-1.5">
+                                                                        <button type="button" onClick={() => playNaturalTts(`${p.id}_th`, p.textTH, 'th')} className={`px-2.5 py-1 rounded-lg font-bold text-[11px] ${isThActive ? 'bg-rose-500 text-white' : 'bg-aurora-500/20 text-accent-adaptive'}`}>
+                                                                            {isThActive ? (ttsState.status === 'loading' ? '⏳ รอ AI...' : '⏹ หยุด') : '🔊 ไทย'}
+                                                                        </button>
+                                                                        <button type="button" onClick={() => playNaturalTts(`${p.id}_en`, p.textEN, 'en')} className={`px-2.5 py-1 rounded-lg font-bold text-[11px] ${isEnActive ? 'bg-rose-500 text-white' : 'bg-prism-500/20 text-prism-adaptive'}`}>
+                                                                            {isEnActive ? (ttsState.status === 'loading' ? '⏳ Waiting...' : '⏹ Stop') : '🔊 EN'}
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                                <p className="text-primary-adaptive leading-relaxed">“{p.textTH}”</p>
+                                                                <p className="text-muted-adaptive italic leading-relaxed">“{p.textEN}”</p>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
                                             </div>
                                         </section>
 
@@ -2440,7 +2714,6 @@
                                     <input value={certHospital} onChange={e => setCertHospital(e.target.value)} placeholder="โรงพยาบาล / หน่วยงาน" className="touch-target spatial-input sm:col-span-2 px-3.5 py-2.5 rounded-xl text-sm" />
                                 </div>
 
-                                {/* CNEU 5-Dimension Satisfaction */}
                                 <div className="spatial-soft rounded-2xl p-4 space-y-3">
                                     <p className="font-mono text-[10px] font-bold text-amber-400 uppercase">แบบประเมินความพึงพอใจ 5 ด้าน (มาตรฐาน CNEU • 1–5 ดาว)</p>
                                     {CNEU_EVAL_CRITERIA.map(c => (
@@ -2461,7 +2734,6 @@
                                     <textarea rows="2" value={csatComment} onChange={e => setCsatComment(e.target.value)} placeholder="ข้อเสนอแนะเพิ่มเติม (ไม่บังคับ)..." className="spatial-input w-full p-3 rounded-xl text-xs" />
                                 </div>
 
-                                {/* Zero-Cost Upgrade #3: Compact SUS (0–100) for R2R Research */}
                                 <div className="spatial-soft rounded-2xl p-4 space-y-3 border-prism-400/35">
                                     <div className="flex items-center justify-between gap-2">
                                         <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">SYSTEM USABILITY SCALE (SUS • มาตรฐานสากล R2R)</span>
