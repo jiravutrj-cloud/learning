@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#020612">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>ระบบรับสมัครอบรม Onsite &amp; พิมพ์ใบเซ็นชื่อหน้างาน — rjcloud.organ 2.0</title>
+    <title>ระบบรับสมัครอบรม Onsite &amp; ตรวจสอบรายชื่อ — rjcloud.organ 2.0</title>
     <link rel="manifest" href="./manifest.json">
 
     <!-- โหลดไฟล์สไตล์และโมดูลกลาง (มีค่าสำรองครบในตัวเมื่อเปิดพรีวิวเดี่ยว) -->
@@ -103,6 +103,7 @@
         --aura-3: rgba(192, 132, 252, 0.14);
       }
 
+      * { box-sizing: border-box; }
       html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
       body {
         margin: 0;
@@ -155,6 +156,7 @@
         color: #050b16 !important;
         box-shadow: 0 10px 28px -6px rgba(134, 239, 172, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.72) inset;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
+        text-decoration: none;
       }
       .rjc2-pill-btn:hover { transform: translateY(-1px) scale(1.015); }
       .rjc2-pill-btn:active { transform: scale(0.98); }
@@ -226,7 +228,6 @@
       }
     }
     </script>
-    <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
 </head>
 <body>
     <!-- หน้าจอโหลดเริ่มต้น -->
@@ -234,7 +235,7 @@
         <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#020612;color:#f8fafc;font-family:-apple-system,'Anuphan','Prompt',sans-serif;gap:14px;padding:24px;text-align:center;">
             <div style="width:46px;height:46px;border:3px solid rgba(56,189,248,0.22);border-top-color:#6ee7b7;border-right-color:#38bdf8;border-radius:9999px;animation:onsiteSpin 0.85s linear infinite;"></div>
             <div style="font-weight:800;font-size:17px;">กำลังเปิดระบบลงทะเบียนอบรม Onsite...</div>
-            <div style="font-size:12px;color:#93b4d8;">rjcloud.organ 2.0 • Scheduled Auto-Unlock &amp; Official Sign-in PDF Studio</div>
+            <div style="font-size:12px;color:#93b4d8;">rjcloud.organ 2.0 • Registration, Self-Check &amp; Official Sign-in PDF Studio</div>
         </div>
     </div>
 
@@ -245,11 +246,12 @@
         if (src.includes('data.js') || src.includes('learning-core.js') || src.includes('styles.css') || src.includes('qrcode')) return;
         const root = document.getElementById('onsite-root');
         if (root && !root.dataset.mounted && ev.message) {
+          const safeMsg = String(ev.message || 'Unknown error').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
           root.innerHTML =
             '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#020612;color:#f8fafc;font-family:Sarabun,sans-serif;">' +
             '<div style="max-width:440px;width:100%;background:#061229;border:1px solid rgba(244,63,94,0.4);border-radius:24px;padding:24px;text-align:center;">' +
             '<h2 style="color:#fda4af;font-weight:700;margin:0 0 8px;">ไม่สามารถเปิดระบบลงทะเบียน Onsite ได้ชั่วคราว</h2>' +
-            '<p style="font-size:13px;color:#dbeafe;margin:0 0 16px;">' + String(ev.message || 'Unknown error') + '</p>' +
+            '<p style="font-size:13px;color:#dbeafe;margin:0 0 16px;">' + safeMsg + '</p>' +
             '<button onclick="window.location.reload()" style="padding:12px 24px;border:none;border-radius:14px;background:#34d399;color:#020612;font-weight:700;cursor:pointer;">โหลดหน้าใหม่</button>' +
             '</div></div>';
         }
@@ -267,7 +269,7 @@
         // ============================================================================
         // 1. CONFIGURATION, REGIONS & PROFESSION GROUPS
         // ============================================================================
-        const CORE = window.RJCLOUD_CORE || {};
+        const CORE = window['RJCLOUD_CORE'] || {};
         const BUILTIN_CONFIG = {
             appName: 'rjcloud.organ',
             appId: 'rjcloud-organ-2027',
@@ -297,15 +299,14 @@
             };
 
         const THEME_KEY = CONFIG.theme?.storageKey || 'rjcloud_theme';
+        const LOCAL_MY_REG_KEY = 'rjcloud_onsite_my_regs_v2027';
 
-        // กลุ่มวิชาชีพมาตรฐานสำหรับคัดกรองแยกโต๊ะ/แยกใบเซ็นชื่อหน้างาน
         const PROFESSION_GROUPS = [
             { id: 'แพทย์', label: 'แพทย์', desc: 'แพทย์ / อาจารย์แพทย์ / แพทย์ประจำบ้าน', defaultPos: 'นายแพทย์ชำนาญการ', icon: 'Stethoscope' },
             { id: 'พยาบาล', label: 'พยาบาล', desc: 'พยาบาลวิชาชีพ / พยาบาล TC / ICU / ER / OR', defaultPos: 'พยาบาลวิชาชีพชำนาญการ', icon: 'HeartPulse' },
             { id: 'บุคลากรสหวิชาชีพ', label: 'บุคลากรสหวิชาชีพ', desc: 'เภสัชกร / นักเทคนิคการแพทย์ / นักสังคมสงเคราะห์ / เจ้าหน้าที่ประสานงาน', defaultPos: 'นักวิชาการสาธารณสุข / สหวิชาชีพ', icon: 'Users' }
         ];
 
-        // รายชื่อเขตสุขภาพ 1–13 และโรงพยาบาลสำรอง (จะผสานกับ data.js อัตโนมัติเมื่อวางคู่กัน)
         const BUILTIN_HOSPITAL_MAPPING = {
             'เขตสุขภาพที่ 1': [
                 { name: 'รพ.นครพิงค์', prov: 'เชียงใหม่' },
@@ -394,7 +395,6 @@
             ? window.HOSPITAL_MAPPING
             : BUILTIN_HOSPITAL_MAPPING;
 
-        // ค่าเริ่มต้นกิจกรรมมาตรฐาน (ผู้จัดแก้ไขได้ทุกช่องและบันทึกขึ้น Cloud ทันที)
         function buildDefaultUnlockLocal() {
             const d = new Date(Date.now() + 24 * 60 * 60 * 1000);
             d.setHours(16, 0, 0, 0);
@@ -414,22 +414,42 @@
             maxSeats: 0
         };
 
-        // ข้อมูลตัวอย่างสำหรับโหมดพรีวิวใบเซ็นชื่อ PDF (ไม่บันทึกลง Cloud จริง)
         function buildPreviewSampleRegistrants(cfg) {
             return [
-                { id: '1100123456', license: '1100123456', name: 'นพ.กิตติพงษ์ สุวรรณภูมิ', professionGroup: 'แพทย์', position: 'นายแพทย์ชำนาญการพิเศษ', region: 'เขตสุขภาพที่ 1', province: 'เชียงใหม่', hospital: 'รพ.นครพิงค์', email: 'kittipong@demo.go.th', phone: '0811112233', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: cfg.unlockAt },
-                { id: '4511128901', license: '4511128901', name: 'พว.กัญญารัตน์ วัฒนากูล', professionGroup: 'พยาบาล', position: 'พยาบาลวิชาชีพชำนาญการ (TC)', region: 'เขตสุขภาพที่ 13 (กทม. / กรมการแพทย์)', province: 'กรุงเทพมหานคร', hospital: 'รพ.ราชวิถี', email: 'kanyarat@demo.go.th', phone: '0812345678', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: cfg.unlockAt },
-                { id: '4511128902', license: '4511128902', name: 'พว.ณัฐธิดา เจริญสุข', professionGroup: 'พยาบาล', position: 'พยาบาลวิชาชีพ ICU', region: 'เขตสุขภาพที่ 13 (กทม. / กรมการแพทย์)', province: 'กรุงเทพมหานคร', hospital: 'รพ.ราชวิถี', email: 'nattida@demo.go.th', phone: '0822223344', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: cfg.unlockAt },
-                { id: '4511128903', license: '4511128903', name: 'นพ.ธนกร พิทักษ์ชีพ', professionGroup: 'แพทย์', position: 'อาจารย์แพทย์ศัลยกรรมปลูกถ่าย', region: 'เขตสุขภาพที่ 13 (กทม. / กรมการแพทย์)', province: 'กรุงเทพมหานคร', hospital: 'รพ.ราชวิถี', email: 'thanakorn@demo.go.th', phone: '0833334455', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: cfg.unlockAt },
-                { id: '4511128904', license: '4511128904', name: 'ภญ.ปิยะนุช ศรีสวัสดิ์', professionGroup: 'บุคลากรสหวิชาชีพ', position: 'เภสัชกรคลินิก', region: 'เขตสุขภาพที่ 13 (กทม. / กรมการแพทย์)', province: 'กรุงเทพมหานคร', hospital: 'รพ.นพรัตนราชธานี', email: 'piyanuch@demo.go.th', phone: '0844445566', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: cfg.unlockAt },
-                { id: '4511128905', license: '4511128905', name: 'พว.อรุณี วงศ์คำ', professionGroup: 'พยาบาล', position: 'พยาบาลวิชาชีพชำนาญการ', region: 'เขตสุขภาพที่ 1', province: 'เชียงใหม่', hospital: 'รพ.นครพิงค์', email: 'arunee@demo.go.th', phone: '0855556677', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: cfg.unlockAt },
-                { id: '4511128906', license: '4511128906', name: 'พว.สุกัญญา แสงจันทร์', professionGroup: 'พยาบาล', position: 'พยาบาลประสานงานรับบริจาคอวัยวะ', region: 'เขตสุขภาพที่ 1', province: 'เชียงราย', hospital: 'รพ.เชียงรายประชานุเคราะห์', email: 'sukanya@demo.go.th', phone: '0866667788', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: cfg.unlockAt },
-                { id: '4511128907', license: '4511128907', name: 'ทนพ.วีรชัย มณีรัตน์', professionGroup: 'บุคลากรสหวิชาชีพ', position: 'นักเทคนิคการแพทย์ (HLA Lab)', region: 'เขตสุขภาพที่ 7', province: 'ขอนแก่น', hospital: 'รพ.ขอนแก่น', email: 'weerachai@demo.go.th', phone: '0877778899', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: cfg.unlockAt },
-                { id: '4511128908', license: '4511128908', name: 'พญ.พิมพ์ชนก อรุณรุ่ง', professionGroup: 'แพทย์', position: 'อายุรแพทย์โรคไต', region: 'เขตสุขภาพที่ 7', province: 'ขอนแก่น', hospital: 'รพ.ขอนแก่น', email: 'pimchanok@demo.go.th', phone: '0888889900', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: cfg.unlockAt },
-                { id: '4511128909', license: '4511128909', name: 'พว.วิภาวี รัตนะ', professionGroup: 'พยาบาล', position: 'พยาบาลวิชาชีพ ER', region: 'เขตสุขภาพที่ 7', province: 'ร้อยเอ็ด', hospital: 'รพ.ร้อยเอ็ด', email: 'wipawee@demo.go.th', phone: '0899990011', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: cfg.unlockAt },
-                { id: '4511128910', license: '4511128910', name: 'พว.ชลธิชา ใจมั่น', professionGroup: 'พยาบาล', position: 'พยาบาลวิชาชีพชำนาญการ', region: 'เขตสุขภาพที่ 12', province: 'สงขลา', hospital: 'รพ.หาดใหญ่', email: 'chonticha@demo.go.th', phone: '0819876543', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: cfg.unlockAt },
-                { id: '4511128911', license: '4511128911', name: 'นายสมชาย รักษาธรรม', professionGroup: 'บุคลากรสหวิชาชีพ', position: 'นักสังคมสงเคราะห์ทางการแพทย์', region: 'เขตสุขภาพที่ 12', province: 'สงขลา', hospital: 'รพ.หาดใหญ่', email: 'somchai@demo.go.th', phone: '0828765432', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: cfg.unlockAt }
+                { id: '1100123456', license: '1100123456', eventId: cfg.eventId, name: 'นพ.กิตติพงษ์ สุวรรณภูมิ', professionGroup: 'แพทย์', position: 'นายแพทย์ชำนาญการพิเศษ', region: 'เขตสุขภาพที่ 1', province: 'เชียงใหม่', hospital: 'รพ.นครพิงค์', email: 'kittipong@demo.go.th', phone: '0811112233', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: cfg.unlockAt },
+                { id: '4511128901', license: '4511128901', eventId: cfg.eventId, name: 'พว.กัญญารัตน์ วัฒนากูล', professionGroup: 'พยาบาล', position: 'พยาบาลวิชาชีพชำนาญการ (TC)', region: 'เขตสุขภาพที่ 13 (กทม. / กรมการแพทย์)', province: 'กรุงเทพมหานคร', hospital: 'รพ.ราชวิถี', email: 'kanyarat@demo.go.th', phone: '0812345678', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: cfg.unlockAt },
+                { id: '4511128902', license: '4511128902', eventId: cfg.eventId, name: 'พว.ณัฐธิดา เจริญสุข', professionGroup: 'พยาบาล', position: 'พยาบาลวิชาชีพ ICU', region: 'เขตสุขภาพที่ 13 (กทม. / กรมการแพทย์)', province: 'กรุงเทพมหานคร', hospital: 'รพ.ราชวิถี', email: 'nattida@demo.go.th', phone: '0822223344', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: cfg.unlockAt },
+                { id: '4511128903', license: '4511128903', eventId: cfg.eventId, name: 'นพ.ธนกร พิทักษ์ชีพ', professionGroup: 'แพทย์', position: 'อาจารย์แพทย์ศัลยกรรมปลูกถ่าย', region: 'เขตสุขภาพที่ 13 (กทม. / กรมการแพทย์)', province: 'กรุงเทพมหานคร', hospital: 'รพ.ราชวิถี', email: 'thanakorn@demo.go.th', phone: '0833334455', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: cfg.unlockAt },
+                { id: '4511128904', license: '4511128904', eventId: cfg.eventId, name: 'ภญ.ปิยะนุช ศรีสวัสดิ์', professionGroup: 'บุคลากรสหวิชาชีพ', position: 'เภสัชกรคลินิก', region: 'เขตสุขภาพที่ 13 (กทม. / กรมการแพทย์)', province: 'กรุงเทพมหานคร', hospital: 'รพ.นพรัตนราชธานี', email: 'piyanuch@demo.go.th', phone: '0844445566', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: cfg.unlockAt },
+                { id: '4511128905', license: '4511128905', eventId: cfg.eventId, name: 'พว.อรุณี วงศ์คำ', professionGroup: 'พยาบาล', position: 'พยาบาลวิชาชีพชำนาญการ', region: 'เขตสุขภาพที่ 1', province: 'เชียงใหม่', hospital: 'รพ.นครพิงค์', email: 'arunee@demo.go.th', phone: '0855556677', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: cfg.unlockAt },
+                { id: '4511128906', license: '4511128906', eventId: cfg.eventId, name: 'พว.สุกัญญา แสงจันทร์', professionGroup: 'พยาบาล', position: 'พยาบาลประสานงานรับบริจาคอวัยวะ', region: 'เขตสุขภาพที่ 1', province: 'เชียงราย', hospital: 'รพ.เชียงรายประชานุเคราะห์', email: 'sukanya@demo.go.th', phone: '0866667788', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: cfg.unlockAt },
+                { id: '4511128907', license: '4511128907', eventId: cfg.eventId, name: 'ทนพ.วีรชัย มณีรัตน์', professionGroup: 'บุคลากรสหวิชาชีพ', position: 'นักเทคนิคการแพทย์ (HLA Lab)', region: 'เขตสุขภาพที่ 7', province: 'ขอนแก่น', hospital: 'รพ.ขอนแก่น', email: 'weerachai@demo.go.th', phone: '0877778899', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: cfg.unlockAt },
+                { id: '4511128908', license: '4511128908', eventId: cfg.eventId, name: 'พญ.พิมพ์ชนก อรุณรุ่ง', professionGroup: 'แพทย์', position: 'อายุรแพทย์โรคไต', region: 'เขตสุขภาพที่ 7', province: 'ขอนแก่น', hospital: 'รพ.ขอนแก่น', email: 'pimchanok@demo.go.th', phone: '0888889900', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: cfg.unlockAt },
+                { id: '4511128909', license: '4511128909', eventId: cfg.eventId, name: 'พว.วิภาวี รัตนะ', professionGroup: 'พยาบาล', position: 'พยาบาลวิชาชีพ ER', region: 'เขตสุขภาพที่ 7', province: 'ร้อยเอ็ด', hospital: 'รพ.ร้อยเอ็ด', email: 'wipawee@demo.go.th', phone: '0899990011', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: cfg.unlockAt },
+                { id: '4511128910', license: '4511128910', eventId: cfg.eventId, name: 'พว.ชลธิชา ใจมั่น', professionGroup: 'พยาบาล', position: 'พยาบาลวิชาชีพชำนาญการ', region: 'เขตสุขภาพที่ 12', province: 'สงขลา', hospital: 'รพ.หาดใหญ่', email: 'chonticha@demo.go.th', phone: '0819876543', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: cfg.unlockAt },
+                { id: '4511128911', license: '4511128911', eventId: cfg.eventId, name: 'นายสมชาย รักษาธรรม', professionGroup: 'บุคลากรสหวิชาชีพ', position: 'นักสังคมสงเคราะห์ทางการแพทย์', region: 'เขตสุขภาพที่ 12', province: 'สงขลา', hospital: 'รพ.หาดใหญ่', email: 'somchai@demo.go.th', phone: '0828765432', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: cfg.unlockAt }
             ];
+        }
+
+        function loadLocalRegistrationsMap() {
+            try { return JSON.parse(localStorage.getItem(LOCAL_MY_REG_KEY) || '{}') || {}; }
+            catch (_) { return {}; }
+        }
+        function saveLocalRegistration(record) {
+            if (!record?.license) return;
+            try {
+                const map = loadLocalRegistrationsMap();
+                map[record.license] = record;
+                localStorage.setItem(LOCAL_MY_REG_KEY, JSON.stringify(map));
+            } catch (_) {}
+        }
+        function deleteLocalRegistration(license) {
+            if (!license) return;
+            try {
+                const map = loadLocalRegistrationsMap();
+                delete map[license];
+                localStorage.setItem(LOCAL_MY_REG_KEY, JSON.stringify(map));
+            } catch (_) {}
         }
 
         // ============================================================================
@@ -507,6 +527,23 @@
                 if (ok) return true;
             } catch (_) {}
             return false;
+        }
+
+        function buildEditableFormFromRecord(rec) {
+            const regKey = normalizeRegionLabel(rec.region || rec.department);
+            const mappedList = HOSPITAL_MAPPING[regKey] || [];
+            const hasInList = mappedList.some(h => h.name === rec.hospital);
+            return {
+                professionGroup: rec.professionGroup || 'พยาบาล',
+                name: rec.name || '',
+                position: rec.position || '',
+                region: HOSPITAL_MAPPING[regKey] ? regKey : 'เขตสุขภาพที่ 13 (กทม. / กรมการแพทย์)',
+                hospital: hasInList ? rec.hospital : '__CUSTOM__',
+                customHospital: hasInList ? '' : (rec.hospital || ''),
+                province: rec.province || '',
+                email: rec.email || '',
+                phone: rec.phone || ''
+            };
         }
 
         // ============================================================================
@@ -610,7 +647,7 @@
         }
 
         // ============================================================================
-        // 4. MAIN ONSITE REGISTRATION & OFFICIAL SIGN-IN PDF APPLICATION
+        // 4. MAIN ONSITE REGISTRATION, SELF-CHECK & OFFICIAL SIGN-IN PDF APPLICATION
         // ============================================================================
         function OnsiteApp() {
             const urlParams = useMemo(() => {
@@ -618,6 +655,7 @@
                 catch (_) { return new URLSearchParams(); }
             }, []);
             const isAdminPreview = urlParams.get('admin_preview') === '1';
+            const modeParam = urlParams.get('mode') || '';
 
             const [theme, setTheme] = useState(() => {
                 try {
@@ -634,10 +672,14 @@
             }, [theme]);
             const toggleTheme = useCallback(() => setTheme(p => (p === 'dark' ? 'light' : 'dark')), []);
 
-            // View Mode: 'register' (หน้าผู้สมัคร) | 'organizer_login' | 'organizer' (ศูนย์ผู้จัดงาน & Export PDF)
-            const [viewMode, setViewMode] = useState('register');
+            // View Mode: 'register' | 'self_check' (ตรวจสอบ/แก้ไข/ลบข้อมูลตนเอง) | 'organizer_login' | 'organizer'
+            const [viewMode, setViewMode] = useState(() => {
+                if (modeParam === 'check') return 'self_check';
+                if (modeParam === 'organizer') return 'organizer_login';
+                return 'register';
+            });
             const [organizerTab, setOrganizerTab] = useState('pdf'); // pdf | settings | list
-            const [organizerSession, setOrganizerSession] = useState(null); // { email, isDemo }
+            const [organizerSession, setOrganizerSession] = useState(null);
             const [adminEmail, setAdminEmail] = useState(CONFIG.contactEmail || 'rjcloud.organ@gmail.com');
             const [adminPassword, setAdminPassword] = useState('');
             const [loggingIn, setLoggingIn] = useState(false);
@@ -649,7 +691,7 @@
             const [authReady, setAuthReady] = useState(!isCloudConfigured);
 
             // Public Registration State
-            const [regStep, setRegStep] = useState(1); // 1: license lookup | 2: form | 3: confirmation card
+            const [regStep, setRegStep] = useState(1);
             const [lookupLicense, setLookupLicense] = useState('');
             const [lookingUp, setLookingUp] = useState(false);
             const [submitting, setSubmitting] = useState(false);
@@ -668,15 +710,27 @@
                 pdpaAccepted: true
             });
 
+            // Learner Self-Service Check / Edit / Delete State
+            const [checkLicenseInput, setCheckLicenseInput] = useState('');
+            const [checkBusy, setCheckBusy] = useState(false);
+            const [checkedRecord, setCheckedRecord] = useState(null);
+            const [checkNotFound, setCheckNotFound] = useState(false);
+            const [selfEditOpen, setSelfEditOpen] = useState(false);
+            const [selfEditSaving, setSelfEditSaving] = useState(false);
+            const [selfEditForm, setSelfEditForm] = useState({
+                professionGroup: 'พยาบาล', name: '', position: '', region: 'เขตสุขภาพที่ 13 (กทม. / กรมการแพทย์)',
+                hospital: 'รพ.ราชวิถี', customHospital: '', province: 'กรุงเทพมหานคร', email: '', phone: ''
+            });
+
             // PDF Sign-in Sheet Filter & Grouping Controls
             const [filterProfession, setFilterProfession] = useState('ALL');
             const [filterRegion, setFilterRegion] = useState('ALL');
             const [filterProvince, setFilterProvince] = useState('ALL');
             const [filterHospital, setFilterHospital] = useState('ALL');
             const [filterSearch, setFilterSearch] = useState('');
-            const [groupByMode, setGroupByMode] = useState('profession'); // profession | region | province | hospital | region_profession | none
-            const [pdfOrientation, setPdfOrientation] = useState('landscape'); // landscape | portrait
-            const [signColumnsMode, setSignColumnsMode] = useState('day1_am_pm'); // day1_single | day1_am_pm | day2_am_pm
+            const [groupByMode, setGroupByMode] = useState('profession');
+            const [pdfOrientation, setPdfOrientation] = useState('landscape');
+            const [signColumnsMode, setSignColumnsMode] = useState('day1_am_pm');
             const [extraBlankRows, setExtraBlankRows] = useState(3);
             const [includeRevoked, setIncludeRevoked] = useState(false);
             const [syncingBatch, setSyncingBatch] = useState(false);
@@ -728,11 +782,12 @@
                     }
                     setAuthReady(true);
 
-                    // หากล็อกอินด้วยอีเมลผู้ดูแลระบบไว้แล้ว เปิดสิทธิ์ศูนย์ผู้จัดอัตโนมัติ
+                    // หากล็อกอินด้วยอีเมลผู้ดูแลระบบจาก admin.html ไว้แล้ว ให้เข้าโหมดผู้จัดอัตโนมัติเมื่อเปิด ?mode=organizer
                     if (fbUser.email) {
                         const allowed = (CONFIG.adminEmails || [CONFIG.contactEmail]).map(x => x.toLowerCase());
                         if (allowed.includes(fbUser.email.toLowerCase())) {
                             setOrganizerSession({ email: fbUser.email, isDemo: false });
+                            if (modeParam === 'organizer') setViewMode('organizer');
                         }
                     }
 
@@ -756,7 +811,7 @@
                     unsubAuth();
                     if (unsubSettings) unsubSettings();
                 };
-            }, []);
+            }, [modeParam]);
 
             // Real-Time Registrants Subscription (เฉพาะผู้จัดที่ยืนยันตัวตนแล้ว เพื่อคุ้มครอง PDPA)
             useEffect(() => {
@@ -781,24 +836,24 @@
             // ============================================================================
             // 5. COMPUTED UNLOCK COUNTDOWN & PUBLIC REGISTRATION HANDLERS
             // ============================================================================
-            const effectiveUnlockMs = useMemo(() => {
-                const iso = confirmedRecord?.onsiteUnlockAt || activityConfig.unlockAt;
-                const t = new Date(iso).getTime();
-                return isNaN(t) ? nowMs : t;
-            }, [confirmedRecord?.onsiteUnlockAt, activityConfig.unlockAt, nowMs]);
+            const getUnlockMeta = useCallback((recordObj) => {
+                const iso = recordObj?.onsiteUnlockAt || activityConfig.unlockAt;
+                const ms = new Date(iso).getTime();
+                const validMs = isNaN(ms) ? nowMs : ms;
+                const unlocked = Boolean(activityConfig.forceUnlocked || nowMs >= validMs);
+                let text = 'เปิดสิทธิ์ให้เข้าสู่ระบบแล้ว';
+                if (!unlocked) {
+                    const diffSec = Math.max(0, Math.floor((validMs - nowMs) / 1000));
+                    const d = Math.floor(diffSec / 86400);
+                    const h = Math.floor((diffSec % 86400) / 3600);
+                    const m = Math.floor((diffSec % 3600) / 60);
+                    const s = diffSec % 60;
+                    text = d > 0 ? `อีก ${d} วัน ${h} ชม. ${m} นาที ${s} วินาที` : `อีก ${h} ชม. ${String(m).padStart(2, '0')} นาที ${String(s).padStart(2, '0')} วินาที`;
+                }
+                return { unlocked, countdown: text, unlockIso: iso };
+            }, [activityConfig.forceUnlocked, activityConfig.unlockAt, nowMs]);
 
-            const isUnlockedNow = Boolean(activityConfig.forceUnlocked || nowMs >= effectiveUnlockMs);
-
-            const countdownText = useMemo(() => {
-                if (isUnlockedNow) return 'เปิดสิทธิ์ให้เข้าสู่ระบบแล้ว';
-                const diffSec = Math.max(0, Math.floor((effectiveUnlockMs - nowMs) / 1000));
-                const d = Math.floor(diffSec / 86400);
-                const h = Math.floor((diffSec % 86400) / 3600);
-                const m = Math.floor((diffSec % 3600) / 60);
-                const s = diffSec % 60;
-                if (d > 0) return `อีก ${d} วัน ${h} ชม. ${m} นาที ${s} วินาที`;
-                return `อีก ${h} ชม. ${String(m).padStart(2, '0')} นาที ${String(s).padStart(2, '0')} วินาที`;
-            }, [isUnlockedNow, effectiveUnlockMs, nowMs]);
+            const bannerUnlockMeta = useMemo(() => getUnlockMeta(confirmedRecord), [getUnlockMeta, confirmedRecord]);
 
             const handleLookupLicense = async (e) => {
                 e.preventDefault();
@@ -820,33 +875,23 @@
                         const uSnap = await getDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', clean));
                         if (uSnap.exists()) foundUser = { id: uSnap.id, ...uSnap.data() };
                     } catch (_) {}
+                } else {
+                    const localMap = loadLocalRegistrationsMap();
+                    foundOnsite = localMap[clean] || registrants.find(r => r.license === clean) || null;
                 }
 
                 if (foundOnsite && !foundOnsite.revoked && foundOnsite.eventId === activityConfig.eventId) {
                     setConfirmedRecord(foundOnsite);
                     setRegStep(3);
                     setLookingUp(false);
-                    showToast('พบข้อมูลการลงทะเบียนกิจกรรมนี้ของท่านแล้วค่ะ', 'info');
+                    showToast('พบข้อมูลการลงทะเบียนกิจกรรมนี้ของท่านแล้วค่ะ (สามารถกดแก้ไขหรือลบข้อมูลได้)', 'info');
                     return;
                 }
 
                 const src = foundOnsite || foundUser;
                 if (src) {
-                    const regKey = normalizeRegionLabel(src.region || src.department);
-                    const mappedList = HOSPITAL_MAPPING[regKey] || [];
-                    const hasInList = mappedList.some(h => h.name === src.hospital);
-                    setForm(prev => ({
-                        ...prev,
-                        professionGroup: src.professionGroup || prev.professionGroup,
-                        name: src.name || '',
-                        position: src.position || prev.position,
-                        region: HOSPITAL_MAPPING[regKey] ? regKey : prev.region,
-                        hospital: hasInList ? src.hospital : (src.hospital ? '__CUSTOM__' : prev.hospital),
-                        customHospital: hasInList ? '' : (src.hospital || ''),
-                        province: src.province || prev.province,
-                        email: src.email || '',
-                        phone: src.phone || ''
-                    }));
+                    const editable = buildEditableFormFromRecord(src);
+                    setForm(prev => ({ ...prev, ...editable }));
                     showToast('ดึงข้อมูลเดิมจากฐานข้อมูล rjcloud.organ มาเติมให้อัตโนมัติแล้วค่ะ');
                 } else {
                     showToast('กรุณากรอกข้อมูลเพื่อลงทะเบียนเข้าร่วมอบรมค่ะ', 'info');
@@ -896,7 +941,6 @@
                     revoked: false
                 };
 
-                // ข้อมูลที่ซิงค์เข้า elearning_users/{license} อัตโนมัติ (กำหนดวัน-เวลาเปิดสิทธิ์ + ชั่งโมงครบเทียบโอน)
                 const learnerSyncPayload = {
                     id: cleanLic,
                     license: cleanLic,
@@ -924,13 +968,11 @@
 
                 if (fbDb && authReady && !isAdminPreview) {
                     try {
-                        // 1) บันทึกใบสมัครลงทะเบียน Onsite
                         await setDoc(
                             doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'onsite_registrations', cleanLic),
                             regPayload,
                             { merge: true }
                         );
-                        // 2) ดึงและซิงค์เข้า rjcloud.organ 2.0 (รักษาสถานะเดิมหากผู้เรียนเคยสอบผ่านแล้ว)
                         const existingSnap = await getDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', cleanLic));
                         if (existingSnap.exists()) {
                             const ex = existingSnap.data();
@@ -950,10 +992,10 @@
                         return;
                     }
                 } else {
-                    // โหมดพรีวิวเดี่ยว เพิ่มเข้าใน state ทันทีเพื่อให้กดดูในหน้า Export PDF ได้เลย
                     setRegistrants(prev => [regPayload, ...prev.filter(x => x.license !== cleanLic)]);
                 }
 
+                saveLocalRegistration(regPayload);
                 setConfirmedRecord(regPayload);
                 setRegStep(3);
                 setSubmitting(false);
@@ -961,7 +1003,165 @@
             };
 
             // ============================================================================
-            // 6. ORGANIZER AUTH, ACTIVITY SETTINGS & BATCH SYNC TO RJCLOUD.ORGAN 2.0
+            // 6. LEARNER SELF-SERVICE CHECK / EDIT / DELETE REGISTRATION HANDLERS
+            // ============================================================================
+            const performSelfCheckLookup = useCallback(async (rawLic) => {
+                const clean = String(rawLic || '').replace(/[^a-zA-Z0-9]/g, '').trim();
+                if (clean.length < 4) {
+                    showToast('กรุณากรอกเลขที่ใบอนุญาตประกอบวิชาชีพอย่างน้อย 4 หลักค่ะ', 'error');
+                    return;
+                }
+                setCheckLicenseInput(clean);
+                setCheckBusy(true);
+                setCheckNotFound(false);
+                setSelfEditOpen(false);
+
+                let found = null;
+                if (fbDb && authReady && !isAdminPreview) {
+                    try {
+                        const snap = await getDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'onsite_registrations', clean));
+                        if (snap.exists()) found = { id: snap.id, ...snap.data() };
+                    } catch (_) {}
+                }
+
+                if (!found) {
+                    const localMap = loadLocalRegistrationsMap();
+                    found = localMap[clean]
+                        || registrants.find(r => r.license === clean)
+                        || (clean === '4511128901' ? buildPreviewSampleRegistrants(activityConfig).find(r => r.license === '4511128901') : null);
+                }
+
+                setCheckBusy(false);
+                if (found) {
+                    setCheckedRecord(found);
+                    setSelfEditForm(buildEditableFormFromRecord(found));
+                    setCheckNotFound(false);
+                    showToast('พบข้อมูลการลงทะเบียนของท่านแล้วค่ะ');
+                } else {
+                    setCheckedRecord(null);
+                    setCheckNotFound(true);
+                }
+            }, [authReady, isAdminPreview, registrants, activityConfig, showToast]);
+
+            const handleOpenSelfCheckWithRecord = (rec) => {
+                if (!rec) { setViewMode('self_check'); return; }
+                setViewMode('self_check');
+                setCheckLicenseInput(rec.license || '');
+                setCheckedRecord(rec);
+                setCheckNotFound(false);
+                setSelfEditForm(buildEditableFormFromRecord(rec));
+                setSelfEditOpen(false);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
+            const handleSaveSelfEdit = async (e) => {
+                e.preventDefault();
+                if (!checkedRecord?.license) return;
+                const cleanLic = checkedRecord.license;
+                const finalHospital = selfEditForm.hospital === '__CUSTOM__' ? selfEditForm.customHospital.trim() : selfEditForm.hospital.trim();
+
+                if (!selfEditForm.name.trim() || !finalHospital || !selfEditForm.province.trim() || !selfEditForm.email.includes('@')) {
+                    showToast('กรุณากรอกชื่อ–นามสกุล โรงพยาบาล จังหวัด และอีเมลให้ครบถ้วนค่ะ', 'error');
+                    return;
+                }
+
+                setSelfEditSaving(true);
+                const updatedRec = {
+                    ...checkedRecord,
+                    professionGroup: selfEditForm.professionGroup,
+                    name: selfEditForm.name.trim(),
+                    position: selfEditForm.position.trim() || selfEditForm.professionGroup,
+                    region: selfEditForm.region,
+                    hospital: finalHospital,
+                    province: selfEditForm.province.trim(),
+                    email: selfEditForm.email.trim(),
+                    phone: selfEditForm.phone.trim(),
+                    updatedAt: new Date().toISOString()
+                };
+
+                if (fbDb && authReady && !isAdminPreview) {
+                    try {
+                        await setDoc(
+                            doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'onsite_registrations', cleanLic),
+                            updatedRec,
+                            { merge: true }
+                        );
+                        await setDoc(
+                            doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', cleanLic),
+                            {
+                                name: updatedRec.name,
+                                position: updatedRec.position,
+                                professionGroup: updatedRec.professionGroup,
+                                department: updatedRec.region,
+                                hospital: updatedRec.hospital,
+                                province: updatedRec.province,
+                                email: updatedRec.email,
+                                phone: updatedRec.phone
+                            },
+                            { merge: true }
+                        );
+                    } catch (err) {
+                        setSelfEditSaving(false);
+                        showToast('บันทึกการแก้ไขไม่สำเร็จ: ' + err.message, 'error');
+                        return;
+                    }
+                }
+
+                saveLocalRegistration(updatedRec);
+                setCheckedRecord(updatedRec);
+                if (confirmedRecord?.license === cleanLic) setConfirmedRecord(updatedRec);
+                setRegistrants(prev => prev.map(r => (r.license === cleanLic ? updatedRec : r)));
+                setSelfEditOpen(false);
+                setSelfEditSaving(false);
+                showToast('บันทึกการแก้ไขข้อมูลและซิงค์เข้า rjcloud.organ 2.0 เรียบร้อยแล้วค่ะ');
+            };
+
+            const handleSelfDeleteRegistration = () => {
+                if (!checkedRecord?.license) return;
+                const target = checkedRecord;
+                setConfirmDialog({
+                    open: true,
+                    title: 'ยืนยันการลบข้อมูลการลงทะเบียน Onsite',
+                    message: `ต้องการยกเลิกและลบข้อมูลการลงทะเบียนของ "${target.name}" (${target.license}) ออกจากบัญชีผู้เข้าอบรม Onsite หรือไม่? (สิทธิ์เทียบโอนชั่วโมงของรุ่นนี้จะถูกยกเลิกด้วย หากต้องการสมัครใหม่สามารถลงทะเบียนซ้ำได้ค่ะ)`,
+                    danger: true,
+                    confirmText: 'ลบข้อมูลการลงทะเบียน',
+                    onConfirm: async () => {
+                        const lic = String(target.license);
+                        if (fbDb && authReady && !isAdminPreview) {
+                            try {
+                                await deleteDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'onsite_registrations', lic));
+                                const uRef = doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', lic);
+                                const uSnap = await getDoc(uRef);
+                                if (uSnap.exists() && uSnap.data()?.onsiteEventId === (target.eventId || activityConfig.eventId)) {
+                                    await setDoc(uRef, {
+                                        studyHoursExempt: false,
+                                        userType: 'เรียนใหม่',
+                                        hoursStatusLabel: 'กำลังสะสมชั่วโมง',
+                                        onsiteEventId: '',
+                                        onsiteUnlockAt: ''
+                                    }, { merge: true });
+                                }
+                            } catch (err) {
+                                showToast('ลบข้อมูลไม่สำเร็จ: ' + err.message, 'error');
+                                return;
+                            }
+                        }
+                        deleteLocalRegistration(lic);
+                        setRegistrants(prev => prev.filter(r => r.license !== lic));
+                        if (confirmedRecord?.license === lic) {
+                            setConfirmedRecord(null);
+                            setRegStep(1);
+                        }
+                        setCheckedRecord(null);
+                        setSelfEditOpen(false);
+                        setCheckLicenseInput('');
+                        showToast('ลบข้อมูลการลงทะเบียน Onsite ของท่านเรียบร้อยแล้วค่ะ');
+                    }
+                });
+            };
+
+            // ============================================================================
+            // 7. ORGANIZER AUTH, ACTIVITY SETTINGS & BATCH SYNC TO RJCLOUD.ORGAN 2.0
             // ============================================================================
             const handleOrganizerLogin = async (e) => {
                 e.preventDefault();
@@ -1023,7 +1223,6 @@
                 }
             };
 
-            // ซิงค์อัปเดตวัน–เวลาเปิดสิทธิ์ & ข้อมูลกิจกรรมเข้า elearning_users ของผู้สมัครทุกคนที่ยังไม่ถูกยกเลิก
             const handleBatchSyncUnlockToLearners = async () => {
                 const activeList = registrants.filter(r => !r.revoked);
                 if (activeList.length === 0) {
@@ -1043,19 +1242,10 @@
                         await setDoc(
                             doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', lic),
                             {
-                                id: lic,
-                                license: lic,
-                                name: r.name,
-                                email: r.email || '',
-                                phone: r.phone || '',
-                                position: r.position || r.professionGroup,
-                                professionGroup: r.professionGroup || 'พยาบาล',
-                                department: r.region,
-                                hospital: r.hospital,
-                                province: r.province,
-                                userType: 'เรียนต่อเนื่อง',
-                                studyHoursExempt: true,
-                                progress: 100,
+                                id: lic, license: lic, name: r.name, email: r.email || '', phone: r.phone || '',
+                                position: r.position || r.professionGroup, professionGroup: r.professionGroup || 'พยาบาล',
+                                department: r.region, hospital: r.hospital, province: r.province,
+                                userType: 'เรียนต่อเนื่อง', studyHoursExempt: true, progress: 100,
                                 hoursStatusLabel: 'ชั่วโมงครบ (เทียบโอน)',
                                 hoursActivityName: activityConfig.activityTitle,
                                 hoursActivityDate: activityConfig.eventDate,
@@ -1076,7 +1266,6 @@
                 }
             };
 
-            // ยกเลิกหรือคืนสิทธิ์เทียบโอน (กรณีผู้สมัครไม่ได้มาเซ็นชื่อเข้าร่วมอบรมจริง — No-show)
             const handleToggleRevoke = (reg) => {
                 const nextRevoked = !reg.revoked;
                 setConfirmDialog({
@@ -1101,9 +1290,7 @@
                                 nextRevoked
                                     ? { studyHoursExempt: false, userType: 'เรียนใหม่', hoursStatusLabel: 'กำลังสะสมชั่วโมง', progress: 0 }
                                     : {
-                                        studyHoursExempt: true,
-                                        userType: 'เรียนต่อเนื่อง',
-                                        progress: 100,
+                                        studyHoursExempt: true, userType: 'เรียนต่อเนื่อง', progress: 100,
                                         hoursStatusLabel: 'ชั่วโมงครบ (เทียบโอน)',
                                         hoursActivityName: activityConfig.activityTitle,
                                         onsiteUnlockAt: activityConfig.unlockAt,
@@ -1120,29 +1307,22 @@
             };
 
             // ============================================================================
-            // 7. SMART MULTI-FILTER & GROUPING ENGINE FOR ON-SITE SIGN-IN PDF
+            // 8. SMART MULTI-FILTER & GROUPING ENGINE FOR ON-SITE SIGN-IN PDF
             // ============================================================================
-            const activeRegistrantsBase = useMemo(() => {
-                return registrants.filter(r => (includeRevoked ? true : !r.revoked));
-            }, [registrants, includeRevoked]);
+            const activeRegistrantsBase = useMemo(() => registrants.filter(r => (includeRevoked ? true : !r.revoked)), [registrants, includeRevoked]);
 
-            // รายการตัวเลือกตัวกรองแบบ Cascading (เขตสุขภาพ -> จังหวัด -> โรงพยาบาล)
             const filterOptions = useMemo(() => {
                 const regions = Array.from(new Set(activeRegistrantsBase.map(r => r.region).filter(Boolean)))
                     .sort((a, b) => getRegionSortOrder(a) - getRegionSortOrder(b));
-
                 const byReg = filterRegion === 'ALL' ? activeRegistrantsBase : activeRegistrantsBase.filter(r => r.region === filterRegion);
                 const provinces = Array.from(new Set(byReg.map(r => r.province).filter(Boolean)))
                     .sort((a, b) => a.localeCompare(b, 'th'));
-
                 const byProv = filterProvince === 'ALL' ? byReg : byReg.filter(r => r.province === filterProvince);
                 const hospitals = Array.from(new Set(byProv.map(r => r.hospital).filter(Boolean)))
                     .sort((a, b) => a.localeCompare(b, 'th'));
-
                 return { regions, provinces, hospitals };
             }, [activeRegistrantsBase, filterRegion, filterProvince]);
 
-            // รีเซ็ตตัวกรองลูกเมื่อตัวกรองแม่เปลี่ยน
             useEffect(() => {
                 if (filterProvince !== 'ALL' && !filterOptions.provinces.includes(filterProvince)) setFilterProvince('ALL');
             }, [filterOptions.provinces, filterProvince]);
@@ -1150,7 +1330,6 @@
                 if (filterHospital !== 'ALL' && !filterOptions.hospitals.includes(filterHospital)) setFilterHospital('ALL');
             }, [filterOptions.hospitals, filterHospital]);
 
-            // กรองและเรียงลำดับรายชื่ออย่างเป็นระบบ (เขตสุขภาพ -> จังหวัด -> โรงพยาบาล -> กลุ่มวิชาชีพ -> ชื่อ ก-ฮ)
             const filteredSortedRegistrants = useMemo(() => {
                 const q = filterSearch.trim().toLowerCase();
                 return activeRegistrantsBase
@@ -1178,7 +1357,6 @@
                     });
             }, [activeRegistrantsBase, filterProfession, filterRegion, filterProvince, filterHospital, filterSearch]);
 
-            // จัดกลุ่มแยกแผ่นเอกสารเซ็นชื่อ (Sheet Pages) เพื่อวางแยกตามโต๊ะลงทะเบียนหน้างาน
             const groupedSignInSheets = useMemo(() => {
                 if (filteredSortedRegistrants.length === 0) return [];
                 if (groupByMode === 'none') {
@@ -1189,12 +1367,9 @@
                         rows: filteredSortedRegistrants
                     }];
                 }
-
                 const map = new Map();
                 filteredSortedRegistrants.forEach(r => {
-                    let gKey = '';
-                    let deskTitle = '';
-                    let subtitle = '';
+                    let gKey = '', deskTitle = '', subtitle = '';
                     if (groupByMode === 'profession') {
                         gKey = r.professionGroup || 'บุคลากรสหวิชาชีพ';
                         deskTitle = `กลุ่มวิชาชีพ: ${gKey}`;
@@ -1221,21 +1396,16 @@
                 });
 
                 const sheets = Array.from(map.values());
-                if (groupByMode === 'profession') {
-                    sheets.sort((a, b) => getProfessionSortOrder(a.key) - getProfessionSortOrder(b.key));
-                }
+                if (groupByMode === 'profession') sheets.sort((a, b) => getProfessionSortOrder(a.key) - getProfessionSortOrder(b.key));
                 return sheets;
             }, [filteredSortedRegistrants, groupByMode]);
 
-            const professionCounts = useMemo(() => {
-                const base = activeRegistrantsBase;
-                return {
-                    all: base.length,
-                    doctor: base.filter(r => r.professionGroup === 'แพทย์').length,
-                    nurse: base.filter(r => r.professionGroup === 'พยาบาล').length,
-                    allied: base.filter(r => r.professionGroup === 'บุคลากรสหวิชาชีพ').length
-                };
-            }, [activeRegistrantsBase]);
+            const professionCounts = useMemo(() => ({
+                all: activeRegistrantsBase.length,
+                doctor: activeRegistrantsBase.filter(r => r.professionGroup === 'แพทย์').length,
+                nurse: activeRegistrantsBase.filter(r => r.professionGroup === 'พยาบาล').length,
+                allied: activeRegistrantsBase.filter(r => r.professionGroup === 'บุคลากรสหวิชาชีพ').length
+            }), [activeRegistrantsBase]);
 
             const handlePrintSignInPdf = () => {
                 setToast(p => ({ ...p, visible: false }));
@@ -1245,16 +1415,7 @@
             const handleExportRegistrantsCsv = () => {
                 const headers = ['ลำดับ', 'กลุ่มวิชาชีพ', 'คำนำหน้า ชื่อ-นามสกุล', 'ตำแหน่ง', 'เลขที่ใบอนุญาต/รหัส', 'เขตสุขภาพ/สังกัด', 'จังหวัด', 'โรงพยาบาล/หน่วยงาน', 'อีเมล', 'เบอร์โทร', 'วันเวลาเปิดสิทธิ์ rjcloud 2.0', 'สถานะสิทธิ์'];
                 const rows = filteredSortedRegistrants.map((r, i) => [
-                    i + 1,
-                    r.professionGroup,
-                    r.name,
-                    r.position,
-                    r.license,
-                    r.region,
-                    r.province,
-                    r.hospital,
-                    r.email,
-                    r.phone,
+                    i + 1, r.professionGroup, r.name, r.position, r.license, r.region, r.province, r.hospital, r.email, r.phone,
                     formatThaiDateTime(r.onsiteUnlockAt || activityConfig.unlockAt),
                     r.revoked ? 'ยกเลิกสิทธิ์เทียบโอน' : 'ชั่วโมงครบ (เทียบโอน)'
                 ].map(escapeCsvCell).join(','));
@@ -1276,16 +1437,17 @@
                 catch (_) { return './onsite.html'; }
             }, []);
 
-            // ============================================================================
-            // 8. RENDER INTERFACE
-            // ============================================================================
             const currentHospitalList = HOSPITAL_MAPPING[form.region] || [];
+            const selfEditHospitalList = HOSPITAL_MAPPING[selfEditForm.region] || [];
 
+            // ============================================================================
+            // 9. RENDER INTERFACE
+            // ============================================================================
             return (
                 <div className="min-h-dvh relative flex flex-col pt-safe pb-safe">
                     <div className="spatial-aura" /><div className="spatial-grid" />
 
-                    {/* Top Navigation Bar (ซ่อนตอนสั่งพิมพ์ PDF) */}
+                    {/* Top Navigation Bar (เปลี่ยนปุ่มหัวเว็บเป็น "ตรวจสอบรายชื่อ" สำหรับผู้เรียนโดยเฉพาะ) */}
                     <header className="no-print sticky top-0 z-30 spatial-header">
                         <div className="max-w-6xl mx-auto px-3.5 sm:px-6 h-14 md:h-16 flex items-center justify-between gap-2">
                             <div className="flex items-center gap-2.5 min-w-0">
@@ -1297,27 +1459,27 @@
                                         rjcloud<span className="text-accent-adaptive">.organ</span> <span className="font-mono text-[10px] text-prism-adaptive">ONSITE</span>
                                     </span>
                                     <span className="text-[10px] font-mono text-muted-adaptive block truncate">
-                                        รับสมัครอบรม Onsite &amp; พิมพ์ใบเซ็นชื่อหน้างาน (PDF)
+                                        ลงทะเบียนอบรม Onsite &amp; ตรวจสอบรายชื่อผู้เข้าร่วม
                                     </span>
                                 </div>
                             </div>
 
                             <div className="flex items-center gap-1.5 shrink-0">
-                                {viewMode === 'organizer' ? (
+                                {viewMode === 'self_check' || viewMode === 'organizer' || viewMode === 'organizer_login' ? (
                                     <button
                                         type="button"
                                         onClick={() => setViewMode('register')}
                                         className="spatial-soft px-3 py-2 rounded-xl text-xs font-bold text-accent-adaptive inline-flex items-center gap-1.5"
                                     >
-                                        <Icon name="UserPlus" size={14} /> หน้ารับสมัคร
+                                        <Icon name="UserPlus" size={14} /> <span>ลงทะเบียนสมัคร</span>
                                     </button>
                                 ) : (
                                     <button
                                         type="button"
-                                        onClick={() => setViewMode(organizerSession ? 'organizer' : 'organizer_login')}
-                                        className="spatial-soft px-3 py-2 rounded-xl text-xs font-bold text-prism-adaptive inline-flex items-center gap-1.5"
+                                        onClick={() => setViewMode('self_check')}
+                                        className="spatial-soft px-3.5 py-2 rounded-xl text-xs font-bold text-prism-adaptive border-prism-400/40 inline-flex items-center gap-1.5"
                                     >
-                                        <Icon name="Printer" size={14} /> <span className="hidden sm:inline">สำหรับผู้จัด / พิมพ์ใบเซ็นชื่อ PDF</span><span className="sm:hidden">ผู้จัด / PDF</span>
+                                        <Icon name="UserCheck" size={15} /> <span>ตรวจสอบรายชื่อ</span>
                                     </button>
                                 )}
                                 <ThemeToggleButton theme={theme} onToggle={toggleTheme} compact />
@@ -1329,7 +1491,7 @@
                         MODE A: PUBLIC REGISTRATION FORM (รับสมัครล่วงหน้าตามระบบราชการ)
                     ==================================================================== */}
                     {viewMode === 'register' && (
-                        <main className="relative z-10 max-w-3xl w-full mx-auto px-3.5 sm:px-6 py-6 sm:py-8 space-y-5">
+                        <main className="relative z-10 max-w-3xl w-full mx-auto px-3.5 sm:px-6 py-6 sm:py-8 space-y-5 flex-1">
                             {/* Standardized Activity Header Card */}
                             <section className="spatial-card rounded-[2rem] p-5 sm:p-6 space-y-3.5 border-aurora-400/35">
                                 <div className="flex flex-wrap items-center justify-between gap-2">
@@ -1374,11 +1536,11 @@
                                             </span>
                                         </span>
                                     </div>
-                                    <span className="font-mono text-[11px] font-bold text-prism-adaptive">{countdownText}</span>
+                                    <span className="font-mono text-[11px] font-bold text-prism-adaptive">{bannerUnlockMeta.countdown}</span>
                                 </div>
                             </section>
 
-                            {/* Step 1: License / ID Lookup */}
+                            {/* Step 1: License Lookup */}
                             {regStep === 1 && (
                                 <form onSubmit={handleLookupLicense} className="spatial-card rounded-[2rem] p-5 sm:p-7 space-y-4">
                                     <div>
@@ -1391,11 +1553,11 @@
                                         </p>
                                     </div>
 
-                                    {!activityConfig.registrationOpen ? (
+                                    {!activityConfig.registrationOpen && (
                                         <div className="p-4 rounded-2xl bg-rose-500/15 border border-rose-400/40 text-xs text-rose-200 font-bold text-center">
-                                            ขณะนี้ผู้จัดงานปิดรับสมัครออนไลน์แล้ว (หากท่านลงทะเบียนไว้แล้ว สามารถกรอกเลขที่ใบอนุญาตด้านล่างเพื่อตรวจสอบบัตรยืนยันและวัน–เวลาเปิดระบบได้ค่ะ)
+                                            ขณะนี้ผู้จัดงานปิดรับสมัครออนไลน์แล้ว (หากท่านลงทะเบียนไว้แล้ว สามารถกดปุ่ม “ตรวจสอบรายชื่อ” ด้านบนเพื่อตรวจหรือแก้ไขข้อมูลได้ค่ะ)
                                         </div>
-                                    ) : null}
+                                    )}
 
                                     <input
                                         type="text"
@@ -1409,10 +1571,17 @@
                                     <button type="submit" disabled={lookingUp} className="rjc2-pill-btn touch-target w-full py-3.5 rounded-full font-display font-extrabold text-sm">
                                         {lookingUp ? 'กำลังตรวจสอบข้อมูล...' : 'ตรวจสอบข้อมูลและดำเนินการต่อ →'}
                                     </button>
+
+                                    <div className="pt-2 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs">
+                                        <span className="text-muted-adaptive">ลงทะเบียนไว้แล้วต้องการตรวจ แก้ไข หรือยกเลิก?</span>
+                                        <button type="button" onClick={() => setViewMode('self_check')} className="font-bold text-prism-adaptive hover:underline">
+                                            ไปหน้า “ตรวจสอบรายชื่อ” →
+                                        </button>
+                                    </div>
                                 </form>
                             )}
 
-                            {/* Step 2: Detailed Registration Form (แยกกลุ่มวิชาชีพ เขตสุขภาพ จังหวัด โรงพยาบาล) */}
+                            {/* Step 2: Detailed Registration Form */}
                             {regStep === 2 && (
                                 <form onSubmit={handleSubmitRegistration} className="spatial-card rounded-[2rem] p-5 sm:p-7 space-y-5">
                                     <div className="flex items-center justify-between gap-2">
@@ -1420,7 +1589,6 @@
                                         <span className="font-mono text-[11px] font-bold text-prism-adaptive">รหัส: {lookupLicense}</span>
                                     </div>
 
-                                    {/* เลือกกลุ่มวิชาชีพชัดเจน 3 กลุ่ม เพื่อแยกโต๊ะลงทะเบียนหน้างานอัตโนมัติ */}
                                     <div className="space-y-2">
                                         <label className="block text-xs font-bold text-secondary-adaptive">
                                             1. เลือกกลุ่มวิชาชีพ * <span className="text-muted-adaptive font-normal">(ใช้จัดกลุ่มใบเซ็นชื่อลงทะเบียนหน้างาน)</span>
@@ -1433,11 +1601,7 @@
                                                         key={pg.id}
                                                         type="button"
                                                         onClick={() => setForm(p => ({ ...p, professionGroup: pg.id, position: p.position || pg.defaultPos }))}
-                                                        className={`text-left p-3.5 rounded-2xl border transition-all space-y-1 ${
-                                                            active
-                                                                ? 'bg-aurora-500/20 border-aurora-400 shadow-md'
-                                                                : 'spatial-soft'
-                                                        }`}
+                                                        className={`text-left p-3.5 rounded-2xl border transition-all space-y-1 ${active ? 'bg-aurora-500/20 border-aurora-400 shadow-md' : 'spatial-soft'}`}
                                                     >
                                                         <div className="flex items-center justify-between">
                                                             <span className="font-display font-extrabold text-sm text-primary-adaptive">{pg.label}</span>
@@ -1488,11 +1652,7 @@
                                                 onChange={e => {
                                                     const val = e.target.value;
                                                     const found = currentHospitalList.find(h => h.name === val);
-                                                    setForm(p => ({
-                                                        ...p,
-                                                        hospital: val,
-                                                        province: found?.prov ? found.prov : p.province
-                                                    }));
+                                                    setForm(p => ({ ...p, hospital: val, province: found?.prov ? found.prov : p.province }));
                                                 }}
                                                 className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-xl text-sm"
                                             >
@@ -1531,7 +1691,7 @@
                                     <label className="spatial-soft p-3.5 rounded-2xl flex items-start gap-2.5 text-xs cursor-pointer">
                                         <input type="checkbox" checked={form.pdpaAccepted} onChange={e => setForm(p => ({ ...p, pdpaAccepted: e.target.checked }))} className="mt-0.5 w-4 h-4 accent-aurora-500 shrink-0" />
                                         <span className="text-secondary-adaptive leading-relaxed">
-                                            ยินยอมให้จัดเก็บข้อมูลเพื่อการจัดทำบัญชีลงทะเบียนหน้างาน ซิงค์สิทธิ์การอบรมเข้าสู่ <b>rjcloud.organ 2.0</b> และการออกประกาศนียบัตรรับรองหน่วยคะแนน CNEU ตามนโยบาย PDPA (สามารถแก้ไขหรือลบข้อมูลได้ด้วยตนเองในหน้าโปรไฟล์)
+                                            ยินยอมให้จัดเก็บข้อมูลเพื่อการจัดทำบัญชีลงทะเบียนหน้างาน ซิงค์สิทธิ์การอบรมเข้าสู่ <b>rjcloud.organ 2.0</b> และการออกประกาศนียบัตรรับรองหน่วยคะแนน CNEU ตามนโยบาย PDPA (สามารถตรวจสอบ แก้ไข หรือลบข้อมูลได้ด้วยตนเองที่เมนู “ตรวจสอบรายชื่อ”)
                                         </span>
                                     </label>
 
@@ -1541,7 +1701,7 @@
                                 </form>
                             )}
 
-                            {/* Step 3: Registration Confirmation Card + Live Countdown to rjcloud.organ 2.0 */}
+                            {/* Step 3: Registration Confirmation Card */}
                             {regStep === 3 && confirmedRecord && (
                                 <section className="spatial-card rounded-[2rem] p-6 sm:p-7 space-y-5 border-aurora-400/50 text-center">
                                     <div className="w-14 h-14 rounded-2xl bg-aurora-500/20 text-accent-adaptive flex items-center justify-center mx-auto">
@@ -1550,47 +1710,28 @@
                                     <div>
                                         <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">REGISTRATION CONFIRMED • ซิงค์ข้อมูลเข้า RJCLOUD.ORGAN 2.0 แล้ว</span>
                                         <h2 className="font-display font-extrabold text-xl text-primary-adaptive mt-1">ลงทะเบียนเข้าร่วมอบรมเรียบร้อยแล้วค่ะ</h2>
-                                        <p className="text-xs text-secondary-adaptive mt-1">วันอบรมจริง กรุณาเซ็นชื่อลงทะเบียนในเอกสารหน้าห้องประชุม (ไม่ต้องสแกน QR หน้าห้อง)</p>
+                                        <p className="text-xs text-secondary-adaptive mt-1">วันอบรมจริง กรุณาเซ็นชื่อลงทะเบียนในเอกสารหน้าห้องประชุม</p>
                                     </div>
 
                                     <div className="spatial-soft rounded-2xl p-4 text-left space-y-2 text-xs sm:text-sm">
-                                        <div className="flex justify-between gap-2 border-b border-white/10 pb-2">
-                                            <span className="text-muted-adaptive">ผู้ลงทะเบียน:</span>
-                                            <span className="font-bold text-primary-adaptive text-right">{confirmedRecord.name}</span>
-                                        </div>
-                                        <div className="flex justify-between gap-2 border-b border-white/10 pb-2">
-                                            <span className="text-muted-adaptive">กลุ่มวิชาชีพ / เลขที่ใบอนุญาต:</span>
-                                            <span className="font-bold text-prism-adaptive text-right">{confirmedRecord.professionGroup} • <span className="font-mono">{confirmedRecord.license}</span></span>
-                                        </div>
-                                        <div className="flex justify-between gap-2 border-b border-white/10 pb-2">
-                                            <span className="text-muted-adaptive">สังกัด / โรงพยาบาล:</span>
-                                            <span className="font-semibold text-secondary-adaptive text-right">{confirmedRecord.hospital} ({confirmedRecord.province}) • {confirmedRecord.region}</span>
-                                        </div>
-                                        <div className="flex justify-between gap-2 border-b border-white/10 pb-2">
-                                            <span className="text-muted-adaptive">สถานะชั่วโมงอบรม:</span>
-                                            <span className="font-bold text-accent-adaptive text-right">ชั่วโมงครบ (เทียบโอน)</span>
-                                        </div>
-                                        <div className="flex justify-between gap-2">
-                                            <span className="text-muted-adaptive">กิจกรรมอ้างอิง:</span>
-                                            <span className="font-semibold text-primary-adaptive text-right">{activityConfig.activityTitle}</span>
-                                        </div>
+                                        <div className="flex justify-between gap-2 border-b border-white/10 pb-2"><span className="text-muted-adaptive">ผู้ลงทะเบียน:</span><span className="font-bold text-primary-adaptive text-right">{confirmedRecord.name}</span></div>
+                                        <div className="flex justify-between gap-2 border-b border-white/10 pb-2"><span className="text-muted-adaptive">กลุ่มวิชาชีพ / เลขที่ใบอนุญาต:</span><span className="font-bold text-prism-adaptive text-right">{confirmedRecord.professionGroup} • <span className="font-mono">{confirmedRecord.license}</span></span></div>
+                                        <div className="flex justify-between gap-2 border-b border-white/10 pb-2"><span className="text-muted-adaptive">สังกัด / โรงพยาบาล:</span><span className="font-semibold text-secondary-adaptive text-right">{confirmedRecord.hospital} ({confirmedRecord.province}) • {confirmedRecord.region}</span></div>
+                                        <div className="flex justify-between gap-2 border-b border-white/10 pb-2"><span className="text-muted-adaptive">สถานะชั่วโมงอบรม:</span><span className="font-bold text-accent-adaptive text-right">ชั่วโมงครบ (เทียบโอน)</span></div>
+                                        <div className="flex justify-between gap-2"><span className="text-muted-adaptive">กิจกรรมอ้างอิง:</span><span className="font-semibold text-primary-adaptive text-right">{activityConfig.activityTitle}</span></div>
                                     </div>
 
-                                    {/* Auto-Unlock Status Box */}
-                                    <div className={`p-4 rounded-2xl border space-y-2 ${isUnlockedNow ? 'bg-aurora-500/20 border-aurora-400' : 'bg-prism-500/15 border-prism-400/40'}`}>
+                                    <div className={`p-4 rounded-2xl border space-y-2 ${bannerUnlockMeta.unlocked ? 'bg-aurora-500/20 border-aurora-400' : 'bg-prism-500/15 border-prism-400/40'}`}>
                                         <p className="font-mono text-[11px] font-bold text-prism-adaptive uppercase">
-                                            {isUnlockedNow ? '✓ ถึงกำหนดเวลาเปิดระบบแล้ว' : '⏳ รอถึงวันและเวลาที่ผู้จัดกำหนดเปิดระบบ'}
+                                            {bannerUnlockMeta.unlocked ? '✓ ถึงกำหนดเวลาเปิดระบบแล้ว' : '⏳ รอถึงวันและเวลาที่ผู้จัดกำหนดเปิดระบบ'}
                                         </p>
-                                        <p className="font-display font-extrabold text-base sm:text-lg text-primary-adaptive">{countdownText}</p>
+                                        <p className="font-display font-extrabold text-base sm:text-lg text-primary-adaptive">{bannerUnlockMeta.countdown}</p>
                                         <p className="text-xs text-secondary-adaptive">
-                                            เปิดให้เข้าทำ Pre-test → AI Skill Lab 3 มิติ → Post-test ≥ 80% → รับประกาศนียบัตร ตั้งแต่วันที่ <b>{formatThaiDateTime(activityConfig.unlockAt)}</b> เป็นต้นไป
+                                            เปิดให้เข้าทำ Pre-test → AI Skill Lab 3 มิติ → Post-test ≥ 80% → รับประกาศนียบัตร ตั้งแต่วันที่ <b>{formatThaiDateTime(bannerUnlockMeta.unlockIso)}</b>
                                         </p>
                                         <div className="pt-2">
-                                            {isUnlockedNow ? (
-                                                <a
-                                                    href={`./index.html?license=${encodeURIComponent(confirmedRecord.license)}&from=onsite`}
-                                                    className="rjc2-pill-btn touch-target w-full py-3.5 rounded-full font-display font-extrabold text-sm inline-flex items-center justify-center gap-2"
-                                                >
+                                            {bannerUnlockMeta.unlocked ? (
+                                                <a href={`./index.html?license=${encodeURIComponent(confirmedRecord.license)}&from=onsite`} className="rjc2-pill-btn touch-target w-full py-3.5 rounded-full font-display font-extrabold text-sm inline-flex items-center justify-center gap-2">
                                                     เข้าสู่ระบบ rjcloud.organ 2.0 ทันที →
                                                 </a>
                                             ) : (
@@ -1601,16 +1742,238 @@
                                         </div>
                                     </div>
 
-                                    <button type="button" onClick={() => { setRegStep(1); setLookupLicense(''); setConfirmedRecord(null); }} className="text-xs font-bold text-prism-adaptive hover:underline">
-                                        ลงทะเบียนให้ผู้เข้าร่วมท่านอื่น
-                                    </button>
+                                    <div className="flex flex-wrap items-center justify-center gap-3 pt-1 text-xs">
+                                        <button type="button" onClick={() => handleOpenSelfCheckWithRecord(confirmedRecord)} className="spatial-soft px-4 py-2 rounded-full font-bold text-prism-adaptive inline-flex items-center gap-1.5">
+                                            <Icon name="Edit3" size={14} /> แก้ไข / ลบข้อมูลการลงทะเบียน
+                                        </button>
+                                        <button type="button" onClick={() => { setRegStep(1); setLookupLicense(''); setConfirmedRecord(null); }} className="font-bold text-secondary-adaptive hover:underline">
+                                            ลงทะเบียนให้ท่านอื่น
+                                        </button>
+                                    </div>
                                 </section>
                             )}
                         </main>
                     )}
 
                     {/* ====================================================================
-                        MODE B: ORGANIZER LOGIN GATE (PDPA PROTECTION)
+                        MODE B: LEARNER SELF-CHECK / EDIT / DELETE REGISTRATION (PDPA SELF-SERVICE)
+                    ==================================================================== */}
+                    {viewMode === 'self_check' && (
+                        <main className="relative z-10 max-w-3xl w-full mx-auto px-3.5 sm:px-6 py-6 sm:py-8 space-y-5 flex-1">
+                            <section className="spatial-card rounded-[2rem] p-5 sm:p-7 space-y-4 border-prism-400/40">
+                                <div className="flex flex-wrap items-center justify-between gap-2">
+                                    <div>
+                                        <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">SELF-SERVICE CHECK &amp; PDPA CONTROL</span>
+                                        <h1 className="font-display font-extrabold text-xl text-primary-adaptive mt-0.5">ตรวจสอบ แก้ไข และลบรายชื่อผู้ลงทะเบียน</h1>
+                                        <p className="text-xs text-secondary-adaptive mt-1 leading-relaxed">
+                                            กรอกเลขที่ใบอนุญาตประกอบวิชาชีพที่ท่านใช้สมัคร เพื่อตรวจสอบสถานะรายชื่อ แก้ไขข้อมูลโรงพยาบาล/อีเมล หรือยกเลิกและลบข้อมูลการลงทะเบียนด้วยตนเอง (คุ้มครอง PDPA ไม่แสดงรายชื่อของผู้อื่น)
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <form onSubmit={(e) => { e.preventDefault(); performSelfCheckLookup(checkLicenseInput); }} className="flex flex-col sm:flex-row gap-2">
+                                    <input
+                                        type="text"
+                                        required
+                                        value={checkLicenseInput}
+                                        onChange={e => setCheckLicenseInput(e.target.value)}
+                                        placeholder="กรอกเลขที่ใบอนุญาตประกอบวิชาชีพ (เช่น 4511128901)"
+                                        className="touch-target spatial-input flex-1 px-4 py-3 rounded-2xl font-mono text-sm sm:text-base font-bold"
+                                    />
+                                    <button type="submit" disabled={checkBusy} className="rjc2-pill-btn touch-target px-6 py-3 rounded-2xl font-display font-extrabold text-sm shrink-0 inline-flex items-center justify-center gap-1.5">
+                                        <Icon name="Search" size={16} /> {checkBusy ? 'กำลังค้นหา...' : 'ตรวจสอบรายชื่อ'}
+                                    </button>
+                                </form>
+
+                                <div className="flex flex-wrap items-center justify-between gap-2 text-xs pt-1">
+                                    <button type="button" onClick={() => performSelfCheckLookup('4511128901')} className="spatial-soft px-3 py-1.5 rounded-full font-bold text-prism-adaptive hover:border-prism-400">
+                                        ทดลองตรวจรายชื่อตัวอย่าง (4511128901) →
+                                    </button>
+                                    <button type="button" onClick={() => setViewMode('register')} className="font-bold text-accent-adaptive hover:underline">
+                                        ยังไม่ได้สมัคร? ไปหน้าลงทะเบียน →
+                                    </button>
+                                </div>
+                            </section>
+
+                            {/* ไม่พบรายชื่อ */}
+                            {checkNotFound && (
+                                <section className="spatial-card rounded-[2rem] p-7 text-center space-y-3 border-rose-500/40">
+                                    <div className="w-12 h-12 rounded-2xl bg-rose-500/20 text-rose-400 flex items-center justify-center mx-auto">
+                                        <Icon name="SearchX" size={24} />
+                                    </div>
+                                    <h2 className="font-display font-extrabold text-lg text-rose-300">ไม่พบรายชื่อการลงทะเบียนของรหัส {checkLicenseInput}</h2>
+                                    <p className="text-xs text-secondary-adaptive">กรุณาตรวจสอบเลขที่ใบอนุญาตอีกครั้ง หรือกดปุ่มด้านล่างเพื่อสมัครลงทะเบียนเข้าร่วมอบรมค่ะ</p>
+                                    <button
+                                        type="button"
+                                        onClick={() => { setLookupLicense(checkLicenseInput); setRegStep(1); setViewMode('register'); }}
+                                        className="rjc2-pill-btn touch-target px-6 py-2.5 rounded-full font-display font-extrabold text-xs"
+                                    >
+                                        ไปสมัครลงทะเบียนด้วยรหัสนี้ →
+                                    </button>
+                                </section>
+                            )}
+
+                            {/* พบรายชื่อ + ปุ่มแก้ไขและลบข้อมูลตนเอง */}
+                            {checkedRecord && (() => {
+                                const recUnlock = getUnlockMeta(checkedRecord);
+                                return (
+                                    <section className="spatial-card rounded-[2rem] p-5 sm:p-7 space-y-5 border-aurora-400/50">
+                                        <div className="flex flex-wrap items-start justify-between gap-3 border-b border-white/10 pb-4">
+                                            <div>
+                                                <span className={`px-3 py-1 rounded-full font-mono text-[10px] font-bold ${checkedRecord.revoked ? 'bg-rose-500/20 text-rose-300' : 'bg-aurora-500/20 text-accent-adaptive'}`}>
+                                                    {checkedRecord.revoked ? '● ถูกยกเลิกสิทธิ์เทียบโอน' : '✓ พบรายชื่อในระบบลงทะเบียนแล้ว'}
+                                                </span>
+                                                <h2 className="font-display font-extrabold text-xl text-primary-adaptive mt-2">{checkedRecord.name}</h2>
+                                                <p className="text-xs text-secondary-adaptive">
+                                                    {checkedRecord.professionGroup} • {checkedRecord.position} • เลขใบอนุญาต <span className="font-mono text-prism-adaptive font-bold">{checkedRecord.license}</span>
+                                                </p>
+                                            </div>
+                                            <div className="flex flex-wrap gap-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => { setSelfEditForm(buildEditableFormFromRecord(checkedRecord)); setSelfEditOpen(v => !v); }}
+                                                    className="spatial-soft px-3.5 py-2 rounded-xl text-xs font-bold text-prism-adaptive border-prism-400/40 inline-flex items-center gap-1.5"
+                                                >
+                                                    <Icon name={selfEditOpen ? 'X' : 'Edit3'} size={14} /> {selfEditOpen ? 'ปิดฟอร์มแก้ไข' : 'แก้ไขข้อมูล'}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={handleSelfDeleteRegistration}
+                                                    className="px-3.5 py-2 rounded-xl bg-rose-500/15 border border-rose-400/40 text-rose-300 hover:bg-rose-600 hover:text-white text-xs font-bold inline-flex items-center gap-1.5 transition-colors"
+                                                >
+                                                    <Icon name="Trash2" size={14} /> ลบข้อมูลของฉัน
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {!selfEditOpen ? (
+                                            <>
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+                                                    <div className="spatial-soft p-3.5 rounded-2xl"><span className="text-[10px] font-mono text-muted-adaptive block">โรงพยาบาล / หน่วยงาน</span><span className="font-bold text-primary-adaptive">{checkedRecord.hospital}</span></div>
+                                                    <div className="spatial-soft p-3.5 rounded-2xl"><span className="text-[10px] font-mono text-muted-adaptive block">จังหวัด / เขตสุขภาพ</span><span className="font-bold text-primary-adaptive">จ.{checkedRecord.province} • {checkedRecord.region}</span></div>
+                                                    <div className="spatial-soft p-3.5 rounded-2xl"><span className="text-[10px] font-mono text-muted-adaptive block">อีเมลรับรหัส OTP</span><span className="font-mono font-bold text-prism-adaptive">{checkedRecord.email || '-'}</span></div>
+                                                    <div className="spatial-soft p-3.5 rounded-2xl"><span className="text-[10px] font-mono text-muted-adaptive block">เบอร์โทรศัพท์</span><span className="font-mono font-bold text-primary-adaptive">{checkedRecord.phone || '-'}</span></div>
+                                                    <div className="sm:col-span-2 spatial-soft p-3.5 rounded-2xl">
+                                                        <span className="text-[10px] font-mono text-muted-adaptive block">กิจกรรมอ้างอิง &amp; สถานะเทียบโอน</span>
+                                                        <span className="font-bold text-accent-adaptive block">ชั่วโมงครบ (เทียบโอน) — {checkedRecord.activityTitle || activityConfig.activityTitle}</span>
+                                                    </div>
+                                                </div>
+
+                                                <div className={`p-4 rounded-2xl border text-center space-y-2 ${recUnlock.unlocked ? 'bg-aurora-500/20 border-aurora-400' : 'bg-prism-500/15 border-prism-400/40'}`}>
+                                                    <p className="font-display font-extrabold text-base text-primary-adaptive">{recUnlock.countdown}</p>
+                                                    <p className="text-xs text-secondary-adaptive">กำหนดเปิดสิทธิ์เข้า rjcloud.organ 2.0: <b>{formatThaiDateTime(recUnlock.unlockIso)}</b></p>
+                                                    {recUnlock.unlocked && !checkedRecord.revoked && (
+                                                        <div className="pt-1">
+                                                            <a href={`./index.html?license=${encodeURIComponent(checkedRecord.license)}&from=onsite`} className="rjc2-pill-btn touch-target inline-flex items-center justify-center px-6 py-3 rounded-full font-display font-extrabold text-xs sm:text-sm">
+                                                                เข้าสู่ระบบ rjcloud.organ 2.0 ทันที →
+                                                            </a>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <form onSubmit={handleSaveSelfEdit} className="space-y-4 text-xs">
+                                                <div className="p-3 rounded-2xl bg-prism-500/15 border border-prism-400/35 text-prism-adaptive font-bold">
+                                                    แก้ไขข้อมูลผู้ลงทะเบียน (การแก้ไขจะอัปเดตทั้งในใบเซ็นชื่อหน้างานและฐานข้อมูล rjcloud.organ 2.0 ทันที)
+                                                </div>
+
+                                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                                    {PROFESSION_GROUPS.map(pg => (
+                                                        <button
+                                                            key={pg.id}
+                                                            type="button"
+                                                            onClick={() => setSelfEditForm(p => ({ ...p, professionGroup: pg.id }))}
+                                                            className={`p-2.5 rounded-xl border text-left font-bold ${selfEditForm.professionGroup === pg.id ? 'bg-aurora-500/20 border-aurora-400 text-primary-adaptive' : 'spatial-soft text-secondary-adaptive'}`}
+                                                        >
+                                                            {pg.label}
+                                                        </button>
+                                                    ))}
+                                                </div>
+
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                    <div>
+                                                        <label className="block font-bold text-secondary-adaptive mb-1 ml-1">คำนำหน้า ชื่อ – นามสกุล *</label>
+                                                        <input required value={selfEditForm.name} onChange={e => setSelfEditForm(p => ({ ...p, name: e.target.value }))} className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-xl text-sm font-semibold" />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block font-bold text-secondary-adaptive mb-1 ml-1">ตำแหน่งปัจจุบัน *</label>
+                                                        <input required value={selfEditForm.position} onChange={e => setSelfEditForm(p => ({ ...p, position: e.target.value }))} className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-xl text-sm" />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block font-bold text-secondary-adaptive mb-1 ml-1">เขตสุขภาพ / สังกัด *</label>
+                                                        <select
+                                                            value={selfEditForm.region}
+                                                            onChange={e => {
+                                                                const reg = e.target.value;
+                                                                const list = HOSPITAL_MAPPING[reg] || [];
+                                                                const first = list[0];
+                                                                setSelfEditForm(p => ({
+                                                                    ...p,
+                                                                    region: reg,
+                                                                    hospital: first ? (first.name.includes('ระบุชื่อ') ? '__CUSTOM__' : first.name) : '__CUSTOM__',
+                                                                    province: first?.prov || p.province
+                                                                }));
+                                                            }}
+                                                            className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-xl text-sm"
+                                                        >
+                                                            {Object.keys(HOSPITAL_MAPPING).map(k => <option key={k} value={k}>{k}</option>)}
+                                                        </select>
+                                                    </div>
+                                                    <div>
+                                                        <label className="block font-bold text-secondary-adaptive mb-1 ml-1">โรงพยาบาล / หน่วยงาน *</label>
+                                                        <select
+                                                            value={selfEditForm.hospital}
+                                                            onChange={e => {
+                                                                const val = e.target.value;
+                                                                const found = selfEditHospitalList.find(h => h.name === val);
+                                                                setSelfEditForm(p => ({ ...p, hospital: val, province: found?.prov ? found.prov : p.province }));
+                                                            }}
+                                                            className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-xl text-sm"
+                                                        >
+                                                            {selfEditHospitalList.map(h => (
+                                                                <option key={h.name} value={h.name.includes('ระบุชื่อ') ? '__CUSTOM__' : h.name}>
+                                                                    {h.name}{h.prov ? ` (${h.prov})` : ''}
+                                                                </option>
+                                                            ))}
+                                                            <option value="__CUSTOM__">+ พิมพ์ชื่อโรงพยาบาล / หน่วยงานเอง</option>
+                                                        </select>
+                                                    </div>
+                                                    {selfEditForm.hospital === '__CUSTOM__' && (
+                                                        <div className="sm:col-span-2">
+                                                            <label className="block font-bold text-accent-adaptive mb-1 ml-1">ระบุชื่อโรงพยาบาล / หน่วยงาน *</label>
+                                                            <input required value={selfEditForm.customHospital} onChange={e => setSelfEditForm(p => ({ ...p, customHospital: e.target.value }))} className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-xl text-sm" />
+                                                        </div>
+                                                    )}
+                                                    <div>
+                                                        <label className="block font-bold text-secondary-adaptive mb-1 ml-1">จังหวัด *</label>
+                                                        <input required value={selfEditForm.province} onChange={e => setSelfEditForm(p => ({ ...p, province: e.target.value }))} className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-xl text-sm" />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block font-bold text-secondary-adaptive mb-1 ml-1">เบอร์โทรศัพท์</label>
+                                                        <input value={selfEditForm.phone} onChange={e => setSelfEditForm(p => ({ ...p, phone: e.target.value }))} className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-xl text-sm" />
+                                                    </div>
+                                                    <div className="sm:col-span-2">
+                                                        <label className="block font-bold text-secondary-adaptive mb-1 ml-1">อีเมลสำหรับรับรหัส OTP *</label>
+                                                        <input required type="email" value={selfEditForm.email} onChange={e => setSelfEditForm(p => ({ ...p, email: e.target.value }))} className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-xl text-sm" />
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-2 gap-2.5 pt-2">
+                                                    <button type="button" onClick={() => setSelfEditOpen(false)} className="touch-target spatial-soft py-3 rounded-2xl font-bold text-sm text-primary-adaptive">ยกเลิก</button>
+                                                    <button type="submit" disabled={selfEditSaving} className="rjc2-pill-btn touch-target py-3 rounded-2xl font-display font-extrabold text-sm">
+                                                        {selfEditSaving ? 'กำลังบันทึก...' : 'บันทึกการแก้ไข ✓'}
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        )}
+                                    </section>
+                                );
+                            })()}
+                        </main>
+                    )}
+
+                    {/* ====================================================================
+                        MODE C: ORGANIZER LOGIN GATE (เข้าจาก admin.html?mode=organizer หรือปุ่มท้ายหน้า)
                     ==================================================================== */}
                     {viewMode === 'organizer_login' && (
                         <main className="relative z-10 flex-1 flex items-center justify-center p-4 py-8">
@@ -1650,11 +2013,10 @@
                     )}
 
                     {/* ====================================================================
-                        MODE C: ORGANIZER COMMAND CENTER (PDF SIGN-IN STUDIO + SETTINGS + LIST)
+                        MODE D: ORGANIZER COMMAND CENTER (PDF SIGN-IN STUDIO + SETTINGS + LIST)
                     ==================================================================== */}
                     {viewMode === 'organizer' && organizerSession && (
-                        <main className="print-root-reset relative z-10 max-w-6xl w-full mx-auto px-3.5 sm:px-6 py-5 space-y-5">
-                            {/* Top Organizer Tabs (ซ่อนตอนสั่งพิมพ์ PDF) */}
+                        <main className="print-root-reset relative z-10 max-w-6xl w-full mx-auto px-3.5 sm:px-6 py-5 space-y-5 flex-1">
                             <div className="no-print flex flex-wrap items-center justify-between gap-3">
                                 <div className="inline-flex p-1 rounded-2xl spatial-soft flex-wrap gap-1">
                                     {[
@@ -1679,10 +2041,11 @@
 
                                 <div className="flex items-center gap-2 text-xs">
                                     {organizerSession.isDemo && (
-                                        <span className="px-2.5 py-1 rounded-full bg-amber-500/20 border border-amber-400/45 text-amber-300 font-mono text-[10px] font-bold">
-                                            DEMO PREVIEW DATA
-                                        </span>
+                                        <span className="px-2.5 py-1 rounded-full bg-amber-500/20 border border-amber-400/45 text-amber-300 font-mono text-[10px] font-bold">DEMO PREVIEW DATA</span>
                                     )}
+                                    <a href="./admin.html" className="spatial-soft px-3 py-2 rounded-xl text-prism-adaptive font-bold inline-flex items-center gap-1">
+                                        <Icon name="LayoutDashboard" size={14} /> กลับ Admin
+                                    </a>
                                     <button
                                         type="button"
                                         onClick={() => {
@@ -1692,15 +2055,14 @@
                                         }}
                                         className="spatial-soft px-3 py-2 rounded-xl text-rose-400 font-bold inline-flex items-center gap-1"
                                     >
-                                        <Icon name="LogOut" size={14} /> ออกจากโหมดผู้จัด
+                                        <Icon name="LogOut" size={14} /> ออก
                                     </button>
                                 </div>
                             </div>
 
-                            {/* ==================== ORG TAB 1: OFFICIAL SIGN-IN SHEET PDF STUDIO ==================== */}
+                            {/* ORG TAB 1: OFFICIAL SIGN-IN SHEET PDF STUDIO */}
                             {organizerTab === 'pdf' && (
                                 <div className="space-y-4">
-                                    {/* แผงคัดกรองและจัดกลุ่มเอกสาร (ซ่อนตอนสั่งพิมพ์ PDF) */}
                                     <section className="no-print spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-4">
                                         <div className="flex flex-wrap items-center justify-between gap-2.5">
                                             <div>
@@ -1719,7 +2081,6 @@
                                             </div>
                                         </div>
 
-                                        {/* แถบคัดกรองด่วนกลุ่มวิชาชีพ (แพทย์ / พยาบาล / บุคลากรสหวิชาชีพ) */}
                                         <div className="flex flex-wrap gap-1.5">
                                             {[
                                                 { id: 'ALL', label: `ทุกกลุ่มวิชาชีพ (${professionCounts.all})` },
@@ -1727,22 +2088,12 @@
                                                 { id: 'พยาบาล', label: `พยาบาล (${professionCounts.nurse})` },
                                                 { id: 'บุคลากรสหวิชาชีพ', label: `บุคลากรสหวิชาชีพ (${professionCounts.allied})` }
                                             ].map(btn => (
-                                                <button
-                                                    key={btn.id}
-                                                    type="button"
-                                                    onClick={() => setFilterProfession(btn.id)}
-                                                    className={`px-3.5 py-2 rounded-full text-xs font-bold transition-all ${
-                                                        filterProfession === btn.id
-                                                            ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold shadow'
-                                                            : 'spatial-soft text-secondary-adaptive'
-                                                    }`}
-                                                >
+                                                <button key={btn.id} type="button" onClick={() => setFilterProfession(btn.id)} className={`px-3.5 py-2 rounded-full text-xs font-bold transition-all ${filterProfession === btn.id ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold shadow' : 'spatial-soft text-secondary-adaptive'}`}>
                                                     {btn.label}
                                                 </button>
                                             ))}
                                         </div>
 
-                                        {/* ตัวกรองเชิงลึก 4 มิติ: เขตสุขภาพ / จังหวัด / โรงพยาบาล / ค้นหา */}
                                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-xs">
                                             <div>
                                                 <label className="block font-bold text-secondary-adaptive mb-1 ml-1">คัดกรองเขตสุขภาพ / สังกัด</label>
@@ -1751,7 +2102,6 @@
                                                     {filterOptions.regions.map(r => <option key={r} value={r}>{r}</option>)}
                                                 </select>
                                             </div>
-
                                             <div>
                                                 <label className="block font-bold text-secondary-adaptive mb-1 ml-1">คัดกรองจังหวัด</label>
                                                 <select value={filterProvince} onChange={e => setFilterProvince(e.target.value)} className="touch-target spatial-input w-full px-3 py-2 rounded-xl text-xs font-semibold">
@@ -1759,7 +2109,6 @@
                                                     {filterOptions.provinces.map(p => <option key={p} value={p}>{p}</option>)}
                                                 </select>
                                             </div>
-
                                             <div>
                                                 <label className="block font-bold text-secondary-adaptive mb-1 ml-1">คัดกรองโรงพยาบาล / หน่วยงาน</label>
                                                 <select value={filterHospital} onChange={e => setFilterHospital(e.target.value)} className="touch-target spatial-input w-full px-3 py-2 rounded-xl text-xs font-semibold">
@@ -1767,14 +2116,12 @@
                                                     {filterOptions.hospitals.map(h => <option key={h} value={h}>{h}</option>)}
                                                 </select>
                                             </div>
-
                                             <div>
                                                 <label className="block font-bold text-secondary-adaptive mb-1 ml-1">ค้นหาชื่อ / เลขใบอนุญาต</label>
                                                 <input value={filterSearch} onChange={e => setFilterSearch(e.target.value)} placeholder="พิมพ์ค้นหา..." className="touch-target spatial-input w-full px-3 py-2 rounded-xl text-xs" />
                                             </div>
                                         </div>
 
-                                        {/* ตัวเลือกการจัดแยกแผ่นเอกสาร (Smart Desk Page-Break) & รูปแบบกระดาษ */}
                                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-3 border-t border-white/10 text-xs">
                                             <div className="lg:col-span-2">
                                                 <label className="block font-bold text-accent-adaptive mb-1 ml-1">การจัดแยกชุด/ขึ้นหน้าใหม่ (ช่วยค้นหารายชื่อหน้างานเร็วที่สุด)</label>
@@ -1787,7 +2134,6 @@
                                                     <option value="none">รวมตารางเดียวต่อเนื่อง (เรียงเขต → จังหวัด → รพ. → ชื่อ ก–ฮ)</option>
                                                 </select>
                                             </div>
-
                                             <div>
                                                 <label className="block font-bold text-secondary-adaptive mb-1 ml-1">ช่องลงลายมือชื่อหน้างาน</label>
                                                 <select value={signColumnsMode} onChange={e => setSignColumnsMode(e.target.value)} className="touch-target spatial-input w-full px-3 py-2 rounded-xl text-xs font-semibold">
@@ -1796,7 +2142,6 @@
                                                     <option value="day2_am_pm">2 วัน (วัน1 เช้า-บ่าย / วัน2 เช้า-บ่าย)</option>
                                                 </select>
                                             </div>
-
                                             <div className="flex items-end gap-2">
                                                 <div className="flex-1">
                                                     <label className="block font-bold text-secondary-adaptive mb-1 ml-1">แนวกระดาษ A4</label>
@@ -1817,22 +2162,15 @@
                                         </div>
 
                                         <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-adaptive">
-                                            <span>
-                                                พบรายชื่อตรงเงื่อนไข <b className="font-mono text-accent-adaptive">{filteredSortedRegistrants.length}</b> ราย • แบ่งออกเป็น <b className="font-mono text-prism-adaptive">{groupedSignInSheets.length}</b> ชุดเอกสารพร้อมพิมพ์ PDF
-                                            </span>
+                                            <span>พบรายชื่อตรงเงื่อนไข <b className="font-mono text-accent-adaptive">{filteredSortedRegistrants.length}</b> ราย • แบ่งออกเป็น <b className="font-mono text-prism-adaptive">{groupedSignInSheets.length}</b> ชุดเอกสารพร้อมพิมพ์ PDF</span>
                                             {(filterProfession !== 'ALL' || filterRegion !== 'ALL' || filterProvince !== 'ALL' || filterHospital !== 'ALL' || filterSearch) && (
-                                                <button
-                                                    type="button"
-                                                    onClick={() => { setFilterProfession('ALL'); setFilterRegion('ALL'); setFilterProvince('ALL'); setFilterHospital('ALL'); setFilterSearch(''); }}
-                                                    className="text-prism-adaptive font-bold hover:underline"
-                                                >
+                                                <button type="button" onClick={() => { setFilterProfession('ALL'); setFilterRegion('ALL'); setFilterProvince('ALL'); setFilterHospital('ALL'); setFilterSearch(''); }} className="text-prism-adaptive font-bold hover:underline">
                                                     ล้างตัวกรองทั้งหมด
                                                 </button>
                                             )}
                                         </div>
                                     </section>
 
-                                    {/* แสดงตัวอย่างกระดาษ A4 สำหรับพิมพ์ / ส่งออก PDF (แยกชุดขึ้นหน้าใหม่อัตโนมัติ) */}
                                     <div className="w-full overflow-x-auto custom-scrollbar pb-6 flex flex-col items-center gap-6">
                                         {groupedSignInSheets.length === 0 ? (
                                             <div className="no-print spatial-card rounded-3xl p-10 text-center text-sm text-muted-adaptive max-w-lg w-full">
@@ -1840,22 +2178,12 @@
                                             </div>
                                         ) : (
                                             groupedSignInSheets.map((sheet, sIdx) => (
-                                                <article
-                                                    key={sheet.key}
-                                                    className={`a4-signin-sheet rounded-xl p-6 sm:p-9 space-y-4 ${pdfOrientation === 'landscape' ? 'a4-landscape' : 'a4-portrait'} ${sIdx > 0 ? 'sheet-page-break' : ''}`}
-                                                >
-                                                    {/* หัวเอกสารลงทะเบียนหน้างานมาตรฐานราชการ */}
+                                                <article key={sheet.key} className={`a4-signin-sheet rounded-xl p-6 sm:p-9 space-y-4 ${pdfOrientation === 'landscape' ? 'a4-landscape' : 'a4-portrait'} ${sIdx > 0 ? 'sheet-page-break' : ''}`}>
                                                     <div className="border-b-2 border-slate-800 pb-3.5 flex items-start justify-between gap-4">
                                                         <div className="space-y-0.5">
-                                                            <p className="text-[11px] font-bold tracking-wider text-emerald-800 uppercase">
-                                                                บัญชีลงทะเบียนเข้าร่วมอบรมหน้างาน (OFFICIAL ON-SITE SIGN-IN SHEET)
-                                                            </p>
-                                                            <h1 className="font-display text-lg sm:text-xl font-extrabold text-slate-900 leading-snug">
-                                                                {activityConfig.activityTitle}
-                                                            </h1>
-                                                            <p className="text-xs sm:text-[13px] text-slate-700 font-semibold">
-                                                                วันที่จัดกิจกรรม: {activityConfig.eventDate} &nbsp;|&nbsp; สถานที่/หน่วยงานผู้จัด: {activityConfig.venueAndOrganizer}
-                                                            </p>
+                                                            <p className="text-[11px] font-bold tracking-wider text-emerald-800 uppercase">บัญชีลงทะเบียนเข้าร่วมอบรมหน้างาน (OFFICIAL ON-SITE SIGN-IN SHEET)</p>
+                                                            <h1 className="font-display text-lg sm:text-xl font-extrabold text-slate-900 leading-snug">{activityConfig.activityTitle}</h1>
+                                                            <p className="text-xs sm:text-[13px] text-slate-700 font-semibold">วันที่จัดกิจกรรม: {activityConfig.eventDate} &nbsp;|&nbsp; สถานที่/หน่วยงานผู้จัด: {activityConfig.venueAndOrganizer}</p>
                                                         </div>
                                                         <div className="text-right shrink-0 border-2 border-slate-800 rounded-lg px-3 py-1.5 bg-slate-50">
                                                             <p className="text-[10px] font-bold text-slate-500 uppercase">ชุดที่ {sIdx + 1} / {groupedSignInSheets.length}</p>
@@ -1863,18 +2191,14 @@
                                                         </div>
                                                     </div>
 
-                                                    {/* แถบป้ายโต๊ะลงทะเบียนขนาดใหญ่อ่านชัดหน้างาน */}
                                                     <div className="bg-slate-100 border border-slate-300 rounded-lg px-3.5 py-2 flex flex-wrap items-center justify-between gap-2">
                                                         <div>
                                                             <p className="font-display font-extrabold text-sm sm:text-base text-slate-900">{sheet.deskTitle}</p>
                                                             <p className="text-[11px] text-slate-600">{sheet.subtitle}</p>
                                                         </div>
-                                                        <span className="text-[11px] font-mono font-bold text-emerald-800">
-                                                            เปิดสิทธิ์ rjcloud.organ 2.0: {formatThaiDateTime(activityConfig.unlockAt)}
-                                                        </span>
+                                                        <span className="text-[11px] font-mono font-bold text-emerald-800">เปิดสิทธิ์ rjcloud.organ 2.0: {formatThaiDateTime(activityConfig.unlockAt)}</span>
                                                     </div>
 
-                                                    {/* ตารางเซ็นชื่อหน้างาน */}
                                                     <table className="signin-table">
                                                         <thead>
                                                             <tr>
@@ -1884,42 +2208,23 @@
                                                                 <th>โรงพยาบาล / หน่วยงาน<br /><span className="font-normal text-[10px] text-slate-500">(จังหวัด • เขตสุขภาพ)</span></th>
                                                                 <th style={{ width: '104px' }}>เลขใบอนุญาตฯ</th>
                                                                 {signColumnsMode === 'day1_single' && <th style={{ width: '150px' }}>ลงลายมือชื่อ</th>}
-                                                                {signColumnsMode === 'day1_am_pm' && (
-                                                                    <>
-                                                                        <th style={{ width: '115px' }}>ลงชื่อ (เช้า)</th>
-                                                                        <th style={{ width: '115px' }}>ลงชื่อ (บ่าย)</th>
-                                                                    </>
-                                                                )}
-                                                                {signColumnsMode === 'day2_am_pm' && (
-                                                                    <>
-                                                                        <th style={{ width: '78px' }}>วันที่ 1<br /><span className="font-normal text-[10px]">เช้า</span></th>
-                                                                        <th style={{ width: '78px' }}>วันที่ 1<br /><span className="font-normal text-[10px]">บ่าย</span></th>
-                                                                        <th style={{ width: '78px' }}>วันที่ 2<br /><span className="font-normal text-[10px]">เช้า</span></th>
-                                                                        <th style={{ width: '78px' }}>วันที่ 2<br /><span className="font-normal text-[10px]">บ่าย</span></th>
-                                                                    </>
-                                                                )}
+                                                                {signColumnsMode === 'day1_am_pm' && (<><th style={{ width: '115px' }}>ลงชื่อ (เช้า)</th><th style={{ width: '115px' }}>ลงชื่อ (บ่าย)</th></>)}
+                                                                {signColumnsMode === 'day2_am_pm' && (<><th style={{ width: '78px' }}>วันที่ 1<br /><span className="font-normal text-[10px]">เช้า</span></th><th style={{ width: '78px' }}>วันที่ 1<br /><span className="font-normal text-[10px]">บ่าย</span></th><th style={{ width: '78px' }}>วันที่ 2<br /><span className="font-normal text-[10px]">เช้า</span></th><th style={{ width: '78px' }}>วันที่ 2<br /><span className="font-normal text-[10px]">บ่าย</span></th></>)}
                                                             </tr>
                                                         </thead>
                                                         <tbody>
                                                             {sheet.rows.map((r, rIdx) => (
                                                                 <tr key={r.id || r.license || rIdx}>
                                                                     <td className="text-center font-mono font-bold text-slate-700">{rIdx + 1}</td>
-                                                                    <td>
-                                                                        <div className="font-bold text-slate-900">{r.name}</div>
-                                                                        <div className="text-[11px] text-slate-500">{r.position || '-'}</div>
-                                                                    </td>
+                                                                    <td><div className="font-bold text-slate-900">{r.name}</div><div className="text-[11px] text-slate-500">{r.position || '-'}</div></td>
                                                                     <td className="text-center font-semibold text-slate-800">{r.professionGroup}</td>
-                                                                    <td>
-                                                                        <div className="font-semibold text-slate-900">{r.hospital}</div>
-                                                                        <div className="text-[11px] text-slate-500">จ.{r.province} • {r.region}</div>
-                                                                    </td>
+                                                                    <td><div className="font-semibold text-slate-900">{r.hospital}</div><div className="text-[11px] text-slate-500">จ.{r.province} • {r.region}</div></td>
                                                                     <td className="text-center font-mono text-[11px] font-bold text-slate-800">{r.license}</td>
                                                                     {signColumnsMode === 'day1_single' && <td />}
                                                                     {signColumnsMode === 'day1_am_pm' && (<><td /><td /></>)}
                                                                     {signColumnsMode === 'day2_am_pm' && (<><td /><td /><td /><td /></>)}
                                                                 </tr>
                                                             ))}
-                                                            {/* แถวว่างสำรองสำหรับ Walk-in หน้างาน */}
                                                             {Array.from({ length: extraBlankRows }).map((_, bIdx) => (
                                                                 <tr key={`blank-${bIdx}`}>
                                                                     <td className="text-center font-mono text-slate-400">{sheet.rows.length + bIdx + 1}</td>
@@ -1932,7 +2237,6 @@
                                                         </tbody>
                                                     </table>
 
-                                                    {/* ท้ายกระดาษ */}
                                                     <div className="sheet-footer-block pt-2 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 text-[10px] font-mono text-slate-500">
                                                         <span>RJCLOUD.ORGAN 2.0 • {activityConfig.eventId} • {sheet.deskTitle}</span>
                                                         <span>พิมพ์เมื่อ: {new Date().toLocaleString('th-TH')}</span>
@@ -1944,98 +2248,74 @@
                                 </div>
                             )}
 
-                            {/* ==================== ORG TAB 2: STANDARDIZED ACTIVITY SETTINGS & SCHEDULED UNLOCK ==================== */}
+                            {/* ORG TAB 2: STANDARDIZED ACTIVITY SETTINGS */}
                             {organizerTab === 'settings' && (
                                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
                                     <div className="lg:col-span-8 spatial-card rounded-[1.75rem] p-5 sm:p-6 space-y-4">
                                         <div>
                                             <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">STANDARDIZED ACTIVITY REFERENCE &amp; AUTO-UNLOCK</span>
                                             <h2 className="font-display font-extrabold text-lg text-primary-adaptive">ตั้งค่าข้อมูลมาตรฐานกิจกรรม &amp; วัน–เวลาเปิดสิทธิ์เข้า rjcloud.organ 2.0</h2>
-                                            <p className="text-xs text-secondary-adaptive mt-0.5">ข้อมูลทั้ง 3 หัวข้อหลักจะถูกนำไปอ้างอิงในโปรไฟล์ผู้เรียนและหัวเอกสารเซ็นชื่อหน้างานโดยอัตโนมัติ</p>
                                         </div>
-
                                         <div className="space-y-3 text-xs">
                                             <div>
                                                 <label className="block font-bold text-secondary-adaptive mb-1 ml-1">รหัสกิจกรรม / รุ่น (Event ID)</label>
                                                 <input value={configDraft.eventId} onChange={e => setConfigDraft(p => ({ ...p, eventId: e.target.value }))} className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-xl font-mono text-sm font-bold" />
                                             </div>
                                             <div>
-                                                <label className="block font-bold text-secondary-adaptive mb-1 ml-1">1. ชื่อกิจกรรม (แสดงคู่กับสถานะชั่วโมงครบ เทียบโอน)</label>
+                                                <label className="block font-bold text-secondary-adaptive mb-1 ml-1">1. ชื่อกิจกรรม</label>
                                                 <input value={configDraft.activityTitle} onChange={e => setConfigDraft(p => ({ ...p, activityTitle: e.target.value }))} className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-xl text-sm font-semibold" />
                                             </div>
                                             <div>
                                                 <label className="block font-bold text-secondary-adaptive mb-1 ml-1">2. วัน/เดือน/ปี ที่จัดกิจกรรม</label>
-                                                <input value={configDraft.eventDate} onChange={e => setConfigDraft(p => ({ ...p, eventDate: e.target.value }))} placeholder="เช่น 15 – 16 มกราคม 2570" className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-xl text-sm" />
+                                                <input value={configDraft.eventDate} onChange={e => setConfigDraft(p => ({ ...p, eventDate: e.target.value }))} className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-xl text-sm" />
                                             </div>
                                             <div>
                                                 <label className="block font-bold text-secondary-adaptive mb-1 ml-1">3. สถานที่ / หน่วยงานที่จัด</label>
-                                                <input value={configDraft.venueAndOrganizer} onChange={e => setConfigDraft(p => ({ ...p, venueAndOrganizer: e.target.value }))} placeholder="เช่น ห้องประชุมพิบูลสงคราม โรงพยาบาลราชวิถี" className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-xl text-sm" />
+                                                <input value={configDraft.venueAndOrganizer} onChange={e => setConfigDraft(p => ({ ...p, venueAndOrganizer: e.target.value }))} className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-xl text-sm" />
                                             </div>
                                             <div className="p-4 rounded-2xl bg-prism-500/15 border border-prism-400/35 space-y-2.5">
-                                                <label className="block font-bold text-prism-adaptive">4. กำหนดวันและเวลาที่เปิดสิทธิ์ให้ผู้เข้าอบรมเข้า rjcloud.organ 2.0 อัตโนมัติ</label>
-                                                <input
-                                                    type="datetime-local"
-                                                    value={configDraft.unlockAtLocal}
-                                                    onChange={e => setConfigDraft(p => ({ ...p, unlockAtLocal: e.target.value }))}
-                                                    className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-xl font-mono text-sm font-bold"
-                                                />
-                                                <p className="text-[11px] text-secondary-adaptive">
-                                                    เมื่อถึงเวลาที่กำหนด ผู้สมัครทุกคนจะเข้าทำ Pre-test → AI Skill Lab 3 มิติ → Post-test ≥ 80% → รับประกาศนียบัตรได้ทันทีโดยไม่ต้องนั่งสะสมชั่วโมงวิดีโอซ้ำ
-                                                </p>
+                                                <label className="block font-bold text-prism-adaptive">4. กำหนดวันและเวลาเปิดสิทธิ์เข้า rjcloud.organ 2.0 อัตโนมัติ</label>
+                                                <input type="datetime-local" value={configDraft.unlockAtLocal} onChange={e => setConfigDraft(p => ({ ...p, unlockAtLocal: e.target.value }))} className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-xl font-mono text-sm font-bold" />
                                             </div>
-
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                                                 <label className="spatial-soft p-3.5 rounded-2xl flex items-center justify-between gap-2 cursor-pointer">
                                                     <span className="font-bold text-primary-adaptive">เปิดรับสมัครออนไลน์อยู่</span>
                                                     <input type="checkbox" checked={Boolean(configDraft.registrationOpen)} onChange={e => setConfigDraft(p => ({ ...p, registrationOpen: e.target.checked }))} className="w-5 h-5 accent-aurora-500" />
                                                 </label>
                                                 <label className="spatial-soft p-3.5 rounded-2xl flex items-center justify-between gap-2 cursor-pointer">
-                                                    <span className="font-bold text-accent-adaptive">เปิดสิทธิ์เข้า rjcloud 2.0 ทันที (ข้ามเวลารอ)</span>
+                                                    <span className="font-bold text-accent-adaptive">เปิดสิทธิ์เข้า rjcloud 2.0 ทันที</span>
                                                     <input type="checkbox" checked={Boolean(configDraft.forceUnlocked)} onChange={e => setConfigDraft(p => ({ ...p, forceUnlocked: e.target.checked }))} className="w-5 h-5 accent-aurora-500" />
                                                 </label>
                                             </div>
                                         </div>
-
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2">
-                                            <button type="button" onClick={() => handleSaveActivityConfig()} className="rjc2-pill-btn touch-target py-3.5 rounded-full font-display font-extrabold text-xs sm:text-sm">
-                                                บันทึกหัวข้อและกำหนดเวลาขึ้น Cloud
-                                            </button>
+                                            <button type="button" onClick={() => handleSaveActivityConfig()} className="rjc2-pill-btn touch-target py-3.5 rounded-full font-display font-extrabold text-xs sm:text-sm">บันทึกหัวข้อและกำหนดเวลาขึ้น Cloud</button>
                                             <button type="button" disabled={syncingBatch} onClick={handleBatchSyncUnlockToLearners} className="spatial-soft touch-target py-3.5 rounded-full font-display font-bold text-xs sm:text-sm text-accent-adaptive border-aurora-400/45">
                                                 {syncingBatch ? 'กำลังซิงค์ให้ทุกคน...' : `ซิงค์กำหนดเวลาให้ผู้สมัครทุกคน (${activeRegistrantsBase.length} ราย)`}
                                             </button>
                                         </div>
                                     </div>
 
-                                    {/* QR & ลิงก์สำหรับแนบในหนังสือเชิญประชุมราชการ */}
                                     <div className="lg:col-span-4 spatial-card rounded-[1.75rem] p-5 space-y-4 text-center">
                                         <div>
                                             <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">INVITATION LETTER QR CODE</span>
-                                            <h3 className="font-display font-bold text-sm text-primary-adaptive mt-0.5">QR รับสมัครล่วงหน้า (แนบหนังสือเชิญประชุม)</h3>
+                                            <h3 className="font-display font-bold text-sm text-primary-adaptive mt-0.5">QR รับสมัครล่วงหน้า</h3>
                                         </div>
-                                        <div className="flex justify-center">
-                                            <QrCodeBox url={shareRegistrationUrl} size={168} />
-                                        </div>
+                                        <div className="flex justify-center"><QrCodeBox url={shareRegistrationUrl} size={168} /></div>
                                         <p className="text-[11px] font-mono text-muted-adaptive break-all spatial-soft p-2.5 rounded-xl">{shareRegistrationUrl}</p>
-                                        <button
-                                            type="button"
-                                            onClick={() => { copyTextSafe(shareRegistrationUrl); showToast('คัดลอกลิงก์รับสมัครสำหรับแนบหนังสือเชิญประชุมแล้วค่ะ'); }}
-                                            className="spatial-soft touch-target w-full py-2.5 rounded-xl text-xs font-bold text-prism-adaptive inline-flex items-center justify-center gap-1.5"
-                                        >
+                                        <button type="button" onClick={() => { copyTextSafe(shareRegistrationUrl); showToast('คัดลอกลิงก์รับสมัครแล้วค่ะ'); }} className="spatial-soft touch-target w-full py-2.5 rounded-xl text-xs font-bold text-prism-adaptive inline-flex items-center justify-center gap-1.5">
                                             <Icon name="Copy" size={14} /> คัดลอกลิงก์หน้ารับสมัคร
                                         </button>
                                     </div>
                                 </div>
                             )}
 
-                            {/* ==================== ORG TAB 3: REGISTRANT LIST & NO-SHOW REVOKE ==================== */}
+                            {/* ORG TAB 3: REGISTRANT LIST & NO-SHOW REVOKE */}
                             {organizerTab === 'list' && (
                                 <section className="spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-4">
                                     <div className="flex flex-wrap items-center justify-between gap-2">
                                         <div>
-                                            <h2 className="font-display font-extrabold text-base sm:text-lg text-primary-adaptive">
-                                                ตรวจสอบรายชื่อผู้สมัคร &amp; จัดการสิทธิ์กรณีไม่มางานจริง (No-show)
-                                            </h2>
-                                            <p className="text-xs text-muted-adaptive">หากตรวจใบเซ็นชื่อกระดาษหน้างานแล้วพบว่าผู้สมัครรายใดไม่ได้มาอบรมจริง สามารถกด “ยกเลิกสิทธิ์เทียบโอน” ได้ทันที</p>
+                                            <h2 className="font-display font-extrabold text-base sm:text-lg text-primary-adaptive">ตรวจสอบรายชื่อผู้สมัคร &amp; จัดการสิทธิ์กรณีไม่มางานจริง (No-show)</h2>
                                         </div>
                                         <label className="spatial-soft px-3 py-1.5 rounded-xl text-xs font-bold inline-flex items-center gap-2 cursor-pointer">
                                             <input type="checkbox" checked={includeRevoked} onChange={e => setIncludeRevoked(e.target.checked)} className="accent-aurora-500" />
@@ -2057,34 +2337,16 @@
                                             <tbody className="divide-y divide-white/10">
                                                 {filteredSortedRegistrants.map(r => (
                                                     <tr key={r.id || r.license} className={r.revoked ? 'opacity-55' : ''}>
-                                                        <td className="py-3 px-3">
-                                                            <p className="font-bold text-primary-adaptive">{r.name}</p>
-                                                            <p className="font-mono text-[11px] text-prism-adaptive">{r.license}</p>
-                                                        </td>
+                                                        <td className="py-3 px-3"><p className="font-bold text-primary-adaptive">{r.name}</p><p className="font-mono text-[11px] text-prism-adaptive">{r.license}</p></td>
                                                         <td className="py-3 px-3 font-bold text-secondary-adaptive">{r.professionGroup}</td>
+                                                        <td className="py-3 px-3"><p className="font-semibold text-primary-adaptive">{r.hospital}</p><p className="text-[11px] text-muted-adaptive">จ.{r.province} • {r.region}</p></td>
                                                         <td className="py-3 px-3">
-                                                            <p className="font-semibold text-primary-adaptive">{r.hospital}</p>
-                                                            <p className="text-[11px] text-muted-adaptive">จ.{r.province} • {r.region}</p>
-                                                        </td>
-                                                        <td className="py-3 px-3">
-                                                            <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold ${
-                                                                r.revoked
-                                                                    ? 'bg-rose-500/20 text-rose-300'
-                                                                    : 'bg-aurora-500/20 text-accent-adaptive'
-                                                            }`}>
+                                                            <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold ${r.revoked ? 'bg-rose-500/20 text-rose-300' : 'bg-aurora-500/20 text-accent-adaptive'}`}>
                                                                 {r.revoked ? 'ยกเลิกสิทธิ์เทียบโอน' : 'ชั่วโมงครบ (เทียบโอน)'}
                                                             </span>
                                                         </td>
                                                         <td className="py-3 px-3 text-right">
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => handleToggleRevoke(r)}
-                                                                className={`px-3 py-1.5 rounded-xl font-bold text-[11px] ${
-                                                                    r.revoked
-                                                                        ? 'bg-aurora-500/20 text-accent-adaptive'
-                                                                        : 'bg-rose-500/15 border border-rose-400/35 text-rose-300 hover:bg-rose-500/25'
-                                                                }`}
-                                                            >
+                                                            <button type="button" onClick={() => handleToggleRevoke(r)} className={`px-3 py-1.5 rounded-xl font-bold text-[11px] ${r.revoked ? 'bg-aurora-500/20 text-accent-adaptive' : 'bg-rose-500/15 border border-rose-400/35 text-rose-300 hover:bg-rose-500/25'}`}>
                                                                 {r.revoked ? 'คืนสิทธิ์เทียบโอน' : 'ยกเลิกสิทธิ์ (ไม่มางาน)'}
                                                             </button>
                                                         </td>
@@ -2098,6 +2360,20 @@
                         </main>
                     )}
 
+                    {/* Subtle Footer with Organizer Entry (ซ่อนตอนพิมพ์ PDF และไม่แย่งความเด่นปุ่มผู้เรียนบนหัวเว็บ) */}
+                    {viewMode !== 'organizer' && (
+                        <footer className="no-print relative z-10 max-w-3xl w-full mx-auto px-4 pb-6 pt-2 text-center space-y-1.5 text-[11px] text-muted-adaptive">
+                            <p>© 2027 Organ Transplantation Center of Rajavithi Hospital • rjcloud.organ 2.0</p>
+                            <button
+                                type="button"
+                                onClick={() => setViewMode(organizerSession ? 'organizer' : 'organizer_login')}
+                                className="text-[11px] text-muted-adaptive/80 hover:text-prism-adaptive underline"
+                            >
+                                สำหรับผู้จัดงาน / พิมพ์ใบเซ็นชื่อหน้างาน (PDF)
+                            </button>
+                        </footer>
+                    )}
+
                     <ConfirmModal dialog={confirmDialog} onClose={() => setConfirmDialog(p => ({ ...p, open: false }))} />
                     <ToastBanner toast={toast} />
                 </div>
@@ -2107,5 +2383,7 @@
         const root = createRoot(document.getElementById('onsite-root'));
         root.render(<OnsiteErrorBoundary><OnsiteApp /></OnsiteErrorBoundary>);
     </script>
+    <!-- โหลด Babel ท้ายสุดหลังสคริปต์ทั้งหมด เพื่อให้แน่ใจว่าโค้ดครบ 100% ก่อนคอมไพล์ -->
+    <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
 </body>
 </html>
