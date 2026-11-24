@@ -1,29 +1,30 @@
 /**
  * ============================================================================
- * rjcloud.organ 2.0 — AI Skill Lab 3D Engine (skilllab-engine.js • Anime Human Hologram Edition)
+ * rjcloud.organ 2.0 — AI Skill Lab 3D Engine (skilllab-engine.js • Set 1 + Set 2 Complete)
  * โมดูลกลางแบบ Zero-Build เผยแพร่ผ่าน window.RJCLOUD_SKILLLAB
  *
- * องค์ประกอบครบชุดภายในไฟล์เดียว:
- * 1. Emotion & Radar Metadata (รองรับ 6 อารมณ์คลินิกและเรดาร์ประเมินผล 5 แกน)
- * 2. 6 Clinical Personas (เคส 1–4 ญาติผู้ป่วย, เคส 5 ผู้ป่วยเด็ก, เคส 6 ส่งเวร SBAR แพทย์เวร ICU)
+ * ความสามารถครบชุดภายในไฟล์เดียว:
+ * 1. Emotion & Dual Radar Metadata:
+ *    - เรดาร์ 5 แกนสำหรับเคสสื่อสารกับญาติ (เคส 1–5)
+ *    - เรดาร์ 5 แกนเฉพาะทาง SBAR สำหรับเคสส่งเวรแพทย์เวร ICU (เคส 6)
+ * 2. 6 Clinical Personas + แนวทางคำพูด 2 ภาษา (TH / EN) ครบทุกเคส
  * 3. Context-Aware 3D Anime Human Hologram Renderer (Three.js r128 • Zero-Cost):
- *    - ปรับตัวละครอัตโนมัติตามเนื้อเรื่องและเพศ/วัยของแต่ละเคส (ไม่ต้องให้ผู้เรียนเลือกตัวอย่างเอง)
- *    - รองรับการแสดงตัวละครหลายตัวพร้อมกันในห้อง (เช่น เคส 3 แสดงทั้ง ภรรยา และ คุณแม่ คู่กัน)
- *    - ขยับปาก Lip-Sync แยกตามผู้พูดจริง, กะพริบตา, คิ้วขมวด/เศร้า, หยดน้ำตา และลากหมุนได้ 360°
- * 4. Realism #1: 3 Hidden Barriers per Case + Emotional Inertia Trust Engine
- * 5. Realism #2: Hard Mode Real-World Curveballs (Phone Interruption & Silent Sob)
+ *    - ปรับเพศ ทรงผม อายุ และจำนวนตัวละครอัตโนมัติ (เคส 3 แสดง ภรรยา + คุณแม่ พร้อมกัน 2 คน)
+ *    - Real Audio-Amplitude Lip-Sync: ขยับปากตรงตามคลื่นเสียง Gemini 24kHz จริงผ่าน Web Audio API
+ * 4. Realism #1: 3 Hidden Barriers per Case + Adaptive Hint เจาะปมที่เหลือ + Emotional Inertia Trust
+ * 5. Realism #2: Hard Mode Curveballs แยกตามบริบท (เคสญาติ: สายพี่ชายแทรก/สะอื้นเงียบ | เคส 6 SBAR: สัญญาณเตือน BP ตกวิกฤต 64/40 + เคสฉุกเฉินแทรก)
  * 6. Realism #3: Targeted 4-Stage Micro-Drill Gauntlet & Instant Evaluator
- * 7. Realism #4 (0 THB): Client-Side Vocal Tone Monitor (Web Audio API) + RAM-Only Audio Replay
- * 8. Realism #5 (0 THB): Perceived Latency Masking Cues + LINE In-App Browser Auto-Detector
- * 9. Research R2R (0 THB): Pre/Post Self-Efficacy Scale + SUS Score + Blind Transcript Builder
- * 10. AI Lab Advisor v3 + Clinical Mastery Badges + Web Audio Consultation Room SFX
+ * 7. Realism #4 (0 THB): Vocal Tone Monitor (Web Audio API) + RAM-Only Audio Replay + Audio Lip-Sync Analyser
+ * 8. Profession-Aware AI Lab Advisor v4: แนะนำเคสตรงตาม 3 กลุ่มวิชาชีพ (พยาบาล / แพทย์ / สหวิชาชีพ)
+ * 9. Export Skill Lab Debrief Card (PNG 1200x1500): บันทึกใบสรุปผลเรดาร์ 5 แกน + ประโยคทอง + เหรียญตรา
+ * 10. Research R2R (0 THB): Pre/Post Self-Efficacy + SUS Score + Blind Transcript + Web Audio ICU/Room SFX
  * ============================================================================
  */
 (function (global) {
   'use strict';
 
   // ==========================================================================
-  // 1. EMOTIONS & RADAR AXES METADATA
+  // 1. EMOTIONS & CONTEXT-AWARE RADAR AXES (FAMILY APPROACH vs. SBAR ICU)
   // ==========================================================================
   const EMOTIONS = {
     SHOCK: {
@@ -160,6 +161,7 @@
     }
   };
 
+  // เรดาร์ 5 แกนสำหรับเคสสื่อสารกับครอบครัวผู้ป่วย (เคส 1–5)
   const RADAR_AXES = [
     { key: 'setting', labelTH: 'ห้องรับรอง & บทบาท', shortTH: 'ห้องรับรอง', labelEN: 'Setting & Role' },
     { key: 'empathy', labelTH: 'รับรู้อารมณ์ร่วม', shortTH: 'อารมณ์ร่วม', labelEN: 'Empathy' },
@@ -168,8 +170,21 @@
     { key: 'dignity', labelTH: 'ไม่เร่งรัด & เกียรติร่าง', shortTH: 'ให้เกียรติร่าง', labelEN: 'Zero Pressure' }
   ];
 
+  // เรดาร์ 5 แกนเฉพาะเคส 6: ส่งเวร SBAR กับแพทย์เวร ICU (คง key เดิมเพื่อให้ซิงค์กับ Dashboard 13 เขตได้ 100%)
+  const SBAR_RADAR_AXES = [
+    { key: 'setting', labelTH: 'S: สถานการณ์ & ตัวตนเคส', shortTH: 'S: สถานการณ์', labelEN: 'S: Situation' },
+    { key: 'empathy', labelTH: 'B: ประวัติ & ตรวจร่างกาย', shortTH: 'B: ประวัติ TBI', labelEN: 'B: Background' },
+    { key: 'clarity', labelTH: 'A: ประเมิน Donor & DI', shortTH: 'A: ประเมิน DI', labelEN: 'A: Assessment' },
+    { key: 'vocal', labelTH: 'ความกระชับ & สื่อสารทีม', shortTH: 'กระชับแม่นยำ', labelEN: 'Concise Team Comm' },
+    { key: 'dignity', labelTH: 'R: แผนพยุงชีพ & DDAVP/ODC', shortTH: 'R: แผนรักษา', labelEN: 'R: Recommendation' }
+  ];
+
+  function getRadarAxes(personaId) {
+    return personaId === 'sbar_doctor' ? SBAR_RADAR_AXES : RADAR_AXES;
+  }
+
   // ==========================================================================
-  // 2. CLINICAL PERSONAS, MULTI-VOICE CAST & ICU BRIEFING CARDS
+  // 2. CLINICAL PERSONAS, MULTI-VOICE CAST, ICU BRIEFS & BILINGUAL QUICK REPLIES
   // ==========================================================================
   const FALLBACK_PERSONAS = [
     {
@@ -351,6 +366,68 @@
     }
   };
 
+  // แนวทางคำพูดด่วน 2 ภาษา (TH & EN) ครบทั้ง 6 เคส (แก้ช่องโหว่ Roleplay EN เห็นคำพูดไทย)
+  const COACH_QUICK_REPLIES = {
+    th: {
+      standard: [
+        'ขอแสดงความเสียใจอย่างสุดซึ้งนะคะ ดิฉันเป็นพยาบาลผู้ประสานงาน เข้าใจว่าตอนนี้ใจยังหนักมาก ที่เห็นหน้าอกคุณพ่อขยับเกิดจากเครื่องช่วยหายใจที่เป่าลมแทน ส่วนก้านสมองหยุดทำงานถาวรซึ่งแพทย์ 3 ท่านตรวจยืนยันครบ 2 ครั้งแล้วค่ะ',
+        'ไม่ต้องรีบตัดสินใจอะไรเลยนะคะ เราให้เวลาครอบครัวค่อยๆ ปรึกษากันอย่างเต็มที่ และทีมแพทย์จะดูแลตกแต่งร่างคุณพ่ออย่างเรียบร้อยสมเกียรติที่สุดค่ะ'
+      ],
+      belief: [
+        'เข้าใจความห่วงใยของคุณยายมากค่ะ เราเคารพความเชื่อของครอบครัวเสมอ ในทางศาสนาการมอบอวัยวะช่วยต่อชีวิตผู้อื่นคือทานบารมีอันยิ่งใหญ่ค่ะ',
+        'ทีมศัลยแพทย์จะดูแลตกแต่งร่างน้องชายให้เรียบร้อยสมบูรณ์ทุกประการ สามารถแต่งตัวและประกอบพิธีทางศาสนาได้ตามปกติเลยค่ะ'
+      ],
+      conflict: [
+        'สัมผัสได้ถึงความรักที่ทั้งภรรยาและคุณแม่มีให้คุณต้นมากค่ะ ดิฉันเข้าใจทั้งความตั้งใจของภรรยาและความเจ็บปวดของคุณแม่เลยค่ะ',
+        'ตามหลักจริยธรรมไทยเราจะไม่ฝืนใจคุณแม่เด็ดขาดแม้มีบัตรจำนงค่ะ เพราะสายสัมพันธ์ครอบครัวสำคัญที่สุด ขอให้ทั้งสองท่านมีเวลาส่วนตัวปรึกษากันก่อนโดยไม่เร่งรัดนะคะ'
+      ],
+      distrust: [
+        'ขอบคุณที่ถามตรงไปตรงมานะคะ การจัดสรรอวัยวะทำผ่านระบบคอมพิวเตอร์กลางของศูนย์รับบริจาคอวัยวะสภากาชาดไทย (ODC) ตามความเข้ากันได้ของเนื้อเยื่อ ไม่มีการซื้อขายหรือลัดคิวค่ะ',
+        'และครอบครัวผู้บริจาคไม่มีค่าใช้จ่ายเพิ่มเติมใดๆ เลยค่ะ สามารถปรึกษาครอบครัวได้เต็มที่โดยไม่เร่งรัดนะคะ'
+      ],
+      pediatric: [
+        'ขอแสดงความเสียใจอย่างสุดซึ้งกับคุณแม่นะคะ เข้าใจหัวอกคนเป็นแม่เลยว่ามันเร็วและเจ็บปวดมาก ไม่ต้องรีบพูดอะไรเลยค่ะ ดิฉันอยู่ตรงนี้เป็นเพื่อนรับฟังคุณแม่นะคะ',
+        'ทีมแพทย์ได้ดูแลน้องต้นกล้าอย่างสุดความสามารถแล้วค่ะ เราเคารพการตัดสินใจของคุณพ่อคุณแม่ร้อยเปอร์เซ็นต์ ให้เวลาอยู่บอกลาน้องอย่างเต็มที่และจะดูแลร่างน้องอย่างทะนุถนอมที่สุดค่ะ'
+      ],
+      sbar_doctor: [
+        'รายงาน SBAR เตียง 1 ครับคุณหมอ (S/B): ผู้ป่วยชาย 38 ปี Severe TBI ตอนนี้ GCS = 3 (E1V1M1) ม่านตาขยายคงที่ 6 มม. BP ตกเหลือ 78/46, HR 116 และปัสสาวะใสออกมาก 640 mL/hr โซเดียม 154 ครับ',
+        '(A/R): ประเมินเข้าข่าย Potential Donor ร่วมกับภาวะ Hypotension และสงสัยเบาจืด (DI) ครับ ขอเสนอให้สารน้ำและยากระตุ้นความดัน พิจารณา DDAVP เพื่อคุมปัสสาวะ และเตรียมแผนตรวจยืนยันสมองตายพร้อมประสานทีม ODC ครับ'
+      ]
+    },
+    en: {
+      standard: [
+        'I am deeply sorry for what you and your family are going through. I understand it feels confusing to see his chest moving—that is the ventilator breathing for him, while three physicians have confirmed irreversible brain death.',
+        'There is no rush at all. Please take all the private time your family needs, and know that our surgical team always restores and cares for your father’s body with the utmost dignity.'
+      ],
+      belief: [
+        'We deeply respect your grandmother’s spiritual beliefs and family traditions. Giving the gift of life to save others is widely honored as an act of great compassion and merit.',
+        'Our surgical team restores the body carefully and respectfully so your family can hold all traditional funeral ceremonies as usual.'
+      ],
+      conflict: [
+        'I can see how deeply both of you love him. I hear your wish to honor his donor card, and I also hear how painful this is for you as his mother.',
+        'We will never force or rush any decision without family consensus. Please take private time together to talk—whatever you decide, we will fully support your family.'
+      ],
+      distrust: [
+        'Thank you for asking such a fair and direct question. Organ allocation is managed transparently through the Thai Red Cross Organ Donation Centre computer matching system based on medical compatibility—there is no queue-jumping or selling.',
+        'Your family will never be billed for any extra ICU or donation-related costs, and there is zero pressure to decide right now.'
+      ],
+      pediatric: [
+        'I am truly heartbroken for you. Losing a 14-year-old son so suddenly is unimaginably painful. You do not have to say anything right now—I am simply here with you.',
+        'The medical team did everything possible for him. We respect your wishes 100%, will give you all the time you need to say goodbye, and will care for his body with the greatest tenderness.'
+      ],
+      sbar_doctor: [
+        'SBAR for Bed 1, Doctor (S/B): 38-year-old male with severe TBI, currently GCS 3 (E1V1M1), fixed dilated 6 mm pupils. Vitals are unstable: BP 78/46, HR 116, clear polyuria 640 mL/hr, serum Na 154 mEq/L.',
+        '(A/R): I assess him as a potential organ donor with hypotension and suspected Central Diabetes Insipidus. I recommend IV fluid resuscitation, vasopressor support, DDAVP to control polyuria, and initiating formal brain death evaluation with ODC coordination.'
+      ]
+    }
+  };
+
+  function getCoachQuickReplies(personaId, lang) {
+    const langKey = lang === 'en' ? 'en' : 'th';
+    const bank = COACH_QUICK_REPLIES[langKey] || COACH_QUICK_REPLIES.th;
+    return bank[personaId] || bank.standard;
+  }
+
   function getPersonas() {
     if (Array.isArray(global.SKILL_LAB_PERSONAS) && global.SKILL_LAB_PERSONAS.length > 0) {
       const merged = global.SKILL_LAB_PERSONAS.map(function (p) {
@@ -385,23 +462,29 @@
   }
 
   // ==========================================================================
-  // 3. REALISM #1: 3 HIDDEN BARRIERS PER CASE + EMOTIONAL INERTIA TRUST ENGINE
+  // 3. REALISM #1: 3 HIDDEN BARRIERS PER CASE + ADAPTIVE SCAFFOLDING HINTS + TRUST
   // ==========================================================================
   const CASE_HIDDEN_BARRIERS = {
     standard: [
       {
         id: 'empathy_ack',
         titleTH: 'รับฟังความเสียใจและแนะนำบทบาทอย่างอ่อนโยน',
+        hintTH: 'ลองเริ่มด้วยการแสดงความเสียใจอย่างอ่อนโยนและแนะนำบทบาทพยาบาลผู้ประสานงาน เช่น “ขอแสดงความเสียใจด้วยนะคะ เข้าใจว่าตอนนี้ใจยังหนักมาก ดิฉันอยู่ตรงนี้เพื่อรับฟังค่ะ”',
+        hintEN: 'Start with gentle empathy and introduce your role: “I am deeply sorry for this sudden shock. I am the care coordinator here to support you.”',
         keywords: /เสียใจ|เข้าใจ|หนักมาก|เป็นกำลังใจ|อยู่ตรงนี้|ยินดีรับฟัง|พยาบาล|ผู้ประสานงาน|ขออนุญาต|sorry|understand|here for you|coordinator/i
       },
       {
         id: 'ventilator_vs_braindeath',
         titleTH: 'อธิบายความต่างระหว่างเครื่องช่วยหายใจกับภาวะสมองตายถาวร',
+        hintTH: 'อธิบายอย่างนุ่มนวลว่าหน้าอกที่ขยับเกิดจาก “เครื่องช่วยหายใจ” ส่วน “ก้านสมองหยุดทำงานถาวร” ซึ่งแพทย์ 3 ท่านตรวจยืนยันครบ 2 ครั้งแล้วค่ะ',
+        hintEN: 'Clarify gently that the ventilator moves the chest while three physicians have confirmed irreversible brain death.',
         keywords: /เครื่องช่วยหายใจ|ก้านสมอง|สมองตาย|ถาวร|สูบฉีด|ออกซิเจน|แพทย์.*3|ตรวจ.*2|ventilator|brain\s*death|permanent|irreversible/i
       },
       {
         id: 'zero_pressure_dignity',
         titleTH: 'ให้เวลาครอบครัวตัดสินใจไม่เร่งรัด & ดูแลร่างอย่างสมเกียรติ',
+        hintTH: 'ยืนยันว่า “ไม่เร่งรัด ให้เวลาครอบครัวปรึกษากันเต็มที่” และทีมแพทย์จะ “ตกแต่งร่างคุณพ่ออย่างเรียบร้อยสมเกียรติ” ค่ะ',
+        hintEN: 'Reassure that there is zero pressure, plenty of time to decide, and the body will be cared for with full dignity.',
         keywords: /ไม่เร่ง|ไม่รีบ|ให้เวลา|ปรึกษา|ตัดสินใจ|เคารพ|ตกแต่งร่าง|เรียบร้อย|สมเกียรติ|no\s*rush|take\s*your\s*time|dignity|respect/i
       }
     ],
@@ -409,16 +492,22 @@
       {
         id: 'respect_grandma',
         titleTH: 'รับฟังและเคารพความเชื่อของคุณยายโดยไม่โต้แย้ง',
+        hintTH: 'รับฟังอย่างให้เกียรติก่อน เช่น “เข้าใจความห่วงใยของคุณยายมากค่ะ เราเคารพความเชื่อและศาสนาของครอบครัวเสมอค่ะ”',
+        hintEN: 'Validate her grandmother’s spiritual beliefs respectfully without arguing.',
         keywords: /เข้าใจความกังวล|คุณยาย|ความเชื่อ|เคารพ|ศาสนา|ไม่ตัดสิน|กตัญญู|understand.*grandmother|respect.*belief|spiritual/i
       },
       {
         id: 'merit_giving',
         titleTH: 'สื่อสารคุณค่าทานบารมี / การส่งต่อชีวิตใหม่อย่างนุ่มนวล',
+        hintTH: 'เชื่อมโยงมุมมองทานบารมี เช่น “ในทางศาสนาการมอบอวัยวะเพื่อช่วยต่อชีวิตผู้อื่นถือเป็นทานบารมีและบุญกุศลอันยิ่งใหญ่ค่ะ”',
+        hintEN: 'Gently frame organ donation as an act of great compassion, merit, and saving lives.',
         keywords: /ทานบารมี|บุญใหญ่|ต่อชีวิต|ช่วยชีวิต|กุศล|ชีวิตใหม่|ความดี|merit|gift\s*of\s*life|save\s*lives|compassion/i
       },
       {
         id: 'dignified_body_ritual',
         titleTH: 'ยืนยันการตกแต่งร่างประณีตและทำพิธีทางศาสนาได้ตามปกติ',
+        hintTH: 'คลายกังวลเรื่องพิธีศพว่า “ทีมศัลยแพทย์จะตกแต่งร่างให้เรียบร้อยสมบูรณ์ แต่งตัวและทำพิธีทางศาสนาได้ตามปกติค่ะ”',
+        hintEN: 'Assure her that the surgical team restores the body carefully for all traditional funeral rites.',
         keywords: /ตกแต่งร่าง|เรียบร้อย|สมบูรณ์|พิธี|ศาสนา|แต่งตัว|เหมือนเดิม|ไม่เสียรูป|funeral|ceremony|restored|dignity|intact/i
       }
     ],
@@ -426,16 +515,22 @@
       {
         id: 'validate_both_sides',
         titleTH: 'วางตัวเป็นกลาง รับฟังทั้งความตั้งใจของภรรยาและความเจ็บปวดของคุณแม่',
+        hintTH: 'แสดงความเป็นกลางรับฟังทั้งสองฝ่าย เช่น “สัมผัสได้ถึงความรักที่ทั้งภรรยาและคุณแม่มีให้คุณต้นมากค่ะ เข้าใจความรู้สึกของทั้งสองท่านเลยค่ะ”',
+        hintEN: 'Acknowledge both the wife’s wish and the mother’s pain with complete neutrality.',
         keywords: /ทั้งสอง|ภรรยา.*แม่|แม่.*ภรรยา|ความรัก|เข้าใจคุณแม่|เข้าใจภรรยา|เป็นกลาง|เข้าใจทั้งคู่|both\s*of\s*you|mother.*wife|love\s*him/i
       },
       {
         id: 'no_coercion_family_first',
         titleTH: 'ยืนยันจริยธรรมไทย: ไม่ฝืนใจคุณแม่หรือญาติสายตรงแม้มีบัตรจำนง',
+        hintTH: 'ยืนยันให้คุณแม่สบายใจว่า “ตามหลักจริยธรรมไทยเราจะไม่ฝืนใจคุณแม่เด็ดขาดแม้มีบัตรจำนงค่ะ เพราะสายสัมพันธ์ครอบครัวสำคัญที่สุด”',
+        hintEN: 'Reassure the mother that we will never coerce or proceed without family consensus.',
         keywords: /ไม่ฝืนใจ|ไม่บังคับ|ไม่ดำเนินการ.*ถ้า.*ไม่พร้อม|ความเห็นพ้อง|ยินยอมพร้อมกัน|เคารพคุณแม่|สายสัมพันธ์|never\s*force|no\s*coercion|consensus|without\s*mother/i
       },
       {
         id: 'private_family_time',
         titleTH: 'เปิดพื้นที่ส่วนตัวให้ครอบครัวค่อยๆ ปรึกษากันโดยไม่กดดัน',
+        hintTH: 'เปิดพื้นที่ให้ครอบครัวคุยกันเอง เช่น “ขอให้ทั้งสองท่านมีเวลาส่วนตัวปรึกษากันก่อนโดยไม่เร่งรัดนะคะ ไม่ว่าคำตอบจะเป็นอย่างไรเราพร้อมเคารพค่ะ”',
+        hintEN: 'Offer private family time to discuss without pressure, honoring whatever they decide.',
         keywords: /ให้เวลา|คุยกันเอง|ปรึกษากัน|พื้นที่ส่วนตัว|ไม่เร่งรัด|ไม่กดดัน|ไม่ว่าคำตอบ|private\s*time|discuss\s*together|whatever\s*you\s*decide/i
       }
     ],
@@ -443,16 +538,22 @@
       {
         id: 'calm_non_defensive',
         titleTH: 'รับฟังข้อสงสัยอย่างใจเย็น ขอบคุณที่ถามตรงไปตรงมาโดยไม่โต้เถียง',
+        hintTH: 'ตอบรับอย่างใจเย็นไม่ตั้งรับ เช่น “ขอบคุณที่ถามตรงไปตรงมานะคะ เข้าใจความกังวลเลย ยินดีชี้แจงทุกขั้นตอนอย่างโปร่งใสค่ะ”',
+        hintEN: 'Respond calmly without defensiveness: “Thank you for asking so directly—I am glad to explain transparently.”',
         keywords: /ขอบคุณที่ถาม|เข้าใจความกังวล|คำถามสำคัญ|ตรงไปตรงมา|ยินดีชี้แจง|โปร่งใส|ตรวจสอบได้|thank\s*you\s*for\s*asking|fair\s*question|transparent/i
       },
       {
         id: 'odc_computer_fairness',
         titleTH: 'อธิบายระบบจัดสรรอวัยวะของ ODC สภากาชาดไทยที่โปร่งใสและเป็นธรรม',
+        hintTH: 'ชี้แจงว่า “จัดสรรผ่านระบบคอมพิวเตอร์กลางของศูนย์รับบริจาคอวัยวะสภากาชาดไทย (ODC) ตามความเข้ากันได้ของเนื้อเยื่อ ไม่มีการซื้อขายหรือลัดคิวค่ะ”',
+        hintEN: 'Explain the Thai Red Cross ODC computer matching system based on medical compatibility with zero queue-jumping.',
         keywords: /สภากาชาด|ODC|ศูนย์รับบริจาค|คอมพิวเตอร์|เข้ากันได้|เนื้อเยื่อ|หมู่เลือด|เร่งด่วน|ไม่มี.*ซื้อขาย|ไม่ลัดคิว|red\s*cross|computer|matching|fair|no\s*selling/i
       },
       {
         id: 'zero_extra_cost',
         titleTH: 'ยืนยันชัดเจนว่าครอบครัวผู้บริจาคไม่มีค่าใช้จ่ายเพิ่มเติมและไม่เร่งรัด',
+        hintTH: 'ยืนยันเรื่องค่าใช้จ่ายว่า “ครอบครัวผู้บริจาคไม่มีค่าใช้จ่ายเพิ่มเติมใดๆ ในขั้นตอนการบริจาคและรอผ่าตัดเลยค่ะ”',
+        hintEN: 'Clarify clearly that the donor family faces zero additional ICU or surgery expenses.',
         keywords: /ไม่มีค่าใช้จ่าย|ไม่เสียค่าใช้จ่าย|ไม่คิดเงิน|ฟรี|รับผิดชอบค่าใช้จ่าย|ไม่เร่ง|no\s*cost|free\s*of\s*charge|zero\s*cost|not\s*billed/i
       }
     ],
@@ -460,16 +561,22 @@
       {
         id: 'deep_bereavement_presence',
         titleTH: 'อยู่เคียงข้างและรับรู้ความเจ็บปวดสูงสุดของคนเป็นแม่โดยไม่รีบอธิบายข้อมูล',
+        hintTH: 'ประคับประคองใจก่อนให้ข้อมูล เช่น “ขอแสดงความเสียใจอย่างสุดซึ้งนะคะ เข้าใจหัวอกคนเป็นแม่ว่ามันเร็วและเจ็บปวดมาก ไม่ต้องรีบพูดอะไรเลย ดิฉันอยู่ตรงนี้เป็นเพื่อนค่ะ”',
+        hintEN: 'Offer quiet bereavement presence first before any clinical explanation.',
         keywords: /เสียใจอย่างสุดซึ้ง|หัวอก.*แม่|เข้าใจ.*แม่|เจ็บปวด|เร็วเกินไป|อยู่ตรงนี้|เป็นเพื่อน|กอด|ไม่ต้องรีบพูด|deeply\s*sorry|mother|heartbreaking|here\s*with\s*you/i
       },
       {
         id: 'gentle_decoupling_legacy',
         titleTH: 'ใช้หลัก Decoupling ค่อยๆ อธิบายความจริงอย่างอ่อนโยนและเชื่อมโยงคุณค่าชีวิตของน้อง',
+        hintTH: 'ยืนยันว่าทีมแพทย์ดูแลน้องสุดความสามารถแล้วและค่อยๆ เชื่อมโยงคุณค่าความทรงจำ/การส่งต่อชีวิตอย่างอ่อนโยนค่ะ',
+        hintEN: 'Confirm the team did everything possible and gently decouple clinical facts from honoring his legacy.',
         keywords: /ก้านสมอง|สมองตาย|ทีมแพทย์ดูแล.*สุดความสามารถ|ความทรงจำ|ความภูมิใจ|ส่งต่อชีวิต|ช่วยเด็ก|decoupling|brain\s*death|legacy|help\s*other\s*children/i
       },
       {
         id: 'parental_autonomy_dignity',
         titleTH: 'เคารพสิทธิ์พ่อแม่ 100% ให้เวลาบอกลาลูกอย่างเต็มที่และดูแลร่างอย่างทะนุถนอมที่สุด',
+        hintTH: 'ยืนยันว่า “ให้เวลาคุณพ่อคุณแม่ได้อยู่บอกลาน้องต้นกล้าอย่างเต็มที่ เคารพการตัดสินใจร้อยเปอร์เซ็นต์ และจะดูแลร่างน้องอย่างทะนุถนอมที่สุดค่ะ”',
+        hintEN: 'Assure full parental autonomy, unhurried goodbye time, and tender care for his body.',
         keywords: /ให้เวลา.*บอกลา|อยู่กับน้อง|ปรึกษาคุณพ่อ|ไม่เร่งรัด|เคารพการตัดสินใจ|ดูแลร่าง|ทะนุถนอม|เรียบร้อย|say\s*goodbye|take\s*all\s*the\s*time|dignity/i
       }
     ],
@@ -477,16 +584,22 @@
       {
         id: 'sbar_situation_background',
         titleTH: 'S & B: ระบุตัวตนเคส TBI คะแนน GCS = 3 และสัญญาณชีพวิกฤต (BP 78/46, UO 640)',
-        keywords: /GCS\s*=?\s*3|จีซีเอส.*3|TBI|อุบัติเหตุทางศีรษะ|78\/46|ความดันตก|ความดันต่ำ|640|ปัสสาวะออกมาก|เตียง\s*1|situation|background/i
+        hintTH: 'รายงาน S & B ให้ครบตัวเลขสำคัญ: “เตียง 1 ผู้ป่วยชาย 38 ปี Severe TBI ตอนนี้ GCS = 3 ม่านตา 6 มม. BP ตกเหลือ 78/46 และปัสสาวะใสออก 640 mL/hr ครับ”',
+        hintEN: 'Report S & B crisply: “Bed 1, 38yo male TBI, GCS 3, fixed 6 mm pupils, BP 78/46, HR 116, clear polyuria 640 mL/hr.”',
+        keywords: /GCS\s*=?\s*3|จีซีเอส.*3|TBI|อุบัติเหตุทางศีรษะ|78\/46|ความดันตก|ความดันต่ำ|640|ปัสสาวะออกมาก|เตียง\s*1|situation|background|polyuria/i
       },
       {
         id: 'sbar_assessment_di',
         titleTH: 'A: ประเมินเข้าข่าย Potential Donor ร่วมกับภาวะ Hypotension และเบาจืด (DI / Na สูง)',
+        hintTH: 'ระบุการประเมิน A ให้ชัด: “ประเมินว่าเข้าข่าย Potential Donor ร่วมกับภาวะ Hypotension และสงสัยเบาจืด (Central DI) เนื่องจากปัสสาวะใสออกมากและ Na สูง 154 ครับ”',
+        hintEN: 'State Assessment clearly: “Potential donor with hypotension and suspected Central Diabetes Insipidus (Na 154).”',
         keywords: /potential\s*donor|เข้าข่ายผู้บริจาค|สมองตาย|เบาจืด|diabetes\s*insipidus|\bDI\b|โซเดียมสูง|154|hypernatremia|assessment/i
       },
       {
         id: 'sbar_recommendation_plan',
         titleTH: 'R: เสนอแผนพยุงความดัน (Fluid/Vasopressor), ยา DDAVP, เตรียมตรวจสมองตาย & ประสาน ODC',
+        hintTH: 'เสนอแผน R ชัดเจน: “ขอเสนอให้สารน้ำ/ยากระตุ้นความดัน พิจารณา DDAVP เพื่อคุมปัสสาวะ และเตรียมแผนตรวจยืนยันสมองตายพร้อมประสานทีม ODC ครับ”',
+        hintEN: 'Deliver Recommendation: “Recommend IV fluids, vasopressor, DDAVP for DI, formal brain death workup, and ODC coordination.”',
         keywords: /DDAVP|ดีดีเอวีพี|desmopressin|สารน้ำ|fluid|vasopressor|กระตุ้นความดัน|ตรวจสมองตาย|apnea|ประสาน.*ODC|ศูนย์รับบริจาค|recommendation/i
       }
     ]
@@ -513,6 +626,36 @@
       unlockedIds: Array.from(unlocked),
       newlyUnlocked: newlyUnlocked,
       total: barriers.length
+    };
+  }
+
+  /**
+   * Adaptive Scaffolding (ชุดที่ 2): ส่งคำใบ้เจาะจงเฉพาะปมในใจที่ยังไม่ได้ปลดล็อก
+   */
+  function getRemainingBarrierHint(personaId, unlockedIds, lang) {
+    const barriers = getCaseBarriers(personaId);
+    const unlocked = new Set(Array.isArray(unlockedIds) ? unlockedIds : []);
+    const remaining = barriers.filter(function (b) { return !unlocked.has(b.id); });
+    const isEn = lang === 'en';
+
+    if (remaining.length === 0) {
+      return {
+        allUnlocked: true,
+        remainingCount: 0,
+        barrierTitle: isEn ? 'All 3 clinical objectives completed!' : 'คลายปมครบทั้ง 3 ข้อแล้ว!',
+        hintText: isEn
+          ? 'Excellent work—you have addressed all 3 key concerns. You may wrap up gently and click Finish & Evaluate.'
+          : 'ยอดเยี่ยมมากค่ะ! ท่านคลายปมสำคัญครบทั้ง 3 ข้อแล้ว สามารถสรุปปิดบทสนทนาอย่างนุ่มนวลและกด “จบเคส & ประเมินผล” ได้เลยค่ะ'
+      };
+    }
+
+    const nextB = remaining[0];
+    return {
+      allUnlocked: false,
+      remainingCount: remaining.length,
+      barrierId: nextB.id,
+      barrierTitle: nextB.titleTH,
+      hintText: isEn ? (nextB.hintEN || nextB.hintTH) : nextB.hintTH
     };
   }
 
@@ -557,7 +700,7 @@
   }
 
   // ==========================================================================
-  // 4. REALISM #2: HARD MODE REAL-WORLD CURVEBALLS (สายแทรก & สะอื้นเงียบ)
+  // 4. REALISM #2: CONTEXT-AWARE HARD MODE CURVEBALLS (FAMILY vs. SBAR ICU)
   // ==========================================================================
   const HARD_MODE_CURVEBALLS = [
     {
@@ -590,10 +733,43 @@
     }
   ];
 
-  function pickHardCurveball(nextTurnNum, usedIds) {
+  // เหตุการณ์แทรกเฉพาะเคส 6 (ส่งเวร SBAR กับ นพ.ภาคิน — ไม่เอาสายพี่ชายมาปะปน!)
+  const SBAR_HARD_MODE_CURVEBALLS = [
+    {
+      id: 'icu_bp_crash_alarm',
+      type: 'alarm',
+      triggerTurn: 2,
+      emotion: 'SHOCK',
+      badgeTH: '🚨 เหตุการณ์แทรก ICU Hard • สัญญาณเตือน Monitor ดังฉุกเฉิน',
+      badgeEN: '🚨 ICU Hard Curveball • Bedside Monitor Alarm',
+      titleTH: 'ความดันเตียง 1 ตกวิกฤตเหลือ BP 64/40 mmHg (MAP 48)!',
+      actionTH: 'เสียง Monitor เตียง 1 ร้องเตือนถี่ นพ.ภาคินหันขวับไปดูจอด้วยสีหน้าตึงเครียด',
+      actionEN: 'The bedside monitor alarms rapidly; Dr. Phakin turns sharply toward the screen.',
+      speechTH: 'เดี๋ยวครับ! จอ Monitor เตียง 1 เตือนแล้ว ความดันตกฮวบเหลือ 64/40 mmHg ปัสสาวะยังพุ่งไม่หยุดเลยครับ! คุณพยาบาลสรุปตัวเลขและเสนอ Order เร่งด่วนเพื่อพยุงอวัยวะตอนนี้เลยครับ!',
+      speechEN: 'Hold on! Bed 1 monitor is alarming—BP just crashed to 64/40 mmHg and polyuria continues! Give me your immediate assessment and urgent order recommendations right now!',
+      coachHintTH: 'ตั้งสติและสรุป A+R กระชับทันที: สงสัย Hypovolemia จาก Central DI (Na 154) เสนอ Load สารน้ำ/ปรับ Vasopressor ให้ MAP ≥ 65 และขอ Order DDAVP ค่ะ'
+    },
+    {
+      id: 'icu_bed3_interrupt',
+      type: 'alarm',
+      triggerTurn: 3,
+      emotion: 'ANGRY',
+      badgeTH: '⚡ เหตุการณ์แทรก ICU Hard • แพทย์ถูกตามเคสฉุกเฉิน',
+      badgeEN: '⚡ ICU Hard Curveball • Urgent Bed 3 Interruption',
+      titleTH: 'เตียง 3 เรียกด่วน — มีเวลา 15 วินาทีสรุปแผนส่งต่อ!',
+      actionTH: 'วิทยุสื่อสารหอผู้ป่วยดังขึ้น นพ.ภาคินกำลังจะเดินไปเตียง 3 และหันมาขอสรุปปิดท้าย',
+      actionEN: 'An urgent page sounds for Bed 3; Dr. Phakin asks for a crisp final confirmation.',
+      speechTH: 'ขอโทษครับ เตียง 3 กำลังต้องใส่ท่อช่วยหายใจ ผมมีเวลาแค่ 15 วินาที ช่วยทวนแผนตรวจยืนยันสมองตายและการประสานทีม ODC ให้ผมเซ็น Order ก่อนเดินไปหน่อยครับ!',
+      speechEN: 'Sorry, Bed 3 needs emergency intubation—I have 15 seconds. Confirm the brain death evaluation plan and ODC coordination so I can sign off right now!',
+      coachHintTH: 'สรุป Read-Back สั้นและแม่น: เตรียมแพทย์ 3 ท่านตรวจสมองตาย 2 ครั้งห่าง 6 ชม. คุมสัญญาณชีพ/DI และแจ้งพยาบาล TC ประสานศูนย์ ODC สภากาชาดไทยค่ะ'
+    }
+  ];
+
+  function pickHardCurveball(nextTurnNum, usedIds, personaId) {
     const used = new Set(Array.isArray(usedIds) ? usedIds : []);
-    for (let i = 0; i < HARD_MODE_CURVEBALLS.length; i++) {
-      const cb = HARD_MODE_CURVEBALLS[i];
+    const pool = personaId === 'sbar_doctor' ? SBAR_HARD_MODE_CURVEBALLS : HARD_MODE_CURVEBALLS;
+    for (let i = 0; i < pool.length; i++) {
+      const cb = pool[i];
       if (!used.has(cb.id) && cb.triggerTurn === Number(nextTurnNum)) {
         return cb;
       }
@@ -701,28 +877,39 @@
   }
 
   // ==========================================================================
-  // 6. AI LAB ADVISOR v3 (วิเคราะห์ประวัติจริง + รองรับ 6 เคส + ตัวละครอนิเมะตามบริบท)
+  // 6. PROFESSION-AWARE AI LAB ADVISOR v4 (แยกแนะนำตรงตาม 3 กลุ่มวิชาชีพ)
   // ==========================================================================
   const ADVISOR_GOALS = [
-    { id: 'auto', label: 'AI วิเคราะห์ให้', icon: 'Sparkles' },
+    { id: 'auto', label: 'AI วิเคราะห์ตามวิชาชีพ', icon: 'Sparkles' },
     { id: 'first', label: 'เพิ่งฝึกครั้งแรก', icon: 'HeartHandshake' },
     { id: 'drill4', label: 'ซ้อม 4 ด่านคำถามหนัก', icon: 'Zap' },
     { id: 'hard_challenge', label: 'ท้าทาย Hard + เหตุการณ์แทรก', icon: 'Flame' },
     { id: 'conflict2', label: 'ฝึกเคสหิน 2 ตัวละครในห้อง', icon: 'Users' },
     { id: 'pediatric', label: 'เคสผู้ป่วยเด็ก (อ่อนไหวสูง)', icon: 'Baby' },
     { id: 'sbar_team', label: 'ฝึกส่งเวร SBAR แพทย์เวร ICU', icon: 'Stethoscope' },
-    { id: 'english', label: 'ฝึกภาษาอังกฤษ', icon: 'Globe' }
+    { id: 'english', label: 'ฝึกภาษาอังกฤษ (EN)', icon: 'Globe' }
   ];
 
   const ADVISOR_QUICK_QUESTIONS = [
     'Normal กับ Hard ต่างกันยังไง?',
-    'เคสผู้ป่วยเด็กกับส่งเวร SBAR ฝึกยังไง?',
-    'วัดความนุ่มนวลน้ำเสียงกับฟังเสียงตัวเองทำงานยังไง?',
-    'ปมในใจ 3 ข้อและ Trust ทำงานยังไง?'
+    'เคส 6 ส่งเวร SBAR ประเมินยังไง?',
+    'ขอคำใบ้เจาะปม & เปิดคำบรรยาย CC ทำยังไง?',
+    'ฟังเสียงตัวเองย้อนหลังปลอดภัย PDPA ไหม?'
   ];
+
+  function resolveProfessionGroup(userObj) {
+    const u = userObj || {};
+    const ex = String(u.professionGroup || '').trim();
+    if (ex === 'พยาบาล' || ex === 'แพทย์' || ex === 'บุคลากรสหวิชาชีพ') return ex;
+    const txt = String(u.name || '') + ' ' + String(u.position || '');
+    if (/(นพ\.|พญ\.|แพทย์|doctor|\bm\.?d\.?\b)/i.test(txt) && !/พยาบาล/.test(txt)) return 'แพทย์';
+    if (/(พว\.|พยาบาล|nurse|\brn\b)/i.test(txt)) return 'พยาบาล';
+    return 'บุคลากรสหวิชาชีพ';
+  }
 
   function computeLabRecommendation(userObj, goalId) {
     const u = userObj || {};
+    const prof = resolveProfessionGroup(u);
     const hist = Array.isArray(u.skillLabHistory) ? u.skillLabHistory : [];
     const bestScore = typeof u.skillLabBestScore === 'number' ? u.skillLabBestScore : null;
     const latestRadar = u.skillLabLatestRadar || null;
@@ -740,45 +927,58 @@
       });
     }
 
+    // ลำดับเคสแนะนำเฉพาะแต่ละกลุ่มวิชาชีพ (ชุดที่ 2: Profession-Aware Pathway)
+    const pathwayByProf = prof === 'แพทย์'
+      ? ['standard', 'distrust', 'pediatric', 'conflict', 'belief', 'sbar_doctor']
+      : prof === 'บุคลากรสหวิชาชีพ'
+        ? ['belief', 'conflict', 'distrust', 'standard', 'pediatric', 'sbar_doctor']
+        : ['standard', 'conflict', 'sbar_doctor', 'belief', 'distrust', 'pediatric'];
+
     const practicedIds = new Set(hist.map(function (h) { return h.personaId; }).filter(Boolean));
-    const unpracticed = ['standard', 'belief', 'conflict', 'distrust', 'pediatric', 'sbar_doctor']
-      .find(function (id) { return !practicedIds.has(id); }) || 'pediatric';
+    const nextUnpracticed = pathwayByProf.find(function (id) { return !practicedIds.has(id); }) || pathwayByProf[0];
 
     if (goalId === 'first') {
+      const startCase = pathwayByProf[0];
+      const startTitle = startCase === 'belief' ? 'เคสคุณฝน (ความเชื่อ & พิธีกรรม)' : 'เคสคุณแพรว (อธิบายภาวะสมองตาย)';
       return {
-        mode: 'roleplay_th', difficulty: 'normal', personaId: 'standard',
-        headline: 'ชุดเริ่มต้นสร้างความมั่นใจ (Roleplay ไทย • เคสคุณแพรว)',
-        reason: 'เหมาะสำหรับผู้เพิ่งเข้าห้องฝึกครั้งแรกค่ะ พบกับตัวละครคุณแพรว (ลูกสาว) ที่มีปมในใจ 3 ข้อชัดเจน พร้อม AI Coach แนะนำประโยคและสีหน้าอารมณ์เสมือนจริง',
-        tip: 'เริ่มด้วยการแนะนำตัว แสดงความเสียใจ และเว้นความเงียบ 2.5 วินาทีหลังคุณแพรวพูดจบนะคะ',
-        speech: 'สวัสดีค่ะคุณ' + nameShort + ' สำหรับการฝึกครั้งแรก แนะนำโหมดโรลเพลย์ภาษาไทย ระดับนอร์มอล เคสคุณแพรวลูกสาวค่ะ จะมีแนวทางคำพูดและเอไอโค้ชช่วยนำทางให้มั่นใจขึ้นค่ะ'
+        mode: 'roleplay_th', difficulty: 'normal', personaId: startCase, professionGroup: prof,
+        headline: 'ชุดเริ่มต้นสำหรับกลุ่ม' + prof + ' (' + startTitle + ' • Normal)',
+        reason: 'ปรับเส้นทางเริ่มต้นให้ตรงบทบาทกลุ่ม' + prof + ' ค่ะ มี AI Coach แนะนำประโยค ปุ่มขอคำใบ้เจาะปมที่เหลือ และตัวละครโฮโลแกรม 3 มิติขยับปากตามเสียงจริง',
+        tip: 'เริ่มด้วยการแนะนำตัว แสดงความเห็นอกเห็นใจ และเว้นความเงียบ 2.5 วินาทีหลังคู่สนทนาพูดจบนะคะ',
+        speech: 'สวัสดีค่ะคุณ' + nameShort + ' สำหรับกลุ่ม' + prof + ' แนะนำเริ่มต้นที่' + startTitle + ' ระดับนอร์มอลค่ะ จะมีแนวทางคำพูดและคำใบ้เจาะปมช่วยนำทางให้มั่นใจขึ้นค่ะ'
       };
     }
 
     if (goalId === 'drill4') {
       return {
-        mode: 'micro_drill', difficulty: 'normal', personaId: 'standard',
+        mode: 'micro_drill', difficulty: 'normal', personaId: 'standard', professionGroup: prof,
         headline: 'โหมด Micro-Drill 4 ด่านคำถามหนักเฉพาะจุด (ซ้อมไว 3 นาที)',
-        reason: 'ซ้อมรับมือ 4 คำถามหินที่พยาบาล TC เจอบ่อยที่สุดเรียงต่อกัน พร้อมเปลี่ยนตัวละครญาติอัตโนมัติทุกด่าน และตรวจให้ประโยคต้นแบบทันที',
+        reason: 'ซ้อมรับมือ 4 คำถามหินที่เจอบ่อยที่สุดเรียงต่อกัน เปลี่ยนตัวละครญาติอัตโนมัติทุกด่าน พร้อมตรวจให้คะแนนและเฉลยประโยคต้นแบบทันที',
         tip: 'ตอบให้ครบทั้งการรับฟังอารมณ์และข้อเท็จจริงคลินิกในแต่ละด่านเพื่อผ่าน 65% ขึ้นไปค่ะ',
-        speech: 'แนะนำโหมดไมโครดริลล์สี่ด่านคำถามหนักค่ะ ใช้เวลาเพียงสามนาที ระบบจะเปลี่ยนตัวละครญาติให้ตรงกับแต่ละคำถามพร้อมเฉลยประโยคต้นแบบทันทีค่ะ'
+        speech: 'แนะนำโหมดไมโครดริลล์สี่ด่านคำถามหนักค่ะ ใช้เวลาเพียงสามนาที ระบบจะเปลี่ยนตัวละครให้ตรงกับแต่ละคำถามพร้อมเฉลยประโยคต้นแบบทันทีค่ะ'
       };
     }
 
     if (goalId === 'hard_challenge') {
+      const hardTarget = prof === 'พยาบาล' ? 'sbar_doctor' : 'distrust';
       return {
-        mode: 'roleplay_th', difficulty: 'hard', personaId: 'distrust',
-        headline: 'โหมดท้าทาย Hard + เหตุการณ์ไม่คาดฝันกลางห้อง (Curveballs)',
-        reason: 'ซ่อนปุ่มแนวทางคำพูด 100% เพิ่มแรงเฉื่อย Trust และสุ่มเหตุการณ์หน้างานจริงกลางห้อง เช่น สายโทรศัพท์พี่ชายโทรแทรกมาค้าน หรือญาติสะอื้นเงียบทดสอบการเว้นความเงียบ 2.5 วิ',
-        tip: 'เมื่อญาติสะอื้นเงียบ อย่ารีบพูดแทรกนะคะ รอให้ครบ 2.5 วิ แล้วค่อยปลอบอย่างนุ่มนวลค่ะ',
-        speech: 'สำหรับโหมดท้าทาย แนะนำระดับฮาร์ดพร้อมเหตุการณ์ไม่คาดฝันกลางห้องค่ะ ระบบจะซ่อนตัวช่วยคำพูดและจำลองสายโทรศัพท์แทรกหรือจังหวะญาติสะอื้นเงียบเสมือนหน้างานจริงค่ะ'
+        mode: 'roleplay_th', difficulty: 'hard', personaId: hardTarget, professionGroup: prof,
+        headline: hardTarget === 'sbar_doctor'
+          ? 'โหมดท้าทาย Hard: ส่งเวร SBAR + Monitor เตือน BP 64/40!'
+          : 'โหมดท้าทาย Hard + เหตุการณ์แทรกกลางห้อง (Curveballs)',
+        reason: hardTarget === 'sbar_doctor'
+          ? 'ซ่อนตัวช่วย 100% พร้อมจำลองสัญญาณเตือน Monitor เตียง 1 ความดันตกฉุกเฉิน BP 64/40 และเคสเตียง 3 แทรกกลางการส่งเวรกับ นพ.ภาคินค่ะ'
+          : 'ซ่อนปุ่มแนวทางคำพูด 100% เพิ่มแรงเฉื่อย Trust และจำลองสายโทรศัพท์พี่ชายโทรแทรกมาคัดค้านหรือจังหวะญาติสะอื้นเงียบกลางห้องค่ะ',
+        tip: 'ตั้งสติและคุมจังหวะการสื่อสารให้ชัดเจนแม่นยำภายใต้แรงกดดันหน้างานจริงค่ะ',
+        speech: 'สำหรับโหมดท้าทาย แนะนำระดับฮาร์ดพร้อมเหตุการณ์ฉุกเฉินไม่คาดฝันกลางห้อง เพื่อฝึกการคุมสถานการณ์จริงค่ะ'
       };
     }
 
     if (goalId === 'conflict2') {
       return {
-        mode: 'roleplay_th', difficulty: bestScore && bestScore >= 82 ? 'hard' : 'normal', personaId: 'conflict',
+        mode: 'roleplay_th', difficulty: bestScore && bestScore >= 82 ? 'hard' : 'normal', personaId: 'conflict', professionGroup: prof,
         headline: 'เคสหิน 2 ตัวละครในห้อง (ภรรยา + คุณแม่ของคุณต้น)',
-        reason: 'ฝึกวางตัวเป็นกลางเมื่อในห้องมีตัวละครญาติ 2 คน (ภรรยา และ คุณแม่) ที่เห็นต่างกันอย่างรุนแรง โดยแต่ละตัวละครจะขยับปากและแสดงสีหน้าแยกตามผู้พูดจริง',
+        reason: 'ฝึกวางตัวเป็นกลางเมื่อในห้องมีตัวละครญาติ 2 คน (ภรรยา และ คุณแม่) ที่เห็นต่างกันอย่างรุนแรง โดยแต่ละตัวละครจะขยับปากตรงตามเสียงผู้พูดจริง',
         tip: 'ยืนยันหลักจริยธรรมไทยว่าจะไม่ฝืนใจคุณแม่แม้มีบัตรบริจาค แล้วให้เวลาครอบครัวปรึกษากันค่ะ',
         speech: 'แนะนำเคสความขัดแย้งในครอบครัวค่ะ ห้องนี้จะมีตัวละครญาติสองคนคือภรรยาและคุณแม่อยู่ร่วมกัน เพื่อฝึกวางตัวเป็นกลางและประสานใจทั้งสองฝ่ายค่ะ'
       };
@@ -786,41 +986,60 @@
 
     if (goalId === 'pediatric') {
       return {
-        mode: 'roleplay_th', difficulty: bestScore && bestScore >= 84 ? 'hard' : 'normal', personaId: 'pediatric',
+        mode: 'roleplay_th', difficulty: bestScore && bestScore >= 84 ? 'hard' : 'normal', personaId: 'pediatric', professionGroup: prof,
         headline: 'เคสระดับสูงที่ 5: คุณแม่ผู้ป่วยเด็กอายุ 14 ปี (Bereavement Sensitivity)',
         reason: 'สถานการณ์ที่ละเอียดอ่อนและท้าทายหัวใจที่สุด ฝึกการอยู่เคียงข้างคุณแม่น้องต้นกล้า การคุมความนุ่มนวลของน้ำเสียง และการเว้นความเงียบเยียวยา 2.5 วิ',
         tip: 'สังเกตมาตรวัดน้ำเสียงสดขณะพูด และลองกดฟังเสียงตัวเองย้อนหลังในหน้าประเมินผลนะคะ',
-        speech: 'แนะนำเคสที่ห้า เคสคุณแม่ผู้ป่วยเด็กอายุสิบสี่ปีค่ะ เคสนี้ละเอียดอ่อนมาก เน้นการประคับประคองความรู้สึก การคุมความนุ่มนวลของน้ำเสียง และการเว้นความเงียบเยียวยาค่ะ'
+        speech: 'แนะนำเคสที่ห้า เคสคุณแม่ผู้ป่วยเด็กอายุสิบสี่ปีค่ะ เคสนี้ละเอียดอ่อนมาก เน้นการประคับประคองความรู้สึกและการเว้นความเงียบเยียวยาค่ะ'
       };
     }
 
     if (goalId === 'sbar_team') {
       return {
-        mode: 'roleplay_th', difficulty: 'normal', personaId: 'sbar_doctor',
-        headline: 'เคสระดับสูงที่ 6: ส่งเวร SBAR กับ นพ.ภาคิน แพทย์เวร ICU',
-        reason: 'ฝึกสื่อสารทีมสหสาขาวิชาชีพแบบ SBAR กับตัวละคร นพ.ภาคิน เมื่อพบ Potential Donor (GCS 3, BP 78/46, ปัสสาวะ 640 mL/hr) ให้ครบทั้ง S-B-A-R',
-        tip: 'เริ่มรายงานให้กระชับตามลำดับ S (ผู้ป่วย/GCS 3) → B (TBI) → A (สงสัย DI) → R (DDAVP/พยุง BP/เตรียมตรวจสมองตาย) ค่ะ',
-        speech: 'แนะนำเคสที่หก ฝึกส่งเวรแบบเอสบาร์กับนายแพทย์ภาคิน แพทย์เวรไอซียูค่ะ เพื่อฝึกสื่อสารข้อมูลคลินิกผู้บริจาคอวัยวะให้กระชับ แม่นยำ และครบถ้วนค่ะ'
+        mode: 'roleplay_th', difficulty: 'normal', personaId: 'sbar_doctor', professionGroup: prof,
+        headline: 'เคสระดับสูงที่ 6: ส่งเวร SBAR กับ นพ.ภาคิน (เกณฑ์ประเมิน SBAR 5 แกน)',
+        reason: 'ฝึกสื่อสารทีมสหสาขาวิชาชีพแบบ SBAR เมื่อพบ Potential Donor (GCS 3, BP 78/46, ปัสสาวะ 640 mL/hr, Na 154) พร้อมเรดาร์ประเมินเฉพาะ S-B-A-R ทั้ง 5 แกน',
+        tip: 'รายงานกระชับตามลำดับ S (ผู้ป่วย/GCS 3) → B (TBI) → A (สงสัย DI) → R (Fluid/Vasopressor, DDAVP & ODC) ค่ะ',
+        speech: 'แนะนำเคสที่หก ฝึกส่งเวรแบบเอสบาร์กับนายแพทย์ภาคิน แพทย์เวรไอซียูค่ะ ใช้เกณฑ์เรดาร์ประเมินเอสบาร์ห้าแกนเฉพาะทางค่ะ'
       };
     }
 
     if (goalId === 'english') {
       return {
-        mode: 'roleplay_en', difficulty: 'normal', personaId: 'standard',
-        headline: 'International English Family Approach (Roleplay EN)',
-        reason: 'ฝึกสื่อสารกับครอบครัวผู้ป่วยชาวต่างชาติด้วยหลัก SPIKES และ Decoupling ภาษาอังกฤษพร้อมเสียงพูดธรรมชาติและตัวตรวจคำกระทบใจภาษาอังกฤษ',
+        mode: 'roleplay_en', difficulty: 'normal', personaId: 'standard', professionGroup: prof,
+        headline: 'International English Family Approach (Roleplay EN + EN Quick Replies)',
+        reason: 'ฝึกสื่อสารกับครอบครัวผู้ป่วยชาวต่างชาติด้วยหลัก SPIKES และ Decoupling ภาษาอังกฤษพร้อมปุ่มแนวทางคำพูดภาษาอังกฤษและตัวตรวจคำกระทบใจ EN',
         tip: 'หลีกเลี่ยงคำว่า pull the plug หรือ harvest และใช้ withdraw life-sustaining support แทนค่ะ',
-        speech: 'แนะนำโหมดโรลเพลย์ภาษาอังกฤษค่ะ เพื่อฝึกสื่อสารกับครอบครัวผู้ป่วยชาวต่างชาติด้วยหลักสไปค์สและดีคัปปลิ้งค่ะ'
+        speech: 'แนะนำโหมดโรลเพลย์ภาษาอังกฤษค่ะ มีแนวทางคำพูดมาตรฐานภาษาอังกฤษให้เลือกฝึกตามหลักสไปค์สและดีคัปปลิ้งครบถ้วนค่ะ'
       };
     }
 
+    // โหมด Auto: วิเคราะห์ตามกลุ่มวิชาชีพ + ประวัติจริง
     if (hist.length === 0) {
+      if (prof === 'แพทย์') {
+        return {
+          mode: 'roleplay_th', difficulty: 'normal', personaId: 'standard', professionGroup: prof,
+          headline: 'AI แนะนำสำหรับแพทย์: เคส 1 อธิบายเกณฑ์สมองตาย & เครื่องช่วยหายใจ',
+          reason: 'สำหรับกลุ่มแพทย์ แนะนำเริ่มที่เคสคุณแพรวเพื่อซ้อมการอธิบายภาวะสมองตายและหลัก Decoupling ด้วยภาษาที่ญาติเข้าใจง่าย ก่อนต่อยอดสู่เคส 4 (ODC) และเคส 5 (ผู้ป่วยเด็ก) ค่ะ',
+          tip: 'อธิบายความต่างระหว่างเครื่องช่วยหายใจกับก้านสมองหยุดทำงานถาวรโดยเลี่ยงศัพท์เทคนิคที่แข็งเกินไปค่ะ',
+          speech: 'สวัสดีค่ะ สำหรับกลุ่มแพทย์ แนะนำเริ่มที่เคสคุณแพรวเพื่อซ้อมการอธิบายเกณฑ์ภาวะสมองตายและหลักดีคัปปลิ้งให้ญาติเข้าใจง่ายค่ะ'
+        };
+      }
+      if (prof === 'บุคลากรสหวิชาชีพ') {
+        return {
+          mode: 'roleplay_th', difficulty: 'normal', personaId: 'belief', professionGroup: prof,
+          headline: 'AI แนะนำสำหรับบุคลากรสหวิชาชีพ: เคส 2 ความเชื่อ ศาสนา & พิธีกรรม',
+          reason: 'สำหรับกลุ่มบุคลากรสหวิชาชีพ แนะนำเริ่มที่เคสคุณฝนเพื่อฝึกการประคับประคองใจ เคารพความเชื่อครอบครัว และคลายข้อกังวลด้านพิธีกรรม ก่อนต่อยอดสู่เคส 3 และเคส 4 ค่ะ',
+          tip: 'รับฟังความกังวลของคุณยายด้วยความเคารพก่อนเชื่อมโยงเรื่องทานบารมีและการดูแลร่างอย่างสมเกียรติค่ะ',
+          speech: 'สวัสดีค่ะ สำหรับกลุ่มบุคลากรสหวิชาชีพ แนะนำเริ่มที่เคสคุณฝนเพื่อฝึกการรับฟังความเชื่อและประคับประคองใจครอบครัวก่อนนะคะ'
+        };
+      }
       return {
-        mode: 'roleplay_th', difficulty: 'normal', personaId: 'standard',
-        headline: 'AI วิเคราะห์ให้: เริ่มที่เคสคุณแพรว (ลูกสาว • Normal)',
-        reason: 'ยังไม่พบประวัติการฝึกใน AI Skill Lab ค่ะ แนะนำเริ่มต้นด้วยเคสคุณแพรวระดับ Normal เพื่อจับจังหวะคลายปมในใจ 3 ข้อและเว้นความเงียบ 2.5 วินาทีก่อนขยับสู่ระดับ Hard ค่ะ',
-        tip: 'สังเกตสีหน้าและแววตาของคุณแพรวที่จะค่อยๆ ผ่อนคลายลงเมื่อคุณคลายปมในใจได้ครบ 3 ข้อค่ะ',
-        speech: 'สวัสดีค่ะคุณ' + nameShort + ' จากประวัติพบว่านี่เป็นการเข้าฝึกครั้งแรก แนะนำเริ่มที่โหมดโรลเพลย์ภาษาไทย ระดับนอร์มอล เคสคุณแพรว เพื่อสร้างความมั่นใจก่อนนะคะ'
+        mode: 'roleplay_th', difficulty: 'normal', personaId: 'standard', professionGroup: prof,
+        headline: 'AI แนะนำสำหรับพยาบาล: เริ่มเคสคุณแพรว (Normal) → ต่อยอดเคส 3 & SBAR',
+        reason: 'ยังไม่พบประวัติการฝึกสำหรับพยาบาลค่ะ แนะนำเริ่มต้นที่เคสคุณแพรวระดับ Normal เพื่อจับจังหวะคลายปม 3 ข้อและเว้นความเงียบ 2.5 วิ แล้วค่อยต่อยอดสู่เคส 3 (2 ตัวละคร) และเคส 6 (ส่งเวร SBAR) ค่ะ',
+        tip: 'ใช้ปุ่ม “ขอคำใบ้เจาะปม” ได้ทันทีหากติดขัด และกดปุ่ม CC ด้านบนหากฝึกในหอผู้ป่วยที่เปิดเสียงไม่ได้ค่ะ',
+        speech: 'สวัสดีค่ะคุณ' + nameShort + ' สำหรับพยาบาล แนะนำเริ่มที่เคสคุณแพรวระดับนอร์มอล เพื่อจับจังหวะคลายปมสามข้อและเว้นความเงียบสองจุดห้าวินาทีก่อนนะคะ'
       };
     }
 
@@ -828,47 +1047,46 @@
       return {
         mode: 'roleplay_th',
         difficulty: 'hard',
-        personaId: unpracticed,
-        headline: 'AI วิเคราะห์ให้: อัปเกรดสู่ระดับ Hard + เหตุการณ์แทรก (' + (unpracticed === 'conflict' ? 'เคส 2 ตัวละครในห้อง' : 'เคสใหม่ที่ยังไม่เคยฝึก') + ')',
-        reason: 'คุณทำคะแนนสูงสุดได้ถึง ' + bestScore + '/100 แล้วค่ะ! พร้อมท้าทายระดับ Hard ที่มีสายโทรศัพท์แทรก/จังหวะสะอื้นเงียบ' + (weakestAxis ? ' และช่วยเสริมแกน "' + weakestAxis.label + '" (' + weakestAxis.score + '/100)' : ''),
-        tip: 'คุมจังหวะการพูดไม่ให้เร็วเกินไป และรักษาความสงบเมื่อเกิดเหตุการณ์ไม่คาดฝันกลางห้องค่ะ',
-        speech: 'ยินดีด้วยค่ะคุณ' + nameShort + ' คะแนนเดิมของคุณสูงถึง ' + bestScore + ' คะแนนแล้ว รอบนี้แนะนำท้าทายระดับฮาร์ดพร้อมเหตุการณ์ไม่คาดฝันกลางห้อง เพื่อยกระดับทักษะให้เชี่ยวชาญยิ่งขึ้นค่ะ'
+        personaId: nextUnpracticed,
+        professionGroup: prof,
+        headline: 'AI แนะนำสำหรับ' + prof + ': อัปเกรดระดับ Hard (' + (nextUnpracticed === 'sbar_doctor' ? 'ส่งเวร SBAR + Monitor Alarm' : nextUnpracticed === 'conflict' ? 'เคส 2 ตัวละครในห้อง' : 'เคสใหม่ที่ยังไม่เคยฝึก') + ')',
+        reason: 'คะแนนสูงสุดเดิมอยู่ที่ ' + bestScore + '/100 แล้วค่ะ! พร้อมท้าทายระดับ Hard พร้อมเหตุการณ์แทรกตรงตามบริบทของเคส' + (weakestAxis ? ' และช่วยเสริมแกน "' + weakestAxis.label + '" (' + weakestAxis.score + '/100)' : ''),
+        tip: 'หลังจบเคสสามารถกด “บันทึกใบสรุปผลเรดาร์ (PNG)” เพื่อเก็บใส่พอร์ตสมรรถนะได้เลยค่ะ',
+        speech: 'ยินดีด้วยค่ะคุณ' + nameShort + ' คะแนนเดิมสูงถึง ' + bestScore + ' คะแนนแล้ว รอบนี้แนะนำท้าทายระดับฮาร์ดพร้อมเหตุการณ์แทรกตรงตามบริบทค่ะ'
       };
     }
 
     return {
       mode: 'micro_drill',
       difficulty: 'normal',
-      personaId: unpracticed,
-      headline: 'AI วิเคราะห์ให้: ซ้อมเจาะจุดอ่อนด้วย Micro-Drill 4 ด่านคำถามหนัก',
-      reason: 'เคยฝึกมาแล้ว ' + hist.length + ' ครั้ง' + (weakestAxis ? ' พบว่าแกน "' + weakestAxis.label + '" (' + weakestAxis.score + '/100) ยังเสริมได้อีก' : '') + ' แนะนำซ้อม 4 ด่านคำถามหนักเพื่อเก็บคำตอบมาตรฐานให้แม่นก่อนสอบจริงค่ะ',
+      personaId: nextUnpracticed,
+      professionGroup: prof,
+      headline: 'AI แนะนำสำหรับ' + prof + ': ซ้อมเจาะจุดอ่อนด้วย Micro-Drill 4 ด่าน',
+      reason: 'เคยฝึกมาแล้ว ' + hist.length + ' ครั้ง' + (weakestAxis ? ' พบว่าแกน "' + weakestAxis.label + '" (' + weakestAxis.score + '/100) ยังเสริมได้อีก' : '') + ' แนะนำซ้อม 4 ด่านคำถามหนักเพื่อเก็บคำตอบมาตรฐานให้แม่นก่อนลงสนามจริงค่ะ',
       tip: 'ดูประโยคต้นแบบที่ระบบเฉลยหลังจบแต่ละด่านแล้วนำไปปรับใช้ในโหมด Roleplay ได้เลยค่ะ',
-      speech: 'สวัสดีค่ะคุณ' + nameShort + ' คุณเคยฝึกมาแล้ว ' + hist.length + ' ครั้ง รอบนี้แนะนำซ้อมโหมดไมโครดริลล์สี่ด่านคำถามหนัก เพื่อเก็บจุดสำคัญให้แม่นยำยิ่งขึ้นค่ะ'
+      speech: 'สวัสดีค่ะคุณ' + nameShort + ' แนะนำซ้อมโหมดไมโครดริลล์สี่ด่านคำถามหนัก เพื่อเก็บประเด็นสำคัญให้แม่นยำยิ่งขึ้นค่ะ'
     };
   }
 
   function answerAdvisorQuestion(question) {
     const q = String(question || '').toLowerCase();
     if (q.includes('normal') || q.includes('hard') || q.includes('ต่างกัน')) {
-      return '• ระดับ Normal: มี AI Coach และปุ่มแนวทางคำพูดให้เลือกปรับใช้ เหมาะสำหรับสร้างความมั่นใจ\n• ระดับ Hard: ซ่อนตัวช่วยคำพูด 100%, ค่า Trust ไต่ขึ้นยากกว่า และมี "เหตุการณ์ไม่คาดฝันกลางห้อง" เช่น สายพี่ชายโทรแทรกมาค้าน หรือจังหวะญาติสะอื้นเงียบ 3 วิ ให้รับมือเหมือนหน้างานจริงค่ะ';
+      return '• ระดับ Normal: มี AI Coach, ปุ่มแนวทางคำพูด (รองรับทั้ง TH และ EN) และปุ่ม “ขอคำใบ้เจาะปม” ทีละข้อ\n• ระดับ Hard: ซ่อนตัวช่วย 100% และมีเหตุการณ์แทรกตรงตามบริบท (เคสญาติ: สายพี่ชายโทรแทรก/สะอื้นเงียบ | เคส 6 SBAR: สัญญาณเตือน Monitor BP ตกวิกฤต 64/40 และเคสฉุกเฉินเตียง 3 แทรก) ค่ะ';
     }
-    if (q.includes('เด็ก') || q.includes('sbar') || q.includes('แพทย์')) {
-      return '• เคส 5 (คุณแม่ผู้ป่วยเด็กอายุ 14 ปี): อ่อนไหวสูงสุด เน้นการปลอบโยนหัวอกคนเป็นแม่ คุมน้ำเสียงให้นุ่มนวล และใช้หลัก Decoupling ไม่เร่งรัดค่ะ\n• เคส 6 (ส่งเวร SBAR กับ นพ.ภาคิน แพทย์เวร ICU): ฝึกสื่อสารสหสาขาวิชาชีพเมื่อพบ Potential Donor (GCS 3, BP ตก, ปัสสาวะออกมากสงสัย DI) ให้รายงานครบ S-B-A-R และเสนอแผนดูแลอวัยวะค่ะ';
+    if (q.includes('sbar') || q.includes('เคส 6') || q.includes('ประเมิน')) {
+      return 'เคส 6 (ส่งเวร SBAR กับ นพ.ภาคิน) ใช้เกณฑ์เรดาร์ 5 แกนเฉพาะทาง SBAR โดยตรง ได้แก่ S (สถานการณ์/GCS 3), B (ประวัติ TBI/สัญญาณชีพ), A (ประเมิน Potential Donor & DI), ความกระชับสื่อสารทีม และ R (แผนพยุง BP, DDAVP & ประสาน ODC) ไม่ปะปนกับเกณฑ์เคสญาติค่ะ';
     }
-    if (q.includes('น้ำเสียง') || q.includes('อัดเสียง') || q.includes('ฟังเสียงตัวเอง') || q.includes('tone')) {
-      return 'ระบบใช้ Web Audio API บนอุปกรณ์ของคุณวัดความนุ่มนวลและจังหวะน้ำเสียงแบบเรียลไทม์ พร้อมบันทึกเสียงพูดของคุณชั่วคราวในหน่วยความจำ (RAM) เพื่อกดฟังเสียงตัวเองย้อนหลังในหน้าสรุปผล 5 แกน โดยไม่มีการอัปโหลดไฟล์เสียงขึ้นเซิร์ฟเวอร์ (ปลอดภัย PDPA 100%) และจะลบทิ้งอัตโนมัติเมื่อปิดหน้าค่ะ';
+    if (q.includes('คำใบ้') || q.includes('cc') || q.includes('คำบรรยาย')) {
+      return '• ปุ่ม CC บนแถบด้านบนห้องฝึก (ค่าเริ่มต้นปิดไว้เพื่อความสะอาดตา) กดแตะเพื่อเปิด–ปิดคำบรรยายคู่สนทนาได้ทันที เหมาะเวลาฝึกในหอผู้ป่วยที่เปิดเสียงไม่ได้ค่ะ\n• ปุ่ม “คำใบ้เจาะปม” (ใน Normal Mode) จะวิเคราะห์ว่าเหลือปมในใจข้อไหนที่ยังไม่ได้ปลดล็อก แล้วแนะนำแนวทาง 1 ประโยคให้ตรงจุดค่ะ';
     }
-    if (q.includes('4 ด่าน') || q.includes('micro') || q.includes('คำถามหนัก')) {
-      return 'โหมด Micro-Drill 4 ด่านคำถามหนัก คือการซ้อมรับมือ 4 คำถามหินยอดฮิตเรียงต่อกันอัตโนมัติ โดยเปลี่ยนตัวละครญาติให้ตรงกับแต่ละคำถาม ใช้เวลา 3 นาที ตรวจให้คะแนนและแสดงประโยคต้นแบบทันทีทุกด่านค่ะ';
+    if (q.includes('น้ำเสียง') || q.includes('อัดเสียง') || q.includes('pdpa') || q.includes('ฟังเสียง')) {
+      return 'ระบบใช้ Web Audio API บนอุปกรณ์ของท่านวัดความนุ่มนวลน้ำเสียงและขยับปากตัวละครตามคลื่นเสียงจริง โดยบันทึกเสียงพูดไว้เฉพาะในหน่วยความจำชั่วคราว (RAM) ไม่มีการอัปโหลดขึ้นเซิร์ฟเวอร์ (PDPA 100%) และลบทิ้งทันทีเมื่อปิดหน้าค่ะ';
     }
-    if (q.includes('ปม') || q.includes('trust') || q.includes('ความไว้วางใจ')) {
-      return 'แต่ละเคสจะมี "ปมในใจ 3 ข้อ" ที่ซ่อนอยู่ค่ะ ค่า Trust % จะไม่กระโดดข้ามขั้น แต่จะค่อยๆ ไต่ระดับเมื่อคุณคลายปมได้ตรงจุดและเว้นความเงียบ 2.5 วินาที (และจะลดลงทันทีหากเผลอใช้คำกระทบใจ เช่น ถอดเครื่อง หรือ รีบตัดสินใจ) ค่ะ';
-    }
-    return 'แนะนำกดปุ่ม "เลือกตามที่ AI แนะนำทันที" เพื่อให้ระบบตั้งค่ารูปแบบ ความยาก และสถานการณ์คลินิกที่เหมาะกับประวัติการเรียนของคุณให้อัตโนมัติ ตัวละครโฮโลแกรม 3 มิติในห้องจะปรับตามเพศและบทบาทของเคสนั้นโดยอัตโนมัติค่ะ';
+    return 'กดปุ่ม “เลือกตามที่ AI แนะนำทันที” เพื่อให้ระบบตั้งค่าให้ตรงกับกลุ่มวิชาชีพและประวัติการฝึกของท่านได้เลยค่ะ ตัวละครโฮโลแกรม 3 มิติจะปรับเพศ ทรงผม และจำนวนคนตามเคสให้อัตโนมัติค่ะ';
   }
 
   // ==========================================================================
-  // 6.5 ZERO-COST WORLD-CLASS UPGRADES (LINE DETECTOR, LATENCY MASK, VOCAL, R2R)
+  // 6.5 ZERO-COST UPGRADES: LINE DETECTOR, LATENCY MASK, VOCAL & REAL LIP-SYNC ANALYSER
   // ==========================================================================
   function detectInAppBrowser() {
     const ua = typeof navigator !== 'undefined' ? String(navigator.userAgent || '') : '';
@@ -931,6 +1149,77 @@
     }
     const list = LATENCY_MASK_CUES[personaId] || LATENCY_MASK_CUES.standard;
     return list[Math.floor(Math.random() * list.length)];
+  }
+
+  /**
+   * Real Audio-Amplitude Lip-Sync Analyser (ชุดที่ 1 • 0 บาท):
+   * เชื่อม <audio> ที่เล่นไฟล์เสียง AI 24kHz เข้ากับ Web Audio API AnalyserNode
+   * เพื่อให้ปากของตัวละครอนิเมะ 3 มิติอ้ากว้างตามคำที่เน้นเสียงและหุบสนิทตรงช่วงเว้นวรรคหายใจ
+   */
+  const _linkedAudioNodes = typeof WeakMap !== 'undefined' ? new WeakMap() : null;
+
+  function createAudioLipSyncAnalyser(audioEl) {
+    if (!audioEl) {
+      return { getAmplitude: function () { return -1; }, resume: function () {} };
+    }
+    if (_linkedAudioNodes && _linkedAudioNodes.has(audioEl)) {
+      return _linkedAudioNodes.get(audioEl);
+    }
+
+    let ctx = null;
+    let analyser = null;
+    let dataArr = null;
+    let connected = false;
+
+    try {
+      const AudioCtx = global.AudioContext || global.webkitAudioContext;
+      if (AudioCtx) {
+        ctx = new AudioCtx();
+        const src = ctx.createMediaElementSource(audioEl);
+        analyser = ctx.createAnalyser();
+        analyser.fftSize = 256;
+        analyser.smoothingTimeConstant = 0.52;
+        src.connect(analyser);
+        analyser.connect(ctx.destination);
+        dataArr = new Uint8Array(analyser.fftSize);
+        connected = true;
+      }
+    } catch (_) {
+      connected = false;
+    }
+
+    const controller = {
+      resume: function () {
+        if (ctx && ctx.state === 'suspended') {
+          ctx.resume().catch(function () {});
+        }
+      },
+      getAmplitude: function () {
+        if (!connected || !analyser || !dataArr || audioEl.paused || audioEl.ended) {
+          return -1;
+        }
+        try {
+          if (ctx && ctx.state === 'suspended') ctx.resume().catch(function () {});
+          analyser.getByteTimeDomainData(dataArr);
+          let sumSq = 0;
+          for (let i = 0; i < dataArr.length; i++) {
+            const norm = (dataArr[i] - 128) / 128;
+            sumSq += norm * norm;
+          }
+          const rms = Math.sqrt(sumSq / dataArr.length);
+          // ตัดเสียงรบกวนพื้นหลังเบาๆ เพื่อให้ปากหุบสนิทตรงช่วงหยุดหายใจระหว่างประโยค
+          if (rms < 0.012) return 0;
+          return Math.min(1, Math.max(0, (rms - 0.012) * 5.8));
+        } catch (_) {
+          return -1;
+        }
+      }
+    };
+
+    if (_linkedAudioNodes) {
+      try { _linkedAudioNodes.set(audioEl, controller); } catch (_) {}
+    }
+    return controller;
   }
 
   function createVocalToneRecorder() {
@@ -1180,7 +1469,7 @@
   }
 
   // ==========================================================================
-  // 7. TRIGGER-WORD POLISHER, RESPONSE PARSER & 5-AXIS FALLBACK EVALUATOR
+  // 7. TRIGGER-WORD POLISHER, PARSER & CONTEXT-AWARE 5-AXIS EVALUATOR (FAMILY vs. SBAR)
   // ==========================================================================
   const FALLBACK_TRIGGERS = [
     { id: 'unplug', lang: 'th', pattern: /ถอดเครื่อง|ปิดเครื่อง|ดึงสาย|ถอดสาย/, flagged: 'ถอดเครื่อง / ปิดเครื่อง', softer: 'ยุติการใช้เครื่องพยุงชีพอย่างสงบ' },
@@ -1193,7 +1482,11 @@
     { id: 'rush_en', lang: 'en', pattern: /decide now|hurry up|sign immediately/i, flagged: 'decide now / hurry up', softer: 'take all the private time your family needs' }
   ];
 
-  function detectTriggerPhrases(text, lang) {
+  function detectTriggerPhrases(text, lang, personaId) {
+    // ในเคส 6 (ส่งเวร SBAR กับแพทย์เวร) ตรวจเฉพาะคำไม่สุภาพ/ไม่เหมาะสมเชิงวิชาชีพ หลีกเลี่ยงการจับคำคลินิกปกติ
+    if (personaId === 'sbar_doctor') {
+      return [];
+    }
     const dict = Array.isArray(global.TRIGGER_PHRASE_DICTIONARY) && global.TRIGGER_PHRASE_DICTIONARY.length > 0
       ? global.TRIGGER_PHRASE_DICTIONARY
       : FALLBACK_TRIGGERS;
@@ -1294,7 +1587,13 @@
     return candidate;
   }
 
+  /**
+   * ประเมินผล 5 แกนแบบแยกบริบท (เคส 6 SBAR ใช้เกณฑ์ SBAR Clinical Handoff • เคส 1–5 ใช้เกณฑ์ Family Approach)
+   */
   function evaluateConversationFallback(params) {
+    const personaId = params.personaId || 'standard';
+    const isSbar = personaId === 'sbar_doctor';
+    const axes = getRadarAxes(personaId);
     const msgs = Array.isArray(params.messages) ? params.messages : [];
     const userMsgs = msgs.filter(function (m) { return m.role === 'user'; });
     const allUserText = userMsgs.map(function (m) { return m.text || ''; }).join(' ');
@@ -1303,29 +1602,50 @@
     const triggerTotal = Number(params.triggerTotal || 0);
     const finalTrust = Number(params.finalTrust || 50);
 
+    const bestUserMsg = userMsgs.reduce(function (best, cur) {
+      return (cur.text || '').length > (best.text || '').length ? cur : best;
+    }, userMsgs[0] || { text: '' });
+
+    if (isSbar) {
+      const sScore = Math.min(98, 60 + (/เตียง\s*1|ชาย.*38|GCS\s*=?\s*3|BP|78\/46|64\/40|ความดัน|bed\s*1/i.test(allUserText) ? 28 : 8) + Math.min(10, barriersUnlocked * 3));
+      const bScore = Math.min(98, 58 + (/TBI|อุบัติเหตุ|ม่านตา|pupil|640|ปัสสาวะ|154|Na|โซเดียม/i.test(allUserText) ? 28 : 8) + Math.min(10, barriersUnlocked * 3));
+      const aScore = Math.min(98, 56 + (/potential\s*donor|ผู้บริจาค|สมองตาย|เบาจืด|\bDI\b|diabetes\s*insipidus|hypotension|hypernatremia/i.test(allUserText) ? 30 : 8) + Math.min(12, barriersUnlocked * 4));
+      const conciseScore = Math.min(98, 68 + (userMsgs.length >= 2 && userMsgs.length <= 5 ? 18 : 10) + (/SBAR|สถานการณ์|ประเมิน|เสนอ|recommend/i.test(allUserText) ? 10 : 0));
+      const rScore = Math.min(98, 56 + (/DDAVP|desmopressin|สารน้ำ|fluid|vasopressor|กระตุ้นความดัน|ตรวจสมองตาย|ODC|ประสาน/i.test(allUserText) ? 32 : 8) + Math.min(10, barriersUnlocked * 3));
+
+      const rMap = { setting: sScore, empathy: bScore, clarity: aScore, vocal: conciseScore, dignity: rScore };
+      const totalScore = Math.round((sScore + bScore + aScore + conciseScore + rScore) / 5);
+
+      return {
+        score: totalScore,
+        personaId: 'sbar_doctor',
+        radar: axes.map(function (a) { return { key: a.key, labelTH: a.labelTH, shortTH: a.shortTH, value: rMap[a.key] }; }),
+        radarMap: rMap,
+        goldenMoment: bestUserMsg && bestUserMsg.text
+          ? '“' + bestUserMsg.text.slice(0, 130) + (bestUserMsg.text.length > 130 ? '...' : '') + '” — รายงานข้อมูลวิกฤตและข้อเสนอแนะเชิงคลินิกได้ตรงประเด็น SBAR ดีมากค่ะ'
+          : 'ส่งเวรกับแพทย์เวร ICU ได้อย่างเป็นระบบค่ะ',
+        turningPoint: barriersUnlocked < 3
+          ? 'ยังรายงานองค์ประกอบ SBAR ไม่ครบ 3 เป้าหมายหลัก ลองเน้นตัวเลขสัญญาณชีพ (BP/UO/Na), การประเมินภาวะเบาจืด (DI) และขอ Order สารน้ำ/Vasopressor/DDAVP พร้อมแผนประสาน ODC ให้ครบใน 2 รอบแรกนะคะ'
+          : 'ส่งเวร SBAR ครบถ้วนแม่นยำมากค่ะ ลองท้าทายโหมด Hard ที่มีสัญญาณ Monitor เตือน BP ตกวิกฤต 64/40 เพื่อฝึกการรับมือภาวะฉุกเฉินต่อได้เลยค่ะ',
+        summary: 'ความชัดเจนทีมแพทย์ (SBAR) ' + finalTrust + '% • ครอบคลุมเป้าหมาย SBAR ' + barriersUnlocked + '/3 ข้อ',
+        source: 'local_sbar_clinical_rubric'
+      };
+    }
+
     const settingScore = Math.min(98, 66 + (/สวัสดี|ขออนุญาต|พยาบาล|ผู้ประสานงาน|ส่วนตัว|เงียบ|hello|coordinator|private/i.test(allUserText) ? 20 : 6) + Math.min(10, userMsgs.length * 2));
     const empathyScore = Math.min(98, Math.max(40, 58 + (/เสียใจ|เข้าใจ|หนักมาก|อยู่ตรงนี้|รับฟัง|กังวล|sorry|understand|feel/i.test(allUserText) ? 20 : 4) + barriersUnlocked * 6 - triggerTotal * 8));
     const clarityScore = Math.min(98, 56 + (/สมองตาย|เครื่องช่วยหายใจ|ก้านสมอง|สภากาชาด|ODC|ไม่มีค่าใช้จ่าย|brain\s*death|ventilator|red\s*cross/i.test(allUserText) ? 22 : 6) + barriersUnlocked * 6);
     const vocalScore = Math.min(98, Math.max(45, 64 + silenceCount * 10 - triggerTotal * 7));
     const dignityScore = Math.min(98, Math.max(42, 60 + (/ไม่เร่ง|ให้เวลา|ปรึกษา|ตกแต่งร่าง|เรียบร้อย|สมเกียรติ|ไม่ฝืนใจ|no\s*rush|dignity|respect/i.test(allUserText) ? 24 : 6) - triggerTotal * 10));
 
-    const radar = [
-      { key: 'setting', labelTH: 'ห้องรับรอง & บทบาท', value: settingScore },
-      { key: 'empathy', labelTH: 'รับรู้อารมณ์ร่วม', value: empathyScore },
-      { key: 'clarity', labelTH: 'ข้อมูลภาวะสมองตาย', value: clarityScore },
-      { key: 'vocal', labelTH: 'น้ำเสียง & ความเงียบ', value: vocalScore },
-      { key: 'dignity', labelTH: 'ไม่เร่งรัด & เกียรติร่าง', value: dignityScore }
-    ];
+    const rMap = { setting: settingScore, empathy: empathyScore, clarity: clarityScore, vocal: vocalScore, dignity: dignityScore };
     const totalScore = Math.round((settingScore + empathyScore + clarityScore + vocalScore + dignityScore) / 5);
-
-    const bestUserMsg = userMsgs.reduce(function (best, cur) {
-      return (cur.text || '').length > (best.text || '').length ? cur : best;
-    }, userMsgs[0] || { text: '' });
 
     return {
       score: totalScore,
-      radar: radar,
-      radarMap: { setting: settingScore, empathy: empathyScore, clarity: clarityScore, vocal: vocalScore, dignity: dignityScore },
+      personaId: personaId,
+      radar: axes.map(function (a) { return { key: a.key, labelTH: a.labelTH, shortTH: a.shortTH, value: rMap[a.key] }; }),
+      radarMap: rMap,
       goldenMoment: bestUserMsg && bestUserMsg.text
         ? '“' + bestUserMsg.text.slice(0, 120) + (bestUserMsg.text.length > 120 ? '...' : '') + '” — แสดงความตั้งใจสื่อสารและประคับประคองความรู้สึกได้ดีค่ะ'
         : 'เริ่มต้นบทสนทนาได้อย่างสุภาพและเป็นระบบค่ะ',
@@ -1340,9 +1660,20 @@
   }
 
   function buildSupervisorEvaluationPrompt(params) {
+    const isSbar = params.personaId === 'sbar_doctor';
     const transcript = (params.messages || [])
-      .map(function (m) { return (m.role === 'user' ? 'ผู้เรียน: ' : 'คู่สนทนา: ') + (m.text || ''); })
+      .map(function (m) { return (m.role === 'user' ? 'ผู้เรียน: ' : (isSbar ? 'นพ.ภาคิน: ' : 'ญาติผู้ป่วย: ')) + (m.text || ''); })
       .join('\n');
+
+    if (isSbar) {
+      return 'คุณคืออาจารย์แพทย์/พยาบาลวิกฤตผู้เชี่ยวชาญด้านการดูแล Potential Donor และการสื่อสารทีมแบบ SBAR (AI Clinical Supervisor)\n' +
+        'ประเมินการส่งเวร SBAR ต่อไปนี้กับ นพ.ภาคิน แพทย์เวร ICU (ผู้ป่วย TBI, GCS 3, BP 78/46, UO 640 mL/hr, Na 154)\n' +
+        'ข้อมูลเสริม: ครอบคลุมเป้าหมาย SBAR ' + (params.barriersUnlocked || 0) + '/3 ข้อ, ความมั่นใจทีมสุดท้าย ' + (params.finalTrust || 50) + '%\n\n' +
+        'บทสนทนา:\n' + transcript + '\n\n' +
+        'ตอบกลับเป็น JSON ล้วนเท่านั้น (ห้ามใส่ markdown หรือคำอธิบายอื่น) โดยแมปคะแนน SBAR ลงฟิลด์ทั้ง 5 ดังนี้:\n' +
+        '{"setting":0-100 (S: สถานการณ์และตัวตนเคส),"empathy":0-100 (B: ประวัติ TBI และสัญญาณชีพ),"clarity":0-100 (A: ประเมิน Potential Donor และเบาจืด DI),"vocal":0-100 (ความกระชับแม่นยำในการสื่อสารทีม),"dignity":0-100 (R: ข้อเสนอ Fluid/Vasopressor, DDAVP และประสาน ODC),"goldenMoment":"ยกประโยคส่งเวรที่แม่นยำที่สุด 1 ประโยค","turningPoint":"ชี้ 1 จุดคลินิกที่ควรเสริมให้ครบ SBAR","summary":"สรุปภาพรวมการส่งเวร SBAR 2 บรรทัดภาษาไทย"}';
+    }
+
     return 'คุณคืออาจารย์พยาบาลผู้เชี่ยวชาญด้าน Family Approach (AI Clinical Supervisor)\n' +
       'ประเมินบทสนทนาจริงต่อไปนี้ในเคส: ' + (params.personaTitle || '') + '\n' +
       'ข้อมูลเสริม: คลายปมในใจ ' + (params.barriersUnlocked || 0) + '/3 ข้อ, เว้นความเงียบ 2.5 วิ ' + (params.silenceCount || 0) + ' ครั้ง, คำกระทบใจ ' + (params.triggerTotal || 0) + ' ครั้ง, Trust สุดท้าย ' + (params.finalTrust || 50) + '%\n\n' +
@@ -1362,6 +1693,7 @@
         const n = Number(v);
         return isNaN(n) ? fb : Math.max(30, Math.min(100, Math.round(n)));
       };
+      const axes = getRadarAxes(fallbackEval && fallbackEval.personaId);
       const rMap = {
         setting: clamp(obj.setting, fallbackEval.radarMap.setting),
         empathy: clamp(obj.empathy, fallbackEval.radarMap.empathy),
@@ -1372,7 +1704,8 @@
       const avg = Math.round((rMap.setting + rMap.empathy + rMap.clarity + rMap.vocal + rMap.dignity) / 5);
       return {
         score: avg,
-        radar: RADAR_AXES.map(function (a) { return { key: a.key, labelTH: a.labelTH, value: rMap[a.key] }; }),
+        personaId: fallbackEval && fallbackEval.personaId,
+        radar: axes.map(function (a) { return { key: a.key, labelTH: a.labelTH, shortTH: a.shortTH, value: rMap[a.key] }; }),
         radarMap: rMap,
         goldenMoment: String(obj.goldenMoment || fallbackEval.goldenMoment),
         turningPoint: String(obj.turningPoint || fallbackEval.turningPoint),
@@ -1385,7 +1718,228 @@
   }
 
   // ==========================================================================
-  // 8. WEB AUDIO API CONSULTATION ROOM SFX (NO EXTERNAL SOUND URLS)
+  // 7.5 EXPORT SKILL LAB DEBRIEF CARD (PNG 1200x1500 • ZERO COST)
+  // ==========================================================================
+  function drawWrappedText(ctx, text, x, y, maxW, lineH, maxLines) {
+    const raw = String(text || '').trim();
+    if (!raw) return y;
+    const chars = Array.from(raw);
+    const lines = [];
+    let line = '';
+    for (let i = 0; i < chars.length; i++) {
+      const ch = chars[i];
+      if (ch === '\n') {
+        lines.push(line);
+        line = '';
+        continue;
+      }
+      const test = line + ch;
+      if (ctx.measureText(test).width > maxW && line.length > 0) {
+        lines.push(line);
+        line = ch;
+        if (lines.length >= maxLines) break;
+      } else {
+        line = test;
+      }
+    }
+    if (line && lines.length < maxLines) lines.push(line);
+    lines.forEach(function (ln, idx) {
+      ctx.fillText(ln, x, y + idx * lineH);
+    });
+    return y + lines.length * lineH;
+  }
+
+  function downloadDebriefCardPng(params) {
+    try {
+      const p = params || {};
+      const evalRes = p.evalResult || {};
+      const userObj = p.user || {};
+      const personaId = p.personaId || evalRes.personaId || 'standard';
+      const axes = Array.isArray(evalRes.radar) && evalRes.radar.length === 5
+        ? evalRes.radar
+        : getRadarAxes(personaId).map(function (a) { return { key: a.key, labelTH: a.labelTH, shortTH: a.shortTH, value: 80 }; });
+      const badges = (Array.isArray(p.badges) ? p.badges : computeClinicalBadges(userObj)).filter(function (b) { return b.earned; });
+
+      const W = 1200, H = 1520;
+      const canvas = document.createElement('canvas');
+      canvas.width = W;
+      canvas.height = H;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return false;
+
+      // พื้นหลังสีน้ำเงินเข้ม Midnight Obsidian พร้อมแสงออร่า
+      const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+      bgGrad.addColorStop(0, '#020612');
+      bgGrad.addColorStop(0.5, '#071735');
+      bgGrad.addColorStop(1, '#020612');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      const orb1 = ctx.createRadialGradient(220, 180, 10, 220, 180, 420);
+      orb1.addColorStop(0, 'rgba(52, 211, 153, 0.22)');
+      orb1.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = orb1;
+      ctx.fillRect(0, 0, W, H);
+
+      const orb2 = ctx.createRadialGradient(980, 320, 10, 980, 320, 440);
+      orb2.addColorStop(0, 'rgba(56, 189, 248, 0.22)');
+      orb2.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = orb2;
+      ctx.fillRect(0, 0, W, H);
+
+      // กรอบการ์ดหลัก
+      ctx.strokeStyle = 'rgba(186, 230, 253, 0.32)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(36, 36, W - 72, H - 72);
+
+      // Header
+      ctx.fillStyle = '#6ee7b7';
+      ctx.font = '700 20px "JetBrains Mono", monospace';
+      ctx.fillText('RJCLOUD.ORGAN 2.0  •  AI SKILL LAB 3D CLINICAL DEBRIEF REPORT', 74, 96);
+
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = '800 38px "Prompt", "Anuphan", sans-serif';
+      ctx.fillText(p.caseTitle || 'รายงานผลประเมินสมรรถนะการสื่อสาร 5 แกน', 74, 150, W - 148);
+
+      const prof = resolveProfessionGroup(userObj);
+      const dateStr = new Date().toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+      ctx.fillStyle = '#93b4d8';
+      ctx.font = '600 22px "Anuphan", "Sarabun", sans-serif';
+      ctx.fillText('ผู้เรียน: ' + (userObj.name || 'ผู้เข้าฝึกอบรม') + ' (' + prof + ')  •  ' + (userObj.hospital || 'รพ.ราชวิถี'), 74, 194, W - 148);
+      ctx.fillText('โหมดฝึก: ' + (p.modeLabel || 'Roleplay 3D') + ' (' + String(p.difficultyId || 'NORMAL').toUpperCase() + ')  •  วันที่: ' + dateStr, 74, 228, W - 148);
+
+      ctx.strokeStyle = 'rgba(186, 230, 253, 0.18)';
+      ctx.beginPath(); ctx.moveTo(74, 256); ctx.lineTo(W - 74, 256); ctx.stroke();
+
+      // Score Box (ซ้าย) + 5-Axis Radar Chart (ขวา)
+      ctx.fillStyle = 'rgba(147, 197, 253, 0.08)';
+      ctx.fillRect(74, 286, 420, 420);
+      ctx.strokeStyle = 'rgba(110, 231, 183, 0.35)';
+      ctx.strokeRect(74, 286, 420, 420);
+
+      ctx.fillStyle = '#67e8f9';
+      ctx.font = '700 18px "JetBrains Mono", monospace';
+      ctx.fillText(personaId === 'sbar_doctor' ? 'SBAR CLINICAL HANDOFF SCORE' : 'EMPATHY & COMMUNICATION INDEX', 102, 334);
+
+      ctx.fillStyle = '#6ee7b7';
+      ctx.font = '800 112px "JetBrains Mono", monospace';
+      ctx.fillText(String(evalRes.score || 0), 102, 462);
+      ctx.fillStyle = '#93b4d8';
+      ctx.font = '700 34px "JetBrains Mono", monospace';
+      ctx.fillText('/100', 256, 462);
+
+      ctx.fillStyle = '#dbeafe';
+      ctx.font = '500 21px "Sarabun", "Anuphan", sans-serif';
+      drawWrappedText(ctx, evalRes.summary || 'ผ่านการฝึกอบรมในห้องจำลอง 3 มิติเรียบร้อยแล้ว', 102, 514, 364, 32, 5);
+
+      // 5-Axis Radar Chart (ขวา)
+      const cx = 825, cy = 496, maxR = 148;
+      const getPt = function (idx, ratio) {
+        const ang = (Math.PI * 2 * idx) / axes.length - Math.PI / 2;
+        return [cx + Math.cos(ang) * maxR * ratio, cy + Math.sin(ang) * maxR * ratio];
+      };
+      [0.25, 0.5, 0.75, 1].forEach(function (lv) {
+        ctx.beginPath();
+        axes.forEach(function (_, i) {
+          const pt = getPt(i, lv);
+          if (i === 0) ctx.moveTo(pt[0], pt[1]); else ctx.lineTo(pt[0], pt[1]);
+        });
+        ctx.closePath();
+        ctx.strokeStyle = 'rgba(147, 197, 253, 0.22)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      });
+      axes.forEach(function (_, i) {
+        const pt = getPt(i, 1);
+        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(pt[0], pt[1]);
+        ctx.strokeStyle = 'rgba(147, 197, 253, 0.18)'; ctx.stroke();
+      });
+      ctx.beginPath();
+      axes.forEach(function (a, i) {
+        const pt = getPt(i, Math.max(0, Math.min(100, Number(a.value || 0))) / 100);
+        if (i === 0) ctx.moveTo(pt[0], pt[1]); else ctx.lineTo(pt[0], pt[1]);
+      });
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(52, 211, 153, 0.34)';
+      ctx.fill();
+      ctx.strokeStyle = '#34d399';
+      ctx.lineWidth = 3.5;
+      ctx.stroke();
+
+      ctx.textAlign = 'center';
+      axes.forEach(function (a, i) {
+        const pt = getPt(i, Math.max(0, Math.min(100, Number(a.value || 0))) / 100);
+        ctx.beginPath(); ctx.arc(pt[0], pt[1], 6, 0, Math.PI * 2);
+        ctx.fillStyle = '#6ee7b7'; ctx.fill();
+
+        const lp = getPt(i, 1.32);
+        ctx.fillStyle = '#dbeafe';
+        ctx.font = '700 18px "Anuphan", "Prompt", sans-serif';
+        ctx.fillText(a.shortTH || a.labelTH, lp[0], lp[1] - 4);
+        ctx.fillStyle = '#6ee7b7';
+        ctx.font = '700 20px "JetBrains Mono", monospace';
+        ctx.fillText(String(a.value || 0), lp[0], lp[1] + 22);
+      });
+      ctx.textAlign = 'left';
+
+      // Golden Moment Box
+      ctx.fillStyle = 'rgba(16, 185, 129, 0.14)';
+      ctx.fillRect(74, 742, W - 148, 224);
+      ctx.strokeStyle = 'rgba(52, 211, 153, 0.45)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(74, 742, W - 148, 224);
+      ctx.fillStyle = '#6ee7b7';
+      ctx.font = '700 20px "Prompt", sans-serif';
+      ctx.fillText('★ ประโยคทองที่ทำได้ดีเยี่ยม (GOLDEN MOMENT)', 104, 786);
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = '500 23px "Sarabun", "Anuphan", sans-serif';
+      drawWrappedText(ctx, evalRes.goldenMoment || '-', 104, 830, W - 208, 36, 4);
+
+      // Turning Point Box
+      ctx.fillStyle = 'rgba(14, 165, 233, 0.14)';
+      ctx.fillRect(74, 996, W - 148, 224);
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
+      ctx.strokeRect(74, 996, W - 148, 224);
+      ctx.fillStyle = '#67e8f9';
+      ctx.font = '700 20px "Prompt", sans-serif';
+      ctx.fillText('✦ จุดควรเกลาเพิ่มความเชี่ยวชาญ (TURNING POINT)', 104, 1040);
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = '500 23px "Sarabun", "Anuphan", sans-serif';
+      drawWrappedText(ctx, evalRes.turningPoint || '-', 104, 1084, W - 208, 36, 4);
+
+      // Earned Clinical Mastery Badges
+      ctx.fillStyle = '#fbbf24';
+      ctx.font = '700 20px "Prompt", sans-serif';
+      ctx.fillText('เหรียญตราสมรรถนะคลินิกที่ได้รับ (' + badges.length + '/5):', 74, 1280);
+      ctx.fillStyle = '#fde68a';
+      ctx.font = '600 21px "Anuphan", sans-serif';
+      const badgeLine = badges.length > 0
+        ? badges.map(function (b) { return '★ ' + b.titleTH; }).join('    •    ')
+        : 'กำลังสะสมเหรียญตราสมรรถนะ — ฝึกต่อเนื่องเพื่อปลดล็อกครบ 5 เหรียญตรา';
+      drawWrappedText(ctx, badgeLine, 74, 1320, W - 148, 34, 2);
+
+      // Footer
+      ctx.strokeStyle = 'rgba(186, 230, 253, 0.18)';
+      ctx.beginPath(); ctx.moveTo(74, 1408); ctx.lineTo(W - 74, 1408); ctx.stroke();
+      ctx.fillStyle = '#93b4d8';
+      ctx.font = '600 18px "JetBrains Mono", monospace';
+      ctx.fillText('ORGAN TRANSPLANTATION CENTER OF RAJAVITHI HOSPITAL  •  RJCLOUD.ORGAN 2.0 (PDPA SAFE)', 74, 1452);
+
+      const a = global.document.createElement('a');
+      a.href = canvas.toDataURL('image/png', 1.0);
+      a.download = 'AI_SkillLab_Debrief_' + personaId + '_' + (evalRes.score || 0) + '.png';
+      global.document.body.appendChild(a);
+      a.click();
+      global.document.body.removeChild(a);
+      return true;
+    } catch (err) {
+      console.warn('Debrief PNG export warning:', err);
+      return false;
+    }
+  }
+
+  // ==========================================================================
+  // 8. WEB AUDIO API CONSULTATION ROOM & ICU MONITOR SFX (NO EXTERNAL SOUND URLS)
   // ==========================================================================
   const SoundFX = {
     ctx: null,
@@ -1444,6 +1998,29 @@
           osc.stop(t + 0.24);
         });
         if (navigator.vibrate) navigator.vibrate([120, 80, 120]);
+      } catch (_) {}
+    },
+
+    // เสียงสัญญาณเตือน ICU Bedside Monitor สำหรับเหตุการณ์แทรกเคส 6 SBAR (Hard Mode)
+    playMonitorAlarm: function () {
+      const ctx = this.ensureCtx();
+      if (!ctx) return;
+      try {
+        [0, 0.18, 0.36].forEach(function (offset) {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          const t = ctx.currentTime + offset;
+          osc.frequency.setValueAtTime(980, t);
+          gain.gain.setValueAtTime(0.001, t);
+          gain.gain.linearRampToValueAtTime(0.085, t + 0.015);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(t);
+          osc.stop(t + 0.14);
+        });
+        if (navigator.vibrate) navigator.vibrate([100, 60, 100, 60, 100]);
       } catch (_) {}
     },
 
@@ -1533,118 +2110,38 @@
   };
 
   // ==========================================================================
-  // 9. CONTEXT-AWARE 3D ANIME HUMAN HOLOGRAM ENGINE (SINGLE & MULTI-CHARACTER)
+  // 9. CONTEXT-AWARE 3D ANIME HUMAN HOLOGRAM ENGINE (REAL AUDIO LIP-SYNC)
   // ==========================================================================
   const ANIME_RIG_PROFILES = {
-    // คุณแพรว (ลูกสาว • หญิงสาว • ผมหน้าม้าซีทรู + ปอยผมยาวประบ่า)
     daughter_praew: {
-      gender: 'female',
-      headWidth: 0.72,
-      headDepth: 0.78,
-      jawTaper: 0.48,
-      jawSquare: 0.0,
-      browRidge: 0.006,
-      cheekFullness: 0.052,
-      noseWidth: 0.036,
-      noseLen: 0.095,
-      chinWidth: 0.085,
-      chinProminence: 0.022,
-      lipFullness: 0.72,
-      neckWidth: 0.20,
-      shoulderWidth: 0.96,
-      eyeScale: 1.48,
-      browThickness: 0.011,
-      hairType: 'long',
-      hasCollar: false,
-      tintShift: 0.0
+      gender: 'female', headWidth: 0.72, headDepth: 0.78, jawTaper: 0.48, jawSquare: 0.0,
+      browRidge: 0.006, cheekFullness: 0.052, noseWidth: 0.036, noseLen: 0.095, chinWidth: 0.085,
+      chinProminence: 0.022, lipFullness: 0.72, neckWidth: 0.20, shoulderWidth: 0.96,
+      eyeScale: 1.48, browThickness: 0.011, hairType: 'long', hasCollar: false, tintShift: 0.0
     },
-    // คุณฝน (พี่สาว • หญิง • ผมหน้าม้าปัดนุ่ม + ผมประบ่าปลายงุ้ม)
     sister_fon: {
-      gender: 'female',
-      headWidth: 0.72,
-      headDepth: 0.79,
-      jawTaper: 0.45,
-      jawSquare: 0.004,
-      browRidge: 0.008,
-      cheekFullness: 0.056,
-      noseWidth: 0.038,
-      noseLen: 0.098,
-      chinWidth: 0.092,
-      chinProminence: 0.024,
-      lipFullness: 0.70,
-      neckWidth: 0.205,
-      shoulderWidth: 0.98,
-      eyeScale: 1.44,
-      browThickness: 0.0115,
-      hairType: 'sister',
-      hasCollar: false,
-      tintShift: 0.14
+      gender: 'female', headWidth: 0.72, headDepth: 0.79, jawTaper: 0.45, jawSquare: 0.004,
+      browRidge: 0.008, cheekFullness: 0.056, noseWidth: 0.038, noseLen: 0.098, chinWidth: 0.092,
+      chinProminence: 0.024, lipFullness: 0.70, neckWidth: 0.205, shoulderWidth: 0.98,
+      eyeScale: 1.44, browThickness: 0.0115, hairType: 'sister', hasCollar: false, tintShift: 0.14
     },
-    // คุณนุช (ลูกสาววัยทำงาน • หญิง • ผมบ๊อบสั้นประคางปัดข้างคมสวย)
     career_nuch: {
-      gender: 'female',
-      headWidth: 0.71,
-      headDepth: 0.78,
-      jawTaper: 0.47,
-      jawSquare: 0.006,
-      browRidge: 0.009,
-      cheekFullness: 0.048,
-      noseWidth: 0.037,
-      noseLen: 0.10,
-      chinWidth: 0.088,
-      chinProminence: 0.024,
-      lipFullness: 0.68,
-      neckWidth: 0.20,
-      shoulderWidth: 0.97,
-      eyeScale: 1.42,
-      browThickness: 0.012,
-      hairType: 'career',
-      hasCollar: false,
-      tintShift: 0.22
+      gender: 'female', headWidth: 0.71, headDepth: 0.78, jawTaper: 0.47, jawSquare: 0.006,
+      browRidge: 0.009, cheekFullness: 0.048, noseWidth: 0.037, noseLen: 0.10, chinWidth: 0.088,
+      chinProminence: 0.024, lipFullness: 0.68, neckWidth: 0.20, shoulderWidth: 0.97,
+      eyeScale: 1.42, browThickness: 0.012, hairType: 'career', hasCollar: false, tintShift: 0.22
     },
-    // คุณแม่ (มารดาอาวุโส / คุณแม่น้องต้นกล้า • หญิง • หน้าม้าปัดเรียบร้อย + มวยผม)
     mother_bun: {
-      gender: 'female',
-      headWidth: 0.74,
-      headDepth: 0.80,
-      jawTaper: 0.40,
-      jawSquare: 0.008,
-      browRidge: 0.010,
-      cheekFullness: 0.064,
-      noseWidth: 0.042,
-      noseLen: 0.105,
-      chinWidth: 0.105,
-      chinProminence: 0.026,
-      lipFullness: 0.68,
-      neckWidth: 0.22,
-      shoulderWidth: 1.04,
-      eyeScale: 1.34,
-      browThickness: 0.0125,
-      hairType: 'bun',
-      hasCollar: false,
-      tintShift: 0.32
+      gender: 'female', headWidth: 0.74, headDepth: 0.80, jawTaper: 0.40, jawSquare: 0.008,
+      browRidge: 0.010, cheekFullness: 0.064, noseWidth: 0.042, noseLen: 0.105, chinWidth: 0.105,
+      chinProminence: 0.026, lipFullness: 0.68, neckWidth: 0.22, shoulderWidth: 1.04,
+      eyeScale: 1.34, browThickness: 0.0125, hairType: 'bun', hasCollar: false, tintShift: 0.32
     },
-    // นพ.ภาคิน (แพทย์เวร ICU • ชาย • กรามเรียวคมอนิเมะ + หน้าม้าปัดชาย + ปกเสื้อกาวน์แพทย์)
     doctor_male: {
-      gender: 'male',
-      headWidth: 0.75,
-      headDepth: 0.82,
-      jawTaper: 0.36,
-      jawSquare: 0.042,
-      browRidge: 0.026,
-      cheekFullness: 0.032,
-      noseWidth: 0.045,
-      noseLen: 0.125,
-      chinWidth: 0.125,
-      chinProminence: 0.044,
-      lipFullness: 0.58,
-      neckWidth: 0.27,
-      shoulderWidth: 1.32,
-      eyeScale: 1.24,
-      browThickness: 0.017,
-      hairType: 'short',
-      hasCollar: true,
-      tintShift: 0.08
+      gender: 'male', headWidth: 0.75, headDepth: 0.82, jawTaper: 0.36, jawSquare: 0.042,
+      browRidge: 0.026, cheekFullness: 0.032, noseWidth: 0.045, noseLen: 0.125, chinWidth: 0.125,
+      chinProminence: 0.044, lipFullness: 0.58, neckWidth: 0.27, shoulderWidth: 1.32,
+      eyeScale: 1.24, browThickness: 0.017, hairType: 'short', hasCollar: true, tintShift: 0.08
     }
   };
 
@@ -1659,7 +2156,6 @@
       case 'sbar_doctor':
         return [{ key: 'primary', profileKey: 'doctor_male', x: 0, y: 0, z: 0, scale: 1.0, yaw: 0 }];
       case 'conflict':
-        // เคสความขัดแย้งในครอบครัว: แสดงตัวละคร 2 คนพร้อมกันในห้อง (ซ้าย: ภรรยาหญิง • ขวา: คุณแม่หญิงอาวุโส)
         return [
           { key: 'wife', profileKey: 'daughter_praew', x: -0.78, y: -0.02, z: 0.05, scale: 0.82, yaw: 0.16 },
           { key: 'mother', profileKey: 'mother_bun', x: 0.78, y: 0.0, z: -0.04, scale: 0.84, yaw: -0.16 }
@@ -1692,33 +2188,22 @@
     let z = sz * p.headDepth;
 
     if (sz < 0) {
-      const backBump = gauss(sy, 0.16, 0.48) * (-sz);
-      z -= 0.095 * backBump;
+      z -= 0.095 * gauss(sy, 0.16, 0.48) * (-sz);
     }
 
     if (sy < 0.06) {
       const t = Math.min(1, Math.max(0, (0.06 - sy) / 1.06));
-      const taper = p.jawTaper * Math.pow(t, 1.24);
-      x *= (1 - taper);
-
+      x *= (1 - p.jawTaper * Math.pow(t, 1.24));
       const jawAngle = gauss2D(absX, sy, 0.58, -0.46, 0.20, 0.16) * smoothstep(-0.15, 0.45, sz);
       x += Math.sign(sx) * p.jawSquare * jawAngle;
       z += p.jawSquare * 0.35 * jawAngle;
-
-      const chinTip = Math.pow(t, 2.1) * gauss(sx, 0, 0.48);
-      y -= 0.075 * chinTip * frontMask;
+      y -= 0.075 * Math.pow(t, 2.1) * gauss(sx, 0, 0.48) * frontMask;
       z -= 0.05 * Math.pow(t, 1.6) * frontMask;
     }
 
-    if (sz > 0.30) {
-      z -= 0.105 * (sz - 0.30) * gauss(sy, -0.06, 0.68);
-    }
-
-    const brow = gauss(sy, 0.23, 0.065) * gauss(sx, 0, 0.36) * frontMask;
-    z += p.browRidge * brow;
-
-    const orbit = (gauss2D(sx, sy, -0.275, 0.025, 0.165, 0.115) + gauss2D(sx, sy, 0.275, 0.025, 0.165, 0.115)) * frontMask;
-    z -= 0.042 * orbit;
+    if (sz > 0.30) z -= 0.105 * (sz - 0.30) * gauss(sy, -0.06, 0.68);
+    z += p.browRidge * gauss(sy, 0.23, 0.065) * gauss(sx, 0, 0.36) * frontMask;
+    z -= 0.042 * (gauss2D(sx, sy, -0.275, 0.025, 0.165, 0.115) + gauss2D(sx, sy, 0.275, 0.025, 0.165, 0.115)) * frontMask;
 
     const cheek = (gauss2D(sx, sy, -0.39, -0.17, 0.19, 0.15) + gauss2D(sx, sy, 0.39, -0.17, 0.19, 0.15)) * frontMask;
     z += p.cheekFullness * cheek;
@@ -1726,18 +2211,13 @@
 
     const noseSpan = smoothstep(-0.28, -0.19, sy) * (1 - smoothstep(0.02, 0.12, sy));
     const noseProg = Math.max(0, Math.min(1, (0.09 - sy) / 0.31));
-    const noseBridge = noseSpan * (0.018 + p.noseLen * Math.pow(noseProg, 1.15)) * gauss(sx, 0, p.noseWidth) * frontMask;
-    const noseTip = 0.042 * gauss2D(sx, sy, 0, -0.215, p.noseWidth * 0.95, 0.036) * frontMask;
-    z += noseBridge + noseTip;
+    z += noseSpan * (0.018 + p.noseLen * Math.pow(noseProg, 1.15)) * gauss(sx, 0, p.noseWidth) * frontMask + 0.042 * gauss2D(sx, sy, 0, -0.215, p.noseWidth * 0.95, 0.036) * frontMask;
 
     const lipOpenDrop = (jawOpen || 0) * 0.08;
-    const upperLip = (0.024 * p.lipFullness) * gauss2D(sx, sy, 0, -0.40, 0.135, 0.028) * frontMask;
-    const mouthIndent = -(0.018 + lipOpenDrop * 0.4) * gauss2D(sx, sy, 0, -0.435 - lipOpenDrop * 0.3, 0.14, 0.018 + lipOpenDrop * 0.25) * frontMask;
-    const lowerLip = (0.028 * p.lipFullness) * gauss2D(sx, sy, 0, -0.472 - lipOpenDrop * 0.72, 0.115, 0.030) * frontMask;
-    z += upperLip + mouthIndent + lowerLip;
-
-    const chinBump = p.chinProminence * gauss2D(sx, sy, 0, -0.72 - lipOpenDrop * 0.65, p.chinWidth, 0.095) * frontMask;
-    z += chinBump;
+    z += (0.024 * p.lipFullness) * gauss2D(sx, sy, 0, -0.40, 0.135, 0.028) * frontMask;
+    z -= (0.018 + lipOpenDrop * 0.4) * gauss2D(sx, sy, 0, -0.435 - lipOpenDrop * 0.3, 0.14, 0.018 + lipOpenDrop * 0.25) * frontMask;
+    z += (0.028 * p.lipFullness) * gauss2D(sx, sy, 0, -0.472 - lipOpenDrop * 0.72, 0.115, 0.030) * frontMask;
+    z += p.chinProminence * gauss2D(sx, sy, 0, -0.72 - lipOpenDrop * 0.65, p.chinWidth, 0.095) * frontMask;
 
     if (jawOpen > 0.001 && sy < -0.42 && sz > 0.15) {
       const jawInfluence = smoothstep(-0.42, -0.78, sy) * smoothstep(0.15, 0.55, sz) * gauss(sx, 0, 0.38);
@@ -1745,9 +2225,7 @@
       z -= jawOpen * 0.02 * jawInfluence;
     }
 
-    const ear = gauss2D(sy, sz, -0.06, -0.08, 0.14, 0.085) * smoothstep(0.87, 0.99, absX);
-    x += Math.sign(sx) * 0.058 * ear;
-
+    x += Math.sign(sx) * 0.058 * gauss2D(sy, sz, -0.06, -0.08, 0.14, 0.085) * smoothstep(0.87, 0.99, absX);
     return { x: x, y: y, z: z };
   }
 
@@ -1817,14 +2295,11 @@
       for (let j = 0; j <= 7; j++) {
         const idx = i * 8 + j;
         if (idx < pos.count) {
-          const vx = pos.getX(idx) - center.x;
-          const vy = pos.getY(idx) - center.y;
-          const vz = pos.getZ(idx) - center.z;
           pos.setXYZ(
             idx,
-            center.x + vx * (0.35 + taper * 0.85),
-            center.y + vy * (0.35 + taper * 0.85),
-            center.z + vz * (0.25 + taper * 0.6)
+            center.x + (pos.getX(idx) - center.x) * (0.35 + taper * 0.85),
+            center.y + (pos.getY(idx) - center.y) * (0.35 + taper * 0.85),
+            center.z + (pos.getZ(idx) - center.z) * (0.25 + taper * 0.6)
           );
         }
       }
@@ -1833,9 +2308,6 @@
     parent.add(new THREE.Mesh(geo, mat));
   }
 
-  /**
-   * สร้างตัวละครอนิเมะโฮโลแกรม 3 มิติ 1 ตัว (รองรับทั้งชาย/หญิง/อาวุโส และขยับปาก Lip-Sync แยกตัว)
-   */
   function createAnimeCharacterRig(THREE, glowTex, initialProfileKey, seedOffset) {
     const rigGroup = new THREE.Group();
     const avatarGroup = new THREE.Group();
@@ -1876,28 +2348,17 @@
     updateHeadGeometry(currentProfile, 0);
 
     const headGlassMat = createAnimeHoloGlassMat(THREE, 0.92);
-    const headMesh = new THREE.Mesh(headGeo, headGlassMat);
-    headGroup.add(headMesh);
+    headGroup.add(new THREE.Mesh(headGeo, headGlassMat));
 
     const headWireMat = new THREE.MeshBasicMaterial({
-      color: 0x7dd3fc,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.11,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false
+      color: 0x7dd3fc, wireframe: true, transparent: true, opacity: 0.11, blending: THREE.AdditiveBlending, depthWrite: false
     });
     const headWire = new THREE.Mesh(headGeo, headWireMat);
     headWire.scale.setScalar(1.004);
     headGroup.add(headWire);
 
-    // ดวงตาอนิเมะกลมโต + ประกายแสงคู่ + หางขนตา + หยดน้ำตา
     const featureColorMat = new THREE.MeshBasicMaterial({
-      color: 0xe0f2fe,
-      transparent: true,
-      opacity: 0.96,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false
+      color: 0xe0f2fe, transparent: true, opacity: 0.96, blending: THREE.AdditiveBlending, depthWrite: false
     });
 
     function createEyeAssembly(sideSign) {
@@ -1978,14 +2439,10 @@
       const pts = [];
       for (let i = 0; i <= 12; i++) {
         const u = i / 12;
-        const x = sideSign * (0.095 + u * 0.21);
-        const arch = Math.sin(u * Math.PI) * 0.032;
-        const zCurve = -Math.pow(u, 1.8) * 0.075;
-        pts.push(new THREE.Vector3(x, arch, zCurve));
+        pts.push(new THREE.Vector3(sideSign * (0.095 + u * 0.21), Math.sin(u * Math.PI) * 0.032, -Math.pow(u, 1.8) * 0.075));
       }
-      const curve = new THREE.CatmullRomCurve3(pts);
       const mat = new THREE.MeshBasicMaterial({ color: 0xbae6fd, transparent: true, opacity: 0.84, blending: THREE.AdditiveBlending, depthWrite: false });
-      const mesh = new THREE.Mesh(new THREE.TubeGeometry(curve, 16, 0.012, 7, false), mat);
+      const mesh = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 16, 0.012, 7, false), mat);
       const pivot = new THREE.Group();
       pivot.add(mesh);
       return { pivot: pivot, mesh: mesh, mat: mat };
@@ -1997,9 +2454,8 @@
 
     const LIP_SEGS = 22;
     function buildLipLine(colorHex, opacity) {
-      const arr = new Float32Array((LIP_SEGS + 1) * 3);
       const geo = new THREE.BufferGeometry();
-      geo.setAttribute('position', new THREE.BufferAttribute(arr, 3));
+      geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array((LIP_SEGS + 1) * 3), 3));
       const mat = new THREE.LineBasicMaterial({ color: colorHex, transparent: true, opacity: opacity, blending: THREE.AdditiveBlending });
       return { line: new THREE.Line(geo, mat), geo: geo, mat: mat };
     }
@@ -2009,13 +2465,11 @@
     const lowerLipInner = buildLipLine(0x67e8f9, 0.52);
     headGroup.add(upperLipOuter.line, upperLipInner.line, lowerLipOuter.line, lowerLipInner.line);
 
-    // คอ & ไหล่ & ปกเสื้อกาวน์แพทย์ (สำหรับ นพ.ภาคิน)
     const bustGroup = new THREE.Group();
     avatarGroup.add(bustGroup);
 
-    const neckGeo = new THREE.CylinderGeometry(0.20, 0.25, 0.62, 28, 6, true);
     const neckMat = createAnimeHoloGlassMat(THREE, 0.75);
-    const neckMesh = new THREE.Mesh(neckGeo, neckMat);
+    const neckMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.20, 0.25, 0.62, 28, 6, true), neckMat);
     neckMesh.position.y = -0.66;
     bustGroup.add(neckMesh);
 
@@ -2034,11 +2488,10 @@
 
     const collarGroup = new THREE.Group();
     const collarPtsL = [new THREE.Vector3(-0.30, -0.76, 0.12), new THREE.Vector3(-0.44, -0.94, 0.24), new THREE.Vector3(-0.18, -1.30, 0.36), new THREE.Vector3(0, -1.24, 0.38)];
-    const collarPtsR = collarPtsL.map(function (v) { return new THREE.Vector3(-v.x, v.y, v.z); });
     const collarMat = new THREE.MeshBasicMaterial({ color: 0x6ee7b7, transparent: true, opacity: 0.72, blending: THREE.AdditiveBlending, depthWrite: false });
     collarGroup.add(
       new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(collarPtsL), 18, 0.016, 7, false), collarMat),
-      new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(collarPtsR), 18, 0.016, 7, false), collarMat)
+      new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(collarPtsL.map(function (v) { return new THREE.Vector3(-v.x, v.y, v.z); })), 18, 0.016, 7, false), collarMat)
     );
     collarGroup.visible = Boolean(startProf.hasCollar);
     bustGroup.add(collarGroup);
@@ -2046,20 +2499,12 @@
     const hairGlassMat = createAnimeHoloGlassMat(THREE, 0.62);
     const hairLineMat = new THREE.LineBasicMaterial({ color: 0x7dd3fc, transparent: true, opacity: 0.38, blending: THREE.AdditiveBlending, depthWrite: false });
 
-    // ทรงผม 1: 'long' (คุณแพรว / ภรรยา — หน้าม้าซีทรู + ปอยผมคลอแก้ม + ผมประบ่า)
+    // ทรงผมทั้ง 5 สไตล์ (long, sister, career, bun, short)
     const hairLongGroup = new THREE.Group();
     const crownLong = new THREE.Mesh(new THREE.SphereGeometry(0.79, 28, 20, 0, Math.PI * 2, 0, Math.PI * 0.56), hairGlassMat);
-    crownLong.position.set(0, 0.22, -0.04);
-    crownLong.scale.set(0.98, 1.02, 1.06);
-    hairLongGroup.add(crownLong);
-    [
-      { x0: -0.24, x1: -0.34, yEnd: 0.14, zEnd: 0.72, r: 0.058 },
-      { x0: -0.10, x1: -0.14, yEnd: 0.22, zEnd: 0.77, r: 0.050 },
-      { x0: 0.02, x1: 0.04, yEnd: 0.24, zEnd: 0.78, r: 0.046 },
-      { x0: 0.14, x1: 0.20, yEnd: 0.20, zEnd: 0.76, r: 0.052 },
-      { x0: 0.28, x1: 0.38, yEnd: 0.12, zEnd: 0.70, r: 0.058 }
-    ].forEach(function (b) {
-      addAnimeHairLock(THREE, hairLongGroup, [new THREE.Vector3(b.x0 * 0.5, 0.94, 0.18), new THREE.Vector3(b.x0, 0.68, 0.68), new THREE.Vector3(b.x1, b.yEnd, b.zEnd)], b.r, hairGlassMat);
+    crownLong.position.set(0, 0.22, -0.04); crownLong.scale.set(0.98, 1.02, 1.06); hairLongGroup.add(crownLong);
+    [[-0.24, -0.34, 0.14, 0.72, 0.058], [-0.10, -0.14, 0.22, 0.77, 0.050], [0.02, 0.04, 0.24, 0.78, 0.046], [0.14, 0.20, 0.20, 0.76, 0.052], [0.28, 0.38, 0.12, 0.70, 0.058]].forEach(function (b) {
+      addAnimeHairLock(THREE, hairLongGroup, [new THREE.Vector3(b[0] * 0.5, 0.94, 0.18), new THREE.Vector3(b[0], 0.68, 0.68), new THREE.Vector3(b[1], b[2], b[3])], b[4], hairGlassMat);
     });
     [-1, 1].forEach(function (s) {
       addAnimeHairLock(THREE, hairLongGroup, [new THREE.Vector3(s * 0.36, 0.86, 0.26), new THREE.Vector3(s * 0.66, 0.24, 0.46), new THREE.Vector3(s * 0.54, -0.42, 0.42), new THREE.Vector3(s * 0.40, -0.94, 0.26)], 0.075, hairGlassMat);
@@ -2071,19 +2516,11 @@
     }
     headGroup.add(hairLongGroup);
 
-    // ทรงผม 2: 'sister' (คุณฝน — หน้าม้าปัดข้างนุ่ม + ผมประบ่าปลายงุ้มเข้ากรอบหน้า)
     const hairSisterGroup = new THREE.Group();
     const crownSister = new THREE.Mesh(new THREE.SphereGeometry(0.79, 28, 20, 0, Math.PI * 2, 0, Math.PI * 0.56), hairGlassMat);
-    crownSister.position.set(0, 0.22, -0.04);
-    crownSister.scale.set(0.98, 1.02, 1.06);
-    hairSisterGroup.add(crownSister);
-    [
-      { x0: -0.26, x1: -0.42, yEnd: 0.10, zEnd: 0.68, r: 0.062 },
-      { x0: -0.08, x1: -0.22, yEnd: 0.20, zEnd: 0.76, r: 0.056 },
-      { x0: 0.08, x1: -0.02, yEnd: 0.22, zEnd: 0.78, r: 0.052 },
-      { x0: 0.24, x1: 0.42, yEnd: 0.12, zEnd: 0.68, r: 0.062 }
-    ].forEach(function (b) {
-      addAnimeHairLock(THREE, hairSisterGroup, [new THREE.Vector3(b.x0 * 0.4, 0.94, 0.18), new THREE.Vector3(b.x0, 0.68, 0.68), new THREE.Vector3(b.x1, b.yEnd, b.zEnd)], b.r, hairGlassMat);
+    crownSister.position.set(0, 0.22, -0.04); crownSister.scale.set(0.98, 1.02, 1.06); hairSisterGroup.add(crownSister);
+    [[-0.26, -0.42, 0.10, 0.68, 0.062], [-0.08, -0.22, 0.20, 0.76, 0.056], [0.08, -0.02, 0.22, 0.78, 0.052], [0.24, 0.42, 0.12, 0.68, 0.062]].forEach(function (b) {
+      addAnimeHairLock(THREE, hairSisterGroup, [new THREE.Vector3(b[0] * 0.4, 0.94, 0.18), new THREE.Vector3(b[0], 0.68, 0.68), new THREE.Vector3(b[1], b[2], b[3])], b[4], hairGlassMat);
     });
     [-1, 1].forEach(function (s) {
       addAnimeHairLock(THREE, hairSisterGroup, [new THREE.Vector3(s * 0.40, 0.85, 0.22), new THREE.Vector3(s * 0.72, 0.18, 0.36), new THREE.Vector3(s * 0.52, -0.58, 0.32)], 0.085, hairGlassMat);
@@ -2094,18 +2531,11 @@
     }
     headGroup.add(hairSisterGroup);
 
-    // ทรงผม 3: 'career' (คุณนุช — ผมบ๊อบสั้นประคางปัดข้างเฉียบคม)
     const hairCareerGroup = new THREE.Group();
     const crownCareer = new THREE.Mesh(new THREE.SphereGeometry(0.79, 28, 20, 0, Math.PI * 2, 0, Math.PI * 0.56), hairGlassMat);
-    crownCareer.position.set(0, 0.22, -0.04);
-    crownCareer.scale.set(0.98, 1.02, 1.06);
-    hairCareerGroup.add(crownCareer);
-    [
-      { x0: -0.22, x1: 0.12, yEnd: 0.22, zEnd: 0.76, r: 0.064 },
-      { x0: -0.04, x1: 0.30, yEnd: 0.16, zEnd: 0.72, r: 0.060 },
-      { x0: -0.32, x1: -0.48, yEnd: 0.08, zEnd: 0.64, r: 0.062 }
-    ].forEach(function (b) {
-      addAnimeHairLock(THREE, hairCareerGroup, [new THREE.Vector3(-0.15, 0.94, 0.20), new THREE.Vector3(b.x0, 0.66, 0.68), new THREE.Vector3(b.x1, b.yEnd, b.zEnd)], b.r, hairGlassMat);
+    crownCareer.position.set(0, 0.22, -0.04); crownCareer.scale.set(0.98, 1.02, 1.06); hairCareerGroup.add(crownCareer);
+    [[-0.22, 0.12, 0.22, 0.76, 0.064], [-0.04, 0.30, 0.16, 0.72, 0.060], [-0.32, -0.48, 0.08, 0.64, 0.062]].forEach(function (b) {
+      addAnimeHairLock(THREE, hairCareerGroup, [new THREE.Vector3(-0.15, 0.94, 0.20), new THREE.Vector3(b[0], 0.66, 0.68), new THREE.Vector3(b[1], b[2], b[3])], b[4], hairGlassMat);
     });
     [-1, 1].forEach(function (s) {
       addAnimeHairLock(THREE, hairCareerGroup, [new THREE.Vector3(s * 0.42, 0.84, 0.18), new THREE.Vector3(s * 0.74, 0.14, 0.30), new THREE.Vector3(s * 0.44, -0.52, 0.34)], 0.09, hairGlassMat);
@@ -2116,11 +2546,9 @@
     }
     headGroup.add(hairCareerGroup);
 
-    // ทรงผม 4: 'bun' (คุณแม่ — หน้าม้าปัดเรียบร้อย + มวยผมด้านหลัง)
     const hairBunGroup = new THREE.Group();
     const bunCap = new THREE.Mesh(new THREE.SphereGeometry(0.82, 28, 22, 0, Math.PI * 2, 0, Math.PI * 0.56), hairGlassMat);
-    bunCap.position.set(0, 0.22, -0.06);
-    bunCap.scale.set(0.96, 1.0, 1.06);
+    bunCap.position.set(0, 0.22, -0.06); bunCap.scale.set(0.96, 1.0, 1.06);
     addAnimeHairLock(THREE, hairBunGroup, [new THREE.Vector3(-0.18, 0.92, 0.24), new THREE.Vector3(0.18, 0.62, 0.70), new THREE.Vector3(0.56, 0.16, 0.48)], 0.072, hairGlassMat);
     addAnimeHairLock(THREE, hairBunGroup, [new THREE.Vector3(-0.22, 0.90, 0.22), new THREE.Vector3(-0.48, 0.54, 0.56), new THREE.Vector3(-0.62, 0.02, 0.36)], 0.065, hairGlassMat);
     const bunSphere = new THREE.Mesh(new THREE.SphereGeometry(0.36, 24, 24), createAnimeHoloGlassMat(THREE, 0.72));
@@ -2130,45 +2558,26 @@
     hairBunGroup.add(bunCap, bunSphere, bunWire);
     headGroup.add(hairBunGroup);
 
-    // ทรงผม 5: 'short' (นพ.ภาคิน — หน้าม้าปัดชายอนิเมะ + ช่อผมสั้น)
     const hairShortGroup = new THREE.Group();
     const maleCrown = new THREE.Mesh(new THREE.SphereGeometry(0.81, 28, 20, 0, Math.PI * 2, 0, Math.PI * 0.52), hairGlassMat);
-    maleCrown.position.set(0, 0.24, -0.05);
-    maleCrown.scale.set(1.0, 1.02, 1.08);
-    hairShortGroup.add(maleCrown);
-    [
-      { x0: -0.34, x1: -0.48, yEnd: 0.14, zEnd: 0.66, r: 0.064 },
-      { x0: -0.14, x1: -0.26, yEnd: 0.18, zEnd: 0.76, r: 0.060 },
-      { x0: 0.04, x1: -0.04, yEnd: 0.22, zEnd: 0.79, r: 0.056 },
-      { x0: 0.22, x1: 0.34, yEnd: 0.18, zEnd: 0.74, r: 0.062 },
-      { x0: 0.38, x1: 0.56, yEnd: 0.08, zEnd: 0.56, r: 0.065 }
-    ].forEach(function (b) {
-      addAnimeHairLock(THREE, hairShortGroup, [new THREE.Vector3(b.x0 * 0.4, 0.96, 0.16), new THREE.Vector3(b.x0, 0.70, 0.68), new THREE.Vector3(b.x1, b.yEnd, b.zEnd)], b.r, hairGlassMat);
+    maleCrown.position.set(0, 0.24, -0.05); maleCrown.scale.set(1.0, 1.02, 1.08); hairShortGroup.add(maleCrown);
+    [[-0.34, -0.48, 0.14, 0.66, 0.064], [-0.14, -0.26, 0.18, 0.76, 0.060], [0.04, -0.04, 0.22, 0.79, 0.056], [0.22, 0.34, 0.18, 0.74, 0.062], [0.38, 0.56, 0.08, 0.56, 0.065]].forEach(function (b) {
+      addAnimeHairLock(THREE, hairShortGroup, [new THREE.Vector3(b[0] * 0.4, 0.96, 0.16), new THREE.Vector3(b[0], 0.70, 0.68), new THREE.Vector3(b[1], b[2], b[3])], b[4], hairGlassMat);
     });
     for (let i = 0; i < 14; i++) {
       const frac = (i / 13) * 2 - 1;
       const pts = [];
       for (let j = 0; j <= 8; j++) {
-        const u = j / 8;
-        const phi = 0.08 + u * 1.15;
+        const u = j / 8, phi = 0.08 + u * 1.15;
         pts.push(new THREE.Vector3(frac * 0.72 * Math.sin(phi * 1.15), 0.26 + Math.cos(phi) * 0.84, 0.44 - u * 1.30));
       }
       hairShortGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(new THREE.CatmullRomCurve3(pts).getPoints(12)), hairLineMat));
     }
     headGroup.add(hairShortGroup);
 
-    const hairGroups = {
-      long: hairLongGroup,
-      sister: hairSisterGroup,
-      career: hairCareerGroup,
-      bun: hairBunGroup,
-      short: hairShortGroup
-    };
-
+    const hairGroups = { long: hairLongGroup, sister: hairSisterGroup, career: hairCareerGroup, bun: hairBunGroup, short: hairShortGroup };
     function applyHairType(hType) {
-      Object.keys(hairGroups).forEach(function (k) {
-        hairGroups[k].visible = k === hType;
-      });
+      Object.keys(hairGroups).forEach(function (k) { hairGroups[k].visible = k === hType; });
     }
     applyHairType(startProf.hairType);
 
@@ -2225,7 +2634,7 @@
       rightBrow.mesh.scale.set(1, bThickScale, 1);
 
       const mouthHalfW = 0.135 + (profile.gender === 'male' ? 0.024 : 0);
-      const totalOpen = emo.mouthBaseOpen + jawOpen * 0.088;
+      const totalOpen = emo.mouthBaseOpen + jawOpen * 0.094;
       const uArr = upperLipOuter.geo.attributes.position.array;
       const uInArr = upperLipInner.geo.attributes.position.array;
       const lArr = lowerLipOuter.geo.attributes.position.array;
@@ -2295,12 +2704,19 @@
         if (blinkTimer <= 0) blinkTimer = 2.8 + Math.random() * 2.6;
         const blinkScale = blinkTimer < 0.14 ? Math.abs((blinkTimer / 0.14) * 2 - 1) : 1;
 
+        // Real Audio-Amplitude Lip-Sync (ใช้ค่าความดังคลื่นเสียงจริงเมื่อพร้อม และ fallback อัตโนมัติหากออฟไลน์)
         let targetJaw = 0;
         if (params.isCharacterSpeaking) {
-          const syll = 0.5 + 0.5 * Math.sin((phase + seedOffset) * 11.5) * Math.cos((phase + seedOffset) * 4.3 + 0.7);
-          targetJaw = 0.18 + syll * 0.64;
+          if (typeof params.liveAudioAmp === 'number' && params.liveAudioAmp >= 0) {
+            targetJaw = Math.min(1, params.liveAudioAmp * 0.95);
+          } else {
+            const syll = 0.5 + 0.5 * Math.sin((phase + seedOffset) * 11.5) * Math.cos((phase + seedOffset) * 4.3 + 0.7);
+            targetJaw = 0.18 + syll * 0.64;
+          }
         }
-        smoothJaw += (targetJaw - smoothJaw) * (1 - Math.exp(-dt * 16));
+        // Fast attack / natural release ให้การเปิด–ปิดปากคมชัดตรงพยางค์พูด
+        const jawRate = targetJaw > smoothJaw ? 24 : 15;
+        smoothJaw += (targetJaw - smoothJaw) * (1 - Math.exp(-dt * jawRate));
 
         if (profChanged || smoothJaw > 0.002) {
           updateHeadGeometry(currentProfile, smoothJaw);
@@ -2333,7 +2749,7 @@
         syncFeatures(currentProfile, smoothEmo, smoothJaw, blinkScale, gazeX, gazeY, phase + seedOffset, params.emotion === 'CONFUSED');
 
         avatarGroup.position.y = 0.06 + Math.sin((phase + seedOffset) * 1.45) * 0.024;
-        headGroup.rotation.x = smoothEmo.headPitch + Math.sin((phase + seedOffset) * 1.1) * 0.025 + smoothJaw * 0.03;
+        headGroup.rotation.x = smoothEmo.headPitch + Math.sin((phase + seedOffset) * 1.1) * 0.025 + smoothJaw * 0.035;
         headGroup.rotation.z = smoothEmo.headRoll + Math.sin((phase + seedOffset) * 0.72) * 0.022;
         headGroup.rotation.y = Math.sin((phase + seedOffset) * 0.48) * 0.05;
         if (hairLongGroup.visible) hairLongGroup.rotation.z = Math.sin((phase + seedOffset) * 1.1) * 0.018;
@@ -2343,10 +2759,6 @@
     };
   }
 
-  /**
-   * ติดตั้งเวทีตัวละครอนิเมะโฮโลแกรม 3 มิติลงใน container ที่กำหนด
-   * ปรับจำนวนตัวละคร (1 หรือ 2 คน), เพศ และบทบาทอัตโนมัติตาม st.personaId
-   */
   function mountHologram3D(container, initialState) {
     const THREE = global.THREE;
     if (!container || !THREE) {
@@ -2354,7 +2766,7 @@
     }
 
     const st = Object.assign(
-      { personaId: 'standard', emotion: 'CONFUSED', trust: 40, isSpeaking: false, activeSpeaker: 'wife' },
+      { personaId: 'standard', emotion: 'CONFUSED', trust: 40, isSpeaking: false, activeSpeaker: 'wife', getAudioAmplitude: null },
       initialState || {}
     );
 
@@ -2398,10 +2810,8 @@
     renderer.domElement.style.height = '100%';
     container.appendChild(renderer.domElement);
 
-    // Glow sprite texture
     const pCan = document.createElement('canvas');
-    pCan.width = 64;
-    pCan.height = 64;
+    pCan.width = 64; pCan.height = 64;
     const pCtx = pCan.getContext('2d');
     const pGrad = pCtx.createRadialGradient(32, 32, 0, 32, 32, 32);
     pGrad.addColorStop(0, 'rgba(255,255,255,1)');
@@ -2415,7 +2825,6 @@
     const root = new THREE.Group();
     scene.add(root);
 
-    // สร้างตัวละคร 2 Rigs (Rig 0 ใช้ทุกเคส, Rig 1 เปิดแสดงเพิ่มอัตโนมัติเมื่อเคสมีญาติ 2 คน เช่น เคสความขัดแย้งในครอบครัว)
     const primaryRig = createAnimeCharacterRig(THREE, glowTex, 'daughter_praew', 0.0);
     const secondaryRig = createAnimeCharacterRig(THREE, glowTex, 'mother_bun', 1.85);
     secondaryRig.group.visible = false;
@@ -2475,6 +2884,10 @@
         fitCameraToFocalPoint(container.clientWidth, container.clientHeight);
       }
 
+      const liveAudioAmp = (st.isSpeaking && typeof st.getAudioAmplitude === 'function')
+        ? st.getAudioAmplitude()
+        : -1;
+
       const cast = getCaseRigCast(st.personaId);
       const isDual = cast.length > 1;
       const c0 = cast[0];
@@ -2488,14 +2901,13 @@
         const c1 = cast[1];
         const wifeSpeaking = Boolean(st.isSpeaking && st.activeSpeaker !== 'mother');
         const motherSpeaking = Boolean(st.isSpeaking && st.activeSpeaker === 'mother');
-
-        // ในเคส 2 คน: ภรรยามีอารมณ์กังวล/ขอความช่วยเหลือ ส่วนคุณแม่สะท้อนอารมณ์หลักของสถานการณ์
         const wifeEmotion = st.emotion === 'CALM' ? 'CALM' : (st.emotion === 'ANGRY' ? 'SAD' : st.emotion);
 
         primaryRig.update(dt, phase, {
           profileKey: c0.profileKey,
           emotion: wifeEmotion,
           isCharacterSpeaking: wifeSpeaking,
+          liveAudioAmp: wifeSpeaking ? liveAudioAmp : -1,
           dimmed: motherSpeaking
         });
 
@@ -2507,6 +2919,7 @@
           profileKey: c1.profileKey,
           emotion: st.emotion,
           isCharacterSpeaking: motherSpeaking,
+          liveAudioAmp: motherSpeaking ? liveAudioAmp : -1,
           dimmed: wifeSpeaking
         });
       } else {
@@ -2515,6 +2928,7 @@
           profileKey: c0.profileKey,
           emotion: st.emotion,
           isCharacterSpeaking: Boolean(st.isSpeaking),
+          liveAudioAmp: liveAudioAmp,
           dimmed: false
         });
       }
@@ -2559,29 +2973,37 @@
   global.RJCLOUD_SKILLLAB = {
     EMOTIONS: EMOTIONS,
     RADAR_AXES: RADAR_AXES,
+    SBAR_RADAR_AXES: SBAR_RADAR_AXES,
     CASE_ICU_BRIEFS: CASE_ICU_BRIEFS,
+    COACH_QUICK_REPLIES: COACH_QUICK_REPLIES,
     HARD_MODE_CURVEBALLS: HARD_MODE_CURVEBALLS,
+    SBAR_HARD_MODE_CURVEBALLS: SBAR_HARD_MODE_CURVEBALLS,
     MICRO_DRILL_STAGES: MICRO_DRILL_STAGES,
     ADVISOR_GOALS: ADVISOR_GOALS,
     ADVISOR_QUICK_QUESTIONS: ADVISOR_QUICK_QUESTIONS,
     SELF_EFFICACY_ITEMS: SELF_EFFICACY_ITEMS,
     SUS_ITEMS: SUS_ITEMS,
 
+    getRadarAxes: getRadarAxes,
     getPersonas: getPersonas,
     getCaseVoices: getCaseVoices,
+    getCoachQuickReplies: getCoachQuickReplies,
     getCaseBarriers: getCaseBarriers,
     evaluateBarriersUnlocked: evaluateBarriersUnlocked,
+    getRemainingBarrierHint: getRemainingBarrierHint,
     computeInertiaTrust: computeInertiaTrust,
     pickHardCurveball: pickHardCurveball,
     evaluateMicroDrillAnswer: evaluateMicroDrillAnswer,
 
     detectInAppBrowser: detectInAppBrowser,
     pickLatencyMaskCue: pickLatencyMaskCue,
+    createAudioLipSyncAnalyser: createAudioLipSyncAnalyser,
     createVocalToneRecorder: createVocalToneRecorder,
     computeSusScore: computeSusScore,
     buildBlindTranscript: buildBlindTranscript,
     computeClinicalBadges: computeClinicalBadges,
 
+    resolveProfessionGroup: resolveProfessionGroup,
     computeLabRecommendation: computeLabRecommendation,
     answerAdvisorQuestion: answerAdvisorQuestion,
     detectTriggerPhrases: detectTriggerPhrases,
@@ -2592,6 +3014,7 @@
     evaluateConversationFallback: evaluateConversationFallback,
     buildSupervisorEvaluationPrompt: buildSupervisorEvaluationPrompt,
     parseSupervisorJson: parseSupervisorJson,
+    downloadDebriefCardPng: downloadDebriefCardPng,
     SoundFX: SoundFX,
     mountHologram3D: mountHologram3D
   };
