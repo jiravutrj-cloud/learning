@@ -7,24 +7,43 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Dashboard 13 เขตสุขภาพ (PDPA Zero-PII) — rjcloud.organ 2.0</title>
-    <link rel="manifest" href="./manifest.json">
 
-    <!-- โหลดไฟล์สไตล์และโมดูลกลาง (วางคู่กันในโฟลเดอร์เดียวกัน มีค่าสำรองในตัว) -->
-    <link rel="stylesheet" href="./styles.css">
-    <script src="./data.js" onerror="console.warn('data.js not loaded, using built-in defaults')"></script>
-    <script src="./learning-core.js" onerror="console.warn('learning-core.js not loaded, using built-in defaults')"></script>
-
-    <!-- ซิงค์โหมดมืด/สว่างทันทีจาก localStorage ป้องกันจอกระพริบ -->
+    <!-- ซิงค์โหมดมืด/สว่างทันที + โหลดไฟล์ร่วมเฉพาะเมื่ออยู่บนโดเมนเว็บจริง (ป้องกัน 404 ในโหมดพรีวิว) -->
     <script>
       (function () {
         try {
-          const key = (window.RJCLOUD_CONFIG && window.RJCLOUD_CONFIG.theme && window.RJCLOUD_CONFIG.theme.storageKey) || 'rjcloud_theme';
-          const def = (window.RJCLOUD_CONFIG && window.RJCLOUD_CONFIG.theme && window.RJCLOUD_CONFIG.theme.defaultMode) || 'dark';
-          const saved = localStorage.getItem(key) || def;
+          const saved = localStorage.getItem('rjcloud_theme') || 'dark';
           const mode = saved === 'light' ? 'light' : 'dark';
           document.documentElement.setAttribute('data-theme', mode);
           const meta = document.querySelector('meta[name="theme-color"]');
           if (meta) meta.setAttribute('content', mode === 'dark' ? '#020612' : '#edf6fd');
+        } catch (_) {}
+
+        try {
+          const loc = window.location;
+          const isRealHost =
+            (loc.protocol === 'https:' || loc.protocol === 'http:') &&
+            loc.origin !== 'null' &&
+            !/(googleusercontent|webcontainer|stackblitz|sandbox|srcdoc|blob:)/i.test(loc.href);
+          if (isRealHost) {
+            const manifest = document.createElement('link');
+            manifest.rel = 'manifest';
+            manifest.href = './manifest.json';
+            document.head.appendChild(manifest);
+
+            const css = document.createElement('link');
+            css.rel = 'stylesheet';
+            css.href = './styles.css';
+            document.head.appendChild(css);
+
+            ['./data.js', './learning-core.js'].forEach(function (src) {
+              const s = document.createElement('script');
+              s.src = src;
+              s.async = false;
+              s.onerror = function () {};
+              document.head.appendChild(s);
+            });
+          }
         } catch (_) {}
       })();
     </script>
@@ -242,7 +261,6 @@
       }
     }
     </script>
-    <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
 </head>
 <body>
     <!-- หน้าจอโหลดเริ่มต้น -->
@@ -261,11 +279,12 @@
         if (src.includes('data.js') || src.includes('learning-core.js') || src.includes('styles.css')) return;
         const root = document.getElementById('executive-root');
         if (root && !root.dataset.mounted && ev.message) {
+          const safeMsg = String(ev.message || 'Unknown error').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
           root.innerHTML =
             '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#020612;color:#f8fafc;font-family:Sarabun,sans-serif;">' +
             '<div style="max-width:440px;width:100%;background:#061229;border:1px solid rgba(244,63,94,0.4);border-radius:24px;padding:24px;text-align:center;">' +
             '<h2 style="color:#fda4af;font-weight:700;margin:0 0 8px;">ไม่สามารถเปิดหน้า Dashboard ได้ชั่วคราว</h2>' +
-            '<p style="font-size:13px;color:#dbeafe;margin:0 0 16px;">' + String(ev.message || 'Unknown error') + '</p>' +
+            '<p style="font-size:13px;color:#dbeafe;margin:0 0 16px;">' + safeMsg + '</p>' +
             '<button onclick="window.location.reload()" style="padding:12px 24px;border:none;border-radius:14px;background:#34d399;color:#020612;font-weight:700;cursor:pointer;">โหลดหน้าใหม่</button>' +
             '</div></div>';
         }
@@ -1781,5 +1800,7 @@
         const root = createRoot(document.getElementById('executive-root'));
         root.render(<ExecutiveErrorBoundary><ExecutiveApp /></ExecutiveErrorBoundary>);
     </script>
+    <!-- โหลด Babel ท้ายสุดหลังสคริปต์ทั้งหมด เพื่อให้แน่ใจว่าโค้ดครบ 100% ก่อนคอมไพล์ -->
+    <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
 </body>
 </html>
