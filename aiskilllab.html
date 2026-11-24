@@ -9,7 +9,7 @@
     <title>AI Skill Lab 3D — rjcloud.organ 2.0</title>
     <link rel="manifest" href="./manifest.json">
 
-    <!-- โหลดไฟล์สไตล์และโมดูลกลางแบบ Zero-Build (มีเอ็นจินสำรองในตัวเมื่อเปิดพรีวิวเดี่ยว) -->
+    <!-- โหลดไฟล์สไตล์และโมดูลกลางแบบ Zero-Build (มีเอ็นจินสำรองครบ 6 สไตล์ในตัวเมื่อเปิดพรีวิวเดี่ยว) -->
     <link rel="stylesheet" href="./styles.css">
     <script src="./data.js" onerror="console.warn('data.js not loaded, using built-in defaults')"></script>
     <script src="./learning-core.js" onerror="console.warn('learning-core.js not loaded, using built-in defaults')"></script>
@@ -104,6 +104,7 @@
         --aura-3: rgba(192, 132, 252, 0.14);
       }
 
+      * { box-sizing: border-box; }
       html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
       body {
         margin: 0;
@@ -155,6 +156,7 @@
         color: #050b16 !important;
         box-shadow: 0 10px 28px -6px rgba(134, 239, 172, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.72) inset;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
+        text-decoration: none;
       }
       .rjc2-pill-btn:hover { transform: translateY(-1px) scale(1.015); }
       .rjc2-pill-btn:active { transform: scale(0.98); }
@@ -165,7 +167,7 @@
       .text-accent-adaptive { color: var(--accent-text); }
       .text-prism-adaptive { color: var(--accent-prism); }
 
-      /* ห้องฝึก 3 มิติสไตล์ Obsidian Stage */
+      /* ห้องฝึก 3 มิติและเวทีตัวอย่าง Lobby สไตล์ Obsidian Stage */
       .holo-stage-bg {
         background: radial-gradient(circle at 50% 42%, #0a1f47 0%, #030a1c 56%, #01040b 100%);
       }
@@ -183,20 +185,9 @@
         border: 1px solid rgba(186, 230, 253, 0.22);
       }
 
-      /* ไฟแอมเบียน + คลื่นเสียง Equalizer สไตล์ Apple Intelligence */
-      @keyframes rjcAmbientRun {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-      }
-      @keyframes rjcAmbientGlowPulse {
-        0%, 100% { box-shadow: 0 0 0 1px rgba(110, 231, 183, 0.45), 0 0 28px -4px rgba(56, 189, 248, 0.5), 0 0 54px -10px rgba(192, 132, 252, 0.38); }
-        50% { box-shadow: 0 0 0 1.5px rgba(103, 232, 249, 0.85), 0 0 42px -2px rgba(110, 231, 183, 0.68), 0 0 68px -8px rgba(56, 189, 248, 0.52); }
-      }
-      @keyframes rjcWaveBar {
-        0%, 100% { transform: scaleY(0.28); opacity: 0.65; }
-        50% { transform: scaleY(1); opacity: 1; }
-      }
+      /* ไฟแอมเบียน + คลื่นเสียง Equalizer สไตล์ Apple Intelligence (ไร้ซับไตเติล) */
+      @keyframes rjcAmbientRun { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+      @keyframes rjcWaveBar { 0%, 100% { transform: scaleY(0.28); opacity: 0.65; } 50% { transform: scaleY(1); opacity: 1; } }
       .rjc-ambient-bar {
         height: 4px;
         width: 100%;
@@ -205,41 +196,15 @@
         animation: rjcAmbientRun 2s linear infinite;
         box-shadow: 0 0 18px rgba(56, 189, 248, 0.85);
       }
-      .rjc-ambient-card-active {
-        animation: rjcAmbientGlowPulse 2.4s ease-in-out infinite;
-        border-color: rgba(110, 231, 183, 0.68) !important;
-      }
-      .rjc-wave-eq {
-        display: inline-flex;
-        align-items: center;
-        gap: 2.5px;
-        height: 14px;
-      }
-      .rjc-wave-eq span {
-        width: 2.5px;
-        height: 100%;
-        border-radius: 9999px;
-        background: linear-gradient(180deg, #fde68a, #6ee7b7, #38bdf8);
-        animation: rjcWaveBar 0.82s ease-in-out infinite;
-      }
+      .rjc-wave-eq { display: inline-flex; align-items: center; gap: 2.5px; height: 14px; }
+      .rjc-wave-eq span { width: 2.5px; height: 100%; border-radius: 9999px; background: linear-gradient(180deg, #fde68a, #6ee7b7, #38bdf8); animation: rjcWaveBar 0.82s ease-in-out infinite; }
       .rjc-wave-eq span:nth-child(2) { animation-delay: 0.14s; }
       .rjc-wave-eq span:nth-child(3) { animation-delay: 0.28s; }
-      .rjc-wave-eq span:nth-child(4) { animation-delay: 0.42s; }
-      .rjc-wave-eq span:nth-child(5) { animation-delay: 0.56s; }
 
       /* แอนิเมชันชั้นเมฆออร่าหลัง Hologram 3 มิติ */
-      @keyframes labCloudDrift {
-        0% { transform: translate3d(-44vw, 0, 0); }
-        100% { transform: translate3d(116vw, 0, 0); }
-      }
-      @keyframes labCloudFloat {
-        0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-        50% { transform: translate3d(16px, -8px, 0) scale(1.03); }
-      }
-      @keyframes labCloudFloatAlt {
-        0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-        50% { transform: translate3d(-18px, -6px, 0) scale(1.03); }
-      }
+      @keyframes labCloudDrift { 0% { transform: translate3d(-44vw, 0, 0); } 100% { transform: translate3d(116vw, 0, 0); } }
+      @keyframes labCloudFloat { 0%, 100% { transform: translate3d(0, 0, 0) scale(1); } 50% { transform: translate3d(16px, -8px, 0) scale(1.03); } }
+      @keyframes labCloudFloatAlt { 0%, 100% { transform: translate3d(0, 0, 0) scale(1); } 50% { transform: translate3d(-18px, -6px, 0) scale(1.03); } }
       .lab-cloud-drift { position: absolute; left: 0; will-change: transform; animation: labCloudDrift var(--c-dur, 96s) linear infinite; animation-delay: var(--c-del, 0s); }
       .lab-cloud-bank-l { position: absolute; will-change: transform; animation: labCloudFloat 18s ease-in-out infinite; }
       .lab-cloud-bank-r { position: absolute; will-change: transform; animation: labCloudFloatAlt 21s ease-in-out infinite; }
@@ -267,7 +232,6 @@
       }
     }
     </script>
-    <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
 </head>
 <body>
     <!-- หน้าจอโหลดเริ่มต้น -->
@@ -275,28 +239,23 @@
         <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#020612;color:#f8fafc;font-family:-apple-system,'Anuphan','Prompt',sans-serif;gap:14px;padding:24px;text-align:center;">
             <div style="width:46px;height:46px;border:3px solid rgba(56,189,248,0.22);border-top-color:#6ee7b7;border-right-color:#38bdf8;border-radius:9999px;animation:labSpin 0.85s linear infinite;"></div>
             <div style="font-weight:800;font-size:17px;">กำลังเปิดห้องฝึกสื่อสาร 3 มิติ AI Skill Lab...</div>
-            <div style="font-size:12px;color:#93b4d8;">rjcloud.organ 2.0 • Studio 24kHz AI Voice &amp; 3D Hologram</div>
+            <div style="font-size:12px;color:#93b4d8;">rjcloud.organ 2.0 • Studio 24kHz AI Voice &amp; Live 3D Hologram</div>
         </div>
     </div>
 
-    <!-- Global Error Guard ป้องกันหน้าขาว/จอดำ (ยกเว้นสคริปต์ภายนอกที่มีตัวสำรองในตัว) -->
+    <!-- Global Error Guard -->
     <script>
       window.addEventListener('error', function (ev) {
         const src = String(ev.filename || (ev.target && ev.target.src) || '');
-        if (
-          src.includes('data.js') ||
-          src.includes('learning-core.js') ||
-          src.includes('skilllab-engine.js') ||
-          src.includes('styles.css') ||
-          src.includes('three')
-        ) return;
+        if (src.includes('data.js') || src.includes('learning-core.js') || src.includes('skilllab-engine.js') || src.includes('styles.css') || src.includes('three')) return;
         const root = document.getElementById('skilllab-root');
         if (root && !root.dataset.mounted && ev.message) {
+          const safeMsg = String(ev.message || 'Unknown error').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
           root.innerHTML =
             '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#020612;color:#f8fafc;font-family:Sarabun,sans-serif;">' +
             '<div style="max-width:440px;width:100%;background:#061229;border:1px solid rgba(244,63,94,0.4);border-radius:24px;padding:24px;text-align:center;">' +
             '<h2 style="color:#fda4af;font-weight:700;margin:0 0 8px;">ไม่สามารถเปิดห้องฝึก AI Skill Lab ได้ชั่วคราว</h2>' +
-            '<p style="font-size:13px;color:#dbeafe;margin:0 0 16px;">' + String(ev.message || 'Unknown error') + '</p>' +
+            '<p style="font-size:13px;color:#dbeafe;margin:0 0 16px;">' + safeMsg + '</p>' +
             '<button onclick="window.location.reload()" style="padding:12px 24px;border:none;border-radius:14px;background:#34d399;color:#020612;font-weight:700;cursor:pointer;">โหลดหน้าใหม่</button>' +
             '</div></div>';
         }
@@ -312,7 +271,7 @@
         import { getFirestore, doc, setDoc, onSnapshot, increment } from 'firebase/firestore';
 
         // ============================================================================
-        // 1. BUILT-IN STANDALONE FALLBACK ENGINE (ทำงานทันทีหากเปิดพรีวิวเดี่ยวโดยไม่มี skilllab-engine.js)
+        // 1. BUILT-IN STANDALONE FALLBACK ENGINE (รองรับ 6 สไตล์ Hologram 3 มิติครบทุกแบบ)
         // ============================================================================
         function createBuiltinSkillLabFallback() {
             const EMOTIONS = {
@@ -333,12 +292,12 @@
             ];
 
             const HOLOGRAM_STYLES = [
-                { id: 'lotus', badge: '01', nameTH: 'ดอกบัวแสง (Lotus)' },
-                { id: 'liquid', badge: '02', nameTH: 'ลูกแก้วออร่า (Liquid)' },
-                { id: 'silk', badge: '03', nameTH: 'คลื่นไหมแสง (Silk)' },
-                { id: 'particles', badge: '04', nameTH: 'แกนอนุภาค (Quantum)' },
-                { id: 'dual', badge: '05', nameTH: 'ดวงแสงคู่ (2 เสียง)' },
-                { id: 'prism', badge: '06', nameTH: 'คริสตัลหัวใจ (Prism)' }
+                { id: 'lotus', badge: '01', nameTH: 'ดอกบัวแสง (Lotus)', descTH: 'กลีบดอกบัวแสงค่อยๆ ผลิบานตามความไว้วางใจ' },
+                { id: 'liquid', badge: '02', nameTH: 'ลูกแก้วออร่า (Liquid)', descTH: 'ลูกแก้วของเหลวพริ้วตามเสียงพูด' },
+                { id: 'silk', badge: '03', nameTH: 'คลื่นไหมแสง (Silk)', descTH: 'ริ้วคลื่นไหม 3 มิติ สะท้อนจังหวะหายใจ' },
+                { id: 'particles', badge: '04', nameTH: 'แกนอนุภาค (Quantum)', descTH: 'กลุ่มอนุภาคพลังงานโคจรรอบแกนแสง' },
+                { id: 'dual', badge: '05', nameTH: 'ดวงแสงคู่ (2 เสียง)', descTH: 'ดวงแสง 2 ดวงสำหรับเคสขัดแย้ง 2 เสียง' },
+                { id: 'prism', badge: '06', nameTH: 'คริสตัลหัวใจ (Prism)', descTH: 'แกนผลึกคริสตัลโปร่งแสงหมุนนุ่มนวล' }
             ];
 
             const PERSONAS = [
@@ -372,38 +331,152 @@
                 { id: 'b3', titleTH: 'ไม่เร่งรัดและดูแลร่างอย่างสมเกียรติ / แผนต่อครบถ้วน', keywords: /ไม่เร่ง|ให้เวลา|ปรึกษา|ตกแต่งร่าง|เรียบร้อย|ไม่มีค่าใช้จ่าย|ประสาน|dignity|no\s*rush/i }
             ];
 
+            /**
+             * เอ็นจิน Hologram 3 มิติสำรองครบทั้ง 6 รูปแบบ (ทำงานได้ทันทีแม้เปิดพรีวิวเดี่ยวโดยไม่มี skilllab-engine.js)
+             */
             function mountHologram3D(container, initialState) {
                 const THREE = window.THREE;
                 if (!container || !THREE) return { update() {}, destroy() {} };
-                const st = { style: 'lotus', emotion: 'CONFUSED', trust: 40, isSpeaking: false, ...initialState };
+                const st = { style: 'lotus', emotion: 'CONFUSED', trust: 45, isSpeaking: false, activeSpeaker: 'wife', ...initialState };
                 const w0 = Math.max(1, container.clientWidth), h0 = Math.max(1, container.clientHeight);
                 const scene = new THREE.Scene();
                 const camera = new THREE.PerspectiveCamera(44, w0 / h0, 0.1, 100);
-                camera.position.set(0, 0.12, w0 < 520 ? 6.6 : 5.4);
+                camera.position.set(0, 0.12, w0 < 480 ? 6.2 : 5.1);
+
                 let renderer = null;
                 try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); }
                 catch (_) { return { update() {}, destroy() {} }; }
                 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
                 renderer.setSize(w0, h0);
                 renderer.setClearColor(0x000000, 0);
+                renderer.domElement.style.display = 'block';
+                renderer.domElement.style.width = '100%';
+                renderer.domElement.style.height = '100%';
                 container.appendChild(renderer.domElement);
 
                 const root = new THREE.Group();
                 scene.add(root);
-                const geo = new THREE.IcosahedronGeometry(1.35, 3);
-                const mat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.24, wireframe: true });
-                const mesh = new THREE.Mesh(geo, mat);
-                const coreMat = new THREE.MeshBasicMaterial({ color: 0x6ee7b7, transparent: true, opacity: 0.65 });
-                const core = new THREE.Mesh(new THREE.SphereGeometry(0.68, 32, 32), coreMat);
-                const ringMat = new THREE.MeshBasicMaterial({ color: 0xbae6fd, transparent: true, opacity: 0.35 });
-                const ring = new THREE.Mesh(new THREE.TorusGeometry(1.9, 0.015, 16, 96), ringMat);
-                ring.rotation.x = Math.PI * 0.42;
-                root.add(mesh, core, ring);
+
+                // 01: Lotus
+                const lotusG = new THREE.Group();
+                lotusG.position.y = -0.45;
+                const petals = [];
+                const petalGeo = new THREE.ConeGeometry(0.36, 1.35, 6);
+                petalGeo.translate(0, 0.65, 0);
+                for (let ring = 0; ring < 2; ring++) {
+                    const cnt = ring === 0 ? 6 : 10;
+                    for (let i = 0; i < cnt; i++) {
+                        const piv = new THREE.Group();
+                        piv.rotation.y = (i / cnt) * Math.PI * 2 + ring * 0.3;
+                        const mat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: ring === 0 ? 0.34 : 0.22, wireframe: ring === 1 });
+                        const m = new THREE.Mesh(petalGeo, mat);
+                        m.rotation.x = ring === 0 ? 0.45 : 0.9;
+                        piv.add(m);
+                        lotusG.add(piv);
+                        petals.push({ mesh: m, mat, ring, idx: i });
+                    }
+                }
+                const lotusCoreMat = new THREE.MeshBasicMaterial({ color: 0x6ee7b7, transparent: true, opacity: 0.78 });
+                const lotusCore = new THREE.Mesh(new THREE.SphereGeometry(0.35, 24, 24), lotusCoreMat);
+                lotusCore.position.y = 0.35;
+                lotusG.add(lotusCore);
+                root.add(lotusG);
+
+                // 02: Liquid Orb
+                const liquidG = new THREE.Group();
+                const liqMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.32, wireframe: true });
+                const liqInnerMat = new THREE.MeshBasicMaterial({ color: 0x818cf8, transparent: true, opacity: 0.55 });
+                const liqOrb = new THREE.Mesh(new THREE.IcosahedronGeometry(1.32, 3), liqMat);
+                const liqCore = new THREE.Mesh(new THREE.SphereGeometry(0.75, 32, 32), liqInnerMat);
+                liquidG.add(liqOrb, liqCore);
+                root.add(liquidG);
+
+                // 03: Silk Waves
+                const silkG = new THREE.Group();
+                const silkLines = [];
+                for (let l = 0; l < 12; l++) {
+                    const arr = new Float32Array(60 * 3);
+                    const geo = new THREE.BufferGeometry();
+                    geo.setAttribute('position', new THREE.BufferAttribute(arr, 3));
+                    const mat = new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.55 });
+                    silkG.add(new THREE.Line(geo, mat));
+                    silkLines.push({ geo, mat, idx: l });
+                }
+                root.add(silkG);
+
+                // 04: Particles
+                const partG = new THREE.Group();
+                const pCount = 260;
+                const pArr = new Float32Array(pCount * 3);
+                const pBase = new Float32Array(pCount * 3);
+                for (let i = 0; i < pCount; i++) {
+                    const th = Math.random() * Math.PI * 2, ph = Math.acos(2 * Math.random() - 1), rr = 0.9 + Math.random() * 0.95;
+                    pBase[i * 3] = pArr[i * 3] = Math.sin(ph) * Math.cos(th) * rr;
+                    pBase[i * 3 + 1] = pArr[i * 3 + 1] = Math.cos(ph) * rr;
+                    pBase[i * 3 + 2] = pArr[i * 3 + 2] = Math.sin(ph) * Math.sin(th) * rr;
+                }
+                const pGeo = new THREE.BufferGeometry();
+                pGeo.setAttribute('position', new THREE.BufferAttribute(pArr, 3));
+                const pMat = new THREE.PointsMaterial({ size: 0.08, color: 0x6ee7b7, transparent: true, opacity: 0.88 });
+                const pRingMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.35 });
+                const pRing = new THREE.Mesh(new THREE.TorusGeometry(1.65, 0.015, 16, 80), pRingMat);
+                pRing.rotation.x = Math.PI * 0.4;
+                partG.add(new THREE.Points(pGeo, pMat), pRing);
+                root.add(partG);
+
+                // 05: Dual Core
+                const dualG = new THREE.Group();
+                const wMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.55, wireframe: true });
+                const mMat = new THREE.MeshBasicMaterial({ color: 0xf43f5e, transparent: true, opacity: 0.55, wireframe: true });
+                const wOrb = new THREE.Mesh(new THREE.IcosahedronGeometry(0.76, 2), wMat);
+                const mOrb = new THREE.Mesh(new THREE.IcosahedronGeometry(0.8, 2), mMat);
+                wOrb.position.x = -1.1; mOrb.position.x = 1.1;
+                dualG.add(wOrb, mOrb);
+                root.add(dualG);
+
+                // 06: Prism
+                const prismG = new THREE.Group();
+                const prGeo = new THREE.OctahedronGeometry(1.28, 1);
+                const prMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.28 });
+                const prWireMat = new THREE.LineBasicMaterial({ color: 0xbae6fd, transparent: true, opacity: 0.78 });
+                const prHaloMat = new THREE.MeshBasicMaterial({ color: 0x6ee7b7, transparent: true, opacity: 0.34 });
+                const prMesh = new THREE.Mesh(prGeo, prMat);
+                const prWire = new THREE.LineSegments(new THREE.EdgesGeometry(prGeo), prWireMat);
+                const prHalo = new THREE.Mesh(new THREE.TorusGeometry(1.85, 0.015, 16, 90), prHaloMat);
+                prHalo.rotation.x = Math.PI * 0.42;
+                prismG.add(prMesh, prWire, prHalo);
+                root.add(prismG);
+
+                const groups = { lotus: lotusG, liquid: liquidG, silk: silkG, particles: partG, dual: dualG, prism: prismG };
+                const syncVis = () => { Object.keys(groups).forEach(k => { groups[k].visible = k === st.style; }); };
+                syncVis();
+
+                // Interactive drag-to-rotate
+                let dragging = false, lx = 0, ly = 0, tRY = 0, tRX = 0;
+                const down = (x, y) => { dragging = true; lx = x; ly = y; };
+                const move = (x, y) => {
+                    if (!dragging) return;
+                    tRY += (x - lx) * 0.008;
+                    tRX = Math.max(-0.55, Math.min(0.55, tRX + (y - ly) * 0.006));
+                    lx = x; ly = y;
+                };
+                const up = () => { dragging = false; };
+                const onMD = e => down(e.clientX, e.clientY);
+                const onMM = e => move(e.clientX, e.clientY);
+                const onTS = e => { if (e.touches[0]) down(e.touches[0].clientX, e.touches[0].clientY); };
+                const onTM = e => { if (e.touches[0]) move(e.touches[0].clientX, e.touches[0].clientY); };
+                renderer.domElement.addEventListener('mousedown', onMD);
+                window.addEventListener('mousemove', onMM);
+                window.addEventListener('mouseup', up);
+                renderer.domElement.addEventListener('touchstart', onTS, { passive: true });
+                renderer.domElement.addEventListener('touchmove', onTM, { passive: true });
+                window.addEventListener('touchend', up);
 
                 let alive = true, rafId = null, t = 0;
                 const onResize = () => {
                     const w = Math.max(1, container.clientWidth), h = Math.max(1, container.clientHeight);
                     camera.aspect = w / h;
+                    camera.position.z = w < 480 ? 6.2 : 5.1;
                     camera.updateProjectionMatrix();
                     renderer.setSize(w, h);
                 };
@@ -412,24 +485,77 @@
                 const animate = () => {
                     if (!alive) return;
                     rafId = requestAnimationFrame(animate);
-                    t += st.isSpeaking ? 0.032 : 0.014;
+                    if (document.hidden) return;
+                    t += st.isSpeaking ? 0.032 : 0.015;
                     const emo = EMOTIONS[st.emotion] || EMOTIONS.CONFUSED;
-                    mat.color.setHex(emo.c1);
-                    coreMat.color.setHex(emo.c2);
-                    const s = 1 + Math.sin(t * 2.2) * (st.isSpeaking ? 0.12 : 0.04);
-                    mesh.scale.setScalar(s);
-                    mesh.rotation.y = t * 0.35;
-                    core.scale.setScalar(0.88 + (Number(st.trust || 40) / 100) * 0.28 + (st.isSpeaking ? Math.sin(t * 4) * 0.08 : 0));
-                    ring.rotation.z = t * 0.2;
+                    const trRatio = Math.max(0, Math.min(1, Number(st.trust || 45) / 100));
+                    root.rotation.y += (tRY - root.rotation.y) * 0.1;
+                    root.rotation.x += (tRX - root.rotation.x) * 0.1;
+
+                    if (lotusG.visible) {
+                        lotusG.rotation.y = t * 0.25;
+                        petals.forEach(p => {
+                            p.mat.color.setHex(p.ring === 0 ? emo.c1 : emo.c2);
+                            const openA = (p.ring === 0 ? 0.25 : 0.55) + trRatio * 0.55;
+                            p.mesh.rotation.x = openA + Math.sin(t * 2.2 + p.idx) * (st.isSpeaking ? 0.09 : 0.03);
+                        });
+                        lotusCoreMat.color.setHex(emo.c1);
+                        lotusCore.scale.setScalar(0.85 + trRatio * 0.3 + (st.isSpeaking ? Math.sin(t * 4) * 0.12 : 0));
+                    }
+                    if (liquidG.visible) {
+                        liqMat.color.setHex(emo.c1); liqInnerMat.color.setHex(emo.c2);
+                        liqOrb.rotation.y = t * 0.35; liqOrb.rotation.x = Math.sin(t * 0.5) * 0.25;
+                        liqOrb.scale.setScalar(1 + Math.sin(t * 2.4) * (st.isSpeaking ? 0.12 : 0.04));
+                        liqCore.scale.setScalar(0.85 + trRatio * 0.28);
+                    }
+                    if (silkG.visible) {
+                        silkLines.forEach(item => {
+                            const arr = item.geo.attributes.position.array;
+                            const sy = ((item.idx / 11) - 0.5) * 1.5;
+                            const amp = st.isSpeaking ? 0.45 : 0.22;
+                            for (let j = 0; j < 60; j++) {
+                                const u = j / 59, env = Math.sin(u * Math.PI);
+                                arr[j * 3] = (u - 0.5) * 5.4;
+                                arr[j * 3 + 1] = sy * env + Math.sin(u * 6.5 - t * 2 + item.idx * 0.4) * amp * env;
+                                arr[j * 3 + 2] = Math.cos(u * 4.5 + t + item.idx * 0.3) * 0.35 * env;
+                            }
+                            item.geo.attributes.position.needsUpdate = true;
+                            item.mat.color.setHex(item.idx % 2 === 0 ? emo.c1 : emo.c2);
+                        });
+                    }
+                    if (partG.visible) {
+                        pMat.color.setHex(emo.c1); pRingMat.color.setHex(emo.c2);
+                        partG.rotation.y = t * 0.3; pRing.rotation.z = t * 0.35;
+                    }
+                    if (dualG.visible) {
+                        const sep = 1.45 - trRatio * 0.55;
+                        wOrb.position.set(-sep, Math.sin(t * 1.4) * 0.1, 0);
+                        mOrb.position.set(sep, Math.cos(t * 1.4) * 0.1, 0);
+                        wOrb.rotation.y = t * 0.4; mOrb.rotation.y = -t * 0.4;
+                        wOrb.scale.setScalar(1 + (st.isSpeaking && st.activeSpeaker !== 'mother' ? Math.sin(t * 4) * 0.12 : 0));
+                        mOrb.scale.setScalar(1 + (st.isSpeaking && st.activeSpeaker === 'mother' ? Math.sin(t * 4) * 0.12 : 0));
+                    }
+                    if (prismG.visible) {
+                        prMat.color.setHex(emo.c1); prWireMat.color.setHex(emo.c2); prHaloMat.color.setHex(emo.c1);
+                        prMesh.rotation.y = t * 0.35; prMesh.rotation.x = Math.sin(t * 0.5) * 0.2;
+                        prWire.rotation.copy(prMesh.rotation);
+                        prHalo.rotation.z = t * 0.25;
+                    }
                     renderer.render(scene, camera);
                 };
                 rafId = requestAnimationFrame(animate);
 
                 return {
-                    update(next) { Object.assign(st, next || {}); },
+                    update(next) { Object.assign(st, next || {}); syncVis(); },
                     destroy() {
                         alive = false;
                         if (rafId) cancelAnimationFrame(rafId);
+                        renderer.domElement.removeEventListener('mousedown', onMD);
+                        window.removeEventListener('mousemove', onMM);
+                        window.removeEventListener('mouseup', up);
+                        renderer.domElement.removeEventListener('touchstart', onTS);
+                        renderer.domElement.removeEventListener('touchmove', onTM);
+                        window.removeEventListener('touchend', up);
                         window.removeEventListener('resize', onResize);
                         try { if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement); renderer.dispose(); } catch (_) {}
                     }
@@ -437,11 +563,7 @@
             }
 
             return {
-                EMOTIONS,
-                RADAR_AXES,
-                HOLOGRAM_STYLES,
-                CASE_ICU_BRIEFS,
-                MICRO_DRILL_STAGES,
+                EMOTIONS, RADAR_AXES, HOLOGRAM_STYLES, CASE_ICU_BRIEFS, MICRO_DRILL_STAGES,
                 ADVISOR_GOALS: [
                     { id: 'auto', label: 'AI วิเคราะห์ให้', icon: 'Sparkles' },
                     { id: 'first', label: 'เพิ่งฝึกครั้งแรก', icon: 'HeartHandshake' },
@@ -470,7 +592,7 @@
                         { id: 'advanced_clinician', titleTH: 'Pediatric / SBAR Pro', descTH: 'ผ่านเคสเด็กหรือ SBAR', earned: hist.some(h => (h.personaId === 'pediatric' || h.personaId === 'sbar_doctor') && Number(h.score || 0) >= 75) }
                     ];
                 },
-                computeLabRecommendation: (u, goalId) => ({
+                computeLabRecommendation: (_u, goalId) => ({
                     mode: goalId === 'drill4' ? 'micro_drill' : 'roleplay_th',
                     difficulty: 'normal',
                     personaId: goalId === 'pediatric' ? 'pediatric' : goalId === 'sbar_team' ? 'sbar_doctor' : 'standard',
@@ -495,8 +617,7 @@
                 },
                 pickHardCurveball: () => null,
                 evaluateMicroDrillAnswer: (stageObj, text, triggers) => {
-                    const hitLabels = [];
-                    const missLabels = [];
+                    const hitLabels = [], missLabels = [];
                     (stageObj?.criteria || []).forEach(c => { if (c.pattern.test(String(text || ''))) hitLabels.push(c.label); else missLabels.push(c.label); });
                     const score = Math.min(100, Math.max(35, 45 + hitLabels.length * 25 - (triggers?.length || 0) * 12));
                     return { stage: stageObj?.stage || 1, score, passed: score >= 65, hitLabels, missLabels, modelAnswerTH: stageObj?.modelAnswerTH || '' };
@@ -533,11 +654,12 @@
         }
 
         // ============================================================================
-        // 2. CONFIGURATION, FIREBASE & ENGINE RESOLUTION
+        // 2. CONFIGURATION, 2-LAYER SESSION STORAGE & ENGINE RESOLUTION
         // ============================================================================
-        const CORE = window.RJCLOUD_CORE || {};
-        const SL = Object.assign({}, createBuiltinSkillLabFallback(), window.RJCLOUD_SKILLLAB || {});
+        const CORE = window['RJCLOUD_CORE'] || {};
+        const SL = Object.assign({}, createBuiltinSkillLabFallback(), window['RJCLOUD_SKILLLAB'] || {});
         const STORAGE_KEY = 'rjcloud_organ_state_v2027';
+        const SESSION_BACKUP_KEY = 'rjcloud_active_session_v2027';
         const SILENT_UNLOCK_WAV = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
 
         const BUILTIN_CONFIG = {
@@ -568,6 +690,27 @@
 
         const THEME_KEY = CONFIG.theme?.storageKey || 'rjcloud_theme';
 
+        function loadSavedLearner() {
+            const stores = [
+                { store: localStorage, key: STORAGE_KEY },
+                { store: sessionStorage, key: SESSION_BACKUP_KEY }
+            ];
+            for (const item of stores) {
+                try {
+                    const parsed = JSON.parse(item.store.getItem(item.key) || 'null');
+                    if (parsed?.user?.id) return parsed.user;
+                } catch (_) {}
+            }
+            return null;
+        }
+
+        function saveLearnerLocally(userObj) {
+            if (!userObj?.id || userObj.id === 'guest_lab') return;
+            const payload = JSON.stringify({ user: userObj, savedAt: Date.now() });
+            try { localStorage.setItem(STORAGE_KEY, payload); } catch (_) {}
+            try { sessionStorage.setItem(SESSION_BACKUP_KEY, payload); } catch (_) {}
+        }
+
         let fbApp = null, fbAuth = null, fbDb = null;
         const isCloudConfigured = Boolean(CONFIG.firebaseConfig?.apiKey && CONFIG.firebaseConfig?.projectId);
         if (isCloudConfigured) {
@@ -575,9 +718,7 @@
                 fbApp = getApps().length === 0 ? initializeApp(CONFIG.firebaseConfig) : getApp();
                 fbAuth = getAuth(fbApp);
                 fbDb = getFirestore(fbApp);
-            } catch (err) {
-                console.warn('Firebase init warning:', err);
-            }
+            } catch (err) { console.warn('Firebase init warning:', err); }
         }
 
         const MODES = [
@@ -592,7 +733,7 @@
         ];
 
         // ============================================================================
-        // 3. STUDIO-GRADE CHUNKED AI VOICE HELPERS (UNIVERSAL REGEX • ZERO BROWSER VOICE)
+        // 3. STUDIO-GRADE CHUNKED AI VOICE HELPERS (24kHz PCM WAV • ZERO BROWSER VOICE)
         // ============================================================================
         function prepareSpeechText(raw, isEn = false) {
             let s = String(raw || '')
@@ -600,17 +741,13 @@
                 .replace(/[*#_]/g, ' ')
                 .replace(/\s{2,}/g, ' ')
                 .trim();
-            if (!isEn && typeof CORE.prepareNaturalThaiSpeech === 'function') {
-                s = CORE.prepareNaturalThaiSpeech(s);
-            }
+            if (!isEn && typeof CORE.prepareNaturalThaiSpeech === 'function') s = CORE.prepareNaturalThaiSpeech(s);
             return s;
         }
 
         function pcmToWavBlobSafe(base64PCM, sampleRate = 24000) {
             try {
-                if (typeof CORE.pcm16ToWavBlob === 'function') {
-                    return CORE.pcm16ToWavBlob(base64PCM, sampleRate);
-                }
+                if (typeof CORE.pcm16ToWavBlob === 'function') return CORE.pcm16ToWavBlob(base64PCM, sampleRate);
                 const bin = window.atob(base64PCM);
                 const bytes = new Uint8Array(bin.length);
                 for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
@@ -625,14 +762,9 @@
                 v.setUint16(32, 2, true); v.setUint16(34, 16, true); ws(36, 'data'); v.setUint32(40, pcmLen, true);
                 new Uint8Array(buf, 44).set(bytes.subarray(off));
                 return new Blob([buf], { type: 'audio/wav' });
-            } catch (_) {
-                return null;
-            }
+            } catch (_) { return null; }
         }
 
-        /**
-         * แบ่งคำพูดออกเป็นช่วงประโยคธรรมชาติโดยไม่ใช้ Lookbehind Regex (รองรับ Safari / iOS / Android ทุกรุ่น 100%)
-         */
         function splitSpeechIntoNaturalChunks(rawText, isEn = false, maxChars = 185) {
             const clean = prepareSpeechText(rawText, isEn);
             if (!clean) return [];
@@ -642,30 +774,18 @@
             const chunks = [];
             let buf = '';
             pieces.forEach((p) => {
-                if ((buf + ' ' + p).trim().length <= maxChars) {
-                    buf = (buf ? `${buf} ${p}` : p).trim();
-                } else {
-                    if (buf) chunks.push(buf);
-                    buf = p.trim();
-                }
+                if ((buf + ' ' + p).trim().length <= maxChars) buf = (buf ? `${buf} ${p}` : p).trim();
+                else { if (buf) chunks.push(buf); buf = p.trim(); }
             });
             if (buf) chunks.push(buf);
             return chunks.filter(Boolean);
         }
 
-        /**
-         * โหลดไฟล์เสียง AI คุณภาพสตูดิโอ 24kHz PCM WAV (รอสูงสุด 45 วิ/รอบ • ลองใหม่อัตโนมัติ 2 รอบ)
-         * ตัดเสียงพูดเบราว์เซอร์ออก 100%
-         */
         async function fetchStudioTtsBlob({ appsScriptUrl, text, voiceName, languageCode, style, signal, cacheKey = '' }) {
             if (cacheKey && typeof CORE.getCachedAudio === 'function') {
-                try {
-                    const hit = await CORE.getCachedAudio(cacheKey);
-                    if (hit && hit.size > 0) return hit;
-                } catch (_) {}
+                try { const hit = await CORE.getCachedAudio(cacheKey); if (hit && hit.size > 0) return hit; } catch (_) {}
             }
             if (!appsScriptUrl || !navigator.onLine) return null;
-
             for (let attempt = 0; attempt < 2; attempt++) {
                 if (signal && signal.aborted) return null;
                 const ctrl = new AbortController();
@@ -674,32 +794,19 @@
                 const tm = setTimeout(() => ctrl.abort(), 45000);
                 try {
                     const rawRes = await fetch(appsScriptUrl, {
-                        method: 'POST',
-                        redirect: 'follow',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify({
-                            action: 'callGeminiTTS',
-                            text,
-                            voiceName: voiceName || 'Sulafat',
-                            languageCode: languageCode || 'th-TH',
-                            style
-                        }),
+                        method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ action: 'callGeminiTTS', text, voiceName: voiceName || 'Sulafat', languageCode: languageCode || 'th-TH', style }),
                         signal: ctrl.signal
                     });
                     clearTimeout(tm);
                     if (signal) signal.removeEventListener('abort', onExtAbort);
                     if (signal && signal.aborted) return null;
-
                     const res = JSON.parse((await rawRes.text()) || '{}');
-                    if (res && res.status === 'success' && res.inlineData && res.inlineData.data) {
-                        const mime = String(res.inlineData.mimeType || '');
-                        const matchRate = mime.match(/rate=(\d+)/);
-                        const rate = parseInt(matchRate ? matchRate[1] : '24000', 10);
-                        const blob = pcmToWavBlobSafe(res.inlineData.data, rate);
+                    if (res?.status === 'success' && res.inlineData?.data) {
+                        const matchRate = String(res.inlineData.mimeType || '').match(/rate=(\d+)/);
+                        const blob = pcmToWavBlobSafe(res.inlineData.data, parseInt(matchRate ? matchRate[1] : '24000', 10));
                         if (blob && blob.size > 0) {
-                            if (cacheKey && typeof CORE.setCachedAudio === 'function') {
-                                CORE.setCachedAudio(cacheKey, blob).catch(() => {});
-                            }
+                            if (cacheKey && typeof CORE.setCachedAudio === 'function') CORE.setCachedAudio(cacheKey, blob).catch(() => {});
                             return blob;
                         }
                     }
@@ -707,9 +814,7 @@
                     clearTimeout(tm);
                     if (signal) signal.removeEventListener('abort', onExtAbort);
                 }
-                if (attempt === 0 && !(signal && signal.aborted)) {
-                    await new Promise(r => setTimeout(r, 1100));
-                }
+                if (attempt === 0 && !(signal && signal.aborted)) await new Promise(r => setTimeout(r, 1100));
             }
             return null;
         }
@@ -720,35 +825,26 @@
             const tm = setTimeout(() => ctrl.abort(), timeoutMs);
             try {
                 const rawRes = await fetch(appsScriptUrl, {
-                    method: 'POST',
-                    redirect: 'follow',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({ action: 'callGemini', prompt, systemInstruction }),
                     signal: ctrl.signal
                 });
                 clearTimeout(tm);
                 const res = JSON.parse((await rawRes.text()) || '{}');
-                return res && res.status === 'success' && res.text ? res.text : null;
-            } catch (_) {
-                clearTimeout(tm);
-                return null;
-            }
+                return res?.status === 'success' && res.text ? res.text : null;
+            } catch (_) { clearTimeout(tm); return null; }
         }
 
         function copyTextSafe(text) {
             try {
                 const ta = document.createElement('textarea');
-                ta.value = String(text || '');
-                ta.setAttribute('readonly', '');
-                ta.style.position = 'fixed';
-                ta.style.opacity = '0';
-                document.body.appendChild(ta);
-                ta.select();
+                ta.value = String(text || ''); ta.setAttribute('readonly', '');
+                ta.style.position = 'fixed'; ta.style.opacity = '0';
+                document.body.appendChild(ta); ta.select();
                 const ok = document.execCommand('copy');
                 document.body.removeChild(ta);
-                if (ok) return true;
-            } catch (_) {}
-            return false;
+                return ok;
+            } catch (_) { return false; }
         }
 
         function resolveRegionId(department = '') {
@@ -758,7 +854,7 @@
                 const num = d.replace(/[^0-9]/g, '');
                 if (num && Number(num) >= 1 && Number(num) <= 12) return `R${num}`;
             }
-            if (['กรมการแพทย์', 'สำนักการแพทย์ กรุงเทพฯ', 'สำนักอนามัย กรุงเทพฯ', 'กรุงเทพมหานคร'].some(k => d.includes(k))) return 'BKK';
+            if (['กรมการแพทย์', 'สำนักการแพทย์ กรุงเทพฯ', 'กรุงเทพมหานคร', 'ราชวิถี'].some(k => d.includes(k))) return 'BKK';
             return 'OTHER';
         }
 
@@ -845,7 +941,7 @@
         }
 
         // ============================================================================
-        // 4. UI PRIMITIVES & 5-AXIS RADAR SVG
+        // 4. UI PRIMITIVES, LIVE LOBBY 3D HOLOGRAM PREVIEW & 5-AXIS RADAR SVG
         // ============================================================================
         class SkillLabErrorBoundary extends React.Component {
             constructor(props) { super(props); this.state = { hasError: false, err: null }; }
@@ -878,6 +974,149 @@
                     <Icon name={isDark ? 'Sun' : 'Moon'} size={15} className={isDark ? 'text-amber-300' : 'text-indigo-600'} />
                     <span className="hidden sm:inline">{isDark ? 'โหมดสว่าง' : 'โหมดมืด'}</span>
                 </button>
+            );
+        }
+
+        function StepVoiceButton({ activeKey, targetKey, status, onToggle, compact = false }) {
+            const isThisActive = activeKey === targetKey && status !== 'idle';
+            const isLoading = isThisActive && status === 'loading';
+            return (
+                <button
+                    type="button"
+                    onClick={onToggle}
+                    aria-label={isThisActive ? 'หยุดเสียง AI แนะนำขั้นตอน' : 'ฟังเสียง AI แนะนำขั้นตอนย้อนหลัง'}
+                    title={isThisActive ? 'หยุดเสียง AI แนะนำ' : 'ฟังเสียง AI แนะนำขั้นตอนนี้'}
+                    className={`px-2.5 sm:px-3 py-2 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 transition-all shrink-0 ${
+                        isThisActive
+                            ? (isLoading
+                                ? 'bg-prism-500/25 border border-prism-400/55 text-prism-adaptive'
+                                : 'bg-rose-600 text-white shadow-md')
+                            : 'spatial-soft text-prism-adaptive hover:border-prism-400/60'
+                    }`}
+                >
+                    {isThisActive ? (
+                        <span className="rjc-wave-eq" style={{ height: '13px' }}><span /><span /><span /></span>
+                    ) : (
+                        <Icon name="Volume2" size={15} />
+                    )}
+                    <span className={compact ? 'hidden sm:inline' : ''}>
+                        {isLoading ? 'รอเสียง AI' : isThisActive ? 'หยุดเสียง' : 'ฟังแนะนำ'}
+                    </span>
+                </button>
+            );
+        }
+
+        /**
+         * เวทีตัวอย่าง Hologram 3 มิติสดในหน้า Lobby (เลือกดูครบ 6 สไตล์ + ลากหมุน + ทดลองเปลี่ยนอารมณ์ได้ทันที)
+         */
+        function LobbyHologramPreview({ holoStyle, stylesList, onSelectStyle }) {
+            const mountRef = useRef(null);
+            const ctrlRef = useRef(null);
+            const [previewEmotion, setPreviewEmotion] = useState('CONFUSED');
+            const [previewSpeaking, setPreviewSpeaking] = useState(true);
+
+            const activeMeta = useMemo(
+                () => (stylesList || []).find(s => s.id === holoStyle) || { badge: '01', nameTH: 'ดอกบัวแสง', descTH: 'ลากเพื่อหมุนดูรอบทิศทาง' },
+                [stylesList, holoStyle]
+            );
+
+            useEffect(() => {
+                if (!mountRef.current || typeof SL.mountHologram3D !== 'function') return;
+                const ctrl = SL.mountHologram3D(mountRef.current, {
+                    style: holoStyle,
+                    emotion: previewEmotion,
+                    trust: previewEmotion === 'CALM' ? 92 : previewEmotion === 'ANGRY' ? 20 : 48,
+                    isSpeaking: previewSpeaking,
+                    activeSpeaker: 'wife'
+                });
+                ctrlRef.current = ctrl;
+                return () => {
+                    try { ctrl.destroy(); } catch (_) {}
+                    ctrlRef.current = null;
+                };
+            }, []);
+
+            useEffect(() => {
+                if (ctrlRef.current) {
+                    ctrlRef.current.update({
+                        style: holoStyle,
+                        emotion: previewEmotion,
+                        trust: previewEmotion === 'CALM' ? 92 : previewEmotion === 'ANGRY' ? 20 : 48,
+                        isSpeaking: previewSpeaking,
+                        activeSpeaker: 'wife'
+                    });
+                }
+            }, [holoStyle, previewEmotion, previewSpeaking]);
+
+            const previewMoods = [
+                { id: 'CONFUSED', label: 'สับสน', dot: '#38bdf8' },
+                { id: 'ANGRY', label: 'ตึงเครียด', dot: '#fb923c' },
+                { id: 'CALM', label: 'สงบเปิดใจ', dot: '#34d399' }
+            ];
+
+            return (
+                <div className="space-y-2.5">
+                    <div className="holo-stage-bg relative w-full h-56 sm:h-64 rounded-2xl overflow-hidden border border-prism-400/35 shadow-inner">
+                        <div ref={mountRef} className="absolute inset-0 cursor-grab active:cursor-grabbing" style={{ touchAction: 'none' }} />
+
+                        {/* ป้ายชื่อสไตล์มุมซ้ายบน */}
+                        <div className="absolute top-2.5 left-2.5 z-10 pointer-events-none flex items-center gap-1.5 holo-stage-pill px-2.5 py-1 rounded-full text-[11px] text-white">
+                            <span className="font-mono font-extrabold text-cyan-300">{activeMeta.badge}</span>
+                            <span className="font-display font-bold">{activeMeta.nameTH}</span>
+                        </div>
+
+                        {/* คำแนะนำลากหมุนมุมขวาบน */}
+                        <button
+                            type="button"
+                            onClick={() => setPreviewSpeaking(v => !v)}
+                            className={`absolute top-2.5 right-2.5 z-10 holo-stage-pill px-2.5 py-1 rounded-full text-[10px] font-bold transition-all ${previewSpeaking ? 'text-emerald-300 border-emerald-400/45' : 'text-sky-200'}`}
+                        >
+                            {previewSpeaking ? '● คลื่นเสียง: เปิด' : '○ คลื่นเสียง: นิ่ง'}
+                        </button>
+
+                        {/* แถบเลือกทดลองอารมณ์ด้านล่าง */}
+                        <div className="absolute bottom-2.5 inset-x-2.5 z-10 flex flex-wrap items-center justify-between gap-1.5">
+                            <span className="holo-stage-pill px-2.5 py-1 rounded-full text-[10px] text-sky-100/90 pointer-events-none">
+                                ลากบนภาพเพื่อหมุน 3 มิติ
+                            </span>
+                            <div className="flex items-center gap-1">
+                                {previewMoods.map(m => (
+                                    <button
+                                        key={m.id}
+                                        type="button"
+                                        onClick={() => setPreviewEmotion(m.id)}
+                                        className={`px-2.5 py-1 rounded-full text-[10px] font-bold inline-flex items-center gap-1 transition-all ${
+                                            previewEmotion === m.id
+                                                ? 'bg-white text-void-950 font-extrabold shadow'
+                                                : 'holo-stage-pill text-sky-100 hover:bg-white/15'
+                                        }`}
+                                    >
+                                        <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: m.dot }} />
+                                        {m.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* ปุ่มเลือกทั้ง 6 สไตล์ */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+                        {(stylesList || []).map(hs => (
+                            <button
+                                key={hs.id}
+                                type="button"
+                                onClick={() => onSelectStyle(hs.id)}
+                                className={`p-2 rounded-xl border text-left text-[11px] font-bold transition-all ${
+                                    holoStyle === hs.id
+                                        ? 'bg-prism-500/25 border-prism-400 text-primary-adaptive shadow-sm'
+                                        : 'spatial-soft text-secondary-adaptive'
+                                }`}
+                            >
+                                <span className="font-mono text-prism-adaptive mr-1">{hs.badge}</span>{hs.nameTH}
+                            </button>
+                        ))}
+                    </div>
+                </div>
             );
         }
 
@@ -981,16 +1220,13 @@
             const DRILL_STAGES = SL.MICRO_DRILL_STAGES || [];
             const inAppInfo = useMemo(() => (typeof SL.detectInAppBrowser === 'function' ? SL.detectInAppBrowser() : { isInApp: false }), []);
 
-            // User & Cloud Settings
+            // User (2-Layer Session Recovery) & Cloud Settings
             const [user, setUser] = useState(() => {
                 if (isAdminPreview) {
                     return { id: '4511128901', license: '4511128901', name: 'พว.กัญญารัตน์ วัฒนากูล', department: 'กรมการแพทย์', hospital: 'รพ.ราชวิถี', skillLabHistory: [] };
                 }
-                try {
-                    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
-                    if (saved && saved.user && saved.user.id) return saved.user;
-                } catch (_) {}
-                return { id: 'guest_lab', license: 'GUEST', name: 'ผู้เรียน', department: 'กรมการแพทย์', hospital: 'รพ.ราชวิถี', skillLabHistory: [] };
+                const saved = loadSavedLearner();
+                return saved?.id ? saved : { id: 'guest_lab', license: 'GUEST', name: 'ผู้เรียน', department: 'กรมการแพทย์', hospital: 'รพ.ราชวิถี', skillLabHistory: [] };
             });
             const [appsScriptUrl, setAppsScriptUrl] = useState(CONFIG.appsScriptUrl || '');
             const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
@@ -1003,11 +1239,10 @@
             const [holoStyle, setHoloStyle] = useState('lotus');
             const [ambientOn, setAmbientOn] = useState(false);
 
-            // AI Lab Advisor v3
+            // AI Lab Advisor & Step Voice Guide (Audio-Only, No Subtitles)
             const [advisorGoalId, setAdvisorGoalId] = useState('auto');
             const [advisorExpanded, setAdvisorExpanded] = useState(true);
-            const [advisorVoicePhase, setAdvisorVoicePhase] = useState('idle');
-            const [advisorVoiceMeta, setAdvisorVoiceMeta] = useState({ chunkIdx: 0, totalChunks: 0, note: '' });
+            const [guideVoiceState, setGuideVoiceState] = useState({ activeKey: '', status: 'idle' });
             const [advisorQuestion, setAdvisorQuestion] = useState('');
             const [advisorReply, setAdvisorReply] = useState('');
             const [advisorAsking, setAdvisorAsking] = useState(false);
@@ -1028,7 +1263,7 @@
             const [isThinking, setIsThinking] = useState(false);
             const [thinkingCue, setThinkingCue] = useState('');
             const [isSpeaking, setIsSpeaking] = useState(false);
-            const [voiceStatus, setVoiceStatus] = useState({ phase: 'idle', chunkIdx: 0, totalChunks: 0, note: '' });
+            const [voiceStatus, setVoiceStatus] = useState({ phase: 'idle', chunkIdx: 0, totalChunks: 0 });
             const [voiceEnabled, setVoiceEnabled] = useState(true);
             const [audioBlockedRetry, setAudioBlockedRetry] = useState(null);
 
@@ -1061,7 +1296,6 @@
             const [preEff, setPreEff] = useState({ explainBrainDeath: 3, handleEmotion: 3, gentleApproach: 3 });
             const [postEff, setPostEff] = useState({ explainBrainDeath: 4, handleEmotion: 4, gentleApproach: 4 });
             const [postEffSaved, setPostEffSaved] = useState(false);
-
             const [toast, setToast] = useState({ visible: false, text: '', type: 'success' });
 
             // Refs
@@ -1069,11 +1303,12 @@
             const holoControllerRef = useRef(null);
             const sharedAudioRef = useRef(null);
             const activeAudioUrlRef = useRef(null);
-            const advisorAudioUrlRef = useRef(null);
+            const guideAudioUrlRef = useRef(null);
             const voiceSessionRef = useRef(0);
-            const advisorSessionRef = useRef(0);
+            const guideSessionRef = useRef(0);
             const voiceAbortRef = useRef(null);
-            const advisorAbortRef = useRef(null);
+            const guideAbortRef = useRef(null);
+            const autoPlayedPhasesRef = useRef(new Set());
             const silenceAnchorRef = useRef(0);
             const silenceCountedRef = useRef(false);
             const recognitionRef = useRef(null);
@@ -1086,6 +1321,12 @@
                 setToast({ visible: true, text: String(text), type });
                 setTimeout(() => setToast(p => ({ ...p, visible: false })), 3300);
             }, []);
+
+            // ลิงก์กลับห้องเรียนหลัก (แก้ปัญหาเด้งกลับหน้าต้นไม้ 100%)
+            const dashboardReturnHref = isAdminPreview ? './index.html?admin_preview=dashboard' : './index.html?return=dashboard';
+            const persistLearnerBeforeReturn = useCallback(() => {
+                if (!isAdminPreview && user?.id && user.id !== 'guest_lab') saveLearnerLocally(user);
+            }, [isAdminPreview, user]);
 
             const selectedMode = useMemo(() => MODES.find(m => m.id === modeId) || MODES[0], [modeId]);
             const activePersona = useMemo(() => PERSONAS.find(p => p.id === personaId) || PERSONAS[0] || {}, [PERSONAS, personaId]);
@@ -1118,10 +1359,7 @@
                 const onOff = () => setIsOnline(false);
                 window.addEventListener('online', onOn);
                 window.addEventListener('offline', onOff);
-                return () => {
-                    window.removeEventListener('online', onOn);
-                    window.removeEventListener('offline', onOff);
-                };
+                return () => { window.removeEventListener('online', onOn); window.removeEventListener('offline', onOff); };
             }, []);
 
             // Firebase Auth + Settings Sync
@@ -1137,9 +1375,7 @@
                     }
                     if (unsubSettings) unsubSettings();
                     unsubSettings = onSnapshot(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_config', 'settings'), (snap) => {
-                        if (snap.exists() && snap.data()?.appsScriptUrl) {
-                            setAppsScriptUrl(snap.data().appsScriptUrl);
-                        }
+                        if (snap.exists() && snap.data()?.appsScriptUrl) setAppsScriptUrl(snap.data().appsScriptUrl);
                     }, () => {});
                 });
                 return () => { active = false; unsubAuth(); if (unsubSettings) unsubSettings(); };
@@ -1152,15 +1388,11 @@
                 return () => clearTimeout(t);
             }, [calmSeconds]);
 
-            // Mount Three.js 3D Hologram in Phase 3
+            // Mount Three.js 3D Hologram in Phase 3 (Consultation Room)
             useEffect(() => {
                 if (phase !== 'negotiating' || !stageContainerRef.current || typeof SL.mountHologram3D !== 'function') return;
                 const ctrl = SL.mountHologram3D(stageContainerRef.current, {
-                    style: holoStyle,
-                    emotion: currentEmotion,
-                    trust: trustScore,
-                    isSpeaking,
-                    activeSpeaker: activeSpeakerKey
+                    style: holoStyle, emotion: currentEmotion, trust: trustScore, isSpeaking, activeSpeaker: activeSpeakerKey
                 });
                 holoControllerRef.current = ctrl;
                 return () => {
@@ -1172,11 +1404,7 @@
             useEffect(() => {
                 if (holoControllerRef.current) {
                     holoControllerRef.current.update({
-                        style: holoStyle,
-                        emotion: currentEmotion,
-                        trust: trustScore,
-                        isSpeaking,
-                        activeSpeaker: activeSpeakerKey
+                        style: holoStyle, emotion: currentEmotion, trust: trustScore, isSpeaking, activeSpeaker: activeSpeakerKey
                     });
                 }
             }, [holoStyle, currentEmotion, trustScore, isSpeaking, activeSpeakerKey]);
@@ -1191,208 +1419,164 @@
             const recordedClipsRef = useRef([]);
             useEffect(() => { recordedClipsRef.current = recordedVoiceClips; }, [recordedVoiceClips]);
             useEffect(() => () => {
-                recordedClipsRef.current.forEach(c => {
-                    if (c && c.audioUrl) { try { URL.revokeObjectURL(c.audioUrl); } catch (_) {} }
-                });
+                recordedClipsRef.current.forEach(c => { if (c?.audioUrl) { try { URL.revokeObjectURL(c.audioUrl); } catch (_) {} } });
             }, []);
 
             // ============================================================================
-            // 6. STUDIO-GRADE CHUNKED AI VOICE CONTROLLERS (NO BROWSER VOICE!)
+            // 6. STUDIO 24kHz AI VOICE CONTROLLERS (AUTO-PLAY + REPLAY • NO SUBTITLES)
             // ============================================================================
             const unlockMobileAudio = useCallback(() => {
                 try {
                     if (!sharedAudioRef.current) {
-                        const a = new Audio();
-                        a.playsInline = true;
-                        a.setAttribute('playsinline', '');
-                        a.preload = 'auto';
+                        const a = new Audio(); a.playsInline = true; a.setAttribute('playsinline', ''); a.preload = 'auto';
                         sharedAudioRef.current = a;
                     }
                     const a = sharedAudioRef.current;
                     if (a.paused && !a.src) {
-                        a.muted = true;
-                        a.src = SILENT_UNLOCK_WAV;
+                        a.muted = true; a.src = SILENT_UNLOCK_WAV;
                         const p = a.play();
-                        if (p && typeof p.then === 'function') {
-                            p.then(() => { try { a.pause(); a.currentTime = 0; } catch (_) {} a.muted = false; })
-                             .catch(() => { a.muted = false; });
-                        } else {
-                            a.muted = false;
-                        }
+                        if (p && typeof p.then === 'function') p.then(() => { try { a.pause(); a.currentTime = 0; } catch (_) {} a.muted = false; }).catch(() => { a.muted = false; });
+                        else a.muted = false;
                     }
                 } catch (_) {}
             }, []);
 
             const stopAiVoice = useCallback(() => {
                 voiceSessionRef.current += 1;
-                if (voiceAbortRef.current) {
-                    try { voiceAbortRef.current.abort(); } catch (_) {}
-                    voiceAbortRef.current = null;
-                }
+                if (voiceAbortRef.current) { try { voiceAbortRef.current.abort(); } catch (_) {} voiceAbortRef.current = null; }
                 setAudioBlockedRetry(null);
                 if (sharedAudioRef.current) {
-                    try {
-                        sharedAudioRef.current.onended = null;
-                        sharedAudioRef.current.onerror = null;
-                        sharedAudioRef.current.pause();
-                    } catch (_) {}
+                    try { sharedAudioRef.current.onended = null; sharedAudioRef.current.onerror = null; sharedAudioRef.current.pause(); } catch (_) {}
                 }
-                if (activeAudioUrlRef.current) {
-                    try { URL.revokeObjectURL(activeAudioUrlRef.current); } catch (_) {}
-                    activeAudioUrlRef.current = null;
-                }
-                if ('speechSynthesis' in window) {
-                    try { window.speechSynthesis.cancel(); } catch (_) {}
-                }
+                if (activeAudioUrlRef.current) { try { URL.revokeObjectURL(activeAudioUrlRef.current); } catch (_) {} activeAudioUrlRef.current = null; }
+                if ('speechSynthesis' in window) { try { window.speechSynthesis.cancel(); } catch (_) {} }
                 setIsSpeaking(false);
-                setVoiceStatus({ phase: 'idle', chunkIdx: 0, totalChunks: 0, note: '' });
+                setVoiceStatus({ phase: 'idle', chunkIdx: 0, totalChunks: 0 });
             }, []);
 
-            const stopAdvisorVoice = useCallback(() => {
-                advisorSessionRef.current += 1;
-                if (advisorAbortRef.current) {
-                    try { advisorAbortRef.current.abort(); } catch (_) {}
-                    advisorAbortRef.current = null;
-                }
+            const stopGuideVoice = useCallback(() => {
+                guideSessionRef.current += 1;
+                if (guideAbortRef.current) { try { guideAbortRef.current.abort(); } catch (_) {} guideAbortRef.current = null; }
                 if (sharedAudioRef.current) {
-                    try {
-                        sharedAudioRef.current.onended = null;
-                        sharedAudioRef.current.onerror = null;
-                        sharedAudioRef.current.pause();
-                    } catch (_) {}
+                    try { sharedAudioRef.current.onended = null; sharedAudioRef.current.onerror = null; sharedAudioRef.current.pause(); } catch (_) {}
                 }
-                if (advisorAudioUrlRef.current) {
-                    try { URL.revokeObjectURL(advisorAudioUrlRef.current); } catch (_) {}
-                    advisorAudioUrlRef.current = null;
-                }
-                if ('speechSynthesis' in window) {
-                    try { window.speechSynthesis.cancel(); } catch (_) {}
-                }
-                setAdvisorVoicePhase('idle');
-                setAdvisorVoiceMeta({ chunkIdx: 0, totalChunks: 0, note: '' });
+                if (guideAudioUrlRef.current) { try { URL.revokeObjectURL(guideAudioUrlRef.current); } catch (_) {} guideAudioUrlRef.current = null; }
+                if ('speechSynthesis' in window) { try { window.speechSynthesis.cancel(); } catch (_) {} }
+                setGuideVoiceState({ activeKey: '', status: 'idle' });
             }, []);
 
-            useEffect(() => () => { stopAiVoice(); stopAdvisorVoice(); }, [stopAiVoice, stopAdvisorVoice]);
+            useEffect(() => () => { stopAiVoice(); stopGuideVoice(); }, [stopAiVoice, stopGuideVoice]);
 
-            const handleSpeakAdvisor = useCallback(async () => {
-                if (advisorVoicePhase !== 'idle') {
-                    stopAdvisorVoice();
+            const playGuideVoice = useCallback(async (key, rawText, cacheKeyBase = '', options = {}) => {
+                const { silentFail = false } = options || {};
+                if (guideVoiceState.activeKey === key && guideVoiceState.status !== 'idle') {
+                    stopGuideVoice();
                     return;
                 }
                 unlockMobileAudio();
                 stopAiVoice();
-                stopAdvisorVoice();
+                stopGuideVoice();
 
-                const sid = advisorSessionRef.current;
-                const chunks = splitSpeechIntoNaturalChunks(advisorReply || activeRec.speech, false, 185);
+                const sid = guideSessionRef.current;
+                const chunks = splitSpeechIntoNaturalChunks(rawText, false, 185);
                 if (chunks.length === 0) return;
 
                 const ctrl = new AbortController();
-                advisorAbortRef.current = ctrl;
-
+                guideAbortRef.current = ctrl;
                 if (!sharedAudioRef.current) {
-                    const a = new Audio();
-                    a.playsInline = true;
-                    a.setAttribute('playsinline', '');
+                    const a = new Audio(); a.playsInline = true; a.setAttribute('playsinline', '');
                     sharedAudioRef.current = a;
                 }
+                const style = 'พูดภาษาไทยด้วยน้ำเสียงผู้หญิงที่อบอุ่น นุ่มนวล คมชัดระดับสตูดิโอ เป็นมิตรเหมือนอาจารย์ผู้ช่วยดูแลผู้เรียน';
 
-                const style = 'พูดภาษาไทยด้วยน้ำเสียงผู้หญิงที่อบอุ่น นุ่มนวล คมชัดระดับสตูดิโอ เป็นมิตรเหมือนอาจารย์ที่ปรึกษาแนะนำการฝึกสื่อสาร';
-                const baseCacheKey = advisorReply ? '' : `lab_adv_hq_${advisorGoalId}`;
-
-                setAdvisorVoicePhase('loading');
-                setAdvisorVoiceMeta({
-                    chunkIdx: 1,
-                    totalChunks: chunks.length,
-                    note: 'กำลังเตรียมเสียง AI คุณภาพสตูดิโอ (รอจน AI พร้อม)...'
-                });
-
+                setGuideVoiceState({ activeKey: key, status: 'loading' });
                 let currentPromise = fetchStudioTtsBlob({
-                    appsScriptUrl,
-                    text: chunks[0],
-                    voiceName: 'Sulafat',
-                    languageCode: 'th-TH',
-                    style,
-                    signal: ctrl.signal,
-                    cacheKey: baseCacheKey ? `${baseCacheKey}_c0` : ''
+                    appsScriptUrl, text: chunks[0], voiceName: 'Sulafat', languageCode: 'th-TH', style,
+                    signal: ctrl.signal, cacheKey: cacheKeyBase ? `${cacheKeyBase}_c0` : ''
                 });
                 let playedAny = false;
 
                 for (let i = 0; i < chunks.length; i++) {
-                    if (advisorSessionRef.current !== sid || ctrl.signal.aborted) return;
-
-                    setAdvisorVoicePhase('loading');
-                    setAdvisorVoiceMeta({
-                        chunkIdx: i + 1,
-                        totalChunks: chunks.length,
-                        note: i === 0
-                            ? 'กำลังรอเสียง AI คุณภาพสตูดิโอ (ไม่ใช้เสียงเบราว์เซอร์แทรก)...'
-                            : `กำลังเตรียมเสียง AI ช่วงที่ ${i + 1}/${chunks.length}...`
-                    });
-
+                    if (guideSessionRef.current !== sid || ctrl.signal.aborted) return;
+                    setGuideVoiceState({ activeKey: key, status: 'loading' });
                     const blob = await currentPromise;
-                    if (advisorSessionRef.current !== sid || ctrl.signal.aborted) return;
+                    if (guideSessionRef.current !== sid || ctrl.signal.aborted) return;
 
-                    if (i + 1 < chunks.length) {
-                        currentPromise = fetchStudioTtsBlob({
-                            appsScriptUrl,
-                            text: chunks[i + 1],
-                            voiceName: 'Sulafat',
-                            languageCode: 'th-TH',
-                            style,
-                            signal: ctrl.signal,
-                            cacheKey: baseCacheKey ? `${baseCacheKey}_c${i + 1}` : ''
-                        });
-                    } else {
-                        currentPromise = null;
-                    }
+                    currentPromise = (i + 1 < chunks.length)
+                        ? fetchStudioTtsBlob({
+                            appsScriptUrl, text: chunks[i + 1], voiceName: 'Sulafat', languageCode: 'th-TH', style,
+                            signal: ctrl.signal, cacheKey: cacheKeyBase ? `${cacheKeyBase}_c${i + 1}` : ''
+                        })
+                        : null;
 
                     if (!blob || blob.size === 0) {
-                        if (!playedAny) {
-                            showToast(
-                                navigator.onLine
-                                    ? 'เซิร์ฟเวอร์เสียง AI กำลังใช้งานหนาแน่น กรุณากดฟังใหม่อีกครั้งค่ะ (ไม่ใช้เสียงเบราว์เซอร์แทรก)'
-                                    : 'ขณะนี้ออฟไลน์และยังไม่มีไฟล์เสียง AI แคชไว้ในเครื่องค่ะ',
-                                'info'
-                            );
+                        if (!playedAny && !silentFail) {
+                            showToast(navigator.onLine ? 'เซิร์ฟเวอร์เสียง AI กำลังใช้งานหนาแน่น กรุณากดฟังใหม่อีกครั้งค่ะ' : 'ขณะนี้ออฟไลน์และยังไม่มีไฟล์เสียง AI แคชไว้ในเครื่องค่ะ', 'info');
                         }
                         break;
                     }
-
                     playedAny = true;
-                    setAdvisorVoicePhase('speaking');
-                    setAdvisorVoiceMeta({
-                        chunkIdx: i + 1,
-                        totalChunks: chunks.length,
-                        note: chunks.length > 1
-                            ? `กำลังแนะนำด้วยเสียง AI สตูดิโอ (ช่วงที่ ${i + 1}/${chunks.length}) • โหลดช่วงถัดไปล่วงหน้าแล้ว`
-                            : 'กำลังแนะนำด้วยเสียง AI คุณภาพสตูดิโอ'
-                    });
-
-                    if (advisorAudioUrlRef.current) {
-                        try { URL.revokeObjectURL(advisorAudioUrlRef.current); } catch (_) {}
-                    }
+                    setGuideVoiceState({ activeKey: key, status: 'speaking' });
+                    if (guideAudioUrlRef.current) { try { URL.revokeObjectURL(guideAudioUrlRef.current); } catch (_) {} }
                     const url = URL.createObjectURL(blob);
-                    advisorAudioUrlRef.current = url;
+                    guideAudioUrlRef.current = url;
 
                     const ok = await new Promise((resolve) => {
                         const a = sharedAudioRef.current;
-                        a.muted = false;
-                        a.src = url;
+                        a.muted = false; a.src = url;
                         a.onended = () => resolve(true);
                         a.onerror = () => resolve(false);
                         try { a.load(); } catch (_) {}
                         const p = a.play();
                         if (p && typeof p.catch === 'function') p.catch(() => resolve(false));
                     });
-
-                    if (!ok || advisorSessionRef.current !== sid) break;
+                    if (!ok || guideSessionRef.current !== sid) break;
                 }
+                if (guideSessionRef.current === sid) stopGuideVoice();
+            }, [guideVoiceState, stopGuideVoice, unlockMobileAudio, stopAiVoice, appsScriptUrl, showToast]);
 
-                if (advisorSessionRef.current === sid) {
-                    stopAdvisorVoice();
+            // เสียง AI แนะนำอัตโนมัติ + ปุ่มฟังย้อนหลังครบทุกขั้นตอนใน AI Skill Lab (Lobby, Briefing, Result)
+            const phaseVoiceGuide = useMemo(() => {
+                if (phase === 'lobby') {
+                    return {
+                        key: 'skilllab_guide_lobby',
+                        text: 'ยินดีต้อนรับสู่ห้องฝึกสื่อสารสามมิติ เอไอสกิลแล็บ ค่ะ ท่านสามารถทดลองหมุนดูตัวอย่างโฮโลแกรมทั้งหกสไตล์ เลือกรูปแบบการฝึก และเลือกสถานการณ์คลินิกที่ต้องการ แล้วกดปุ่มเปิดแฟ้มส่งเวรด้านล่างได้เลยค่ะ'
+                    };
                 }
-            }, [advisorVoicePhase, stopAdvisorVoice, unlockMobileAudio, stopAiVoice, advisorReply, activeRec.speech, advisorGoalId, appsScriptUrl, showToast]);
+                if (phase === 'briefing') {
+                    return {
+                        key: 'skilllab_guide_briefing',
+                        text: 'ขั้นตอนอ่านแฟ้มส่งเวรไอซียูค่ะ กรุณาอ่านข้อมูลผู้ป่วย ประเมินระดับความมั่นใจก่อนฝึกทั้งสามข้อ จากนั้นกดเคาะประตูเพื่อเข้าห้องให้คำปรึกษาค่ะ'
+                    };
+                }
+                if (phase === 'result') {
+                    return {
+                        key: 'skilllab_guide_result',
+                        text: 'เสร็จสิ้นการฝึกสื่อสารแล้วค่ะ สามารถดูคะแนนเรดาร์ห้าแกน อ่านประโยคทองและจุดที่ควรเกลา ฟังเสียงตัวเองย้อนหลัง และบันทึกความมั่นใจหลังฝึกเพื่อกลับสู่ห้องเรียนหลักได้เลยค่ะ'
+                    };
+                }
+                return null;
+            }, [phase]);
+
+            useEffect(() => {
+                if (!phaseVoiceGuide || isAdminPreview) return;
+                if (autoPlayedPhasesRef.current.has(phaseVoiceGuide.key)) return;
+                autoPlayedPhasesRef.current.add(phaseVoiceGuide.key);
+                const tm = setTimeout(() => {
+                    playGuideVoice(phaseVoiceGuide.key, phaseVoiceGuide.text, phaseVoiceGuide.key, { silentFail: true });
+                }, 480);
+                return () => clearTimeout(tm);
+            }, [phaseVoiceGuide, isAdminPreview, playGuideVoice]);
+
+            const handleReplayPhaseGuide = useCallback(() => {
+                if (!phaseVoiceGuide) return;
+                playGuideVoice(phaseVoiceGuide.key, phaseVoiceGuide.text, phaseVoiceGuide.key, { silentFail: false });
+            }, [phaseVoiceGuide, playGuideVoice]);
+
+            const handleSpeakAdvisor = useCallback(() => {
+                const text = advisorReply || activeRec.speech;
+                playGuideVoice('lab_advisor_voice', text, advisorReply ? '' : `lab_adv_hq_${advisorGoalId}`, { silentFail: false });
+            }, [advisorReply, activeRec.speech, advisorGoalId, playGuideVoice]);
 
             const speakRelativeSegments = useCallback(async (rawText, emoKey, targetPersonaId) => {
                 if (!voiceEnabled) {
@@ -1400,6 +1584,7 @@
                     silenceCountedRef.current = false;
                     return;
                 }
+                stopGuideVoice();
                 stopAiVoice();
                 const sid = voiceSessionRef.current;
                 const rawSegments = SL.splitDualSpeakerSegments(rawText, targetPersonaId, isEn ? 'en' : 'th');
@@ -1407,14 +1592,8 @@
 
                 const playQueue = [];
                 rawSegments.forEach((seg) => {
-                    const subChunks = splitSpeechIntoNaturalChunks(seg.text, isEn, 185);
-                    subChunks.forEach((chunkText) => {
-                        playQueue.push({
-                            speaker: seg.speaker,
-                            label: seg.label,
-                            voiceName: seg.voiceName || 'Sulafat',
-                            text: chunkText
-                        });
+                    splitSpeechIntoNaturalChunks(seg.text, isEn, 185).forEach((chunkText) => {
+                        playQueue.push({ speaker: seg.speaker, label: seg.label, voiceName: seg.voiceName || 'Sulafat', text: chunkText });
                     });
                 });
                 if (playQueue.length === 0) return;
@@ -1425,28 +1604,14 @@
 
                 const ctrl = new AbortController();
                 voiceAbortRef.current = ctrl;
-
                 if (!sharedAudioRef.current) {
-                    const a = new Audio();
-                    a.playsInline = true;
-                    a.setAttribute('playsinline', '');
+                    const a = new Audio(); a.playsInline = true; a.setAttribute('playsinline', '');
                     sharedAudioRef.current = a;
                 }
 
-                setVoiceStatus({
-                    phase: 'loading',
-                    chunkIdx: 1,
-                    totalChunks: playQueue.length,
-                    note: `กำลังเตรียมเสียง AI คุณภาพสตูดิโอ (${playQueue[0].label || 'คู่สนทนา'})...`
-                });
-
+                setVoiceStatus({ phase: 'loading', chunkIdx: 1, totalChunks: playQueue.length });
                 let currentPromise = fetchStudioTtsBlob({
-                    appsScriptUrl,
-                    text: playQueue[0].text,
-                    voiceName: playQueue[0].voiceName,
-                    languageCode: langCode,
-                    style: ttsStyle,
-                    signal: ctrl.signal
+                    appsScriptUrl, text: playQueue[0].text, voiceName: playQueue[0].voiceName, languageCode: langCode, style: ttsStyle, signal: ctrl.signal
                 });
                 let playedAny = false;
 
@@ -1455,85 +1620,45 @@
                     const item = playQueue[i];
                     setActiveSpeakerBadge(item.label || 'ญาติผู้ป่วย');
                     setActiveSpeakerKey(item.speaker === 'mother' ? 'mother' : 'wife');
-
                     setIsSpeaking(false);
-                    setVoiceStatus({
-                        phase: 'loading',
-                        chunkIdx: i + 1,
-                        totalChunks: playQueue.length,
-                        note: i === 0
-                            ? `กำลังรอเสียง AI คุณภาพสตูดิโอ (${item.label || 'คู่สนทนา'})...`
-                            : `กำลังเตรียมเสียง AI ช่วงที่ ${i + 1}/${playQueue.length}...`
-                    });
+                    setVoiceStatus({ phase: 'loading', chunkIdx: i + 1, totalChunks: playQueue.length });
 
                     const blob = await currentPromise;
                     if (voiceSessionRef.current !== sid || ctrl.signal.aborted) return;
 
-                    if (i + 1 < playQueue.length) {
-                        const nextItem = playQueue[i + 1];
-                        currentPromise = fetchStudioTtsBlob({
-                            appsScriptUrl,
-                            text: nextItem.text,
-                            voiceName: nextItem.voiceName,
-                            languageCode: langCode,
-                            style: ttsStyle,
-                            signal: ctrl.signal
-                        });
-                    } else {
-                        currentPromise = null;
-                    }
+                    currentPromise = (i + 1 < playQueue.length)
+                        ? fetchStudioTtsBlob({
+                            appsScriptUrl, text: playQueue[i + 1].text, voiceName: playQueue[i + 1].voiceName, languageCode: langCode, style: ttsStyle, signal: ctrl.signal
+                        })
+                        : null;
 
                     if (!blob || blob.size === 0) {
-                        if (!playedAny) {
-                            showToast(
-                                navigator.onLine
-                                    ? 'เซิร์ฟเวอร์เสียง AI กำลังใช้งานหนาแน่น แตะ “ฟังเสียงญาติซ้ำ” ได้เลยค่ะ (ไม่ใช้เสียงเบราว์เซอร์แทรก)'
-                                    : 'ขณะนี้ออฟไลน์ ไม่สามารถโหลดเสียง AI สตูดิโอได้ (กดดูประวัติสนทนาได้ค่ะ)',
-                                'info'
-                            );
-                        }
+                        if (!playedAny) showToast(navigator.onLine ? 'เซิร์ฟเวอร์เสียง AI กำลังใช้งานหนาแน่น แตะ “ฟังเสียงญาติซ้ำ” ได้เลยค่ะ' : 'ขณะนี้ออฟไลน์ (กดดูประวัติสนทนาได้ค่ะ)', 'info');
                         break;
                     }
 
-                    if (activeAudioUrlRef.current) {
-                        try { URL.revokeObjectURL(activeAudioUrlRef.current); } catch (_) {}
-                    }
+                    if (activeAudioUrlRef.current) { try { URL.revokeObjectURL(activeAudioUrlRef.current); } catch (_) {} }
                     const wavUrl = URL.createObjectURL(blob);
                     activeAudioUrlRef.current = wavUrl;
-
                     playedAny = true;
                     setIsSpeaking(true);
-                    setVoiceStatus({
-                        phase: 'speaking',
-                        chunkIdx: i + 1,
-                        totalChunks: playQueue.length,
-                        note: playQueue.length > 1
-                            ? `กำลังพูดเสียง AI สตูดิโอ (${item.label || 'คู่สนทนา'} • ช่วง ${i + 1}/${playQueue.length})`
-                            : `กำลังพูดเสียง AI สตูดิโอ (${item.label || 'คู่สนทนา'})`
-                    });
+                    setVoiceStatus({ phase: 'speaking', chunkIdx: i + 1, totalChunks: playQueue.length });
 
                     const outcome = await new Promise((resolve) => {
                         const a = sharedAudioRef.current;
-                        a.muted = false;
-                        a.src = wavUrl;
+                        a.muted = false; a.src = wavUrl;
                         a.onended = () => resolve('ok');
                         a.onerror = () => resolve('err');
                         try { a.load(); } catch (_) {}
                         const p = a.play();
                         if (p && typeof p.then === 'function') {
-                            p.catch((err) => {
-                                if (err && (err.name === 'NotAllowedError' || /notallowed|autoplay|interact/i.test(String(err.message || '')))) {
-                                    resolve('blocked');
-                                } else {
-                                    resolve('err');
-                                }
-                            });
+                            p.catch((err) => resolve(err && (err.name === 'NotAllowedError' || /notallowed|autoplay|interact/i.test(String(err.message || ''))) ? 'blocked' : 'err'));
                         }
                     });
 
                     if (outcome === 'blocked' && voiceSessionRef.current === sid) {
                         setIsSpeaking(false);
-                        setVoiceStatus({ phase: 'idle', chunkIdx: 0, totalChunks: 0, note: '' });
+                        setVoiceStatus({ phase: 'idle', chunkIdx: 0, totalChunks: 0 });
                         setAudioBlockedRetry({ rawText, emoKey, targetPersonaId });
                         return;
                     }
@@ -1542,17 +1667,17 @@
 
                 if (voiceSessionRef.current === sid) {
                     setIsSpeaking(false);
-                    setVoiceStatus({ phase: 'idle', chunkIdx: 0, totalChunks: 0, note: '' });
+                    setVoiceStatus({ phase: 'idle', chunkIdx: 0, totalChunks: 0 });
                     silenceAnchorRef.current = Date.now();
                     silenceCountedRef.current = false;
                 }
-            }, [voiceEnabled, stopAiVoice, isEn, appsScriptUrl, EMOTIONS, showToast]);
+            }, [voiceEnabled, stopGuideVoice, stopAiVoice, isEn, appsScriptUrl, EMOTIONS, showToast]);
 
             // ============================================================================
             // 7. ADVISOR, BRIEFING, CONVERSATION, MICRO-DRILL & EVALUATION HANDLERS
             // ============================================================================
             const handleApplyRec = () => {
-                stopAdvisorVoice();
+                stopGuideVoice();
                 if (activeRec.mode) setModeId(activeRec.mode);
                 if (activeRec.difficulty) setDifficultyId(activeRec.difficulty);
                 if (activeRec.personaId) setPersonaId(activeRec.personaId);
@@ -1570,7 +1695,7 @@
                 const aiText = await callGeminiText(
                     appsScriptUrl,
                     `คำถามผู้เรียนเกี่ยวกับ AI Skill Lab: ${q}`,
-                    'คุณคือ AI Lab Advisor ของ rjcloud.organ 2.0 ตอบสั้น กระชับ อบอุ่น 3-4 บรรทัดภาษาไทย อ้างอิงความสามารถ: 6 เคส (รวมเด็ก 14 ปี และส่งเวร SBAR), Normal/Hard Curveballs, Micro-Drill 4 ด่าน, วัดน้ำเสียงสด + อัดเสียงฟังย้อนหลังใน RAM, ปมในใจ 3 ข้อและ Trust Inertia',
+                    'คุณคือ AI Lab Advisor ของ rjcloud.organ 2.0 ตอบสั้น กระชับ อบอุ่น 3-4 บรรทัดภาษาไทย',
                     12000
                 );
                 setAdvisorReply(aiText || localReply);
@@ -1579,7 +1704,7 @@
 
             const handleKnockAndEnter = () => {
                 unlockMobileAudio();
-                stopAdvisorVoice();
+                stopGuideVoice();
                 stopAiVoice();
                 if (SL.SoundFX) SL.SoundFX.playDoorKnock();
 
@@ -1595,7 +1720,7 @@
                 setPaceHint('');
                 setLearnerCallName(String(user?.name || '').replace(/^(พว\.|นพ\.|พญ\.)/, '').trim());
                 setRecordedVoiceClips(prev => {
-                    prev.forEach(c => { if (c && c.audioUrl) { try { URL.revokeObjectURL(c.audioUrl); } catch (_) {} } });
+                    prev.forEach(c => { if (c?.audioUrl) { try { URL.revokeObjectURL(c.audioUrl); } catch (_) {} } });
                     return [];
                 });
                 setShowSuggestions(difficultyId === 'normal');
@@ -1610,8 +1735,7 @@
                     setCurrentActionCue(firstStage.actionTH);
                     setTrustScore(40);
                     setActiveSpeakerBadge(firstStage.badgeTH);
-                    const openMsg = { id: Date.now(), role: 'relative', text: firstStage.promptTH, emotion: firstStage.emotion, actionCue: firstStage.actionTH };
-                    setMessages([openMsg]);
+                    setMessages([{ id: Date.now(), role: 'relative', text: firstStage.promptTH, emotion: firstStage.emotion, actionCue: firstStage.actionTH }]);
                     setPhase('negotiating');
                     setTimeout(() => speakRelativeSegments(firstStage.promptTH, firstStage.emotion, firstStage.personaId), 420);
                     return;
@@ -1620,16 +1744,14 @@
                 const openEmo = activePersona.openingEmotion || 'CONFUSED';
                 const openText = isEn ? activePersona.openingEN : activePersona.openingTH;
                 const openAct = isEn ? activePersona.openingActionEN : activePersona.openingActionTH;
-                const initTrust = (EMOTIONS[openEmo] && EMOTIONS[openEmo].baseTrust) || 38;
                 setCurrentEmotion(openEmo);
                 setCurrentActionCue(openAct || '');
                 setCoachHint('');
-                setTrustScore(initTrust);
+                setTrustScore((EMOTIONS[openEmo] && EMOTIONS[openEmo].baseTrust) || 38);
                 setActiveSpeakerBadge(activePersona.speakerRoleTH || 'ญาติผู้ป่วย');
                 if (personaId === 'conflict') setHoloStyle('dual');
 
-                const openMsg = { id: Date.now(), role: 'relative', text: openText, emotion: openEmo, actionCue: openAct };
-                setMessages([openMsg]);
+                setMessages([{ id: Date.now(), role: 'relative', text: openText, emotion: openEmo, actionCue: openAct }]);
                 setPhase('negotiating');
                 setTimeout(() => speakRelativeSegments(openText, openEmo, personaId), 420);
             };
@@ -1643,20 +1765,10 @@
                 const avgVocalCalm = vocalScores.length ? Math.round(vocalScores.reduce((a, b) => a + b, 0) / vocalScores.length) : null;
 
                 const entry = {
-                    at: new Date().toISOString(),
-                    modeId,
-                    personaId,
-                    difficultyId,
-                    outcome: sessionOutcome,
-                    score: finalEval.score,
-                    radar: finalEval.radar,
-                    trustScore,
-                    barriersUnlocked: unlockedBarrierIds.length,
-                    silenceCount,
-                    triggerTotal,
-                    avgVocalCalm,
-                    preSelfEfficacyAvg: preAvg,
-                    postSelfEfficacyAvg: postAvg,
+                    at: new Date().toISOString(), modeId, personaId, difficultyId, outcome: sessionOutcome,
+                    score: finalEval.score, radar: finalEval.radar, trustScore,
+                    barriersUnlocked: unlockedBarrierIds.length, silenceCount, triggerTotal, avgVocalCalm,
+                    preSelfEfficacyAvg: preAvg, postSelfEfficacyAvg: postAvg,
                     blindTranscript: SL.buildBlindTranscript(allMsgs, user?.name)
                 };
 
@@ -1680,13 +1792,12 @@
                 setUser(updatedUser);
                 if (isAdminPreview || !updatedUser?.id || updatedUser.id === 'guest_lab') return;
 
-                try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ user: updatedUser })); } catch (_) {}
+                saveLearnerLocally(updatedUser);
                 if (!fbDb) return;
 
                 try {
                     await setDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', String(updatedUser.id)), updatedUser, { merge: true });
-                    const anonId = buildAnonTelemetryId(updatedUser.id);
-                    await setDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'executive_telemetry', anonId), {
+                    await setDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'executive_telemetry', buildAnonTelemetryId(updatedUser.id)), {
                         regionId: resolveRegionId(updatedUser.department),
                         status: updatedUser.status === 'ผ่าน' ? 'ผ่าน' : 'กำลังเรียน',
                         progress: Number(updatedUser.progress || 0),
@@ -1712,15 +1823,9 @@
                         summaryUpdates.postEffCount = increment(1);
                     }
                     if (Object.keys(summaryUpdates).length > 0) {
-                        await setDoc(
-                            doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'executive_summary', 'global'),
-                            { ...summaryUpdates, updatedAt: new Date().toISOString() },
-                            { merge: true }
-                        );
+                        await setDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'executive_summary', 'global'), { ...summaryUpdates, updatedAt: new Date().toISOString() }, { merge: true });
                     }
-                } catch (err) {
-                    console.warn('SkillLab cloud save warning:', err);
-                }
+                } catch (err) { console.warn('SkillLab cloud save warning:', err); }
             }, [preEff, modeId, personaId, difficultyId, sessionOutcome, trustScore, unlockedBarrierIds.length, silenceCount, triggerTotal, user, isAdminPreview]);
 
             const handleFinishAndEvaluate = useCallback(async (overrideMessages = null) => {
@@ -1729,20 +1834,10 @@
                 setPhase('evaluating');
 
                 const fallback = SL.evaluateConversationFallback({
-                    messages: allMsgs,
-                    barriersUnlocked: unlockedBarrierIds.length,
-                    silenceCount,
-                    triggerTotal,
-                    finalTrust: trustScore
+                    messages: allMsgs, barriersUnlocked: unlockedBarrierIds.length, silenceCount, triggerTotal, finalTrust: trustScore
                 });
-
                 const supPrompt = SL.buildSupervisorEvaluationPrompt({
-                    messages: allMsgs,
-                    personaTitle: activePersona.titleTH,
-                    barriersUnlocked: unlockedBarrierIds.length,
-                    silenceCount,
-                    triggerTotal,
-                    finalTrust: trustScore
+                    messages: allMsgs, personaTitle: activePersona.titleTH, barriersUnlocked: unlockedBarrierIds.length, silenceCount, triggerTotal, finalTrust: trustScore
                 });
                 const rawJson = await callGeminiText(appsScriptUrl, supPrompt, 'ตอบเป็น JSON ล้วนเท่านั้นสำหรับประเมิน 5 แกนทางคลินิก', 16000);
                 const finalEval = rawJson ? SL.parseSupervisorJson(rawJson, fallback) : fallback;
@@ -1751,19 +1846,6 @@
                 setPhase('result');
                 await persistSkillLabSession(finalEval, allMsgs, null);
             }, [stopAiVoice, messages, unlockedBarrierIds.length, silenceCount, triggerTotal, trustScore, activePersona.titleTH, appsScriptUrl, persistSkillLabSession]);
-
-            const handleForceShowEvaluation = () => {
-                const fallback = SL.evaluateConversationFallback({
-                    messages,
-                    barriersUnlocked: unlockedBarrierIds.length,
-                    silenceCount,
-                    triggerTotal,
-                    finalTrust: trustScore
-                });
-                setEvalResult(fallback);
-                setPhase('result');
-                persistSkillLabSession(fallback, messages, null);
-            };
 
             const handleSendUserMsg = useCallback(async (rawOverride = null) => {
                 const text = String(rawOverride !== null ? rawOverride : userInput).trim();
@@ -1774,11 +1856,9 @@
                 setUserInput('');
                 setActiveCurveball(null);
 
-                // จับ Therapeutic Silence >= 2.5 วิ
                 let usedSilence = false;
                 if (silenceAnchorRef.current > 0 && !silenceCountedRef.current) {
-                    const elapsed = Date.now() - silenceAnchorRef.current;
-                    if (elapsed >= 2500) {
+                    if (Date.now() - silenceAnchorRef.current >= 2500) {
                         usedSilence = true;
                         silenceCountedRef.current = true;
                         setSilenceCount(c => c + 1);
@@ -1787,22 +1867,16 @@
                     }
                 }
 
-                // ตรวจคำกระทบใจ
                 const hits = SL.detectTriggerPhrases(text, isEn ? 'en' : 'th');
                 if (hits.length > 0) setTriggerTotal(t => t + hits.length);
-
-                // จับชื่อที่ผู้เรียนแนะนำตัวกลางห้อง
                 const introduced = SL.extractIntroducedLearnerName(text);
                 if (introduced) setLearnerCallName(introduced);
 
-                const userMsg = { id: Date.now(), role: 'user', text, usedSilence, triggerCount: hits.length };
-                const nextMessages = [...messages, userMsg];
+                const nextMessages = [...messages, { id: Date.now(), role: 'user', text, usedSilence, triggerCount: hits.length }];
                 setMessages(nextMessages);
 
-                // MODE B: MICRO-DRILL 4 ด่านคำถามหนัก
                 if (selectedMode.isDrill && DRILL_STAGES[drillStageIdx]) {
-                    const stageObj = DRILL_STAGES[drillStageIdx];
-                    const res = SL.evaluateMicroDrillAnswer(stageObj, text, hits, usedSilence);
+                    const res = SL.evaluateMicroDrillAnswer(DRILL_STAGES[drillStageIdx], text, hits, usedSilence);
                     setDrillResults(prev => [...prev, res]);
                     setLatestDrillFeedback(res);
                     if (res.passed) {
@@ -1815,7 +1889,6 @@
                     return;
                 }
 
-                // MODE A & C: ROLEPLAY + HIDDEN BARRIERS + EMOTIONAL INERTIA + HARD CURVEBALLS
                 const barrierEval = SL.evaluateBarriersUnlocked(personaId, text, unlockedBarrierIds);
                 setUnlockedBarrierIds(barrierEval.unlockedIds);
                 if (barrierEval.newlyUnlocked.length > 0) {
@@ -1824,8 +1897,6 @@
                 }
 
                 const nextTurnNum = userTurnCount + 1;
-
-                // ตรวจเหตุการณ์แทรกโหมด Hard (Curveball)
                 if (difficultyId === 'hard' && !isEn && personaId !== 'sbar_doctor') {
                     const cb = SL.pickHardCurveball(nextTurnNum, usedCurveballIds);
                     if (cb) {
@@ -1835,14 +1906,12 @@
                         setCurrentEmotion(cb.emotion);
                         setCurrentActionCue(cb.actionTH);
                         setCoachHint(cb.coachHintTH);
-                        const cbMsg = { id: Date.now() + 1, role: 'relative', text: cb.speechTH, emotion: cb.emotion, actionCue: cb.actionTH };
-                        setMessages([...nextMessages, cbMsg]);
+                        setMessages([...nextMessages, { id: Date.now() + 1, role: 'relative', text: cb.speechTH, emotion: cb.emotion, actionCue: cb.actionTH }]);
                         speakRelativeSegments(cb.speechTH, cb.emotion, personaId);
                         return;
                     }
                 }
 
-                // Perceived Latency Masking ระหว่างรอ AI ตอบ
                 setIsThinking(true);
                 setThinkingCue(SL.pickLatencyMaskCue(personaId, isEn));
                 if (SL.SoundFX) SL.SoundFX.playThinkingCue();
@@ -1861,16 +1930,9 @@
                     rawAi || buildOfflineRelativeReply(personaId, nextTurnNum, barrierEval.unlockedIds.length, hits.length, isEn),
                     currentEmotion
                 );
-
                 const inertia = SL.computeInertiaTrust({
-                    prevTrust: trustScore,
-                    aiEmotion: parsed.emotion,
-                    newlyUnlockedCount: barrierEval.newlyUnlocked.length,
-                    totalUnlockedCount: barrierEval.unlockedIds.length,
-                    triggerCount: hits.length,
-                    usedSilence,
-                    difficulty: difficultyId,
-                    userText: text
+                    prevTrust: trustScore, aiEmotion: parsed.emotion, newlyUnlockedCount: barrierEval.newlyUnlocked.length,
+                    totalUnlockedCount: barrierEval.unlockedIds.length, triggerCount: hits.length, usedSilence, difficulty: difficultyId, userText: text
                 });
 
                 setTrustScore(inertia.trust);
@@ -1880,28 +1942,16 @@
                 if (parsed.coachHint && difficultyId === 'normal') setCoachHint(parsed.coachHint);
                 if (parsed.outcome) setSessionOutcome(parsed.outcome);
 
-                const aiMsg = {
-                    id: Date.now() + 2,
-                    role: 'relative',
-                    text: parsed.speech,
-                    emotion: inertia.emotion,
-                    actionCue: parsed.actionCue
-                };
-                const finalMessages = [...nextMessages, aiMsg];
-                setMessages(finalMessages);
+                setMessages([...nextMessages, { id: Date.now() + 2, role: 'relative', text: parsed.speech, emotion: inertia.emotion, actionCue: parsed.actionCue }]);
                 speakRelativeSegments(parsed.speech, inertia.emotion, personaId);
             }, [
-                userInput, isThinking, unlockMobileAudio, stopAiVoice, isEn, messages,
-                selectedMode, drillStageIdx, DRILL_STAGES, personaId, unlockedBarrierIds,
-                userTurnCount, difficultyId, usedCurveballIds, learnerCallName, activePersona.promptHintTH,
-                appsScriptUrl, currentEmotion, trustScore, speakRelativeSegments, showToast
+                userInput, isThinking, unlockMobileAudio, stopAiVoice, isEn, messages, selectedMode, drillStageIdx,
+                DRILL_STAGES, personaId, unlockedBarrierIds, userTurnCount, difficultyId, usedCurveballIds,
+                learnerCallName, activePersona.promptHintTH, appsScriptUrl, currentEmotion, trustScore, speakRelativeSegments, showToast
             ]);
 
             const handleNextDrillStage = () => {
-                if (drillStageIdx + 1 >= DRILL_STAGES.length) {
-                    handleFinishAndEvaluate(messages);
-                    return;
-                }
+                if (drillStageIdx + 1 >= DRILL_STAGES.length) { handleFinishAndEvaluate(messages); return; }
                 const nextIdx = drillStageIdx + 1;
                 const st = DRILL_STAGES[nextIdx];
                 setDrillStageIdx(nextIdx);
@@ -1910,17 +1960,8 @@
                 setCurrentEmotion(st.emotion);
                 setCurrentActionCue(st.actionTH);
                 setActiveSpeakerBadge(st.badgeTH);
-                const nextMsg = { id: Date.now(), role: 'relative', text: st.promptTH, emotion: st.emotion, actionCue: st.actionTH };
-                setMessages(prev => [...prev, nextMsg]);
+                setMessages(prev => [...prev, { id: Date.now(), role: 'relative', text: st.promptTH, emotion: st.emotion, actionCue: st.actionTH }]);
                 speakRelativeSegments(st.promptTH, st.emotion, st.personaId);
-            };
-
-            const handleRewindToMessage = (targetIdx) => {
-                stopAiVoice();
-                const sliced = messages.slice(0, targetIdx + 1);
-                setMessages(sliced);
-                setShowTranscriptModal(false);
-                showToast('ย้อนเวลากลับไปแก้ไขคำพูดในรอบที่เลือกแล้วค่ะ', 'info');
             };
 
             // ============================================================================
@@ -1928,38 +1969,20 @@
             // ============================================================================
             const stopMicAndAnalyze = useCallback(async (shouldAutoSend = false) => {
                 setIsListening(false);
-                if (recognitionRef.current) {
-                    try { recognitionRef.current.stop(); } catch (_) {}
-                    recognitionRef.current = null;
-                }
+                if (recognitionRef.current) { try { recognitionRef.current.stop(); } catch (_) {} recognitionRef.current = null; }
                 const rec = vocalRecorderRef.current;
                 vocalRecorderRef.current = null;
                 let clipMeta = null;
-                if (rec && rec.isActive()) {
-                    clipMeta = await rec.stop();
-                }
+                if (rec && rec.isActive()) clipMeta = await rec.stop();
                 setLiveVocalMetric(null);
 
                 const spokenText = latestFinalTranscriptRef.current.trim();
                 const elapsedSec = Math.max(1, (Date.now() - voiceStartTsRef.current) / 1000);
-                if (spokenText.length > 0 && spokenText.length / elapsedSec > 18) {
-                    setPaceHint('จังหวะการพูดค่อนข้างเร็ว ลองผ่อนความเร็วลงอีกนิดเพื่อให้ญาติฟังสบายขึ้นนะคะ');
-                } else {
-                    setPaceHint('');
-                }
+                setPaceHint(spokenText.length > 0 && spokenText.length / elapsedSec > 18 ? 'จังหวะการพูดค่อนข้างเร็ว ลองผ่อนความเร็วลงอีกนิดเพื่อให้ญาติฟังสบายขึ้นนะคะ' : '');
 
                 if (clipMeta) {
-                    setRecordedVoiceClips(prev => [
-                        ...prev,
-                        {
-                            id: Date.now(),
-                            turn: userTurnCount + 1,
-                            transcript: spokenText || '(บันทึกเสียงพูด)',
-                            ...clipMeta
-                        }
-                    ]);
+                    setRecordedVoiceClips(prev => [...prev, { id: Date.now(), turn: userTurnCount + 1, transcript: spokenText || '(บันทึกเสียงพูด)', ...clipMeta }]);
                 }
-
                 if (shouldAutoSend && autoSendVoice && spokenText) {
                     latestFinalTranscriptRef.current = '';
                     handleSendUserMsg(spokenText);
@@ -1967,37 +1990,26 @@
             }, [autoSendVoice, userTurnCount, handleSendUserMsg]);
 
             const handleToggleMic = async () => {
-                if (isListening) {
-                    await stopMicAndAnalyze(true);
-                    return;
-                }
+                if (isListening) { await stopMicAndAnalyze(true); return; }
                 unlockMobileAudio();
                 stopAiVoice();
-
                 const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-                if (!SpeechRec) {
-                    showToast('เบราว์เซอร์นี้ไม่รองรับไมค์แปลงเสียง (แนะนำเปิดใน Safari/Chrome หรือพิมพ์/แตะคำพูดด้านล่างค่ะ)', 'info');
-                    return;
-                }
+                if (!SpeechRec) { showToast('เบราว์เซอร์นี้ไม่รองรับไมค์แปลงเสียง (แนะนำเปิดใน Safari/Chrome หรือพิมพ์/แตะคำพูดด้านล่างค่ะ)', 'info'); return; }
 
                 latestFinalTranscriptRef.current = '';
                 voiceStartTsRef.current = Date.now();
                 setIsListening(true);
-
                 if (typeof SL.createVocalToneRecorder === 'function') {
                     const rec = SL.createVocalToneRecorder();
                     vocalRecorderRef.current = rec;
                     rec.start((metric) => setLiveVocalMetric(metric)).catch(() => {});
                 }
-
                 try {
                     const sr = new SpeechRec();
                     sr.lang = isEn ? 'en-US' : 'th-TH';
-                    sr.continuous = true;
-                    sr.interimResults = true;
+                    sr.continuous = true; sr.interimResults = true;
                     sr.onresult = (ev) => {
-                        let finalStr = '';
-                        let interimStr = '';
+                        let finalStr = '', interimStr = '';
                         for (let i = 0; i < ev.results.length; i++) {
                             if (ev.results[i].isFinal) finalStr += ev.results[i][0].transcript;
                             else interimStr += ev.results[i][0].transcript;
@@ -2006,12 +2018,8 @@
                         latestFinalTranscriptRef.current = combined;
                         setUserInput(combined);
                     };
-                    sr.onerror = () => { stopMicAndAnalyze(false); };
-                    sr.onend = () => {
-                        if (recognitionRef.current === sr) {
-                            stopMicAndAnalyze(true);
-                        }
-                    };
+                    sr.onerror = () => stopMicAndAnalyze(false);
+                    sr.onend = () => { if (recognitionRef.current === sr) stopMicAndAnalyze(true); };
                     recognitionRef.current = sr;
                     sr.start();
                 } catch (_) {
@@ -2020,16 +2028,10 @@
                 }
             };
 
-            const handleSavePostSelfEfficacy = async () => {
-                if (!evalResult) return;
-                await persistSkillLabSession(evalResult, messages, postEff);
-                setPostEffSaved(true);
-                showToast('บันทึกความมั่นใจหลังฝึก (Post Self-Efficacy R2R) เรียบร้อยแล้วค่ะ');
-            };
-
             const curEmoMeta = EMOTIONS[currentEmotion] || EMOTIONS.CONFUSED || { colorHex: '#38bdf8', labelTH: 'สับสน', labelEN: 'Confused' };
             const preEffAvg = ((Number(preEff.explainBrainDeath) + Number(preEff.handleEmotion) + Number(preEff.gentleApproach)) / 3).toFixed(2);
             const postEffAvg = ((Number(postEff.explainBrainDeath) + Number(postEff.handleEmotion) + Number(postEff.gentleApproach)) / 3).toFixed(2);
+            const isAnyVoiceActive = guideVoiceState.status !== 'idle' || voiceStatus.phase !== 'idle' || isThinking;
 
             // ============================================================================
             // 9. RENDER PHASES
@@ -2038,32 +2040,33 @@
                 <div className={`min-h-dvh relative flex flex-col pt-safe pb-safe ${phase === 'negotiating' ? 'holo-stage-bg' : ''}`}>
                     {phase !== 'negotiating' && (<><div className="spatial-aura" /><div className="spatial-grid" /></>)}
 
+                    {/* แถบไฟแอมเบียนด้านบนสุดขณะ AI แนะนำหรือคู่สนทนาพูด (ไร้ซับไตเติลกวนสายตา) */}
+                    {isAnyVoiceActive && (
+                        <div className="fixed top-0 left-0 right-0 z-50 pointer-events-none" aria-hidden="true">
+                            <div className="rjc-ambient-bar" />
+                        </div>
+                    )}
+
                     {/* LINE / In-App Browser Auto-Detector Banner */}
                     {inAppInfo.isInApp && phase !== 'negotiating' && (
                         <div className="relative z-40 bg-amber-500/20 border-b border-amber-400/45 px-3.5 py-2.5 text-xs">
                             <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-2">
-                                <span className="text-amber-200 font-bold">
-                                    ⚠️ คุณกำลังเปิดจากในแอป {inAppInfo.appName} ซึ่งอาจบล็อกไมค์และเสียง AI — แนะนำเปิดใน Safari / Chrome ค่ะ
-                                </span>
+                                <span className="text-amber-200 font-bold">⚠️ เปิดจากในแอป {inAppInfo.appName} อาจบล็อกไมค์และเสียง AI — แนะนำเปิดใน Safari / Chrome ค่ะ</span>
                                 <div className="flex gap-1.5">
-                                    <a href={inAppInfo.externalUrl} target="_blank" rel="noreferrer" className="px-3 py-1.5 rounded-full bg-amber-400 text-void-950 font-display font-extrabold text-[11px]">
-                                        เปิดใน Safari / Chrome
-                                    </a>
-                                    <button type="button" onClick={() => { copyTextSafe(window.location.href); showToast('คัดลอกลิงก์ห้องฝึกแล้ว นำไปวางใน Safari/Chrome ได้เลยค่ะ'); }} className="px-3 py-1.5 rounded-full bg-white/15 text-white font-bold text-[11px]">
-                                        คัดลอกลิงก์
-                                    </button>
+                                    <a href={inAppInfo.externalUrl} target="_blank" rel="noreferrer" className="px-3 py-1.5 rounded-full bg-amber-400 text-void-950 font-display font-extrabold text-[11px]">เปิดใน Safari / Chrome</a>
+                                    <button type="button" onClick={() => { copyTextSafe(window.location.href); showToast('คัดลอกลิงก์ห้องฝึกแล้วค่ะ'); }} className="px-3 py-1.5 rounded-full bg-white/15 text-white font-bold text-[11px]">คัดลอกลิงก์</button>
                                 </div>
                             </div>
                         </div>
                     )}
 
-                    {/* ==================== PHASE 1: LOBBY & AI LAB ADVISOR v3 ==================== */}
+                    {/* ==================== PHASE 1: LOBBY + LIVE 3D HOLOGRAM PREVIEW ==================== */}
                     {phase === 'lobby' && (
                         <div className="relative z-10 flex-1 flex flex-col">
                             <header className="sticky top-0 z-30 spatial-header">
                                 <div className="max-w-5xl mx-auto px-3.5 sm:px-6 h-14 md:h-16 flex items-center justify-between gap-2">
                                     <div className="flex items-center gap-2.5 min-w-0">
-                                        <a href="./index.html" aria-label="กลับห้องเรียน" className="w-9 h-9 rounded-xl spatial-soft text-primary-adaptive flex items-center justify-center shrink-0">
+                                        <a href={dashboardReturnHref} onClick={persistLearnerBeforeReturn} aria-label="กลับห้องเรียนหลัก" className="w-9 h-9 rounded-xl spatial-soft text-primary-adaptive flex items-center justify-center shrink-0">
                                             <Icon name="ArrowLeft" size={18} />
                                         </a>
                                         <div className="min-w-0">
@@ -2075,14 +2078,18 @@
                                             </span>
                                         </div>
                                     </div>
-                                    <ThemeToggleButton theme={theme} onToggle={toggleTheme} />
+                                    <div className="flex items-center gap-1.5 shrink-0">
+                                        {phaseVoiceGuide && (
+                                            <StepVoiceButton activeKey={guideVoiceState.activeKey} targetKey={phaseVoiceGuide.key} status={guideVoiceState.status} onToggle={handleReplayPhaseGuide} />
+                                        )}
+                                        <ThemeToggleButton theme={theme} onToggle={toggleTheme} />
+                                    </div>
                                 </div>
                             </header>
 
                             <main className="max-w-5xl w-full mx-auto px-3.5 sm:px-6 py-5 space-y-5 pb-12">
-                                {/* AI Lab Advisor v3 Card */}
-                                <section className={`spatial-card rounded-[1.75rem] overflow-hidden border-aurora-400/40 transition-all duration-300 ${advisorVoicePhase !== 'idle' ? 'rjc-ambient-card-active' : ''}`}>
-                                    <div className="rjc-ambient-bar" />
+                                {/* AI Lab Advisor v3 Card (No Subtitle Banner) */}
+                                <section className="spatial-card rounded-[1.75rem] overflow-hidden border-aurora-400/40">
                                     <div className="p-4 sm:p-5 space-y-3.5">
                                         <div className="flex flex-wrap items-center justify-between gap-2">
                                             <div className="flex items-center gap-2.5">
@@ -2095,39 +2102,18 @@
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-1.5 shrink-0">
-                                                <button
-                                                    type="button"
-                                                    onClick={handleSpeakAdvisor}
-                                                    className={`px-3 py-1.5 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 ${
-                                                        advisorVoicePhase === 'speaking' ? 'bg-rose-500 text-white'
-                                                            : advisorVoicePhase === 'loading' ? 'bg-prism-500/25 border border-prism-400/50 text-prism-adaptive animate-pulse'
-                                                                : 'spatial-soft text-prism-adaptive'
-                                                    }`}
-                                                >
-                                                    <Icon name={advisorVoicePhase !== 'idle' ? 'Square' : 'Volume2'} size={14} />
-                                                    <span>{advisorVoicePhase === 'loading' ? 'รอเสียง AI...' : advisorVoicePhase === 'speaking' ? 'หยุดเสียง' : 'ฟัง AI แนะนำ'}</span>
-                                                </button>
+                                                <StepVoiceButton activeKey={guideVoiceState.activeKey} targetKey="lab_advisor_voice" status={guideVoiceState.status} onToggle={handleSpeakAdvisor} />
                                                 <button type="button" onClick={() => setAdvisorExpanded(v => !v)} className="spatial-soft w-8 h-8 rounded-xl text-secondary-adaptive flex items-center justify-center">
                                                     <Icon name={advisorExpanded ? 'ChevronUp' : 'ChevronDown'} size={16} />
                                                 </button>
                                             </div>
                                         </div>
 
-                                        {advisorVoicePhase !== 'idle' && (
-                                            <div className="spatial-soft rounded-2xl px-3.5 py-2 border-prism-400/45 flex flex-wrap items-center justify-between gap-2 text-xs">
-                                                <div className="flex items-center gap-2 text-primary-adaptive font-bold">
-                                                    <span className="rjc-wave-eq"><span /><span /><span /><span /><span /></span>
-                                                    <span>{advisorVoiceMeta.note || 'กำลังเตรียมเสียง AI คุณภาพสตูดิโอ...'}</span>
-                                                </div>
-                                                <span className="font-mono text-[10px] font-bold text-prism-adaptive">24kHz STUDIO PCM • NO BROWSER VOICE</span>
-                                            </div>
-                                        )}
-
                                         {advisorExpanded && (
                                             <div className="space-y-3">
                                                 <div className="flex flex-wrap gap-1.5">
                                                     {ADVISOR_GOALS.map(g => (
-                                                        <button key={g.id} type="button" onClick={() => { stopAdvisorVoice(); setAdvisorGoalId(g.id); setAdvisorReply(''); }} className={`px-3 py-1.5 rounded-full text-xs font-bold inline-flex items-center gap-1 ${advisorGoalId === g.id ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'spatial-soft text-secondary-adaptive'}`}>
+                                                        <button key={g.id} type="button" onClick={() => { stopGuideVoice(); setAdvisorGoalId(g.id); setAdvisorReply(''); }} className={`px-3 py-1.5 rounded-full text-xs font-bold inline-flex items-center gap-1 ${advisorGoalId === g.id ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'spatial-soft text-secondary-adaptive'}`}>
                                                             <Icon name={g.icon} size={13} /> {g.label}
                                                         </button>
                                                     ))}
@@ -2137,7 +2123,7 @@
                                                     <p className="font-display font-bold text-sm text-accent-adaptive">{activeRec.headline}</p>
                                                     <p className="text-secondary-adaptive leading-relaxed">{activeRec.reason}</p>
                                                     <p className="text-prism-adaptive font-semibold">💡 {activeRec.tip}</p>
-                                                    <div className="pt-1 flex flex-wrap gap-2">
+                                                    <div className="pt-1">
                                                         <button type="button" onClick={handleApplyRec} className="rjc2-pill-btn px-4 py-2 rounded-full font-display font-extrabold text-xs">
                                                             เลือกตามที่ AI แนะนำทันที ✓
                                                         </button>
@@ -2160,31 +2146,25 @@
 
                                                 <form onSubmit={handleAskAdvisor} className="flex gap-2">
                                                     <input value={advisorQuestion} onChange={e => setAdvisorQuestion(e.target.value)} disabled={advisorAsking} placeholder="ถาม AI Lab Advisor เช่น เคสเด็กหรือส่งเวร SBAR ฝึกยังไง..." className="touch-target spatial-input flex-1 px-3.5 py-2 rounded-xl text-xs" />
-                                                    <button type="submit" disabled={!advisorQuestion.trim() || advisorAsking} className="touch-target px-4 rounded-xl bg-prism-500 text-void-950 font-bold text-xs">
-                                                        {advisorAsking ? '...' : 'ถาม'}
-                                                    </button>
+                                                    <button type="submit" disabled={!advisorQuestion.trim() || advisorAsking} className="touch-target px-4 rounded-xl bg-prism-500 text-void-950 font-bold text-xs">{advisorAsking ? '...' : 'ถาม'}</button>
                                                 </form>
                                             </div>
                                         )}
                                     </div>
                                 </section>
 
-                                {/* Clinical Mastery Badges Strip */}
-                                <section className="spatial-card rounded-[1.5rem] p-4 space-y-2">
-                                    <span className="font-mono text-[10px] font-bold text-amber-400 uppercase block">
-                                        CLINICAL MASTERY BADGES ({clinicalBadges.filter(b => b.earned).length}/{clinicalBadges.length})
-                                    </span>
-                                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                                        {clinicalBadges.map(b => (
-                                            <div key={b.id} className={`p-2.5 rounded-xl border text-center space-y-1 ${b.earned ? 'bg-aurora-500/15 border-aurora-400/45' : 'spatial-soft opacity-55'}`}>
-                                                <p className="font-display font-bold text-[11px] text-primary-adaptive leading-tight">{b.earned ? '🏅 ' : '🔒 '}{b.titleTH}</p>
-                                                <p className="text-[10px] text-muted-adaptive leading-snug">{b.descTH}</p>
-                                            </div>
-                                        ))}
+                                {/* 1. เวทีตัวอย่าง Hologram 3 มิติสด (ให้ผู้เรียนเลือกดูและหมุนก่อนเข้าห้องฝึก) */}
+                                <section className="spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3 border-prism-400/35">
+                                    <div className="flex flex-wrap items-center justify-between gap-2">
+                                        <div>
+                                            <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">LIVE 3D HOLOGRAM PREVIEW • 6 STYLES</span>
+                                            <h2 className="font-display font-extrabold text-sm sm:text-base text-primary-adaptive">ตัวอย่าง Hologram 3 มิติสด (แตะสลับรูปแบบและลากหมุนดูก่อนเข้าห้อง)</h2>
+                                        </div>
                                     </div>
+                                    <LobbyHologramPreview holoStyle={holoStyle} stylesList={HOLO_STYLES} onSelectStyle={setHoloStyle} />
                                 </section>
 
-                                {/* 1. เลือกรูปแบบ & ระดับความยาก */}
+                                {/* 2. เลือกรูปแบบ & ระดับความยาก */}
                                 <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-2.5">
                                         <p className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">1. เลือกรูปแบบการฝึก (MODE)</p>
@@ -2198,34 +2178,35 @@
                                         ))}
                                     </div>
 
-                                    <div className="spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3">
-                                        <div className="space-y-2">
-                                            <p className="font-mono text-[10px] font-bold text-amber-400 uppercase">2. ระดับความยาก (DIFFICULTY)</p>
-                                            {DIFFICULTIES.map(d => (
-                                                <button key={d.id} type="button" onClick={() => setDifficultyId(d.id)} className={`w-full text-left p-3 rounded-2xl border transition-all ${difficultyId === d.id ? 'bg-amber-500/20 border-amber-400' : 'spatial-soft'}`}>
-                                                    <p className="font-display font-bold text-sm text-primary-adaptive">{d.labelTH}</p>
-                                                    <p className="text-xs text-muted-adaptive mt-0.5">{d.descTH}</p>
-                                                </button>
-                                            ))}
-                                        </div>
+                                    <div className="spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-2.5">
+                                        <p className="font-mono text-[10px] font-bold text-amber-400 uppercase">2. ระดับความยาก (DIFFICULTY)</p>
+                                        {DIFFICULTIES.map(d => (
+                                            <button key={d.id} type="button" onClick={() => setDifficultyId(d.id)} className={`w-full text-left p-3 rounded-2xl border transition-all ${difficultyId === d.id ? 'bg-amber-500/20 border-amber-400' : 'spatial-soft'}`}>
+                                                <p className="font-display font-bold text-sm text-primary-adaptive">{d.labelTH}</p>
+                                                <p className="text-xs text-muted-adaptive mt-0.5">{d.descTH}</p>
+                                            </button>
+                                        ))}
 
-                                        <div className="space-y-2 pt-1">
-                                            <p className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">3. สไตล์ HOLOGRAM 3 มิติ (6 รูปแบบ)</p>
-                                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
-                                                {HOLO_STYLES.map(hs => (
-                                                    <button key={hs.id} type="button" onClick={() => setHoloStyle(hs.id)} className={`p-2 rounded-xl border text-left text-[11px] font-bold ${holoStyle === hs.id ? 'bg-prism-500/25 border-prism-400 text-primary-adaptive' : 'spatial-soft text-secondary-adaptive'}`}>
-                                                        <span className="font-mono text-prism-adaptive mr-1">{hs.badge}</span>{hs.nameTH}
-                                                    </button>
+                                        {/* เหรียญตราสมรรถนะคลินิก */}
+                                        <div className="pt-2 space-y-1.5">
+                                            <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase block">
+                                                CLINICAL MASTERY BADGES ({clinicalBadges.filter(b => b.earned).length}/{clinicalBadges.length})
+                                            </span>
+                                            <div className="flex flex-wrap gap-1.5">
+                                                {clinicalBadges.map(b => (
+                                                    <span key={b.id} className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${b.earned ? 'bg-aurora-500/15 border-aurora-400/45 text-accent-adaptive' : 'spatial-soft text-muted-adaptive opacity-60'}`}>
+                                                        {b.earned ? '🏅 ' : '🔒 '}{b.titleTH}
+                                                    </span>
                                                 ))}
                                             </div>
                                         </div>
                                     </div>
                                 </section>
 
-                                {/* 2. เลือกเคสคลินิก ครบ 6 เคส */}
+                                {/* 3. เลือกเคสคลินิกครบ 6 เคส */}
                                 {!selectedMode.isDrill && (
                                     <section className="spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3">
-                                        <p className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">4. เลือกสถานการณ์คลินิก (6 เคส — รวมผู้ป่วยเด็ก &amp; ส่งเวร SBAR แพทย์เวร ICU)</p>
+                                        <p className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">3. เลือกสถานการณ์คลินิก (6 เคส — รวมผู้ป่วยเด็ก &amp; ส่งเวร SBAR แพทย์เวร ICU)</p>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
                                             {PERSONAS.map(p => (
                                                 <button key={p.id} type="button" onClick={() => { setPersonaId(p.id); if (p.id === 'conflict') setHoloStyle('dual'); }} className={`text-left p-3.5 rounded-2xl border transition-all space-y-1.5 ${personaId === p.id ? 'bg-aurora-500/20 border-aurora-400 shadow-md' : 'spatial-soft'}`}>
@@ -2241,7 +2222,7 @@
                                     </section>
                                 )}
 
-                                <button type="button" onClick={() => { unlockMobileAudio(); stopAdvisorVoice(); setPhase('briefing'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="rjc2-pill-btn touch-target w-full py-4 rounded-full font-display font-extrabold text-base">
+                                <button type="button" onClick={() => { unlockMobileAudio(); stopGuideVoice(); setPhase('briefing'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="rjc2-pill-btn touch-target w-full py-4 rounded-full font-display font-extrabold text-base">
                                     เปิดแฟ้มส่งเวร ICU &amp; เตรียมเคาะประตูเข้าห้อง →
                                 </button>
                             </main>
@@ -2253,8 +2234,13 @@
                         <div className="relative z-10 flex-1 flex items-center justify-center p-4 py-8">
                             <div className="spatial-card max-w-2xl w-full rounded-[2rem] p-5 sm:p-7 space-y-5">
                                 <div className="flex items-center justify-between gap-2">
-                                    <button type="button" onClick={() => setPhase('lobby')} className="spatial-soft px-3 py-2 rounded-xl text-xs font-bold text-primary-adaptive">← เปลี่ยนเคส</button>
-                                    <span className="font-mono text-[10px] font-bold text-accent-adaptive">PRE-ROOM CLINICAL BRIEFING</span>
+                                    <button type="button" onClick={() => { stopGuideVoice(); setPhase('lobby'); }} className="spatial-soft px-3 py-2 rounded-xl text-xs font-bold text-primary-adaptive">← เปลี่ยนเคส</button>
+                                    <div className="flex items-center gap-2">
+                                        {phaseVoiceGuide && (
+                                            <StepVoiceButton activeKey={guideVoiceState.activeKey} targetKey={phaseVoiceGuide.key} status={guideVoiceState.status} onToggle={handleReplayPhaseGuide} />
+                                        )}
+                                        <span className="font-mono text-[10px] font-bold text-accent-adaptive hidden sm:inline">PRE-ROOM BRIEFING</span>
+                                    </div>
                                 </div>
 
                                 <div>
@@ -2311,16 +2297,9 @@
                         </div>
                     )}
 
-                    {/* ==================== PHASE 3: 3D CONSULTATION ROOM (AUDIO-FIRST • NO SUBTITLE BOX) ==================== */}
+                    {/* ==================== PHASE 3: 3D CONSULTATION ROOM (AUDIO-FIRST • ZERO SUBTITLES) ==================== */}
                     {phase === 'negotiating' && (
                         <div className="relative z-10 flex-1 flex flex-col justify-between min-h-dvh p-2.5 sm:p-5 text-white overflow-hidden">
-                            {/* แถบไฟแอมเบียนด้านบนสุดแสดงสถานะรอ AI พร้อมและขณะ AI พูด */}
-                            {(isThinking || voiceStatus.phase !== 'idle') && (
-                                <div className="fixed top-0 left-0 right-0 z-30 pointer-events-none" aria-hidden="true">
-                                    <div className="rjc-ambient-bar" />
-                                </div>
-                            )}
-
                             {/* ชั้นเมฆออร่าลอยนุ่มหลัง Hologram 3 มิติ (z-0) */}
                             <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden" aria-hidden="true">
                                 <svg width="0" height="0" className="absolute">
@@ -2343,11 +2322,6 @@
                                 <div className="lab-cloud-drift top-[15%] w-[54vw] max-w-[620px] min-w-[240px] opacity-70" style={{ '--c-dur': '96s', '--c-del': '-26s' }}>
                                     <svg viewBox="0 0 460 150" className="w-full h-auto overflow-visible" filter="url(#labCloudBlur)">
                                         <path d="M40 122 C22 122 18 106 34 96 C48 88 68 88 84 92 C102 64 146 52 182 66 C210 36 266 34 300 60 C330 52 366 68 378 92 C404 90 428 102 424 122 Z" fill="url(#labCloudAurora)" />
-                                    </svg>
-                                </div>
-                                <div className="lab-cloud-drift top-[33%] w-[48vw] max-w-[560px] min-w-[220px] opacity-60" style={{ '--c-dur': '78s', '--c-del': '-52s' }}>
-                                    <svg viewBox="0 0 420 140" className="w-full h-auto overflow-visible" filter="url(#labCloudBlur)">
-                                        <path d="M36 112 C24 112 18 100 28 90 C38 82 54 80 68 84 C84 58 122 46 154 58 C180 30 232 26 264 48 C292 40 326 52 338 74 C358 72 378 84 374 112 Z" fill="url(#labCloudMint)" />
                                     </svg>
                                 </div>
                                 <div className="lab-cloud-bank-l bottom-[20%] -left-[8%] w-[54vw] max-w-[580px] opacity-60">
@@ -2416,24 +2390,15 @@
                                 </div>
                             )}
 
-                            {/* Bottom Stage Controls (z-20 — เน้นฟังเสียง ไม่แสดงกล่องซับไตเติลบัง Hologram) */}
+                            {/* Bottom Stage Controls (ไร้กล่องซับไตเติลกวนสายตา) */}
                             <section className="relative z-20 max-w-4xl w-full mx-auto space-y-2 mt-auto">
-                                {/* ป้ายสถานะบาง 1 แถว (ตัวละคร • Trust • ปม • ภาษากาย) */}
                                 {latestRelativeMsg && (
                                     <div className="flex flex-wrap items-center justify-between gap-1.5 px-0.5">
                                         <div className="holo-stage-pill px-2.5 py-1 rounded-full text-xs flex items-center gap-1.5 max-w-full">
                                             <span className="font-mono text-[10px] font-bold text-cyan-200 truncate">{activeSpeakerBadge || activePersona.speakerRoleTH}</span>
-                                            {voiceStatus.phase === 'loading' && (
-                                                <span className="text-[10px] font-bold text-cyan-300 animate-pulse shrink-0">
-                                                    ● รอเสียง AI ({voiceStatus.chunkIdx}/{voiceStatus.totalChunks})
-                                                </span>
+                                            {(voiceStatus.phase !== 'idle' || isThinking) && (
+                                                <span className="rjc-wave-eq shrink-0" style={{ height: '11px' }}><span /><span /><span /></span>
                                             )}
-                                            {isSpeaking && (
-                                                <span className="text-[10px] font-bold text-emerald-300 animate-pulse shrink-0">
-                                                    ● กำลังพูด{voiceStatus.totalChunks > 1 ? ` (${voiceStatus.chunkIdx}/${voiceStatus.totalChunks})` : ''}
-                                                </span>
-                                            )}
-                                            {isThinking && <span className="text-[10px] font-bold text-amber-300 animate-pulse shrink-0">● กำลังคิดคำตอบ...</span>}
                                             <span className="text-white/25">•</span>
                                             <span className="font-mono text-[10px] text-sky-200 shrink-0">
                                                 Trust {trustScore}%
@@ -2460,22 +2425,6 @@
                                     </div>
                                 )}
 
-                                {/* แถบไฟแอมเบียนแสดงสถานะรอเสียง AI พร้อมและขณะ AI พูด */}
-                                {(voiceStatus.phase !== 'idle' || isThinking) && (
-                                    <div className="holo-obsidian-card rjc-ambient-card-active rounded-2xl px-3.5 py-2 flex flex-wrap items-center justify-between gap-2 text-[11px] sm:text-xs">
-                                        <div className="flex items-center gap-2 text-cyan-100 font-bold min-w-0">
-                                            <span className="rjc-wave-eq shrink-0"><span /><span /><span /><span /><span /></span>
-                                            <span className="truncate">
-                                                {isThinking
-                                                    ? 'กำลังประมวลผลบทสนทนาและเตรียมเสียง AI คุณภาพสตูดิโอ...'
-                                                    : voiceStatus.note}
-                                            </span>
-                                        </div>
-                                        <span className="font-mono text-[10px] font-bold text-emerald-300 shrink-0">STUDIO 24kHz • ZERO BROWSER VOICE</span>
-                                    </div>
-                                )}
-
-                                {/* ปุ่มกดอนุญาตเสียงบนมือถือหากเบราว์เซอร์บล็อก Autoplay */}
                                 {audioBlockedRetry && (
                                     <button
                                         type="button"
@@ -2491,7 +2440,6 @@
                                     </button>
                                 )}
 
-                                {/* แบนเนอร์เหตุการณ์แทรกโหมด Hard */}
                                 {activeCurveball && (
                                     <div className="holo-obsidian-card border-amber-400/55 rounded-2xl px-3.5 py-2.5 text-xs space-y-1">
                                         <p className="font-mono text-[10px] font-bold text-amber-300">{activeCurveball.badgeTH}</p>
@@ -2500,7 +2448,6 @@
                                     </div>
                                 )}
 
-                                {/* AI Coach Hint (เฉพาะ Normal Mode) */}
                                 {coachHint && difficultyId === 'normal' && !activeCurveball && (
                                     <div className="holo-stage-pill rounded-xl px-3 py-1.5 text-[11px] text-emerald-200 flex items-center gap-1.5">
                                         <Icon name="Sparkles" size={13} className="shrink-0" />
@@ -2508,7 +2455,6 @@
                                     </div>
                                 )}
 
-                                {/* ตรวจผล Micro-Drill ทันทีหลังตอบแต่ละด่าน */}
                                 {selectedMode.isDrill && latestDrillFeedback && (
                                     <div className="holo-obsidian-card border-emerald-400/50 rounded-2xl p-3.5 space-y-2 text-xs">
                                         <div className="flex items-center justify-between gap-2">
@@ -2519,30 +2465,21 @@
                                                 {drillStageIdx + 1 >= DRILL_STAGES.length ? 'ดูสรุปผลรวม 5 แกน →' : 'ไปด่านถัดไป →'}
                                             </button>
                                         </div>
-                                        {latestDrillFeedback.missLabels.length > 0 && (
-                                            <p className="text-amber-200 text-[11px]">ควรเพิ่ม: {latestDrillFeedback.missLabels.join(', ')}</p>
-                                        )}
-                                        <p className="text-sky-100/90 text-[11px] leading-relaxed">
-                                            <b className="text-cyan-300">ประโยคต้นแบบ:</b> “{latestDrillFeedback.modelAnswerTH}”
-                                        </p>
+                                        {latestDrillFeedback.missLabels.length > 0 && <p className="text-amber-200 text-[11px]">ควรเพิ่ม: {latestDrillFeedback.missLabels.join(', ')}</p>}
+                                        <p className="text-sky-100/90 text-[11px] leading-relaxed"><b className="text-cyan-300">ประโยคต้นแบบ:</b> “{latestDrillFeedback.modelAnswerTH}”</p>
                                     </div>
                                 )}
 
-                                {/* เตือนคำกระทบใจ (AI Polisher) */}
                                 {liveTriggers.length > 0 && (
                                     <div className="rounded-xl bg-rose-600/25 border border-rose-400/55 px-3 py-2 text-[11px] text-rose-100">
                                         ⚠️ พบคำที่อาจกระทบใจ: <b>{liveTriggers[0].flagged}</b> → แนะนำใช้: <b className="text-emerald-300">“{liveTriggers[0].softer}”</b>
                                     </div>
                                 )}
 
-                                {/* เตือนความเร็วการพูด */}
                                 {paceHint && (
-                                    <div className="rounded-xl bg-amber-500/20 border border-amber-400/45 px-3 py-1.5 text-[11px] text-amber-100">
-                                        ⏱️ {paceHint}
-                                    </div>
+                                    <div className="rounded-xl bg-amber-500/20 border border-amber-400/45 px-3 py-1.5 text-[11px] text-amber-100">⏱️ {paceHint}</div>
                                 )}
 
-                                {/* มาตรวัดความนุ่มนวลน้ำเสียงสดขณะพูดไมค์ */}
                                 {isListening && liveVocalMetric && (
                                     <div className="holo-obsidian-card rounded-xl px-3 py-2 flex items-center justify-between gap-3 text-[11px]">
                                         <div className="flex items-center gap-2 min-w-0">
@@ -2555,7 +2492,6 @@
                                     </div>
                                 )}
 
-                                {/* กล่องแนวทางคำพูด (เฉพาะ Normal Mode และพับเก็บได้) */}
                                 {difficultyId === 'normal' && !latestDrillFeedback && (
                                     <div className="holo-obsidian-card rounded-2xl p-2.5 sm:p-3 space-y-2">
                                         <div className="flex items-center justify-between text-[11px] px-1">
@@ -2567,13 +2503,7 @@
                                         {showSuggestions && (
                                             <div className="flex gap-2 overflow-x-auto custom-scrollbar pb-1">
                                                 {suggestedPrompts.map((sp, i) => (
-                                                    <button
-                                                        key={i}
-                                                        type="button"
-                                                        disabled={isThinking}
-                                                        onClick={() => handleSendUserMsg(sp)}
-                                                        className="min-w-[235px] max-w-[280px] shrink-0 text-left p-2.5 rounded-xl bg-white/[0.07] hover:bg-white/[0.14] border border-white/15 text-[11px] sm:text-xs text-sky-50 leading-relaxed"
-                                                    >
+                                                    <button key={i} type="button" disabled={isThinking} onClick={() => handleSendUserMsg(sp)} className="min-w-[235px] max-w-[280px] shrink-0 text-left p-2.5 rounded-xl bg-white/[0.07] hover:bg-white/[0.14] border border-white/15 text-[11px] sm:text-xs text-sky-50 leading-relaxed">
                                                         “{sp}”
                                                     </button>
                                                 ))}
@@ -2582,35 +2512,18 @@
                                     </div>
                                 )}
 
-                                {/* ช่องพิมพ์ + ปุ่มไมค์ + ปุ่มส่ง + แถบฟังซ้ำ/ประวัติสนทนา */}
                                 <div className="holo-obsidian-card rounded-[1.5rem] p-2.5 sm:p-3 space-y-2">
                                     <form onSubmit={(e) => { e.preventDefault(); handleSendUserMsg(); }} className="flex items-center gap-2">
-                                        <button
-                                            type="button"
-                                            onClick={handleToggleMic}
-                                            aria-label="พูดผ่านไมโครโฟน"
-                                            className={`touch-target w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 transition-all ${
-                                                isListening
-                                                    ? 'bg-rose-600 text-white animate-pulse shadow-lg shadow-rose-500/40'
-                                                    : 'bg-emerald-500/25 border border-emerald-400/50 text-emerald-200'
-                                            }`}
-                                        >
+                                        <button type="button" onClick={handleToggleMic} aria-label="พูดผ่านไมโครโฟน" className={`touch-target w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 transition-all ${isListening ? 'bg-rose-600 text-white animate-pulse shadow-lg shadow-rose-500/40' : 'bg-emerald-500/25 border border-emerald-400/50 text-emerald-200'}`}>
                                             <Icon name={isListening ? 'Square' : 'Mic'} size={18} />
                                         </button>
                                         <input
-                                            type="text"
-                                            value={userInput}
-                                            onChange={e => setUserInput(e.target.value)}
+                                            type="text" value={userInput} onChange={e => setUserInput(e.target.value)}
                                             disabled={isThinking || Boolean(latestDrillFeedback)}
                                             placeholder={isListening ? 'กำลังฟังและวัดความนุ่มนวลน้ำเสียง...' : 'พิมพ์ หรือแตะปุ่มไมค์เพื่อพูดสื่อสาร...'}
                                             className="touch-target flex-1 min-w-0 px-3.5 py-2.5 rounded-2xl bg-white/[0.08] border border-white/15 text-white placeholder-sky-200/55 text-sm focus:outline-none focus:border-cyan-400"
                                         />
-                                        <button
-                                            type="submit"
-                                            disabled={!userInput.trim() || isThinking || Boolean(latestDrillFeedback)}
-                                            aria-label="ส่งข้อความ"
-                                            className="touch-target w-11 h-11 rounded-2xl rjc2-pill-btn disabled:opacity-35 flex items-center justify-center shrink-0"
-                                        >
+                                        <button type="submit" disabled={!userInput.trim() || isThinking || Boolean(latestDrillFeedback)} aria-label="ส่งข้อความ" className="touch-target w-11 h-11 rounded-2xl rjc2-pill-btn disabled:opacity-35 flex items-center justify-center shrink-0">
                                             <Icon name="Send" size={17} />
                                         </button>
                                     </form>
@@ -2623,12 +2536,7 @@
                                         <button type="button" onClick={() => setShowTranscriptModal(true)} className="font-bold text-sky-200 hover:text-white inline-flex items-center gap-1">
                                             <Icon name="History" size={13} /> ดูประวัติสนทนา
                                         </button>
-                                        <button
-                                            type="button"
-                                            disabled={!latestRelativeMsg}
-                                            onClick={() => latestRelativeMsg && speakRelativeSegments(latestRelativeMsg.text, latestRelativeMsg.emotion || currentEmotion, personaId)}
-                                            className="font-bold text-cyan-300 hover:text-white inline-flex items-center gap-1 disabled:opacity-40"
-                                        >
+                                        <button type="button" disabled={!latestRelativeMsg} onClick={() => latestRelativeMsg && speakRelativeSegments(latestRelativeMsg.text, latestRelativeMsg.emotion || currentEmotion, personaId)} className="font-bold text-cyan-300 hover:text-white inline-flex items-center gap-1 disabled:opacity-40">
                                             <Icon name="RotateCcw" size={13} /> ฟังเสียงญาติซ้ำ
                                         </button>
                                     </div>
@@ -2640,21 +2548,25 @@
                     {/* ==================== PHASE 4A: EVALUATING ==================== */}
                     {phase === 'evaluating' && (
                         <div className="relative z-10 flex-1 flex items-center justify-center p-4">
-                            <div className="spatial-card max-w-md w-full rounded-[2rem] overflow-hidden text-center">
-                                <div className="rjc-ambient-bar" />
-                                <div className="p-7 space-y-4">
-                                    <div className="w-12 h-12 border-4 border-aurora-400 border-t-transparent rounded-full animate-spin mx-auto" />
-                                    <h2 className="font-display font-extrabold text-lg text-primary-adaptive">AI Clinical Supervisor กำลังประเมินผล 5 แกน...</h2>
-                                    <p className="text-xs text-secondary-adaptive">กำลังวิเคราะห์ประโยคทอง จุดที่ควรเกลา ความเงียบ 2.5 วิ และน้ำเสียงของคุณ</p>
-                                    <button type="button" onClick={handleForceShowEvaluation} className="spatial-soft px-4 py-2 rounded-full text-xs font-bold text-prism-adaptive">
-                                        แสดงผลสรุปทันที
-                                    </button>
-                                </div>
+                            <div className="spatial-card max-w-md w-full rounded-[2rem] overflow-hidden text-center p-7 space-y-4">
+                                <div className="w-12 h-12 border-4 border-aurora-400 border-t-transparent rounded-full animate-spin mx-auto" />
+                                <h2 className="font-display font-extrabold text-lg text-primary-adaptive">AI Clinical Supervisor กำลังประเมินผล 5 แกน...</h2>
+                                <p className="text-xs text-secondary-adaptive">กำลังวิเคราะห์ประโยคทอง จุดที่ควรเกลา ความเงียบ 2.5 วิ และน้ำเสียงของคุณ</p>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const fb = SL.evaluateConversationFallback({ messages, barriersUnlocked: unlockedBarrierIds.length, silenceCount, triggerTotal, finalTrust: trustScore });
+                                        setEvalResult(fb); setPhase('result'); persistSkillLabSession(fb, messages, null);
+                                    }}
+                                    className="spatial-soft px-4 py-2 rounded-full text-xs font-bold text-prism-adaptive"
+                                >
+                                    แสดงผลสรุปทันที
+                                </button>
                             </div>
                         </div>
                     )}
 
-                    {/* ==================== PHASE 4B: RESULT + 5-AXIS RADAR + SELF-REFLECTION REPLAY + POST R2R ==================== */}
+                    {/* ==================== PHASE 4B: RESULT + 5-AXIS RADAR + POST R2R ==================== */}
                     {phase === 'result' && evalResult && (
                         <div className="relative z-10 max-w-4xl w-full mx-auto px-4 py-6 space-y-5 pb-12">
                             <header className="spatial-card rounded-[1.75rem] p-5 flex flex-wrap items-center justify-between gap-3">
@@ -2665,27 +2577,23 @@
                                     </h1>
                                     <p className="text-xs text-secondary-adaptive mt-0.5">{evalResult.summary}</p>
                                 </div>
-                                <span className="px-3.5 py-1.5 rounded-full bg-aurora-500/20 border border-aurora-400/45 text-accent-adaptive font-display font-extrabold text-xs">
-                                    ผ่านภารกิจ AI Skill Lab ✓
-                                </span>
+                                <div className="flex items-center gap-2">
+                                    {phaseVoiceGuide && (
+                                        <StepVoiceButton activeKey={guideVoiceState.activeKey} targetKey={phaseVoiceGuide.key} status={guideVoiceState.status} onToggle={handleReplayPhaseGuide} />
+                                    )}
+                                    <span className="px-3.5 py-1.5 rounded-full bg-aurora-500/20 border border-aurora-400/45 text-accent-adaptive font-display font-extrabold text-xs">
+                                        ผ่านภารกิจ AI Skill Lab ✓
+                                    </span>
+                                </div>
                             </header>
 
                             <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
                                 <div className="md:col-span-5 spatial-card rounded-[1.75rem] p-5 space-y-3">
                                     <FiveAxisRadarSVG radarArr={evalResult.radar} theme={theme} />
                                     <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                                        <div className="spatial-soft p-2.5 rounded-xl">
-                                            <span className="text-[10px] text-muted-adaptive block">Trust</span>
-                                            <span className="font-mono font-extrabold text-accent-adaptive">{trustScore}%</span>
-                                        </div>
-                                        <div className="spatial-soft p-2.5 rounded-xl">
-                                            <span className="text-[10px] text-muted-adaptive block">ความเงียบ 2.5 วิ</span>
-                                            <span className="font-mono font-extrabold text-prism-adaptive">{silenceCount} ครั้ง</span>
-                                        </div>
-                                        <div className="spatial-soft p-2.5 rounded-xl">
-                                            <span className="text-[10px] text-muted-adaptive block">คำกระทบใจ</span>
-                                            <span className={`font-mono font-extrabold ${triggerTotal === 0 ? 'text-accent-adaptive' : 'text-rose-400'}`}>{triggerTotal}</span>
-                                        </div>
+                                        <div className="spatial-soft p-2.5 rounded-xl"><span className="text-[10px] text-muted-adaptive block">Trust</span><span className="font-mono font-extrabold text-accent-adaptive">{trustScore}%</span></div>
+                                        <div className="spatial-soft p-2.5 rounded-xl"><span className="text-[10px] text-muted-adaptive block">ความเงียบ 2.5 วิ</span><span className="font-mono font-extrabold text-prism-adaptive">{silenceCount} ครั้ง</span></div>
+                                        <div className="spatial-soft p-2.5 rounded-xl"><span className="text-[10px] text-muted-adaptive block">คำกระทบใจ</span><span className={`font-mono font-extrabold ${triggerTotal === 0 ? 'text-accent-adaptive' : 'text-rose-400'}`}>{triggerTotal}</span></div>
                                     </div>
                                 </div>
 
@@ -2701,7 +2609,6 @@
                                         </div>
                                     </div>
 
-                                    {/* Self-Reflection Audio Replay (RAM-Only • 0 THB • PDPA Safe) */}
                                     <div className="spatial-card rounded-[1.75rem] p-5 space-y-3 text-xs">
                                         <div>
                                             <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">SELF-REFLECTION AUDIO REPLAY (RAM-ONLY • 100% PDPA SAFE)</span>
@@ -2734,7 +2641,7 @@
                                         <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">POST-TRAINING SELF-EFFICACY (R2R RESEARCH)</span>
                                         <h3 className="font-display font-bold text-sm sm:text-base text-primary-adaptive">ประเมินความมั่นใจหลังฝึกเสร็จ (เทียบก่อนฝึก {preEffAvg} → หลังฝึก {postEffAvg})</h3>
                                     </div>
-                                    <button type="button" disabled={postEffSaved} onClick={handleSavePostSelfEfficacy} className="rjc2-pill-btn px-4 py-2 rounded-full font-display font-extrabold text-xs disabled:opacity-50">
+                                    <button type="button" disabled={postEffSaved} onClick={async () => { await persistSkillLabSession(evalResult, messages, postEff); setPostEffSaved(true); showToast('บันทึกความมั่นใจหลังฝึกเรียบร้อยแล้วค่ะ'); }} className="rjc2-pill-btn px-4 py-2 rounded-full font-display font-extrabold text-xs disabled:opacity-50">
                                         {postEffSaved ? 'บันทึกผลวิจัยแล้ว ✓' : 'บันทึกความมั่นใจหลังฝึก'}
                                     </button>
                                 </div>
@@ -2753,10 +2660,10 @@
                             </section>
 
                             <div className="flex flex-wrap gap-3">
-                                <button type="button" onClick={() => setPhase('lobby')} className="spatial-soft touch-target flex-1 py-3.5 rounded-full font-display font-bold text-sm text-primary-adaptive">
+                                <button type="button" onClick={() => { stopGuideVoice(); setPhase('lobby'); }} className="spatial-soft touch-target flex-1 py-3.5 rounded-full font-display font-bold text-sm text-primary-adaptive">
                                     ฝึกเคสใหม่อีกครั้ง
                                 </button>
-                                <a href="./index.html" className="rjc2-pill-btn touch-target flex-1 py-3.5 rounded-full font-display font-extrabold text-sm inline-flex items-center justify-center">
+                                <a href={dashboardReturnHref} onClick={persistLearnerBeforeReturn} className="rjc2-pill-btn touch-target flex-1 py-3.5 rounded-full font-display font-extrabold text-sm inline-flex items-center justify-center">
                                     กลับสู่ห้องเรียนหลัก (Step 4 Post-test) →
                                 </a>
                             </div>
@@ -2796,7 +2703,7 @@
                         <div onClick={() => setShowTranscriptModal(false)} className="fixed inset-0 z-[150] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
                             <div onClick={e => e.stopPropagation()} className="spatial-card max-w-lg w-full max-h-[82vh] rounded-[2rem] p-5 flex flex-col gap-3">
                                 <div className="flex items-center justify-between">
-                                    <h3 className="font-display font-extrabold text-base text-primary-adaptive">ประวัติสนทนา &amp; ย้อนเวลาแก้คำพูด (Time-Rewind)</h3>
+                                    <h3 className="font-display font-extrabold text-base text-primary-adaptive">ประวัติสนทนา &amp; ย้อนเวลาแก้คำพูด</h3>
                                     <button type="button" onClick={() => setShowTranscriptModal(false)} className="spatial-soft w-8 h-8 rounded-xl flex items-center justify-center"><Icon name="X" size={16} /></button>
                                 </div>
                                 <div className="flex-1 overflow-y-auto custom-scrollbar space-y-2 text-xs pr-1">
@@ -2805,7 +2712,7 @@
                                             <div className="flex items-center justify-between gap-2">
                                                 <span className="font-mono text-[10px] font-bold text-prism-adaptive">{m.role === 'user' ? 'คุณ (ผู้เรียน)' : (activeSpeakerBadge || 'คู่สนทนา')}</span>
                                                 {m.role === 'relative' && idx < messages.length - 1 && (
-                                                    <button type="button" onClick={() => handleRewindToMessage(idx)} className="text-[10px] font-bold text-amber-400 hover:underline">⏪ ย้อนมาตรงนี้</button>
+                                                    <button type="button" onClick={() => { stopAiVoice(); setMessages(messages.slice(0, idx + 1)); setShowTranscriptModal(false); showToast('ย้อนเวลากลับไปแก้ไขคำพูดในรอบที่เลือกแล้วค่ะ', 'info'); }} className="text-[10px] font-bold text-amber-400 hover:underline">⏪ ย้อนมาตรงนี้</button>
                                                 )}
                                             </div>
                                             <p className="text-primary-adaptive leading-relaxed">{m.text}</p>
@@ -2835,5 +2742,7 @@
         const root = createRoot(document.getElementById('skilllab-root'));
         root.render(<SkillLabErrorBoundary><SkillLabApp /></SkillLabErrorBoundary>);
     </script>
+    <!-- โหลด Babel ท้ายสุดหลังสคริปต์ทั้งหมด เพื่อให้แน่ใจว่าโค้ดครบ 100% ก่อนคอมไพล์ -->
+    <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
 </body>
 </html>
