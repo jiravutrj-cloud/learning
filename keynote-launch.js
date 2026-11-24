@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * rjcloud.organ 2.0 — World-Class Keynote Launch Module (keynote-launch.js)
+ * rjcloud.organ 2.0 — World-Class Launch Experience Module (keynote-launch.js)
  * เชื่อมต่อหน้าแรกต้นไม้ (index.html) ผ่าน window.RJCLOUD_KEYNOTE
  *
  * ความสามารถครบชุด (อัปเกรด Studio-Grade AI Voice 2027 • ไฟล์ 3/4):
@@ -47,7 +47,7 @@
       speaker: 'female',
       voiceName: FEMALE_VOICE_NAME,
       badge: 'พิธีกรหญิง',
-      style: 'พูดภาษาไทยสลับอังกฤษด้วยน้ำเสียงผู้หญิงที่อบอุ่น สง่างาม มั่นใจ คมชัดระดับสตูดิโอ และทันสมัยเหมือนพิธีกรงานเปิดตัว Apple Keynote',
+      style: 'พูดภาษาไทยสลับอังกฤษด้วยน้ำเสียงผู้หญิงที่อบอุ่น สง่างาม มั่นใจ คมชัดระดับสตูดิโอ และทันสมัยเหมือนพิธีกรงานเปิดตัวเทคโนโลยีระดับสากล',
       speech: 'และวันนี้... Organ Transplantation Center of ราชวิถี Hospital พร้อมแล้วที่จะพาท่านก้าวข้ามทุกขีดจำกัดของการฝึกอบรมเดิมๆ ค่ะ'
     },
     {
@@ -853,9 +853,9 @@
       dock.className = 'rjkn-dock';
       dock.style.display = 'none';
       dock.innerHTML = `
-        <button type="button" id="rjkn-dock-play" class="rjkn-pill" title="เปิดการนำเสนอเปิดตัวด้วยเสียงพิธีกรคู่ AI คุณภาพสตูดิโอ">
+        <button type="button" id="rjkn-dock-play" class="rjkn-pill" title="ฟังเสียงพิธีกรคู่ AI แนะนำระบบ rjcloud.organ 2.0">
           <span id="rjkn-dock-icon">▶</span>
-          <span id="rjkn-dock-label">เปิดตัว AI Keynote</span>
+          <span id="rjkn-dock-label">แนะนำระบบ AI</span>
         </button>
         <button type="button" id="rjkn-dock-mute" class="rjkn-pill" style="display:none;" title="เปิด/ปิดเสียงเพลงประกอบ">
           <span id="rjkn-mute-label">🎵 เพลง: เปิด</span>
@@ -898,12 +898,12 @@
     if (State.running) {
       playBtn.classList.add(State.voicePhase === 'loading' ? 'is-loading' : 'is-live');
       iconEl.innerHTML = '<span class="rjkn-eq"><span></span><span></span><span></span></span>';
-      labelEl.textContent = State.statusLabel || 'หยุด Keynote';
+      labelEl.textContent = State.statusLabel || 'หยุดเสียงเปิดตัว';
       muteBtn.style.display = 'inline-flex';
       muteLabel.textContent = State.musicMuted ? '🔇 เพลง: ปิด' : '🎵 เพลง: เปิด';
     } else {
       iconEl.textContent = '▶';
-      labelEl.textContent = 'เปิดตัว AI Keynote';
+      labelEl.textContent = 'แนะนำระบบ AI';
       muteBtn.style.display = 'none';
     }
   }
@@ -1005,7 +1005,7 @@
 
     if (State.sessionId === sid && State.running) {
       State.voicePhase = 'music_only';
-      State.statusLabel = 'หยุดเพลง Keynote';
+      State.statusLabel = 'หยุดเสียงเปิดตัว';
       updateDockUi();
       MusicEngine.duckTo(65, 900);
       setTimeout(function () {
