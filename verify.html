@@ -7,35 +7,53 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>ตรวจสอบความถูกต้องประกาศนียบัตร (QR 3D Seal) — rjcloud.organ 2.0</title>
-    <link rel="manifest" href="./manifest.json">
 
-    <!-- โหลดไฟล์สไตล์และโมดูลกลาง (มีค่าสำรองครบในตัวเมื่อเปิดพรีวิวเดี่ยว) -->
-    <link rel="stylesheet" href="./styles.css">
-    <script src="./data.js" onerror="console.warn('data.js not loaded, using built-in defaults')"></script>
-    <script src="./learning-core.js" onerror="console.warn('learning-core.js not loaded, using built-in defaults')"></script>
-    <script src="./cert-engine.js" onerror="console.warn('cert-engine.js not loaded, using built-in fallback')"></script>
-
-    <!-- ซิงค์โหมดมืด/สว่างทันทีจาก localStorage ป้องกันจอกระพริบ -->
+    <!-- ซิงค์โหมดมืด/สว่างทันที + โหลดไฟล์ร่วมเฉพาะเมื่ออยู่บนโดเมนเว็บจริง (ป้องกัน 404 ในโหมดพรีวิว) -->
     <script>
       (function () {
         try {
-          const key = (window.RJCLOUD_CONFIG && window.RJCLOUD_CONFIG.theme && window.RJCLOUD_CONFIG.theme.storageKey) || 'rjcloud_theme';
-          const def = (window.RJCLOUD_CONFIG && window.RJCLOUD_CONFIG.theme && window.RJCLOUD_CONFIG.theme.defaultMode) || 'dark';
-          const saved = localStorage.getItem(key) || def;
+          const saved = localStorage.getItem('rjcloud_theme') || 'dark';
           const mode = saved === 'light' ? 'light' : 'dark';
           document.documentElement.setAttribute('data-theme', mode);
           const meta = document.querySelector('meta[name="theme-color"]');
           if (meta) meta.setAttribute('content', mode === 'dark' ? '#020612' : '#edf6fd');
+        } catch (_) {}
+
+        try {
+          const loc = window.location;
+          const isRealHost =
+            (loc.protocol === 'https:' || loc.protocol === 'http:') &&
+            loc.origin !== 'null' &&
+            !/(googleusercontent|webcontainer|stackblitz|sandbox|srcdoc|blob:)/i.test(loc.href);
+          if (isRealHost) {
+            const manifest = document.createElement('link');
+            manifest.rel = 'manifest';
+            manifest.href = './manifest.json';
+            document.head.appendChild(manifest);
+
+            const css = document.createElement('link');
+            css.rel = 'stylesheet';
+            css.href = './styles.css';
+            document.head.appendChild(css);
+
+            ['./data.js', './cert-engine.js'].forEach(function (src) {
+              const s = document.createElement('script');
+              s.src = src;
+              s.defer = true;
+              s.onerror = function () {};
+              document.head.appendChild(s);
+            });
+          }
         } catch (_) {}
       })();
     </script>
 
     <!-- Tailwind CSS, QR Generator & ฟอนต์ภาษาไทยสไตล์ Apple -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" onerror="console.warn('QR CDN unavailable')"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" defer></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Prompt:wght@500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Prompt:wght@500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <script>
       if (window.tailwind) {
@@ -43,8 +61,8 @@
           theme: {
             extend: {
               fontFamily: {
-                display: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Anuphan', 'Prompt', 'sans-serif'],
-                sans: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'Anuphan', 'Sarabun', 'sans-serif'],
+                display: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Anuphan', 'Prompt', 'sans-serif'],
+                sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'Anuphan', 'Sarabun', 'sans-serif'],
                 mono: ['SF Mono', 'ui-monospace', 'JetBrains Mono', 'monospace']
               },
               colors: {
@@ -64,15 +82,15 @@
         --text-main: #f8fafc;
         --text-secondary: #dbeafe;
         --text-muted: #93b4d8;
-        --glass-bg: linear-gradient(145deg, rgba(16, 40, 86, 0.56) 0%, rgba(5, 16, 40, 0.86) 100%);
+        --glass-bg: linear-gradient(145deg, rgba(16, 40, 86, 0.58) 0%, rgba(5, 16, 40, 0.88) 100%);
         --glass-border: rgba(186, 230, 253, 0.24);
-        --glass-shadow: 0 24px 54px -18px rgba(0, 8, 28, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+        --glass-shadow: 0 24px 54px -18px rgba(0, 8, 28, 0.82), inset 0 1px 0 rgba(255, 255, 255, 0.22);
         --header-bg: rgba(4, 12, 30, 0.86);
         --surface-soft: rgba(147, 197, 253, 0.08);
         --surface-soft-hover: rgba(147, 197, 253, 0.16);
         --surface-border: rgba(186, 230, 253, 0.18);
         --input-bg: rgba(6, 18, 44, 0.86);
-        --input-border: rgba(147, 197, 253, 0.3);
+        --input-border: rgba(147, 197, 253, 0.32);
         --input-text: #f8fafc;
         --accent-text: #6ee7b7;
         --accent-prism: #67e8f9;
@@ -86,14 +104,14 @@
         --text-main: #0c1b33;
         --text-secondary: #284366;
         --text-muted: #5a7496;
-        --glass-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.94) 0%, rgba(232, 244, 253, 0.86) 100%);
+        --glass-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.94) 0%, rgba(232, 244, 253, 0.88) 100%);
         --glass-border: rgba(255, 255, 255, 0.96);
         --glass-shadow: 0 18px 42px -14px rgba(15, 58, 125, 0.15);
-        --header-bg: rgba(244, 250, 255, 0.9);
-        --surface-soft: rgba(255, 255, 255, 0.82);
+        --header-bg: rgba(244, 250, 255, 0.92);
+        --surface-soft: rgba(255, 255, 255, 0.84);
         --surface-soft-hover: rgba(255, 255, 255, 0.98);
-        --surface-border: rgba(125, 175, 226, 0.32);
-        --input-bg: rgba(255, 255, 255, 0.95);
+        --surface-border: rgba(125, 175, 226, 0.34);
+        --input-bg: rgba(255, 255, 255, 0.96);
         --input-border: rgba(148, 184, 222, 0.65);
         --input-text: #0c1b33;
         --accent-text: #047857;
@@ -108,7 +126,7 @@
       html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
       body {
         margin: 0;
-        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Anuphan', 'Sarabun', sans-serif;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Anuphan', 'Sarabun', sans-serif;
         background-color: var(--bg-page);
         color: var(--text-main);
         overflow-x: hidden;
@@ -147,7 +165,7 @@
         -webkit-backdrop-filter: blur(22px) saturate(160%);
         border-bottom: 1px solid var(--surface-border);
       }
-      .spatial-soft { background: var(--surface-soft); border: 1px solid var(--surface-border); }
+      .spatial-soft { background: var(--surface-soft); border: 1px solid var(--surface-border); transition: background 0.18s ease, border-color 0.18s ease; }
       .spatial-soft:hover { background: var(--surface-soft-hover); }
       .spatial-input { background: var(--input-bg); border: 1px solid var(--input-border); color: var(--input-text); }
       .spatial-input:focus { outline: none; border-color: #38bdf8; box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.22); }
@@ -157,6 +175,7 @@
         color: #050b16 !important;
         box-shadow: 0 10px 28px -6px rgba(134, 239, 172, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.72) inset;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
+        cursor: pointer;
       }
       .rjc2-pill-btn:hover { transform: translateY(-1px) scale(1.015); }
       .rjc2-pill-btn:active { transform: scale(0.98); }
@@ -167,181 +186,420 @@
       .text-accent-adaptive { color: var(--accent-text); }
       .text-prism-adaptive { color: var(--accent-prism); }
 
-      /* ตราโฮโลแกรม 3 มิติป้องกันการปลอมแปลง (Interactive 3D Tilt + Iridescent Foil) */
+      /* ============================================================================
+       * ตราโฮโลแกรม 3 มิติป้องกันการปลอมแปลง (Interactive 3D Tilt + Iridescent Foil)
+       * ============================================================================ */
       @keyframes holoRingSpin {
         from { transform: rotate(0deg); }
         to { transform: rotate(360deg); }
+      }
+      @keyframes holoRingSpinReverse {
+        from { transform: rotate(360deg); }
+        to { transform: rotate(0deg); }
       }
       @keyframes holoShimmer {
         0% { background-position: 0% 50%; }
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
       }
+      @keyframes verifyFadeIn {
+        from { opacity: 0; transform: translateY(10px) scale(0.99); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+
       .holo-card-wrapper {
-        perspective: 1100px;
+        perspective: 1200px;
       }
       .holo-cert-card {
         position: relative;
         transform-style: preserve-3d;
-        transition: transform 0.18s ease-out;
-        overflow: hidden;
+        transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease;
+        will-change: transform;
+        animation: verifyFadeIn 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
       }
-      .holo-foil-overlay {
+      .holo-foil-sheen {
         position: absolute;
         inset: 0;
+        border-radius: inherit;
         pointer-events: none;
-        opacity: 0.26;
-        background: radial-gradient(
-          circle at var(--mx, 50%) var(--my, 35%),
-          rgba(255, 255, 255, 0.62) 0%,
-          rgba(110, 231, 183, 0.28) 22%,
-          rgba(56, 189, 248, 0.24) 44%,
-          rgba(192, 132, 252, 0.16) 66%,
-          transparent 82%
-        );
+        opacity: 0.45;
         mix-blend-mode: screen;
-        transition: opacity 0.2s ease;
+        background:
+          radial-gradient(circle at var(--mx, 50%) var(--my, 35%), rgba(255, 255, 255, 0.32) 0%, rgba(110, 231, 183, 0.16) 24%, rgba(56, 189, 248, 0.12) 46%, transparent 72%),
+          linear-gradient(125deg, rgba(253, 224, 71, 0.08) 0%, rgba(56, 189, 248, 0.1) 35%, rgba(192, 132, 252, 0.1) 68%, rgba(110, 231, 183, 0.08) 100%);
+        background-size: 200% 200%;
+        animation: holoShimmer 7s ease-in-out infinite;
       }
-      .holo-seal-disc {
+      html[data-theme="light"] .holo-foil-sheen {
+        mix-blend-mode: overlay;
+        opacity: 0.55;
+      }
+
+      .holo-seal-orb {
         position: relative;
-        background: linear-gradient(135deg, #fde68a 0%, #6ee7b7 34%, #38bdf8 66%, #e879f9 100%);
-        background-size: 240% 240%;
-        animation: holoShimmer 5.2s ease infinite;
-        box-shadow: 0 0 28px -4px rgba(110, 231, 183, 0.65), inset 0 1px 2px rgba(255, 255, 255, 0.85);
+        width: 98px;
+        height: 98px;
+        border-radius: 9999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform: translateZ(26px);
+        box-shadow: 0 12px 30px -6px rgba(16, 185, 129, 0.45), inset 0 0 18px rgba(255, 255, 255, 0.35);
       }
-      .holo-seal-orbit {
-        animation: holoRingSpin 16s linear infinite;
+      .holo-seal-ring-outer {
+        position: absolute;
+        inset: 0;
+        border-radius: 9999px;
+        background: conic-gradient(from 0deg, #fde68a, #6ee7b7, #38bdf8, #c084fc, #f472b6, #fde68a);
+        -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
+        mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
+        animation: holoRingSpin 9s linear infinite;
+      }
+      .holo-seal-ring-inner {
+        position: absolute;
+        inset: 8px;
+        border-radius: 9999px;
+        border: 1.5px dashed rgba(253, 224, 71, 0.72);
+        animation: holoRingSpinReverse 16s linear infinite;
+      }
+      .holo-seal-core {
+        position: relative;
+        width: 72px;
+        height: 72px;
+        border-radius: 9999px;
+        background: radial-gradient(circle at 30% 25%, #a7f3d0 0%, #10b981 48%, #0369a1 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+        box-shadow: inset 0 2px 6px rgba(255, 255, 255, 0.55);
+      }
+      .holo-seal-core.is-blue {
+        background: radial-gradient(circle at 30% 25%, #bae6fd 0%, #0ea5e9 48%, #4f46e5 100%);
+      }
+
+      /* Toast notification (แทน alert()) */
+      .verify-toast {
+        position: fixed;
+        top: calc(1rem + env(safe-area-inset-top, 0px));
+        left: 50%;
+        transform: translateX(-50%) translateY(-12px);
+        z-index: 160;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease, transform 0.25s ease;
+      }
+      .verify-toast.is-show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
       }
 
       @media print {
-        @page { size: A4 portrait; margin: 14mm; }
-        html, body { background: #ffffff !important; color: #0f172a !important; }
-        .no-print, .spatial-aura, .spatial-grid, .holo-foil-overlay { display: none !important; }
-        .spatial-card, .spatial-soft {
-          background: #ffffff !important;
-          color: #0f172a !important;
-          border: 1px solid #cbd5e1 !important;
-          box-shadow: none !important;
-        }
-        .text-primary-adaptive, .text-secondary-adaptive, .text-muted-adaptive { color: #0f172a !important; }
-        .text-accent-adaptive { color: #047857 !important; }
-        .text-prism-adaptive { color: #0369a1 !important; }
+        @page { size: A4 portrait; margin: 12mm; }
+        body { background: #ffffff !important; color: #0f172a !important; }
+        .no-print, .spatial-aura, .spatial-grid, .holo-foil-sheen { display: none !important; }
+        .spatial-card { background: #ffffff !important; border: 2px solid #cbd5e1 !important; box-shadow: none !important; color: #0f172a !important; }
+        .spatial-soft { background: #f8fafc !important; border: 1px solid #cbd5e1 !important; color: #0f172a !important; }
+        .text-primary-adaptive, .text-secondary-adaptive { color: #0f172a !important; }
+        .text-muted-adaptive { color: #475569 !important; }
       }
-      @keyframes verifySpin { to { transform: rotate(360deg); } }
+      @media (prefers-reduced-motion: reduce) {
+        .holo-seal-ring-outer, .holo-seal-ring-inner, .holo-foil-sheen { animation: none !important; }
+      }
     </style>
-
-    <!-- ESM Import Map (React 18, Lucide Icons, Firebase 11) -->
-    <script type="importmap">
-    {
-      "imports": {
-        "react": "https://esm.sh/react@18.2.0",
-        "react-dom": "https://esm.sh/react-dom@18.2.0",
-        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-        "lucide-react": "https://esm.sh/lucide-react@0.344.0?external=react",
-        "firebase/app": "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js",
-        "firebase/auth": "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js",
-        "firebase/firestore": "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"
-      }
-    }
-    </script>
 </head>
-<body>
-    <!-- หน้าจอโหลดเริ่มต้น -->
-    <div id="verify-root">
-        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#020612;color:#f8fafc;font-family:-apple-system,'Anuphan','Prompt',sans-serif;gap:14px;padding:24px;text-align:center;">
-            <div style="width:46px;height:46px;border:3px solid rgba(56,189,248,0.22);border-top-color:#6ee7b7;border-right-color:#38bdf8;border-radius:9999px;animation:verifySpin 0.85s linear infinite;"></div>
-            <div style="font-weight:800;font-size:17px;">กำลังเปิดระบบตรวจสอบประกาศนียบัตรดิจิทัล...</div>
-            <div style="font-size:12px;color:#93b4d8;">rjcloud.organ 2.0 • Profession-Aware Verification &amp; 3D Hologram Seal</div>
+<body class="min-h-dvh relative flex flex-col pt-safe pb-safe">
+    <!-- Background Spatial Aura & Grid -->
+    <div class="spatial-aura" aria-hidden="true"></div>
+    <div class="spatial-grid" aria-hidden="true"></div>
+
+    <!-- Toast Notification Banner -->
+    <div id="verify-toast" class="verify-toast no-print w-[92vw] max-w-md" role="status" aria-live="polite">
+        <div id="verify-toast-box" class="px-4 py-3 rounded-2xl shadow-2xl border backdrop-blur-2xl flex items-center gap-2 text-xs sm:text-sm font-bold text-white bg-emerald-700/95 border-emerald-400/60">
+            <span id="verify-toast-icon" aria-hidden="true">✓</span>
+            <span id="verify-toast-text">พร้อมตรวจสอบประกาศนียบัตร</span>
         </div>
     </div>
 
-    <!-- Global Error Guard -->
-    <script>
-      window.addEventListener('error', function (ev) {
-        const src = String(ev.filename || (ev.target && ev.target.src) || '');
-        if (src.includes('data.js') || src.includes('learning-core.js') || src.includes('cert-engine.js') || src.includes('styles.css') || src.includes('qrcode')) return;
-        const root = document.getElementById('verify-root');
-        if (root && !root.dataset.mounted && ev.message) {
-          const safeMsg = String(ev.message || 'Unknown error').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          root.innerHTML =
-            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#020612;color:#f8fafc;font-family:Sarabun,sans-serif;">' +
-            '<div style="max-width:440px;width:100%;background:#061229;border:1px solid rgba(244,63,94,0.4);border-radius:24px;padding:24px;text-align:center;">' +
-            '<h2 style="color:#fda4af;font-weight:700;margin:0 0 8px;">ไม่สามารถเปิดระบบตรวจสอบได้ชั่วคราว</h2>' +
-            '<p style="font-size:13px;color:#dbeafe;margin:0 0 16px;">' + safeMsg + '</p>' +
-            '<button onclick="window.location.reload()" style="padding:12px 24px;border:none;border-radius:14px;background:#34d399;color:#020612;font-weight:700;cursor:pointer;">โหลดหน้าใหม่</button>' +
-            '</div></div>';
-        }
-      });
-    </script>
+    <!-- Top Navigation Header -->
+    <header class="no-print sticky top-0 z-30 spatial-header">
+        <div class="max-w-4xl mx-auto px-3.5 sm:px-6 h-14 md:h-16 flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5 min-w-0">
+                <a href="./index.html" aria-label="กลับหน้าหลัก" class="w-9 h-9 rounded-xl spatial-soft text-primary-adaptive flex items-center justify-center shrink-0 no-underline">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+                </a>
+                <div class="min-w-0">
+                    <span class="font-display font-extrabold text-sm sm:text-base text-primary-adaptive block leading-none truncate">
+                        rjcloud<span class="text-accent-adaptive">.organ</span> <span class="font-mono text-[10px] text-prism-adaptive">VERIFY 2.0</span>
+                    </span>
+                    <span class="text-[10px] font-mono text-muted-adaptive block truncate">
+                        Public Certificate Verification • QR 3D Hologram Seal
+                    </span>
+                </div>
+            </div>
 
-    <script type="text/babel" data-type="module" data-presets="react">
-        import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-        import { createRoot } from 'react-dom/client';
-        import * as LucideIcons from 'lucide-react';
-        import { initializeApp, getApps, getApp } from 'firebase/app';
-        import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
-        import { getFirestore, doc, getDoc } from 'firebase/firestore';
+            <div class="flex items-center gap-1.5 shrink-0">
+                <span class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-aurora-500/15 border border-aurora-400/35 text-accent-adaptive font-mono text-[10px] font-bold">
+                    PDPA ZERO-PII
+                </span>
+                <button id="btn-theme-toggle" type="button" aria-label="สลับโหมดมืดหรือสว่าง" class="spatial-soft px-2.5 sm:px-3 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5 text-primary-adaptive shrink-0 cursor-pointer">
+                    <span id="theme-icon" aria-hidden="true">☀️</span>
+                    <span id="theme-label" class="hidden sm:inline">โหมดสว่าง</span>
+                </button>
+            </div>
+        </div>
+    </header>
 
+    <!-- Main Verification Workspace -->
+    <main class="relative z-10 max-w-4xl w-full mx-auto px-3.5 sm:px-6 py-5 sm:py-8 space-y-5 flex-1">
+        <!-- Search & Sample Selector Card -->
+        <section class="no-print spatial-card rounded-[2rem] p-5 sm:p-6 space-y-4">
+            <div class="flex flex-wrap items-start justify-between gap-2">
+                <div>
+                    <span class="font-mono text-[10px] font-bold text-prism-adaptive uppercase tracking-wider">OFFICIAL CERTIFICATE REGISTRY • ตรวจสอบได้ทันทีตลอด 24 ชม.</span>
+                    <h1 class="font-display font-extrabold text-lg sm:text-2xl text-primary-adaptive mt-0.5">
+                        ตรวจสอบความถูกต้องประกาศนียบัตรดิจิทัล
+                    </h1>
+                    <p class="text-xs text-secondary-adaptive mt-1 leading-relaxed">
+                        กรอกรหัสอ้างอิงประกาศนียบัตร (Certificate No.) เพื่อยืนยันสถานะการสำเร็จหลักสูตรและสิทธิ์รับรองตามกลุ่มวิชาชีพจากฐานข้อมูลสาธารณะ <b>rjcloud.organ 2.0</b>
+                    </p>
+                </div>
+            </div>
+
+            <form id="verify-search-form" class="flex flex-col sm:flex-row gap-2.5">
+                <div class="relative flex-1">
+                    <input
+                        id="verify-code-input"
+                        type="text"
+                        autocomplete="off"
+                        spellcheck="false"
+                        placeholder="กรอกรหัสประกาศนียบัตร เช่น RJC-2027-DEMO01"
+                        class="touch-target spatial-input w-full px-4 py-3 rounded-2xl font-mono text-sm sm:text-base font-bold uppercase tracking-wide"
+                    />
+                </div>
+                <button id="btn-verify-submit" type="submit" class="rjc2-pill-btn touch-target px-6 py-3 rounded-2xl font-display font-extrabold text-sm inline-flex items-center justify-center gap-2 shrink-0">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    <span id="btn-verify-text">ตรวจสอบรหัส</span>
+                </button>
+            </form>
+
+            <!-- ปุ่มทดลองเทียบครบทั้ง 3 กลุ่มวิชาชีพทันที -->
+            <div class="pt-2 border-t border-white/10 space-y-2">
+                <p class="text-[11px] font-semibold text-muted-adaptive">
+                    ทดลองตรวจสอบรหัสตัวอย่างเทียบครบทั้ง 3 กลุ่มวิชาชีพ (คลิกเพื่อดูตราโฮโลแกรม 3 มิติและการแสดงผลแยกสิทธิ์):
+                </p>
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" data-demo-code="RJC-2027-DEMO01" class="demo-chip spatial-soft px-3.5 py-2 rounded-full text-xs font-bold text-accent-adaptive border-aurora-400/45 inline-flex items-center gap-1.5 cursor-pointer">
+                        <span>●</span> พยาบาล • CNEU (DEMO01)
+                    </button>
+                    <button type="button" data-demo-code="RJC-2027-MD0002" class="demo-chip spatial-soft px-3.5 py-2 rounded-full text-xs font-bold text-prism-adaptive border-prism-400/45 inline-flex items-center gap-1.5 cursor-pointer">
+                        <span>●</span> แพทย์ • ชม.อบรม (MD0002)
+                    </button>
+                    <button type="button" data-demo-code="RJC-2027-ALLIED4" class="demo-chip spatial-soft px-3.5 py-2 rounded-full text-xs font-bold text-indigo-300 border-indigo-400/45 inline-flex items-center gap-1.5 cursor-pointer">
+                        <span>●</span> สหวิชาชีพ • ชม.พัฒนา (ALLIED4)
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading Indicator -->
+        <section id="verify-loading" class="hidden spatial-card rounded-[2rem] p-10 text-center space-y-3">
+            <div class="w-10 h-10 border-4 border-aurora-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <p class="font-display font-bold text-sm text-primary-adaptive">กำลังตรวจสอบรหัสประกาศนียบัตรจากฐานข้อมูล Cloud...</p>
+            <p class="text-xs font-mono text-muted-adaptive">Verifying against public registry certificates/{code}</p>
+        </section>
+
+        <!-- Not Found / Invalid Code State -->
+        <section id="verify-not-found" class="hidden spatial-card rounded-[2rem] p-7 sm:p-9 text-center space-y-4 border-rose-500/45">
+            <div class="w-14 h-14 rounded-2xl bg-rose-500/20 text-rose-400 flex items-center justify-center mx-auto">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+            </div>
+            <div class="space-y-1.5">
+                <span class="px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 font-mono text-[10px] font-bold uppercase">UNVERIFIED / NOT FOUND</span>
+                <h2 class="font-display font-extrabold text-xl text-rose-300">ไม่พบรหัสประกาศนียบัตรในระบบทะเบียนสาธารณะ</h2>
+                <p id="not-found-code-msg" class="text-xs sm:text-sm text-secondary-adaptive max-w-lg mx-auto leading-relaxed"></p>
+            </div>
+            <p class="text-[11px] text-muted-adaptive">
+                กรุณาตรวจสอบตัวสะกดรหัสบนมุมซ้ายล่างของใบประกาศนียบัตร (เช่น <span class="font-mono">RJC-2027-XXXXXX</span>) หรือสแกน QR Code จากเอกสารต้นฉบับอีกครั้งค่ะ
+            </p>
+        </section>
+
+        <!-- Verified Certificate Result Card (Interactive 3D Hologram Seal + Profession-Aware Credit Box) -->
+        <section id="verify-result-wrap" class="hidden holo-card-wrapper">
+            <article id="holo-cert-card" class="holo-cert-card spatial-card rounded-[2rem] p-5 sm:p-8 space-y-6 overflow-hidden border-aurora-400/50" style="--mx: 50%; --my: 30%;">
+                <div class="holo-foil-sheen" aria-hidden="true"></div>
+
+                <!-- Top Verification Banner + 3D Hologram Seal -->
+                <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/15 pb-5">
+                    <div class="space-y-2 min-w-0">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span id="res-status-badge" class="px-3 py-1 rounded-full bg-aurora-500/20 border border-aurora-400/50 text-accent-adaptive font-mono text-[11px] font-extrabold inline-flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                VERIFIED AUTHENTIC • เอกสารจริงถูกต้อง
+                            </span>
+                            <span id="res-prof-pill" class="px-2.5 py-1 rounded-full spatial-soft font-mono text-[10px] font-bold text-prism-adaptive">
+                                พยาบาล
+                            </span>
+                            <span id="res-demo-tag" class="hidden px-2.5 py-1 rounded-full bg-amber-400/20 border border-amber-400/45 text-amber-300 font-mono text-[10px] font-bold">
+                                SAMPLE PREVIEW
+                            </span>
+                        </div>
+
+                        <h2 id="res-name-th" class="font-display font-extrabold text-2xl sm:text-3xl text-primary-adaptive leading-tight">
+                            พว.กัญญารัตน์ วัฒนากูล
+                        </h2>
+                        <p id="res-name-en" class="font-display font-semibold text-sm text-secondary-adaptive -mt-1"></p>
+                        <p id="res-org-line" class="text-xs sm:text-sm text-muted-adaptive">
+                            พยาบาลวิชาชีพชำนาญการ (TC) • โรงพยาบาลราชวิถี
+                        </p>
+                    </div>
+
+                    <!-- Interactive 3D Hologram Seal -->
+                    <div class="flex sm:flex-col items-center gap-3 shrink-0 self-start sm:self-center">
+                        <div class="holo-seal-orb" title="ตราโฮโลแกรมดิจิทัล 3 มิติ rjcloud.organ 2.0">
+                            <div class="holo-seal-ring-outer"></div>
+                            <div class="holo-seal-ring-inner"></div>
+                            <div id="holo-seal-core" class="holo-seal-core">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+                                <span class="font-mono text-[8.5px] font-extrabold tracking-widest mt-0.5">VERIFIED</span>
+                            </div>
+                        </div>
+                        <span class="font-mono text-[9.5px] text-muted-adaptive uppercase text-center">3D HOLOGRAM SEAL<br/>ขยับเมาส์เพื่อดูมิติแสง</span>
+                    </div>
+                </div>
+
+                <!-- Profession-Specific Credit / Hours Recognition Box (แยก CNEU เฉพาะพยาบาล 100%) -->
+                <div id="res-credit-box" class="relative z-10 rounded-2xl p-4 sm:p-5 border space-y-1.5">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span id="res-credit-heading" class="font-mono text-[10.5px] font-extrabold uppercase tracking-wider">
+                            หน่วยคะแนนการศึกษาต่อเนื่องทางการพยาบาล (CNEU • สภาการพยาบาล)
+                        </span>
+                        <span id="res-credit-badge" class="px-2.5 py-0.5 rounded-full font-mono text-[10px] font-extrabold">
+                            CNEU ACCREDITED
+                        </span>
+                    </div>
+                    <p id="res-credit-main" class="font-display font-extrabold text-base sm:text-lg text-primary-adaptive leading-snug"></p>
+                    <p id="res-credit-sub" class="text-xs text-secondary-adaptive leading-relaxed"></p>
+                </div>
+
+                <!-- Structured Metadata Grid -->
+                <div class="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+                    <div class="spatial-soft rounded-2xl p-3.5 space-y-0.5">
+                        <span class="font-mono text-[10px] text-muted-adaptive uppercase block">CERTIFICATE NO. (รหัสอ้างอิง)</span>
+                        <span id="res-code" class="font-mono font-extrabold text-base text-prism-adaptive break-all"></span>
+                    </div>
+                    <div class="spatial-soft rounded-2xl p-3.5 space-y-0.5">
+                        <span id="res-license-label" class="font-mono text-[10px] text-muted-adaptive uppercase block">เลขที่ใบอนุญาตประกอบวิชาชีพการพยาบาล</span>
+                        <span id="res-license" class="font-mono font-extrabold text-base text-primary-adaptive"></span>
+                    </div>
+                    <div class="spatial-soft rounded-2xl p-3.5 space-y-0.5 sm:col-span-2">
+                        <span class="font-mono text-[10px] text-muted-adaptive uppercase block">PROGRAM / COURSE (หลักสูตรที่สำเร็จการอบรม)</span>
+                        <span id="res-course-th" class="font-display font-bold text-primary-adaptive block"></span>
+                        <span id="res-course-en" class="text-xs text-muted-adaptive block"></span>
+                    </div>
+                    <div class="spatial-soft rounded-2xl p-3.5 space-y-0.5">
+                        <span class="font-mono text-[10px] text-muted-adaptive uppercase block">ISSUED DATE (วันที่ออกประกาศนียบัตร)</span>
+                        <span id="res-issued-at" class="font-bold text-primary-adaptive"></span>
+                    </div>
+                    <div class="spatial-soft rounded-2xl p-3.5 space-y-0.5">
+                        <span class="font-mono text-[10px] text-muted-adaptive uppercase block">EVALUATION STANDARD (เกณฑ์การประเมิน)</span>
+                        <span id="res-eval-meta" class="font-bold text-accent-adaptive"></span>
+                    </div>
+                </div>
+
+                <!-- Signer, Organizer & Live Verification QR -->
+                <div class="relative z-10 pt-4 border-t border-white/15 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="space-y-1 text-center sm:text-left">
+                        <span class="font-mono text-[10px] text-muted-adaptive uppercase block">ISSUING AUTHORITY (หน่วยงานผู้รับรอง)</span>
+                        <p id="res-org-title" class="font-display font-bold text-sm text-primary-adaptive"></p>
+                        <p id="res-signer" class="text-xs text-secondary-adaptive"></p>
+                        <p class="text-[10.5px] text-muted-adaptive pt-1">
+                            ✓ คุ้มครองข้อมูลส่วนบุคคล (PDPA Zero-PII): ไม่เปิดเผยอีเมลและเบอร์โทรศัพท์ในทะเบียนตรวจสอบสาธารณะ
+                        </p>
+                    </div>
+
+                    <div class="flex flex-col items-center gap-1.5 shrink-0">
+                        <div class="p-2 rounded-2xl bg-white shadow-lg border border-white/80">
+                            <canvas id="res-qr-canvas" width="108" height="108" class="block rounded-lg"></canvas>
+                        </div>
+                        <span class="font-mono text-[9.5px] font-bold text-muted-adaptive tracking-wider">DIRECT VERIFY QR</span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="no-print relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2">
+                    <button id="btn-copy-verify-link" type="button" class="spatial-soft touch-target py-3 px-4 rounded-full font-display font-bold text-xs sm:text-sm text-prism-adaptive inline-flex items-center justify-center gap-2 cursor-pointer">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                        <span>คัดลอกลิงก์หน้าตรวจสอบนี้</span>
+                    </button>
+                    <button id="btn-print-verify" type="button" class="rjc2-pill-btn touch-target py-3 px-4 rounded-full font-display font-extrabold text-xs sm:text-sm inline-flex items-center justify-center gap-2">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
+                        <span>พิมพ์หลักฐานการตรวจสอบ (PDF)</span>
+                    </button>
+                </div>
+            </article>
+        </section>
+
+        <!-- Initial Helper State (เมื่อยังไม่ระบุรหัสใน URL) -->
+        <section id="verify-empty-guide" class="no-print spatial-card rounded-[2rem] p-6 sm:p-7 text-center space-y-3">
+            <div class="w-12 h-12 rounded-2xl bg-prism-500/15 text-prism-adaptive flex items-center justify-center mx-auto">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg>
+            </div>
+            <h2 class="font-display font-bold text-base sm:text-lg text-primary-adaptive">พร้อมตรวจสอบประกาศนียบัตรด้วยระบบ QR 3 มิติ</h2>
+            <p class="text-xs sm:text-sm text-secondary-adaptive max-w-xl mx-auto leading-relaxed">
+                พิมพ์รหัสประกาศนียบัตรในช่องด้านบน หรือแตะเลือก <b>รหัสตัวอย่างทั้ง 3 กลุ่มวิชาชีพ</b> เพื่อดูความแตกต่างระหว่างการรับรองหน่วยคะแนน <b>CNEU (เฉพาะพยาบาล)</b> กับ <b>ชั่วโมงการฝึกอบรมวิชาการ/พัฒนาสมรรถนะ (แพทย์และบุคลากรสหวิชาชีพ)</b> ค่ะ
+            </p>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="no-print relative z-10 max-w-4xl w-full mx-auto px-4 pb-6 pt-2 text-center space-y-1 text-[11px] text-muted-adaptive">
+        <p class="m-0">© 2027 Organ Transplantation Center of Rajavithi Hospital • rjcloud.organ 2.0</p>
+        <p class="m-0">Public Zero-PII Certificate Verification Registry</p>
+    </footer>
+
+    <!-- Native High-Speed Verification Engine (Lazy-Load Firebase Firestore + 3D Tilt + Profession-Aware Credit Display) -->
+    <script type="module">
         // ============================================================================
-        // 1. CONFIGURATION, PROFESSION-AWARE CREDIT RESOLVER & 3-PROFESSION SAMPLES
+        // 1. CONFIGURATION & DEMO SAMPLES (ครบทั้ง 3 กลุ่มวิชาชีพ)
         // ============================================================================
-        const CORE = window['RJCLOUD_CORE'] || {};
-        const CERT = window['RJCLOUD_CERT'] || {};
-
-        const BUILTIN_CONFIG = {
-            appName: 'rjcloud.organ',
-            appId: 'rjcloud-organ-2027',
-            theme: { defaultMode: 'dark', storageKey: 'rjcloud_theme' },
-            firebaseConfig: {
-                apiKey: 'AIzaSyCpvK0FCVVk9dt0ylHn_VzUStl7540UsbY',
-                authDomain: 'rj-cloud-organ.firebaseapp.com',
-                projectId: 'rj-cloud-organ',
-                storageBucket: 'rj-cloud-organ.firebasestorage.app',
-                messagingSenderId: '1030088973707',
-                appId: '1:1030088973707:web:8104bb1d90ac6a58f8e38e',
-                measurementId: 'G-X5YLDTC6V4'
-            }
+        const DEFAULT_APP_ID = 'rjcloud-organ-2027';
+        const DEFAULT_FIREBASE_CONFIG = {
+            apiKey: 'AIzaSyCpvK0FCVVk9dt0ylHn_VzUStl7540UsbY',
+            authDomain: 'rj-cloud-organ.firebaseapp.com',
+            projectId: 'rj-cloud-organ',
+            storageBucket: 'rj-cloud-organ.firebasestorage.app',
+            messagingSenderId: '1030088973707',
+            appId: '1:1030088973707:web:8104bb1d90ac6a58f8e38e'
         };
 
-        const CONFIG = typeof CORE.getResolvedConfig === 'function'
-            ? CORE.getResolvedConfig()
-            : {
-                ...BUILTIN_CONFIG,
-                ...(window.RJCLOUD_CONFIG || {}),
-                theme: { ...BUILTIN_CONFIG.theme, ...(window.RJCLOUD_CONFIG?.theme || {}) },
-                firebaseConfig: (window.RJCLOUD_CONFIG?.firebaseConfig?.apiKey)
-                    ? window.RJCLOUD_CONFIG.firebaseConfig
-                    : BUILTIN_CONFIG.firebaseConfig
-            };
-
-        const THEME_KEY = CONFIG.theme?.storageKey || 'rjcloud_theme';
-
-        // ชุดรหัสตัวอย่างครบ 3 กลุ่มวิชาชีพ สำหรับกดทดสอบเปรียบเทียบในหน้า Preview ทันที
-        // (ไม่ระบุแยกประเภทผู้เรียน มอบสิทธิ์และเกียรติเท่าเทียมกัน 100%)
-        const DEMO_CERT_RECORDS = {
+        const DEMO_CERTIFICATES = {
             'RJC-2027-DEMO01': {
                 code: 'RJC-2027-DEMO01',
                 name: 'พว.กัญญารัตน์ วัฒนากูล',
                 nameEN: 'Kanyarat Wattanakul, RN',
                 license: '4511128901',
-                position: 'พยาบาลวิชาชีพชำนาญการ',
+                position: 'พยาบาลวิชาชีพชำนาญการ (TC)',
                 professionGroup: 'พยาบาล',
                 cneuEligible: true,
                 creditType: 'CNEU',
-                trainingHours: '8',
                 cneuActivityCode: 'CNEU-2027-0148',
                 cneuCredits: '8.0',
+                trainingHours: '8',
                 hospital: 'โรงพยาบาลราชวิถี',
-                department: 'กรมการแพทย์',
-                province: 'กรุงเทพมหานคร',
-                orgTitleTH: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ',
+                department: 'เขตสุขภาพที่ 13 (กทม. / กรมการแพทย์)',
                 courseTitleTH: 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ',
                 courseTitleEN: 'Organ Donation & Transplantation Clinical Coordination Program',
+                orgTitleTH: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ โรงพยาบาลราชวิถี',
                 signerName: 'ผู้อำนวยการศูนย์ความเป็นเลิศทางการแพทย์',
                 signerPosition: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ',
-                issuedAt: '2027-01-20T09:30:00.000Z',
+                posttestScore: '37/40 (92.5%)',
+                skillLabBestScore: 92,
+                issuedAt: '2026-11-24T09:30:00.000Z',
                 status: 'valid',
-                isDemoSample: true
+                isDemo: true
             },
             'RJC-2027-MD0002': {
                 code: 'RJC-2027-MD0002',
@@ -352,20 +610,23 @@
                 professionGroup: 'แพทย์',
                 cneuEligible: false,
                 creditType: 'HOURS',
-                trainingHours: '8',
                 cneuActivityCode: '',
                 cneuCredits: '',
+                cmeActivityCode: '',
+                cmeCredits: '',
+                trainingHours: '8',
                 hospital: 'โรงพยาบาลนครพิงค์',
                 department: 'เขตสุขภาพที่ 1',
-                province: 'เชียงใหม่',
-                orgTitleTH: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ',
                 courseTitleTH: 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ',
                 courseTitleEN: 'Organ Donation & Transplantation Clinical Coordination Program',
+                orgTitleTH: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ โรงพยาบาลราชวิถี',
                 signerName: 'ผู้อำนวยการศูนย์ความเป็นเลิศทางการแพทย์',
                 signerPosition: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ',
-                issuedAt: '2027-01-20T09:30:00.000Z',
+                posttestScore: '38/40 (95%)',
+                skillLabBestScore: 88,
+                issuedAt: '2026-11-24T10:15:00.000Z',
                 status: 'valid',
-                isDemoSample: true
+                isDemo: true
             },
             'RJC-2027-ALLIED4': {
                 code: 'RJC-2027-ALLIED4',
@@ -376,115 +637,70 @@
                 professionGroup: 'บุคลากรสหวิชาชีพ',
                 cneuEligible: false,
                 creditType: 'HOURS',
-                trainingHours: '8',
                 cneuActivityCode: '',
                 cneuCredits: '',
+                trainingHours: '8',
                 hospital: 'โรงพยาบาลนพรัตนราชธานี',
-                department: 'กรมการแพทย์',
-                province: 'กรุงเทพมหานคร',
-                orgTitleTH: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ',
+                department: 'เขตสุขภาพที่ 13 (กทม. / กรมการแพทย์)',
                 courseTitleTH: 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ',
                 courseTitleEN: 'Organ Donation & Transplantation Clinical Coordination Program',
+                orgTitleTH: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ โรงพยาบาลราชวิถี',
                 signerName: 'ผู้อำนวยการศูนย์ความเป็นเลิศทางการแพทย์',
                 signerPosition: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ',
-                issuedAt: '2027-01-20T09:30:00.000Z',
+                posttestScore: '36/40 (90%)',
+                skillLabBestScore: 86,
+                issuedAt: '2026-11-24T11:00:00.000Z',
                 status: 'valid',
-                isDemoSample: true
+                isDemo: true
             }
         };
+        // รองรับรหัสตัวอย่างสำรองจาก admin.html
+        DEMO_CERTIFICATES['RJC-2027-NURSE01'] = { ...DEMO_CERTIFICATES['RJC-2027-DEMO01'], code: 'RJC-2027-NURSE01' };
+        DEMO_CERTIFICATES['RJC-2027-NURSE03'] = {
+            ...DEMO_CERTIFICATES['RJC-2027-DEMO01'],
+            code: 'RJC-2027-NURSE03',
+            name: 'พว.สุกัญญา แสงจันทร์',
+            nameEN: 'Sukanya Saengchan, RN',
+            license: '4511128903',
+            position: 'พยาบาลวิชาชีพ ICU',
+            hospital: 'โรงพยาบาลขอนแก่น',
+            department: 'เขตสุขภาพที่ 7'
+        };
 
-        /**
-         * วิเคราะห์กลุ่มวิชาชีพและข้อมูลการรับรองของใบประกาศฯ (รองรับทั้งเอกสารใหม่และเอกสารเก่า)
-         * - พยาบาล: แสดงกล่องหน่วยคะแนน CNEU (สภาการพยาบาล)
-         * - แพทย์: ไม่แสดงคำว่า CNEU แสดงชั่วโมงการฝึกอบรมวิชาการทางการแพทย์ (หรือ CME หากระบุ)
-         * - บุคลากรสหวิชาชีพ: ไม่แสดงคำว่า CNEU แสดงชั่วโมงการพัฒนาสมรรถนะวิชาชีพ
-         */
-        function resolveVerifyCreditMeta(rec) {
-            if (!rec) return null;
-            if (typeof CERT.getCertificateCreditMeta === 'function') {
-                return CERT.getCertificateCreditMeta(rec, rec, {
-                    activityCode: rec.cneuActivityCode,
-                    cneuCredits: rec.cneuCredits,
-                    cmeActivityCode: rec.cmeActivityCode,
-                    cmeCredits: rec.cmeCredits,
-                    trainingHours: rec.trainingHours || '8'
-                });
-            }
+        // ============================================================================
+        // 2. DOM REFERENCES & HELPERS
+        // ============================================================================
+        const $ = (id) => document.getElementById(id);
+        const searchForm = $('verify-search-form');
+        const codeInput = $('verify-code-input');
+        const loadingSec = $('verify-loading');
+        const notFoundSec = $('verify-not-found');
+        const notFoundMsg = $('not-found-code-msg');
+        const resultWrap = $('verify-result-wrap');
+        const emptyGuide = $('verify-empty-guide');
+        const holoCard = $('holo-cert-card');
 
-            const explicit = String(rec.professionGroup || '').trim();
-            const txt = `${rec.name || ''} ${rec.position || ''}`;
-            const professionGroup = (explicit === 'พยาบาล' || explicit === 'แพทย์' || explicit === 'บุคลากรสหวิชาชีพ')
-                ? explicit
-                : (/(นพ\.|พญ\.|แพทย์|หมอ|doctor|\bm\.?d\.?\b)/i.test(txt) && !/พยาบาล/.test(txt)
-                    ? 'แพทย์'
-                    : (/(พว\.|พยาบาล|nurse|\brn\b)/i.test(txt) ? 'พยาบาล' : 'บุคลากรสหวิชาชีพ'));
+        let currentDisplayedCode = '';
+        let toastTimer = null;
 
-            const isNurseCneu = typeof rec.cneuEligible === 'boolean'
-                ? rec.cneuEligible
-                : (professionGroup === 'พยาบาล');
-            const trainingHours = String(rec.trainingHours || '8').trim() || '8';
-
-            if (isNurseCneu) {
-                const rawCode = String(rec.cneuActivityCode || '').trim();
-                const rawCredits = String(rec.cneuCredits || '').trim();
-                const lineTextTH = (rawCode || rawCredits)
-                    ? [rawCode ? `รหัสกิจกรรม ${rawCode}` : '', rawCredits ? `จำนวน ${rawCredits} หน่วยคะแนน` : ''].filter(Boolean).join(' • ')
-                    : `จำนวน ${trainingHours} ชั่วโมงการฝึกอบรมมาตรฐานวิชาชีพ`;
-                return {
-                    professionGroup: 'พยาบาล',
-                    isNurseCneu: true,
-                    creditType: 'CNEU',
-                    badgeLabelTH: 'หน่วยคะแนนการศึกษาต่อเนื่องทางการพยาบาล (CNEU • สภาการพยาบาล)',
-                    licenseLabelTH: 'เลขที่ใบอนุญาตประกอบวิชาชีพการพยาบาล',
-                    lineTextTH,
-                    trainingHours
-                };
-            }
-
-            if (professionGroup === 'แพทย์') {
-                const cmeCode = String(rec.cmeActivityCode || '').trim();
-                const cmeCredits = String(rec.cmeCredits || '').trim();
-                const hasCme = Boolean(cmeCode || cmeCredits);
-                const lineTextTH = hasCme
-                    ? [cmeCode ? `รหัสกิจกรรม CME ${cmeCode}` : '', cmeCredits ? `จำนวน ${cmeCredits} หน่วยคะแนน` : ''].filter(Boolean).join(' • ')
-                    : `จำนวน ${trainingHours} ชั่วโมงการฝึกอบรมวิชาการทางการแพทย์`;
-                return {
-                    professionGroup: 'แพทย์',
-                    isNurseCneu: false,
-                    creditType: hasCme ? 'CME' : 'HOURS',
-                    badgeLabelTH: hasCme ? 'หน่วยคะแนนการศึกษาต่อเนื่องแพทย์ (CME)' : 'การรับรองชั่วโมงการฝึกอบรมวิชาการทางการแพทย์',
-                    licenseLabelTH: 'เลขที่ใบอนุญาตประกอบวิชาชีพเวชกรรม',
-                    lineTextTH,
-                    trainingHours
-                };
-            }
-
-            return {
-                professionGroup: 'บุคลากรสหวิชาชีพ',
-                isNurseCneu: false,
-                creditType: 'HOURS',
-                badgeLabelTH: 'การรับรองชั่วโมงการพัฒนาสมรรถนะบุคลากรทางการแพทย์',
-                licenseLabelTH: 'เลขที่ใบอนุญาตวิชาชีพ / รหัสประจำตัวบุคลากร',
-                lineTextTH: `จำนวน ${trainingHours} ชั่วโมงการพัฒนาสมรรถนะวิชาชีพ`,
-                trainingHours
-            };
-        }
-
-        let fbApp = null, fbAuth = null, fbDb = null;
-        const isCloudConfigured = Boolean(CONFIG.firebaseConfig?.apiKey && CONFIG.firebaseConfig?.projectId);
-        if (isCloudConfigured) {
-            try {
-                fbApp = getApps().length === 0 ? initializeApp(CONFIG.firebaseConfig) : getApp();
-                fbAuth = getAuth(fbApp);
-                fbDb = getFirestore(fbApp);
-            } catch (err) { console.warn('Firebase init warning:', err); }
-        }
-
-        function formatThaiDateSafe(isoStr) {
-            try {
-                const d = isoStr ? new Date(isoStr) : new Date();
-                return isNaN(d.getTime()) ? '-' : d.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
-            } catch (_) { return '-'; }
+        function showToast(text, type = 'success') {
+            const wrap = $('verify-toast');
+            const box = $('verify-toast-box');
+            const icon = $('verify-toast-icon');
+            const lbl = $('verify-toast-text');
+            if (!wrap || !box || !lbl) return;
+            lbl.textContent = String(text || '');
+            icon.textContent = type === 'error' ? '!' : type === 'info' ? '✦' : '✓';
+            box.className = 'px-4 py-3 rounded-2xl shadow-2xl border backdrop-blur-2xl flex items-center gap-2 text-xs sm:text-sm font-bold text-white ' + (
+                type === 'error'
+                    ? 'bg-rose-700/95 border-rose-400/60'
+                    : type === 'info'
+                        ? 'bg-sky-700/95 border-sky-400/60'
+                        : 'bg-emerald-700/95 border-emerald-400/60'
+            );
+            wrap.classList.add('is-show');
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => wrap.classList.remove('is-show'), 3200);
         }
 
         function copyTextSafe(text) {
@@ -498,465 +714,397 @@
                 ta.select();
                 const ok = document.execCommand('copy');
                 document.body.removeChild(ta);
-                if (ok) return true;
-            } catch (_) {}
-            return false;
-        }
-
-        // ============================================================================
-        // 2. UI PRIMITIVES & MINI QR CANVAS
-        // ============================================================================
-        class VerifyErrorBoundary extends React.Component {
-            constructor(props) { super(props); this.state = { hasError: false, err: null }; }
-            static getDerivedStateFromError(err) { return { hasError: true, err }; }
-            render() {
-                if (this.state.hasError) {
-                    return (
-                        <div className="min-h-dvh flex items-center justify-center p-6 bg-void-950 text-white">
-                            <div className="spatial-card max-w-md w-full rounded-3xl p-6 text-center space-y-4 border-rose-500/40">
-                                <h2 className="font-display font-bold text-lg text-rose-400">พบข้อผิดพลาดในการตรวจสอบเอกสาร</h2>
-                                <p className="text-xs font-mono bg-rose-500/10 text-rose-200 p-3 rounded-xl overflow-auto">{String(this.state.err?.message || this.state.err)}</p>
-                                <button type="button" onClick={() => window.location.reload()} className="rjc2-pill-btn touch-target w-full py-3 rounded-full font-display font-bold text-sm">โหลดหน้าใหม่</button>
-                            </div>
-                        </div>
-                    );
-                }
-                return this.props.children;
+                return ok;
+            } catch (_) {
+                return false;
             }
         }
 
-        function Icon({ name, size = 18, className = '' }) {
-            const Comp = LucideIcons[name] || LucideIcons.ShieldCheck || LucideIcons.QrCode;
-            return Comp ? <Comp size={size} className={className} /> : null;
+        function formatThaiDate(isoStr) {
+            try {
+                const d = isoStr ? new Date(isoStr) : new Date();
+                if (isNaN(d.getTime())) return '-';
+                return d.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+            } catch (_) {
+                return '-';
+            }
         }
 
-        function ThemeToggleButton({ theme, onToggle }) {
-            const isDark = theme === 'dark';
-            return (
-                <button type="button" onClick={onToggle} aria-label="สลับโหมดมืดหรือสว่าง" className="spatial-soft px-2.5 sm:px-3 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5 text-primary-adaptive shrink-0">
-                    <Icon name={isDark ? 'Sun' : 'Moon'} size={15} className={isDark ? 'text-amber-300' : 'text-indigo-600'} />
-                    <span className="hidden sm:inline">{isDark ? 'โหมดสว่าง' : 'โหมดมืด'}</span>
-                </button>
-            );
+        function normalizeVerifyCode(raw) {
+            const clean = String(raw || '').trim().toUpperCase().replace(/\s+/g, '');
+            if (!clean) return '';
+            if (clean === 'DEMO01') return 'RJC-2027-DEMO01';
+            if (clean === 'MD0002') return 'RJC-2027-MD0002';
+            if (clean === 'ALLIED4') return 'RJC-2027-ALLIED4';
+            return clean;
         }
 
-        function ToastBanner({ toast }) {
-            if (!toast.visible) return null;
-            return (
-                <div className="no-print fixed top-[calc(1rem+env(safe-area-inset-top,0px))] left-1/2 -translate-x-1/2 z-[160] w-[92vw] max-w-md pointer-events-none">
-                    <div className={`px-4 py-3 rounded-2xl shadow-2xl border backdrop-blur-2xl flex items-center gap-2 text-xs sm:text-sm font-bold text-white ${
-                        toast.type === 'error' ? 'bg-rose-700/95 border-rose-400/60' : 'bg-emerald-700/95 border-emerald-400/60'
-                    }`}>
-                        <Icon name={toast.type === 'error' ? 'AlertCircle' : 'CheckCircle2'} size={16} className="shrink-0" />
-                        <span>{toast.text}</span>
-                    </div>
-                </div>
-            );
+        /**
+         * วิเคราะห์กลุ่มวิชาชีพและสิทธิ์การรับรอง (ไม่มีคำว่า CNEU หลุดไปในกลุ่มแพทย์/สหวิชาชีพ 100%)
+         */
+        function resolveProfessionDisplay(cert) {
+            if (window.RJCLOUD_CERT && typeof window.RJCLOUD_CERT.getCertificateCreditMeta === 'function') {
+                return window.RJCLOUD_CERT.getCertificateCreditMeta(cert, cert, cert);
+            }
+            const explicit = String(cert?.professionGroup || '').trim();
+            const txt = `${cert?.name || ''} ${cert?.position || ''}`;
+            const prof = (explicit === 'พยาบาล' || explicit === 'แพทย์' || explicit === 'บุคลากรสหวิชาชีพ')
+                ? explicit
+                : (/(นพ\.|พญ\.|แพทย์|doctor|\bm\.?d\.?\b)/i.test(txt) && !/พยาบาล/.test(txt)
+                    ? 'แพทย์'
+                    : (/(พว\.|พยาบาล|nurse|\brn\b)/i.test(txt) ? 'พยาบาล' : 'บุคลากรสหวิชาชีพ'));
+            const isNurse = typeof cert?.cneuEligible === 'boolean' ? cert.cneuEligible : prof === 'พยาบาล';
+            const hrs = String(cert?.trainingHours || '8').trim() || '8';
+
+            if (isNurse) {
+                const code = String(cert?.cneuActivityCode || '').trim();
+                const cr = String(cert?.cneuCredits || '').trim();
+                const lineTextTH = (code || cr)
+                    ? [code ? `รหัสกิจกรรม CNEU: ${code}` : '', cr ? `จำนวน ${cr} หน่วยคะแนน` : ''].filter(Boolean).join(' • ')
+                    : `จำนวน ${hrs} ชั่วโมงการฝึกอบรมมาตรฐานวิชาชีพ`;
+                return {
+                    professionGroup: 'พยาบาล',
+                    isNurseCneu: true,
+                    creditType: 'CNEU',
+                    badgeLabelTH: 'หน่วยคะแนนการศึกษาต่อเนื่องทางการพยาบาล (CNEU • สภาการพยาบาล)',
+                    licenseLabelTH: 'เลขที่ใบอนุญาตประกอบวิชาชีพการพยาบาล',
+                    lineTextTH,
+                    trainingHours: hrs
+                };
+            }
+
+            if (prof === 'แพทย์') {
+                const cmeCode = String(cert?.cmeActivityCode || '').trim();
+                const cmeCr = String(cert?.cmeCredits || '').trim();
+                const hasCme = Boolean(cmeCode || cmeCr);
+                return {
+                    professionGroup: 'แพทย์',
+                    isNurseCneu: false,
+                    creditType: hasCme ? 'CME' : 'HOURS',
+                    badgeLabelTH: hasCme ? 'หน่วยคะแนนการศึกษาต่อเนื่องทางการแพทย์ (CME)' : 'การรับรองชั่วโมงการฝึกอบรมวิชาการทางการแพทย์',
+                    licenseLabelTH: 'เลขที่ใบอนุญาตประกอบวิชาชีพเวชกรรม',
+                    lineTextTH: hasCme
+                        ? [cmeCode ? `รหัสกิจกรรม CME: ${cmeCode}` : '', cmeCr ? `จำนวน ${cmeCr} หน่วยคะแนน` : ''].filter(Boolean).join(' • ')
+                        : `จำนวน ${hrs} ชั่วโมงการฝึกอบรมวิชาการทางการแพทย์`,
+                    trainingHours: hrs
+                };
+            }
+
+            return {
+                professionGroup: 'บุคลากรสหวิชาชีพ',
+                isNurseCneu: false,
+                creditType: 'HOURS',
+                badgeLabelTH: 'การรับรองชั่วโมงการพัฒนาสมรรถนะบุคลากรทางการแพทย์',
+                licenseLabelTH: 'เลขที่ใบอนุญาตวิชาชีพ / รหัสประจำตัวบุคลากร',
+                lineTextTH: `จำนวน ${hrs} ชั่วโมงการพัฒนาสมรรถนะวิชาชีพ`,
+                trainingHours: hrs
+            };
         }
 
-        function MiniQrCanvas({ url, size = 92 }) {
-            const ref = useRef(null);
-            useEffect(() => {
-                const canvas = ref.current;
-                if (!canvas || !url || typeof window.qrcode !== 'function') return;
+        function drawDirectQr(urlText) {
+            const canvas = $('res-qr-canvas');
+            if (!canvas) return;
+            const size = 108;
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, size, size);
+
+            if (typeof window.qrcode === 'function') {
                 try {
                     const qr = window.qrcode(0, 'M');
-                    qr.addData(url);
+                    qr.addData(String(urlText));
                     qr.make();
-                    const count = qr.getModuleCount();
-                    canvas.width = size;
-                    canvas.height = size;
-                    const ctx = canvas.getContext('2d');
-                    ctx.fillStyle = '#ffffff';
-                    ctx.fillRect(0, 0, size, size);
-                    const cell = size / count;
+                    const cnt = qr.getModuleCount();
+                    const cell = (size - 8) / cnt;
                     ctx.fillStyle = '#0f172a';
-                    for (let r = 0; r < count; r++) {
-                        for (let c = 0; c < count; c++) {
+                    for (let r = 0; r < cnt; r++) {
+                        for (let c = 0; c < cnt; c++) {
                             if (qr.isDark(r, c)) {
-                                ctx.fillRect(Math.floor(c * cell), Math.floor(r * cell), Math.ceil(cell), Math.ceil(cell));
+                                ctx.fillRect(Math.floor(4 + c * cell), Math.floor(4 + r * cell), Math.ceil(cell), Math.ceil(cell));
                             }
                         }
                     }
+                    return;
                 } catch (_) {}
-            }, [url, size]);
-            return <canvas ref={ref} width={size} height={size} className="rounded-xl bg-white p-1.5 shadow" />;
+            }
+            // Fallback graphic if CDN blocked
+            ctx.strokeStyle = '#0f172a';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(10, 10, size - 20, size - 20);
+            ctx.fillStyle = '#0f172a';
+            ctx.font = '700 11px JetBrains Mono, monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText('VERIFIED', size / 2, size / 2 + 4);
         }
 
         // ============================================================================
-        // 3. MAIN CERTIFICATE VERIFICATION APPLICATION (PROFESSION-AWARE • EQUAL HONOR)
+        // 3. LAZY-LOAD FIREBASE FIRESTORE (โหลดเฉพาะตอนค้นหารหัสจริง)
         // ============================================================================
-        function VerifyApp() {
-            const initialCode = useMemo(() => {
-                try { return String(new URLSearchParams(window.location.search).get('code') || '').trim().toUpperCase(); }
-                catch (_) { return ''; }
-            }, []);
+        let firebaseHandlePromise = null;
 
-            const [theme, setTheme] = useState(() => {
+        async function getFirestoreLazy() {
+            if (firebaseHandlePromise) return firebaseHandlePromise;
+            firebaseHandlePromise = (async () => {
                 try {
-                    const saved = localStorage.getItem(THEME_KEY);
-                    if (saved === 'light' || saved === 'dark') return saved;
-                } catch (_) {}
-                return CONFIG.theme?.defaultMode === 'light' ? 'light' : 'dark';
-            });
-            useEffect(() => {
-                document.documentElement.setAttribute('data-theme', theme);
-                const meta = document.querySelector('meta[name="theme-color"]');
-                if (meta) meta.setAttribute('content', theme === 'dark' ? '#020612' : '#edf6fd');
-                try { localStorage.setItem(THEME_KEY, theme); } catch (_) {}
-            }, [theme]);
-            const toggleTheme = useCallback(() => setTheme(p => (p === 'dark' ? 'light' : 'dark')), []);
+                    const resolvedCfg = (window.RJCLOUD_CONFIG && window.RJCLOUD_CONFIG.firebaseConfig && window.RJCLOUD_CONFIG.firebaseConfig.apiKey)
+                        ? window.RJCLOUD_CONFIG.firebaseConfig
+                        : DEFAULT_FIREBASE_CONFIG;
+                    const appId = (window.RJCLOUD_CONFIG && window.RJCLOUD_CONFIG.appId) || DEFAULT_APP_ID;
 
-            const [authReady, setAuthReady] = useState(!isCloudConfigured);
-            const [codeInput, setCodeInput] = useState(initialCode);
-            const [lookupStatus, setLookupStatus] = useState(initialCode ? 'loading' : 'idle'); // idle | loading | valid | not_found
-            const [certRecord, setCertRecord] = useState(null);
-            const [tiltStyle, setTiltStyle] = useState({ transform: 'rotateX(0deg) rotateY(0deg)', '--mx': '50%', '--my': '35%' });
-            const [toast, setToast] = useState({ visible: false, text: '', type: 'success' });
+                    const [appMod, authMod, fsMod] = await Promise.all([
+                        import('https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js'),
+                        import('https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js'),
+                        import('https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js')
+                    ]);
 
-            const showToast = useCallback((text, type = 'success') => {
-                setToast({ visible: true, text: String(text), type });
-                setTimeout(() => setToast(p => ({ ...p, visible: false })), 3000);
-            }, []);
+                    const app = appMod.getApps().length === 0 ? appMod.initializeApp(resolvedCfg) : appMod.getApp();
+                    const auth = authMod.getAuth(app);
+                    if (!auth.currentUser) {
+                        try { await authMod.signInAnonymously(auth); } catch (_) {}
+                    }
+                    const db = fsMod.getFirestore(app);
+                    return { db, doc: fsMod.doc, getDoc: fsMod.getDoc, appId };
+                } catch (err) {
+                    console.warn('Firestore lazy-load unavailable:', err);
+                    return null;
+                }
+            })();
+            return firebaseHandlePromise;
+        }
 
-            useEffect(() => {
-                const el = document.getElementById('verify-root');
-                if (el) el.dataset.mounted = 'true';
-            }, []);
+        async function lookupCertificate(rawCode) {
+            const code = normalizeVerifyCode(rawCode);
+            if (!code) {
+                showToast('กรุณากรอกรหัสประกาศนียบัตรก่อนตรวจสอบค่ะ', 'error');
+                return;
+            }
 
-            // Firebase Anonymous Auth (พร้อม Safety Timeout 5 วินาทีป้องกันโหลดค้าง)
-            useEffect(() => {
-                if (!isCloudConfigured || !fbAuth) { setAuthReady(true); return; }
-                let active = true;
-                let anonTried = false;
-                const safety = setTimeout(() => { if (active) setAuthReady(true); }, 5000);
-                let unsub = () => {};
+            codeInput.value = code;
+            currentDisplayedCode = code;
+            emptyGuide.classList.add('hidden');
+            notFoundSec.classList.add('hidden');
+            resultWrap.classList.add('hidden');
+            loadingSec.classList.remove('hidden');
+
+            // อัปเดต URL โดยไม่รีเฟรชหน้า (เฉพาะกรณีเบราว์เซอร์อนุญาต)
+            try {
+                const nextUrl = new URL(window.location.href);
+                nextUrl.searchParams.set('code', code);
+                window.history.replaceState({}, '', nextUrl.toString());
+            } catch (_) {}
+
+            let certData = null;
+
+            // 1) ค้นหาจากทะเบียนสาธารณะ Firebase Firestore (certificates/{code}) ก่อนเสมอเมื่อออนไลน์และไม่ใช่รหัสตัวอย่างล้วน
+            const isKnownDemo = Boolean(DEMO_CERTIFICATES[code]);
+            if (navigator.onLine && !isKnownDemo) {
                 try {
-                    unsub = onAuthStateChanged(
-                        fbAuth,
-                        async (fbUser) => {
-                            if (!active) return;
-                            if (!fbUser && !anonTried) {
-                                anonTried = true;
-                                try { await signInAnonymously(fbAuth); } catch (_) { if (active) setAuthReady(true); }
-                                return;
-                            }
-                            setAuthReady(true);
-                        },
-                        () => { if (active) setAuthReady(true); }
-                    );
-                } catch (_) {
-                    if (active) setAuthReady(true);
-                }
-                return () => { active = false; clearTimeout(safety); try { unsub(); } catch (_) {} };
-            }, []);
-
-            const performVerify = useCallback(async (rawCode) => {
-                const cleanCode = String(rawCode || '').trim().toUpperCase();
-                if (!cleanCode) {
-                    setLookupStatus('idle');
-                    setCertRecord(null);
-                    return;
-                }
-                setCodeInput(cleanCode);
-                setLookupStatus('loading');
-
-                // อัปเดต URL query parameter โดยไม่รีโหลดหน้า
-                try {
-                    const nextUrl = new URL(window.location.href);
-                    nextUrl.searchParams.set('code', cleanCode);
-                    window.history.replaceState({}, '', nextUrl.toString());
-                } catch (_) {}
-
-                // รหัสตัวอย่างพรีวิวครบทั้ง 3 กลุ่มวิชาชีพ
-                if (DEMO_CERT_RECORDS[cleanCode]) {
-                    setCertRecord(DEMO_CERT_RECORDS[cleanCode]);
-                    setLookupStatus('valid');
-                    return;
-                }
-
-                // ค้นหาจากทะเบียนสาธารณะ certificates/{code} บน Firebase Firestore
-                if (fbDb) {
-                    try {
-                        const snap = await getDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'certificates', cleanCode));
+                    const handle = await Promise.race([
+                        getFirestoreLazy(),
+                        new Promise((resolve) => setTimeout(() => resolve(null), 6500))
+                    ]);
+                    if (handle && handle.db) {
+                        const snap = await handle.getDoc(
+                            handle.doc(handle.db, 'artifacts', handle.appId, 'public', 'data', 'certificates', code)
+                        );
                         if (snap.exists()) {
-                            const data = snap.data() || {};
-                            // ล้างฟิลด์ประเภทการเรียนและ PII ออกเสมอ เพื่อคุ้มครอง PDPA และคงมาตรฐานสิทธิ์/เกียรติเท่าเทียมกัน 100%
-                            const sanitized = { ...data, code: data.code || cleanCode };
-                            delete sanitized.userType;
-                            delete sanitized.email;
-                            delete sanitized.phone;
-                            setCertRecord(sanitized);
-                            setLookupStatus(sanitized.status === 'revoked' ? 'not_found' : 'valid');
-                            return;
+                            certData = { code: snap.id, ...snap.data(), isDemo: false };
                         }
-                    } catch (err) {
-                        console.warn('Certificate verify query warning:', err);
                     }
+                } catch (err) {
+                    console.warn('Firestore lookup warning:', err);
                 }
+            }
 
-                setCertRecord(null);
-                setLookupStatus('not_found');
-            }, []);
+            // 2) หากตรงกับรหัสตัวอย่าง 3 กลุ่มวิชาชีพ ให้แสดงข้อมูลตัวอย่างทันที
+            if (!certData && isKnownDemo) {
+                await new Promise((r) => setTimeout(r, 220));
+                certData = DEMO_CERTIFICATES[code];
+            }
 
-            // ค้นหาอัตโนมัติเมื่อเปิดลิงก์จาก QR Code (?code=...)
-            useEffect(() => {
-                if (authReady && initialCode) {
-                    performVerify(initialCode);
-                }
-            }, [authReady, initialCode, performVerify]);
+            loadingSec.classList.add('hidden');
 
-            const creditMeta = useMemo(() => resolveVerifyCreditMeta(certRecord), [certRecord]);
+            if (!certData || certData.status === 'revoked') {
+                notFoundMsg.textContent = certData && certData.status === 'revoked'
+                    ? `รหัสประกาศนียบัตร "${code}" ถูกยกเลิกสถานะการรับรองในระบบแล้วค่ะ`
+                    : `ไม่พบรหัส "${code}" ในทะเบียนประกาศนียบัตรสาธารณะของ rjcloud.organ 2.0 ค่ะ`;
+                notFoundSec.classList.remove('hidden');
+                showToast('ไม่พบข้อมูลรหัสประกาศนียบัตรนี้ในระบบค่ะ', 'error');
+                return;
+            }
 
-            const handleCardPointerMove = (e) => {
-                const rect = e.currentTarget.getBoundingClientRect();
-                const clientX = e.touches && e.touches[0] ? e.touches[0].clientX : e.clientX;
-                const clientY = e.touches && e.touches[0] ? e.touches[0].clientY : e.clientY;
-                const px = Math.max(0, Math.min(1, (clientX - rect.left) / Math.max(1, rect.width)));
-                const py = Math.max(0, Math.min(1, (clientY - rect.top) / Math.max(1, rect.height)));
-                const rotY = (px - 0.5) * 10;
-                const rotX = (0.5 - py) * 8;
-                setTiltStyle({
-                    transform: `rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg)`,
-                    '--mx': `${(px * 100).toFixed(1)}%`,
-                    '--my': `${(py * 100).toFixed(1)}%`
-                });
-            };
-
-            const handleCardPointerLeave = () => {
-                setTiltStyle({ transform: 'rotateX(0deg) rotateY(0deg)', '--mx': '50%', '--my': '35%' });
-            };
-
-            const currentShareUrl = useMemo(() => {
-                try {
-                    const u = new URL(window.location.href);
-                    if (certRecord?.code) u.searchParams.set('code', certRecord.code);
-                    return u.toString();
-                } catch (_) {
-                    return `https://learn.coerj.com/verify.html?code=${encodeURIComponent(certRecord?.code || 'RJC-2027-DEMO01')}`;
-                }
-            }, [certRecord?.code]);
-
-            return (
-                <div className="min-h-dvh relative flex flex-col pt-safe pb-safe">
-                    <div className="spatial-aura" /><div className="spatial-grid" />
-
-                    {/* Top Header */}
-                    <header className="no-print sticky top-0 z-30 spatial-header">
-                        <div className="max-w-4xl mx-auto px-3.5 sm:px-6 h-14 md:h-16 flex items-center justify-between gap-2">
-                            <div className="flex items-center gap-2.5 min-w-0">
-                                <a href="./index.html" aria-label="กลับหน้าแรก" className="w-9 h-9 rounded-xl spatial-soft text-primary-adaptive flex items-center justify-center shrink-0">
-                                    <Icon name="ArrowLeft" size={18} />
-                                </a>
-                                <div className="min-w-0">
-                                    <span className="font-display font-extrabold text-sm sm:text-base text-primary-adaptive block leading-none truncate">
-                                        rjcloud<span className="text-accent-adaptive">.organ</span> <span className="font-mono text-[10px] text-prism-adaptive">VERIFY</span>
-                                    </span>
-                                    <span className="text-[10px] font-mono text-muted-adaptive block truncate">
-                                        Public Digital Certificate Verification • 3D Hologram Seal
-                                    </span>
-                                </div>
-                            </div>
-                            <ThemeToggleButton theme={theme} onToggle={toggleTheme} />
-                        </div>
-                    </header>
-
-                    <main className="relative z-10 max-w-3xl w-full mx-auto px-3.5 sm:px-6 py-6 sm:py-9 space-y-6 flex-1">
-                        {/* Search Bar Section */}
-                        <section className="no-print spatial-card rounded-[2rem] p-5 sm:p-6 space-y-4">
-                            <div className="text-center space-y-1">
-                                <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">ORGAN TRANSPLANTATION CENTER OF RAJAVITHI HOSPITAL</span>
-                                <h1 className="font-display font-extrabold text-xl sm:text-2xl text-primary-adaptive">ตรวจสอบความถูกต้องประกาศนียบัตรดิจิทัล</h1>
-                                <p className="text-xs text-secondary-adaptive">สแกน QR Code จากใบประกาศนียบัตร หรือกรอกรหัสอ้างอิงเพื่อยืนยันความถูกต้องกับฐานข้อมูลกลาง</p>
-                            </div>
-
-                            <form onSubmit={(e) => { e.preventDefault(); performVerify(codeInput); }} className="flex flex-col sm:flex-row gap-2">
-                                <input
-                                    type="text"
-                                    value={codeInput}
-                                    onChange={e => setCodeInput(e.target.value.toUpperCase())}
-                                    placeholder="กรอกรหัสประกาศนียบัตร เช่น RJC-2027-XXXXXX"
-                                    className="touch-target spatial-input flex-1 px-4 py-3 rounded-2xl font-mono text-sm sm:text-base font-bold uppercase tracking-wider"
-                                />
-                                <button type="submit" className="rjc2-pill-btn touch-target px-6 py-3 rounded-2xl font-display font-extrabold text-sm shrink-0 inline-flex items-center justify-center gap-1.5">
-                                    <Icon name="Search" size={16} /> ตรวจสอบรหัส
-                                </button>
-                            </form>
-
-                            {/* ปุ่มทดลองเทียบใบรับรองครบทั้ง 3 กลุ่มวิชาชีพทันทีใน Preview */}
-                            <div className="space-y-1.5 pt-1 text-center">
-                                <p className="text-[11px] font-mono text-muted-adaptive">ทดลองตรวจสอบตัวอย่างแยกตามวิชาชีพ (Preview Mode):</p>
-                                <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs">
-                                    <button type="button" onClick={() => performVerify('RJC-2027-DEMO01')} className="spatial-soft px-3 py-1.5 rounded-full text-accent-adaptive font-bold hover:border-aurora-400">
-                                        พยาบาล • CNEU (DEMO01)
-                                    </button>
-                                    <button type="button" onClick={() => performVerify('RJC-2027-MD0002')} className="spatial-soft px-3 py-1.5 rounded-full text-prism-adaptive font-bold hover:border-prism-400">
-                                        แพทย์ • ชม.อบรม (MD0002)
-                                    </button>
-                                    <button type="button" onClick={() => performVerify('RJC-2027-ALLIED4')} className="spatial-soft px-3 py-1.5 rounded-full text-secondary-adaptive font-bold hover:border-indigo-400">
-                                        สหวิชาชีพ • ชม.พัฒนา (ALLIED4)
-                                    </button>
-                                </div>
-                            </div>
-                        </section>
-
-                        {/* State: Loading */}
-                        {lookupStatus === 'loading' && (
-                            <section className="spatial-card rounded-[2rem] p-10 text-center space-y-3">
-                                <div className="w-10 h-10 border-4 border-aurora-400 border-t-transparent rounded-full animate-spin mx-auto" />
-                                <p className="font-display font-bold text-sm text-primary-adaptive">กำลังตรวจสอบรหัสประกาศนียบัตรกับฐานข้อมูล Cloud...</p>
-                            </section>
-                        )}
-
-                        {/* State: Valid Certificate (3D Hologram Seal Card — Profession-Aware & Equal Honor 100%) */}
-                        {lookupStatus === 'valid' && certRecord && creditMeta && (
-                            <div className="holo-card-wrapper">
-                                <article
-                                    onMouseMove={handleCardPointerMove}
-                                    onMouseLeave={handleCardPointerLeave}
-                                    onTouchMove={handleCardPointerMove}
-                                    onTouchEnd={handleCardPointerLeave}
-                                    style={tiltStyle}
-                                    className="holo-cert-card spatial-card rounded-[2rem] p-5 sm:p-8 space-y-6 border-aurora-400/50"
-                                >
-                                    <div className="holo-foil-overlay" aria-hidden="true" />
-
-                                    {/* Verified Top Banner + 3D Hologram Seal */}
-                                    <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/15 pb-5">
-                                        <div className="space-y-1.5">
-                                            <div className="flex flex-wrap items-center gap-1.5">
-                                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-aurora-500/20 border border-aurora-400/55 text-accent-adaptive font-display font-extrabold text-xs">
-                                                    <Icon name="BadgeCheck" size={16} /> เอกสารรับรองของแท้ (VERIFIED AUTHENTIC)
-                                                </span>
-                                                <span className="inline-flex items-center px-2.5 py-1 rounded-full spatial-soft text-[11px] font-bold text-prism-adaptive">
-                                                    กลุ่มวิชาชีพ: {creditMeta.professionGroup}
-                                                </span>
-                                            </div>
-                                            <p className="font-mono text-xs font-bold text-prism-adaptive">
-                                                CERTIFICATE NO: {certRecord.code}
-                                                {certRecord.isDemoSample && <span className="ml-2 text-amber-400">(ตัวอย่างพรีวิว)</span>}
-                                            </p>
-                                        </div>
-
-                                        {/* 3D Iridescent Hologram Seal */}
-                                        <div className="flex items-center gap-3 shrink-0">
-                                            <div className="holo-seal-disc w-16 h-16 rounded-full flex items-center justify-center p-1">
-                                                <div className="w-full h-full rounded-full bg-void-950/85 border border-white/50 flex flex-col items-center justify-center text-center relative">
-                                                    <div className="holo-seal-orbit absolute inset-1 rounded-full border border-dashed border-emerald-300/70" />
-                                                    <Icon name="ShieldCheck" size={20} className="text-emerald-300" />
-                                                    <span className="font-mono text-[8px] font-extrabold text-amber-200 tracking-wider">2027</span>
-                                                </div>
-                                            </div>
-                                            <div className="text-left text-[11px] leading-tight">
-                                                <span className="font-mono font-extrabold text-accent-adaptive block">3D HOLOGRAM SEAL</span>
-                                                <span className="text-muted-adaptive block">ขยับเมาส์หรือเอียงจอ</span>
-                                                <span className="text-muted-adaptive block">เพื่อตรวจแสงโฮโลแกรม</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Holder Identity & Course Info (มาตรฐานและเกียรติเท่าเทียมกันทุกวิชาชีพ) */}
-                                    <div className="relative z-10 text-center space-y-1.5 py-1">
-                                        <p className="text-xs font-semibold text-muted-adaptive">รับรองว่าบุคคลดังต่อไปนี้ได้สำเร็จการอบรมตามเกณฑ์มาตรฐานหลักสูตร</p>
-                                        <h2 className="font-display font-extrabold text-2xl sm:text-3xl text-primary-adaptive">{certRecord.name}</h2>
-                                        {certRecord.nameEN && <p className="font-display font-semibold text-sm sm:text-base text-prism-adaptive">{certRecord.nameEN}</p>}
-                                        <p className="text-xs sm:text-sm text-secondary-adaptive">
-                                            {certRecord.position || 'บุคลากรทางการแพทย์'} • {certRecord.hospital || '-'}
-                                            {certRecord.province ? ` (${certRecord.province})` : ''}
-                                        </p>
-                                    </div>
-
-                                    <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                                        <div className="spatial-soft p-3.5 rounded-2xl space-y-1">
-                                            <span className="font-mono text-[10px] text-muted-adaptive block">{creditMeta.licenseLabelTH}</span>
-                                            <span className="font-mono font-extrabold text-sm text-prism-adaptive">{certRecord.license || '-'}</span>
-                                        </div>
-                                        <div className="spatial-soft p-3.5 rounded-2xl space-y-1">
-                                            <span className="font-mono text-[10px] text-muted-adaptive block">วันที่ออกประกาศนียบัตร</span>
-                                            <span className="font-bold text-sm text-primary-adaptive">{formatThaiDateSafe(certRecord.issuedAt)}</span>
-                                        </div>
-                                        <div className="spatial-soft p-3.5 rounded-2xl space-y-1 sm:col-span-2">
-                                            <span className="font-mono text-[10px] text-muted-adaptive block">หลักสูตรที่สำเร็จการอบรม</span>
-                                            <span className="font-display font-bold text-sm text-primary-adaptive block">{certRecord.courseTitleTH}</span>
-                                            {certRecord.courseTitleEN && <span className="text-[11px] text-muted-adaptive block">{certRecord.courseTitleEN}</span>}
-                                        </div>
-
-                                        {/* กล่องการรับรองตรงตามกลุ่มวิชาชีพ (แสดง CNEU เฉพาะพยาบาล • แพทย์/สหวิชาชีพแสดงชั่วโมงอบรมมาตรฐาน) */}
-                                        <div className={`spatial-soft p-3.5 rounded-2xl space-y-1 sm:col-span-2 ${creditMeta.isNurseCneu ? 'border-aurora-400/50 bg-aurora-500/10' : 'border-prism-400/45 bg-prism-500/10'}`}>
-                                            <span className={`font-mono text-[10px] font-bold block ${creditMeta.isNurseCneu ? 'text-accent-adaptive' : 'text-prism-adaptive'}`}>
-                                                {creditMeta.badgeLabelTH}
-                                            </span>
-                                            <span className={`font-display font-extrabold text-sm block ${creditMeta.isNurseCneu ? 'text-accent-adaptive' : 'text-primary-adaptive'}`}>
-                                                {creditMeta.lineTextTH}
-                                            </span>
-                                        </div>
-
-                                        <div className="spatial-soft p-3.5 rounded-2xl space-y-1">
-                                            <span className="font-mono text-[10px] text-muted-adaptive block">หน่วยงานผู้ออกเอกสาร</span>
-                                            <span className="font-bold text-primary-adaptive">{certRecord.orgTitleTH || 'ศูนย์ความเป็นเลิศทางการแพทย์ฯ โรงพยาบาลราชวิถี'}</span>
-                                        </div>
-                                        <div className="spatial-soft p-3.5 rounded-2xl space-y-1">
-                                            <span className="font-mono text-[10px] text-muted-adaptive block">ผู้ลงนามรับรอง</span>
-                                            <span className="font-bold text-primary-adaptive block">{certRecord.signerName || '-'}</span>
-                                            <span className="text-[11px] text-muted-adaptive block">{certRecord.signerPosition || ''}</span>
-                                        </div>
-                                    </div>
-
-                                    {/* Bottom QR + Actions */}
-                                    <div className="relative z-10 pt-3 border-t border-white/15 flex flex-col sm:flex-row items-center justify-between gap-4">
-                                        <div className="flex items-center gap-3">
-                                            <MiniQrCanvas url={currentShareUrl} size={86} />
-                                            <div className="text-[11px] text-muted-adaptive space-y-0.5">
-                                                <p className="font-bold text-primary-adaptive">ตรวจสอบผ่านทะเบียนสาธารณะ rjcloud.organ 2.0</p>
-                                                <p>คุ้มครอง PDPA: ไม่เปิดเผยอีเมลหรือหมายเลขโทรศัพท์</p>
-                                                <p>มอบสิทธิ์และเกียรติมาตรฐานเดียวกันทุกประเภทผู้เรียน</p>
-                                            </div>
-                                        </div>
-
-                                        <div className="no-print flex flex-wrap gap-2 w-full sm:w-auto">
-                                            <button
-                                                type="button"
-                                                onClick={() => { copyTextSafe(currentShareUrl); showToast('คัดลอกลิงก์หน้าตรวจสอบประกาศนียบัตรแล้วค่ะ'); }}
-                                                className="spatial-soft touch-target flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs font-bold text-prism-adaptive inline-flex items-center justify-center gap-1.5"
-                                            >
-                                                <Icon name="Copy" size={14} /> คัดลอกลิงก์
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => window.print()}
-                                                className="rjc2-pill-btn touch-target flex-1 sm:flex-initial px-4 py-2 rounded-xl font-display font-extrabold text-xs inline-flex items-center justify-center gap-1.5"
-                                            >
-                                                <Icon name="Printer" size={14} /> พิมพ์หลักฐาน
-                                            </button>
-                                        </div>
-                                    </div>
-                                </article>
-                            </div>
-                        )}
-
-                        {/* State: Not Found */}
-                        {lookupStatus === 'not_found' && (
-                            <section className="spatial-card rounded-[2rem] p-7 text-center space-y-3 border-rose-500/40">
-                                <div className="w-12 h-12 rounded-2xl bg-rose-500/20 text-rose-400 flex items-center justify-center mx-auto">
-                                    <Icon name="ShieldAlert" size={24} />
-                                </div>
-                                <h2 className="font-display font-extrabold text-lg text-rose-300">ไม่พบรหัสประกาศนียบัตรนี้ในฐานข้อมูล</h2>
-                                <p className="text-xs text-secondary-adaptive max-w-md mx-auto leading-relaxed">
-                                    กรุณาตรวจสอบตัวอักษรและขีดคั่นของรหัส <b className="font-mono text-primary-adaptive">{codeInput}</b> ให้ตรงกับบนใบประกาศนียบัตรอีกครั้งค่ะ
-                                </p>
-                            </section>
-                        )}
-                    </main>
-
-                    <ToastBanner toast={toast} />
-                </div>
-            );
+            renderVerifiedCertificate(certData);
+            showToast(`ยืนยันความถูกต้องสำเร็จ: ${certData.name}`);
         }
 
-        const root = createRoot(document.getElementById('verify-root'));
-        root.render(<VerifyErrorBoundary><VerifyApp /></VerifyErrorBoundary>);
+        // ============================================================================
+        // 4. RENDER VERIFIED CERTIFICATE (PROFESSION-AWARE EQUAL HONOR UI)
+        // ============================================================================
+        function renderVerifiedCertificate(cert) {
+            const meta = resolveProfessionDisplay(cert);
+            const isNurse = meta.isNurseCneu;
+
+            $('res-name-th').textContent = cert.name || 'ผู้สำเร็จการอบรม';
+            const enEl = $('res-name-en');
+            if (cert.nameEN) {
+                enEl.textContent = cert.nameEN;
+                enEl.classList.remove('hidden');
+            } else {
+                enEl.textContent = '';
+                enEl.classList.add('hidden');
+            }
+
+            const orgParts = [cert.position || meta.professionGroup, cert.hospital || '', cert.department || ''].filter(Boolean);
+            $('res-org-line').textContent = orgParts.join(' • ');
+            $('res-prof-pill').textContent = `กลุ่มวิชาชีพ: ${meta.professionGroup}`;
+            $('res-demo-tag').classList.toggle('hidden', !cert.isDemo);
+
+            // สีของตราโฮโลแกรม 3 มิติและกล่องรับรองสิทธิ์แยกตามวิชาชีพด้วยเกียรติเท่าเทียมกัน
+            const sealCore = $('holo-seal-core');
+            const creditBox = $('res-credit-box');
+            const creditHeading = $('res-credit-heading');
+            const creditBadge = $('res-credit-badge');
+            const creditMain = $('res-credit-main');
+            const creditSub = $('res-credit-sub');
+
+            if (isNurse) {
+                sealCore.classList.remove('is-blue');
+                holoCard.style.borderColor = 'rgba(52, 211, 153, 0.52)';
+                creditBox.className = 'relative z-10 rounded-2xl p-4 sm:p-5 border space-y-1.5 bg-aurora-500/15 border-aurora-400/50';
+                creditHeading.className = 'font-mono text-[10.5px] font-extrabold uppercase tracking-wider text-accent-adaptive';
+                creditBadge.className = 'px-2.5 py-0.5 rounded-full font-mono text-[10px] font-extrabold bg-aurora-500/25 text-accent-adaptive';
+                creditHeading.textContent = 'หน่วยคะแนนการศึกษาต่อเนื่องทางการพยาบาล (CNEU • สภาการพยาบาล)';
+                creditBadge.textContent = 'CNEU VERIFIED';
+                creditMain.textContent = meta.lineTextTH;
+                creditSub.textContent = 'ผ่านการรับรองตามเกณฑ์มาตรฐานหลักสูตรปี 2027 สำหรับพยาบาลวิชาชีพ พร้อมบันทึกในรายงานส่งสภาการพยาบาลเรียบร้อยแล้ว';
+            } else {
+                sealCore.classList.add('is-blue');
+                holoCard.style.borderColor = 'rgba(56, 189, 248, 0.52)';
+                creditBox.className = 'relative z-10 rounded-2xl p-4 sm:p-5 border space-y-1.5 bg-prism-500/15 border-prism-400/50';
+                creditHeading.className = 'font-mono text-[10.5px] font-extrabold uppercase tracking-wider text-prism-adaptive';
+                creditBadge.className = 'px-2.5 py-0.5 rounded-full font-mono text-[10px] font-extrabold bg-prism-500/25 text-prism-adaptive';
+                creditHeading.textContent = meta.badgeLabelTH;
+                creditBadge.textContent = meta.creditType === 'CME' ? 'CME VERIFIED' : `${meta.trainingHours} HRS VERIFIED`;
+                creditMain.textContent = meta.lineTextTH;
+                creditSub.textContent = meta.professionGroup === 'แพทย์'
+                    ? 'ผ่านการประเมินผลตามเกณฑ์มาตรฐานหลักสูตรปี 2027 ด้วยมาตรฐานและเกียรติทางวิชาการเท่าเทียมกันทุกกลุ่มวิชาชีพ'
+                    : 'ผ่านการประเมินผลตามเกณฑ์มาตรฐานหลักสูตรปี 2027 เพื่อรับรองการพัฒนาสมรรถนะบุคลากรสหวิชาชีพทางการแพทย์';
+            }
+
+            $('res-code').textContent = cert.code || '-';
+            $('res-license-label').textContent = meta.licenseLabelTH;
+            $('res-license').textContent = cert.license || '-';
+            $('res-course-th').textContent = cert.courseTitleTH || 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ';
+            $('res-course-en').textContent = cert.courseTitleEN || 'Organ Donation & Transplantation Clinical Coordination Program';
+            $('res-issued-at').textContent = formatThaiDate(cert.issuedAt);
+
+            const evalParts = [
+                cert.posttestScore ? `Post-test ${cert.posttestScore}` : 'Post-test ≥ 80%',
+                typeof cert.skillLabBestScore === 'number' ? `AI Skill Lab ${cert.skillLabBestScore}/100` : 'AI Skill Lab ผ่านเกณฑ์'
+            ];
+            $('res-eval-meta').textContent = evalParts.join(' • ');
+
+            $('res-org-title').textContent = cert.orgTitleTH || 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ โรงพยาบาลราชวิถี';
+            $('res-signer').textContent = [cert.signerName || '', cert.signerPosition ? `(${cert.signerPosition})` : ''].filter(Boolean).join(' ');
+
+            // วาด QR Code ตรงสู่หน้านี้
+            const directUrl = buildVerifyShareUrl(cert.code);
+            drawDirectQr(directUrl);
+
+            resultWrap.classList.remove('hidden');
+            resultWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function buildVerifyShareUrl(code) {
+            try {
+                const loc = window.location;
+                if ((loc.protocol === 'https:' || loc.protocol === 'http:') && !/(googleusercontent|webcontainer|sandbox|srcdoc|blob:)/i.test(loc.href)) {
+                    const u = new URL(loc.href.split('?')[0].split('#')[0]);
+                    u.searchParams.set('code', code);
+                    return u.toString();
+                }
+            } catch (_) {}
+            return `https://learn.coerj.com/verify.html?code=${encodeURIComponent(code)}`;
+        }
+
+        // ============================================================================
+        // 5. INTERACTIVE 3D HOLOGRAM TILT, THEME TOGGLE & EVENT WIRING
+        // ============================================================================
+        function syncThemeButton() {
+            const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+            $('theme-icon').textContent = isDark ? '☀️' : '🌙';
+            $('theme-label').textContent = isDark ? 'โหมดสว่าง' : 'โหมดมืด';
+        }
+
+        $('btn-theme-toggle').addEventListener('click', () => {
+            const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+            const next = isDark ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            const meta = document.querySelector('meta[name="theme-color"]');
+            if (meta) meta.setAttribute('content', next === 'dark' ? '#020612' : '#edf6fd');
+            try { localStorage.setItem('rjcloud_theme', next); } catch (_) {}
+            syncThemeButton();
+        });
+
+        // 3D Tilt Effect บนการ์ดประกาศนียบัตรโฮโลแกรม
+        function applyHoloTilt(clientX, clientY) {
+            if (!holoCard || resultWrap.classList.contains('hidden')) return;
+            const rect = holoCard.getBoundingClientRect();
+            if (rect.width <= 0 || rect.height <= 0) return;
+            const px = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+            const py = Math.max(0, Math.min(1, (clientY - rect.top) / rect.height));
+            const rotY = (px - 0.5) * 9;
+            const rotX = (0.5 - py) * 7;
+            holoCard.style.transform = `rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg)`;
+            holoCard.style.setProperty('--mx', `${(px * 100).toFixed(1)}%`);
+            holoCard.style.setProperty('--my', `${(py * 100).toFixed(1)}%`);
+        }
+
+        function resetHoloTilt() {
+            if (!holoCard) return;
+            holoCard.style.transform = 'rotateX(0deg) rotateY(0deg)';
+            holoCard.style.setProperty('--mx', '50%');
+            holoCard.style.setProperty('--my', '30%');
+        }
+
+        holoCard.addEventListener('mousemove', (e) => applyHoloTilt(e.clientX, e.clientY));
+        holoCard.addEventListener('mouseleave', resetHoloTilt);
+        holoCard.addEventListener('touchmove', (e) => {
+            if (e.touches && e.touches[0]) applyHoloTilt(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: true });
+        holoCard.addEventListener('touchend', resetHoloTilt);
+
+        // Search Form & Demo Chips
+        searchForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            lookupCertificate(codeInput.value);
+        });
+
+        document.querySelectorAll('.demo-chip').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                lookupCertificate(btn.getAttribute('data-demo-code') || '');
+            });
+        });
+
+        $('btn-copy-verify-link').addEventListener('click', () => {
+            const url = buildVerifyShareUrl(currentDisplayedCode || 'RJC-2027-DEMO01');
+            const ok = copyTextSafe(url);
+            showToast(ok ? 'คัดลอกลิงก์หน้าตรวจสอบประกาศนียบัตรเรียบร้อยค่ะ' : 'ไม่สามารถคัดลอกลิงก์ได้ในขณะนี้ค่ะ', ok ? 'success' : 'error');
+        });
+
+        $('btn-print-verify').addEventListener('click', () => {
+            window.print();
+        });
+
+        // Initial Load: Sync Theme & Auto-Lookup ?code=... (หรือเปิดตัวอย่างแรกในโหมดพรีวิว)
+        syncThemeButton();
+        const urlCode = new URLSearchParams(window.location.search).get('code');
+        if (urlCode) {
+            lookupCertificate(urlCode);
+        }
     </script>
-    <!-- โหลด Babel ท้ายสุดหลังสคริปต์ทั้งหมด เพื่อให้แน่ใจว่าโค้ดครบ 100% ก่อนคอมไพล์ -->
-    <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
 </body>
 </html>
