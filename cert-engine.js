@@ -1,19 +1,22 @@
 /* ============================================================================
- * rjcloud.organ 2.0 — Certificate, Real QR Code & Export Engine (cert-engine.js)
- * โมดูลกลางแบบ Zero-Build (ไฟล์ 4/4 • สะอาดพร้อมใช้งาน 100%)
+ * rjcloud.organ 2.0 — Certificate, Real QR Code & Profession-Aware Credit Engine
+ * ไฟล์ที่ 1/5 (cert-engine.js • Zero-Build Standalone Module)
  *
- * นโยบายความเท่าเทียม (Equal Rights & Honor Standard):
- * - ประกาศนียบัตร, หนังสือรับรอง CNEU และทะเบียนสาธารณะ certificates/{code}
- *   ไม่ระบุแยกประเภทผู้เรียน (ผู้เรียนใหม่ / ผู้เรียนต่อเนื่อง / ผู้เข้าอบรม Onsite)
- *   เพื่อมอบสิทธิ์และเกียรติเท่าเทียมกันทุกประการ
- * - คุ้มครองข้อมูลส่วนบุคคล PDPA: ไม่เก็บอีเมลและเบอร์โทรศัพท์ในทะเบียนสาธารณะ
+ * นโยบายความเท่าเทียมและความถูกต้องตามสภาวิชาชีพ (Profession-Aware Equal Honor):
+ * 1. มาตรฐานและเกียรติเท่าเทียมกัน 100% ทุกกลุ่มการเรียน (ไม่ระบุแยกผู้เรียนใหม่/ต่อเนื่อง/Onsite)
+ * 2. คัดกรองหน่วยคะแนน CNEU เฉพาะกลุ่มวิชาชีพ "พยาบาล" (สภาการพยาบาล) เท่านั้น:
+ *    - พยาบาล          -> แสดงรหัสกิจกรรม CNEU + หน่วยคะแนนบนใบประกาศฯ และทะเบียนสาธารณะ
+ *    - แพทย์           -> ไม่แสดงคำว่า CNEU แสดงชั่วโมงการฝึกอบรมวิชาการมาตรฐาน (หรือ CME หากระบุ)
+ *    - บุคลากรสหวิชาชีพ -> ไม่แสดงคำว่า CNEU แสดงชั่วโมงการพัฒนาสมรรถนะวิชาชีพมาตรฐาน
+ * 3. คุ้มครอง PDPA 100%: ไม่เก็บอีเมลและเบอร์โทรศัพท์ในทะเบียนสาธารณะ certificates/{code}
  *
  * โครงสร้างภายในไฟล์ (เผยแพร่ผ่าน window.RJCLOUD_CERT):
- * 1. Safe Image Loader, Font Ready Guard, Verify URL Builder & Thai Date Formatter
- * 2. Pixel-Perfect Real QR Code Canvas Renderer (qrcode-generator + CORS Fallback)
- * 3. Apple-Minimalist Certificate Canvas Renderer (1600x1131 px • A4 Landscape)
- * 4. Equal-Honor Public Certificate Registry Payload Builder (PDPA-Safe)
- * 5. PNG / PDF Exporters & Individual A4 CNEU Print Controller
+ * 1. Profession & CNEU Eligibility Resolvers (Backward-Compatible กับข้อมูลผู้เรียนเก่า)
+ * 2. Safe Image Loader, Font Ready Guard, Verify URL Builder & Thai Date Formatter
+ * 3. Pixel-Perfect Real QR Code Canvas Renderer (qrcode-generator + Fallback)
+ * 4. Apple-Minimalist Certificate Canvas Renderer (1600x1131 px • A4 Landscape)
+ * 5. Profession-Aware Public Certificate Registry Payload Builder (PDPA-Safe)
+ * 6. PNG / PDF Exporters & Individual A4 Certification Letter Print Controller
  * ============================================================================ */
 
 (function (global) {
@@ -23,6 +26,9 @@
     certPrefix: 'RJC-2027',
     cneuActivityCode: '',
     cneuCredits: '',
+    cmeActivityCode: '',
+    cmeCredits: '',
+    trainingHours: '8',
     orgTitleTH: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ',
     orgTitleEN: 'rjcloud.organ • Clinical Organ Donation & Transplantation Network',
     courseTitleTH: 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ',
@@ -37,7 +43,147 @@
   };
 
   // ============================================================================
-  // 1. SAFE IMAGE LOADER, FONT READY GUARD, VERIFY URL & THAI DATE FORMATTER
+  // 1. PROFESSION & CNEU ELIGIBILITY RESOLVERS (BACKWARD-COMPATIBLE)
+  // ============================================================================
+
+  /**
+   * วิเคราะห์กลุ่มวิชาชีพของผู้เรียนเป็น 3 กลุ่มมาตรฐาน: 'พยาบาล' | 'แพทย์' | 'บุคลากรสหวิชาชีพ'
+   * - อ่านจากฟิลด์ professionGroup ก่อนเป็นอันดับแรก
+   * - หากเป็นบัญชีเก่าที่ยังไม่มี professionGroup จะตรวจจับอัตโนมัติจากคำนำหน้าชื่อและตำแหน่ง
+   */
+  function resolveProfessionGroup(userObj) {
+    const u = userObj || {};
+    const explicit = String(u.professionGroup || '').trim();
+    if (explicit === 'พยาบาล' || explicit === 'แพทย์' || explicit === 'บุคลากรสหวิชาชีพ') {
+      return explicit;
+    }
+
+    const combined = (String(u.name || '') + ' ' + String(u.position || '')).trim();
+    const lower = combined.toLowerCase();
+
+    // ตรวจจับกลุ่มแพทย์ (นพ., พญ., แพทย์, Doctor, Physician, MD)
+    if (
+      /(นพ\.|พญ\.|แพทย์|ศ\.นพ\.|รศ\.นพ\.|ผศ\.นพ\.|หมอ|doctor|physician|\bm\.?d\.?\b)/i.test(combined) &&
+      !/(พยาบาล|ผู้ช่วยแพทย์)/i.test(combined)
+    ) {
+      return 'แพทย์';
+    }
+
+    // ตรวจจับกลุ่มพยาบาล (พว., พยาบาล, Nurse, RN)
+    if (/(พว\.|พยาบาล|nurse|\brn\b)/i.test(combined)) {
+      return 'พยาบาล';
+    }
+
+    // ตรวจจับกลุ่มสหวิชาชีพชัดเจน (เภสัชกร, เทคนิคการแพทย์, สังคมสงเคราะห์, นักวิชาการ ฯลฯ)
+    if (/(ภก\.|ภญ\.|ทนพ\.|ทพ\.|ทพญ\.|เภสัช|เทคนิคการแพทย์|สังคมสงเคราะห์|นักวิชาการ|รังสี|กายภาพ|เจ้าหน้าที่)/i.test(lower)) {
+      return 'บุคลากรสหวิชาชีพ';
+    }
+
+    // ค่าเริ่มต้นสำหรับบุคลากรทั่วไปที่ยังไม่ได้ระบุ
+    return 'บุคลากรสหวิชาชีพ';
+  }
+
+  /**
+   * ตรวจสอบสิทธิ์การรับหน่วยคะแนน CNEU (เฉพาะพยาบาลวิชาชีพเท่านั้น)
+   */
+  function isNurseCneuEligible(userObj) {
+    const u = userObj || {};
+    if (typeof u.cneuEligible === 'boolean') {
+      return u.cneuEligible;
+    }
+    return resolveProfessionGroup(u) === 'พยาบาล';
+  }
+
+  /**
+   * สร้างข้อมูลหน่วยคะแนน/ชั่วโมงอบรมและข้อความรับรองให้ตรงตามกลุ่มวิชาชีพของแต่ละบุคคล
+   * - พยาบาล: แสดงรหัสกิจกรรม CNEU + หน่วยคะแนน (สภาการพยาบาล)
+   * - แพทย์: ไม่มีคำว่า CNEU แสดงชั่วโมงการฝึกอบรมวิชาการมาตรฐาน (หรือ CME หากผู้จัดกรอกไว้)
+   * - บุคลากรสหวิชาชีพ: ไม่มีคำว่า CNEU แสดงชั่วโมงการพัฒนาสมรรถนะวิชาชีพมาตรฐาน
+   */
+  function getCertificateCreditMeta(userObj, tplInput, cneuInput) {
+    const u = userObj || {};
+    const tpl = tplInput || {};
+    const cneu = cneuInput || {};
+    const professionGroup = resolveProfessionGroup(u);
+    const isNurseCneu = isNurseCneuEligible(u);
+
+    const trainingHours = String(
+      cneu.trainingHours || tpl.trainingHours || u.trainingHours || FALLBACK_TEMPLATE.trainingHours
+    ).trim() || '8';
+
+    const rawCneuCode = String(cneu.activityCode || tpl.cneuActivityCode || u.cneuActivityCode || '').trim();
+    const rawCneuCredits = String(cneu.cneuCredits || tpl.cneuCredits || u.cneuCredits || '').trim();
+    const rawCmeCode = String(cneu.cmeActivityCode || tpl.cmeActivityCode || u.cmeActivityCode || '').trim();
+    const rawCmeCredits = String(cneu.cmeCredits || tpl.cmeCredits || u.cmeCredits || '').trim();
+
+    if (isNurseCneu) {
+      const hasCneu = Boolean(rawCneuCode || rawCneuCredits);
+      const lineTextTH = hasCneu
+        ? [
+            rawCneuCode ? 'รหัสกิจกรรม CNEU: ' + rawCneuCode : '',
+            rawCneuCredits ? 'จำนวน ' + rawCneuCredits + ' หน่วยคะแนน' : ''
+          ].filter(Boolean).join('   •   ')
+        : 'จำนวน ' + trainingHours + ' ชั่วโมงการฝึกอบรมมาตรฐานวิชาชีพ';
+
+      return {
+        professionGroup: 'พยาบาล',
+        isNurseCneu: true,
+        creditType: 'CNEU',
+        badgeLabelTH: 'หน่วยคะแนนการศึกษาต่อเนื่อง (CNEU • สภาการพยาบาล)',
+        letterHeadingTH: 'หนังสือรับรองการสำเร็จการอบรมและหน่วยคะแนนการศึกษาต่อเนื่อง (CNEU)',
+        licenseLabelTH: 'เลขที่ใบอนุญาตประกอบวิชาชีพการพยาบาล',
+        lineTextTH: lineTextTH,
+        trainingHours: trainingHours,
+        cneuActivityCode: rawCneuCode,
+        cneuCredits: rawCneuCredits,
+        cmeActivityCode: '',
+        cmeCredits: ''
+      };
+    }
+
+    if (professionGroup === 'แพทย์') {
+      const hasCme = Boolean(rawCmeCode || rawCmeCredits);
+      const lineTextTH = hasCme
+        ? [
+            rawCmeCode ? 'รหัสกิจกรรม CME: ' + rawCmeCode : '',
+            rawCmeCredits ? 'จำนวน ' + rawCmeCredits + ' หน่วยคะแนน' : ''
+          ].filter(Boolean).join('   •   ')
+        : 'จำนวน ' + trainingHours + ' ชั่วโมงการฝึกอบรมวิชาการทางการแพทย์';
+
+      return {
+        professionGroup: 'แพทย์',
+        isNurseCneu: false,
+        creditType: hasCme ? 'CME' : 'HOURS',
+        badgeLabelTH: hasCme ? 'หน่วยคะแนนการศึกษาต่อเนื่องแพทย์ (CME)' : 'ชั่วโมงการฝึกอบรมวิชาการทางการแพทย์',
+        letterHeadingTH: 'หนังสือรับรองการสำเร็จการอบรมและชั่วโมงการฝึกอบรมวิชาการ',
+        licenseLabelTH: 'เลขที่ใบอนุญาตประกอบวิชาชีพเวชกรรม',
+        lineTextTH: lineTextTH,
+        trainingHours: trainingHours,
+        cneuActivityCode: '',
+        cneuCredits: '',
+        cmeActivityCode: rawCmeCode,
+        cmeCredits: rawCmeCredits
+      };
+    }
+
+    return {
+      professionGroup: 'บุคลากรสหวิชาชีพ',
+      isNurseCneu: false,
+      creditType: 'HOURS',
+      badgeLabelTH: 'ชั่วโมงการพัฒนาสมรรถนะบุคลากรทางการแพทย์',
+      letterHeadingTH: 'หนังสือรับรองการสำเร็จการอบรมและชั่วโมงพัฒนาบุคลากร',
+      licenseLabelTH: 'เลขที่ใบอนุญาตวิชาชีพ / รหัสประจำตัวบุคลากร',
+      lineTextTH: 'จำนวน ' + trainingHours + ' ชั่วโมงการพัฒนาสมรรถนะวิชาชีพ',
+      trainingHours: trainingHours,
+      cneuActivityCode: '',
+      cneuCredits: '',
+      cmeActivityCode: '',
+      cmeCredits: ''
+    };
+  }
+
+  // ============================================================================
+  // 2. SAFE IMAGE LOADER, FONT READY GUARD, VERIFY URL & THAI DATE FORMATTER
   // ============================================================================
 
   /**
@@ -113,7 +259,7 @@
   }
 
   // ============================================================================
-  // 2. PIXEL-PERFECT REAL QR CODE CANVAS RENDERER (ANTI-BLANK BOX GUARANTEE)
+  // 3. PIXEL-PERFECT REAL QR CODE CANVAS RENDERER (ANTI-BLANK BOX GUARANTEE)
   // ============================================================================
 
   /**
@@ -161,12 +307,13 @@
   }
 
   // ============================================================================
-  // 3. APPLE-MINIMALIST CERTIFICATE CANVAS RENDERER (1600x1131 • A4 LANDSCAPE)
+  // 4. APPLE-MINIMALIST CERTIFICATE CANVAS RENDERER (1600x1131 • A4 LANDSCAPE)
   // ============================================================================
 
   /**
-   * วาดใบประกาศนียบัตรสไตล์มินิมอลเรียบหรูมาตรฐานเดียวกันทุกประเภทผู้เรียน
-   * (พื้นสีขาวบริสุทธิ์ ตัดเส้นทองเมทัลลิกบางเฉียบ + รหัสกิจกรรม/หน่วยคะแนน CNEU + QR Code จริง)
+   * วาดใบประกาศนียบัตรสไตล์มินิมอลเรียบหรูมาตรฐานเดียวกันทุกวิชาชีพ
+   * - พยาบาล: พิมพ์บรรทัด รหัสกิจกรรม CNEU + หน่วยคะแนน
+   * - แพทย์และสหวิชาชีพ: พิมพ์บรรทัดจำนวนชั่วโมงการฝึกอบรมวิชาการ/พัฒนาสมรรถนะ (ไม่มีคำว่า CNEU)
    */
   async function drawMinimalistCertificate(canvas, tplInput, userObj, verifyUrl) {
     if (!canvas) return false;
@@ -177,6 +324,7 @@
       tplInput || {}
     );
     const u = userObj || {};
+    const creditMeta = getCertificateCreditMeta(u, tpl, tpl);
 
     const W = 1600;
     const H = 1131;
@@ -296,7 +444,7 @@
       .join('   •   ');
     ctx.fillText(orgMeta, W / 2, ruleY + 38, SAFE_TEXT_W);
 
-    // 7. ข้อความรับรอง ชื่อหลักสูตร หน่วยคะแนน CNEU และวันที่ออกเอกสาร (มาตรฐานเท่าเทียมกันทุกประเภท)
+    // 7. ข้อความรับรอง ชื่อหลักสูตร และหน่วยคะแนน/ชั่วโมงการฝึกอบรมตรงตามกลุ่มวิชาชีพ
     ctx.fillStyle = '#424245';
     ctx.font = '500 23px "Sarabun", sans-serif';
     ctx.fillText(tpl.completionTextTH || '', W / 2, ruleY + 92, SAFE_TEXT_W);
@@ -309,16 +457,11 @@
     ctx.font = '500 18px "Prompt", sans-serif';
     ctx.fillText(tpl.courseTitleEN || '', W / 2, ruleY + 178, SAFE_TEXT_W);
 
-    const cneuCode = String(tpl.cneuActivityCode || u.cneuActivityCode || '').trim();
-    const cneuCred = String(tpl.cneuCredits || u.cneuCredits || '').trim();
-    if (cneuCode || cneuCred) {
-      const cneuLine = [
-        cneuCode ? 'รหัสกิจกรรม CNEU: ' + cneuCode : '',
-        cneuCred ? 'จำนวน ' + cneuCred + ' หน่วยคะแนน' : ''
-      ].filter(Boolean).join('   •   ');
-      ctx.fillStyle = '#047857';
+    if (creditMeta.lineTextTH) {
+      // พยาบาล: สีเขียวมรกต (CNEU) | แพทย์ & สหวิชาชีพ: สีน้ำเงินกรมท่าสง่างาม (ชั่วโมงอบรม / CME)
+      ctx.fillStyle = creditMeta.isNurseCneu ? '#047857' : '#0369a1';
       ctx.font = '600 19px "Prompt", sans-serif';
-      ctx.fillText(cneuLine, W / 2, ruleY + 212, SAFE_TEXT_W);
+      ctx.fillText(creditMeta.lineTextTH, W / 2, ruleY + 212, SAFE_TEXT_W);
 
       ctx.fillStyle = '#6e6e73';
       ctx.font = '500 18px "Sarabun", sans-serif';
@@ -390,12 +533,13 @@
   }
 
   // ============================================================================
-  // 4. EQUAL-HONOR PUBLIC CERTIFICATE REGISTRY PAYLOAD BUILDER (PDPA-SAFE)
+  // 5. PROFESSION-AWARE PUBLIC CERTIFICATE REGISTRY PAYLOAD BUILDER (PDPA-SAFE)
   // ============================================================================
 
   /**
    * สร้างก้อนข้อมูลสำหรับบันทึกในทะเบียนสาธารณะ certificates/{code}
-   * - ไม่ระบุแยกประเภทผู้เรียน (ตัด userType / กลุ่มเรียน ออก 100% เพื่อสิทธิ์และเกียรติเท่าเทียมกันทุกประเภท)
+   * - ไม่ระบุแยกประเภทการเรียน (ตัด userType ออก 100% มอบสิทธิ์และเกียรติเท่าเทียมกัน)
+   * - บันทึก creditType ('CNEU' | 'CME' | 'HOURS') และใส่รหัส CNEU เฉพาะกลุ่มพยาบาลเท่านั้น
    * - คุ้มครอง PDPA: ไม่เก็บอีเมลและเบอร์โทรศัพท์ในคอลเลกชันสาธารณะเด็ดขาด
    */
   function buildPublicCertPayload(params) {
@@ -403,6 +547,7 @@
     const u = p.user || {};
     const tpl = Object.assign({}, FALLBACK_TEMPLATE, p.certTemplate || {});
     const cneu = p.cneuConfig || {};
+    const creditMeta = getCertificateCreditMeta(u, tpl, cneu);
 
     return {
       code: p.code,
@@ -410,6 +555,11 @@
       nameEN: p.nameEN || u.nameEN || '',
       license: p.license || u.license || u.id || '',
       position: u.position || 'บุคลากรทางการแพทย์',
+      professionGroup: creditMeta.professionGroup,
+      cneuEligible: creditMeta.isNurseCneu,
+      creditType: creditMeta.creditType,
+      creditLabelTH: creditMeta.lineTextTH,
+      trainingHours: creditMeta.trainingHours,
       hospital: p.finalHospital || u.hospital || '',
       department: u.department || '',
       province: u.province || '',
@@ -420,15 +570,17 @@
       signerPosition: tpl.signerPosition,
       posttestScore: u.posttest || 'ผ่านเกณฑ์มาตรฐาน (≥ 80%)',
       skillLabBestScore: typeof u.skillLabBestScore === 'number' ? u.skillLabBestScore : null,
-      cneuActivityCode: cneu.activityCode || '',
-      cneuCredits: cneu.cneuCredits || '',
+      cneuActivityCode: creditMeta.isNurseCneu ? creditMeta.cneuActivityCode : '',
+      cneuCredits: creditMeta.isNurseCneu ? creditMeta.cneuCredits : '',
+      cmeActivityCode: creditMeta.creditType === 'CME' ? creditMeta.cmeActivityCode : '',
+      cmeCredits: creditMeta.creditType === 'CME' ? creditMeta.cmeCredits : '',
       issuedAt: p.issuedAt || new Date().toISOString(),
       status: 'valid'
     };
   }
 
   // ============================================================================
-  // 5. PNG / PDF EXPORTERS & INDIVIDUAL A4 CNEU PRINT CONTROLLER
+  // 6. PNG / PDF EXPORTERS & INDIVIDUAL A4 CERTIFICATION LETTER PRINT CONTROLLER
   // ============================================================================
 
   /**
@@ -474,7 +626,7 @@
   }
 
   /**
-   * สั่งพิมพ์หรือบันทึก PDF หนังสือรับรอง CNEU รายบุคคล (A4 แนวตั้ง)
+   * สั่งพิมพ์หรือบันทึก PDF หนังสือรับรองรายบุคคล (A4 แนวตั้ง — รองรับทั้ง CNEU และชั่วโมงอบรม)
    */
   function printIndividualCneuLetter() {
     if (!global.document || !global.document.body) return;
@@ -500,9 +652,12 @@
   }
 
   // ============================================================================
-  // 6. EXPORT PUBLIC API TO window.RJCLOUD_CERT
+  // 7. EXPORT PUBLIC API TO window.RJCLOUD_CERT
   // ============================================================================
   global.RJCLOUD_CERT = {
+    resolveProfessionGroup: resolveProfessionGroup,
+    isNurseCneuEligible: isNurseCneuEligible,
+    getCertificateCreditMeta: getCertificateCreditMeta,
     loadImageSafe: loadImageSafe,
     waitFontsReadySafe: waitFontsReadySafe,
     buildVerifyUrl: buildVerifyUrl,
