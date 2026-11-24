@@ -664,6 +664,7 @@
 
         /**
          * แบ่งบทพูดเป็นช่วงธรรมชาติ (Chunking) เพื่อโหลดล่วงหน้าทีละช่วงโดยไม่ลดทอนคุณภาพเสียง 24kHz PCM
+         * (ไม่ใช้ Lookbehind Regex เพื่อรองรับ Safari / iOS / Android ทุกรุ่น 100%)
          */
         function splitSpeechIntoNaturalChunks(input, lang = 'th', maxChars = 190) {
             const rawList = Array.isArray(input)
@@ -676,7 +677,8 @@
                     chunks.push(segment);
                     return;
                 }
-                const pieces = segment.split(/(?<=[.!?。\n]|ค่ะ|ครับ)\s+/g).filter(Boolean);
+                const marked = segment.replace(/([.!?。\n]|ค่ะ|ครับ)\s+/g, '$1\u0001');
+                const pieces = marked.split('\u0001').map(s => s.trim()).filter(Boolean);
                 let buf = '';
                 pieces.forEach((p) => {
                     if ((buf + ' ' + p).trim().length <= maxChars) {
@@ -836,6 +838,7 @@
                 const hero = heroRef.current;
                 if (!canvas || !hero) return;
                 const ctx = canvas.getContext('2d');
+                if (!ctx) return;
                 let rafId = null;
                 let alive = true;
                 let mx = 0, my = 0, tmx = 0, tmy = 0, w = window.innerWidth, h = window.innerHeight;
@@ -1589,7 +1592,8 @@
 
                     if (signal?.aborted) return null;
                     if (res?.status === 'success' && res.inlineData?.data) {
-                        const rate = parseInt(res.inlineData.mimeType?.match(/rate=(\d+)/)?.[1] ?? '24000', 10);
+                        const rateMatch = String(res.inlineData.mimeType || '').match(/rate=(\d+)/);
+                        const rate = parseInt(rateMatch ? rateMatch[1] : '24000', 10);
                         const blob = pcm16ToWavBlobSafe(res.inlineData.data, rate);
                         if (blob && blob.size > 0) {
                             if (typeof CORE.setCachedAudio === 'function') CORE.setCachedAudio(cacheKey, blob).catch(() => {});
