@@ -9,15 +9,13 @@
     <title>rjcloud.organ 2.0 — e-Learning Organ Donation Training (Cloud AI)</title>
     <link rel="manifest" href="./manifest.json">
 
-    <!-- โหลดไฟล์สไตล์และโมดูลกลางแบบ Modular Zero-Build -->
     <link rel="stylesheet" href="./styles.css">
     <script src="./data.js" onerror="console.warn('data.js not loaded, using built-in defaults')"></script>
     <script src="./learning-core.js" onerror="console.warn('learning-core.js not loaded, using built-in defaults')"></script>
     <script src="./cert-engine.js" onerror="console.warn('cert-engine.js not loaded, using built-in fallback')"></script>
     <script src="./ai-interactive.js" onerror="console.warn('ai-interactive.js not loaded')"></script>
-    <script src="./keynote-launch.js?v=202706" onerror="console.warn('keynote-launch.js not loaded')"></script>
+    <script src="./keynote-launch.js?v=202707" onerror="console.warn('keynote-launch.js not loaded')"></script>
 
-    <!-- ซิงค์โหมดมืด/สว่างทันทีจาก localStorage ป้องกันจอกระพริบ -->
     <script>
       (function () {
         try {
@@ -32,7 +30,6 @@
       })();
     </script>
 
-    <!-- Tailwind CSS, QR Generator, jsPDF & ฟอนต์ภาษาไทยสไตล์ Apple -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" onerror="console.warn('Primary QR CDN unavailable')"></script>
     <script>
@@ -131,16 +128,12 @@
       .pb-dock-safe { padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px)); }
       @media (max-width: 768px) { input, select, textarea { font-size: 16px !important; } }
 
-      .hero-atmosphere {
-        background: linear-gradient(180deg, #000000 0%, #000000 25%, #030c1e 39%, #07255e 54%, #165cc4 71%, #4b98e8 85%, #a9d6f7 96%, #c4e4fb 100%);
-      }
-      .lower-atmosphere {
-        background: linear-gradient(180deg, #c4e4fb 0%, #9ccbf2 14%, #1d4f9c 44%, #071838 78%, #030816 100%);
-      }
+      .hero-atmosphere { background: linear-gradient(180deg, #000000 0%, #000000 25%, #030c1e 39%, #07255e 54%, #165cc4 71%, #4b98e8 85%, #a9d6f7 96%, #c4e4fb 100%); }
+      .lower-atmosphere { background: linear-gradient(180deg, #c4e4fb 0%, #9ccbf2 14%, #1d4f9c 44%, #071838 78%, #030816 100%); }
       .liquid-glass-backdrop {
         clip-path: url(#liquidGlassClipNorm);
         -webkit-clip-path: url(#liquidGlassClipNorm);
-        background: radial-gradient(circle at var(--gx, 32%) var(--gy, 28%), rgba(255, 255, 255, 0.13) 0%, rgba(186, 224, 255, 0.045) 38%, rgba(15, 58, 130, 0.045) 74%, rgba(255, 255, 255, 0.035) 100%);
+        background: radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.13) 0%, rgba(186, 224, 255, 0.045) 38%, rgba(15, 58, 130, 0.045) 74%, rgba(255, 255, 255, 0.035) 100%);
         backdrop-filter: blur(3.5px) saturate(135%) brightness(1.04);
         -webkit-backdrop-filter: blur(3.5px) saturate(135%) brightness(1.04);
       }
@@ -151,26 +144,9 @@
         border: 1px solid rgba(255, 255, 255, 0.48);
         box-shadow: 0 20px 50px -15px rgba(0, 18, 56, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.55);
       }
-      .hero-eyebrow {
-        letter-spacing: 0.055em;
-        background: rgba(255, 255, 255, 0.09);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        box-shadow: 0 4px 18px rgba(0, 14, 44, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.38);
-      }
-      .hero-headline {
-        font-weight: 500;
-        letter-spacing: -0.015em;
-        text-shadow: 0 2px 14px rgba(0, 10, 38, 0.8), 0 1px 4px rgba(0, 12, 42, 0.74), 0 0 26px rgba(147, 210, 255, 0.24);
-      }
-      .hero-year-highlight {
-        font-weight: 700;
-        letter-spacing: -0.015em;
-        background: linear-gradient(95deg, #ffffff 0%, #fffbeb 42%, #fde68a 72%, #bae6fd 100%);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-        filter: drop-shadow(0 3px 16px rgba(0, 12, 44, 0.85)) drop-shadow(0 0 26px rgba(253, 224, 71, 0.36));
-      }
+      .hero-eyebrow { letter-spacing: 0.055em; background: rgba(255, 255, 255, 0.09); border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 4px 18px rgba(0, 14, 44, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.38); }
+      .hero-headline { font-weight: 500; letter-spacing: -0.015em; text-shadow: 0 2px 14px rgba(0, 10, 38, 0.8), 0 0 26px rgba(147, 210, 255, 0.24); }
+      .hero-year-highlight { font-weight: 700; letter-spacing: -0.015em; background: linear-gradient(95deg, #ffffff 0%, #fffbeb 42%, #fde68a 72%, #bae6fd 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 3px 16px rgba(0, 12, 44, 0.85)); }
       #liquid-glass-stage { container-type: inline-size; }
       .hero-fit-line1 { font-size: 3.55cqw; line-height: 1.22; }
       .hero-fit-line2 { font-size: 3.85cqw; line-height: 1.16; }
@@ -184,26 +160,10 @@
       }
       .login-pill-btn:hover, .rjc2-pill-btn:hover { transform: translateY(-1.5px) scale(1.02); }
       .rajavithi-watermark { color: rgba(45, 76, 120, 0.82); letter-spacing: 0.06em; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.42); }
-      .pathway-glass-card {
-        background: linear-gradient(155deg, rgba(255, 255, 255, 0.2) 0%, rgba(15, 40, 88, 0.42) 100%);
-        backdrop-filter: blur(20px) saturate(155%);
-        -webkit-backdrop-filter: blur(20px) saturate(155%);
-        border: 1px solid rgba(255, 255, 255, 0.28);
-      }
+      .pathway-glass-card { background: linear-gradient(155deg, rgba(255, 255, 255, 0.2) 0%, rgba(15, 40, 88, 0.42) 100%); backdrop-filter: blur(20px) saturate(155%); -webkit-backdrop-filter: blur(20px) saturate(155%); border: 1px solid rgba(255, 255, 255, 0.28); }
 
-      .spatial-aura {
-        position: fixed; inset: 0; z-index: 0; pointer-events: none;
-        background:
-          radial-gradient(ellipse 90% 55% at 50% 108%, var(--aura-1) 0%, transparent 66%),
-          radial-gradient(circle at 86% 14%, var(--aura-2) 0%, transparent 48%),
-          radial-gradient(circle at 14% 28%, var(--aura-3) 0%, transparent 46%);
-      }
-      .spatial-grid {
-        position: fixed; inset: 0; z-index: 0; pointer-events: none;
-        background-image: linear-gradient(to right, var(--grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
-        background-size: 44px 44px;
-        mask-image: radial-gradient(ellipse at center, black 42%, transparent 94%);
-      }
+      .spatial-aura { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(ellipse 90% 55% at 50% 108%, var(--aura-1) 0%, transparent 66%), radial-gradient(circle at 86% 14%, var(--aura-2) 0%, transparent 48%), radial-gradient(circle at 14% 28%, var(--aura-3) 0%, transparent 46%); }
+      .spatial-grid { position: fixed; inset: 0; z-index: 0; pointer-events: none; background-image: linear-gradient(to right, var(--grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px); background-size: 44px 44px; mask-image: radial-gradient(ellipse at center, black 42%, transparent 94%); }
       .spatial-card { background: var(--glass-bg); backdrop-filter: blur(22px) saturate(165%); -webkit-backdrop-filter: blur(22px) saturate(165%); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); }
       .spatial-header { background: var(--header-bg); backdrop-filter: blur(22px) saturate(160%); -webkit-backdrop-filter: blur(22px) saturate(160%); border-bottom: 1px solid var(--surface-border); }
       .spatial-dock { background: var(--dock-bg); backdrop-filter: blur(24px) saturate(160%); -webkit-backdrop-filter: blur(24px) saturate(160%); border-top: 1px solid var(--surface-border); }
@@ -220,45 +180,13 @@
       .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
       .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(147, 197, 253, 0.38); border-radius: 999px; }
 
-      /* แถบไฟแอมเบียน + คลื่นเสียง AI สไตล์ Apple Intelligence */
-      @keyframes rjcAmbientFlow {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-      }
-      @keyframes rjcAmbientGlowPulse {
-        0%, 100% { box-shadow: 0 0 0 1px rgba(110, 231, 183, 0.45), 0 0 28px -4px rgba(56, 189, 248, 0.5), 0 0 54px -10px rgba(192, 132, 252, 0.38); }
-        50% { box-shadow: 0 0 0 1.5px rgba(103, 232, 249, 0.8), 0 0 42px -2px rgba(110, 231, 183, 0.65), 0 0 68px -8px rgba(56, 189, 248, 0.5); }
-      }
-      @keyframes rjcWaveBar {
-        0%, 100% { transform: scaleY(0.28); opacity: 0.65; }
-        50% { transform: scaleY(1); opacity: 1; }
-      }
-      .rjc-ambient-bar {
-        height: 4px;
-        width: 100%;
-        background: linear-gradient(90deg, #6ee7b7, #38bdf8, #818cf8, #f0abfc, #fde68a, #6ee7b7);
-        background-size: 300% 100%;
-        animation: rjcAmbientFlow 2.1s linear infinite;
-        box-shadow: 0 0 18px rgba(56, 189, 248, 0.85);
-      }
-      .rjc-ambient-card-active {
-        animation: rjcAmbientGlowPulse 2.4s ease-in-out infinite;
-        border-color: rgba(110, 231, 183, 0.65) !important;
-      }
-      .rjc-wave-eq {
-        display: inline-flex;
-        align-items: center;
-        gap: 3px;
-        height: 18px;
-      }
-      .rjc-wave-eq span {
-        width: 3px;
-        height: 100%;
-        border-radius: 9999px;
-        background: linear-gradient(180deg, #fde68a, #6ee7b7, #38bdf8);
-        animation: rjcWaveBar 0.85s ease-in-out infinite;
-      }
+      @keyframes rjcAmbientFlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+      @keyframes rjcAmbientGlowPulse { 0%, 100% { box-shadow: 0 0 0 1px rgba(110, 231, 183, 0.45), 0 0 28px -4px rgba(56, 189, 248, 0.5); } 50% { box-shadow: 0 0 0 1.5px rgba(103, 232, 249, 0.8), 0 0 42px -2px rgba(110, 231, 183, 0.65); } }
+      @keyframes rjcWaveBar { 0%, 100% { transform: scaleY(0.28); opacity: 0.65; } 50% { transform: scaleY(1); opacity: 1; } }
+      .rjc-ambient-bar { height: 4px; width: 100%; background: linear-gradient(90deg, #6ee7b7, #38bdf8, #818cf8, #f0abfc, #fde68a, #6ee7b7); background-size: 300% 100%; animation: rjcAmbientFlow 2.1s linear infinite; box-shadow: 0 0 18px rgba(56, 189, 248, 0.85); }
+      .rjc-ambient-card-active { animation: rjcAmbientGlowPulse 2.4s ease-in-out infinite; border-color: rgba(110, 231, 183, 0.65) !important; }
+      .rjc-wave-eq { display: inline-flex; align-items: center; gap: 3px; height: 18px; }
+      .rjc-wave-eq span { width: 3px; height: 100%; border-radius: 9999px; background: linear-gradient(180deg, #fde68a, #6ee7b7, #38bdf8); animation: rjcWaveBar 0.85s ease-in-out infinite; }
       .rjc-wave-eq span:nth-child(2) { animation-delay: 0.14s; }
       .rjc-wave-eq span:nth-child(3) { animation-delay: 0.28s; }
       .rjc-wave-eq span:nth-child(4) { animation-delay: 0.42s; }
@@ -267,7 +195,7 @@
       @keyframes treeCanopySway { 0%, 100% { transform: rotate(0deg) scale(1); } 32% { transform: rotate(1.15deg) scale(1.008); } 68% { transform: rotate(-1.05deg) scale(1.004); } }
       @keyframes branchSwayLeft { 0%, 100% { transform: rotate(0deg); } 40% { transform: rotate(-2.2deg); } 75% { transform: rotate(1.3deg); } }
       @keyframes branchSwayRight { 0%, 100% { transform: rotate(0deg); } 38% { transform: rotate(2.1deg); } 76% { transform: rotate(-1.35deg); } }
-      @keyframes leafFlutterOrganic { 0%, 100% { transform: rotate(0deg) scale(1); } 30% { transform: rotate(var(--fl-rot, 8deg)) scale(1.09); filter: brightness(1.32); } 62% { transform: rotate(calc(var(--fl-rot, 8deg) * -0.55)) scale(0.98); } }
+      @keyframes leafFlutterOrganic { 0%, 100% { transform: rotate(0deg) scale(1); } 30% { transform: rotate(var(--fl-rot, 8deg)) scale(1.09); filter: brightness(1.32); } }
       @keyframes leafAuraHaloSync { 0%, 100% { opacity: 0.08; transform: scale(0.72); } 30% { opacity: 0.85; transform: scale(1.65); } }
       @keyframes nodePulseGlow { 0%, 100% { opacity: 0.65; transform: scale(1); } 50% { opacity: 1; transform: scale(1.24); } }
       @keyframes twinkleStar { 0%, 100% { opacity: 0.16; transform: scale(0.85); } 50% { opacity: 0.92; transform: scale(1.28); } }
@@ -289,10 +217,10 @@
       .hero-cloud-bank-l { position: absolute; will-change: transform; animation: cloudBankFloat 16s ease-in-out infinite; }
       .hero-cloud-bank-r { position: absolute; will-change: transform; animation: cloudBankFloatAlt 19s ease-in-out infinite; }
       .hero-cloud-haze { background: radial-gradient(ellipse 85% 58% at 50% 100%, rgba(255, 255, 255, 0.56) 0%, rgba(224, 242, 254, 0.32) 45%, rgba(125, 211, 252, 0) 78%); }
+
       @media (prefers-reduced-motion: reduce) {
         .hero-cloud-drift, .hero-cloud-bank-l, .hero-cloud-bank-r, .rjc-ambient-bar, .rjc-wave-eq span { animation: none !important; }
       }
-
       @media print {
         body.printing-cneu-letter * { visibility: hidden !important; }
         body.printing-cneu-letter #cneu-letter-print-area,
@@ -301,7 +229,6 @@
       }
     </style>
 
-    <!-- ESM Import Map (React 18, Lucide Icons, Firebase 11) -->
     <script type="importmap">
     {
       "imports": {
@@ -318,7 +245,6 @@
     <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
 </head>
 <body>
-    <!-- หน้าจอโหลดเริ่มต้น -->
     <div id="app-root">
         <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#020612;color:#f8fafc;font-family:-apple-system,'Anuphan','Prompt',sans-serif;gap:14px;padding:24px;text-align:center;">
             <div style="width:48px;height:48px;border:3px solid rgba(56,189,248,0.22);border-top-color:#6ee7b7;border-right-color:#38bdf8;border-radius:9999px;animation:rjcSpin 0.85s linear infinite;"></div>
@@ -327,7 +253,6 @@
         </div>
     </div>
 
-    <!-- Global Error Guard ป้องกันหน้าขาว/จอดำ -->
     <script>
       window.addEventListener('error', function (ev) {
         const src = String(ev.filename || (ev.target && ev.target.src) || '');
@@ -354,7 +279,7 @@
         import { getFirestore, doc, getDoc, setDoc, deleteDoc, onSnapshot, increment } from 'firebase/firestore';
 
         // ============================================================================
-        // 1. MODULAR ENGINE RESOLUTION & ZERO-COST CONSTANTS
+        // 1. CONFIGURATION, CONSTANTS & STATUS ENGINE (FAST-TRACK + ONSITE UNLOCK)
         // ============================================================================
         const CORE = window.RJCLOUD_CORE || {};
         const CERT = window.RJCLOUD_CERT || {};
@@ -364,7 +289,6 @@
         const BUILTIN_CONFIG = {
             appName: 'rjcloud.organ',
             themeName: 'rjcloud.organ 2.0',
-            contactEmail: 'rjcloud.organ@gmail.com',
             appId: 'rjcloud-organ-2027',
             theme: { defaultMode: 'dark', storageKey: 'rjcloud_theme' },
             learningRules: { minStudyPercent: 80, minPosttestPercent: 80 },
@@ -394,6 +318,7 @@
         const THEME_KEY = CONFIG.theme?.storageKey || 'rjcloud_theme';
         const MIN_STUDY_PERCENT = Number(CONFIG.learningRules?.minStudyPercent || 80);
         const MIN_POSTTEST_PERCENT = Number(CONFIG.learningRules?.minPosttestPercent || 80);
+        const DEFAULT_ONLINE_COURSE_NAME = 'หลักสูตรออนไลน์การรับบริจาคและปลูกถ่ายอวัยวะ (rjcloud.organ 2.0)';
 
         const CLINICAL_DOMAINS = window.CLINICAL_DOMAINS || {
             policy_ethics: { id: 'policy_ethics', nameTH: 'นโยบาย กฎหมาย และจริยธรรมวิชาชีพ', shortName: 'กฎหมาย & จริยธรรม', color: '#38bdf8', remediationGuide: 'ทบทวนเกณฑ์อายุ 18 ปี, ODC สภากาชาดไทย และ Autonomy' },
@@ -447,36 +372,11 @@
         ];
 
         const POCKET_PHRASEBOOK = [
-            {
-                id: 'pb_open', catLabel: 'เปิดบทสนทนา',
-                situation: 'เมื่อเชิญญาติเข้าห้องรับรองส่วนตัว (SPIKES — Setting & Empathy)',
-                textTH: 'สวัสดีค่ะ ดิฉันเป็นพยาบาลผู้ประสานงานดูแลครอบครัวค่ะ ขอแสดงความเสียใจอย่างสุดซึ้งกับเหตุการณ์ที่เกิดขึ้นนะคะ ขอบคุณที่มานั่งคุยกันในพื้นที่ส่วนตัวนี้ เราค่อยๆ คุยกันช้าๆ ไม่ต้องรีบค่ะ',
-                textEN: 'Hello, I am the organ donation coordinator. I am deeply sorry for what your family is going through. Thank you for sitting with me in this private room—there is no rush at all.'
-            },
-            {
-                id: 'pb_vent', catLabel: 'สมองตาย vs เครื่องช่วยหายใจ',
-                situation: 'เมื่อญาติเห็นหน้าอกยังขยับและตัวอุ่นจึงทำใจเชื่อไม่ได้',
-                textTH: 'เข้าใจเลยค่ะว่าเห็นหน้าอกยังขยับและตัวอุ่นแล้วทำใจเชื่อยาก จริงๆ แล้วเกิดจากเครื่องช่วยหายใจที่เป่าลมและยาพยุงความดันไว้ค่ะ ส่วนก้านสมองหยุดทำงานถาวรซึ่งแพทย์ผู้เชี่ยวชาญ 3 ท่านตรวจยืนยันครบ 2 ครั้งแล้วค่ะ',
-                textEN: 'It is completely understandable to feel confused when the chest is rising and the body feels warm. The ventilator moves air and medications support circulation, while the brainstem has permanently stopped functioning.'
-            },
-            {
-                id: 'pb_belief', catLabel: 'ความเชื่อ & เกียรติร่าง',
-                situation: 'เมื่อญาติกังวลเรื่องชาติหน้าอวัยวะไม่ครบและการประกอบพิธีศาสนา',
-                textTH: 'เราเคารพความเชื่อของครอบครัวเสมอค่ะ ในทางศาสนาการมอบอวัยวะเพื่อต่อชีวิตผู้อื่นถือเป็นทานบารมีอันยิ่งใหญ่ และทีมศัลยแพทย์จะดูแลเย็บแผลตกแต่งร่างให้เรียบร้อยสมบูรณ์ สมเกียรติที่สุด ทำพิธีทางศาสนาได้ตามปกติค่ะ',
-                textEN: 'We deeply respect your family’s spiritual beliefs. Giving the gift of life is regarded as an act of profound compassion, and our surgical team restores the body with utmost dignity for your ceremony.'
-            },
-            {
-                id: 'pb_odc', catLabel: 'ความโปร่งใส ODC & ค่าใช้จ่าย',
-                situation: 'เมื่อญาติระแวงเรื่องการลัดคิวให้คนรวยและกลัวค่าใช้จ่ายห้อง ICU เพิ่ม',
-                textTH: 'ขอบคุณที่ถามอย่างตรงไปตรงมานะคะ การจัดสรรอวัยวะดำเนินการผ่านระบบคอมพิวเตอร์ของศูนย์รับบริจาคอวัยวะสภากาชาดไทย (ODC) ตามความเข้ากันได้ของเนื้อเยื่อ ไม่มีการซื้อขายหรือลัดคิว และครอบครัวไม่มีค่าใช้จ่ายเพิ่มเติมเลยค่ะ',
-                textEN: 'Thank you for asking openly. Organ allocation is managed transparently by the Thai Red Cross Organ Donation Centre computer matching system—there is no queue-jumping and zero extra cost to your family.'
-            },
-            {
-                id: 'pb_conflict', catLabel: 'ขัดแย้ง 2 เสียง / เด็ก',
-                situation: 'เมื่อความเห็นในครอบครัวต่างกันหรือเป็นเคสผู้ป่วยเด็ก (Zero Pressure)',
-                textTH: 'สัมผัสได้ถึงความรักที่ทุกคนมีให้ท่านค่ะ ตามหลักจริยธรรมเราจะไม่ฝืนใจครอบครัวหรือดำเนินการใดๆ หากทุกท่านยังไม่เห็นพ้องร่วมกัน ขอให้ครอบครัวมีเวลาส่วนตัวคุยกันก่อนอย่างเต็มที่นะคะ',
-                textEN: 'We can feel how deeply everyone loves them. Ethically, we never proceed without family consensus. Please take all the private time your family needs together.'
-            }
+            { id: 'pb_open', catLabel: 'เปิดบทสนทนา', situation: 'เมื่อเชิญญาติเข้าห้องรับรองส่วนตัว (SPIKES)', textTH: 'สวัสดีค่ะ ดิฉันเป็นพยาบาลผู้ประสานงานดูแลครอบครัวค่ะ ขอแสดงความเสียใจอย่างสุดซึ้งกับเหตุการณ์ที่เกิดขึ้นนะคะ ขอบคุณที่มานั่งคุยกันในพื้นที่ส่วนตัวนี้ เราค่อยๆ คุยกันช้าๆ ไม่ต้องรีบค่ะ', textEN: 'Hello, I am the organ donation coordinator. I am deeply sorry for what your family is going through. Thank you for sitting with me in this private room—there is no rush at all.' },
+            { id: 'pb_vent', catLabel: 'สมองตาย vs เครื่องช่วยหายใจ', situation: 'เมื่อญาติเห็นหน้าอกยังขยับและตัวอุ่น', textTH: 'เข้าใจเลยค่ะว่าเห็นหน้าอกยังขยับและตัวอุ่นแล้วทำใจเชื่อยาก จริงๆ แล้วเกิดจากเครื่องช่วยหายใจที่เป่าลมและยาพยุงความดันไว้ค่ะ ส่วนก้านสมองหยุดทำงานถาวรซึ่งแพทย์ผู้เชี่ยวชาญ 3 ท่านตรวจยืนยันครบ 2 ครั้งแล้วค่ะ', textEN: 'It is completely understandable to feel confused when the chest is rising. The ventilator moves air and medications support circulation, while the brainstem has permanently stopped functioning.' },
+            { id: 'pb_belief', catLabel: 'ความเชื่อ & เกียรติร่าง', situation: 'เมื่อญาติกังวลเรื่องชาติหน้าและพิธีศาสนา', textTH: 'เราเคารพความเชื่อของครอบครัวเสมอค่ะ ในทางศาสนาการมอบอวัยวะเพื่อต่อชีวิตผู้อื่นถือเป็นทานบารมีอันยิ่งใหญ่ และทีมศัลยแพทย์จะดูแลเย็บแผลตกแต่งร่างให้เรียบร้อยสมบูรณ์ ทำพิธีทางศาสนาได้ตามปกติค่ะ', textEN: 'We deeply respect your spiritual beliefs. Giving the gift of life is an act of profound compassion, and our surgical team restores the body with utmost dignity.' },
+            { id: 'pb_odc', catLabel: 'ความโปร่งใส ODC & ค่าใช้จ่าย', situation: 'เมื่อญาติระแวงเรื่องลัดคิวและค่า ICU', textTH: 'ขอบคุณที่ถามอย่างตรงไปตรงมานะคะ การจัดสรรอวัยวะดำเนินการผ่านระบบคอมพิวเตอร์ของศูนย์รับบริจาคอวัยวะสภากาชาดไทย (ODC) ตามความเข้ากันได้ของเนื้อเยื่อ ไม่มีการซื้อขายหรือลัดคิว และครอบครัวไม่มีค่าใช้จ่ายเพิ่มเติมเลยค่ะ', textEN: 'Organ allocation is managed transparently by the Thai Red Cross Organ Donation Centre matching system—there is no queue-jumping and zero extra cost to your family.' },
+            { id: 'pb_conflict', catLabel: 'ขัดแย้ง 2 เสียง / เด็ก', situation: 'เมื่อความเห็นในครอบครัวต่างกันหรือเคสเด็ก', textTH: 'สัมผัสได้ถึงความรักที่ทุกคนมีให้ท่านค่ะ ตามหลักจริยธรรมเราจะไม่ฝืนใจครอบครัวหรือดำเนินการใดๆ หากทุกท่านยังไม่เห็นพ้องร่วมกัน ขอให้ครอบครัวมีเวลาส่วนตัวคุยกันก่อนอย่างเต็มที่นะคะ', textEN: 'We can feel how deeply everyone loves them. Ethically, we never proceed without family consensus. Please take all the private time your family needs together.' }
         ];
 
         const CLINICAL_CASE_SIMULATIONS = window.CLINICAL_CASE_SIMULATIONS || [];
@@ -499,26 +399,28 @@
             department: 'กรมการแพทย์',
             hospital: 'รพ.ราชวิถี',
             province: 'กรุงเทพมหานคร',
-            userType: 'เรียนใหม่',
+            userType: 'เรียนต่อเนื่อง',
+            studyHoursExempt: true,
+            hoursStatusLabel: 'ชั่วโมงครบ (เทียบโอน)',
+            hoursActivityName: 'การอบรมเชิงปฏิบัติการการรับบริจาคและปลูกถ่ายอวัยวะ รุ่นที่ 1/2570',
+            hoursActivityDate: '15 – 16 มกราคม 2570',
+            hoursActivityVenue: 'ห้องประชุมพิบูลสงคราม โรงพยาบาลราชวิถี',
             workContext: 'donor_team',
             status: 'ผ่าน',
             pretest: '28/40',
             posttest: '37/40',
-            progress: 92,
-            studySeconds: 26496,
+            progress: 100,
+            studySeconds: 28800,
             skillLabPassed: true,
             skillLabBestScore: 91,
-            skillLabHistory: [
-                { personaId: 'conflict', difficultyId: 'hard', score: 91, silenceCount: 3, triggerTotal: 0 },
-                { personaId: 'pediatric', difficultyId: 'normal', score: 88, silenceCount: 2, triggerTotal: 0 }
-            ],
+            skillLabHistory: [{ personaId: 'conflict', difficultyId: 'hard', score: 91, silenceCount: 3, triggerTotal: 0 }],
             certificateClaimed: true,
             certificateCode: 'RJC-2027-DEMO01',
             certificateIssuedAt: new Date().toISOString()
         };
 
         // ============================================================================
-        // 2. HELPERS, FIREBASE & STUDIO-GRADE CHUNKED AI VOICE HELPERS
+        // 2. HELPERS: FAST-TRACK HOURS, PLAIN THAI STATUS & STUDIO AI VOICE
         // ============================================================================
         let fbApp = null, fbAuth = null, fbDb = null;
         const isCloudConfigured = Boolean(CONFIG.firebaseConfig?.apiKey && CONFIG.firebaseConfig?.projectId);
@@ -528,6 +430,55 @@
                 fbAuth = getAuth(fbApp);
                 fbDb = getFirestore(fbApp);
             } catch (err) { console.warn('Firebase init warning:', err); }
+        }
+
+        function isHoursExemptUser(u) {
+            if (!u) return false;
+            return Boolean(u.studyHoursExempt || u.userType === 'เรียนต่อเนื่อง');
+        }
+
+        /**
+         * คำนวณชื่อสถานะภาษาไทยสุภาพล้วนๆ (ไม่มีสัญลักษณ์หรือป้ายกลุ่มตามข้อกำหนด)
+         * พร้อมระบุชื่อกิจกรรมคู่กับสถานะ ชั่วโมงครบ / ชั่วโมงครบ (เทียบโอน)
+         */
+        function resolveLearnerStatusInfo(u, livePct) {
+            if (!u) {
+                return { statusLabel: 'ลงทะเบียนแล้ว', hoursLabel: 'กำลังสะสมชั่วโมง', activityName: '', activityMeta: '' };
+            }
+            const exempt = isHoursExemptUser(u);
+            const studyEnough = exempt || Number(livePct || u.progress || 0) >= MIN_STUDY_PERCENT;
+            const labDone = Boolean(u.skillLabPassed || (Array.isArray(u.skillLabHistory) && u.skillLabHistory.length > 0));
+            const bestLab = Number(u.skillLabBestScore || 0);
+            const passed = u.status === 'ผ่าน' || Boolean(u.certificateCode);
+            const hasPre = Boolean(u.pretest && u.pretest !== '-');
+
+            const activityName = exempt
+                ? (u.hoursActivityName || 'ผู้เรียนต่อเนื่อง / ผ่านการอบรมมาตรฐานมาก่อนแล้ว')
+                : (studyEnough ? (u.hoursActivityName || DEFAULT_ONLINE_COURSE_NAME) : '');
+            const activityMeta = [u.hoursActivityDate, u.hoursActivityVenue].filter(Boolean).join(' • ');
+
+            const hoursLabel = exempt
+                ? 'ชั่วโมงครบ (เทียบโอน)'
+                : (studyEnough ? 'ชั่วโมงครบ' : `กำลังสะสมชั่วโมง (${Math.round(livePct || 0)}%)`);
+
+            let statusLabel = 'ลงทะเบียนแล้ว';
+            if (passed && bestLab >= 85) statusLabel = 'ผู้เชี่ยวชาญคลินิก';
+            else if (passed) statusLabel = 'สำเร็จหลักสูตร';
+            else if (labDone) statusLabel = 'ผ่าน AI Skill Lab 3D';
+            else if (exempt) statusLabel = 'ชั่วโมงครบ (เทียบโอน)';
+            else if (studyEnough) statusLabel = 'ชั่วโมงครบ';
+            else if (hasPre || Number(livePct || 0) > 0) statusLabel = 'กำลังสะสมชั่วโมง';
+
+            return { statusLabel, hoursLabel, activityName, activityMeta, isExempt: exempt, isStudyEnough: studyEnough };
+        }
+
+        function formatThaiDateTimeFull(isoStr) {
+            if (!isoStr) return '-';
+            try {
+                const d = new Date(isoStr);
+                if (isNaN(d.getTime())) return '-';
+                return `${d.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })} เวลา ${d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })} น.`;
+            } catch (_) { return '-'; }
         }
 
         const parseRawExams = (raw) => {
@@ -563,8 +514,7 @@
                 if (Number(answersMap[idx]) === Number(q.answer)) acc[dk].correct += 1;
             });
             const domains = Object.keys(CLINICAL_DOMAINS).map(k => {
-                const t = acc[k].total || 0;
-                const c = acc[k].correct || 0;
+                const t = acc[k].total || 0, c = acc[k].correct || 0;
                 return { id: k, ...CLINICAL_DOMAINS[k], correct: c, total: t, percent: t > 0 ? Math.round((c / t) * 100) : 100 };
             });
             const weakest = [...domains].sort((a, b) => a.percent - b.percent)[0];
@@ -575,23 +525,9 @@
             let sum = 0, cnt = 0;
             SUS_USABILITY_ITEMS.forEach(item => {
                 const v = Number(answers?.[item.key]);
-                if (v >= 1 && v <= 5) {
-                    sum += item.positive ? (v - 1) : (5 - v);
-                    cnt += 1;
-                }
+                if (v >= 1 && v <= 5) { sum += item.positive ? (v - 1) : (5 - v); cnt += 1; }
             });
             return cnt > 0 ? Math.round((sum / (cnt * 4)) * 100) : null;
-        }
-
-        function computeClinicalBadgesForProfile(userObj) {
-            const hist = Array.isArray(userObj?.skillLabHistory) ? userObj.skillLabHistory : [];
-            return [
-                { id: 'master_silence', title: 'Master of Silence', desc: 'เว้นความเงียบ 2.5 วิ ≥ 2 ครั้ง', color: '#38bdf8', earned: hist.some(h => Number(h.silenceCount || 0) >= 2) },
-                { id: 'gentle_comm', title: 'Gentle Communicator', desc: 'จบเคสไร้คำกระทบใจ (0 Trigger)', color: '#34d399', earned: hist.some(h => Number(h.triggerTotal || 0) === 0 && Number(h.score || 0) >= 75) },
-                { id: 'dual_peacemaker', title: 'Dual-Voice Peacemaker', desc: 'ผ่านเคสขัดแย้ง 2 เสียง ≥ 85', color: '#f43f5e', earned: hist.some(h => h.personaId === 'conflict' && Number(h.score || 0) >= 85) },
-                { id: 'hard_survivor', title: 'Hard Mode Survivor', desc: 'ผ่านโหมด Hard + เหตุการณ์แทรก', color: '#fbbf24', earned: hist.some(h => h.difficultyId === 'hard' && Number(h.score || 0) >= 75) },
-                { id: 'advanced_clinician', title: 'Pediatric / SBAR Pro', desc: 'ผ่านเคสผู้ป่วยเด็กหรือ SBAR', color: '#c084fc', earned: hist.some(h => (h.personaId === 'pediatric' || h.personaId === 'sbar_doctor') && Number(h.score || 0) >= 75) }
-            ];
         }
 
         function resolveRegionId(department = '') {
@@ -637,17 +573,13 @@
 
         function maskEmailSafe(e) {
             if (typeof CORE.maskEmail === 'function') return CORE.maskEmail(e);
-            const s = String(e || '');
-            const [u, d] = s.split('@');
+            const [u, d] = String(e || '').split('@');
             return d ? `${u.slice(0, 2)}•••@${d}` : '-';
         }
 
         function formatStudyTimeSafe(sec) {
             const s = Math.max(0, Math.floor(Number(sec || 0)));
-            const h = Math.floor(s / 3600);
-            const m = Math.floor((s % 3600) / 60);
-            const r = s % 60;
-            return `${h} ชม. ${String(m).padStart(2, '0')} น. ${String(r).padStart(2, '0')} วิ`;
+            return `${Math.floor(s / 3600)} ชม. ${String(Math.floor((s % 3600) / 60)).padStart(2, '0')} น. ${String(s % 60).padStart(2, '0')} วิ`;
         }
 
         function formatThaiDateSafe(iso) {
@@ -662,31 +594,19 @@
             return String(raw || '').replace(/[*#_]/g, ' ').replace(/\s{2,}/g, ' ').trim();
         }
 
-        /**
-         * แบ่งบทพูดเป็นช่วงธรรมชาติ (Chunking) เพื่อโหลดล่วงหน้าทีละช่วงโดยไม่ลดทอนคุณภาพเสียง 24kHz PCM
-         * (ไม่ใช้ Lookbehind Regex เพื่อรองรับ Safari / iOS / Android ทุกรุ่น 100%)
-         */
         function splitSpeechIntoNaturalChunks(input, lang = 'th', maxChars = 190) {
             const rawList = Array.isArray(input)
                 ? input.map(s => (lang === 'en' ? String(s || '').trim() : prepareSpeechSafe(s))).filter(Boolean)
                 : [lang === 'en' ? String(input || '').trim() : prepareSpeechSafe(input)].filter(Boolean);
-
             const chunks = [];
             rawList.forEach((segment) => {
-                if (segment.length <= maxChars) {
-                    chunks.push(segment);
-                    return;
-                }
+                if (segment.length <= maxChars) { chunks.push(segment); return; }
                 const marked = segment.replace(/([.!?。\n]|ค่ะ|ครับ)\s+/g, '$1\u0001');
                 const pieces = marked.split('\u0001').map(s => s.trim()).filter(Boolean);
                 let buf = '';
                 pieces.forEach((p) => {
-                    if ((buf + ' ' + p).trim().length <= maxChars) {
-                        buf = (buf ? `${buf} ${p}` : p).trim();
-                    } else {
-                        if (buf) chunks.push(buf);
-                        buf = p.trim();
-                    }
+                    if ((buf + ' ' + p).trim().length <= maxChars) buf = (buf ? `${buf} ${p}` : p).trim();
+                    else { if (buf) chunks.push(buf); buf = p.trim(); }
                 });
                 if (buf) chunks.push(buf);
             });
@@ -739,7 +659,7 @@
         }
 
         // ============================================================================
-        // 3. UI PRIMITIVES & LIVING TREE HERO LANDING (RJCLOUD.ORGAN 2.0)
+        // 3. UI PRIMITIVES & LIVING TREE HERO LANDING
         // ============================================================================
         class AppErrorBoundary extends React.Component {
             constructor(props) { super(props); this.state = { hasError: false, err: null }; }
@@ -809,7 +729,6 @@
             );
         }
 
-        // Landing Hero Stage (Atmospheric Horizon + Volumetric Clouds + Eclipse Arc + Living Tree + Slim Liquid Glass)
         function LandingHeroStage({ onStartLogin, onOpenPdpa, pwaPrompt, onInstallPwa }) {
             const canvasRef = useRef(null);
             const heroRef = useRef(null);
@@ -839,17 +758,13 @@
                 if (!canvas || !hero) return;
                 const ctx = canvas.getContext('2d');
                 if (!ctx) return;
-                let rafId = null;
-                let alive = true;
-                let mx = 0, my = 0, tmx = 0, tmy = 0, w = window.innerWidth, h = window.innerHeight;
+                let rafId = null, alive = true, mx = 0, my = 0, tmx = 0, tmy = 0, w = window.innerWidth, h = window.innerHeight;
 
                 const resize = () => {
                     const r = hero.getBoundingClientRect();
                     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-                    w = Math.max(1, r.width);
-                    h = Math.max(1, r.height);
-                    canvas.width = Math.round(w * dpr);
-                    canvas.height = Math.round(h * dpr);
+                    w = Math.max(1, r.width); h = Math.max(1, r.height);
+                    canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
                     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
                 };
                 resize();
@@ -860,22 +775,12 @@
                 };
                 window.addEventListener('mousemove', onMove);
 
-                const drawOrb = (x, y, rad, stops) => {
-                    const g = ctx.createRadialGradient(x, y, 0, x, y, rad);
-                    stops.forEach(([p, c]) => g.addColorStop(p, c));
-                    ctx.fillStyle = g;
-                    ctx.beginPath();
-                    ctx.arc(x, y, rad, 0, Math.PI * 2);
-                    ctx.fill();
-                };
-
                 const render = (now) => {
                     if (!alive) return;
                     rafId = requestAnimationFrame(render);
                     if (document.hidden) return;
                     ctx.clearRect(0, 0, w, h);
-                    mx += (tmx - mx) * 0.055;
-                    my += (tmy - my) * 0.055;
+                    mx += (tmx - mx) * 0.055; my += (tmy - my) * 0.055;
                     const t = now * 0.001;
                     const k = 0.8 * (0.92 + 0.08 * Math.sin(t * 1.15));
                     const minDim = Math.min(w, h);
@@ -892,43 +797,32 @@
                     g.addColorStop(0.52, `rgba(255,250,215,${(0.95 * k).toFixed(3)})`);
                     g.addColorStop(0.68, `rgba(110,231,183,${(0.54 * k).toFixed(3)})`);
                     g.addColorStop(1, 'rgba(56,189,248,0)');
-                    ctx.strokeStyle = g;
-                    ctx.lineWidth = 12;
-                    ctx.filter = 'blur(9px)';
-                    ctx.beginPath();
-                    ctx.arc(arcCx, arcCy, arcR, Math.PI * 1.28, Math.PI * 1.72);
-                    ctx.stroke();
-                    ctx.filter = 'none';
-                    ctx.lineWidth = 2;
-                    ctx.beginPath();
-                    ctx.arc(arcCx, arcCy, arcR, Math.PI * 1.30, Math.PI * 1.70);
-                    ctx.stroke();
+                    ctx.strokeStyle = g; ctx.lineWidth = 12; ctx.filter = 'blur(9px)';
+                    ctx.beginPath(); ctx.arc(arcCx, arcCy, arcR, Math.PI * 1.28, Math.PI * 1.72); ctx.stroke();
+                    ctx.filter = 'none'; ctx.lineWidth = 2;
+                    ctx.beginPath(); ctx.arc(arcCx, arcCy, arcR, Math.PI * 1.30, Math.PI * 1.70); ctx.stroke();
                     ctx.restore();
 
                     const fx = arcCx + Math.sin(t * 0.22) * Math.min(w * 0.06, 55);
                     const fy = arcCy - Math.sqrt(Math.max(0, arcR * arcR - Math.pow(fx - arcCx, 2)));
-                    drawOrb(fx, fy, minDim * 0.32, [
-                        [0, `rgba(255,254,244,${(0.9 * k).toFixed(3)})`],
-                        [0.14, `rgba(254,240,178,${(0.52 * k).toFixed(3)})`],
-                        [0.38, `rgba(125,211,252,${(0.2 * k).toFixed(3)})`],
-                        [1, 'rgba(0,0,0,0)']
-                    ]);
+                    const rad = minDim * 0.32;
+                    const orb = ctx.createRadialGradient(fx, fy, 0, fx, fy, rad);
+                    orb.addColorStop(0, `rgba(255,254,244,${(0.9 * k).toFixed(3)})`);
+                    orb.addColorStop(0.14, `rgba(254,240,178,${(0.52 * k).toFixed(3)})`);
+                    orb.addColorStop(0.38, `rgba(125,211,252,${(0.2 * k).toFixed(3)})`);
+                    orb.addColorStop(1, 'rgba(0,0,0,0)');
+                    ctx.fillStyle = orb; ctx.beginPath(); ctx.arc(fx, fy, rad, 0, Math.PI * 2); ctx.fill();
                 };
                 rafId = requestAnimationFrame(render);
-                return () => {
-                    alive = false;
-                    if (rafId) cancelAnimationFrame(rafId);
-                    window.removeEventListener('resize', resize);
-                    window.removeEventListener('mousemove', onMove);
-                };
+                return () => { alive = false; if (rafId) cancelAnimationFrame(rafId); window.removeEventListener('resize', resize); window.removeEventListener('mousemove', onMove); };
             }, []);
 
             const steps = [
                 { no: '01', title: 'Pre-test & AI Map', desc: 'วัดพื้นฐาน 4 หมวดคลินิกพร้อมแผนติวอัจฉริยะ', icon: 'ClipboardCheck' },
-                { no: '02', title: '20 บทเรียน + AI ติว', desc: 'สะสมเวลา ≥80% พร้อมสรุป 1 นาทีเสียง AI สตูดิโอ', icon: 'MonitorPlay' },
+                { no: '02', title: '20 บทเรียน / เทียบโอน', desc: 'สะสมเวลา ≥80% หรือเทียบโอนครบ 100% สำหรับผู้ผ่านอบรม/Onsite', icon: 'MonitorPlay' },
                 { no: '03', title: 'AI Skill Lab 3 มิติ', desc: 'ฝึกสื่อสาร 6 เคส (รวมเด็ก/SBAR) + วัดน้ำเสียงสด', icon: 'Bot' },
                 { no: '04', title: 'Post-test ≥ 80%', desc: 'ประเมินความรู้หลังเรียนพร้อม AI วิเคราะห์จุดพลาด', icon: 'FileCheck2' },
-                { no: '05', title: 'ประกาศฯ + CNEU QR', desc: 'ออกใบประกาศฯ PDF/PNG + ตราโฮโลแกรมกันปลอม', icon: 'Award' }
+                { no: '05', title: 'ประกาศฯ + CNEU QR', desc: 'ออกใบประกาศฯ PDF/PNG + ตราโฮโลแกรมสิทธิ์เท่าเทียมทุกประเภท', icon: 'Award' }
             ];
 
             return (
@@ -952,60 +846,22 @@
                             <span className="shooting-star top-[12%] left-[92%]" style={{ '--len': '185px', '--ang': '-34deg', '--m-dur': '8.4s', '--m-del': '2.7s', '--trail-col': 'rgba(110,231,183,0.78)' }} />
                         </div>
 
-                        {/* Atmospheric Volumetric Clouds Behind Living Tree */}
                         <div className="absolute inset-0 pointer-events-none overflow-hidden z-[11]" aria-hidden="true">
                             <svg width="0" height="0" className="absolute">
                                 <defs>
-                                    <linearGradient id="cloudSilverGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                                        <stop offset="0%" stopColor="#ffffff" stopOpacity="0.82" />
-                                        <stop offset="48%" stopColor="#e0f2fe" stopOpacity="0.46" />
-                                        <stop offset="100%" stopColor="#60a5fa" stopOpacity="0" />
-                                    </linearGradient>
-                                    <linearGradient id="cloudWarmRimGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                                        <stop offset="0%" stopColor="#fffbeb" stopOpacity="0.72" />
-                                        <stop offset="40%" stopColor="#dbeafe" stopOpacity="0.4" />
-                                        <stop offset="100%" stopColor="#38bdf8" stopOpacity="0" />
-                                    </linearGradient>
-                                    <linearGradient id="cloudSoftHorizonGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                                        <stop offset="0%" stopColor="#ffffff" stopOpacity="0.68" />
-                                        <stop offset="60%" stopColor="#bae6fd" stopOpacity="0.32" />
-                                        <stop offset="100%" stopColor="#93c5fd" stopOpacity="0" />
-                                    </linearGradient>
-                                    <filter id="cloudSoftBlur" x="-15%" y="-20%" width="130%" height="145%">
-                                        <feGaussianBlur stdDeviation="5.5" />
-                                    </filter>
+                                    <linearGradient id="cloudSilverGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stopColor="#ffffff" stopOpacity="0.82" /><stop offset="48%" stopColor="#e0f2fe" stopOpacity="0.46" /><stop offset="100%" stopColor="#60a5fa" stopOpacity="0" /></linearGradient>
+                                    <linearGradient id="cloudSoftHorizonGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stopColor="#ffffff" stopOpacity="0.68" /><stop offset="60%" stopColor="#bae6fd" stopOpacity="0.32" /><stop offset="100%" stopColor="#93c5fd" stopOpacity="0" /></linearGradient>
+                                    <filter id="cloudSoftBlur" x="-15%" y="-20%" width="130%" height="145%"><feGaussianBlur stdDeviation="5.5" /></filter>
                                 </defs>
                             </svg>
-
-                            <div className="hero-cloud-drift top-[44%] sm:top-[42%] w-[46vw] max-w-[540px] min-w-[230px] opacity-50" style={{ '--c-dur': '108s', '--c-del': '-22s' }}>
-                                <svg viewBox="0 0 420 140" className="w-full h-auto overflow-visible" filter="url(#cloudSoftBlur)">
-                                    <path d="M40 112 C28 112 20 100 28 90 C34 82 48 80 58 82 C68 58 98 46 126 56 C144 30 192 22 226 42 C252 34 286 44 298 68 C318 64 342 74 348 90 C366 90 380 100 376 112 Z" fill="url(#cloudWarmRimGrad)" />
-                                </svg>
+                            <div className="hero-cloud-drift top-[52%] w-[56vw] max-w-[660px] min-w-[260px] opacity-65" style={{ '--c-dur': '86s', '--c-del': '-54s' }}>
+                                <svg viewBox="0 0 480 160" className="w-full h-auto overflow-visible" filter="url(#cloudSoftBlur)"><path d="M36 128 C20 128 16 112 30 102 C40 94 58 92 72 96 C84 64 124 46 160 60 C186 24 248 18 286 48 C318 38 358 54 370 82 C398 78 426 90 434 108 C452 108 462 120 452 128 Z" fill="url(#cloudSilverGrad)" /></svg>
                             </div>
-                            <div className="hero-cloud-drift top-[54%] sm:top-[52%] w-[56vw] max-w-[660px] min-w-[260px] opacity-65" style={{ '--c-dur': '86s', '--c-del': '-54s' }}>
-                                <svg viewBox="0 0 480 160" className="w-full h-auto overflow-visible" filter="url(#cloudSoftBlur)">
-                                    <path d="M36 128 C20 128 16 112 30 102 C40 94 58 92 72 96 C84 64 124 46 160 60 C186 24 248 18 286 48 C318 38 358 54 370 82 C398 78 426 90 434 108 C452 108 462 120 452 128 Z" fill="url(#cloudSilverGrad)" />
-                                </svg>
+                            <div className="hero-cloud-bank-l bottom-[9%] -left-[8%] w-[58vw] max-w-[620px] opacity-70">
+                                <svg viewBox="0 0 520 180" className="w-full h-auto overflow-visible" filter="url(#cloudSoftBlur)"><path d="M10 164 C10 126 42 104 82 108 C100 68 154 48 202 68 C236 32 308 26 354 60 C392 52 436 70 452 104 C484 104 510 124 510 164 Z" fill="url(#cloudSoftHorizonGrad)" /></svg>
                             </div>
-                            <div className="hero-cloud-drift top-[64%] sm:top-[61%] w-[52vw] max-w-[620px] min-w-[250px] opacity-55" style={{ '--c-dur': '124s', '--c-del': '-84s' }}>
-                                <svg viewBox="0 0 460 150" className="w-full h-auto overflow-visible" filter="url(#cloudSoftBlur)">
-                                    <path d="M44 122 C26 122 22 106 38 96 C52 88 70 88 86 92 C104 64 148 54 182 68 C210 38 264 36 298 62 C328 54 364 68 376 92 C402 90 426 102 422 122 Z" fill="url(#cloudSoftHorizonGrad)" />
-                                </svg>
-                            </div>
-                            <div className="hero-cloud-drift top-[48%] sm:top-[47%] w-[38vw] max-w-[440px] min-w-[190px] opacity-40" style={{ '--c-dur': '74s', '--c-del': '-38s' }}>
-                                <svg viewBox="0 0 380 125" className="w-full h-auto overflow-visible" filter="url(#cloudSoftBlur)">
-                                    <path d="M34 102 C22 102 18 90 30 82 C44 74 64 74 78 78 C96 52 138 44 170 58 C196 34 246 36 272 60 C298 56 328 68 336 86 C352 86 360 96 350 102 Z" fill="url(#cloudWarmRimGrad)" />
-                                </svg>
-                            </div>
-                            <div className="hero-cloud-bank-l bottom-[8%] sm:bottom-[10%] -left-[12%] sm:-left-[6%] w-[58vw] max-w-[620px] opacity-70">
-                                <svg viewBox="0 0 520 180" className="w-full h-auto overflow-visible" filter="url(#cloudSoftBlur)">
-                                    <path d="M10 164 C10 126 42 104 82 108 C100 68 154 48 202 68 C236 32 308 26 354 60 C392 52 436 70 452 104 C484 104 510 124 510 164 Z" fill="url(#cloudSoftHorizonGrad)" />
-                                </svg>
-                            </div>
-                            <div className="hero-cloud-bank-r bottom-[7%] sm:bottom-[9%] -right-[12%] sm:-right-[6%] w-[60vw] max-w-[640px] opacity-70">
-                                <svg viewBox="0 0 540 185" className="w-full h-auto overflow-visible" filter="url(#cloudSoftBlur)">
-                                    <path d="M24 168 C16 130 48 106 90 110 C112 72 166 56 214 74 C252 34 328 28 378 64 C418 54 468 72 486 108 C516 110 534 132 530 168 Z" fill="url(#cloudSilverGrad)" />
-                                </svg>
+                            <div className="hero-cloud-bank-r bottom-[8%] -right-[8%] w-[60vw] max-w-[640px] opacity-70">
+                                <svg viewBox="0 0 540 185" className="w-full h-auto overflow-visible" filter="url(#cloudSoftBlur)"><path d="M24 168 C16 130 48 106 90 110 C112 72 166 56 214 74 C252 34 328 28 378 64 C418 54 468 72 486 108 C516 110 534 132 530 168 Z" fill="url(#cloudSilverGrad)" /></svg>
                             </div>
                             <div className="hero-cloud-haze absolute inset-x-0 bottom-0 h-[34%]" />
                         </div>
@@ -1018,15 +874,9 @@
                                     <div className="w-[min(118vw,500px)] sm:w-[720px] md:w-[min(92vw,88dvh,880px)] lg:w-[min(90vw,92dvh,980px)] xl:w-[min(88vw,94dvh,1060px)] md:pb-6 lg:pb-7 pointer-events-none">
                                         <svg viewBox="30 14 460 394" className="w-full h-auto overflow-visible drop-shadow-[0_14px_42px_rgba(56,189,248,0.42)]" fill="none">
                                             <defs>
-                                                <linearGradient id="trunkGrad" x1="170" y1="400" x2="350" y2="170" gradientUnits="userSpaceOnUse">
-                                                    <stop offset="0%" stopColor="#c064c9" /><stop offset="45%" stopColor="#7c7ce8" /><stop offset="100%" stopColor="#48b8d0" />
-                                                </linearGradient>
-                                                <linearGradient id="leftBranchGrad" x1="80" y1="240" x2="260" y2="60" gradientUnits="userSpaceOnUse">
-                                                    <stop offset="0%" stopColor="#b25cc4" /><stop offset="55%" stopColor="#9061d6" /><stop offset="100%" stopColor="#6084db" />
-                                                </linearGradient>
-                                                <linearGradient id="rightBranchGrad" x1="260" y1="60" x2="450" y2="240" gradientUnits="userSpaceOnUse">
-                                                    <stop offset="0%" stopColor="#5da9d9" /><stop offset="55%" stopColor="#4cb8b0" /><stop offset="100%" stopColor="#64c79c" />
-                                                </linearGradient>
+                                                <linearGradient id="trunkGrad" x1="170" y1="400" x2="350" y2="170" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#c064c9" /><stop offset="45%" stopColor="#7c7ce8" /><stop offset="100%" stopColor="#48b8d0" /></linearGradient>
+                                                <linearGradient id="leftBranchGrad" x1="80" y1="240" x2="260" y2="60" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#b25cc4" /><stop offset="55%" stopColor="#9061d6" /><stop offset="100%" stopColor="#6084db" /></linearGradient>
+                                                <linearGradient id="rightBranchGrad" x1="260" y1="60" x2="450" y2="240" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#5da9d9" /><stop offset="55%" stopColor="#4cb8b0" /><stop offset="100%" stopColor="#64c79c" /></linearGradient>
                                                 <radialGradient id="auraPinkGrad" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="#f5d0fe" stopOpacity="0.95" /><stop offset="100%" stopColor="#a855f7" stopOpacity="0" /></radialGradient>
                                                 <radialGradient id="auraCyanGrad" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="#ccfbf1" stopOpacity="0.95" /><stop offset="100%" stopColor="#38bdf8" stopOpacity="0" /></radialGradient>
                                             </defs>
@@ -1045,9 +895,7 @@
                                                     {LEFT_LEAVES.map((lf, idx) => (
                                                         <g key={`ll-${idx}`}>
                                                             <circle cx={lf.cx} cy={lf.cy} r={Math.max(lf.rx, lf.ry) * 1.6} fill="url(#auraPinkGrad)" className="leaf-aura-halo" style={{ '--dur': `${(3.5 + (idx % 4) * 0.6).toFixed(1)}s`, '--del': `${-(idx * 0.5)}s` }} />
-                                                            <g transform={`rotate(${lf.rot} ${lf.cx} ${lf.cy})`}>
-                                                                <ellipse cx={lf.cx} cy={lf.cy} rx={lf.rx} ry={lf.ry} fill="#c668d4" opacity="0.96" className="living-leaf" style={{ '--dur': `${(3.5 + (idx % 4) * 0.6).toFixed(1)}s`, '--del': `${-(idx * 0.5)}s`, '--fl-rot': `${idx % 2 ? 8 : -8}deg` }} />
-                                                            </g>
+                                                            <g transform={`rotate(${lf.rot} ${lf.cx} ${lf.cy})`}><ellipse cx={lf.cx} cy={lf.cy} rx={lf.rx} ry={lf.ry} fill="#c668d4" opacity="0.96" className="living-leaf" style={{ '--dur': `${(3.5 + (idx % 4) * 0.6).toFixed(1)}s`, '--del': `${-(idx * 0.5)}s`, '--fl-rot': `${idx % 2 ? 8 : -8}deg` }} /></g>
                                                         </g>
                                                     ))}
                                                     <g stroke="#f0abfc" strokeWidth="2" fill="rgba(217,70,239,0.34)">
@@ -1066,9 +914,7 @@
                                                     {RIGHT_LEAVES.map((lf, idx) => (
                                                         <g key={`rl-${idx}`}>
                                                             <circle cx={lf.cx} cy={lf.cy} r={Math.max(lf.rx, lf.ry) * 1.6} fill="url(#auraCyanGrad)" className="leaf-aura-halo" style={{ '--dur': `${(3.6 + (idx % 4) * 0.55).toFixed(1)}s`, '--del': `${-(idx * 0.45)}s` }} />
-                                                            <g transform={`rotate(${lf.rot} ${lf.cx} ${lf.cy})`}>
-                                                                <ellipse cx={lf.cx} cy={lf.cy} rx={lf.rx} ry={lf.ry} fill="#55cbc7" opacity="0.96" className="living-leaf" style={{ '--dur': `${(3.6 + (idx % 4) * 0.55).toFixed(1)}s`, '--del': `${-(idx * 0.45)}s`, '--fl-rot': `${idx % 2 ? -8 : 8}deg` }} />
-                                                            </g>
+                                                            <g transform={`rotate(${lf.rot} ${lf.cx} ${lf.cy})`}><ellipse cx={lf.cx} cy={lf.cy} rx={lf.rx} ry={lf.ry} fill="#55cbc7" opacity="0.96" className="living-leaf" style={{ '--dur': `${(3.6 + (idx % 4) * 0.55).toFixed(1)}s`, '--del': `${-(idx * 0.45)}s`, '--fl-rot': `${idx % 2 ? -8 : 8}deg` }} /></g>
                                                         </g>
                                                     ))}
                                                 </g>
@@ -1082,15 +928,10 @@
                                         </svg>
                                     </div>
 
-                                    {/* Desktop Slim Sculpted Liquid Glass Chamber */}
                                     <div id="liquid-glass-stage" className="hidden md:block absolute bottom-0 left-[50.5%] -translate-x-1/2 z-20 w-[90%] max-w-[720px] aspect-[760/208] pointer-events-auto">
                                         <div className="liquid-glass-backdrop absolute inset-0" />
                                         <svg viewBox="0 0 760 208" className="absolute inset-0 w-full h-full pointer-events-none" fill="none" preserveAspectRatio="none">
-                                            <defs>
-                                                <linearGradient id="glassRimStroke" x1="4" y1="4" x2="756" y2="204" gradientUnits="userSpaceOnUse">
-                                                    <stop offset="0%" stopColor="rgba(255,255,255,0.92)" /><stop offset="55%" stopColor="rgba(255,255,255,0.46)" /><stop offset="100%" stopColor="rgba(255,255,255,0.78)" />
-                                                </linearGradient>
-                                            </defs>
+                                            <defs><linearGradient id="glassRimStroke" x1="4" y1="4" x2="756" y2="204" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="rgba(255,255,255,0.92)" /><stop offset="55%" stopColor="rgba(255,255,255,0.46)" /><stop offset="100%" stopColor="rgba(255,255,255,0.78)" /></linearGradient></defs>
                                             <path d="M 28 4 L 538 4 Q 562 4 562 28 L 562 56 Q 562 80 586 80 L 732 80 Q 756 80 756 104 L 756 180 Q 756 204 732 204 L 210 204 Q 186 204 186 180 L 186 138 Q 186 114 162 114 L 28 114 Q 4 114 4 90 L 4 28 Q 4 4 28 4 Z" fill="rgba(255,255,255,0.06)" stroke="url(#glassRimStroke)" strokeWidth="1.65" />
                                         </svg>
                                         <div className="relative z-10 w-full h-full">
@@ -1099,15 +940,11 @@
                                                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 shadow-[0_0_8px_#6ee7b7]" />
                                                     e-Learning Organ Donation Training
                                                 </span>
-                                                <h1 className="hero-headline hero-fit-line1 font-display text-white whitespace-nowrap">
-                                                    ยกระดับทักษะการรับบริจาคและปลูกถ่ายอวัยวะ
-                                                </h1>
+                                                <h1 className="hero-headline hero-fit-line1 font-display text-white whitespace-nowrap">ยกระดับทักษะการรับบริจาคและปลูกถ่ายอวัยวะ</h1>
                                             </div>
                                             <div className="absolute top-[40.5%] bottom-[4.5%] left-[25.5%] right-[27.5%] flex flex-col items-center justify-between text-center">
                                                 <p className="hero-year-highlight hero-fit-line2 font-display whitespace-nowrap">สู่มาตรฐานปี 2027</p>
-                                                <button type="button" onClick={onStartLogin} className="login-pill-btn touch-target px-10 py-1.5 rounded-full font-display font-semibold text-[15px] lg:text-[16px] tracking-wide cursor-pointer">
-                                                    เข้าสู่ระบบ
-                                                </button>
+                                                <button type="button" onClick={onStartLogin} className="login-pill-btn touch-target px-10 py-1.5 rounded-full font-display font-semibold text-[15px] lg:text-[16px] tracking-wide cursor-pointer">เข้าสู่ระบบ</button>
                                             </div>
                                             <div className="absolute top-[41%] bottom-[4.5%] right-[1.8%] w-[24.2%] border-l border-white/20 pl-2 flex flex-col items-center justify-center text-center">
                                                 <span className="beta-glow text-[30px] lg:text-[38px] leading-[0.88]">Beta</span>
@@ -1118,7 +955,6 @@
                                     </div>
                                 </div>
 
-                                {/* Mobile Slim Liquid Glass Card */}
                                 <div className="md:hidden relative z-20 -mt-14 w-full max-w-[350px] liquid-glass-mobile rounded-[1.5rem] px-3.5 pt-3.5 pb-2.5 text-center space-y-2">
                                     <div className="flex justify-center">
                                         <span className="hero-eyebrow inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10.5px] font-medium text-cyan-50/95">
@@ -1129,9 +965,7 @@
                                     <h1 className="hero-headline font-display text-white text-base leading-snug">ยกระดับทักษะการรับบริจาคและปลูกถ่ายอวัยวะ</h1>
                                     <p className="hero-year-highlight font-display text-xl leading-tight">สู่มาตรฐานปี 2027</p>
                                     <div className="pt-1">
-                                        <button type="button" onClick={onStartLogin} className="login-pill-btn touch-target w-full max-w-[210px] py-2 px-7 rounded-full font-display font-semibold text-sm">
-                                            เข้าสู่ระบบ
-                                        </button>
+                                        <button type="button" onClick={onStartLogin} className="login-pill-btn touch-target w-full max-w-[210px] py-2 px-7 rounded-full font-display font-semibold text-sm">เข้าสู่ระบบ</button>
                                     </div>
                                     <div className="pt-1 border-t border-white/20 flex items-center justify-center gap-3">
                                         <span className="beta-glow text-2xl leading-none">Beta</span>
@@ -1150,7 +984,6 @@
                         </main>
                     </section>
 
-                    {/* Lower Pathway Section + Quick Links */}
                     <section id="pathway" className="lower-atmosphere relative w-full py-12 sm:py-16 px-4 sm:px-6">
                         <div className="max-w-5xl mx-auto space-y-8">
                             <div className="text-center space-y-2">
@@ -1174,14 +1007,14 @@
                             </div>
 
                             <div className="flex flex-wrap items-center justify-center gap-2.5 pt-2">
-                                <button type="button" onClick={onStartLogin} className="rjc2-pill-btn touch-target px-7 py-3 rounded-full font-display font-extrabold text-sm">
-                                    เริ่มต้นเข้าสู่ระบบผู้เรียน →
-                                </button>
                                 {pwaPrompt && (
                                     <button type="button" onClick={onInstallPwa} className="touch-target px-5 py-3 rounded-full bg-emerald-500/20 border border-emerald-300/45 text-emerald-100 font-display font-bold text-xs inline-flex items-center gap-1.5">
                                         <Icon name="Smartphone" size={15} /> ติดตั้งแอปลงจอมือถือ (PWA)
                                     </button>
                                 )}
+                                <a href="./onsite.html" className="touch-target px-5 py-3 rounded-full bg-white/10 hover:bg-white/20 border border-emerald-300/40 text-emerald-100 font-display font-bold text-xs inline-flex items-center gap-1.5">
+                                    <Icon name="ClipboardList" size={15} /> ลงทะเบียนอบรม Onsite
+                                </a>
                                 <a href="./verify.html" className="touch-target px-5 py-3 rounded-full bg-white/10 hover:bg-white/20 border border-white/25 text-white font-display font-bold text-xs inline-flex items-center gap-1.5">
                                     <Icon name="QrCode" size={15} /> ตรวจสอบประกาศนียบัตร
                                 </a>
@@ -1206,13 +1039,16 @@
         }
 
         // ============================================================================
-        // 4. MAIN LEARNER APPLICATION (5-STEP JOURNEY + STUDIO CHUNKED AI VOICE)
+        // 4. MAIN LEARNER APPLICATION (FAST-TRACK + ONSITE UNLOCK + STUDIO AI VOICE)
         // ============================================================================
         function LearnerApp() {
-            const previewParam = useMemo(() => {
-                try { return new URLSearchParams(window.location.search).get('admin_preview') || ''; }
-                catch (_) { return ''; }
+            const urlQuery = useMemo(() => {
+                try { return new URLSearchParams(window.location.search); }
+                catch (_) { return new URLSearchParams(); }
             }, []);
+            const previewParam = urlQuery.get('admin_preview') || '';
+            const incomingLicense = urlQuery.get('license') || '';
+            const fromOnsite = urlQuery.get('from') === 'onsite';
             const isAdminPreview = Boolean(previewParam);
 
             const [theme, setTheme] = useState(() => {
@@ -1230,9 +1066,10 @@
             }, [theme]);
             const toggleTheme = useCallback(() => setTheme(p => (p === 'dark' ? 'light' : 'dark')), []);
 
-            // PWA Install & Offline Status
             const [pwaPrompt, setPwaPrompt] = useState(null);
             const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
+            const [nowMs, setNowMs] = useState(Date.now());
+
             useEffect(() => {
                 if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost')) {
                     navigator.serviceWorker.register('./sw.js').catch(() => {});
@@ -1243,10 +1080,12 @@
                 window.addEventListener('beforeinstallprompt', onBip);
                 window.addEventListener('online', onOn);
                 window.addEventListener('offline', onOff);
+                const clock = setInterval(() => setNowMs(Date.now()), 1000);
                 return () => {
                     window.removeEventListener('beforeinstallprompt', onBip);
                     window.removeEventListener('online', onOn);
                     window.removeEventListener('offline', onOff);
+                    clearInterval(clock);
                 };
             }, []);
 
@@ -1256,7 +1095,6 @@
                 setPwaPrompt(null);
             };
 
-            // Core Navigation & User State
             const [screen, setScreen] = useState(() => {
                 if (previewParam === 'landing') return 'landing';
                 if (previewParam === 'auth1' || previewParam === 'auth2' || previewParam === 'auth3') return 'auth';
@@ -1265,6 +1103,7 @@
                 if (previewParam === 'cert_confirm') return 'cert_confirm';
                 if (previewParam === 'certificate') return 'certificate';
                 if (previewParam === 'dashboard' || previewParam === 'live' || previewParam === 'profile') return 'dashboard';
+                if (incomingLicense && fromOnsite) return 'auth';
                 try {
                     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
                     if (saved?.user?.id) return saved.user.pretest && saved.user.pretest !== '-' ? 'dashboard' : 'pretest';
@@ -1287,11 +1126,12 @@
             const [questions, setQuestions] = useState(() => parseRawExams(window.QUIZ_QUESTIONS_RAW || []));
             const [certTemplate, setCertTemplate] = useState({ ...DEFAULT_CERT_TEMPLATE });
             const [cneuConfig, setCneuConfig] = useState({ ...DEFAULT_CNEU_CONFIG });
+            const [onsiteSettings, setOnsiteSettings] = useState(null);
             const [liveConfig, setLiveConfig] = useState({ status: 'offline', hours: 8, allowPosttest: false, topic: 'การบรรยายพิเศษด้านการรับบริจาคอวัยวะ 2027', url: '', documentUrl: '' });
 
             // Auth Wizard 3-Step State
             const [authStep, setAuthStep] = useState(() => (previewParam === 'auth2' ? 2 : previewParam === 'auth3' ? 3 : 1));
-            const [licenseInput, setLicenseInput] = useState(isAdminPreview ? ADMIN_PREVIEW_USER.license : '');
+            const [licenseInput, setLicenseInput] = useState(incomingLicense || (isAdminPreview ? ADMIN_PREVIEW_USER.license : ''));
             const [authBusy, setAuthBusy] = useState(false);
             const [isExistingAccount, setIsExistingAccount] = useState(false);
             const [regForm, setRegForm] = useState({
@@ -1321,7 +1161,7 @@
             const [aiLessonBusy, setAiLessonBusy] = useState(false);
             const [ttsState, setTtsState] = useState({ activeKey: '', status: 'idle', chunkIdx: 0, totalChunks: 0, note: '' });
 
-            // Interactive Tabs: Clinical Cases, Flashcards, Pocket Phrasebook & 30s Warm-up
+            // Interactive Tabs
             const [caseIdx, setCaseIdx] = useState(0);
             const [caseStepIdx, setCaseStepIdx] = useState(0);
             const [caseFeedback, setCaseFeedback] = useState(null);
@@ -1331,7 +1171,7 @@
             const [phraseFilter, setPhraseFilter] = useState('ALL');
             const [warmupTags, setWarmupTags] = useState({ age: 'วัยทำงาน (20–45 ปี)', cause: 'อุบัติเหตุทางศีรษะ (TBI)', mood: 'สับสนเรื่องเครื่องช่วยหายใจ', concern: 'กลัวร่างไม่เรียบร้อย' });
 
-            // Step 5: Certificate Confirm, CSAT 5-Dimension & SUS (0–100) R2R Research
+            // Step 5: Certificate Confirm, CSAT & SUS
             const [certNameTH, setCertNameTH] = useState(user?.name || '');
             const [certNameEN, setCertNameEN] = useState(user?.nameEN || '');
             const [certHospital, setCertHospital] = useState(user?.hospital || '');
@@ -1341,8 +1181,10 @@
             const [issuingCert, setIssuingCert] = useState(false);
             const [showCneuLetter, setShowCneuLetter] = useState(false);
 
-            // Modals & Toast
+            // Modals & Self-Service Profile Edit
             const [showPdpaModal, setShowPdpaModal] = useState(false);
+            const [editingProfile, setEditingProfile] = useState(false);
+            const [profileDraft, setProfileDraft] = useState({ name: '', email: '', phone: '', position: '', hospital: '' });
             const [toast, setToast] = useState({ visible: false, text: '', type: 'success' });
             const [confirmDialog, setConfirmDialog] = useState({ open: false, title: '', message: '', danger: false, confirmText: 'ยืนยัน', onConfirm: null });
 
@@ -1367,11 +1209,7 @@
             // Keynote Launch Sync
             useEffect(() => {
                 if (window.RJCLOUD_KEYNOTE && typeof window.RJCLOUD_KEYNOTE.sync === 'function') {
-                    window.RJCLOUD_KEYNOTE.sync({
-                        isLanding: screen === 'landing',
-                        appsScriptUrl,
-                        isAdminPreview
-                    });
+                    window.RJCLOUD_KEYNOTE.sync({ isLanding: screen === 'landing', appsScriptUrl, isAdminPreview });
                 }
             }, [screen, appsScriptUrl, isAdminPreview]);
 
@@ -1396,6 +1234,7 @@
                         if (d.liveConfig) setLiveConfig(p => ({ ...p, ...d.liveConfig }));
                         if (d.certTemplate) setCertTemplate(p => ({ ...p, ...d.certTemplate }));
                         if (d.cneuConfig) setCneuConfig(p => ({ ...p, ...d.cneuConfig }));
+                        if (d.onsiteConfig) setOnsiteSettings(d.onsiteConfig);
                     }, () => {});
                     unsubContent = onSnapshot(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_config', 'content'), (snap) => {
                         if (!snap.exists()) return;
@@ -1407,34 +1246,55 @@
                         }
                     }, () => {});
                 });
-                return () => {
-                    active = false;
-                    unsubAuth();
-                    if (unsubSettings) unsubSettings();
-                    if (unsubContent) unsubContent();
-                };
+                return () => { active = false; unsubAuth(); if (unsubSettings) unsubSettings(); if (unsubContent) unsubContent(); };
             }, [isAdminPreview]);
 
-            // Computed Learning Metrics
-            const targetSeconds = useMemo(() => {
-                const baseH = Number(liveConfig.hours || 8);
-                const hrs = user?.userType === 'เรียนต่อเนื่อง' ? Math.max(2, Math.round(baseH / 2)) : baseH;
-                return hrs * 3600;
-            }, [liveConfig.hours, user?.userType]);
+            // ============================================================================
+            // COMPUTED FAST-TRACK HOURS, SCHEDULED ONSITE UNLOCK & STATUS
+            // ============================================================================
+            const targetSeconds = useMemo(() => Number(liveConfig.hours || 8) * 3600, [liveConfig.hours]);
+            const isExemptHours = isHoursExemptUser(user);
 
             const liveStudyPercent = useMemo(() => {
+                if (isExemptHours) return 100;
                 const calc = Math.min(100, Math.round((studySeconds / Math.max(1, targetSeconds)) * 100));
                 return Math.max(Number(user?.progress || 0), calc);
-            }, [studySeconds, targetSeconds, user?.progress]);
+            }, [isExemptHours, studySeconds, targetSeconds, user?.progress]);
+
+            const statusInfo = useMemo(() => resolveLearnerStatusInfo(user, liveStudyPercent), [user, liveStudyPercent]);
+
+            // ตรวจวัน–เวลาเปิดสิทธิ์ของผู้สมัคร Onsite (ถ้ายังไม่ถึงเวลาจะแสดงหน้ารอนับถอยหลังอัตโนมัติ)
+            const onsiteLockInfo = useMemo(() => {
+                if (!user || isAdminPreview) return { locked: false, unlockIso: '', countdown: '' };
+                const userUnlockIso = user.onsiteUnlockAt || '';
+                if (!userUnlockIso) return { locked: false, unlockIso: '', countdown: '' };
+
+                const sameEvent = onsiteSettings?.eventId && user.onsiteEventId === onsiteSettings.eventId;
+                const effectiveIso = (sameEvent && onsiteSettings?.unlockAt) ? onsiteSettings.unlockAt : userUnlockIso;
+                const forceOpen = Boolean(user.onsiteForceUnlocked || (sameEvent && onsiteSettings?.forceUnlocked));
+                if (forceOpen) return { locked: false, unlockIso: effectiveIso, countdown: '' };
+
+                const targetMs = new Date(effectiveIso).getTime();
+                if (isNaN(targetMs) || nowMs >= targetMs) return { locked: false, unlockIso: effectiveIso, countdown: '' };
+
+                const diffSec = Math.max(0, Math.floor((targetMs - nowMs) / 1000));
+                const d = Math.floor(diffSec / 86400);
+                const h = Math.floor((diffSec % 86400) / 3600);
+                const m = Math.floor((diffSec % 3600) / 60);
+                const s = diffSec % 60;
+                const countdown = d > 0
+                    ? `อีก ${d} วัน ${h} ชม. ${m} นาที ${s} วินาที`
+                    : `อีก ${h} ชม. ${String(m).padStart(2, '0')} นาที ${String(s).padStart(2, '0')} วินาที`;
+                return { locked: true, unlockIso: effectiveIso, countdown };
+            }, [user, onsiteSettings, nowMs, isAdminPreview]);
 
             const hasDonePretest = Boolean(user?.pretest && user.pretest !== '-');
-            const isStudyEnough = liveStudyPercent >= MIN_STUDY_PERCENT;
+            const isStudyEnough = isExemptHours || liveStudyPercent >= MIN_STUDY_PERCENT;
             const isLabDone = Boolean(user?.skillLabPassed || (Array.isArray(user?.skillLabHistory) && user.skillLabHistory.length > 0));
             const isPostPassed = user?.status === 'ผ่าน';
             const canTakePosttest = Boolean(liveConfig.allowPosttest || (isStudyEnough && isLabDone) || isPostPassed);
             const activeLesson = useMemo(() => lessons.find(l => Number(l.id) === Number(currentLessonId)) || lessons[0] || { id: 1, title: 'บทเรียนที่ 1', videoId: '' }, [lessons, currentLessonId]);
             const activeLessonGuide = (window.LESSON_AI_GUIDES && window.LESSON_AI_GUIDES[activeLesson.id]) || { keyPoints: ['ทบทวนหลักการสำคัญจากวิดีโอและเอกสารประกอบบทเรียนนี้'], microCheck: null };
-            const clinicalBadges = useMemo(() => computeClinicalBadgesForProfile(user), [user]);
 
             const sortedFlashcards = useMemo(() => {
                 const weakId = user?.aiRoadmap?.weakestId;
@@ -1442,13 +1302,10 @@
                 return [...SPACED_FLASHCARDS].sort((a, b) => (a.domain === weakId ? -1 : 0) - (b.domain === weakId ? -1 : 0));
             }, [user?.aiRoadmap?.weakestId]);
 
-            // Save User Helper + Zero-Cost Executive Summary Increment
             const saveUserToCloud = useCallback(async (updatedUser, summaryIncrements = null) => {
                 setUser(updatedUser);
                 if (isAdminPreview || !updatedUser?.id) return;
-                try {
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify({ user: updatedUser }));
-                } catch (_) {}
+                try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ user: updatedUser })); } catch (_) {}
                 if (!fbDb) return;
                 try {
                     await setDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', String(updatedUser.id)), updatedUser, { merge: true });
@@ -1465,46 +1322,38 @@
                 } catch (err) { console.warn('Cloud save warning:', err); }
             }, [isAdminPreview]);
 
-            // Study Timer
+            // Study Timer (นับเวลาเฉพาะผู้เรียนใหม่ที่ยังไม่ครบชั่วโมง เพื่อประหยัดเขียน Cloud)
             useEffect(() => {
-                if (screen !== 'dashboard' || !user || isAdminPreview) return;
+                if (screen !== 'dashboard' || !user || isAdminPreview || isExemptHours || onsiteLockInfo.locked) return;
                 if (activeTab !== 'lessons' && activeTab !== 'live') return;
-                const tick = setInterval(() => {
-                    if (document.hidden) return;
-                    setStudySeconds(s => s + 1);
-                }, 1000);
+                const tick = setInterval(() => { if (!document.hidden) setStudySeconds(s => s + 1); }, 1000);
                 const syncCloud = setInterval(() => {
                     const sec = studySecondsRef.current;
                     const pct = Math.min(100, Math.round((sec / Math.max(1, targetSeconds)) * 100));
-                    saveUserToCloud({ ...user, studySeconds: sec, progress: Math.max(Number(user.progress || 0), pct), lastVideoId: currentLessonId });
+                    const nextProgress = Math.max(Number(user.progress || 0), pct);
+                    const reachedHours = nextProgress >= MIN_STUDY_PERCENT;
+                    saveUserToCloud({
+                        ...user,
+                        studySeconds: sec,
+                        progress: nextProgress,
+                        lastVideoId: currentLessonId,
+                        ...(reachedHours && !user.hoursActivityName ? { hoursStatusLabel: 'ชั่วโมงครบ', hoursActivityName: DEFAULT_ONLINE_COURSE_NAME } : {})
+                    });
                 }, 25000);
                 return () => { clearInterval(tick); clearInterval(syncCloud); };
-            }, [screen, activeTab, user, isAdminPreview, targetSeconds, currentLessonId, saveUserToCloud]);
+            }, [screen, activeTab, user, isAdminPreview, isExemptHours, onsiteLockInfo.locked, targetSeconds, currentLessonId, saveUserToCloud]);
 
-            // Sync Bridge for ai-interactive.js
             useEffect(() => {
                 if (window.RJCLOUD_AI_INTERACTIVE && typeof window.RJCLOUD_AI_INTERACTIVE.registerBridge === 'function') {
                     window.RJCLOUD_AI_INTERACTIVE.registerBridge({
-                        screen,
-                        activeTab,
-                        user,
-                        lessons,
-                        currentLessonId,
-                        studySeconds,
-                        targetSeconds,
-                        liveStudyPercent,
-                        hasDonePretest,
-                        isAdminPreview,
-                        appsScriptUrl,
-                        setActiveTab,
+                        screen, activeTab, user, lessons, currentLessonId, studySeconds, targetSeconds,
+                        liveStudyPercent, hasDonePretest, isAdminPreview, appsScriptUrl, setActiveTab,
                         selectLesson: (id) => { setCurrentLessonId(Number(id)); setMicroAnswer(null); },
-                        toggleTheme,
-                        toast: showToast
+                        toggleTheme, toast: showToast
                     });
                 }
             }, [screen, activeTab, user, lessons, currentLessonId, studySeconds, targetSeconds, liveStudyPercent, hasDonePretest, isAdminPreview, appsScriptUrl, toggleTheme, showToast]);
 
-            // Draw Certificate when viewing certificate screen
             useEffect(() => {
                 if (screen !== 'certificate' || !certCanvasRef.current || !user) return;
                 const mergedTpl = { ...certTemplate, cneuActivityCode: cneuConfig.activityCode, cneuCredits: cneuConfig.cneuCredits };
@@ -1517,57 +1366,31 @@
             }, [screen, user, certTemplate, cneuConfig]);
 
             // ============================================================================
-            // STUDIO-GRADE CHUNKED AI VOICE ENGINE (ZERO BROWSER SPEECHSYNTHESIS NOISE!)
-            // โหลดเสียง AI คุณภาพสูงสุด (24kHz PCM WAV) แบ่งช่วงล่วงหน้า (Lookahead Prefetch)
-            // ตัดเสียงรบกวนจากเบราว์เซอร์ออก 100% รอจนเสียง AI พร้อมจริง
+            // 5. STUDIO-GRADE CHUNKED AI VOICE ENGINE (ZERO BROWSER SPEECH!)
             // ============================================================================
             const unlockMobileAudio = useCallback(() => {
                 try {
                     if (!sharedTtsAudioRef.current) {
                         const a = new Audio();
-                        a.playsInline = true;
-                        a.setAttribute('playsinline', '');
-                        a.preload = 'auto';
+                        a.playsInline = true; a.setAttribute('playsinline', ''); a.preload = 'auto';
                         sharedTtsAudioRef.current = a;
                     }
                     const a = sharedTtsAudioRef.current;
                     if (a.paused && !a.src) {
-                        a.muted = true;
-                        a.src = SILENT_UNLOCK_WAV;
+                        a.muted = true; a.src = SILENT_UNLOCK_WAV;
                         const p = a.play();
-                        if (p && typeof p.then === 'function') {
-                            p.then(() => {
-                                try { a.pause(); a.currentTime = 0; } catch (_) {}
-                                a.muted = false;
-                            }).catch(() => { a.muted = false; });
-                        } else {
-                            a.muted = false;
-                        }
+                        if (p && typeof p.then === 'function') p.then(() => { try { a.pause(); a.currentTime = 0; } catch (_) {} a.muted = false; }).catch(() => { a.muted = false; });
+                        else a.muted = false;
                     }
                 } catch (_) {}
             }, []);
 
             const stopTts = useCallback(() => {
                 ttsSessionRef.current += 1;
-                if (ttsAbortRef.current) {
-                    try { ttsAbortRef.current.abort(); } catch (_) {}
-                    ttsAbortRef.current = null;
-                }
-                if (sharedTtsAudioRef.current) {
-                    try {
-                        sharedTtsAudioRef.current.onended = null;
-                        sharedTtsAudioRef.current.onerror = null;
-                        sharedTtsAudioRef.current.pause();
-                    } catch (_) {}
-                }
-                if (ttsUrlRef.current) {
-                    try { URL.revokeObjectURL(ttsUrlRef.current); } catch (_) {}
-                    ttsUrlRef.current = null;
-                }
-                // สั่งตัดเสียงพูดเบราว์เซอร์ทิ้งเสมอ เพื่อไม่ให้มีเสียงหุ่นยนต์แทรกรบกวน
-                if ('speechSynthesis' in window) {
-                    try { window.speechSynthesis.cancel(); } catch (_) {}
-                }
+                if (ttsAbortRef.current) { try { ttsAbortRef.current.abort(); } catch (_) {} ttsAbortRef.current = null; }
+                if (sharedTtsAudioRef.current) { try { sharedTtsAudioRef.current.onended = null; sharedTtsAudioRef.current.onerror = null; sharedTtsAudioRef.current.pause(); } catch (_) {} }
+                if (ttsUrlRef.current) { try { URL.revokeObjectURL(ttsUrlRef.current); } catch (_) {} ttsUrlRef.current = null; }
+                if ('speechSynthesis' in window) { try { window.speechSynthesis.cancel(); } catch (_) {} }
                 setTtsState({ activeKey: '', status: 'idle', chunkIdx: 0, totalChunks: 0, note: '' });
             }, []);
             useEffect(() => () => stopTts(), [stopTts]);
@@ -1576,8 +1399,6 @@
                 const cached = typeof CORE.getCachedAudio === 'function' ? await CORE.getCachedAudio(cacheKey) : null;
                 if (cached && cached.size > 0) return cached;
                 if (!appsScriptUrl || !navigator.onLine) return null;
-
-                // ลองโหลดเสียง AI คุณภาพสูงสุดสูงสุด 2 รอบ (Timeout 45 วิ/รอบ) ไม่ลดทอนคุณภาพ
                 for (let attempt = 0; attempt < 2; attempt++) {
                     if (signal?.aborted) return null;
                     const res = await postAppsScript(appsScriptUrl, {
@@ -1586,139 +1407,76 @@
                         voiceName: 'Sulafat',
                         languageCode: lang === 'en' ? 'en-US' : 'th-TH',
                         style: lang === 'en'
-                            ? 'Speak gently, warmly, and clearly like a compassionate senior clinical educator in a studio recording.'
-                            : 'พูดภาษาไทยด้วยน้ำเสียงผู้หญิงที่อบอุ่น นุ่มนวล คมชัดระดับสตูดิโอ เป็นธรรมชาติเหมือนอาจารย์พยาบาลผู้เชี่ยวชาญกำลังสรุปบทเรียนอย่างใจเย็น'
+                            ? 'Speak gently, warmly, and clearly like a senior clinical educator in a studio recording.'
+                            : 'พูดภาษาไทยด้วยน้ำเสียงผู้หญิงที่อบอุ่น นุ่มนวล คมชัดระดับสตูดิโอ เป็นธรรมชาติเหมือนอาจารย์พยาบาลผู้เชี่ยวชาญ'
                     }, 45000, signal);
-
                     if (signal?.aborted) return null;
                     if (res?.status === 'success' && res.inlineData?.data) {
                         const rateMatch = String(res.inlineData.mimeType || '').match(/rate=(\d+)/);
-                        const rate = parseInt(rateMatch ? rateMatch[1] : '24000', 10);
-                        const blob = pcm16ToWavBlobSafe(res.inlineData.data, rate);
+                        const blob = pcm16ToWavBlobSafe(res.inlineData.data, parseInt(rateMatch ? rateMatch[1] : '24000', 10));
                         if (blob && blob.size > 0) {
                             if (typeof CORE.setCachedAudio === 'function') CORE.setCachedAudio(cacheKey, blob).catch(() => {});
                             return blob;
                         }
                     }
-                    if (attempt === 0 && !signal?.aborted) {
-                        await new Promise(r => setTimeout(r, 1100));
-                    }
+                    if (attempt === 0 && !signal?.aborted) await new Promise(r => setTimeout(r, 1100));
                 }
                 return null;
             }, [appsScriptUrl]);
 
             const playNaturalTts = useCallback(async (key, rawInput, lang = 'th') => {
-                if (ttsState.activeKey === key && ttsState.status !== 'idle') {
-                    stopTts();
-                    return;
-                }
+                if (ttsState.activeKey === key && ttsState.status !== 'idle') { stopTts(); return; }
                 unlockMobileAudio();
                 stopTts();
-
                 const chunks = splitSpeechIntoNaturalChunks(rawInput, lang, 190);
                 if (chunks.length === 0) return;
 
                 const sid = ttsSessionRef.current;
                 const ctrl = new AbortController();
                 ttsAbortRef.current = ctrl;
-
                 if (!sharedTtsAudioRef.current) {
-                    const a = new Audio();
-                    a.playsInline = true;
-                    a.setAttribute('playsinline', '');
+                    const a = new Audio(); a.playsInline = true; a.setAttribute('playsinline', '');
                     sharedTtsAudioRef.current = a;
                 }
 
-                setTtsState({
-                    activeKey: key,
-                    status: 'loading',
-                    chunkIdx: 1,
-                    totalChunks: chunks.length,
-                    note: 'กำลังเตรียมเสียง AI คุณภาพสูงสุด (รอจน AI พร้อม)...'
-                });
-
-                // เริ่มโหลดช่วงที่ 1 ทันที และใช้ Lookahead Prefetching โหลดช่วงถัดไประหว่างที่ช่วงปัจจุบันกำลังเล่น
+                setTtsState({ activeKey: key, status: 'loading', chunkIdx: 1, totalChunks: chunks.length, note: 'กำลังเตรียมเสียง AI คุณภาพสตูดิโอ (รอจน AI พร้อม)...' });
                 let currentPromise = fetchStudioTtsChunk(`${key}_hq_c0`, chunks[0], lang, ctrl.signal);
                 let playedAny = false;
 
                 for (let i = 0; i < chunks.length; i++) {
                     if (ttsSessionRef.current !== sid || ctrl.signal.aborted) return;
-
-                    setTtsState(prev => ({
-                        ...prev,
-                        status: 'loading',
-                        chunkIdx: i + 1,
-                        totalChunks: chunks.length,
-                        note: i === 0
-                            ? 'กำลังเตรียมเสียง AI คุณภาพสตูดิโอ (รอสักครู่)...'
-                            : `กำลังเตรียมเสียง AI ช่วงที่ ${i + 1}/${chunks.length}...`
-                    }));
-
+                    setTtsState({ activeKey: key, status: 'loading', chunkIdx: i + 1, totalChunks: chunks.length, note: i === 0 ? 'กำลังเตรียมเสียง AI คุณภาพสตูดิโอ...' : `กำลังเตรียมเสียง AI ช่วงที่ ${i + 1}/${chunks.length}...` });
                     const blob = await currentPromise;
                     if (ttsSessionRef.current !== sid || ctrl.signal.aborted) return;
-
-                    // โหลดช่วงถัดไปล่วงหน้าทันทีขณะที่ช่วงนี้กำลังเล่น (รักษาคุณภาพ 100% ไร้รอยต่อ)
-                    if (i + 1 < chunks.length) {
-                        currentPromise = fetchStudioTtsChunk(`${key}_hq_c${i + 1}`, chunks[i + 1], lang, ctrl.signal);
-                    } else {
-                        currentPromise = null;
-                    }
-
+                    currentPromise = (i + 1 < chunks.length) ? fetchStudioTtsChunk(`${key}_hq_c${i + 1}`, chunks[i + 1], lang, ctrl.signal) : null;
                     if (!blob || blob.size === 0) {
-                        if (!playedAny) {
-                            showToast(
-                                navigator.onLine
-                                    ? 'เซิร์ฟเวอร์เสียง AI กำลังใช้งานหนาแน่น กรุณากดฟังใหม่อีกครั้งค่ะ (ไม่ใช้เสียงเบราว์เซอร์แทรก)'
-                                    : 'ขณะนี้ออฟไลน์และยังไม่มีไฟล์เสียง AI แคชไว้ในเครื่องค่ะ',
-                                'info'
-                            );
-                        }
+                        if (!playedAny) showToast(navigator.onLine ? 'เซิร์ฟเวอร์เสียง AI กำลังใช้งานหนาแน่น กรุณากดฟังใหม่อีกครั้งค่ะ' : 'ขณะนี้ออฟไลน์และยังไม่มีไฟล์เสียง AI แคชไว้ในเครื่องค่ะ', 'info');
                         break;
                     }
-
                     playedAny = true;
-                    setTtsState({
-                        activeKey: key,
-                        status: 'speaking',
-                        chunkIdx: i + 1,
-                        totalChunks: chunks.length,
-                        note: chunks.length > 1
-                            ? `กำลังบรรยายเสียง AI คุณภาพสตูดิโอ (ช่วงที่ ${i + 1}/${chunks.length})`
-                            : 'กำลังบรรยายเสียง AI คุณภาพสตูดิโอ'
-                    });
-
-                    if (ttsUrlRef.current) {
-                        try { URL.revokeObjectURL(ttsUrlRef.current); } catch (_) {}
-                    }
+                    setTtsState({ activeKey: key, status: 'speaking', chunkIdx: i + 1, totalChunks: chunks.length, note: chunks.length > 1 ? `กำลังบรรยายเสียง AI สตูดิโอ (ช่วงที่ ${i + 1}/${chunks.length})` : 'กำลังบรรยายเสียง AI คุณภาพสตูดิโอ' });
+                    if (ttsUrlRef.current) { try { URL.revokeObjectURL(ttsUrlRef.current); } catch (_) {} }
                     const url = URL.createObjectURL(blob);
                     ttsUrlRef.current = url;
-
                     const ok = await new Promise((resolve) => {
                         const a = sharedTtsAudioRef.current;
-                        a.muted = false;
-                        a.src = url;
+                        a.muted = false; a.src = url;
                         a.onended = () => resolve(true);
                         a.onerror = () => resolve(false);
                         try { a.load(); } catch (_) {}
                         const p = a.play();
                         if (p && typeof p.catch === 'function') p.catch(() => resolve(false));
                     });
-
                     if (!ok || ttsSessionRef.current !== sid) break;
                 }
-
-                if (ttsSessionRef.current === sid) {
-                    stopTts();
-                }
+                if (ttsSessionRef.current === sid) stopTts();
             }, [ttsState, unlockMobileAudio, stopTts, fetchStudioTtsChunk, showToast]);
 
             // ============================================================================
-            // 5. AUTH WIZARD HANDLERS (3 STEPS WITH REAL EMAIL OTP)
+            // 6. AUTH, EXAM, LESSON AI, CERTIFICATE & PDPA SELF-SERVICE HANDLERS
             // ============================================================================
             const handleStartLogin = () => {
-                if (window.RJCLOUD_KEYNOTE && typeof window.RJCLOUD_KEYNOTE.stopAll === 'function') {
-                    window.RJCLOUD_KEYNOTE.stopAll();
-                }
+                if (window.RJCLOUD_KEYNOTE && typeof window.RJCLOUD_KEYNOTE.stopAll === 'function') window.RJCLOUD_KEYNOTE.stopAll();
                 setAuthStep(1);
                 setScreen('auth');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1747,11 +1505,11 @@
                         department: found.department || 'กรมการแพทย์',
                         hospital: found.hospital || 'รพ.ราชวิถี',
                         province: found.province || 'กรุงเทพมหานคร',
-                        userType: found.userType === 'เรียนต่อเนื่อง' ? 'เรียนต่อเนื่อง' : 'เรียนใหม่',
+                        userType: isHoursExemptUser(found) ? 'เรียนต่อเนื่อง' : 'เรียนใหม่',
                         workContext: found.workContext || 'donor_team',
                         pdpaAccepted: true
                     });
-                    showToast('พบประวัติผู้เรียนในระบบแล้ว กรุณาตรวจสอบข้อมูลและรับรหัส OTP ค่ะ');
+                    showToast('พบข้อมูลผู้เรียนในระบบแล้ว กรุณาตรวจสอบข้อมูลและรับรหัส OTP ค่ะ');
                 } else {
                     setIsExistingAccount(false);
                     setUser(null);
@@ -1764,14 +1522,8 @@
 
             const handleSendOtp = async (e) => {
                 e.preventDefault();
-                if (!regForm.name.trim() || !regForm.email.includes('@')) {
-                    showToast('กรุณากรอกชื่อ–นามสกุลและอีเมลที่ถูกต้องค่ะ', 'error');
-                    return;
-                }
-                if (!regForm.pdpaAccepted) {
-                    showToast('กรุณายอมรับนโยบายคุ้มครองข้อมูลส่วนบุคคล (PDPA) ก่อนดำเนินการค่ะ', 'error');
-                    return;
-                }
+                if (!regForm.name.trim() || !regForm.email.includes('@')) { showToast('กรุณากรอกชื่อ–นามสกุลและอีเมลที่ถูกต้องค่ะ', 'error'); return; }
+                if (!regForm.pdpaAccepted) { showToast('กรุณายอมรับนโยบายคุ้มครองข้อมูลส่วนบุคคล (PDPA) ก่อนดำเนินการค่ะ', 'error'); return; }
                 setAuthBusy(true);
                 const code = String(Math.floor(100000 + Math.random() * 900000));
                 setGeneratedOtp(code);
@@ -1791,18 +1543,17 @@
                     showToast(`ส่งรหัส OTP 6 หลักไปยัง ${maskEmailSafe(regForm.email)} เรียบร้อยแล้วค่ะ`);
                     setAuthStep(3);
                 } else {
-                    showToast('ส่งอีเมล OTP ไม่สำเร็จ (กรุณาตรวจสอบอีเมลหรือลองใหม่อีกครั้งค่ะ)', 'error');
+                    showToast('ส่งอีเมล OTP ไม่สำเร็จ กรุณาตรวจสอบอีเมลหรือลองใหม่อีกครั้งค่ะ', 'error');
                 }
             };
 
             const handleVerifyOtp = async (e) => {
                 e.preventDefault();
-                if (otpInput.trim() !== generatedOtp && !isAdminPreview) {
-                    showToast('รหัส OTP ไม่ถูกต้อง กรุณาตรวจสอบในอีเมลอีกครั้งค่ะ', 'error');
-                    return;
-                }
+                if (otpInput.trim() !== generatedOtp && !isAdminPreview) { showToast('รหัส OTP ไม่ถูกต้อง กรุณาตรวจสอบในอีเมลอีกครั้งค่ะ', 'error'); return; }
                 const cleanLic = licenseInput.replace(/[^a-zA-Z0-9]/g, '').trim();
                 const baseUser = user || {};
+                const exempt = Boolean(baseUser.studyHoursExempt || regForm.userType === 'เรียนต่อเนื่อง');
+
                 const nextUser = {
                     ...baseUser,
                     id: cleanLic,
@@ -1814,10 +1565,13 @@
                     department: regForm.department,
                     hospital: regForm.hospital,
                     province: regForm.province,
-                    userType: regForm.userType,
+                    userType: exempt ? 'เรียนต่อเนื่อง' : 'เรียนใหม่',
+                    studyHoursExempt: exempt,
+                    progress: exempt ? 100 : Number(baseUser.progress || 0),
+                    hoursStatusLabel: exempt ? 'ชั่วโมงครบ (เทียบโอน)' : (baseUser.hoursStatusLabel || 'กำลังสะสมชั่วโมง'),
+                    hoursActivityName: exempt ? (baseUser.hoursActivityName || 'ผู้เรียนต่อเนื่อง / ผ่านการอบรมมาตรฐานมาก่อนแล้ว') : (baseUser.hoursActivityName || ''),
                     workContext: regForm.workContext,
                     status: baseUser.status || 'กำลังเรียน',
-                    progress: Number(baseUser.progress || 0),
                     studySeconds: Number(baseUser.studySeconds || 0),
                     pretest: baseUser.pretest || '-',
                     posttest: baseUser.posttest || '-',
@@ -1835,9 +1589,6 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             };
 
-            // ============================================================================
-            // 6. EXAM, LESSON AI CHAT, CERTIFICATE & LOGOUT HANDLERS
-            // ============================================================================
             const handleSubmitExam = async (mode) => {
                 if (Object.keys(examAnswers).length < questions.length && !isAdminPreview) {
                     showToast(`กรุณาตอบคำถามให้ครบทุกข้อ (${Object.keys(examAnswers).length}/${questions.length}) ค่ะ`, 'error');
@@ -1851,15 +1602,16 @@
                 const scoreStr = `${correct}/${total}`;
 
                 if (mode === 'pretest') {
-                    const updated = { ...user, pretest: scoreStr, aiRoadmap: diag };
-                    await saveUserToCloud(updated);
+                    await saveUserToCloud({ ...user, pretest: scoreStr, aiRoadmap: diag });
                     setExamResult({ mode, correct, total, pct, diag, passed: true });
                     showToast(`บันทึกคะแนน Pre-test (${scoreStr}) และสร้าง AI Roadmap เรียบร้อยค่ะ`);
                 } else {
                     const passed = pct >= MIN_POSTTEST_PERCENT;
                     const wasAlreadyPassed = user?.status === 'ผ่าน';
-                    const updated = { ...user, posttest: scoreStr, status: passed ? 'ผ่าน' : (user?.status || 'กำลังเรียน'), aiRoadmap: diag };
-                    await saveUserToCloud(updated, passed && !wasAlreadyPassed ? { passedUsers: increment(1) } : null);
+                    await saveUserToCloud(
+                        { ...user, posttest: scoreStr, status: passed ? 'ผ่าน' : (user?.status || 'กำลังเรียน'), aiRoadmap: diag },
+                        passed && !wasAlreadyPassed ? { passedUsers: increment(1) } : null
+                    );
                     setExamResult({ mode, correct, total, pct, diag, passed });
                     showToast(passed ? `ยินดีด้วยค่ะ! สอบผ่าน Post-test (${pct}%) ปลดล็อกประกาศนียบัตรแล้ว` : `ได้คะแนน ${pct}% (เกณฑ์ผ่าน ≥${MIN_POSTTEST_PERCENT}%) ทบทวนจุดอ่อนแล้วสอบใหม่ได้เลยค่ะ`, passed ? 'success' : 'info');
                 }
@@ -1918,22 +1670,21 @@
 
                 await saveUserToCloud(updatedUser, summaryInc);
 
+                // บันทึกทะเบียนสาธารณะ certificates/{code} โดยไม่ระบุแยกประเภทผู้เรียน (สิทธิ์และเกียรติเท่ากัน 100%)
                 const publicCert = typeof CERT.buildPublicCertPayload === 'function'
                     ? CERT.buildPublicCertPayload({ code, user: updatedUser, finalName: certNameTH.trim(), nameEN: certNameEN.trim(), finalHospital: certHospital.trim(), certTemplate, cneuConfig, issuedAt })
-                    : { code, name: certNameTH.trim(), license: updatedUser.license, hospital: certHospital.trim(), issuedAt, status: 'valid' };
+                    : { code, name: certNameTH.trim(), nameEN: certNameEN.trim(), license: updatedUser.license, hospital: certHospital.trim(), courseTitleTH: certTemplate.courseTitleTH, cneuActivityCode: cneuConfig.activityCode, cneuCredits: cneuConfig.cneuCredits, issuedAt, status: 'valid' };
+                delete publicCert.userType;
 
-                try {
-                    const localMap = JSON.parse(localStorage.getItem('rjcloud_local_certificates') || '{}');
-                    localMap[code] = publicCert;
-                    localStorage.setItem('rjcloud_local_certificates', JSON.stringify(localMap));
-                    if (fbDb && !isAdminPreview) {
+                if (fbDb && !isAdminPreview) {
+                    try {
                         await setDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'certificates', code), publicCert, { merge: true });
-                    }
-                } catch (_) {}
+                    } catch (err) { console.warn('Cert registry write warning:', err); }
+                }
 
                 setIssuingCert(false);
                 setScreen('certificate');
-                showToast('ออกประกาศนียบัตรดิจิทัลพร้อม QR Code และบันทึกข้อมูลวิจัย R2R เรียบร้อยค่ะ');
+                showToast('ออกใบประกาศนียบัตรดิจิทัลพร้อม QR Code เรียบร้อยแล้วค่ะ');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             };
 
@@ -1941,17 +1692,46 @@
                 setConfirmDialog({
                     open: true,
                     title: 'ออกจากระบบผู้เรียน',
-                    message: 'ข้อมูลความคืบหน้าการเรียนทั้งหมดของคุณถูกบันทึกไว้บน Cloud แล้ว ต้องการออกจากระบบหรือไม่?',
-                    danger: true,
+                    message: 'ต้องการออกจากระบบกลับไปยังหน้าแรกหรือไม่? ข้อมูลการเรียนทั้งหมดถูกบันทึกไว้บน Cloud แล้วค่ะ',
+                    danger: false,
                     confirmText: 'ออกจากระบบ',
                     onConfirm: () => {
                         stopTts();
                         try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
                         setUser(null);
                         setScreen('landing');
-                        showToast('ออกจากระบบเรียบร้อยแล้วค่ะ', 'info');
+                        showToast('ออกจากระบบเรียบร้อยแล้วค่ะ');
                     }
                 });
+            };
+
+            const handleStartEditProfile = () => {
+                setProfileDraft({
+                    name: user?.name || '',
+                    email: user?.email || '',
+                    phone: user?.phone || '',
+                    position: user?.position || '',
+                    hospital: user?.hospital || ''
+                });
+                setEditingProfile(true);
+            };
+
+            const handleSaveProfileEdit = async (e) => {
+                e.preventDefault();
+                if (!profileDraft.name.trim()) { showToast('กรุณาระบุชื่อ–นามสกุลให้ถูกต้องค่ะ', 'error'); return; }
+                const updated = {
+                    ...user,
+                    name: profileDraft.name.trim(),
+                    email: profileDraft.email.trim(),
+                    phone: profileDraft.phone.trim(),
+                    position: profileDraft.position.trim(),
+                    hospital: profileDraft.hospital.trim()
+                };
+                await saveUserToCloud(updated);
+                setCertNameTH(updated.name);
+                setCertHospital(updated.hospital);
+                setEditingProfile(false);
+                showToast('บันทึกการแก้ไขข้อมูลส่วนตัวด้วยตนเองเรียบร้อยแล้วค่ะ');
             };
 
             const handleExportPersonalPdpaJson = () => {
@@ -1990,25 +1770,74 @@
             if (screen === 'landing') {
                 return (
                     <>
-                        <LandingHeroStage
-                            onStartLogin={handleStartLogin}
-                            onOpenPdpa={() => setShowPdpaModal(true)}
-                            pwaPrompt={pwaPrompt}
-                            onInstallPwa={handleInstallPwa}
-                        />
+                        <LandingHeroStage onStartLogin={handleStartLogin} onOpenPdpa={() => setShowPdpaModal(true)} pwaPrompt={pwaPrompt} onInstallPwa={handleInstallPwa} />
                         {showPdpaModal && (
                             <div onClick={() => setShowPdpaModal(false)} className="fixed inset-0 z-[165] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-                                <div onClick={e => e.stopPropagation()} className="spatial-card max-w-lg w-full rounded-[2rem] p-6 space-y-3 text-xs sm:text-sm">
+                                <div onClick={e => e.stopPropagation()} className="spatial-card max-w-lg w-full rounded-[2rem] p-6 space-y-3.5 text-xs sm:text-sm">
                                     <h3 className="font-display font-extrabold text-base text-primary-adaptive">นโยบายคุ้มครองข้อมูลส่วนบุคคล (PDPA)</h3>
-                                    <p className="text-secondary-adaptive leading-relaxed">
-                                        ระบบจัดเก็บชื่อ–นามสกุล เลขใบอนุญาต อีเมล และหน่วยงานเพื่อการยืนยันตัวตน OTP, ออกประกาศนียบัตร CNEU และการวิจัยพัฒนาคุณภาพการฝึกอบรม โดยหน้า Dashboard สถิติ 13 เขตใช้ข้อมูลแบบไม่ระบุตัวตน (Zero-PII) 100% และคุณสามารถดาวน์โหลดหรือลบข้อมูลของตนเองได้ทุกเมื่อในหน้าโปรไฟล์ค่ะ
-                                    </p>
+                                    <div className="space-y-2 text-secondary-adaptive leading-relaxed">
+                                        <p>1. <b>วัตถุประสงค์การจัดเก็บข้อมูล:</b> ระบบจัดเก็บชื่อ–นามสกุล เลขที่ใบอนุญาตประกอบวิชาชีพ อีเมล (ใช้สำหรับส่งรหัสยืนยันตัวตน OTP เท่านั้น) ตำแหน่ง และหน่วยงาน เพื่อบันทึกประวัติการอบรม ออกใบประกาศนียบัตรรับรองหน่วยคะแนน CNEU และการพัฒนาคุณภาพหลักสูตร</p>
+                                        <p>2. <b>การแสดงผลแบบไม่ระบุตัวตน (Zero-PII):</b> หน้า Dashboard สถิติภาพรวม 13 เขตสุขภาพ และชุดข้อมูลวิเคราะห์งานวิจัย ใช้ข้อมูลสถิติรวมแบบตัดข้อมูลส่วนบุคคลออกทั้งหมด 100%</p>
+                                        <p>3. <b>สิทธิ์การจัดการข้อมูลด้วยตนเอง (Self-Service 100%):</b> ผู้เรียนสามารถ <b>แก้ไขข้อมูลส่วนตัว ดาวน์โหลดสำเนาข้อมูล (JSON) หรือลบข้อมูลบัญชีผู้เรียนออกจากระบบถาวรได้ด้วยตนเองทันที</b> ในหน้า “โปรไฟล์” โดยไม่ต้องติดต่อหรือส่งคำร้องผ่านอีเมลค่ะ</p>
+                                    </div>
                                     <button type="button" onClick={() => setShowPdpaModal(false)} className="rjc2-pill-btn touch-target w-full py-2.5 rounded-full font-display font-bold text-xs">รับทราบและปิด</button>
                                 </div>
                             </div>
                         )}
                         <ToastBanner toast={toast} />
                     </>
+                );
+            }
+
+            // หน้าจอนับถอยหลังหากผู้สมัคร Onsite เข้ามาก่อนวัน–เวลาที่ผู้จัดกำหนดเปิดสิทธิ์
+            if (user && onsiteLockInfo.locked && screen !== 'auth') {
+                return (
+                    <div className="min-h-dvh relative flex items-center justify-center p-4 pt-safe">
+                        <div className="spatial-aura" /><div className="spatial-grid" />
+                        <div className="spatial-card relative z-10 max-w-lg w-full rounded-[2rem] p-6 sm:p-8 text-center space-y-5 border-prism-400/45">
+                            <div className="w-14 h-14 rounded-2xl bg-prism-500/20 text-prism-adaptive flex items-center justify-center mx-auto">
+                                <Icon name="Clock" size={28} />
+                            </div>
+                            <div className="space-y-1">
+                                <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">SCHEDULED AUTO-UNLOCK • รอถึงกำหนดเวลาเปิดสิทธิ์</span>
+                                <h1 className="font-display font-extrabold text-xl text-primary-adaptive">สิทธิ์การเรียนของท่านพร้อมเปิดอัตโนมัติตามกำหนดเวลา</h1>
+                                <p className="text-xs text-secondary-adaptive">ระบบได้บันทึกสิทธิ์ <b>ชั่วโมงครบ (เทียบโอน)</b> ให้ท่านเรียบร้อยแล้วค่ะ</p>
+                            </div>
+
+                            <div className="spatial-soft rounded-2xl p-4 text-left space-y-2 text-xs">
+                                <div className="flex justify-between gap-2 border-b border-white/10 pb-1.5">
+                                    <span className="text-muted-adaptive">ผู้เรียน:</span>
+                                    <span className="font-bold text-primary-adaptive text-right">{user.name}</span>
+                                </div>
+                                <div className="flex justify-between gap-2 border-b border-white/10 pb-1.5">
+                                    <span className="text-muted-adaptive">สถานะชั่วโมงอบรม:</span>
+                                    <span className="font-bold text-accent-adaptive text-right">{statusInfo.hoursLabel}</span>
+                                </div>
+                                <div className="flex justify-between gap-2 border-b border-white/10 pb-1.5">
+                                    <span className="text-muted-adaptive">กิจกรรมอ้างอิง:</span>
+                                    <span className="font-semibold text-primary-adaptive text-right">{statusInfo.activityName}</span>
+                                </div>
+                                {statusInfo.activityMeta && (
+                                    <div className="flex justify-between gap-2">
+                                        <span className="text-muted-adaptive">วันที่ / สถานที่จัด:</span>
+                                        <span className="text-secondary-adaptive text-right">{statusInfo.activityMeta}</span>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="p-4 rounded-2xl bg-aurora-500/15 border border-aurora-400/35 space-y-1">
+                                <p className="text-xs text-secondary-adaptive">เปิดสิทธิ์เข้าทำ Pre-test → AI Skill Lab 3D → Post-test ≥ 80% ตั้งแต่</p>
+                                <p className="font-display font-extrabold text-sm text-accent-adaptive">{formatThaiDateTimeFull(onsiteLockInfo.unlockIso)}</p>
+                                <p className="font-mono text-lg font-extrabold text-primary-adaptive pt-1">{onsiteLockInfo.countdown}</p>
+                            </div>
+
+                            <button type="button" onClick={handleLogout} className="spatial-soft touch-target w-full py-3 rounded-full text-xs font-bold text-secondary-adaptive">
+                                กลับหน้าแรก
+                            </button>
+                        </div>
+                        <ConfirmModal dialog={confirmDialog} onClose={() => setConfirmDialog(p => ({ ...p, open: false }))} />
+                        <ToastBanner toast={toast} />
+                    </div>
                 );
             }
 
@@ -2035,16 +1864,11 @@
                                     <form onSubmit={handleLookupLicense} className="space-y-4">
                                         <div>
                                             <h1 className="font-display text-xl font-extrabold text-primary-adaptive">เข้าสู่ระบบ / ลงทะเบียนผู้เรียน</h1>
-                                            <p className="text-xs text-secondary-adaptive mt-1">กรอกเลขที่ใบอนุญาตประกอบวิชาชีพ (10 หลัก) เพื่อตรวจสอบประวัติหรือเริ่มลงทะเบียนใหม่</p>
+                                            <p className="text-xs text-secondary-adaptive mt-1">
+                                                กรอกเลขที่ใบอนุญาตประกอบวิชาชีพ หากเคยลงทะเบียน Onsite หรือเคยผ่านการอบรมมาก่อน ระบบจะดึงข้อมูลและสิทธิ์เทียบโอนให้อัตโนมัติค่ะ
+                                            </p>
                                         </div>
-                                        <input
-                                            type="text"
-                                            required
-                                            value={licenseInput}
-                                            onChange={e => setLicenseInput(e.target.value)}
-                                            placeholder="เช่น 6511123456"
-                                            className="touch-target spatial-input w-full px-4 py-3 rounded-2xl font-mono text-base font-bold"
-                                        />
+                                        <input type="text" required value={licenseInput} onChange={e => setLicenseInput(e.target.value)} placeholder="เช่น 6511123456" className="touch-target spatial-input w-full px-4 py-3 rounded-2xl font-mono text-base font-bold" />
                                         <button type="submit" disabled={authBusy} className="rjc2-pill-btn touch-target w-full py-3.5 rounded-full font-display font-extrabold text-sm">
                                             {authBusy ? 'กำลังตรวจสอบข้อมูล...' : 'ตรวจสอบเลขที่ใบอนุญาต →'}
                                         </button>
@@ -2072,8 +1896,8 @@
                                             </select>
                                             <input value={regForm.hospital} onChange={e => setRegForm(p => ({ ...p, hospital: e.target.value }))} placeholder="โรงพยาบาล / หน่วยงาน" className="touch-target spatial-input px-3.5 py-2.5 rounded-xl text-sm" />
                                             <select value={regForm.userType} onChange={e => setRegForm(p => ({ ...p, userType: e.target.value }))} className="touch-target spatial-input px-3.5 py-2.5 rounded-xl text-sm">
-                                                <option value="เรียนใหม่">สิทธิ์: เรียนใหม่</option>
-                                                <option value="เรียนต่อเนื่อง">สิทธิ์: เรียนต่อเนื่อง</option>
+                                                <option value="เรียนใหม่">กลุ่มผู้เรียนใหม่ (สะสมชั่วโมงครบ ≥ 80%)</option>
+                                                <option value="เรียนต่อเนื่อง">กลุ่มเคยผ่านการอบรมแล้ว (เทียบโอนชั่วโมงครบ 100%)</option>
                                             </select>
                                             <select value={regForm.workContext} onChange={e => setRegForm(p => ({ ...p, workContext: e.target.value }))} className="touch-target spatial-input px-3.5 py-2.5 rounded-xl text-sm">
                                                 <option value="donor_team">มุมมอง AI: ทีมรับบริจาค / TC</option>
@@ -2083,7 +1907,7 @@
                                         </div>
                                         <label className="spatial-soft p-3 rounded-xl flex items-start gap-2 cursor-pointer">
                                             <input type="checkbox" checked={regForm.pdpaAccepted} onChange={e => setRegForm(p => ({ ...p, pdpaAccepted: e.target.checked }))} className="mt-1 accent-aurora-500" />
-                                            <span className="text-secondary-adaptive leading-relaxed">ยินยอมให้จัดเก็บข้อมูลเพื่อการอบรม รับรองหน่วยคะแนน CNEU และการวิจัยพัฒนาคุณภาพตามนโยบาย PDPA</span>
+                                            <span className="text-secondary-adaptive leading-relaxed">ยินยอมให้จัดเก็บข้อมูลเพื่อการอบรม รับรองหน่วยคะแนน CNEU และการพัฒนาคุณภาพหลักสูตรตามนโยบาย PDPA (แก้ไขหรือลบข้อมูลได้เองในหน้าโปรไฟล์)</span>
                                         </label>
                                         <button type="submit" disabled={authBusy} className="rjc2-pill-btn touch-target w-full py-3.5 rounded-full font-display font-extrabold text-sm">
                                             {authBusy ? 'กำลังส่งรหัส OTP ไปยังอีเมล...' : 'ส่งรหัส OTP 6 หลักทางอีเมล →'}
@@ -2093,26 +1917,13 @@
 
                                 {authStep === 3 && (
                                     <form onSubmit={handleVerifyOtp} className="space-y-4 text-center">
-                                        <div className="w-12 h-12 rounded-2xl bg-aurora-500/20 text-accent-adaptive flex items-center justify-center mx-auto">
-                                            <Icon name="ShieldCheck" size={24} />
-                                        </div>
+                                        <div className="w-12 h-12 rounded-2xl bg-aurora-500/20 text-accent-adaptive flex items-center justify-center mx-auto"><Icon name="ShieldCheck" size={24} /></div>
                                         <div>
                                             <h2 className="font-display text-lg font-extrabold text-primary-adaptive">กรอกรหัสยืนยันตัวตน OTP 6 หลัก</h2>
                                             <p className="text-xs text-secondary-adaptive mt-1">ส่งไปยังอีเมล <b>{maskEmailSafe(otpSentEmail || regForm.email)}</b> แล้วค่ะ</p>
                                         </div>
-                                        <input
-                                            type="text"
-                                            inputMode="numeric"
-                                            maxLength={6}
-                                            required
-                                            value={otpInput}
-                                            onChange={e => setOtpInput(e.target.value.replace(/[^0-9]/g, ''))}
-                                            placeholder="000000"
-                                            className="touch-target spatial-input w-full text-center tracking-[0.55em] font-mono text-2xl font-extrabold py-3.5 rounded-2xl"
-                                        />
-                                        <button type="submit" className="rjc2-pill-btn touch-target w-full py-3.5 rounded-full font-display font-extrabold text-sm">
-                                            ยืนยันรหัส OTP และเข้าสู่ห้องเรียน →
-                                        </button>
+                                        <input type="text" inputMode="numeric" maxLength={6} required value={otpInput} onChange={e => setOtpInput(e.target.value.replace(/[^0-9]/g, ''))} placeholder="000000" className="touch-target spatial-input w-full text-center tracking-[0.55em] font-mono text-2xl font-extrabold py-3.5 rounded-2xl" />
+                                        <button type="submit" className="rjc2-pill-btn touch-target w-full py-3.5 rounded-full font-display font-extrabold text-sm">ยืนยันรหัส OTP และเข้าสู่ห้องเรียน →</button>
                                     </form>
                                 )}
                             </div>
@@ -2144,9 +1955,7 @@
                                     <div className="flex items-center justify-between gap-3">
                                         <div>
                                             <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">AI 4-DOMAIN DIAGNOSTIC ROADMAP</span>
-                                            <h2 className="font-display font-extrabold text-xl text-primary-adaptive">
-                                                ได้คะแนน {examResult.correct}/{examResult.total} ({examResult.pct}%)
-                                            </h2>
+                                            <h2 className="font-display font-extrabold text-xl text-primary-adaptive">ได้คะแนน {examResult.correct}/{examResult.total} ({examResult.pct}%)</h2>
                                         </div>
                                         <span className={`px-3.5 py-1.5 rounded-full font-display font-extrabold text-xs ${examResult.passed ? 'bg-aurora-500/20 text-accent-adaptive' : 'bg-amber-500/20 text-amber-400'}`}>
                                             {examResult.mode === 'pretest' ? 'บันทึกผลแล้ว ✓' : (examResult.passed ? 'สอบผ่านเกณฑ์ ✓' : 'ยังไม่ถึง 80%')}
@@ -2155,13 +1964,8 @@
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                                         {examResult.diag.domains.map(d => (
                                             <div key={d.id} className="spatial-soft p-3.5 rounded-2xl space-y-1.5">
-                                                <div className="flex justify-between text-xs font-bold">
-                                                    <span className="text-primary-adaptive">{d.shortName}</span>
-                                                    <span className="font-mono" style={{ color: d.color }}>{d.percent}%</span>
-                                                </div>
-                                                <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
-                                                    <div className="h-full rounded-full" style={{ width: `${d.percent}%`, backgroundColor: d.color }} />
-                                                </div>
+                                                <div className="flex justify-between text-xs font-bold"><span className="text-primary-adaptive">{d.shortName}</span><span className="font-mono" style={{ color: d.color }}>{d.percent}%</span></div>
+                                                <div className="h-1.5 rounded-full bg-white/10 overflow-hidden"><div className="h-full rounded-full" style={{ width: `${d.percent}%`, backgroundColor: d.color }} /></div>
                                                 <p className="text-[11px] text-muted-adaptive">{d.remediationGuide}</p>
                                             </div>
                                         ))}
@@ -2171,6 +1975,15 @@
                                             <button type="button" onClick={() => { setExamResult(null); setScreen('cert_confirm'); }} className="rjc2-pill-btn touch-target flex-1 py-3.5 rounded-full font-display font-extrabold text-sm">
                                                 ไปขั้นตอนที่ 5: ประเมินผล &amp; รับประกาศนียบัตร →
                                             </button>
+                                        ) : isExemptHours ? (
+                                            <>
+                                                <a href="./aiskilllab.html" className="rjc2-pill-btn touch-target flex-1 py-3.5 rounded-full font-display font-extrabold text-sm inline-flex items-center justify-center">
+                                                    ไปขั้นตอนที่ 3: เข้าห้องฝึก AI Skill Lab 3D ทันที →
+                                                </a>
+                                                <button type="button" onClick={() => { setExamResult(null); setExamAnswers({}); setScreen('dashboard'); }} className="spatial-soft touch-target px-5 py-3.5 rounded-full font-display font-bold text-xs text-primary-adaptive">
+                                                    เข้าหน้าหลัก / ทบทวนบทเรียน
+                                                </button>
+                                            </>
                                         ) : (
                                             <button type="button" onClick={() => { setExamResult(null); setExamAnswers({}); setScreen('dashboard'); }} className="rjc2-pill-btn touch-target flex-1 py-3.5 rounded-full font-display font-extrabold text-sm">
                                                 เข้าสู่ห้องเรียน 20 บท + AI Study Companion →
@@ -2182,19 +1995,12 @@
                                 <div className="space-y-3 pb-10">
                                     {questions.map((q, qIdx) => (
                                         <div key={q.id || qIdx} className="spatial-card rounded-2xl p-4 sm:p-5 space-y-3">
-                                            <p className="font-display font-bold text-sm text-primary-adaptive leading-relaxed">
-                                                <span className="font-mono text-prism-adaptive mr-1.5">{qIdx + 1}.</span>{q.question}
-                                            </p>
+                                            <p className="font-display font-bold text-sm text-primary-adaptive leading-relaxed"><span className="font-mono text-prism-adaptive mr-1.5">{qIdx + 1}.</span>{q.question}</p>
                                             <div className="space-y-2">
                                                 {(q.options || []).map((opt, optIdx) => {
                                                     const chosen = Number(examAnswers[qIdx]) === optIdx;
                                                     return (
-                                                        <button
-                                                            key={optIdx}
-                                                            type="button"
-                                                            onClick={() => setExamAnswers(p => ({ ...p, [qIdx]: optIdx }))}
-                                                            className={`w-full text-left px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm transition-all ${chosen ? 'bg-aurora-500/20 border-aurora-400 text-primary-adaptive font-bold' : 'spatial-soft text-secondary-adaptive'}`}
-                                                        >
+                                                        <button key={optIdx} type="button" onClick={() => setExamAnswers(p => ({ ...p, [qIdx]: optIdx }))} className={`w-full text-left px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm transition-all ${chosen ? 'bg-aurora-500/20 border-aurora-400 text-primary-adaptive font-bold' : 'spatial-soft text-secondary-adaptive'}`}>
                                                             {opt}
                                                         </button>
                                                     );
@@ -2202,15 +2008,13 @@
                                             </div>
                                         </div>
                                     ))}
-                                    <button type="button" onClick={() => handleSubmitExam(screen)} className="rjc2-pill-btn touch-target w-full py-4 rounded-full font-display font-extrabold text-base">
-                                        ส่งคำตอบและวิเคราะห์ผลด้วย AI →
-                                    </button>
+                                    <button type="button" onClick={() => handleSubmitExam(screen)} className="rjc2-pill-btn touch-target w-full py-4 rounded-full font-display font-extrabold text-base">ส่งคำตอบและวิเคราะห์ผลด้วย AI →</button>
                                 </div>
                             )}
                         </div>
                     )}
 
-                    {/* ==================== SCREEN: MAIN DASHBOARD (5 TABS) ==================== */}
+                    {/* ==================== SCREEN: MAIN DASHBOARD ==================== */}
                     {screen === 'dashboard' && user && (
                         <div className="relative z-10 flex-1 flex flex-col pb-dock-safe lg:pb-10">
                             <header className="sticky top-0 z-30 spatial-header">
@@ -2221,8 +2025,8 @@
                                             <span className="font-display font-extrabold text-sm sm:text-base text-primary-adaptive block leading-none truncate">
                                                 rjcloud<span className="text-accent-adaptive">.organ</span> <span className="font-mono text-[10px] text-prism-adaptive">2.0</span>
                                             </span>
-                                            <span className="text-[10px] font-mono text-muted-adaptive block truncate">
-                                                {user.name} • {!isOnline ? 'โหมดออฟไลน์ ICU' : `${liveStudyPercent}%`}
+                                            <span className="text-[11px] text-muted-adaptive block truncate">
+                                                {user.name} • {statusInfo.statusLabel}
                                             </span>
                                         </div>
                                     </div>
@@ -2235,28 +2039,18 @@
                                             { id: 'live', label: 'Live สด', icon: 'Radio' },
                                             { id: 'profile', label: 'โปรไฟล์ & Warm-up', icon: 'User' }
                                         ].map(t => (
-                                            <button
-                                                key={t.id}
-                                                type="button"
-                                                onClick={() => setActiveTab(t.id)}
-                                                className={`px-3.5 py-2 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 transition-all ${activeTab === t.id ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'text-secondary-adaptive hover:bg-white/10'}`}
-                                            >
+                                            <button key={t.id} type="button" onClick={() => setActiveTab(t.id)} className={`px-3.5 py-2 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 transition-all ${activeTab === t.id ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'text-secondary-adaptive hover:bg-white/10'}`}>
                                                 <Icon name={t.icon} size={15} /> {t.label}
                                             </button>
                                         ))}
-                                        <button
-                                            id="btn-learner-logout"
-                                            type="button"
-                                            onClick={handleLogout}
-                                            className="px-3 py-2 rounded-xl text-xs font-bold text-secondary-adaptive hover:bg-rose-600 hover:text-white transition-colors inline-flex items-center gap-1"
-                                        >
+                                        <button type="button" onClick={handleLogout} className="px-3 py-2 rounded-xl text-xs font-bold text-secondary-adaptive hover:bg-rose-600 hover:text-white transition-colors inline-flex items-center gap-1">
                                             <Icon name="LogOut" size={14} /> ออกจากระบบ
                                         </button>
                                     </div>
 
                                     <div className="flex items-center gap-1.5 shrink-0">
                                         <ThemeToggleButton theme={theme} onToggle={toggleTheme} compact />
-                                        <button id="btn-learner-logout-mobile" type="button" onClick={handleLogout} aria-label="ออกจากระบบ" className="lg:hidden w-9 h-9 rounded-xl spatial-soft hover:bg-rose-600 hover:text-white text-secondary-adaptive flex items-center justify-center">
+                                        <button type="button" onClick={handleLogout} aria-label="ออกจากระบบ" className="lg:hidden w-9 h-9 rounded-xl spatial-soft hover:bg-rose-600 hover:text-white text-secondary-adaptive flex items-center justify-center">
                                             <Icon name="LogOut" size={16} />
                                         </button>
                                     </div>
@@ -2264,6 +2058,33 @@
                             </header>
 
                             <main className="max-w-7xl w-full mx-auto px-3.5 sm:px-6 pt-4 space-y-5">
+                                {/* Fast-Track Banner สำหรับผู้เรียนที่ได้รับสิทธิ์ ชั่วโมงครบ (เทียบโอน) */}
+                                {isExemptHours && !isPostPassed && (
+                                    <div className="spatial-card rounded-[1.5rem] p-4 border-aurora-400/45 flex flex-wrap items-center justify-between gap-3 text-xs">
+                                        <div className="space-y-0.5">
+                                            <p className="font-display font-extrabold text-sm text-accent-adaptive">
+                                                สถานะชั่วโมงอบรม: {statusInfo.hoursLabel}
+                                            </p>
+                                            <p className="text-secondary-adaptive">
+                                                อ้างอิงกิจกรรม: <b className="text-primary-adaptive">{statusInfo.activityName}</b>
+                                                {statusInfo.activityMeta ? ` (${statusInfo.activityMeta})` : ''}
+                                            </p>
+                                            <p className="text-muted-adaptive">ไม่ต้องสะสมชั่วโมงวิดีโอซ้ำ สามารถเข้าฝึก AI Skill Lab 3D และทำ Post-test ≥ 80% เพื่อรับประกาศนียบัตรได้ทันที (หรือเปิดดูวิดีโอทบทวนได้ตามต้องการค่ะ)</p>
+                                        </div>
+                                        <div className="flex flex-wrap gap-2">
+                                            {!isLabDone ? (
+                                                <a href="./aiskilllab.html" className="rjc2-pill-btn px-4 py-2.5 rounded-full font-display font-extrabold text-xs">
+                                                    เข้าฝึก AI Skill Lab 3D เลย →
+                                                </a>
+                                            ) : (
+                                                <button type="button" onClick={() => { setExamAnswers({}); setExamResult(null); setScreen('posttest'); }} className="rjc2-pill-btn px-4 py-2.5 rounded-full font-display font-extrabold text-xs">
+                                                    เข้าสอบ Post-test ≥ 80% เลย →
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+
                                 {/* 5-Step Progress Strip */}
                                 <div className="spatial-card rounded-[1.5rem] p-3.5 sm:p-4 grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs">
                                     <div className={`p-2.5 rounded-xl border ${hasDonePretest ? 'bg-aurora-500/15 border-aurora-400/45' : 'spatial-soft'}`}>
@@ -2271,8 +2092,11 @@
                                         <span className="font-bold text-primary-adaptive">{user.pretest || 'รอทำ'}</span>
                                     </div>
                                     <div className={`p-2.5 rounded-xl border ${isStudyEnough ? 'bg-aurora-500/15 border-aurora-400/45' : 'spatial-soft'}`}>
-                                        <span className="font-mono text-[10px] font-bold text-prism-adaptive block">02 เวลาเรียน ≥80%</span>
-                                        <span className="font-mono font-bold text-primary-adaptive">{liveStudyPercent}% ({formatStudyTimeSafe(studySeconds)})</span>
+                                        <span className="font-mono text-[10px] font-bold text-prism-adaptive block">02 ชั่วโมงอบรม</span>
+                                        <span className="font-bold text-primary-adaptive block truncate">{statusInfo.hoursLabel}</span>
+                                        {statusInfo.isStudyEnough && statusInfo.activityName && (
+                                            <span className="text-[10px] text-muted-adaptive block truncate">{statusInfo.activityName}</span>
+                                        )}
                                     </div>
                                     <a href="./aiskilllab.html" className={`p-2.5 rounded-xl border transition-all ${isLabDone ? 'bg-aurora-500/15 border-aurora-400/45' : 'bg-violet-500/15 border-violet-400/45 hover:border-violet-300'}`}>
                                         <span className="font-mono text-[10px] font-bold text-violet-300 block">03 AI SKILL LAB 3D</span>
@@ -2281,26 +2105,18 @@
                                     <button
                                         type="button"
                                         onClick={() => {
-                                            if (!canTakePosttest && !isAdminPreview) {
-                                                showToast(`กรุณาสะสมเวลาเรียน ≥${MIN_STUDY_PERCENT}% และผ่าน AI Skill Lab ก่อนทำ Post-test ค่ะ`, 'info');
-                                                return;
-                                            }
-                                            setExamAnswers({});
-                                            setExamResult(null);
-                                            setScreen('posttest');
+                                            if (!canTakePosttest && !isAdminPreview) { showToast(`กรุณาสะสมเวลาเรียน ≥${MIN_STUDY_PERCENT}% และผ่าน AI Skill Lab ก่อนทำ Post-test ค่ะ`, 'info'); return; }
+                                            setExamAnswers({}); setExamResult(null); setScreen('posttest');
                                         }}
                                         className={`text-left p-2.5 rounded-xl border ${isPostPassed ? 'bg-aurora-500/15 border-aurora-400/45' : 'spatial-soft'}`}
                                     >
                                         <span className="font-mono text-[10px] font-bold text-amber-400 block">04 POST-TEST ≥80%</span>
-                                        <span className="font-bold text-primary-adaptive">{isPostPassed ? `ผ่าน (${user.posttest}) ✓` : (canTakePosttest ? 'เริ่มสอบเลย →' : 'ล็อกอยู่')}</span>
+                                        <span className="font-bold text-primary-adaptive">{isPostPassed ? `ผ่าน (${user.posttest})` : (canTakePosttest ? 'เริ่มสอบเลย →' : 'ล็อกอยู่')}</span>
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => {
-                                            if (!isPostPassed && !isAdminPreview) {
-                                                showToast('สอบผ่าน Post-test ≥80% ก่อนรับประกาศนียบัตรนะคะ', 'info');
-                                                return;
-                                            }
+                                            if (!isPostPassed && !isAdminPreview) { showToast('สอบผ่าน Post-test ≥80% ก่อนรับประกาศนียบัตรนะคะ', 'info'); return; }
                                             setScreen(user.certificateCode ? 'certificate' : 'cert_confirm');
                                         }}
                                         className={`col-span-2 sm:col-span-1 text-left p-2.5 rounded-xl border ${user.certificateCode ? 'bg-aurora-500/20 border-aurora-400' : 'spatial-soft'}`}
@@ -2310,19 +2126,14 @@
                                     </button>
                                 </div>
 
-                                {/* TAB 1: LESSONS + AUDIO-FIRST 1-MINUTE SUMMARY + AI STUDY COMPANION */}
+                                {/* TAB 1: LESSONS + AUDIO-ONLY STUDIO AI SUMMARY + AI STUDY COMPANION */}
                                 {activeTab === 'lessons' && (
                                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
                                         <div className="lg:col-span-8 space-y-4">
                                             <div className="spatial-card rounded-[1.75rem] overflow-hidden">
                                                 <div className="aspect-video w-full bg-black relative">
                                                     {activeLesson.videoId ? (
-                                                        <iframe
-                                                            src={`https://drive.google.com/file/d/${activeLesson.videoId}/preview`}
-                                                            className="w-full h-full border-0"
-                                                            allow="autoplay; fullscreen"
-                                                            title={activeLesson.title}
-                                                        />
+                                                        <iframe src={`https://drive.google.com/file/d/${activeLesson.videoId}/preview`} className="w-full h-full border-0" allow="autoplay; fullscreen" title={activeLesson.title} />
                                                     ) : (
                                                         <div className="w-full h-full flex items-center justify-center text-xs text-muted-adaptive">ไม่มีวิดีโอในบทเรียนนี้</div>
                                                     )}
@@ -2340,95 +2151,48 @@
                                                 </div>
                                             </div>
 
-                                            {/* 1-Minute Clinical Audio Summary (ไร้ซับไตเติล + ไฟแอมเบียน + รอเสียง AI คุณภาพสตูดิโอแบบแบ่งช่วง) */}
                                             <div className={`spatial-card rounded-[1.75rem] overflow-hidden transition-all duration-300 ${isSummaryActive ? 'rjc-ambient-card-active' : ''}`}>
                                                 {isSummaryActive && <div className="rjc-ambient-bar" />}
                                                 <div className="p-4 sm:p-5 space-y-3.5">
                                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                                         <div className="flex items-start gap-3">
-                                                            <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 transition-all ${
-                                                                isSummaryActive
-                                                                    ? 'bg-gradient-to-br from-aurora-400 via-prism-400 to-violet-400 text-void-950 shadow-lg'
-                                                                    : 'bg-aurora-500/15 border border-aurora-400/35 text-accent-adaptive'
-                                                            }`}>
-                                                                {isSummaryActive ? (
-                                                                    <span className="rjc-wave-eq"><span /><span /><span /><span /><span /></span>
-                                                                ) : (
-                                                                    <Icon name="Headphones" size={20} />
-                                                                )}
+                                                            <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 ${isSummaryActive ? 'bg-gradient-to-br from-aurora-400 via-prism-400 to-violet-400 text-void-950' : 'bg-aurora-500/15 border border-aurora-400/35 text-accent-adaptive'}`}>
+                                                                {isSummaryActive ? <span className="rjc-wave-eq"><span /><span /><span /><span /><span /></span> : <Icon name="Headphones" size={20} />}
                                                             </div>
                                                             <div>
-                                                                <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase block">
-                                                                    STUDIO AI VOICE • AUDIO-ONLY SUMMARY
-                                                                </span>
-                                                                <h3 className="font-display font-extrabold text-sm sm:text-base text-primary-adaptive leading-snug">
-                                                                    สรุปคลินิก 1 นาทีประจำบทที่ {activeLesson.id} (เน้นฟังเสียง AI)
-                                                                </h3>
-                                                                <p className="text-xs text-muted-adaptive mt-0.5">
-                                                                    {isSummaryActive
-                                                                        ? ttsState.note
-                                                                        : 'กดปุ่มเพื่อฟังสรุปประเด็นสำคัญด้วยเสียง AI คุณภาพสูงสุด (ไม่มีซับไตเติล • ตัดเสียงเบราว์เซอร์ 100%)'}
-                                                                </p>
+                                                                <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase block">STUDIO AI VOICE • AUDIO-ONLY SUMMARY</span>
+                                                                <h3 className="font-display font-extrabold text-sm sm:text-base text-primary-adaptive">สรุปคลินิก 1 นาทีประจำบทที่ {activeLesson.id}</h3>
+                                                                <p className="text-xs text-muted-adaptive mt-0.5">{isSummaryActive ? ttsState.note : 'กดฟังสรุปประเด็นสำคัญด้วยเสียง AI คุณภาพสตูดิโอ (ตัดเสียงเบราว์เซอร์ 100%)'}</p>
                                                             </div>
                                                         </div>
-
                                                         <button
                                                             type="button"
                                                             onClick={() => {
                                                                 const pts = Array.isArray(activeLessonGuide.keyPoints) ? activeLessonGuide.keyPoints : [];
-                                                                const segments = [
-                                                                    `สรุปคลินิกหนึ่งนาที ประจำบทที่ ${activeLesson.id} เรื่อง ${activeLesson.title} ค่ะ`,
-                                                                    ...pts
-                                                                ];
-                                                                playNaturalTts(summaryAudioKey, segments, 'th');
+                                                                playNaturalTts(summaryAudioKey, [`สรุปคลินิกหนึ่งนาที ประจำบทที่ ${activeLesson.id} เรื่อง ${activeLesson.title} ค่ะ`, ...pts], 'th');
                                                             }}
-                                                            className={`touch-target px-5 py-2.5 rounded-full font-display font-extrabold text-xs sm:text-sm inline-flex items-center justify-center gap-2 shrink-0 transition-all ${
-                                                                isSummaryActive
-                                                                    ? 'bg-rose-600 hover:bg-rose-500 text-white shadow-lg'
-                                                                    : 'rjc2-pill-btn'
-                                                            }`}
+                                                            className={`touch-target px-5 py-2.5 rounded-full font-display font-extrabold text-xs sm:text-sm inline-flex items-center justify-center gap-2 shrink-0 ${isSummaryActive ? 'bg-rose-600 text-white' : 'rjc2-pill-btn'}`}
                                                         >
                                                             <Icon name={isSummaryActive ? 'Square' : 'Volume2'} size={16} />
-                                                            <span>
-                                                                {isSummaryActive
-                                                                    ? (ttsState.status === 'loading' ? 'กำลังเตรียมเสียง • แตะเพื่อหยุด' : 'หยุดฟังสรุป')
-                                                                    : 'ฟังสรุปเสียง AI คุณภาพสูง'}
-                                                            </span>
+                                                            <span>{isSummaryActive ? (ttsState.status === 'loading' ? 'รอเสียง AI • หยุด' : 'หยุดฟังสรุป') : 'ฟังสรุปเสียง AI คุณภาพสูง'}</span>
                                                         </button>
                                                     </div>
 
-                                                    {isSummaryActive && (
-                                                        <div className="spatial-soft rounded-2xl px-3.5 py-2.5 border-prism-400/40 flex flex-wrap items-center justify-between gap-2 text-xs">
-                                                            <div className="flex items-center gap-2 text-primary-adaptive font-bold">
-                                                                <span className={`w-2.5 h-2.5 rounded-full ${ttsState.status === 'speaking' ? 'bg-emerald-400 animate-pulse' : 'bg-cyan-400 animate-ping'}`} />
-                                                                <span>
-                                                                    {ttsState.status === 'loading'
-                                                                        ? `กำลังรอเสียง AI คุณภาพสตูดิโอ (ช่วงที่ ${ttsState.chunkIdx}/${ttsState.totalChunks})...`
-                                                                        : `กำลังบรรยายสรุป (ช่วงที่ ${ttsState.chunkIdx}/${ttsState.totalChunks}) • โหลดช่วงถัดไปล่วงหน้าแล้ว`}
-                                                                </span>
-                                                            </div>
-                                                            <span className="font-mono text-[10px] font-bold text-prism-adaptive">24kHz STUDIO PCM • NO BROWSER VOICE</span>
-                                                        </div>
-                                                    )}
-
                                                     {activeLessonGuide.microCheck && (
                                                         <div className="spatial-soft p-3.5 rounded-2xl space-y-2 text-xs">
-                                                            <p className="font-bold text-primary-adaptive">⚡ Micro-Check: {activeLessonGuide.microCheck.q}</p>
+                                                            <p className="font-bold text-primary-adaptive">Micro-Check: {activeLessonGuide.microCheck.q}</p>
                                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                                                 {activeLessonGuide.microCheck.options.map((op, i) => (
-                                                                    <button key={i} type="button" onClick={() => setMicroAnswer(i)} className={`text-left p-2.5 rounded-xl border ${microAnswer === i ? (i === activeLessonGuide.microCheck.answer ? 'bg-emerald-500/20 border-emerald-400 text-accent-adaptive font-bold' : 'bg-rose-500/20 border-rose-400 text-rose-300') : 'spatial-soft text-secondary-adaptive'}`}>
-                                                                        {op}
-                                                                    </button>
+                                                                    <button key={i} type="button" onClick={() => setMicroAnswer(i)} className={`text-left p-2.5 rounded-xl border ${microAnswer === i ? (i === activeLessonGuide.microCheck.answer ? 'bg-emerald-500/20 border-emerald-400 text-accent-adaptive font-bold' : 'bg-rose-500/20 border-rose-400 text-rose-300') : 'spatial-soft text-secondary-adaptive'}`}>{op}</button>
                                                                 ))}
                                                             </div>
-                                                            {microAnswer !== null && <p className="text-accent-adaptive font-semibold pt-1">💡 {activeLessonGuide.microCheck.explain}</p>}
+                                                            {microAnswer !== null && <p className="text-accent-adaptive font-semibold pt-1">{activeLessonGuide.microCheck.explain}</p>}
                                                         </div>
                                                     )}
                                                 </div>
                                             </div>
                                         </div>
 
-                                        {/* Right Column: AI Study Companion Chat + Lesson Selector */}
                                         <div className="lg:col-span-4 space-y-4">
                                             <div className="spatial-card rounded-[1.75rem] p-4 space-y-3">
                                                 <div className="flex items-center gap-2">
@@ -2441,9 +2205,7 @@
                                                 <div className="max-h-56 overflow-y-auto custom-scrollbar space-y-2 text-xs">
                                                     {aiLessonChat.length === 0 && <p className="spatial-soft p-3 rounded-xl text-muted-adaptive">ลองถาม เช่น “Apnea Test ตรวจยังไง?” หรือ “คุมเบาจืดใน Donor ใช้ยาอะไร?”</p>}
                                                     {aiLessonChat.map((m, i) => (
-                                                        <div key={i} className={`p-2.5 rounded-xl whitespace-pre-line ${m.role === 'user' ? 'bg-aurora-500/20 text-primary-adaptive font-semibold ml-6' : 'spatial-soft text-secondary-adaptive mr-4'}`}>
-                                                            {m.text}
-                                                        </div>
+                                                        <div key={i} className={`p-2.5 rounded-xl whitespace-pre-line ${m.role === 'user' ? 'bg-aurora-500/20 text-primary-adaptive font-semibold ml-6' : 'spatial-soft text-secondary-adaptive mr-4'}`}>{m.text}</div>
                                                     ))}
                                                 </div>
                                                 <form onSubmit={handleAskLessonAi} className="flex gap-1.5">
@@ -2473,9 +2235,7 @@
                                         <div className="spatial-card rounded-[1.75rem] p-5 space-y-4">
                                             <div className="flex flex-wrap gap-2">
                                                 {CLINICAL_CASE_SIMULATIONS.map((c, idx) => (
-                                                    <button key={c.id} type="button" onClick={() => { setCaseIdx(idx); setCaseStepIdx(0); setCaseFeedback(null); }} className={`px-3.5 py-2 rounded-xl text-xs font-bold ${idx === caseIdx ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'spatial-soft text-secondary-adaptive'}`}>
-                                                        {c.badge}
-                                                    </button>
+                                                    <button key={c.id} type="button" onClick={() => { setCaseIdx(idx); setCaseStepIdx(0); setCaseFeedback(null); }} className={`px-3.5 py-2 rounded-xl text-xs font-bold ${idx === caseIdx ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'spatial-soft text-secondary-adaptive'}`}>{c.badge}</button>
                                                 ))}
                                             </div>
                                             <div>
@@ -2493,19 +2253,15 @@
                                             <p className="spatial-soft p-4 rounded-2xl text-sm text-primary-adaptive leading-relaxed">{curStep.situation}</p>
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                                                 {curStep.options.map((opt, i) => (
-                                                    <button key={i} type="button" onClick={() => setCaseFeedback(opt)} className="touch-target spatial-soft hover:border-aurora-400 text-left p-3.5 rounded-2xl text-xs sm:text-sm text-primary-adaptive font-semibold">
-                                                        {opt.label}
-                                                    </button>
+                                                    <button key={i} type="button" onClick={() => setCaseFeedback(opt)} className="touch-target spatial-soft hover:border-aurora-400 text-left p-3.5 rounded-2xl text-xs sm:text-sm text-primary-adaptive font-semibold">{opt.label}</button>
                                                 ))}
                                             </div>
                                             {caseFeedback && (
                                                 <div className={`p-4 rounded-2xl border text-xs sm:text-sm space-y-2 ${caseFeedback.correct ? 'bg-emerald-500/15 border-emerald-400/50 text-primary-adaptive' : 'bg-rose-500/15 border-rose-400/50 text-primary-adaptive'}`}>
-                                                    <p className="font-bold">{caseFeedback.correct ? '✓ การตัดสินใจถูกต้องตามมาตรฐานคลินิก' : '✕ ควรปรับแนวทางการดูแลใหม่'}</p>
+                                                    <p className="font-bold">{caseFeedback.correct ? 'การตัดสินใจถูกต้องตามมาตรฐานคลินิก' : 'ควรปรับแนวทางการดูแลใหม่'}</p>
                                                     <p>{caseFeedback.outcome}</p>
                                                     {caseStepIdx + 1 < curCase.steps.length && (
-                                                        <button type="button" onClick={() => { setCaseStepIdx(s => s + 1); setCaseFeedback(null); }} className="rjc2-pill-btn px-4 py-2 rounded-full font-display font-bold text-xs">
-                                                            ไปสถานการณ์ถัดไป →
-                                                        </button>
+                                                        <button type="button" onClick={() => { setCaseStepIdx(s => s + 1); setCaseFeedback(null); }} className="rjc2-pill-btn px-4 py-2 rounded-full font-display font-bold text-xs">ไปสถานการณ์ถัดไป →</button>
                                                     )}
                                                 </div>
                                             )}
@@ -2513,7 +2269,7 @@
                                     );
                                 })()}
 
-                                {/* TAB 3: SPACED-REPETITION SMART FLASHCARDS */}
+                                {/* TAB 3: SMART FLASHCARDS */}
                                 {activeTab === 'flashcards' && sortedFlashcards.length > 0 && (() => {
                                     const card = sortedFlashcards[fcIdx % sortedFlashcards.length];
                                     return (
@@ -2522,13 +2278,9 @@
                                                 <span className="font-mono font-bold text-prism-adaptive">SMART FLASHCARD {(fcIdx % sortedFlashcards.length) + 1}/{sortedFlashcards.length}</span>
                                                 <span className="font-mono font-bold text-accent-adaptive">จำได้แล้ว {masteredFcIds.length}/{sortedFlashcards.length}</span>
                                             </div>
-                                            <button type="button" onClick={() => setFcFlipped(v => !v)} className="w-full min-h-[220px] spatial-soft rounded-[1.5rem] p-6 flex flex-col items-center justify-center gap-3 transition-all">
-                                                <span className="px-2.5 py-0.5 rounded-full bg-aurora-500/20 text-accent-adaptive font-mono text-[10px] font-bold">
-                                                    {fcFlipped ? 'เฉลยมาตรฐานคลินิก' : 'แตะการ์ดเพื่อพลิกดูเฉลย'}
-                                                </span>
-                                                <p className="font-display font-bold text-base sm:text-lg text-primary-adaptive whitespace-pre-line leading-relaxed">
-                                                    {fcFlipped ? card.back : card.front}
-                                                </p>
+                                            <button type="button" onClick={() => setFcFlipped(v => !v)} className="w-full min-h-[220px] spatial-soft rounded-[1.5rem] p-6 flex flex-col items-center justify-center gap-3">
+                                                <span className="px-2.5 py-0.5 rounded-full bg-aurora-500/20 text-accent-adaptive font-mono text-[10px] font-bold">{fcFlipped ? 'เฉลยมาตรฐานคลินิก' : 'แตะการ์ดเพื่อพลิกดูเฉลย'}</span>
+                                                <p className="font-display font-bold text-base sm:text-lg text-primary-adaptive whitespace-pre-line leading-relaxed">{fcFlipped ? card.back : card.front}</p>
                                             </button>
                                             <div className="grid grid-cols-3 gap-2">
                                                 <button type="button" onClick={() => { setFcFlipped(false); setFcIdx(i => (i - 1 + sortedFlashcards.length) % sortedFlashcards.length); }} className="touch-target spatial-soft rounded-xl text-xs font-bold text-primary-adaptive">← ก่อนหน้า</button>
@@ -2547,9 +2299,7 @@
                                                 <span className="font-mono text-[10px] font-bold text-rose-400 uppercase">LIVE BROADCAST • {liveConfig.status}</span>
                                                 <h2 className="font-display font-extrabold text-lg text-primary-adaptive">{liveConfig.topic}</h2>
                                             </div>
-                                            {liveConfig.documentUrl && (
-                                                <a href={liveConfig.documentUrl} target="_blank" rel="noreferrer" className="spatial-soft px-3.5 py-2 rounded-xl text-xs font-bold text-accent-adaptive">ดาวน์โหลดเอกสาร Live</a>
-                                            )}
+                                            {liveConfig.documentUrl && <a href={liveConfig.documentUrl} target="_blank" rel="noreferrer" className="spatial-soft px-3.5 py-2 rounded-xl text-xs font-bold text-accent-adaptive">ดาวน์โหลดเอกสาร Live</a>}
                                         </div>
                                         <div className="aspect-video w-full rounded-2xl overflow-hidden bg-void-950 border border-white/10 flex items-center justify-center">
                                             {liveConfig.url ? (
@@ -2561,43 +2311,96 @@
                                     </div>
                                 )}
 
-                                {/* TAB 5: PROFILE + CLINICAL BADGES + POCKET PHRASEBOOK + 30S WARM-UP + PDPA */}
+                                {/* TAB 5: PROFILE (ชื่อสถานะภาษาไทยไร้สัญลักษณ์ + ระบุชื่อกิจกรรม + PDPA Self-Service) */}
                                 {activeTab === 'profile' && (
                                     <div className="space-y-5">
                                         <section className="spatial-card rounded-[1.75rem] p-5 space-y-4">
                                             <div className="flex flex-wrap items-start justify-between gap-3">
-                                                <div>
-                                                    <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">LEARNER PORTFOLIO • {user.license}</span>
-                                                    <h2 className="font-display text-xl font-extrabold text-primary-adaptive">{user.name}</h2>
-                                                    <p className="text-xs text-secondary-adaptive">{user.position} • {user.hospital} ({user.department})</p>
+                                                <div className="space-y-1">
+                                                    <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">LEARNER PROFILE</span>
+                                                    <h2 className="font-display font-extrabold text-xl text-primary-adaptive">{user.name}</h2>
+                                                    <p className="text-xs text-secondary-adaptive">
+                                                        {user.position || 'บุคลากรทางการแพทย์'} • {user.hospital || '-'} • เลขที่ใบอนุญาต <span className="font-mono text-prism-adaptive">{user.license}</span>
+                                                    </p>
                                                 </div>
-                                                <div className="flex flex-wrap gap-2">
-                                                    <a href="./aiskilllab.html" className="rjc2-pill-btn px-4 py-2 rounded-full font-display font-extrabold text-xs">ฝึก AI Skill Lab 3D →</a>
-                                                    {pwaPrompt && (
-                                                        <button type="button" onClick={handleInstallPwa} className="spatial-soft px-3.5 py-2 rounded-full text-xs font-bold text-accent-adaptive">ติดตั้งแอป (PWA)</button>
-                                                    )}
+                                                <div className="px-3.5 py-2 rounded-2xl bg-aurora-500/15 border border-aurora-400/40 text-right">
+                                                    <span className="block text-[10px] font-mono text-muted-adaptive">สถานะปัจจุบัน</span>
+                                                    <span className="font-display font-extrabold text-sm text-accent-adaptive">{statusInfo.statusLabel}</span>
                                                 </div>
                                             </div>
 
-                                            <div className="space-y-2 pt-2 border-t border-white/10">
-                                                <span className="font-mono text-[10px] font-bold text-amber-400 uppercase block">
-                                                    CLINICAL MASTERY BADGES • เหรียญตราสมรรถนะคลินิก ({clinicalBadges.filter(b => b.earned).length}/{clinicalBadges.length})
-                                                </span>
-                                                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
-                                                    {clinicalBadges.map(b => (
-                                                        <div key={b.id} className={`p-3 rounded-2xl border text-center space-y-1.5 transition-all ${b.earned ? 'bg-aurora-500/15 border-aurora-400/50' : 'spatial-soft opacity-55'}`}>
-                                                            <div className="w-9 h-9 rounded-full mx-auto flex items-center justify-center" style={{ backgroundColor: b.earned ? `${b.color}28` : 'rgba(148,163,184,0.18)', border: `1.5px solid ${b.earned ? b.color : '#64748b'}` }}>
-                                                                <Icon name={b.earned ? 'Award' : 'Lock'} size={16} className={b.earned ? 'text-white' : 'text-muted-adaptive'} />
-                                                            </div>
-                                                            <p className="font-display font-bold text-xs text-primary-adaptive leading-tight">{b.title}</p>
-                                                            <p className="text-[10px] text-muted-adaptive leading-snug">{b.desc}</p>
-                                                        </div>
-                                                    ))}
+                                            {/* กล่องอ้างอิงสถานะชั่วโมงอบรมและชื่อกิจกรรมมาตรฐาน */}
+                                            <div className="spatial-soft rounded-2xl p-4 space-y-1.5 text-xs">
+                                                <div className="flex flex-wrap items-center justify-between gap-2">
+                                                    <span className="text-muted-adaptive">สถานะชั่วโมงการเรียนรู้:</span>
+                                                    <span className="font-display font-bold text-accent-adaptive">{statusInfo.hoursLabel}</span>
+                                                </div>
+                                                {statusInfo.activityName && (
+                                                    <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-white/10">
+                                                        <span className="text-muted-adaptive">กิจกรรมอ้างอิง:</span>
+                                                        <span className="font-semibold text-primary-adaptive text-right">{statusInfo.activityName}</span>
+                                                    </div>
+                                                )}
+                                                {statusInfo.activityMeta && (
+                                                    <div className="flex flex-wrap items-center justify-between gap-2">
+                                                        <span className="text-muted-adaptive">วันที่ / สถานที่จัด:</span>
+                                                        <span className="text-secondary-adaptive text-right">{statusInfo.activityMeta}</span>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center text-xs">
+                                                <div className="spatial-soft p-3 rounded-xl">
+                                                    <span className="text-[10px] text-muted-adaptive block">Pre-test</span>
+                                                    <span className="font-mono font-extrabold text-sm text-primary-adaptive">{user.pretest || '-'}</span>
+                                                </div>
+                                                <div className="spatial-soft p-3 rounded-xl">
+                                                    <span className="text-[10px] text-muted-adaptive block">AI Skill Lab 3D</span>
+                                                    <span className="font-mono font-extrabold text-sm text-prism-adaptive">{user.skillLabBestScore ? `${user.skillLabBestScore}/100` : (isLabDone ? 'ผ่าน' : 'รอฝึก')}</span>
+                                                </div>
+                                                <div className="spatial-soft p-3 rounded-xl">
+                                                    <span className="text-[10px] text-muted-adaptive block">Post-test</span>
+                                                    <span className="font-mono font-extrabold text-sm text-accent-adaptive">{user.posttest || '-'}</span>
+                                                </div>
+                                                <div className="spatial-soft p-3 rounded-xl">
+                                                    <span className="text-[10px] text-muted-adaptive block">ประกาศนียบัตร</span>
+                                                    <span className="font-mono font-extrabold text-xs text-primary-adaptive">{user.certificateCode || 'รอสอบผ่าน'}</span>
                                                 </div>
                                             </div>
                                         </section>
 
-                                        {/* Pocket Phrasebook (Studio AI Voice + Ambient Status) */}
+                                        {/* PDPA Self-Service Data Rights (แก้ไข ดาวน์โหลด ลบ ด้วยตนเอง 100%) */}
+                                        <section className="spatial-card rounded-[1.75rem] p-5 space-y-4 text-xs">
+                                            <div className="flex flex-wrap items-center justify-between gap-3">
+                                                <div>
+                                                    <h3 className="font-display font-bold text-sm text-primary-adaptive">สิทธิ์จัดการข้อมูลส่วนบุคคลด้วยตนเอง (PDPA Self-Service)</h3>
+                                                    <p className="text-muted-adaptive">ผู้เรียนสามารถแก้ไขข้อมูลส่วนตัว ดาวน์โหลดสำเนา หรือลบประวัติผู้เรียนออกถาวรได้ด้วยตนเองทันที</p>
+                                                </div>
+                                                <div className="flex flex-wrap gap-2">
+                                                    <button type="button" onClick={handleStartEditProfile} className="spatial-soft px-3.5 py-2 rounded-xl font-bold text-accent-adaptive">แก้ไขข้อมูลส่วนตัว</button>
+                                                    <button type="button" onClick={handleExportPersonalPdpaJson} className="spatial-soft px-3.5 py-2 rounded-xl font-bold text-prism-adaptive">ดาวน์โหลดข้อมูล (JSON)</button>
+                                                    <button type="button" onClick={handleDeleteAccountPdpa} className="px-3.5 py-2 rounded-xl bg-rose-500/15 border border-rose-400/40 font-bold text-rose-300">ลบข้อมูลของฉัน</button>
+                                                </div>
+                                            </div>
+
+                                            {editingProfile && (
+                                                <form onSubmit={handleSaveProfileEdit} className="pt-3 border-t border-white/10 space-y-3">
+                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                                        <input required value={profileDraft.name} onChange={e => setProfileDraft(p => ({ ...p, name: e.target.value }))} placeholder="คำนำหน้า ชื่อ–นามสกุล *" className="touch-target spatial-input px-3.5 py-2 rounded-xl text-sm" />
+                                                        <input type="email" value={profileDraft.email} onChange={e => setProfileDraft(p => ({ ...p, email: e.target.value }))} placeholder="อีเมลสำหรับรับ OTP" className="touch-target spatial-input px-3.5 py-2 rounded-xl text-sm" />
+                                                        <input value={profileDraft.phone} onChange={e => setProfileDraft(p => ({ ...p, phone: e.target.value }))} placeholder="เบอร์โทรศัพท์" className="touch-target spatial-input px-3.5 py-2 rounded-xl text-sm" />
+                                                        <input value={profileDraft.position} onChange={e => setProfileDraft(p => ({ ...p, position: e.target.value }))} placeholder="ตำแหน่ง" className="touch-target spatial-input px-3.5 py-2 rounded-xl text-sm" />
+                                                        <input value={profileDraft.hospital} onChange={e => setProfileDraft(p => ({ ...p, hospital: e.target.value }))} placeholder="โรงพยาบาล / หน่วยงาน" className="touch-target spatial-input sm:col-span-2 px-3.5 py-2 rounded-xl text-sm" />
+                                                    </div>
+                                                    <div className="flex justify-end gap-2">
+                                                        <button type="button" onClick={() => setEditingProfile(false)} className="spatial-soft px-4 py-2 rounded-xl font-bold text-secondary-adaptive">ยกเลิก</button>
+                                                        <button type="submit" className="rjc2-pill-btn px-5 py-2 rounded-xl font-display font-extrabold text-xs">บันทึกการแก้ไข</button>
+                                                    </div>
+                                                </form>
+                                            )}
+                                        </section>
+
+                                        {/* Pocket Phrasebook */}
                                         <section className={`spatial-card rounded-[1.75rem] overflow-hidden transition-all ${ttsState.activeKey.startsWith('pb_') && ttsState.status !== 'idle' ? 'rjc-ambient-card-active' : ''}`}>
                                             {ttsState.activeKey.startsWith('pb_') && ttsState.status !== 'idle' && <div className="rjc-ambient-bar" />}
                                             <div className="p-5 space-y-3.5">
@@ -2608,20 +2411,10 @@
                                                     </div>
                                                     <div className="flex gap-1 overflow-x-auto">
                                                         {['ALL', 'เปิดบทสนทนา', 'สมองตาย vs เครื่องช่วยหายใจ', 'ความเชื่อ & เกียรติร่าง', 'ความโปร่งใส ODC & ค่าใช้จ่าย'].map(cat => (
-                                                            <button key={cat} type="button" onClick={() => setPhraseFilter(cat)} className={`px-2.5 py-1 rounded-full text-[10px] font-bold shrink-0 ${phraseFilter === cat ? 'bg-prism-400 text-void-950' : 'spatial-soft text-secondary-adaptive'}`}>
-                                                                {cat === 'ALL' ? 'ทั้งหมด' : cat}
-                                                            </button>
+                                                            <button key={cat} type="button" onClick={() => setPhraseFilter(cat)} className={`px-2.5 py-1 rounded-full text-[10px] font-bold shrink-0 ${phraseFilter === cat ? 'bg-prism-400 text-void-950' : 'spatial-soft text-secondary-adaptive'}`}>{cat === 'ALL' ? 'ทั้งหมด' : cat}</button>
                                                         ))}
                                                     </div>
                                                 </div>
-
-                                                {ttsState.activeKey.startsWith('pb_') && ttsState.status !== 'idle' && (
-                                                    <div className="spatial-soft rounded-xl px-3.5 py-2 border-prism-400/40 flex items-center justify-between gap-2 text-xs">
-                                                        <span className="font-bold text-prism-adaptive">{ttsState.note}</span>
-                                                        <button type="button" onClick={stopTts} className="px-2.5 py-1 rounded-lg bg-rose-600 text-white font-bold text-[11px]">หยุดเสียง</button>
-                                                    </div>
-                                                )}
-
                                                 <div className="space-y-2.5">
                                                     {POCKET_PHRASEBOOK.filter(p => phraseFilter === 'ALL' || p.catLabel === phraseFilter).map(p => {
                                                         const isThActive = ttsState.activeKey === `${p.id}_th` && ttsState.status !== 'idle';
@@ -2631,12 +2424,8 @@
                                                                 <div className="flex flex-wrap items-center justify-between gap-2">
                                                                     <span className="font-display font-bold text-prism-adaptive">{p.catLabel} — <span className="text-muted-adaptive font-normal">{p.situation}</span></span>
                                                                     <div className="flex gap-1.5">
-                                                                        <button type="button" onClick={() => playNaturalTts(`${p.id}_th`, p.textTH, 'th')} className={`px-2.5 py-1 rounded-lg font-bold text-[11px] ${isThActive ? 'bg-rose-500 text-white' : 'bg-aurora-500/20 text-accent-adaptive'}`}>
-                                                                            {isThActive ? (ttsState.status === 'loading' ? '⏳ รอ AI...' : '⏹ หยุด') : '🔊 ไทย'}
-                                                                        </button>
-                                                                        <button type="button" onClick={() => playNaturalTts(`${p.id}_en`, p.textEN, 'en')} className={`px-2.5 py-1 rounded-lg font-bold text-[11px] ${isEnActive ? 'bg-rose-500 text-white' : 'bg-prism-500/20 text-prism-adaptive'}`}>
-                                                                            {isEnActive ? (ttsState.status === 'loading' ? '⏳ Waiting...' : '⏹ Stop') : '🔊 EN'}
-                                                                        </button>
+                                                                        <button type="button" onClick={() => playNaturalTts(`${p.id}_th`, p.textTH, 'th')} className={`px-2.5 py-1 rounded-lg font-bold text-[11px] ${isThActive ? 'bg-rose-500 text-white' : 'bg-aurora-500/20 text-accent-adaptive'}`}>{isThActive ? (ttsState.status === 'loading' ? 'รอ AI...' : 'หยุด') : 'ฟังไทย'}</button>
+                                                                        <button type="button" onClick={() => playNaturalTts(`${p.id}_en`, p.textEN, 'en')} className={`px-2.5 py-1 rounded-lg font-bold text-[11px] ${isEnActive ? 'bg-rose-500 text-white' : 'bg-prism-500/20 text-prism-adaptive'}`}>{isEnActive ? (ttsState.status === 'loading' ? 'Waiting...' : 'Stop') : 'Listen EN'}</button>
                                                                     </div>
                                                                 </div>
                                                                 <p className="text-primary-adaptive leading-relaxed">“{p.textTH}”</p>
@@ -2648,7 +2437,7 @@
                                             </div>
                                         </section>
 
-                                        {/* Zero-PII 30-Second Pre-Approach Warm-up */}
+                                        {/* Zero-PII 30-Second Warm-up */}
                                         <section className="spatial-card rounded-[1.75rem] p-5 space-y-3 text-xs">
                                             <span className="font-mono text-[10px] font-bold text-amber-400 uppercase">30-SECOND PRE-APPROACH WARM-UP (ZERO-PII • PDPA SAFE)</span>
                                             <h3 className="font-display font-extrabold text-base text-primary-adaptive">โหมดอุ่นเครื่อง 30 วิก่อนพบญาติจริง (ไม่กรอกข้อมูลผู้ป่วย)</h3>
@@ -2662,23 +2451,10 @@
                                                 <b>แนวทางเปิดบทสนทนา 30 วิ ({warmupTags.age} • {warmupTags.mood}):</b> เริ่มในห้องส่วนตัวด้วยน้ำเสียงนุ่มนวล รับฟังความเสียใจและเว้นความเงียบ 2.5 วินาที ก่อนคลายข้อกังวลเรื่อง <b>“{warmupTags.concern}”</b> โดยไม่เร่งรัดการตัดสินใจค่ะ
                                             </div>
                                         </section>
-
-                                        {/* PDPA Data Rights */}
-                                        <section className="spatial-card rounded-[1.75rem] p-5 flex flex-wrap items-center justify-between gap-3 text-xs">
-                                            <div>
-                                                <h3 className="font-display font-bold text-sm text-primary-adaptive">สิทธิ์จัดการข้อมูลส่วนบุคคล (PDPA)</h3>
-                                                <p className="text-muted-adaptive">สามารถขอรับสำเนาข้อมูลหรือขอลบประวัติผู้เรียนออกถาวรได้ทันที</p>
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <button type="button" onClick={handleExportPersonalPdpaJson} className="spatial-soft px-3.5 py-2 rounded-xl font-bold text-prism-adaptive">ดาวน์โหลดข้อมูล (JSON)</button>
-                                                <button type="button" onClick={handleDeleteAccountPdpa} className="px-3.5 py-2 rounded-xl bg-rose-500/15 border border-rose-400/40 font-bold text-rose-300">ลบข้อมูลของฉัน</button>
-                                            </div>
-                                        </section>
                                     </div>
                                 )}
                             </main>
 
-                            {/* Mobile Bottom Dock */}
                             <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 spatial-dock px-2 pt-1.5 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))]">
                                 <div className="grid grid-cols-5 gap-1 max-w-lg mx-auto">
                                     {[
@@ -2689,8 +2465,7 @@
                                         { id: 'profile', label: 'โปรไฟล์', icon: 'User' }
                                     ].map(t => (
                                         <button key={t.id} type="button" onClick={() => setActiveTab(t.id)} className={`touch-target flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-xl text-[10px] font-bold ${activeTab === t.id ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950' : 'text-secondary-adaptive'}`}>
-                                            <Icon name={t.icon} size={17} />
-                                            <span>{t.label}</span>
+                                            <Icon name={t.icon} size={17} /><span>{t.label}</span>
                                         </button>
                                     ))}
                                 </div>
@@ -2698,7 +2473,7 @@
                         </div>
                     )}
 
-                    {/* ==================== SCREEN: STEP 5 CERTIFICATE CONFIRM + CSAT + SUS (R2R) ==================== */}
+                    {/* ==================== SCREEN: STEP 5 CERTIFICATE CONFIRM + CSAT + SUS ==================== */}
                     {screen === 'cert_confirm' && user && (
                         <div className="relative z-10 max-w-2xl w-full mx-auto px-4 py-7">
                             <form onSubmit={handleConfirmAndIssueCert} className="spatial-card rounded-[2rem] p-5 sm:p-7 space-y-5">
@@ -2706,12 +2481,10 @@
                                     <button type="button" onClick={() => setScreen('dashboard')} className="spatial-soft px-3 py-2 rounded-xl text-xs font-bold text-primary-adaptive">← กลับห้องเรียน</button>
                                     <span className="font-mono text-[10px] font-bold text-accent-adaptive">STEP 05 • CNEU &amp; R2R EVALUATION</span>
                                 </div>
-
                                 <div>
                                     <h1 className="font-display text-xl font-extrabold text-primary-adaptive">ยืนยันชื่อประกาศนียบัตร &amp; แบบประเมินหลักสูตร</h1>
-                                    <p className="text-xs text-secondary-adaptive mt-0.5">ตรวจสอบตัวสะกดให้ถูกต้องก่อนออกใบประกาศนียบัตรพร้อม QR Code รับรอง</p>
+                                    <p className="text-xs text-secondary-adaptive mt-0.5">ประกาศนียบัตรและหนังสือรับรองมีมาตรฐานและเกียรติเท่าเทียมกันทุกประเภท</p>
                                 </div>
-
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <input required value={certNameTH} onChange={e => setCertNameTH(e.target.value)} placeholder="ชื่อ–นามสกุล (ภาษาไทย) *" className="touch-target spatial-input px-3.5 py-2.5 rounded-xl text-sm font-bold" />
                                     <input value={certNameEN} onChange={e => setCertNameEN(e.target.value)} placeholder="Full Name in English (ไม่บังคับ)" className="touch-target spatial-input px-3.5 py-2.5 rounded-xl text-sm" />
@@ -2719,18 +2492,13 @@
                                 </div>
 
                                 <div className="spatial-soft rounded-2xl p-4 space-y-3">
-                                    <p className="font-mono text-[10px] font-bold text-amber-400 uppercase">แบบประเมินความพึงพอใจ 5 ด้าน (มาตรฐาน CNEU • 1–5 ดาว)</p>
+                                    <p className="font-mono text-[10px] font-bold text-amber-400 uppercase">แบบประเมินความพึงพอใจ 5 ด้าน (มาตรฐาน CNEU • 1–5)</p>
                                     {CNEU_EVAL_CRITERIA.map(c => (
                                         <div key={c.key} className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 text-xs">
-                                            <div>
-                                                <p className="font-bold text-primary-adaptive">{c.title}</p>
-                                                <p className="text-[11px] text-muted-adaptive">{c.desc}</p>
-                                            </div>
+                                            <div><p className="font-bold text-primary-adaptive">{c.title}</p><p className="text-[11px] text-muted-adaptive">{c.desc}</p></div>
                                             <div className="flex gap-1 shrink-0">
                                                 {[1, 2, 3, 4, 5].map(n => (
-                                                    <button key={n} type="button" onClick={() => setCsatScores(p => ({ ...p, [c.key]: n }))} className={`w-8 h-8 rounded-lg font-mono text-xs font-bold ${csatScores[c.key] === n ? 'bg-amber-400 text-void-950 font-extrabold' : 'spatial-soft text-secondary-adaptive'}`}>
-                                                        {n}
-                                                    </button>
+                                                    <button key={n} type="button" onClick={() => setCsatScores(p => ({ ...p, [c.key]: n }))} className={`w-8 h-8 rounded-lg font-mono text-xs font-bold ${csatScores[c.key] === n ? 'bg-amber-400 text-void-950 font-extrabold' : 'spatial-soft text-secondary-adaptive'}`}>{n}</button>
                                                 ))}
                                             </div>
                                         </div>
@@ -2748,9 +2516,7 @@
                                             <span className="text-secondary-adaptive leading-snug">{item.title}</span>
                                             <div className="flex gap-1 shrink-0">
                                                 {[1, 2, 3, 4, 5].map(n => (
-                                                    <button key={n} type="button" onClick={() => setSusAnswers(p => ({ ...p, [item.key]: n }))} className={`w-8 h-8 rounded-lg font-mono text-xs font-bold ${susAnswers[item.key] === n ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'spatial-soft text-secondary-adaptive'}`}>
-                                                        {n}
-                                                    </button>
+                                                    <button key={n} type="button" onClick={() => setSusAnswers(p => ({ ...p, [item.key]: n }))} className={`w-8 h-8 rounded-lg font-mono text-xs font-bold ${susAnswers[item.key] === n ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'spatial-soft text-secondary-adaptive'}`}>{n}</button>
                                                 ))}
                                             </div>
                                         </div>
@@ -2764,7 +2530,7 @@
                         </div>
                     )}
 
-                    {/* ==================== SCREEN: STEP 5 CERTIFICATE VIEW & EXPORT ==================== */}
+                    {/* ==================== SCREEN: STEP 5 CERTIFICATE VIEW & CNEU LETTER (สิทธิ์เท่ากันทุกประเภท) ==================== */}
                     {screen === 'certificate' && user && (
                         <div className="relative z-10 max-w-4xl w-full mx-auto px-4 py-6 space-y-5">
                             <div className="flex flex-wrap items-center justify-between gap-2">
@@ -2792,7 +2558,7 @@
                                     <h2 className="font-display font-extrabold text-xl text-center">หนังสือรับรองการผ่านการอบรมและหน่วยคะแนน CNEU</h2>
                                     <p className="text-center font-semibold">{cneuConfig.orgName}</p>
                                     <p className="leading-relaxed">
-                                        ขอรับรองว่า <b>{user.name}</b> เลขที่ใบอนุญาตประกอบวิชาชีพ <b>{user.license}</b> สังกัด <b>{user.hospital}</b> ได้ผ่านการอบรมหลักสูตร <b>{cneuConfig.courseName}</b> รหัสกิจกรรม <b>{cneuConfig.activityCode}</b> จำนวน <b>{cneuConfig.cneuCredits} หน่วยคะแนน</b> ผ่านเกณฑ์เวลาเรียนสะสม, AI Skill Lab 3 มิติ และแบบทดสอบหลังเรียน ({user.posttest}) ณ วันที่ {formatThaiDateSafe(user.certificateIssuedAt)}
+                                        ขอรับรองว่า <b>{user.name}</b> เลขที่ใบอนุญาตประกอบวิชาชีพ <b>{user.license}</b> สังกัด <b>{user.hospital}</b> ได้ผ่านการอบรมหลักสูตร <b>{cneuConfig.courseName}</b> รหัสกิจกรรม <b>{cneuConfig.activityCode}</b> จำนวน <b>{cneuConfig.cneuCredits} หน่วยคะแนน</b> ผ่านเกณฑ์มาตรฐานหลักสูตรครบทุกขั้นตอน (คะแนนหลังเรียน {user.posttest}) ณ วันที่ {formatThaiDateSafe(user.certificateIssuedAt)}
                                     </p>
                                     <div className="pt-8 text-right">
                                         <p className="font-bold">({cneuConfig.approverName})</p>
