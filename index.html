@@ -247,27 +247,25 @@
         background: linear-gradient(
           180deg,
           #01030a 0%,
-          #030816 17%,
-          #06142d 35%,
-          #0c264e 53%,
-          #164478 70%,
-          #3470a8 84%,
-          #8abce0 94%,
-          #c4e1f5 100%
+          #030816 18%,
+          #06142d 38%,
+          #0b244a 58%,
+          #12386b 78%,
+          #0e2d59 91%,
+          #0a2042 100%
         );
       }
       .hero-vignette {
         background:
-          radial-gradient(ellipse 72% 64% at 50% 40%, rgba(0, 0, 0, 0) 36%, rgba(1, 4, 14, 0.68) 100%),
-          linear-gradient(180deg, rgba(1, 3, 10, 0.56) 0%, rgba(1, 3, 10, 0) 22%, rgba(1, 3, 10, 0) 84%, rgba(182, 222, 248, 0.30) 100%);
+          radial-gradient(ellipse 74% 64% at 46% 38%, rgba(0, 0, 0, 0) 38%, rgba(1, 4, 14, 0.62) 100%),
+          linear-gradient(180deg, rgba(1, 3, 10, 0.48) 0%, rgba(1, 3, 10, 0) 20%, rgba(1, 3, 10, 0) 82%, rgba(6, 18, 42, 0.52) 100%);
       }
       .lower-landing-bg {
         background: linear-gradient(
           180deg,
-          #c4e1f5 0%,
-          #88b9e3 10%,
-          #153d78 36%,
-          #061430 68%,
+          #0a2042 0%,
+          #081b3b 22%,
+          #05122b 58%,
           #020612 100%
         );
       }
@@ -323,10 +321,15 @@
         letter-spacing: 0.015em;
         text-shadow: 0 0 10px rgba(254, 249, 195, 0.82), 0 0 24px rgba(253, 224, 71, 0.4), 0 0 42px rgba(250, 204, 21, 0.22);
       }
+      /* ข้อความ RAJAVITHI HOSPITAL & COE คมชัด เด่นตา เงาบางเบาเป็นธรรมชาติ */
       .rajavithi-watermark {
-        color: rgba(28, 54, 94, 0.92);
-        letter-spacing: 0.06em;
-        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.65);
+        color: rgba(244, 250, 255, 0.97);
+        letter-spacing: 0.065em;
+        text-shadow: 0 1px 5px rgba(2, 8, 24, 0.34);
+      }
+      .rajavithi-submark {
+        color: rgba(206, 232, 255, 0.92);
+        text-shadow: 0 1px 4px rgba(2, 8, 24, 0.28);
       }
 
       /* ============================================================================
@@ -809,7 +812,7 @@
         }
 
         // ============================================================================
-        // 2. SHARED UI PRIMITIVES (ERROR BOUNDARY, ICONS, TOAST & PWA INSTALL MODAL)
+        // 2. SHARED UI PRIMITIVES
         // ============================================================================
         class AppErrorBoundary extends React.Component {
             constructor(props) { super(props); this.state = { hasError: false, err: null }; }
@@ -882,8 +885,8 @@
         }
 
         function InstallAppModal({ open, onClose }) {
+            const isIos = useMemo(() => /iPad|iPhone|iPod/i.test(navigator.userAgent || ''), []);
             if (!open) return null;
-            const isIos = /iPad|iPhone|iPod/i.test(navigator.userAgent || '');
             return (
                 <div className="no-print-letter fixed inset-0 z-[175] bg-slate-950/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
                     <div className="spatial-card w-full sm:max-w-md rounded-t-[2rem] sm:rounded-[2rem] p-6 space-y-4 border-aurora-400/45 text-left">
@@ -919,9 +922,9 @@
 
         // ============================================================================
         // 3. XIANXIA BLOCKBUSTER PEACH BLOSSOM HERO SCREEN
-        //    1. ต้นดอกท้อโบราณพุ่มใหญ่แผ่กว้าง (12 กิ่ง) + ช่อดอกท้อ 5 กลีบเรียงชั้น 185+ ช่อ บานไล่ตามแสงแอมเบียนจนเต็มพุ่ม
-        //    2. แยกเลเยอร์ Z-Index ชัดเจน: กิ่งไม้ (z-15) < ดอกท้อ+แสงปราณ+กลีบร่วง (z-18) < กรอบกระจก (z-25) ไม่บังข้อความ 100%
-        //    3. ฉากหลังภาพยนตร์จีนฟอร์มยักษ์: ทิวเขาหินแหลม 4 ระยะซ้อนหมอกเย็นฟุ้ง 4-Octave fBm + จันทราหยกทอง + ลำแสงสวรรค์สาดส่อง
+        //    - ต้นดอกท้อโบราณ 12 กิ่งแผ่กว้างพุ่มใหญ่เต็มต้น + แสงแอมเบียนปลุกดอกท้อบานไล่ตามกิ่ง
+        //    - จันทราหยกทองเอียงซ้ายเหนือเรือนยอด + ลำแสงสวรรค์สาดทแยง
+        //    - ทิวเขา 4 ระยะสลับร่างเป็น AI Hologram อัลต้าสมูท + ทะเลหมอกเย็นฟุ้ง 4-Octave fBm
         // ============================================================================
         function LandingHeroScreen({ onStartAuth, hasSavedSession, onResumeDashboard, showInstallBtn, onInstallApp }) {
             const heroStageRef = useRef(null);
@@ -938,16 +941,16 @@
             const mFitLine1Ref = useRef(null);
             const mFitLine2Ref = useRef(null);
 
-            // ใบท้อสีหยกอ่อน 16 ใบแซมเฉพาะบนเรือนยอดกิ่งด้านบน (อยู่สูงกว่ากรอบกระจกทั้งหมด)
+            // ใบท้อสีหยก 16 ใบแซมบนเรือนยอด 12 กิ่ง (viewBox 0 0 640 420 • อยู่เหนือกรอบกระจกทั้งหมด)
             const jadeLeaves = useMemo(() => ([
-                { cx: 112, cy: 214, rx: 11, ry: 4.5, rot: -24 }, { cx: 168, cy: 196, rx: 10, ry: 4.2, rot: -14 },
-                { cx: 92,  cy: 162, rx: 11, ry: 4.5, rot: 14 },  { cx: 152, cy: 156, rx: 10, ry: 4.0, rot: 22 },
-                { cx: 146, cy: 112, rx: 10, ry: 4.2, rot: 34 },  { cx: 212, cy: 84,  rx: 9.5, ry: 4.0, rot: 52 },
-                { cx: 266, cy: 62,  rx: 9,  ry: 3.8, rot: 68 },  { cx: 236, cy: 142, rx: 9.5, ry: 4.0, rot: 28 },
-                { cx: 404, cy: 142, rx: 9.5, ry: 4.0, rot: -28 }, { cx: 374, cy: 62,  rx: 9,  ry: 3.8, rot: -68 },
-                { cx: 428, cy: 84,  rx: 9.5, ry: 4.0, rot: -52 }, { cx: 494, cy: 112, rx: 10, ry: 4.2, rot: -34 },
-                { cx: 488, cy: 156, rx: 10, ry: 4.0, rot: -22 }, { cx: 548, cy: 162, rx: 11, ry: 4.5, rot: -14 },
-                { cx: 472, cy: 196, rx: 10, ry: 4.2, rot: 14 },  { cx: 528, cy: 214, rx: 11, ry: 4.5, rot: 24 }
+                { cx: 112, cy: 220, rx: 11, ry: 4.5, rot: -22 }, { cx: 184, cy: 212, rx: 10, ry: 4.0, rot: -10 },
+                { cx: 92,  cy: 176, rx: 11, ry: 4.4, rot: 12 },  { cx: 168, cy: 172, rx: 10, ry: 4.0, rot: 18 },
+                { cx: 140, cy: 132, rx: 10, ry: 4.2, rot: 28 },  { cx: 212, cy: 118, rx: 9.5, ry: 4.0, rot: 36 },
+                { cx: 188, cy: 84,  rx: 9.5, ry: 4.0, rot: 46 }, { cx: 254, cy: 64,  rx: 9.0, ry: 3.8, rot: 58 },
+                { cx: 528, cy: 220, rx: 11, ry: 4.5, rot: 22 },  { cx: 456, cy: 212, rx: 10, ry: 4.0, rot: 10 },
+                { cx: 548, cy: 176, rx: 11, ry: 4.4, rot: -12 }, { cx: 472, cy: 172, rx: 10, ry: 4.0, rot: -18 },
+                { cx: 500, cy: 132, rx: 10, ry: 4.2, rot: -28 }, { cx: 428, cy: 118, rx: 9.5, ry: 4.0, rot: -36 },
+                { cx: 452, cy: 84,  rx: 9.5, ry: 4.0, rot: -46 }, { cx: 386, cy: 64,  rx: 9.0, ry: 3.8, rot: -58 }
             ]), []);
 
             useEffect(() => {
@@ -962,8 +965,8 @@
                 const flare = {
                     targetMouseX: 0, targetMouseY: 0, mouseX: 0, mouseY: 0,
                     w: 0, h: 0, lastFitW: 0, inView: true,
-                    moonX: window.innerWidth * 0.5, moonY: window.innerHeight * 0.26,
-                    treeLeft: 0, treeTop: 0, treeW: 480, treeH: 315
+                    moonX: window.innerWidth * 0.22, moonY: window.innerHeight * 0.16,
+                    treeLeft: 0, treeTop: 0, treeW: 420, treeH: 310
                 };
 
                 // =========================================================================
@@ -1107,19 +1110,17 @@
                     })
                 };
 
-                // อบทิวเขาหินแหลมแดนเซียน 4 ระยะ (Shan-Shui Karst Peaks) พร้อมสันเขารับแสงจันทราหยกทอง
+                // อบทิวเขาหินแหลมแดนเซียน 4 ระยะ (Shan-Shui Ink-Wash + AI Hologram Wireframe ตรงพิกัดทุกพิกเซล)
                 let mountainLayers = [];
                 const bakeMountainLayer = (w, h, cfg) => {
-                    const off = document.createElement('canvas');
-                    off.width = Math.max(2, Math.round(w));
-                    off.height = Math.max(2, Math.round(h));
-                    const c = off.getContext('2d');
-                    const steps = Math.max(90, Math.round(w / 7));
+                    const rw = Math.max(2, Math.round(w));
+                    const rh = Math.max(2, Math.round(h));
+                    const steps = Math.max(96, Math.round(w / 7));
                     const ridgePts = [];
 
                     for (let i = 0; i <= steps; i++) {
                         const u = i / steps;
-                        // เว้นหุบเขาตรงกลางให้ดวงจันทราและต้นดอกท้อโดดเด่น พร้อมยอดเขาสูงชันซ้าย–ขวาแบบภาพยนตร์จีน
+                        // เว้นหุบเขาตรงกลางให้ต้นดอกท้อโดดเด่น พร้อมยอดเขาสูงชันซ้าย–ขวาแบบภาพยนตร์จีน
                         const valleyDip = 1 - cfg.valleyDepth * Math.exp(-Math.pow((u - 0.5) / cfg.valleyWidth, 2));
                         let spire = 0;
                         for (let s = 0; s < cfg.spires.length; s++) {
@@ -1129,35 +1130,39 @@
                         }
                         const crag = ridged1D(u * cfg.freq, cfg.seed) * cfg.roughness;
                         const normElev = Math.max(0.02, (cfg.baseElev + spire + crag) * valleyDip);
-                        const py = h * (cfg.horizonY - normElev);
-                        ridgePts.push({ x: u * w, y: py });
+                        const py = rh * (cfg.horizonY - normElev);
+                        ridgePts.push({ x: u * rw, y: py });
                     }
 
-                    // 1) ตัวภูเขาไล่เฉดเงาหมึกจีนลึกสู่หมอกเย็นที่ฐานเขา
-                    const bodyGrad = c.createLinearGradient(0, h * (cfg.horizonY - cfg.maxElev), 0, h);
+                    // --- A) ภูเขาหมึกจีนเดิม (Normal Xianxia Ink-Wash Mountain) ---
+                    const normalOff = document.createElement('canvas');
+                    normalOff.width = rw;
+                    normalOff.height = rh;
+                    const c = normalOff.getContext('2d');
+
+                    const bodyGrad = c.createLinearGradient(0, rh * (cfg.horizonY - cfg.maxElev), 0, rh);
                     bodyGrad.addColorStop(0, cfg.topCol);
-                    bodyGrad.addColorStop(0.54, cfg.midCol);
-                    bodyGrad.addColorStop(0.86, cfg.fogCol);
-                    bodyGrad.addColorStop(1, 'rgba(138, 188, 224, 0)');
+                    bodyGrad.addColorStop(0.56, cfg.midCol);
+                    bodyGrad.addColorStop(0.88, cfg.fogCol);
+                    bodyGrad.addColorStop(1, 'rgba(10, 32, 66, 0)');
 
                     c.beginPath();
-                    c.moveTo(0, h);
+                    c.moveTo(0, rh);
                     for (let i = 0; i < ridgePts.length; i++) c.lineTo(ridgePts[i].x, ridgePts[i].y);
-                    c.lineTo(w, h);
+                    c.lineTo(rw, rh);
                     c.closePath();
                     c.fillStyle = bodyGrad;
                     c.fill();
 
-                    // 2) สันเขารองรับแสงจันทราหยกทอง (Rim Light จับเฉพาะสันเขาด้านที่หันรับดวงจันทร์กลางฟ้า)
+                    // สันเขารองรับแสงจันทราหยกทองด้านบนซ้าย (Moonlight Rim Light)
                     c.save();
                     c.clip();
                     for (let i = 1; i < ridgePts.length - 1; i++) {
                         const p0 = ridgePts[i - 1], p1 = ridgePts[i], p2 = ridgePts[i + 1];
                         const slope = (p2.y - p0.y) / Math.max(1, p2.x - p0.x);
-                        // ฝั่งซ้ายสันลาดลงขวาหันรับดวงจันทร์, ฝั่งขวาสันลาดขึ้นขวาหันรับดวงจันทร์
-                        const facesMoon = (p1.x < w * 0.5 && slope > 0.06) || (p1.x >= w * 0.5 && slope < -0.06);
+                        const facesMoon = slope < -0.045 || (p1.x < rw * 0.32 && slope > 0.05);
                         if (facesMoon && cfg.rimAlpha > 0) {
-                            const g = c.createLinearGradient(p1.x, p1.y, p1.x + (p1.x < w * 0.5 ? 28 : -28), p1.y + 42);
+                            const g = c.createLinearGradient(p1.x, p1.y, p1.x + 26, p1.y + 42);
                             g.addColorStop(0, `rgba(${cfg.rimRGB}, ${cfg.rimAlpha})`);
                             g.addColorStop(1, `rgba(${cfg.rimRGB}, 0)`);
                             c.strokeStyle = g;
@@ -1171,9 +1176,8 @@
                     }
                     c.restore();
 
-                    // 3) เส้นออร่าขอบสันเขาบางเบาเสริมความคมลึกยามค่ำคืน
                     c.strokeStyle = `rgba(${cfg.rimRGB}, ${(cfg.rimAlpha * 0.42).toFixed(3)})`;
-                    c.lineWidth = 1.15;
+                    c.lineWidth = 1.1;
                     c.beginPath();
                     for (let i = 0; i < ridgePts.length; i++) {
                         if (i === 0) c.moveTo(ridgePts[i].x, ridgePts[i].y);
@@ -1181,7 +1185,117 @@
                     }
                     c.stroke();
 
-                    return off;
+                    // --- B) ภูเขา AI Hologram (Topographic Contour + Wireframe Mesh + Data Nodes) ---
+                    const holoOff = document.createElement('canvas');
+                    holoOff.width = rw;
+                    holoOff.height = rh;
+                    const hc = holoOff.getContext('2d');
+
+                    const drawMountainPath = (ctx2) => {
+                        ctx2.beginPath();
+                        ctx2.moveTo(0, rh);
+                        for (let i = 0; i < ridgePts.length; i++) ctx2.lineTo(ridgePts[i].x, ridgePts[i].y);
+                        ctx2.lineTo(rw, rh);
+                        ctx2.closePath();
+                    };
+
+                    // 1) มวลแสงโฮโลแกรมไซแอน–หยกโปร่งแสงภายในภูเขา
+                    const holoFill = hc.createLinearGradient(0, rh * (cfg.horizonY - cfg.maxElev), 0, rh);
+                    holoFill.addColorStop(0, 'rgba(56, 189, 248, 0.28)');
+                    holoFill.addColorStop(0.38, 'rgba(45, 212, 191, 0.14)');
+                    holoFill.addColorStop(0.76, 'rgba(56, 189, 248, 0.05)');
+                    holoFill.addColorStop(1, 'rgba(14, 165, 233, 0)');
+                    drawMountainPath(hc);
+                    hc.fillStyle = holoFill;
+                    hc.fill();
+
+                    // 2) โครงข่าย AI Topographic Contour Lines & Triangulated Wireframe ภายในภูเขา
+                    hc.save();
+                    drawMountainPath(hc);
+                    hc.clip();
+
+                    const contourCount = 7;
+                    for (let lv = 1; lv <= contourCount; lv++) {
+                        const frac = lv / contourCount;
+                        const dropY = frac * rh * 0.24;
+                        const alpha = (1 - frac * 0.72) * 0.34;
+                        hc.strokeStyle = lv % 2 === 0
+                            ? `rgba(110, 231, 183, ${alpha.toFixed(3)})`
+                            : `rgba(56, 189, 248, ${alpha.toFixed(3)})`;
+                        hc.lineWidth = lv === 1 ? 1.1 : 0.8;
+                        hc.beginPath();
+                        for (let i = 0; i < ridgePts.length; i++) {
+                            const px = ridgePts[i].x;
+                            const py = ridgePts[i].y + dropY + Math.sin(i * 0.25 + lv) * 2.2;
+                            if (i === 0) hc.moveTo(px, py);
+                            else hc.lineTo(px, py);
+                        }
+                        hc.stroke();
+                    }
+
+                    const stride = Math.max(4, Math.round(ridgePts.length / 26));
+                    hc.lineWidth = 0.75;
+                    for (let i = 0; i < ridgePts.length; i += stride) {
+                        const p = ridgePts[i];
+                        const pNext = ridgePts[Math.min(ridgePts.length - 1, i + stride)];
+                        const vGrad = hc.createLinearGradient(p.x, p.y, p.x, p.y + rh * 0.24);
+                        vGrad.addColorStop(0, 'rgba(103, 232, 249, 0.36)');
+                        vGrad.addColorStop(0.55, 'rgba(56, 189, 248, 0.14)');
+                        vGrad.addColorStop(1, 'rgba(56, 189, 248, 0)');
+                        hc.strokeStyle = vGrad;
+                        hc.beginPath();
+                        hc.moveTo(p.x, p.y);
+                        hc.lineTo(p.x, p.y + rh * 0.24);
+                        hc.stroke();
+
+                        hc.strokeStyle = 'rgba(110, 231, 183, 0.14)';
+                        hc.beginPath();
+                        hc.moveTo(p.x, p.y);
+                        hc.lineTo(pNext.x, pNext.y + rh * 0.08);
+                        hc.stroke();
+                    }
+
+                    hc.strokeStyle = 'rgba(186, 230, 253, 0.08)';
+                    hc.lineWidth = 0.7;
+                    for (let sy = Math.round(rh * 0.36); sy < rh; sy += 9) {
+                        hc.beginPath();
+                        hc.moveTo(0, sy);
+                        hc.lineTo(rw, sy);
+                        hc.stroke();
+                    }
+                    hc.restore();
+
+                    // 3) เส้นขอบสันเขาโฮโลแกรมเรืองแสง 2 ชั้น (Soft Outer Aura + Crisp Neon Core)
+                    hc.lineJoin = 'round';
+                    hc.strokeStyle = 'rgba(56, 189, 248, 0.28)';
+                    hc.lineWidth = 5.0;
+                    hc.beginPath();
+                    for (let i = 0; i < ridgePts.length; i++) {
+                        if (i === 0) hc.moveTo(ridgePts[i].x, ridgePts[i].y);
+                        else hc.lineTo(ridgePts[i].x, ridgePts[i].y);
+                    }
+                    hc.stroke();
+
+                    hc.strokeStyle = 'rgba(165, 243, 252, 0.88)';
+                    hc.lineWidth = 1.45;
+                    hc.stroke();
+
+                    // 4) จุดโหนดข้อมูล AI เรืองแสงตามยอดเขาและสันเขาหลัก (AI Terrain Nodes)
+                    for (let i = stride; i < ridgePts.length - stride; i += stride) {
+                        const p = ridgePts[i];
+                        const isPeak = p.y < ridgePts[Math.max(0, i - 2)].y && p.y <= ridgePts[Math.min(ridgePts.length - 1, i + 2)].y;
+                        const nr = isPeak ? 3.2 : 1.9;
+                        const ng = hc.createRadialGradient(p.x, p.y, 0, p.x, p.y, nr * 4.2);
+                        ng.addColorStop(0, isPeak ? 'rgba(236, 253, 245, 0.95)' : 'rgba(186, 230, 253, 0.85)');
+                        ng.addColorStop(0.35, isPeak ? 'rgba(110, 231, 183, 0.55)' : 'rgba(56, 189, 248, 0.42)');
+                        ng.addColorStop(1, 'rgba(56, 189, 248, 0)');
+                        hc.fillStyle = ng;
+                        hc.beginPath();
+                        hc.arc(p.x, p.y, nr * 4.2, 0, Math.PI * 2);
+                        hc.fill();
+                    }
+
+                    return { normal: normalOff, holo: holoOff };
                 };
 
                 const rebuildMountains = (w, h) => {
@@ -1735,8 +1849,14 @@
                                 flare.treeTop = tr.top - heroRect.top;
                                 flare.treeW = tr.width;
                                 flare.treeH = tr.height;
-                                flare.moonX = flare.treeLeft + tr.width * 0.5;
-                                flare.moonY = flare.treeTop + tr.height * (nw < 768 ? 0.30 : 0.29);
+                                // ย้ายดวงจันทราขึ้นไปอยู่เหนือต้นดอกท้อและเอียงไปทางด้านซ้ายอย่างสง่างาม
+                                if (nw < 768) {
+                                    flare.moonX = nw * 0.21;
+                                    flare.moonY = Math.max(58, Math.min(nh * 0.15, flare.treeTop + tr.height * 0.02));
+                                } else {
+                                    flare.moonX = Math.max(nw * 0.14, Math.min(nw * 0.27, flare.treeLeft + tr.width * 0.10));
+                                    flare.moonY = Math.max(72, Math.min(nh * 0.21, flare.treeTop + tr.height * 0.05));
+                                }
                             }
                         }
 
@@ -1805,15 +1925,15 @@
                     flare.mouseY += (flare.targetMouseY - flare.mouseY) * 0.045;
 
                     // =========================================================================
-                    // LAYER 1 (bgCtx): จันทราหยกทอง + ลำแสงสวรรค์ + ทิวเขา 4 ระยะสลับชั้นหมอกเย็นฟุ้ง
+                    // LAYER 1 (bgCtx): จันทราหยกทอง (บนซ้าย) + ทิวเขา 4 ระยะสลับ AI Hologram อัลต้าสมูท + ลำแสงสวรรค์
                     // =========================================================================
                     bgCtx.clearRect(0, 0, w, h);
 
                     const mx = flare.moonX + flare.mouseX * 14;
                     const my = flare.moonY + flare.mouseY * 7;
-                    const moonR = Math.min(w * 0.22, minDim * 0.23, 152);
+                    const moonR = Math.min(w * 0.145, minDim * 0.155, 102);
 
-                    // 1) รัศมีจันทราหยกทองและวงแหวนแสงศักดิ์สิทธิ์
+                    // 1) รัศมีจันทราหยกทองและวงแหวนแสงศักดิ์สิทธิ์ (ตำแหน่งบนซ้ายเหนือต้นดอกท้อ)
                     bgCtx.save();
                     bgCtx.globalCompositeOperation = 'lighter';
                     drawSoftOrb(bgCtx, mx, my, moonR * 3.1, [
@@ -1827,7 +1947,7 @@
 
                     // ตัวดวงจันทราหยกทองมีรายละเอียดพื้นผิว
                     bgCtx.save();
-                    bgCtx.globalAlpha = 0.92;
+                    bgCtx.globalAlpha = 0.94;
                     bgCtx.drawImage(moonSprite, mx - moonR * 1.15, my - moonR * 1.15, moonR * 2.3, moonR * 2.3);
                     bgCtx.restore();
 
@@ -1837,74 +1957,110 @@
                     bgCtx.translate(mx, my);
                     bgCtx.rotate(t * 0.06);
                     bgCtx.strokeStyle = `rgba(254, 240, 178, ${(0.18 * k).toFixed(3)})`;
-                    bgCtx.lineWidth = 1.4;
-                    bgCtx.setLineDash([34, 18, 10, 22]);
-                    bgCtx.beginPath(); bgCtx.arc(0, 0, moonR * 1.16, 0, Math.PI * 2); bgCtx.stroke();
+                    bgCtx.lineWidth = 1.3;
+                    bgCtx.setLineDash([28, 16, 8, 18]);
+                    bgCtx.beginPath(); bgCtx.arc(0, 0, moonR * 1.18, 0, Math.PI * 2); bgCtx.stroke();
                     bgCtx.rotate(-t * 0.11);
                     bgCtx.strokeStyle = `rgba(167, 243, 208, ${(0.12 * k).toFixed(3)})`;
-                    bgCtx.setLineDash([18, 28]);
-                    bgCtx.beginPath(); bgCtx.arc(0, 0, moonR * 1.38, 0, Math.PI * 2); bgCtx.stroke();
+                    bgCtx.setLineDash([14, 24]);
+                    bgCtx.beginPath(); bgCtx.arc(0, 0, moonR * 1.42, 0, Math.PI * 2); bgCtx.stroke();
                     bgCtx.setLineDash([]);
                     bgCtx.restore();
 
-                    // 2) ทิวเขาแดนเซียน 4 ระยะสลับชั้นหมอกเย็นฟุ้ง (Atmospheric Depth Interleaving!)
+                    // 2) ทิวเขาแดนเซียน 4 ระยะสลับร่างเป็น AI Hologram อัลต้าสมูท + สลับชั้นหมอกเย็นฟุ้ง
                     const drift1 = ((t * 11) % (w * 1.35)) - w * 0.35;
                     const drift2 = w - (((t * 14) % (w * 1.40)));
 
+                    // Helper วาดภูเขาแต่ละระยะพร้อมเอฟเฟกต์สลับเป็น AI Hologram แบบ Ultra-Smooth Wave
+                    const drawSmartMountainPlane = (idx, parallaxX, normalBaseAlpha, holoPeakAlpha) => {
+                        const layer = mountainLayers[idx];
+                        if (!layer) return;
+                        // คลื่นโคไซน์นุ่มลึกสลับจากภูเขาเดิม -> โฮโลแกรม AI -> ภูเขาเดิม ไล่ระดับความลึกทั้ง 4 ชั้นอย่างต่อเนื่อง
+                        const wavePhase = t * 0.56 - idx * 0.48;
+                        const smoothCos = 0.5 - 0.5 * Math.cos(wavePhase);
+                        const holoMix = Math.pow(smoothCos, 1.55);
+                        const holoBreath = 0.86 + 0.14 * Math.sin(t * 3.6 + idx * 1.7);
+
+                        bgCtx.save();
+                        bgCtx.globalCompositeOperation = 'source-over';
+                        bgCtx.globalAlpha = normalBaseAlpha * (1 - holoMix * 0.48);
+                        bgCtx.drawImage(layer.normal, parallaxX, 0, w, h);
+
+                        if (holoMix > 0.008) {
+                            bgCtx.globalCompositeOperation = 'lighter';
+                            bgCtx.globalAlpha = Math.min(0.95, holoMix * holoBreath * holoPeakAlpha);
+                            bgCtx.drawImage(layer.holo, parallaxX, 0, w, h);
+
+                            // ลำแสงสแกนโฮโลแกรม AI บางเบาไหลผ่านแนวเขาในช่วงกำลังเปลี่ยนร่าง
+                            const scanFrac = (t * 0.24 + idx * 0.19) % 1;
+                            const scanY = h * (0.42 + scanFrac * 0.48);
+                            const scanGrad = bgCtx.createLinearGradient(0, scanY - 26, 0, scanY + 26);
+                            const scanA = Math.sin(scanFrac * Math.PI) * holoMix * 0.14;
+                            if (scanA > 0.004) {
+                                scanGrad.addColorStop(0, 'rgba(56, 189, 248, 0)');
+                                scanGrad.addColorStop(0.5, `rgba(103, 232, 249, ${scanA.toFixed(3)})`);
+                                scanGrad.addColorStop(1, 'rgba(110, 231, 183, 0)');
+                                bgCtx.fillStyle = scanGrad;
+                                bgCtx.fillRect(0, scanY - 26, w, 52);
+                            }
+                        }
+                        bgCtx.restore();
+                    };
+
+                    drawSmartMountainPlane(0, flare.mouseX * 4, 0.88, 0.72);
+
                     bgCtx.save();
                     bgCtx.globalCompositeOperation = 'source-over';
-                    if (mountainLayers[0]) {
-                        bgCtx.globalAlpha = 0.88;
-                        bgCtx.drawImage(mountainLayers[0], flare.mouseX * 4, 0, w, h);
-                    }
-                    // หมอกเย็นชั้นที่ 1 คั่นกลางระหว่างภูเขาระยะ 1 และระยะ 2
-                    bgCtx.globalAlpha = 0.62;
+                    bgCtx.globalAlpha = 0.56;
                     bgCtx.drawImage(mistSprites.coolFar, -w * 0.12 + Math.sin(t * 0.14) * 26, h * 0.50, w * 1.24, h * 0.36);
-
-                    if (mountainLayers[1]) {
-                        bgCtx.globalAlpha = 0.94;
-                        bgCtx.drawImage(mountainLayers[1], flare.mouseX * 9, 0, w, h);
-                    }
-                    // หมอกเย็นชั้นที่ 2 ลอยพาดหุบเขาซ้าย–ขวา
-                    bgCtx.globalAlpha = 0.74;
-                    bgCtx.drawImage(mistSprites.coolMidL, -w * 0.16 + Math.sin(t * 0.19) * 22, h * 0.54, w * 0.78, h * 0.38);
-                    bgCtx.globalAlpha = 0.74;
-                    bgCtx.drawImage(mistSprites.coolMidR, w * 0.38 - Math.sin(t * 0.17 + 1.1) * 22, h * 0.53, w * 0.78, h * 0.39);
-
-                    if (mountainLayers[2]) {
-                        bgCtx.globalAlpha = 0.96;
-                        bgCtx.drawImage(mountainLayers[2], flare.mouseX * 15, 0, w, h);
-                    }
-                    // ปอยหมอกเย็นบางลอยสวนกันผ่านหน้าชะง่อนผา
-                    bgCtx.globalAlpha = 0.52;
-                    bgCtx.drawImage(mistSprites.coolVeil, drift1 - w * 0.32, h * 0.56, w * 0.86, h * 0.28);
-
-                    if (mountainLayers[3]) {
-                        bgCtx.globalAlpha = 0.98;
-                        bgCtx.drawImage(mountainLayers[3], flare.mouseX * 22, 0, w, h);
-                    }
-                    // ทะเลหมอกเย็นฟุ้งฐานล่างโอบหุบเขาและโคนรากต้นดอกท้อ
-                    bgCtx.globalAlpha = 0.76;
-                    bgCtx.drawImage(mistSprites.coolFar, -w * 0.14 - Math.sin(t * 0.15) * 24, h * 0.68, w * 1.28, h * 0.38);
-                    bgCtx.globalAlpha = 0.44;
-                    bgCtx.drawImage(mistSprites.coolVeil, drift2 - w * 0.38, h * 0.66, w * 0.84, h * 0.26);
                     bgCtx.restore();
 
-                    // 3) ลำแสงสวรรค์สาดส่อง (Volumetric Heavenly God Rays) ส่องทแยงจากจันทราลงสู่หุบเขาหมอกเย็น
+                    drawSmartMountainPlane(1, flare.mouseX * 9, 0.94, 0.84);
+
+                    bgCtx.save();
+                    bgCtx.globalCompositeOperation = 'source-over';
+                    bgCtx.globalAlpha = 0.68;
+                    bgCtx.drawImage(mistSprites.coolMidL, -w * 0.16 + Math.sin(t * 0.19) * 22, h * 0.54, w * 0.78, h * 0.38);
+                    bgCtx.globalAlpha = 0.68;
+                    bgCtx.drawImage(mistSprites.coolMidR, w * 0.38 - Math.sin(t * 0.17 + 1.1) * 22, h * 0.53, w * 0.78, h * 0.39);
+                    bgCtx.restore();
+
+                    drawSmartMountainPlane(2, flare.mouseX * 15, 0.96, 0.92);
+
+                    bgCtx.save();
+                    bgCtx.globalCompositeOperation = 'source-over';
+                    bgCtx.globalAlpha = 0.48;
+                    bgCtx.drawImage(mistSprites.coolVeil, drift1 - w * 0.32, h * 0.56, w * 0.86, h * 0.28);
+                    bgCtx.restore();
+
+                    drawSmartMountainPlane(3, flare.mouseX * 22, 0.98, 0.96);
+
+                    bgCtx.save();
+                    bgCtx.globalCompositeOperation = 'source-over';
+                    bgCtx.globalAlpha = 0.58;
+                    bgCtx.drawImage(mistSprites.coolFar, -w * 0.14 - Math.sin(t * 0.15) * 24, h * 0.68, w * 1.28, h * 0.36);
+                    bgCtx.globalAlpha = 0.36;
+                    bgCtx.drawImage(mistSprites.coolVeil, drift2 - w * 0.38, h * 0.66, w * 0.84, h * 0.25);
+                    bgCtx.restore();
+
+                    // 3) ลำแสงสวรรค์สาดส่อง (Volumetric Heavenly God Rays) ทแยงจากจันทราบนซ้ายผ่านเรือนยอดดอกท้อลงสู่หุบเขา
                     bgCtx.save();
                     bgCtx.globalCompositeOperation = 'lighter';
-                    const rayAngles = [-0.56, -0.32, -0.11, 0.10, 0.31, 0.54];
-                    const rayLen = h * 0.82;
-                    for (let i = 0; i < rayAngles.length; i++) {
-                        const sway = Math.sin(t * 0.28 + i * 1.3) * 0.03 + flare.mouseX * 0.022;
-                        const ang = Math.PI * 0.5 + rayAngles[i] + sway;
-                        const pulse = 0.044 + 0.018 * Math.sin(t * 0.62 + i * 1.5);
+                    const targetTreeX = flare.treeLeft + flare.treeW * 0.52;
+                    const targetTreeY = flare.treeTop + flare.treeH * 0.46;
+                    const baseRayAng = Math.atan2(targetTreeY - my, targetTreeX - mx);
+                    const rayOffsets = [-0.34, -0.17, -0.02, 0.14, 0.31, 0.50];
+                    const rayLen = Math.hypot(w * 0.78, h * 0.78);
+                    for (let i = 0; i < rayOffsets.length; i++) {
+                        const sway = Math.sin(t * 0.28 + i * 1.3) * 0.026 + flare.mouseX * 0.018;
+                        const ang = baseRayAng + rayOffsets[i] + sway;
+                        const pulse = 0.040 + 0.016 * Math.sin(t * 0.62 + i * 1.5);
                         drawSoftLightBeam(
-                            bgCtx, mx, my - moonR * 0.25, ang, rayLen, minDim * 0.15,
-                            `rgba(254, 249, 212, ${(pulse * 1.55 * k).toFixed(3)})`,
+                            bgCtx, mx, my, ang, rayLen, minDim * 0.14,
+                            `rgba(254, 249, 212, ${(pulse * 1.48 * k).toFixed(3)})`,
                             i % 2 === 0
-                                ? `rgba(110, 231, 183, ${(pulse * 0.74 * k).toFixed(3)})`
-                                : `rgba(147, 210, 252, ${(pulse * 0.72 * k).toFixed(3)})`
+                                ? `rgba(110, 231, 183, ${(pulse * 0.72 * k).toFixed(3)})`
+                                : `rgba(147, 210, 252, ${(pulse * 0.70 * k).toFixed(3)})`
                         );
                     }
                     bgCtx.restore();
@@ -2396,12 +2552,12 @@
                                     </div>
                                 </div>
 
-                                {/* ลายน้ำโรงพยาบาลราชวิถี (z-25 ชัดเจนไม่ถูกหมอกบัง) */}
+                                {/* ลายน้ำโรงพยาบาลราชวิถี (z-25 คมชัด เงาบางเบาอ่านง่าย) */}
                                 <div className="relative z-[25] text-center mt-2.5 sm:mt-3 select-none">
                                     <p className="rajavithi-watermark font-display font-bold text-[26px] sm:text-4xl md:text-[42px] leading-none m-0">
                                         RAJAVITHI HOSPITAL
                                     </p>
-                                    <p className="rajavithi-watermark font-display font-semibold text-[11px] sm:text-sm md:text-[16px] tracking-[0.2em] sm:tracking-[0.26em] mt-1.5 opacity-90 m-0">
+                                    <p className="rajavithi-submark font-display font-semibold text-[11px] sm:text-sm md:text-[16px] tracking-[0.2em] sm:tracking-[0.26em] mt-1.5 m-0">
                                         COE ORGAN TRANSPLANTATION CLOUD
                                     </p>
                                 </div>
