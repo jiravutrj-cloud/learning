@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="th" data-theme="dark">
 <head>
@@ -8,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>AI Skill Lab 3D — ห้องฝึกสื่อสารอนุภาคอนิเมะ 2,800 ดวง | rjcloud.organ 2.0</title>
 
-    <!-- ซิงค์โหมดมืด/สว่างทันที + โหลดไฟล์ร่วมเฉพาะเมื่ออยู่บนโดเมนเว็บจริง (ป้องกัน 404 ในโหมดพรีวิว) -->
+    <!-- ซิงค์โหมดมืด/สว่างทันที + โหลดไฟล์ร่วมเฉพาะเมื่ออยู่บนโดเมนเว็บจริง ป้องกัน 404 ในพรีวิว -->
     <script>
       (function () {
         try {
@@ -36,7 +37,7 @@
             css.href = './styles.css';
             document.head.appendChild(css);
 
-            ['./data.js', './learning-core.js', './skilllab-engine.js?v=202713'].forEach(function (src) {
+            ['./data.js', './learning-core.js', './skilllab-engine.js?v=202714'].forEach(function (src) {
               const s = document.createElement('script');
               s.src = src;
               s.async = false;
@@ -48,11 +49,215 @@
       })();
     </script>
 
-    <!-- Tailwind CSS & ฟอนต์ภาษาไทยสไตล์ Apple (ไม่พึ่ง Three.js ภายนอก เพราะใช้เอนจินอนุภาค 2,800 ดวง 60FPS) -->
+    <!-- Tailwind CSS & ฟอนต์ภาษาไทยสไตล์ Apple -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- ... existing code ... -->
+    <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Prompt:wght@500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+      if (window.tailwind) {
+        tailwind.config = {
+          theme: {
+            extend: {
+              fontFamily: {
+                display: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Anuphan', 'Prompt', 'sans-serif'],
+                sans: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'Anuphan', 'Sarabun', 'sans-serif'],
+                mono: ['SF Mono', 'ui-monospace', 'JetBrains Mono', 'monospace']
+              },
+              colors: {
+                void: { 950: '#030611', 900: '#061229', 800: '#0c1f42', 700: '#153263' },
+                aurora: { 200: '#a7f3d0', 300: '#6ee7b7', 400: '#34d399', 500: '#10b981', 600: '#059669' },
+                prism: { 200: '#bae6fd', 300: '#7dd3fc', 400: '#38bdf8', 500: '#0ea5e9', 600: '#0284c7' }
+              }
+            }
+          }
+        };
+      }
+    </script>
+
+    <style>
+      /* ============================================================================
+       * 1. ADAPTIVE BENTO GRID THEME TOKENS (DARK OBSIDIAN & LIGHT CRYSTAL GLASS)
+       * ============================================================================ */
+      :root, html[data-theme="dark"] {
+        --bg-page: #030611;
+        --text-main: #f8fafc;
+        --text-secondary: #cbd5e1;
+        --text-muted: #94a3b8;
+        --glass-bg: linear-gradient(155deg, rgba(18, 28, 54, 0.78) 0%, rgba(7, 13, 28, 0.92) 100%);
+        --glass-border: rgba(148, 197, 255, 0.18);
+        --glass-border-hover: rgba(103, 232, 249, 0.48);
+        --glass-shadow: 0 24px 60px -20px rgba(0, 4, 18, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+        --header-bg: rgba(3, 6, 17, 0.82);
+        --surface-soft: rgba(255, 255, 255, 0.048);
+        --surface-soft-hover: rgba(255, 255, 255, 0.095);
+        --surface-border: rgba(148, 197, 255, 0.16);
+        --input-bg: rgba(5, 10, 24, 0.82);
+        --input-border: rgba(148, 197, 255, 0.24);
+        --input-text: #f8fafc;
+        --accent-text: #6ee7b7;
+        --accent-prism: #67e8f9;
+        --grid-line: rgba(148, 197, 255, 0.038);
+        --aura-1: rgba(16, 185, 129, 0.14);
+        --aura-2: rgba(56, 189, 248, 0.16);
+        --aura-3: rgba(129, 140, 248, 0.16);
+      }
+      html[data-theme="light"] {
+        --bg-page: #edf5fc;
+        --text-main: #0f172a;
+        --text-secondary: #334155;
+        --text-muted: #64748b;
+        --glass-bg: linear-gradient(155deg, rgba(255, 255, 255, 0.93) 0%, rgba(236, 246, 255, 0.88) 100%);
+        --glass-border: rgba(255, 255, 255, 0.96);
+        --glass-border-hover: rgba(14, 165, 233, 0.48);
+        --glass-shadow: 0 20px 46px -18px rgba(15, 58, 125, 0.16), 0 0 0 1px rgba(148, 184, 222, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+        --header-bg: rgba(244, 249, 255, 0.88);
+        --surface-soft: rgba(255, 255, 255, 0.78);
+        --surface-soft-hover: rgba(255, 255, 255, 0.98);
+        --surface-border: rgba(148, 184, 222, 0.36);
+        --input-bg: rgba(255, 255, 255, 0.95);
+        --input-border: rgba(148, 184, 222, 0.65);
+        --input-text: #0f172a;
+        --accent-text: #047857;
+        --accent-prism: #0284c7;
+        --grid-line: rgba(15, 58, 125, 0.045);
+        --aura-1: rgba(16, 185, 129, 0.16);
+        --aura-2: rgba(56, 189, 248, 0.20);
+        --aura-3: rgba(129, 140, 248, 0.16);
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Anuphan', 'Sarabun', sans-serif;
+        background-color: var(--bg-page);
+        color: var(--text-main);
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+        transition: background-color 0.28s ease, color 0.28s ease;
+      }
+
+      .touch-target { min-height: 44px; touch-action: manipulation; }
+      .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+      .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+      @media (max-width: 768px) { input, select, textarea { font-size: 16px !important; } }
+
+      .spatial-aura {
+        position: fixed; inset: 0; z-index: 0; pointer-events: none;
+        background:
+          radial-gradient(ellipse 90% 55% at 50% 108%, var(--aura-1) 0%, transparent 66%),
+          radial-gradient(circle at 86% 14%, var(--aura-2) 0%, transparent 48%),
+          radial-gradient(circle at 14% 28%, var(--aura-3) 0%, transparent 46%);
+      }
+      .spatial-grid {
+        position: fixed; inset: 0; z-index: 0; pointer-events: none;
+        background-image: linear-gradient(to right, var(--grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+        background-size: 44px 44px;
+        mask-image: radial-gradient(ellipse at center, black 42%, transparent 94%);
+      }
+      .spatial-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(24px) saturate(165%);
+        -webkit-backdrop-filter: blur(24px) saturate(165%);
+        border: 1px solid var(--glass-border);
+        box-shadow: var(--glass-shadow);
+        transition: border-color 0.22s ease, box-shadow 0.22s ease, background 0.28s ease;
+      }
+      .spatial-card:hover { border-color: var(--glass-border-hover); }
+      .spatial-header {
+        background: var(--header-bg);
+        backdrop-filter: blur(22px) saturate(160%);
+        -webkit-backdrop-filter: blur(22px) saturate(160%);
+        border-bottom: 1px solid var(--surface-border);
+      }
+      .spatial-soft { background: var(--surface-soft); border: 1px solid var(--surface-border); transition: background 0.18s ease, border-color 0.18s ease; }
+      .spatial-soft:hover { background: var(--surface-soft-hover); }
+      .spatial-input { background: var(--input-bg); border: 1px solid var(--input-border); color: var(--input-text); }
+      .spatial-input:focus { outline: none; border-color: #38bdf8; box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.22); }
+
+      .rjc2-pill-btn {
+        background: linear-gradient(95deg, #d7fbe6 0%, #c6f3f9 48%, #b3c8ff 100%);
+        color: #050b16 !important;
+        box-shadow: 0 10px 28px -6px rgba(134, 239, 172, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.72) inset;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      .rjc2-pill-btn:hover { transform: translateY(-1px) scale(1.015); }
+      .rjc2-pill-btn:active { transform: scale(0.98); }
+
+      .text-primary-adaptive { color: var(--text-main); }
+      .text-secondary-adaptive { color: var(--text-secondary); }
+      .text-muted-adaptive { color: var(--text-muted); }
+      .text-accent-adaptive { color: var(--accent-text); }
+      .text-prism-adaptive { color: var(--accent-prism); }
+
+      /* เวทีอนุภาค 2,800 ดวงใช้พื้นลึก Obsidian เสมอให้อนุภาคแสงคมชัดอบอุ่น */
+      .holo-stage-bg {
+        background: radial-gradient(ellipse 78% 66% at 50% 42%, #091836 0%, #030715 58%, #01030a 100%);
+      }
+      .stage-hud-glass {
+        background: linear-gradient(155deg, rgba(10, 20, 42, 0.80) 0%, rgba(4, 10, 24, 0.92) 100%);
+        backdrop-filter: blur(20px) saturate(160%);
+        -webkit-backdrop-filter: blur(20px) saturate(160%);
+        border: 1px solid rgba(148, 197, 255, 0.22);
+        box-shadow: 0 18px 46px -14px rgba(0, 4, 18, 0.88), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+        color: #f8fafc;
+      }
+
+      @keyframes labSpin { to { transform: rotate(360deg); } }
+      @keyframes cloudDriftLab {
+        0% { transform: translate3d(-18vw, 0, 0); }
+        50% { transform: translate3d(18vw, -12px, 0); }
+        100% { transform: translate3d(-18vw, 0, 0); }
+      }
+      .lab-cloud-drift {
+        position: absolute;
+        left: 22%;
+        animation: cloudDriftLab var(--c-dur, 80s) ease-in-out infinite;
+        animation-delay: var(--c-del, 0s);
+      }
+
+      @keyframes rjcAmbientRun { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+      @keyframes rjcWaveBar { 0%, 100% { transform: scaleY(0.28); opacity: 0.65; } 50% { transform: scaleY(1); opacity: 1; } }
+      .rjc-ambient-bar {
+        height: 4px; width: 100%;
+        background: linear-gradient(90deg, #6ee7b7, #38bdf8, #818cf8, #f0abfc, #fde68a, #6ee7b7);
+        background-size: 300% 100%;
+        animation: rjcAmbientRun 2s linear infinite;
+        box-shadow: 0 0 18px rgba(56, 189, 248, 0.85);
+      }
+      .rjc-wave-eq { display: inline-flex; align-items: center; gap: 2.5px; height: 13px; }
+      .rjc-wave-eq span { width: 2.5px; height: 100%; border-radius: 9999px; background: linear-gradient(180deg, #fde68a, #6ee7b7, #38bdf8); animation: rjcWaveBar 0.82s ease-in-out infinite; }
+      .rjc-wave-eq span:nth-child(2) { animation-delay: 0.14s; }
+      .rjc-wave-eq span:nth-child(3) { animation-delay: 0.28s; }
+
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+      .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(147, 197, 253, 0.36); border-radius: 999px; }
+    </style>
+
+    <!-- ESM Import Map (React 18, Lucide Icons, Firebase 11) -->
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@18.2.0",
+        "react-dom": "https://esm.sh/react-dom@18.2.0",
+        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+        "lucide-react": "https://esm.sh/lucide-react@0.344.0?external=react",
+        "firebase/app": "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"
+      }
+    }
+    </script>
+</head>
+<body>
+    <!-- หน้าจอโหลดเริ่มต้น -->
     <div id="skilllab-root">
         <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#030611;color:#f8fafc;font-family:-apple-system,'Anuphan','Prompt',sans-serif;gap:14px;padding:24px;text-align:center;">
             <div style="width:46px;height:46px;border:3px solid rgba(56,189,248,0.22);border-top-color:#6ee7b7;border-right-color:#38bdf8;border-radius:9999px;animation:labSpin 0.85s linear infinite;"></div>
@@ -60,344 +265,1227 @@
             <div style="font-size:12px;color:#93b4d8;">rjcloud.organ 2.0 • Adaptive Bento Grid &amp; 2,800-Particle Warm Anime Engine</div>
         </div>
     </div>
-<!-- ... existing code ... -->
-                    modelAnswerTH: 'สัมผัสได้ถึงความรักที่ทั้งภรรยาและคุณแม่มีให้คุณต้นค่ะ ตามหลักจริยธรรมไทยเราจะไม่ฝืนใจคุณแม่เด็ดขาดแม้มีบัตรจำนง เพราะสายสัมพันธ์ครอบครัวสำคัญที่สุด ขอให้ทั้งสองท่านมีเวลาส่วนตัวปรึกษากันก่อนโดยไม่เร่งรัดนะคะ'
-                }
-            ];
 
-            // 2,800-Particle Warm Friendly Anime ⇄ Emotion Text & Color Morph Engine (Standalone Fallback ครบสมบูรณ์ 100%)
-            function mountHologram3D(container, initialState) {
-                if (!container) {
-                    return { update() {}, toggleDisplayMode() { return 'anime'; }, destroy() {} };
-                }
-                const st = { personaId: 'standard', emotion: 'CONFUSED', trust: 45, isSpeaking: false, activeSpeaker: 'wife', getAudioAmplitude: null, ...(initialState || {}) };
-                const PAL = {
-                    CONFUSED: { textTop: 'สับสน',       textSub: 'CONFUSED', c1: [232, 246, 255], c2: [96, 198, 255],  c3: [139, 152, 255], blush: [255, 178, 206] },
-                    SHOCK:    { textTop: 'ช็อก / ตกใจ', textSub: 'SHOCK',    c1: [255, 242, 245], c2: [255, 148, 168], c3: [244, 114, 148], blush: [255, 168, 194] },
-                    ANGRY:    { textTop: 'คัดค้าน!',    textSub: 'TENSE',    c1: [255, 247, 238], c2: [253, 168, 96],  c3: [249, 115, 115], blush: [255, 174, 156] },
-                    SAD:      { textTop: 'โศกเศร้า',    textSub: 'GRIEVING', c1: [246, 242, 255], c2: [198, 154, 255], c3: [132, 140, 255], blush: [244, 176, 224] },
-                    HESITANT: { textTop: 'ลังเล',       textSub: 'HESITANT', c1: [255, 251, 238], c2: [253, 204, 82],  c3: [96, 196, 255],  blush: [255, 184, 196] },
-                    CALM:     { textTop: 'สงบ • วางใจ', textSub: 'CALM',     c1: [238, 255, 248], c2: [86, 232, 182],  c3: [72, 214, 246],  blush: [255, 182, 210] }
-                };
-                const resolveAid = (pid) => (pid === 'conflict' ? 'dual' : pid === 'sbar_doctor' ? 'male' : pid === 'pediatric' ? 'elder_female' : 'female');
+    <!-- Global Error Guard -->
+    <script>
+      window.addEventListener('error', function (ev) {
+        const src = String(ev.filename || (ev.target && ev.target.src) || '');
+        if (/(data|learning-core|skilllab-engine)\.js|styles\.css/i.test(src)) return;
+        const root = document.getElementById('skilllab-root');
+        if (root && !root.dataset.mounted && ev.message) {
+          const safeMsg = String(ev.message || 'Unknown error').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          root.innerHTML =
+            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#030611;color:#f8fafc;font-family:Sarabun,sans-serif;">' +
+            '<div style="max-width:440px;width:100%;background:#061229;border:1px solid rgba(244,63,94,0.4);border-radius:24px;padding:24px;text-align:center;">' +
+            '<h2 style="color:#fda4af;font-weight:700;margin:0 0 8px;">ไม่สามารถเปิดห้องฝึก AI Skill Lab ได้ชั่วคราว</h2>' +
+            '<p style="font-size:13px;color:#dbeafe;margin:0 0 16px;">' + safeMsg + '</p>' +
+            '<button onclick="window.location.reload()" style="padding:12px 24px;border:none;border-radius:14px;background:#34d399;color:#020612;font-weight:700;cursor:pointer;">โหลดหน้าใหม่</button>' +
+            '</div></div>';
+        }
+      });
+    </script>
 
-                const canvas = document.createElement('canvas');
-                canvas.style.cssText = 'display:block;width:100%;height:100%;';
-                container.appendChild(canvas);
-                const ctx = canvas.getContext('2d');
-                if (!ctx) return { update() {}, toggleDisplayMode() { return 'anime'; }, destroy() {} };
+    <script type="text/babel" data-type="module" data-presets="react">
+        import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+        import { createRoot } from 'react-dom/client';
+        import * as LucideIcons from 'lucide-react';
+        import { initializeApp, getApps, getApp } from 'firebase/app';
+        import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
+        import { getFirestore, doc, setDoc, onSnapshot } from 'firebase/firestore';
 
-                const drawFriendlyLayer = (c, part, prof, emoId, isDualLeft) => {
-                    c.strokeStyle = '#ffffff'; c.fillStyle = '#ffffff'; c.lineCap = 'round'; c.lineJoin = 'round';
-                    const hair = prof === 'elder_female' ? 'bun' : (prof === 'male' ? 'short' : 'long');
-                    const isDoctor = prof === 'male';
-                    if (part === 0) {
-                        c.lineWidth = 4.6;
-                        c.beginPath(); c.moveTo(-64, -14); c.bezierCurveTo(-66, 30, -44, 62, 0, 72); c.bezierCurveTo(44, 62, 66, 30, 64, -14); c.stroke();
-                        c.lineWidth = 3.6;
-                        c.beginPath(); c.arc(-66, 12, 11, Math.PI * 0.55, Math.PI * 1.48); c.stroke();
-                        c.beginPath(); c.arc(66, 12, 11, -Math.PI * 0.48, Math.PI * 0.45); c.stroke();
-                        c.beginPath(); c.arc(0, 22, 2.2, 0, Math.PI * 2); c.fill();
-                        c.lineWidth = 4.2;
-                        c.beginPath(); c.moveTo(-16, 68); c.quadraticCurveTo(-18, 86, -24, 96); c.moveTo(16, 68); c.quadraticCurveTo(18, 86, 24, 96); c.stroke();
-                        const shW = isDoctor ? 114 : 96;
-                        c.lineWidth = 4.8;
-                        c.beginPath(); c.moveTo(-shW, 152); c.quadraticCurveTo(-shW * 0.82, 102, -24, 96); c.moveTo(shW, 152); c.quadraticCurveTo(shW * 0.82, 102, 24, 96); c.stroke();
-                        if (isDoctor) {
-                            c.lineWidth = 4.0; c.beginPath(); c.moveTo(-36, 98); c.lineTo(-12, 146); c.lineTo(0, 134); c.lineTo(12, 146); c.lineTo(36, 98); c.stroke();
-                            c.lineWidth = 3.4; c.beginPath(); c.moveTo(-34, 96); c.bezierCurveTo(-48, 122, -46, 144, -36, 152); c.moveTo(34, 96); c.bezierCurveTo(48, 122, 46, 140, 36, 148); c.stroke();
-                            c.beginPath(); c.arc(36, 150, 7, 0, Math.PI * 2); c.stroke();
-                        } else {
-                            c.lineWidth = 3.8; c.beginPath(); c.moveTo(-30, 97); c.quadraticCurveTo(0, 124, 30, 97); c.stroke();
-                        }
-                    } else if (part === 1) {
-                        [-27, 27].forEach((ex) => {
-                            const s = ex < 0 ? -1 : 1;
-                            if (emoId === 'CALM') {
-                                c.lineWidth = 5.6; c.beginPath(); c.arc(ex, 12, 15, Math.PI * 1.12, Math.PI * 1.88); c.stroke();
-                                c.lineWidth = 3.2; c.beginPath(); c.moveTo(ex + s * 13, 6); c.lineTo(ex + s * 18, 2); c.stroke();
-                            } else {
-                                c.lineWidth = 5.8; c.beginPath(); c.moveTo(ex - s * 14, 4); c.quadraticCurveTo(ex, emoId === 'SHOCK' ? -13 : -9, ex + s * 17, emoId === 'SAD' ? 8 : 3); c.stroke();
-                                c.lineWidth = 3.6; c.beginPath(); c.ellipse(ex, 8, 10.5, emoId === 'SHOCK' ? 12.5 : (emoId === 'SAD' ? 10.5 : 11.5), 0, 0, Math.PI * 2); c.stroke();
-                                c.beginPath(); c.arc(ex - 3.8, 3.8, 4.0, 0, Math.PI * 2); c.fill();
-                                c.beginPath(); c.arc(ex + 3.6, 12.2, 2.0, 0, Math.PI * 2); c.fill();
-                                c.lineWidth = 2.2; c.beginPath(); c.arc(ex, 9, 12.5, Math.PI * 0.24, Math.PI * 0.76); c.stroke();
-                            }
-                        });
-                    } else if (part === 2) {
-                        c.lineWidth = 4.2;
-                        [-1, 1].forEach((s) => {
-                            let yIn = -17, yOut = -16;
-                            if (emoId === 'CALM') { yIn = -19; yOut = -17; }
-                            else if (emoId === 'SHOCK') { yIn = -26; yOut = -22; }
-                            else if (emoId === 'SAD') { yIn = -23; yOut = -13; }
-                            else if (emoId === 'ANGRY') { yIn = -11; yOut = -21; }
-                            else if (emoId === 'CONFUSED') { yIn = s < 0 ? -21 : -16; yOut = s < 0 ? -17 : -21; }
-                            else if (emoId === 'HESITANT') { yIn = -19; yOut = -15; }
-                            c.beginPath(); c.moveTo(s * 13, yIn); c.quadraticCurveTo(s * 26, Math.min(yIn, yOut) - 4, s * 40, yOut); c.stroke();
-                        });
-                    } else if (part === 3) {
-                        c.lineWidth = 4.4;
-                        if (emoId === 'CALM') { c.beginPath(); c.arc(0, 38, 13, Math.PI * 0.14, Math.PI * 0.86); c.stroke(); }
-                        else if (emoId === 'SHOCK') { c.beginPath(); c.ellipse(0, 46, 7.5, 9.5, 0, 0, Math.PI * 2); c.stroke(); }
-                        else if (emoId === 'SAD') { c.beginPath(); c.arc(0, 54, 11, Math.PI * 1.18, Math.PI * 1.82); c.stroke(); }
-                        else if (emoId === 'ANGRY') { c.beginPath(); c.moveTo(-12, 47); c.quadraticCurveTo(0, 42, 12, 47); c.stroke(); }
-                        else if (emoId === 'CONFUSED') { c.beginPath(); c.moveTo(-10, 46); c.quadraticCurveTo(-4, 42, 0, 46); c.quadraticCurveTo(5, 49, 10, 45); c.stroke(); }
-                        else { c.beginPath(); c.moveTo(-9, 45); c.quadraticCurveTo(0, 48, 9, 45); c.stroke(); }
-                    } else if (part === 4) {
-                        c.lineWidth = 5.0; c.beginPath(); c.moveTo(-78, -6); c.bezierCurveTo(-80, -68, -46, -96, 0, -96); c.bezierCurveTo(46, -96, 80, -68, 78, -6); c.stroke();
-                        if (hair === 'long') {
-                            c.lineWidth = 4.4; c.beginPath(); c.moveTo(-66, -24); c.quadraticCurveTo(-48, -14, -36, -34); c.quadraticCurveTo(-22, -12, -8, -32); c.quadraticCurveTo(6, -12, 22, -32); c.quadraticCurveTo(40, -14, 66, -24); c.stroke();
-                            c.lineWidth = 5.2;
-                            [-1, 1].forEach((s) => {
-                                c.beginPath(); c.moveTo(s * 78, -8); c.bezierCurveTo(s * 94, 42, s * 98, 96, s * 80, 134); c.quadraticCurveTo(s * 64, 122, s * 62, 86); c.stroke();
-                                c.lineWidth = 3.8; c.beginPath(); c.moveTo(s * 64, -18); c.quadraticCurveTo(s * 76, 28, s * 56, 76); c.stroke(); c.lineWidth = 5.2;
-                            });
-                        } else if (hair === 'bun') {
-                            c.lineWidth = 5.4; c.beginPath(); c.arc(0, -110, 26, Math.PI * 0.92, Math.PI * 2.08); c.stroke();
-                            c.lineWidth = 3.6; c.beginPath(); c.moveTo(-26, -96); c.quadraticCurveTo(0, -104, 26, -96); c.stroke();
-                            c.lineWidth = 4.6; c.beginPath(); c.moveTo(-68, -16); c.quadraticCurveTo(-22, -46, 24, -36); c.quadraticCurveTo(56, -26, 68, -12); c.stroke();
-                            [-1, 1].forEach((s) => { c.beginPath(); c.moveTo(s * 76, -8); c.quadraticCurveTo(s * 84, 34, s * 60, 68); c.stroke(); });
-                        } else {
-                            c.lineWidth = 4.8; c.beginPath(); c.moveTo(-66, -20); c.quadraticCurveTo(-48, -32, -32, -16); c.quadraticCurveTo(-16, -42, 2, -18); c.quadraticCurveTo(22, -42, 42, -18); c.quadraticCurveTo(56, -30, 66, -20); c.stroke();
-                            c.lineWidth = 4.2; c.beginPath(); c.moveTo(-14, -95); c.quadraticCurveTo(-4, -108, 12, -96); c.stroke();
-                            [-1, 1].forEach((s) => { c.beginPath(); c.moveTo(s * 76, -8); c.quadraticCurveTo(s * 76, 12, s * 66, 24); c.stroke(); });
-                        }
-                    } else if (part === 5) {
-                        c.lineWidth = 3.0;
-                        [-43, 43].forEach((bx) => [-7, 0, 7].forEach((dx) => { c.beginPath(); c.moveTo(bx + dx - 2.5, 29); c.lineTo(bx + dx + 2.5, 21); c.stroke(); }));
-                        if (emoId === 'SAD') {
-                            c.beginPath(); c.ellipse(-34, 29, 3.5, 6, 0.2, 0, Math.PI * 2); c.fill();
-                            c.beginPath(); c.ellipse(34, 29, 3.5, 6, -0.2, 0, Math.PI * 2); c.fill();
-                        }
-                        if (!isDualLeft) {
-                            c.lineWidth = 3.8;
-                            if (emoId === 'CALM') {
-                                c.save(); c.translate(92, -56); c.scale(0.85, 0.85);
-                                c.beginPath(); c.moveTo(0, 10); c.bezierCurveTo(-18, -4, -18, -22, 0, -10); c.bezierCurveTo(18, -22, 18, -4, 0, 10); c.fill();
-                                c.restore();
-                            } else if (emoId === 'CONFUSED') {
-                                c.font = '800 38px Prompt, Inter, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('?', 92, -52);
-                            } else if (emoId === 'HESITANT') {
-                                [0, 1, 2].forEach((k) => { c.beginPath(); c.arc(82 + k * 14, -44 - k * 8, 3.8 + k * 0.5, 0, Math.PI * 2); c.fill(); });
-                            } else if (emoId === 'SHOCK') {
-                                c.beginPath(); c.moveTo(84, -42); c.lineTo(96, -68); c.moveTo(96, -34); c.lineTo(114, -52); c.stroke();
-                            } else if (emoId === 'ANGRY') {
-                                c.beginPath(); c.moveTo(82, -56); c.quadraticCurveTo(92, -52, 88, -42); c.moveTo(100, -60); c.quadraticCurveTo(92, -50, 102, -44); c.stroke();
-                            }
+        // ============================================================================
+        // 1. CONFIGURATION, TWO-LAYER SESSION STORAGE & AUDIO DSP HELPERS
+        // ============================================================================
+        const CORE = window['RJCLOUD_CORE'] || {};
+        const STORAGE_KEY = 'rjcloud_organ_state_v2027';
+        const SESSION_BACKUP_KEY = 'rjcloud_active_session_v2027';
+        const SILENT_UNLOCK_WAV = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
+
+        const BUILTIN_CONFIG = {
+            appName: 'rjcloud.organ',
+            appId: 'rjcloud-organ-2027',
+            theme: { defaultMode: 'dark', storageKey: 'rjcloud_theme' },
+            firebaseConfig: {
+                apiKey: 'AIzaSyCpvK0FCVVk9dt0ylHn_VzUStl7540UsbY',
+                authDomain: 'rj-cloud-organ.firebaseapp.com',
+                projectId: 'rj-cloud-organ',
+                storageBucket: 'rj-cloud-organ.firebasestorage.app',
+                messagingSenderId: '1030088973707',
+                appId: '1:1030088973707:web:8104bb1d90ac6a58f8e38e'
+            },
+            appsScriptUrl: 'https://script.google.com/macros/s/AKfycbwuN8MeZhhhomEhpkfXtpoTP341cugDqw1DbQPK_6NSHun2pGZCE0Kfc3eH4YYJ6aWQIg/exec'
+        };
+
+        const CONFIG = typeof CORE.getResolvedConfig === 'function'
+            ? CORE.getResolvedConfig()
+            : {
+                ...BUILTIN_CONFIG,
+                ...(window.RJCLOUD_CONFIG || {}),
+                theme: { ...BUILTIN_CONFIG.theme, ...(window.RJCLOUD_CONFIG?.theme || {}) },
+                firebaseConfig: (window.RJCLOUD_CONFIG?.firebaseConfig?.apiKey) ? window.RJCLOUD_CONFIG.firebaseConfig : BUILTIN_CONFIG.firebaseConfig,
+                appsScriptUrl: window.RJCLOUD_CONFIG?.appsScriptUrl || BUILTIN_CONFIG.appsScriptUrl
+            };
+
+        const THEME_KEY = CONFIG.theme?.storageKey || 'rjcloud_theme';
+
+        let fbApp = null, fbAuth = null, fbDb = null;
+        const isCloudConfigured = Boolean(CONFIG.firebaseConfig?.apiKey && CONFIG.firebaseConfig?.projectId);
+        if (isCloudConfigured) {
+            try {
+                fbApp = getApps().length === 0 ? initializeApp(CONFIG.firebaseConfig) : getApp();
+                fbAuth = getAuth(fbApp);
+                fbDb = getFirestore(fbApp);
+            } catch (_) {}
+        }
+
+        function loadLearnerSessionSafe() {
+            for (const item of [{ s: localStorage, k: STORAGE_KEY }, { s: sessionStorage, k: SESSION_BACKUP_KEY }]) {
+                try {
+                    const parsed = JSON.parse(item.s.getItem(item.k) || 'null');
+                    if (parsed?.user?.id) return parsed.user;
+                } catch (_) {}
+            }
+            return {
+                id: '4511128901', license: '4511128901', name: 'พว.กัญญารัตน์ วัฒนากูล',
+                professionGroup: 'พยาบาล', position: 'พยาบาลวิชาชีพชำนาญการ (TC)',
+                department: 'เขตสุขภาพที่ 13 (กทม. / กรมการแพทย์)', hospital: 'รพ.ราชวิถี',
+                skillLabPassed: false, skillLabBestScore: 0, skillLabHistory: []
+            };
+        }
+
+        function saveLearnerSessionSafe(u) {
+            if (!u?.id) return;
+            const payload = JSON.stringify({ user: u, savedAt: Date.now() });
+            try { localStorage.setItem(STORAGE_KEY, payload); } catch (_) {}
+            try { sessionStorage.setItem(SESSION_BACKUP_KEY, payload); } catch (_) {}
+        }
+
+        function copyTextSafe(text) {
+            try {
+                const ta = document.createElement('textarea');
+                ta.value = String(text || '');
+                ta.setAttribute('readonly', '');
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                const ok = document.execCommand('copy');
+                document.body.removeChild(ta);
+                return ok;
+            } catch (_) { return false; }
+        }
+
+        function pcmToWavBlobSafe(base64PCM, sampleRate = 24000) {
+            try {
+                if (typeof CORE.pcm16ToWavBlob === 'function') return CORE.pcm16ToWavBlob(base64PCM, sampleRate);
+                const bin = window.atob(base64PCM);
+                const bytes = new Uint8Array(bin.length);
+                for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+                const off = (bytes.length > 44 && bytes[0] === 0x52 && bytes[1] === 0x49) ? 44 : 0;
+                const pcmLen = Math.max(0, bytes.length - off);
+                const buf = new ArrayBuffer(44 + pcmLen);
+                const v = new DataView(buf);
+                const ws = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+                ws(0, 'RIFF'); v.setUint32(4, 36 + pcmLen, true); ws(8, 'WAVE'); ws(12, 'fmt ');
+                v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+                v.setUint32(24, sampleRate, true); v.setUint32(28, sampleRate * 2, true);
+                v.setUint16(32, 2, true); v.setUint16(34, 16, true); ws(36, 'data'); v.setUint32(40, pcmLen, true);
+                new Uint8Array(buf, 44).set(bytes.subarray(off));
+                return new Blob([buf], { type: 'audio/wav' });
+            } catch (_) { return null; }
+        }
+
+        async function fetchStudioTtsBlob({ appsScriptUrl, text, voiceName = 'Sulafat', languageCode = 'th-TH', style = '', cacheKey = '', signal }) {
+            if (cacheKey && typeof CORE.getCachedAudio === 'function') {
+                try { const hit = await CORE.getCachedAudio(cacheKey); if (hit && hit.size > 0) return hit; } catch (_) {}
+            }
+            if (!appsScriptUrl || !navigator.onLine) return null;
+            for (let attempt = 0; attempt < 2; attempt++) {
+                if (signal?.aborted) return null;
+                const ctrl = new AbortController();
+                const onAbort = () => ctrl.abort();
+                if (signal) signal.addEventListener('abort', onAbort, { once: true });
+                const tm = setTimeout(() => ctrl.abort(), 45000);
+                try {
+                    const cleanSpeech = typeof CORE.prepareNaturalThaiSpeech === 'function' ? CORE.prepareNaturalThaiSpeech(text) : text;
+                    const rawRes = await fetch(appsScriptUrl, {
+                        method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ action: 'callGeminiTTS', text: cleanSpeech, voiceName, languageCode, style }),
+                        signal: ctrl.signal
+                    });
+                    clearTimeout(tm);
+                    if (signal) signal.removeEventListener('abort', onAbort);
+                    if (signal?.aborted) return null;
+                    const res = JSON.parse((await rawRes.text()) || '{}');
+                    if (res?.status === 'success' && res.inlineData?.data) {
+                        const rateMatch = String(res.inlineData.mimeType || '').match(/rate=(\d+)/);
+                        const blob = pcmToWavBlobSafe(res.inlineData.data, parseInt(rateMatch ? rateMatch[1] : '24000', 10));
+                        if (blob && blob.size > 0) {
+                            if (cacheKey && typeof CORE.setCachedAudio === 'function') CORE.setCachedAudio(cacheKey, blob).catch(() => {});
+                            return blob;
                         }
                     }
-                };
+                } catch (_) {
+                    clearTimeout(tm);
+                    if (signal) signal.removeEventListener('abort', onAbort);
+                }
+                if (attempt === 0 && !signal?.aborted) await new Promise(r => setTimeout(r, 1000));
+            }
+            return null;
+        }
 
-                const count = window.innerWidth < 640 ? 1900 : 2800;
-                let cache = {};
-                const genTargets = (mode, aid, emo) => {
-                    const key = mode === 'text' ? `T_${emo}` : `F_${aid}_${emo}`;
-                    if (cache[key]) return cache[key];
-                    const pos = new Float32Array(count * 3), part = new Uint8Array(count), side = new Uint8Array(count);
-                    if (mode === 'text') {
-                        const m = PAL[emo] || PAL.CONFUSED, off = document.createElement('canvas'); off.width = 640; off.height = 240;
-                        const c = off.getContext('2d'); c.fillStyle = '#000'; c.fillRect(0, 0, 640, 240); c.fillStyle = '#fff'; c.textAlign = 'center'; c.textBaseline = 'middle';
-                        c.font = '800 94px Prompt, Anuphan, sans-serif'; c.fillText(m.textTop, 320, 96); c.font = '700 42px Inter, JetBrains Mono, sans-serif'; c.fillText(m.textSub, 320, 178);
-                        const d = c.getImageData(0, 0, 640, 240).data, pts = [];
-                        for (let y = 0; y < 240; y += 2) for (let x = 0; x < 640; x += 2) if (d[(y * 640 + x) * 4] > 110) pts.push([x, y]);
-                        for (let i = 0; i < count; i++) {
-                            const pk = pts[Math.floor(Math.random() * pts.length)] || [320, 120];
-                            pos[i * 3] = ((pk[0] - 320) / 172) + (Math.random() - 0.5) * 0.018;
-                            pos[i * 3 + 1] = ((pk[1] - 122) / 172) + (Math.random() - 0.5) * 0.018;
-                            pos[i * 3 + 2] = (Math.random() - 0.5) * 0.14;
-                            part[i] = pk[1] > 142 ? 1 : 0;
-                        }
-                        cache[key] = { pos, part, side, eyeY: 0, mouthY: 0.25 };
-                        return cache[key];
+        // ============================================================================
+        // 2. COMPLETE CLINICAL SKILL LAB ENGINE (STANDALONE FALLBACK + FULL 6 CASES)
+        // ============================================================================
+        const EMOTIONS_DATA = {
+            SHOCK:    { id: 'SHOCK',    labelTH: 'ช็อก / ตกใจ',    color: '#fb7185', style: 'พูดด้วยน้ำเสียงสั่นเครือ ตกใจ หายใจถี่ ยังไม่เชื่อข่าวร้าย' },
+            CONFUSED: { id: 'CONFUSED', labelTH: 'สับสน',         color: '#38bdf8', style: 'พูดด้วยน้ำเสียงสับสน งุนงง กังวลใจ ขอคำอธิบาย' },
+            ANGRY:    { id: 'ANGRY',    labelTH: 'คัดค้าน / เครียด', color: '#fb923c', style: 'พูดด้วยน้ำเสียงตึงเครียด ระแวง และคัดค้านชัดเจน' },
+            SAD:      { id: 'SAD',      labelTH: 'โศกเศร้า',       color: '#c084fc', style: 'พูดด้วยน้ำเสียงเศร้าสะอื้น แผ่วเบา สูญเสียคนที่รัก' },
+            HESITANT: { id: 'HESITANT', labelTH: 'ลังเล / ครุ่นคิด', color: '#fbbf24', style: 'พูดด้วยน้ำเสียงลังเล ค่อยๆ รับฟัง แต่ยังมีข้อกังวลในใจ' },
+            CALM:     { id: 'CALM',     labelTH: 'สงบ / เปิดใจ',    color: '#34d399', style: 'พูดด้วยน้ำเสียงอ่อนโยน สงบขึ้น และรู้สึกวางใจผู้สนทนา' }
+        };
+
+        const RADAR_AXES_FAMILY = [
+            { key: 'setting', labelTH: 'ห้องรับรอง & บทบาท', shortTH: 'ห้องรับรอง' },
+            { key: 'empathy', labelTH: 'รับรู้อารมณ์ร่วม', shortTH: 'อารมณ์ร่วม' },
+            { key: 'clarity', labelTH: 'ข้อมูลภาวะสมองตาย', shortTH: 'ข้อมูลคลินิก' },
+            { key: 'vocal',   labelTH: 'น้ำเสียง & ความเงียบ', shortTH: 'ความเงียบ 2.5 วิ' },
+            { key: 'dignity', labelTH: 'ไม่เร่งรัด & เกียรติร่าง', shortTH: 'ให้เกียรติร่าง' }
+        ];
+
+        const RADAR_AXES_SBAR = [
+            { key: 'setting', labelTH: 'S: สถานการณ์วิกฤต', shortTH: 'S: สถานการณ์' },
+            { key: 'empathy', labelTH: 'B: ประวัติ & ผลตรวจ', shortTH: 'B: ประวัติ' },
+            { key: 'clarity', labelTH: 'A: ประเมิน DI & Donor', shortTH: 'A: ประเมิน' },
+            { key: 'vocal',   labelTH: 'R: แผน DDAVP & ODC', shortTH: 'R: ข้อเสนอ' },
+            { key: 'dignity', labelTH: 'ความกระชับแม่นยำ', shortTH: 'ความกระชับ' }
+        ];
+
+        const PERSONAS_DATA = [
+            {
+                id: 'standard', tagTH: 'เคสที่ 1 • สมองตาย', icon: 'HeartPulse',
+                titleTH: 'คุณแพรว (ลูกสาว) — สับสนเรื่องเครื่องช่วยหายใจ',
+                descTH: 'เห็นหน้าอกคุณพ่อยังขยับและตัวยังอุ่น จึงไม่เชื่อว่าสมองตายถาวรแล้ว',
+                speakerRoleTH: 'คุณแพรว (ลูกสาว • อนิเมะหญิง)',
+                voicePrimary: 'Sulafat', openingEmotion: 'CONFUSED',
+                openingTH: 'เมื่อกี้หนูเพิ่งไปจับมือคุณพ่อ ตัวพ่อก็ยังอุ่น หน้าอกก็ยังขยับหายใจอยู่เลยค่ะ ตกลงคุณพ่อยังไม่เสียใช่ไหมคะ?',
+                openingEN: 'I just held my father’s hand and his chest is still moving. He is still warm—how can he be brain dead?',
+                openingActionTH: 'จับมือแน่น แววตาสับสนและคาดหวัง',
+                icuBrief: { patient: 'ชาย 54 ปี • Severe TBI', vitals: 'BP 112/68 • HR 84 • SpO₂ 99% (On Ventilator)', brainDeath: 'แพทย์ 3 ท่านยืนยันสมองตายครบ 2 ครั้ง ห่างกัน 6 ชม.' },
+                barriers: [
+                    { id: 'b1', labelTH: 'รับรู้อารมณ์สูญเสียอย่างอ่อนโยน', keywords: ['เสียใจ', 'เข้าใจ', 'ทำใจ', 'รัก', 'อบอุ่น', 'sorry', 'understand'], hintTH: 'ลองกล่าวแสดงความเสียใจและรับรู้ความรู้สึกที่เห็นตัวคุณพ่อยังอุ่นก่อนอธิบายทางการแพทย์ค่ะ' },
+                    { id: 'b2', labelTH: 'อธิบายความต่างของเครื่องช่วยหายใจกับสมองตาย', keywords: ['เครื่องช่วยหายใจ', 'เป่าลม', 'ก้านสมอง', 'แพทย์ 3 ท่าน', '6 ชั่วโมง', 'ventilator', 'brainstem'], hintTH: 'อธิบายว่าหน้าอกที่ขยับเกิดจากเครื่องช่วยหายใจ แต่ก้านสมองหยุดทำงานถาวรซึ่งแพทย์ 3 ท่านยืนยันครบ 2 ครั้งแล้วค่ะ' },
+                    { id: 'b3', labelTH: 'ไม่เร่งรัด & ให้เวลาครอบครัว (Decoupling)', keywords: ['ไม่เร่ง', 'ให้เวลา', 'พัก', 'อยู่ข้าง', 'ปรึกษา', 'time', 'rush'], hintTH: 'ย้ำว่าจะไม่เร่งรัดและเปิดเวลาให้ครอบครัวได้อยู่กับคุณพ่ออย่างสงบก่อนค่ะ' }
+                ]
+            },
+            {
+                id: 'belief', tagTH: 'เคสที่ 2 • ความเชื่อ', icon: 'Sparkles',
+                titleTH: 'คุณฝน (พี่สาว) — กังวลเรื่องความเชื่อและพิธีทางศาสนา',
+                descTH: 'กลัวว่าร่างน้องชายจะไม่ครบ 32 ประการและทำพิธีทางศาสนาไม่ได้',
+                speakerRoleTH: 'คุณฝน (พี่สาว • อนิเมะหญิง)',
+                voicePrimary: 'Aoede', openingEmotion: 'HESITANT',
+                openingTH: 'พี่ก็อยากให้น้องได้ทำบุญใหญ่นะคะ แต่ผู้ใหญ่ที่บ้านกังวลมาก กลัวว่าร่างน้องจะไม่สมบูรณ์ ชาติหน้าจะไม่ครบ 32 ค่ะ',
+                openingEN: 'We worry that organ donation might leave his body incomplete for our religious ceremony.',
+                openingActionTH: 'กุมมือแน่น แววตากังวลและลังเล',
+                icuBrief: { patient: 'ชาย 29 ปี • MCA Head Injury', vitals: 'BP 108/66 • HR 88 • Temp 36.7°C', brainDeath: 'ยืนยันภาวะสมองตายสมบูรณ์ แจ้งข่าวร้ายแล้ว 2 ชม.' },
+                barriers: [
+                    { id: 'b1', labelTH: 'เคารพความเชื่อและศาสนาของครอบครัว', keywords: ['เคารพ', 'ความเชื่อ', 'ศาสนา', 'บุญ', 'ทานบารมี', 'respect', 'belief'], hintTH: 'แสดงความเคารพในความเชื่อของครอบครัวและเชื่อมโยงการช่วยชีวิตเป็นทานบารมีอันยิ่งใหญ่ค่ะ' },
+                    { id: 'b2', labelTH: 'ยืนยันการตกแต่งร่างประณีตสมเกียรติ', keywords: ['ตกแต่งร่าง', 'เรียบร้อย', 'สมบูรณ์', 'สมเกียรติ', 'ประณีต', 'restore', 'dignity'], hintTH: 'ยืนยันว่าทีมศัลยแพทย์จะดูแลตกแต่งร่างอย่างประณีตเรียบร้อยเหมือนเดิมทุกประการค่ะ' },
+                    { id: 'b3', labelTH: 'ยืนยันทำพิธีทางศาสนาได้ตามปกติ', keywords: ['พิธี', 'ศาสนา', 'รดน้ำ', 'ปกติ', 'ceremony', 'funeral'], hintTH: 'ให้ความมั่นใจว่าสามารถประกอบพิธีรดน้ำศพและพิธีทางศาสนาได้ตามประเพณีปกติค่ะ' }
+                ]
+            },
+            {
+                id: 'conflict', tagTH: 'เคสที่ 3 • 2 ตัวละคร', icon: 'Users',
+                titleTH: 'ภรรยา & คุณแม่ — ความเห็นในครอบครัวขัดแย้งกัน',
+                descTH: 'ผู้ป่วยทำบัตรจำนงไว้ ภรรยาอยากทำตามเจตนา แต่คุณแม่คัดค้านเสียงแข็ง',
+                speakerRoleTH: '2 ตัวละคร (ภรรยา + คุณแม่)',
+                voicePrimary: 'Sulafat', voiceSecondary: 'Vindemiatrix', openingEmotion: 'ANGRY',
+                openingTH: '[ภรรยา]: พี่ต้นทำบัตรบริจาคอวัยวะไว้ หนูอยากทำตามความตั้งใจสุดท้ายของพี่เขาค่ะ [คุณแม่]: แม่ไม่ยอมเด็ดขาด! แม่เลี้ยงลูกมา ใครจะมาผ่าลูกแม่ไม่ได้!',
+                openingEN: '[Wife]: He signed a donor card. [Mother]: Never! I will not allow anyone to touch my son!',
+                openingActionTH: 'ภรรยาและคุณแม่โต้เถียงกันเสียงสั่นเครือ',
+                icuBrief: { patient: 'ชาย 38 ปี • Ruptured Aneurysm (มีบัตรจำนง)', vitals: 'BP 116/72 • HR 92 • MAP 86', brainDeath: 'ยืนยันสมองตายสมบูรณ์ ภรรยาและมารดาอยู่ในห้องรับรอง' },
+                barriers: [
+                    { id: 'b1', labelTH: 'วางตัวเป็นกลาง รับรู้ความรักของทั้งสองฝ่าย', keywords: ['ทั้งสองท่าน', 'ความรัก', 'เป็นกลาง', 'เข้าใจทั้ง', 'คุณแม่', 'ภรรยา', 'both', 'love'], hintTH: 'กล่าวรับรู้ความรักที่ทั้งภรรยาและคุณแม่มีต่อผู้ป่วยโดยไม่เข้าข้างฝ่ายใดค่ะ' },
+                    { id: 'b2', labelTH: 'ยืนยันไม่ฝืนใจญาติสายตรงแม้มีบัตรจำนง', keywords: ['ไม่ฝืนใจ', 'ไม่บังคับ', 'สายตรง', 'ยินยอม', 'force', 'consent'], hintTH: 'ยืนยันชัดเจนว่าตามหลักจริยธรรมไทย เราจะไม่ฝืนใจคุณแม่เด็ดขาดแม้มีบัตรจำนงค่ะ' },
+                    { id: 'b3', labelTH: 'ให้เวลาส่วนตัวครอบครัวปรึกษากันอย่างสงบ', keywords: ['เวลาส่วนตัว', 'ปรึกษา', 'ไม่เร่ง', 'คุยกัน', 'private', 'time'], hintTH: 'เสนอเปิดพื้นที่ส่วนตัวให้ทั้งสองท่านได้พูดคุยปลอบใจกันก่อนโดยไม่เร่งรัดค่ะ' }
+                ]
+            },
+            {
+                id: 'distrust', tagTH: 'เคสที่ 4 • ความโปร่งใส', icon: 'ShieldAlert',
+                titleTH: 'คุณนุช (น้องสาว) — กังวลเรื่องความโปร่งใสและค่าใช้จ่าย',
+                descTH: 'ระแวงว่าจะนำอวัยวะไปให้คนรวยลัดคิว และกลัวครอบครัวต้องจ่ายเงินเพิ่ม',
+                speakerRoleTH: 'คุณนุช (น้องสาว • อนิเมะหญิง)',
+                voicePrimary: 'Kore', openingEmotion: 'ANGRY',
+                openingTH: 'ขอถามตรงๆ นะคะ ที่ชวนบริจาคเนี่ย จะเอาอวัยวะพี่ชายไปขายหรือให้คนมีเงินลัดคิวใช่ไหมคะ แล้วบ้านหนูต้องเสียค่าผ่าตัดเพิ่มหรือเปล่า?',
+                openingEN: 'Are you going to sell his organs to wealthy patients? Will our family be charged extra fees?',
+                openingActionTH: 'กอดอก จ้องตาอย่างระแวง',
+                icuBrief: { patient: 'ชาย 44 ปี • Hemorrhagic Stroke', vitals: 'BP 110/68 • HR 86 • On Levophed low dose', brainDeath: 'ยืนยันสมองตายครบเกณฑ์ ญาติสายตรงขอซักถามระบบจัดสรร' },
+                barriers: [
+                    { id: 'b1', labelTH: 'รับฟังข้อกังวลอย่างสุภาพไม่โต้เถียง', keywords: ['เข้าใจความกังวล', 'ถามได้เต็มที่', 'ยินดีชี้แจง', 'สุภาพ', 'understand', 'transparent'], hintTH: 'รับฟังด้วยความใจเย็น ไม่โต้เถียง และชื่นชมที่ญาติถามอย่างตรงไปตรงมาค่ะ' },
+                    { id: 'b2', labelTH: 'ชี้แจงระบบคอมพิวเตอร์กลาง ODC สภากาชาดไทย', keywords: ['สภากาชาด', 'ODC', 'คอมพิวเตอร์', 'เนื้อเยื่อ', 'ลัดคิว', 'Red Cross', 'computer'], hintTH: 'อธิบายว่าการจัดสรรทำผ่านระบบคอมพิวเตอร์กลาง ODC สภากาชาดไทยตามความเข้ากันได้ของเนื้อเยื่อ ไร้การซื้อขายลัดคิวค่ะ' },
+                    { id: 'b3', labelTH: 'ยืนยันครอบครัวไม่มีค่าใช้จ่ายเพิ่มเติม', keywords: ['ไม่มีค่าใช้จ่าย', 'ไม่เสียเงิน', 'ฟรี', 'รับผิดชอบ', 'zero cost', 'no charge'], hintTH: 'ยืนยันชัดเจนว่าครอบครัวผู้บริจาคไม่มีค่าใช้จ่ายเพิ่มเติมใดๆ ทั้งสิ้นค่ะ' }
+                ]
+            },
+            {
+                id: 'pediatric', tagTH: 'เคสที่ 5 • โศกเศร้าลึก', icon: 'HeartHandshake',
+                titleTH: 'คุณแม่ (มารดาผู้ป่วยวัยรุ่น) — โศกเศร้าอย่างรุนแรง',
+                descTH: 'สูญเสียลูกกะทันหัน ร้องไห้หนักและยังรับความจริงไม่ได้',
+                speakerRoleTH: 'คุณแม่ (มารดาอาวุโส • อนิเมะมวยผม)',
+                voicePrimary: 'Vindemiatrix', openingEmotion: 'SAD',
+                openingTH: 'ไม่จริงใช่ไหมคะ... เมื่อเช้าลูกยังยิ้มหอมแก้มแม่ไปโรงเรียนอยู่เลย ทำไมฟ้าใจร้ายกับแม่ขนาดนี้ แม่รับไม่ได้ค่ะ...',
+                openingEN: 'This cannot be real... he smiled at me just this morning. I cannot bear losing my child...',
+                openingActionTH: 'ร้องไห้สะอื้น ก้มหน้าด้วยความโศกเศร้า',
+                icuBrief: { patient: 'วัยรุ่น 17 ปี • อุบัติเหตุจราจร', vitals: 'BP 102/64 • HR 96 • Stable', brainDeath: 'ยืนยันสมองตายครบ 2 ครั้ง คุณแม่เพิ่งทราบข่าวร้าย' },
+                barriers: [
+                    { id: 'b1', labelTH: 'อยู่เคียงข้างและใช้ความเงียบเยียวยา 2.5 วิ', keywords: ['เสียใจ', 'อยู่ตรงนี้', 'เคียงข้าง', 'ไม่เป็นไร', 'ร้องไห้ได้', 'here with you', 'silence'], hintTH: 'ลองใช้ปุ่ม "เว้นความเงียบ 2.5 วิ" และบอกคุณแม่ว่าเราอยู่เคียงข้างให้คุณแม่ร้องไห้ได้อย่างเต็มที่ค่ะ' },
+                    { id: 'b2', labelTH: 'รับฟังความทรงจำและเชิดชูคุณค่าของลูก', keywords: ['ความรัก', 'ลูกน่ารัก', 'ภูมิใจ', 'ใจดี', 'ความทรงจำ', 'proud', 'memory'], hintTH: 'รับฟังเรื่องราวความน่ารักของลูกและเชื่อมโยงความเมตตาของลูกอย่างอ่อนโยนที่สุดค่ะ' },
+                    { id: 'b3', labelTH: 'ไม่เร่งรัดและให้เวลาคุณแม่เต็มที่', keywords: ['ไม่เร่ง', 'ให้เวลา', 'พร้อม', 'ค่อยๆ', 'take your time', 'no rush'], hintTH: 'ย้ำว่าจะไม่เร่งรัดใดๆ ให้คุณแม่มีเวลาอยู่กับลูกอย่างสงบค่ะ' }
+                ]
+            },
+            {
+                id: 'sbar_doctor', tagTH: 'เคสที่ 6 • SBAR ICU', icon: 'Stethoscope',
+                titleTH: 'นพ.ภาคิน (แพทย์เวร ICU) — ส่งเวร SBAR เคส Potential Donor + DI',
+                descTH: 'ฝึกส่งเวรแบบ SBAR กระชับแม่นยำ กรณีผู้ป่วยสมองตายมีปัสสาวะใสออกมาก (DI)',
+                speakerRoleTH: 'นพ.ภาคิน (แพทย์ ICU • อนิเมะชาย)',
+                voicePrimary: 'Puck', openingEmotion: 'CONFUSED',
+                openingTH: 'สวัสดีครับ มีเคสด่วนใน ICU เตียง 4 ใช่ไหมครับ ช่วยรายงานแบบ SBAR สั้นๆ กระชับเลยครับ ตอนนี้ผู้ป่วยเป็นยังไงบ้าง?',
+                openingEN: 'Hello, I hear we have an urgent update for ICU Bed 4. Please give me a concise SBAR handoff.',
+                openingActionTH: 'เปิดชาร์ตผู้ป่วย รอฟังรายงาน SBAR ที่กระชับแม่นยำ',
+                icuBrief: { patient: 'เตียง 4: ชาย 41 ปี • Severe TBI (Potential Donor)', vitals: 'GCS E1V1M1 (3), Fixed Pupils 5mm, BP 88/54, Urine 640 mL/hr ใส, Na 154 mEq/L', brainDeath: 'สงสัยภาวะ Central DI ต้องคุมสารน้ำ, DDAVP และประสานทีม ODC' },
+                barriers: [
+                    { id: 'b1', labelTH: 'S + B: ระบุเตียง/อายุ/TBI และ GCS 3 ชัดเจน', keywords: ['เตียง 4', '41', 'TBI', 'GCS', 'รูม่านตา', 'bed 4', 'pupil'], hintTH: 'รายงาน S+B: เตียง 4 ชาย 41 ปี อุบัติเหตุศีรษะรุนแรง ตอนนี้ GCS=3 รูม่านตาขยายไม่ตอบสนองแสงค่ะ' },
+                    { id: 'b2', labelTH: 'A: ประเมินภาวะเบาจืด (Central DI) + ปัสสาวะ/Na', keywords: ['เบาจืด', 'DI', '640', '154', 'ปัสสาวะ', 'โซเดียม', 'diabetes insipidus'], hintTH: 'รายงาน A: สงสัยภาวะเบาจืดจากสมอง (Central DI) เพราะปัสสาวะใสออก 640 mL/hr และ Na สูง 154 ค่ะ' },
+                    { id: 'b3', labelTH: 'R: เสนอให้สารน้ำ ยา DDAVP และประสานทีม TC/ODC', keywords: ['DDAVP', 'Desmopressin', 'สารน้ำ', 'ประสาน', 'ODC', 'TC', 'fluids'], hintTH: 'รายงาน R: ขอพิจารณาให้สารน้ำทดแทน ยา DDAVP และขออนุญาตประสานทีม TC/ODC คัดกรอง Potential Donor ค่ะ' }
+                ]
+            }
+        ];
+
+        const MICRO_DRILL_STAGES = [
+            {
+                id: 'd1', badgeTH: 'ด่าน 1/4 • เครื่องช่วยหายใจ', personaId: 'standard', emotion: 'CONFUSED',
+                actionTH: 'คุณแพรวมองจอ Monitor ด้วยแววตาสับสน',
+                promptTH: 'ทำไมคุณหมอบอกว่าพ่อเสียแล้ว แต่หนูยังเห็นหน้าอกพ่อขยับและตัวก็ยังอุ่นอยู่เลยคะ?',
+                keywords: ['เครื่องช่วยหายใจ', 'เป่าลม', 'ก้านสมอง', 'แพทย์ 3 ท่าน', 'เข้าใจ', 'เสียใจ'],
+                modelAnswerTH: 'เข้าใจเลยค่ะว่าเห็นหน้าอกคุณพ่อยังขยับแล้วทำใจเชื่อยากมาก หน้าอกที่ขยับเกิดจากเครื่องช่วยหายใจที่เป่าลมแทน ส่วนก้านสมองหยุดทำงานถาวรซึ่งแพทย์ 3 ท่านตรวจยืนยันครบ 2 ครั้งแล้วค่ะ'
+            },
+            {
+                id: 'd2', badgeTH: 'ด่าน 2/4 • ความเชื่อ & ร่างสมบูรณ์', personaId: 'belief', emotion: 'HESITANT',
+                actionTH: 'คุณฝนกังวลเรื่องพิธีทางศาสนา',
+                promptTH: 'ถ้าบริจาคอวัยวะ ร่างน้องจะไม่สมบูรณ์ ทำพิธีรดน้ำศพไม่ได้ใช่ไหมคะ?',
+                keywords: ['ตกแต่งร่าง', 'เรียบร้อย', 'สมบูรณ์', 'สมเกียรติ', 'พิธี', 'ปกติ'],
+                modelAnswerTH: 'เราเคารพความเชื่อของครอบครัวเสมอค่ะ ทีมศัลยแพทย์จะดูแลตกแต่งร่างให้เรียบร้อยสมบูรณ์อย่างสมเกียรติที่สุด สามารถประกอบพิธีรดน้ำศพและพิธีทางศาสนาได้ตามปกติทุกประการค่ะ'
+            },
+            {
+                id: 'd3', badgeTH: 'ด่าน 3/4 • ความโปร่งใส ODC', personaId: 'distrust', emotion: 'ANGRY',
+                actionTH: 'คุณนุชถามเสียงแข็งด้วยความระแวง',
+                promptTH: 'บริจาคไปแล้วจะเอาไปให้คนรวยลัดคิวไหม แล้วบ้านหนูต้องเสียค่าผ่าตัดเพิ่มหรือเปล่า?',
+                keywords: ['สภากาชาด', 'ODC', 'คอมพิวเตอร์', 'เนื้อเยื่อ', 'ไม่มีค่าใช้จ่าย', 'ไม่ลัดคิว'],
+                modelAnswerTH: 'ยินดีชี้แจงอย่างโปร่งใสเลยค่ะ การจัดสรรอวัยวะทำผ่านระบบคอมพิวเตอร์กลางของศูนย์รับบริจาคอวัยวะสภากาชาดไทย (ODC) ตามความเข้ากันได้ของเนื้อเยื่อ ไม่มีการลัดคิว และครอบครัวไม่มีค่าใช้จ่ายเพิ่มเติมเลยค่ะ'
+            },
+            {
+                id: 'd4', badgeTH: 'ด่าน 4/4 • ครอบครัวเห็นต่าง', personaId: 'conflict', emotion: 'ANGRY',
+                actionTH: 'คุณแม่และภรรยามีความเห็นขัดแย้งกัน',
+                promptTH: '[ภรรยา]: พี่เขาทำบัตรบริจาคไว้ค่ะ [คุณแม่]: แต่แม่ไม่ยอมเด็ดขาด ใครก็ห้ามผ่าลูกแม่!',
+                keywords: ['ทั้งสองท่าน', 'ความรัก', 'ไม่ฝืนใจ', 'เวลาส่วนตัว', 'ปรึกษา', 'เป็นกลาง'],
+                modelAnswerTH: 'สัมผัสได้ถึงความรักที่ทั้งภรรยาและคุณแม่มีให้คุณต้นค่ะ ตามหลักจริยธรรมไทยเราจะไม่ฝืนใจคุณแม่เด็ดขาดแม้มีบัตรจำนง เพราะสายสัมพันธ์ครอบครัวสำคัญที่สุด ขอให้ทั้งสองท่านมีเวลาส่วนตัวปรึกษากันก่อนโดยไม่เร่งรัดนะคะ'
+            }
+        ];
+
+        const QUICK_REPLIES_MAP = {
+            th: {
+                standard: ['ขอแสดงความเสียใจอย่างสุดซึ้งค่ะ เข้าใจว่าเห็นตัวคุณพ่อยังอุ่นแล้วทำใจยากมาก', 'หน้าอกที่ขยับเกิดจากเครื่องช่วยหายใจที่เป่าลมแทน ส่วนก้านสมองหยุดทำงานถาวรซึ่งแพทย์ 3 ท่านตรวจยืนยันครบ 2 ครั้งแล้วค่ะ', 'เราจะไม่เร่งรัดใดๆ เลยค่ะ ขอให้ครอบครัวมีเวลาอยู่กับคุณพ่ออย่างสงบก่อนนะคะ'],
+                belief: ['เราเคารพความเชื่อของครอบครัวเสมอค่ะ ในทางศาสนาการช่วยต่อชีวิตถือเป็นทานบารมีอันยิ่งใหญ่', 'ทีมศัลยแพทย์จะดูแลตกแต่งร่างให้เรียบร้อยสมบูรณ์อย่างสมเกียรติทุกประการค่ะ', 'ครอบครัวสามารถทำพิธีรดน้ำศพและประกอบพิธีทางศาสนาได้ตามปกติค่ะ'],
+                conflict: ['สัมผัสได้ถึงความรักที่ทั้งภรรยาและคุณแม่มีให้ผู้ป่วยค่ะ', 'ตามหลักจริยธรรมไทย เราจะไม่ฝืนใจคุณแม่เด็ดขาดแม้จะมีบัตรแสดงความจำนงค่ะ', 'ขอให้ทั้งสองท่านมีเวลาส่วนตัวปรึกษากันก่อนโดยไม่เร่งรัดเลยนะคะ'],
+                distrust: ['เข้าใจความกังวลและยินดีชี้แจงทุกข้อสงสัยอย่างโปร่งใสค่ะ', 'การจัดสรรอวัยวะทำผ่านระบบคอมพิวเตอร์กลางของสภากาชาดไทย (ODC) ตามความเข้ากันได้ของเนื้อเยื่อ ไม่มีการลัดคิวค่ะ', 'ครอบครัวผู้บริจาคไม่มีค่าใช้จ่ายเพิ่มเติมใดๆ ทั้งสิ้นค่ะ'],
+                pediatric: ['ขอแสดงความเสียใจด้วยหัวใจจริงค่ะ หนูอยู่ตรงนี้เคียงข้างคุณแม่นะคะ ร้องไห้ได้เลยค่ะ', 'คุณแม่คงภูมิใจในความน่ารักและจิตใจดีของน้องมากเลยนะคะ', 'เราจะไม่เร่งรัดใดๆ ทั้งสิ้นค่ะ ขอให้คุณแม่มีเวลาอยู่กับน้องอย่างเต็มที่ก่อนนะคะ'],
+                sbar_doctor: ['รายงาน SBAR ค่ะ เตียง 4 ชาย 41 ปี Severe TBI ตอนนี้ GCS=3 รูม่านตาขยาย 5 มม. ไม่ตอบสนองแสงค่ะ', 'ประเมิน (A) สงสัยภาวะเบาจืดจากสมอง (Central DI) ปัสสาวะใสออก 640 mL/hr และ Na 154 mEq/L BP 88/54 ค่ะ', 'ข้อเสนอ (R) ขอพิจารณาให้สารน้ำทดแทน ยา DDAVP และขออนุญาตประสานทีม TC/ODC คัดกรอง Potential Donor ค่ะ']
+            },
+            en: {
+                standard: ['I am deeply sorry for your loss. It is completely understandable to feel confused seeing his chest move.', 'The ventilator is breathing for him, while three physicians have confirmed irreversible brain death twice, six hours apart.', 'There is no rush at all. Please take all the private time your family needs with him.'],
+                sbar_doctor: ['SBAR for ICU Bed 4: 41-year-old male with severe TBI, GCS 3, fixed dilated pupils.', 'Assessment: Suspected Central Diabetes Insipidus with clear urine 640 mL/hr, Na 154, BP 88/54.', 'Recommendation: Consider IV fluids, DDAVP, and notifying the TC/ODC team for potential donor evaluation.']
+            }
+        };
+
+        const FALLBACK_SL = {
+            EMOTIONS: EMOTIONS_DATA,
+            RADAR_AXES: RADAR_AXES_FAMILY,
+            SBAR_RADAR_AXES: RADAR_AXES_SBAR,
+            MICRO_DRILL_STAGES,
+            ADVISOR_GOALS: [
+                { id: 'balanced', label: 'แนะนำตามวิชาชีพ' },
+                { id: 'empathy', label: 'ฝึกปลอบใจ & ความเงียบ' },
+                { id: 'conflict', label: 'รับมือครอบครัวขัดแย้ง' },
+                { id: 'sbar', label: 'ฝึกส่งเวร SBAR แพทย์' }
+            ],
+            ADVISOR_QUICK_QUESTIONS: [
+                'หลัก Decoupling คืออะไร?',
+                'ต้องเว้นความเงียบกี่วินาที?',
+                'ถ้าญาติคัดค้านแม้มีบัตรบริจาค?'
+            ],
+            SELF_EFFICACY_ITEMS: [
+                { key: 'e1', labelTH: '1. มั่นใจในการอธิบายภาวะสมองตายอย่างอ่อนโยน' },
+                { key: 'e2', labelTH: '2. มั่นใจในการรับมืออารมณ์โศกเศร้าและข้อคัดค้านของญาติ' },
+                { key: 'e3', labelTH: '3. มั่นใจในการประสานงานทีมแพทย์และศูนย์ ODC' }
+            ],
+            getPersonas: () => PERSONAS_DATA,
+            getRadarAxes: (pid) => (pid === 'sbar_doctor' ? RADAR_AXES_SBAR : RADAR_AXES_FAMILY),
+            getCoachQuickReplies: (pid, lang = 'th') => (QUICK_REPLIES_MAP[lang]?.[pid] || QUICK_REPLIES_MAP.th[pid] || QUICK_REPLIES_MAP.th.standard),
+            getCaseBarriers: (pid) => (PERSONAS_DATA.find(p => p.id === pid)?.barriers || PERSONAS_DATA[0].barriers),
+            resolveProfessionGroup: (u) => {
+                const ex = String(u?.professionGroup || '').trim();
+                if (ex === 'พยาบาล' || ex === 'แพทย์' || ex === 'บุคลากรสหวิชาชีพ') return ex;
+                const txt = `${u?.name || ''} ${u?.position || ''}`;
+                if (/(นพ\.|พญ\.|แพทย์|doctor)/i.test(txt) && !/พยาบาล/.test(txt)) return 'แพทย์';
+                if (/(พว\.|พยาบาล|nurse)/i.test(txt)) return 'พยาบาล';
+                return 'บุคลากรสหวิชาชีพ';
+            },
+            computeLabRecommendation: (u, goalId = 'balanced') => {
+                const prof = FALLBACK_SL.resolveProfessionGroup(u);
+                if (goalId === 'sbar') return { personaId: 'sbar_doctor', modeId: 'roleplay_th', difficultyId: 'normal', headline: 'แนะนำฝึกเคสที่ 6: ส่งเวร SBAR กับ นพ.ภาคิน', reason: 'ซ้อมรายงานภาวะเบาจืด (Central DI) และขอพิจารณา DDAVP ให้กระชับแม่นยำภายใน 2 นาทีค่ะ' };
+                if (goalId === 'conflict') return { personaId: 'conflict', modeId: 'roleplay_th', difficultyId: 'normal', headline: 'แนะนำฝึกเคสที่ 3: ภรรยา & คุณแม่ (2 ตัวละคร)', reason: 'ฝึกวางตัวเป็นกลางเมื่อครอบครัวเห็นต่างแม้ผู้ป่วยมีบัตรแสดงความจำนงค่ะ' };
+                if (goalId === 'empathy') return { personaId: 'pediatric', modeId: 'roleplay_th', difficultyId: 'normal', headline: 'แนะนำฝึกเคสที่ 5: คุณแม่ผู้สูญเสีย & ความเงียบ 2.5 วิ', reason: 'ฝึกการอยู่เคียงข้างและใช้พลังความเงียบเยียวยาอย่างอ่อนโยนที่สุดค่ะ' };
+                if (prof === 'แพทย์') return { personaId: 'distrust', modeId: 'roleplay_th', difficultyId: 'normal', headline: 'แนะนำสำหรับกลุ่มแพทย์: เคสความโปร่งใส ODC', reason: 'ซ้อมอธิบายเกณฑ์สมองตายและการจัดสรรอวัยวะอย่างโปร่งใสด้วยน้ำเสียงสงบมั่นคงค่ะ' };
+                if (prof === 'บุคลากรสหวิชาชีพ') return { personaId: 'belief', modeId: 'roleplay_th', difficultyId: 'normal', headline: 'แนะนำสำหรับสหวิชาชีพ: เคสความเชื่อ & พิธีทางศาสนา', reason: 'ฝึกคลายความกังวลด้านวัฒนธรรม การตกแต่งร่าง และพิธีกรรมทางศาสนาค่ะ' };
+                return { personaId: 'standard', modeId: 'roleplay_th', difficultyId: 'normal', headline: 'แนะนำสำหรับพยาบาล: เคสที่ 1 คุณแพรว (สมองตาย)', reason: 'ปูพื้นฐานการสื่อสารแบบ Decoupling อธิบายเครื่องช่วยหายใจและสร้างความไว้วางใจค่ะ' };
+            },
+            answerAdvisorQuestion: (q) => {
+                if (q.includes('Decoupling')) return 'หลัก Decoupling คือการแยกช่วงเวลาการแจ้งข่าวภาวะสมองตาย ออกจากการพูดคุยเรื่องการบริจาคอวัยวะ เพื่อให้ครอบครัวมีเวลาตั้งสติและยอมรับความจริงก่อนค่ะ';
+                if (q.includes('ความเงียบ')) return 'ควรเว้นความเงียบเยียวยาอย่างน้อย 2.5 วินาทีหลังญาติร้องไห้หรือช็อก เพื่อให้พื้นที่ปลอดภัยทางอารมณ์โดยไม่พูดแทรกค่ะ';
+                return 'ตามหลักจริยธรรมไทย แม้ผู้ป่วยจะมีบัตรจำนง แต่หากญาติสายตรงคัดค้าน เราจะไม่ฝืนใจเด็ดขาด ให้วางตัวเป็นกลางและเปิดเวลาให้ครอบครัวปรึกษากันค่ะ';
+            },
+            detectTriggerPhrases: (text) => {
+                const bad = ['ถอดเครื่อง', 'ศพ', 'รีบเซ็น', 'บังคับ', 'อย่าเรื่องมาก', 'ไม่ช่วยก็ตาย', 'pull the plug', 'corpse'];
+                return bad.filter(w => String(text || '').toLowerCase().includes(w));
+            },
+            evaluateBarriersUnlocked: (pid, learnerTexts = []) => {
+                const barriers = FALLBACK_SL.getCaseBarriers(pid);
+                const joined = learnerTexts.join(' ').toLowerCase();
+                return barriers.filter(b => (b.keywords || []).some(k => joined.includes(k.toLowerCase()))).map(b => b.id);
+            },
+            getRemainingBarrierHint: (pid, unlockedIds = []) => {
+                const rem = FALLBACK_SL.getCaseBarriers(pid).find(b => !unlockedIds.includes(b.id));
+                return rem ? rem.hintTH : 'คุณปลดล็อกปมสำคัญครบทั้ง 3 ข้อแล้วค่ะ สามารถกด “จบเคส & ประเมินผล 5 แกน” ได้เลยค่ะ';
+            },
+            splitDualSpeakerSegments: (text, persona) => {
+                const raw = String(text || '').trim();
+                if (persona?.id === 'conflict' && raw.includes('[ภรรยา]') && raw.includes('[คุณแม่]')) {
+                    const parts = raw.split(/(?=\[คุณแม่\])/).map(s => s.trim()).filter(Boolean);
+                    return parts.map(p => p.startsWith('[คุณแม่]')
+                        ? { speakerKey: 'mother', badgeTH: 'คุณแม่ (คัดค้าน)', voiceName: 'Vindemiatrix', text: p.replace(/^\[คุณแม่\]:?\s*/, '') }
+                        : { speakerKey: 'wife', badgeTH: 'ภรรยา (ผู้ป่วย)', voiceName: 'Sulafat', text: p.replace(/^\[ภรรยา\]:?\s*/, '') }
+                    );
+                }
+                return [{ speakerKey: 'primary', badgeTH: persona?.speakerRoleTH || 'คู่สนทนา', voiceName: persona?.voicePrimary || 'Sulafat', text: raw }];
+            },
+            evaluateMicroDrillAnswer: (stage, answer) => {
+                const low = String(answer || '').toLowerCase();
+                const hits = (stage.keywords || []).filter(k => low.includes(k.toLowerCase())).length;
+                const triggers = FALLBACK_SL.detectTriggerPhrases(answer);
+                const score = Math.max(45, Math.min(100, 62 + hits * 12 - triggers.length * 18));
+                return {
+                    score,
+                    passed: score >= 75,
+                    feedbackTH: triggers.length > 0
+                        ? `พบถ้อยคำที่อาจกระทบจิตใจ (${triggers.join(', ')}) แนะนำปรับใช้คำที่อ่อนโยนและให้เกียรติครอบครัวมากขึ้นค่ะ`
+                        : (score >= 80 ? 'ตอบได้อ่อนโยน ชัดเจน และตรงประเด็นทางคลินิกมากค่ะ!' : 'สื่อสารได้ดีค่ะ ลองเสริมคำสำคัญทางคลินิกหรือการให้เกียรติตามแนวทางตัวอย่างด้านล่างเพิ่มเติมนะคะ')
+                };
+            },
+            evaluateConversationFallback: ({ personaId, messages, unlockedIds, silenceCount, triggerTotal }) => {
+                const learnerMsgs = messages.filter(m => m.role === 'user');
+                const base = 66 + unlockedIds.length * 9 + Math.min(8, silenceCount * 3) + Math.min(6, learnerMsgs.length * 2) - triggerTotal * 12;
+                const score = Math.max(52, Math.min(98, Math.round(base)));
+                const axes = FALLBACK_SL.getRadarAxes(personaId);
+                const radar = axes.map((a, idx) => ({
+                    key: a.key,
+                    labelTH: a.labelTH,
+                    value: Math.max(50, Math.min(99, score + (idx % 2 === 0 ? 3 : -2)))
+                }));
+                const bestMsg = learnerMsgs[learnerMsgs.length - 1]?.text || 'สื่อสารด้วยความตั้งใจและรับฟังคู่สนทนาอย่างสุภาพ';
+                return {
+                    score,
+                    radar,
+                    summary: score >= 85
+                        ? 'ยอดเยี่ยมมากค่ะ! ท่านสามารถคลายปมความกังวลและสื่อสารตามมาตรฐานวิชาชีพได้อย่างนุ่มนวลและน่าเชื่อถือ'
+                        : 'สื่อสารได้ดีและมีพื้นฐานความเห็นอกเห็นใจค่ะ หากเก็บประเด็นปมสำคัญให้ครบทั้ง 3 ข้อและเว้นจังหวะความเงียบ 2.5 วิ จะยิ่งสมบูรณ์แบบค่ะ',
+                    goldenMoment: `“${bestMsg.slice(0, 140)}”`,
+                    turningPoint: FALLBACK_SL.getRemainingBarrierHint(personaId, unlockedIds)
+                };
+            },
+            computeClinicalBadges: (u) => {
+                const hist = Array.isArray(u?.skillLabHistory) ? u.skillLabHistory : [];
+                const best = Number(u?.skillLabBestScore || 0);
+                return [
+                    { id: 'first', titleTH: 'ก้าวแรก AI Lab', descTH: 'ฝึกสื่อสารสำเร็จอย่างน้อย 1 รอบ', earned: hist.length > 0 || u?.skillLabPassed },
+                    { id: 'empathy90', titleTH: 'Empathy 85+', descTH: 'ทำคะแนน Empathy ตั้งแต่ 85 ขึ้นไป', earned: best >= 85 },
+                    { id: 'silence', titleTH: 'พลังความเงียบ', descTH: 'ใช้ความเงียบเยียวยา 2.5 วินาทีอย่างเหมาะสม', earned: hist.some(h => (h.silenceCount || 0) >= 1) }
+                ];
+            },
+            detectInAppBrowser: () => {
+                const ua = navigator.userAgent || '';
+                if (/Line\//i.test(ua)) return { isInApp: true, appName: 'LINE', externalUrl: window.location.href };
+                if (/FBAN|FBAV/i.test(ua)) return { isInApp: true, appName: 'Facebook', externalUrl: window.location.href };
+                return { isInApp: false, appName: '', externalUrl: window.location.href };
+            },
+            downloadDebriefCardPng: ({ user, persona, evalResult }) => {
+                try {
+                    const c = document.createElement('canvas'); c.width = 1200; c.height = 760;
+                    const ctx = c.getContext('2d');
+                    const g = ctx.createLinearGradient(0, 0, 1200, 760);
+                    g.addColorStop(0, '#030611'); g.addColorStop(1, '#0c1f42');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, 1200, 760);
+                    ctx.strokeStyle = 'rgba(110,231,183,0.5)'; ctx.lineWidth = 3; ctx.strokeRect(30, 30, 1140, 700);
+                    ctx.fillStyle = '#6ee7b7'; ctx.font = '700 18px JetBrains Mono, monospace';
+                    ctx.fillText('RJCLOUD.ORGAN 2.0 • AI SKILL LAB 3D DEBRIEF REPORT', 64, 92);
+                    ctx.fillStyle = '#ffffff'; ctx.font = '800 34px Prompt, sans-serif';
+                    ctx.fillText(persona?.titleTH || 'AI Skill Lab 3D', 64, 146, 1060);
+                    ctx.fillStyle = '#bae6fd'; ctx.font = '600 22px Sarabun, sans-serif';
+                    ctx.fillText(`ผู้เข้าฝึก: ${user?.name || '-'} (${user?.hospital || 'รพ.ราชวิถี'})`, 64, 192);
+                    ctx.fillStyle = '#34d399'; ctx.font = '800 84px JetBrains Mono, monospace';
+                    ctx.fillText(`${evalResult?.score || 0}/100`, 64, 306);
+                    ctx.fillStyle = '#e2e8f0'; ctx.font = '500 22px Sarabun, sans-serif';
+                    ctx.fillText(String(evalResult?.summary || '').slice(0, 86), 64, 376, 1060);
+                    ctx.fillStyle = '#fde68a'; ctx.font = '700 20px Prompt, sans-serif';
+                    ctx.fillText(`Golden Moment: ${String(evalResult?.goldenMoment || '').slice(0, 76)}`, 64, 456, 1060);
+                    ctx.fillStyle = '#7dd3fc'; ctx.font = '600 20px Sarabun, sans-serif';
+                    ctx.fillText(`ข้อเสนอแนะ: ${String(evalResult?.turningPoint || '').slice(0, 84)}`, 64, 514, 1060);
+                    const a = document.createElement('a');
+                    a.href = c.toDataURL('image/png', 1);
+                    a.download = `AI_SkillLab_Debrief_${Date.now()}.png`;
+                    a.click();
+                    return true;
+                } catch (_) { return false; }
+            }
+        };
+
+        // รวมโมดูลภายนอก (ถ้าโหลดครบ) เข้ากับ FALLBACK_SL ที่สมบูรณ์ 100%
+        const EXT_SL = (window.RJCLOUD_SKILLLAB && typeof window.RJCLOUD_SKILLLAB.getPersonas === 'function') ? window.RJCLOUD_SKILLLAB : {};
+        const SL = { ...FALLBACK_SL, ...EXT_SL };
+
+        // ============================================================================
+        // 3. 2,800-PARTICLE ENGINE: WARM FRIENDLY ANIME ⇄ EMOTION TEXT & COLOR MORPH
+        // ============================================================================
+        function mountParticleAnime2800(container, initialState) {
+            if (!container) return { update() {}, toggleDisplayMode() { return 'anime'; }, destroy() {} };
+            const st = { personaId: 'standard', emotion: 'CONFUSED', trust: 45, isSpeaking: false, activeSpeaker: 'wife', getAudioAmplitude: null, ...(initialState || {}) };
+            const PAL = {
+                CONFUSED: { textTop: 'สับสน',       textSub: 'CONFUSED', c1: [232, 246, 255], c2: [96, 198, 255],  c3: [139, 152, 255], blush: [255, 178, 206] },
+                SHOCK:    { textTop: 'ช็อก / ตกใจ', textSub: 'SHOCK',    c1: [255, 242, 245], c2: [255, 148, 168], c3: [244, 114, 148], blush: [255, 168, 194] },
+                ANGRY:    { textTop: 'คัดค้าน!',    textSub: 'TENSE',    c1: [255, 247, 238], c2: [253, 168, 96],  c3: [249, 115, 115], blush: [255, 174, 156] },
+                SAD:      { textTop: 'โศกเศร้า',    textSub: 'GRIEVING', c1: [246, 242, 255], c2: [198, 154, 255], c3: [132, 140, 255], blush: [244, 176, 224] },
+                HESITANT: { textTop: 'ลังเล',       textSub: 'HESITANT', c1: [255, 251, 238], c2: [253, 204, 82],  c3: [96, 196, 255],  blush: [255, 184, 196] },
+                CALM:     { textTop: 'สงบ • วางใจ', textSub: 'CALM',     c1: [238, 255, 248], c2: [86, 232, 182],  c3: [72, 214, 246],  blush: [255, 182, 210] }
+            };
+            const resolveAid = (pid) => (pid === 'conflict' ? 'dual' : pid === 'sbar_doctor' ? 'male' : pid === 'pediatric' ? 'elder_female' : 'female');
+
+            const canvas = document.createElement('canvas');
+            canvas.style.cssText = 'display:block;width:100%;height:100%;';
+            container.appendChild(canvas);
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return { update() {}, toggleDisplayMode() { return 'anime'; }, destroy() {} };
+
+            const drawFriendlyLayer = (c, part, prof, emoId, isDualLeft) => {
+                c.strokeStyle = '#ffffff'; c.fillStyle = '#ffffff'; c.lineCap = 'round'; c.lineJoin = 'round';
+                const hair = prof === 'elder_female' ? 'bun' : (prof === 'male' ? 'short' : 'long');
+                const isDoctor = prof === 'male';
+                if (part === 0) {
+                    c.lineWidth = 4.6;
+                    c.beginPath(); c.moveTo(-64, -14); c.bezierCurveTo(-66, 30, -44, 62, 0, 72); c.bezierCurveTo(44, 62, 66, 30, 64, -14); c.stroke();
+                    c.lineWidth = 3.6;
+                    c.beginPath(); c.arc(-66, 12, 11, Math.PI * 0.55, Math.PI * 1.48); c.stroke();
+                    c.beginPath(); c.arc(66, 12, 11, -Math.PI * 0.48, Math.PI * 0.45); c.stroke();
+                    c.beginPath(); c.arc(0, 22, 2.2, 0, Math.PI * 2); c.fill();
+                    c.lineWidth = 4.2;
+                    c.beginPath(); c.moveTo(-16, 68); c.quadraticCurveTo(-18, 86, -24, 96); c.moveTo(16, 68); c.quadraticCurveTo(18, 86, 24, 96); c.stroke();
+                    const shW = isDoctor ? 114 : 96;
+                    c.lineWidth = 4.8;
+                    c.beginPath(); c.moveTo(-shW, 152); c.quadraticCurveTo(-shW * 0.82, 102, -24, 96); c.moveTo(shW, 152); c.quadraticCurveTo(shW * 0.82, 102, 24, 96); c.stroke();
+                    if (isDoctor) {
+                        c.lineWidth = 4.0; c.beginPath(); c.moveTo(-36, 98); c.lineTo(-12, 146); c.lineTo(0, 134); c.lineTo(12, 146); c.lineTo(36, 98); c.stroke();
+                        c.lineWidth = 3.4; c.beginPath(); c.moveTo(-34, 96); c.bezierCurveTo(-48, 122, -46, 144, -36, 152); c.moveTo(34, 96); c.bezierCurveTo(48, 122, 46, 140, 36, 148); c.stroke();
+                        c.beginPath(); c.arc(36, 150, 7, 0, Math.PI * 2); c.stroke();
+                    } else {
+                        c.lineWidth = 3.8; c.beginPath(); c.moveTo(-30, 97); c.quadraticCurveTo(0, 124, 30, 97); c.stroke();
                     }
-                    const off = document.createElement('canvas'); off.width = 480; off.height = 480; const c = off.getContext('2d');
-                    const isDual = aid === 'dual'; let cur = 0;
-                    [{ p: 0, r: 0.28, z: 0 }, { p: 4, r: 0.34, z: 0.04 }, { p: 1, r: 0.16, z: 0.11 }, { p: 2, r: 0.05, z: 0.10 }, { p: 3, r: 0.06, z: 0.10 }, { p: 5, r: 0.11, z: 0.09 }].forEach((q, qi) => {
-                        c.clearRect(0, 0, 480, 480);
-                        if (isDual) {
-                            c.save(); c.translate(142, 238); c.scale(0.72, 0.72); drawFriendlyLayer(c, q.p, 'female', emo === 'ANGRY' ? 'SAD' : emo, true); c.restore();
-                            c.save(); c.translate(338, 238); c.scale(0.72, 0.72); drawFriendlyLayer(c, q.p, 'elder_female', emo, false); c.restore();
-                        } else { c.save(); c.translate(240, 225); c.scale(1.08, 1.08); drawFriendlyLayer(c, q.p, aid, emo, false); c.restore(); }
-                        const d = c.getImageData(0, 0, 480, 480).data, pts = [];
-                        for (let y = 0; y < 480; y += 2) for (let x = 0; x < 480; x += 2) if (d[(y * 480 + x) * 4 + 3] > 90) pts.push([x, y]);
-                        const n = qi === 5 ? (count - cur) : Math.floor(count * q.r);
-                        for (let i = 0; i < n && cur < count; i++) {
-                            const pk = pts[Math.floor(Math.random() * pts.length)] || [240, 235];
-                            const nx = (pk[0] - 240) / 145, ny = (pk[1] - 235) / 145;
-                            const localCx = isDual ? (pk[0] < 240 ? -0.68 : 0.68) : 0;
-                            const dx = nx - localCx, r2 = Math.min(1.4, dx * dx + ny * ny);
-                            pos[cur * 3] = nx + (Math.random() - 0.5) * 0.012;
-                            pos[cur * 3 + 1] = ny + (Math.random() - 0.5) * 0.012;
-                            pos[cur * 3 + 2] = (0.24 - r2 * 0.18) + q.z + (Math.random() - 0.5) * 0.025;
-                            part[cur] = q.p; side[cur] = (isDual && pk[0] >= 240) ? 1 : 0; cur++;
+                } else if (part === 1) {
+                    [-27, 27].forEach((ex) => {
+                        const s = ex < 0 ? -1 : 1;
+                        if (emoId === 'CALM') {
+                            c.lineWidth = 5.6; c.beginPath(); c.arc(ex, 12, 15, Math.PI * 1.12, Math.PI * 1.88); c.stroke();
+                            c.lineWidth = 3.2; c.beginPath(); c.moveTo(ex + s * 13, 6); c.lineTo(ex + s * 18, 2); c.stroke();
+                        } else {
+                            c.lineWidth = 5.8; c.beginPath(); c.moveTo(ex - s * 14, 4); c.quadraticCurveTo(ex, emoId === 'SHOCK' ? -13 : -9, ex + s * 17, emoId === 'SAD' ? 8 : 3); c.stroke();
+                            c.lineWidth = 3.6; c.beginPath(); c.ellipse(ex, 8, 10.5, emoId === 'SHOCK' ? 12.5 : (emoId === 'SAD' ? 10.5 : 11.5), 0, 0, Math.PI * 2); c.stroke();
+                            c.beginPath(); c.arc(ex - 3.8, 3.8, 4.0, 0, Math.PI * 2); c.fill();
+                            c.beginPath(); c.arc(ex + 3.6, 12.2, 2.0, 0, Math.PI * 2); c.fill();
+                            c.lineWidth = 2.2; c.beginPath(); c.arc(ex, 9, 12.5, Math.PI * 0.24, Math.PI * 0.76); c.stroke();
                         }
                     });
-                    cache[key] = { pos, part, side, eyeY: isDual ? 0.05 : -0.024, mouthY: isDual ? 0.239 : 0.258 };
+                } else if (part === 2) {
+                    c.lineWidth = 4.2;
+                    [-1, 1].forEach((s) => {
+                        let yIn = -17, yOut = -16;
+                        if (emoId === 'CALM') { yIn = -19; yOut = -17; }
+                        else if (emoId === 'SHOCK') { yIn = -26; yOut = -22; }
+                        else if (emoId === 'SAD') { yIn = -23; yOut = -13; }
+                        else if (emoId === 'ANGRY') { yIn = -11; yOut = -21; }
+                        else if (emoId === 'CONFUSED') { yIn = s < 0 ? -21 : -16; yOut = s < 0 ? -17 : -21; }
+                        else if (emoId === 'HESITANT') { yIn = -19; yOut = -15; }
+                        c.beginPath(); c.moveTo(s * 13, yIn); c.quadraticCurveTo(s * 26, Math.min(yIn, yOut) - 4, s * 40, yOut); c.stroke();
+                    });
+                } else if (part === 3) {
+                    c.lineWidth = 4.4;
+                    if (emoId === 'CALM') { c.beginPath(); c.arc(0, 38, 13, Math.PI * 0.14, Math.PI * 0.86); c.stroke(); }
+                    else if (emoId === 'SHOCK') { c.beginPath(); c.ellipse(0, 46, 7.5, 9.5, 0, 0, Math.PI * 2); c.stroke(); }
+                    else if (emoId === 'SAD') { c.beginPath(); c.arc(0, 54, 11, Math.PI * 1.18, Math.PI * 1.82); c.stroke(); }
+                    else if (emoId === 'ANGRY') { c.beginPath(); c.moveTo(-12, 47); c.quadraticCurveTo(0, 42, 12, 47); c.stroke(); }
+                    else if (emoId === 'CONFUSED') { c.beginPath(); c.moveTo(-10, 46); c.quadraticCurveTo(-4, 42, 0, 46); c.quadraticCurveTo(5, 49, 10, 45); c.stroke(); }
+                    else { c.beginPath(); c.moveTo(-9, 45); c.quadraticCurveTo(0, 48, 9, 45); c.stroke(); }
+                } else if (part === 4) {
+                    c.lineWidth = 5.0; c.beginPath(); c.moveTo(-78, -6); c.bezierCurveTo(-80, -68, -46, -96, 0, -96); c.bezierCurveTo(46, -96, 80, -68, 78, -6); c.stroke();
+                    if (hair === 'long') {
+                        c.lineWidth = 4.4; c.beginPath(); c.moveTo(-66, -24); c.quadraticCurveTo(-48, -14, -36, -34); c.quadraticCurveTo(-22, -12, -8, -32); c.quadraticCurveTo(6, -12, 22, -32); c.quadraticCurveTo(40, -14, 66, -24); c.stroke();
+                        c.lineWidth = 5.2;
+                        [-1, 1].forEach((s) => {
+                            c.beginPath(); c.moveTo(s * 78, -8); c.bezierCurveTo(s * 94, 42, s * 98, 96, s * 80, 134); c.quadraticCurveTo(s * 64, 122, s * 62, 86); c.stroke();
+                            c.lineWidth = 3.8; c.beginPath(); c.moveTo(s * 64, -18); c.quadraticCurveTo(s * 76, 28, s * 56, 76); c.stroke(); c.lineWidth = 5.2;
+                        });
+                    } else if (hair === 'bun') {
+                        c.lineWidth = 5.4; c.beginPath(); c.arc(0, -110, 26, Math.PI * 0.92, Math.PI * 2.08); c.stroke();
+                        c.lineWidth = 3.6; c.beginPath(); c.moveTo(-26, -96); c.quadraticCurveTo(0, -104, 26, -96); c.stroke();
+                        c.lineWidth = 4.6; c.beginPath(); c.moveTo(-68, -16); c.quadraticCurveTo(-22, -46, 24, -36); c.quadraticCurveTo(56, -26, 68, -12); c.stroke();
+                        [-1, 1].forEach((s) => { c.beginPath(); c.moveTo(s * 76, -8); c.quadraticCurveTo(s * 84, 34, s * 60, 68); c.stroke(); });
+                    } else {
+                        c.lineWidth = 4.8; c.beginPath(); c.moveTo(-66, -20); c.quadraticCurveTo(-48, -32, -32, -16); c.quadraticCurveTo(-16, -42, 2, -18); c.quadraticCurveTo(22, -42, 42, -18); c.quadraticCurveTo(56, -30, 66, -20); c.stroke();
+                        c.lineWidth = 4.2; c.beginPath(); c.moveTo(-14, -95); c.quadraticCurveTo(-4, -108, 12, -96); c.stroke();
+                        [-1, 1].forEach((s) => { c.beginPath(); c.moveTo(s * 76, -8); c.quadraticCurveTo(s * 76, 12, s * 66, 24); c.stroke(); });
+                    }
+                } else if (part === 5) {
+                    c.lineWidth = 3.0;
+                    [-43, 43].forEach((bx) => [-7, 0, 7].forEach((dx) => { c.beginPath(); c.moveTo(bx + dx - 2.5, 29); c.lineTo(bx + dx + 2.5, 21); c.stroke(); }));
+                    if (emoId === 'SAD') {
+                        c.beginPath(); c.ellipse(-34, 29, 3.5, 6, 0.2, 0, Math.PI * 2); c.fill();
+                        c.beginPath(); c.ellipse(34, 29, 3.5, 6, -0.2, 0, Math.PI * 2); c.fill();
+                    }
+                    if (!isDualLeft) {
+                        c.lineWidth = 3.8;
+                        if (emoId === 'CALM') {
+                            c.save(); c.translate(92, -56); c.scale(0.85, 0.85);
+                            c.beginPath(); c.moveTo(0, 10); c.bezierCurveTo(-18, -4, -18, -22, 0, -10); c.bezierCurveTo(18, -22, 18, -4, 0, 10); c.fill();
+                            c.restore();
+                        } else if (emoId === 'CONFUSED') {
+                            c.font = '800 38px Prompt, Inter, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('?', 92, -52);
+                        } else if (emoId === 'HESITANT') {
+                            [0, 1, 2].forEach((k) => { c.beginPath(); c.arc(82 + k * 14, -44 - k * 8, 3.8 + k * 0.5, 0, Math.PI * 2); c.fill(); });
+                        } else if (emoId === 'SHOCK') {
+                            c.beginPath(); c.moveTo(84, -42); c.lineTo(96, -68); c.moveTo(96, -34); c.lineTo(114, -52); c.stroke();
+                        } else if (emoId === 'ANGRY') {
+                            c.beginPath(); c.moveTo(82, -56); c.quadraticCurveTo(92, -52, 88, -42); c.moveTo(100, -60); c.quadraticCurveTo(92, -50, 102, -44); c.stroke();
+                        }
+                    }
+                }
+            };
+
+            const count = window.innerWidth < 640 ? 1900 : 2800;
+            let cache = {};
+            const genTargets = (mode, aid, emo) => {
+                const key = mode === 'text' ? `T_${emo}` : `F_${aid}_${emo}`;
+                if (cache[key]) return cache[key];
+                const pos = new Float32Array(count * 3), part = new Uint8Array(count), side = new Uint8Array(count);
+                if (mode === 'text') {
+                    const m = PAL[emo] || PAL.CONFUSED, off = document.createElement('canvas'); off.width = 640; off.height = 240;
+                    const c = off.getContext('2d'); c.fillStyle = '#000'; c.fillRect(0, 0, 640, 240); c.fillStyle = '#fff'; c.textAlign = 'center'; c.textBaseline = 'middle';
+                    c.font = '800 94px Prompt, Anuphan, sans-serif'; c.fillText(m.textTop, 320, 96); c.font = '700 42px Inter, JetBrains Mono, sans-serif'; c.fillText(m.textSub, 320, 178);
+                    const d = c.getImageData(0, 0, 640, 240).data, pts = [];
+                    for (let y = 0; y < 240; y += 2) for (let x = 0; x < 640; x += 2) if (d[(y * 640 + x) * 4] > 110) pts.push([x, y]);
+                    for (let i = 0; i < count; i++) {
+                        const pk = pts[Math.floor(Math.random() * pts.length)] || [320, 120];
+                        pos[i * 3] = ((pk[0] - 320) / 172) + (Math.random() - 0.5) * 0.018;
+                        pos[i * 3 + 1] = ((pk[1] - 122) / 172) + (Math.random() - 0.5) * 0.018;
+                        pos[i * 3 + 2] = (Math.random() - 0.5) * 0.14;
+                        part[i] = pk[1] > 142 ? 1 : 0;
+                    }
+                    cache[key] = { pos, part, side, eyeY: 0, mouthY: 0.25 };
                     return cache[key];
-                };
-
-                let aid = resolveAid(st.personaId), emo = PAL[st.emotion] ? st.emotion : 'CONFUSED', mode = 'anime', retTm = null;
-                let w = Math.max(1, container.clientWidth), h = Math.max(1, container.clientHeight);
-                let rotY = 0, rotX = 0, targetRotY = 0, targetRotX = 0, dragging = false, lx = 0, ly = 0, px = -9999, py = -9999;
-                let td = genTargets('anime', aid, emo);
-                const curC1 = PAL[emo].c1.slice(), curC2 = PAL[emo].c2.slice(), curC3 = PAL[emo].c3.slice(), curBl = PAL[emo].blush.slice();
-                const pts = Array.from({ length: count }, (_, i) => ({ x: (Math.random() - 0.5) * 3.8, y: (Math.random() - 0.5) * 2.8, z: (Math.random() - 0.5) * 1.8, vx: 0, vy: 0, vz: 0, tx: td.pos[i * 3], ty: td.pos[i * 3 + 1], tz: td.pos[i * 3 + 2], part: td.part[i], side: td.side[i], sz: 0.96 + Math.random() * 1.18, sd: Math.random() * 6.28 }));
-
-                const apply = (m, a, e) => {
-                    mode = m; aid = a; emo = PAL[e] ? e : 'CONFUSED'; td = genTargets(m, aid, emo);
-                    for (let i = 0; i < count; i++) {
-                        const p = pts[i];
-                        p.vx += (Math.random() - 0.5) * 0.16; p.vy += (Math.random() - 0.5) * 0.16; p.vz += (Math.random() - 0.5) * 0.14;
-                        p.tx = td.pos[i * 3]; p.ty = td.pos[i * 3 + 1]; p.tz = td.pos[i * 3 + 2]; p.part = td.part[i]; p.side = td.side[i];
+                }
+                const off = document.createElement('canvas'); off.width = 480; off.height = 480; const c = off.getContext('2d');
+                const isDual = aid === 'dual'; let cur = 0;
+                [{ p: 0, r: 0.28, z: 0 }, { p: 4, r: 0.34, z: 0.04 }, { p: 1, r: 0.16, z: 0.11 }, { p: 2, r: 0.05, z: 0.10 }, { p: 3, r: 0.06, z: 0.10 }, { p: 5, r: 0.11, z: 0.09 }].forEach((q, qi) => {
+                    c.clearRect(0, 0, 480, 480);
+                    if (isDual) {
+                        c.save(); c.translate(142, 238); c.scale(0.72, 0.72); drawFriendlyLayer(c, q.p, 'female', emo === 'ANGRY' ? 'SAD' : emo, true); c.restore();
+                        c.save(); c.translate(338, 238); c.scale(0.72, 0.72); drawFriendlyLayer(c, q.p, 'elder_female', emo, false); c.restore();
+                    } else { c.save(); c.translate(240, 225); c.scale(1.08, 1.08); drawFriendlyLayer(c, q.p, aid, emo, false); c.restore(); }
+                    const d = c.getImageData(0, 0, 480, 480).data, pts = [];
+                    for (let y = 0; y < 480; y += 2) for (let x = 0; x < 480; x += 2) if (d[(y * 480 + x) * 4 + 3] > 90) pts.push([x, y]);
+                    const n = qi === 5 ? (count - cur) : Math.floor(count * q.r);
+                    for (let i = 0; i < n && cur < count; i++) {
+                        const pk = pts[Math.floor(Math.random() * pts.length)] || [240, 235];
+                        const nx = (pk[0] - 240) / 145, ny = (pk[1] - 235) / 145;
+                        const localCx = isDual ? (pk[0] < 240 ? -0.68 : 0.68) : 0;
+                        const dx = nx - localCx, r2 = Math.min(1.4, dx * dx + ny * ny);
+                        pos[cur * 3] = nx + (Math.random() - 0.5) * 0.012;
+                        pos[cur * 3 + 1] = ny + (Math.random() - 0.5) * 0.012;
+                        pos[cur * 3 + 2] = (0.24 - r2 * 0.18) + q.z + (Math.random() - 0.5) * 0.025;
+                        part[cur] = q.p; side[cur] = (isDual && pk[0] >= 240) ? 1 : 0; cur++;
                     }
-                    if (m === 'text') { targetRotY = 0; targetRotX = 0; }
-                };
+                });
+                cache[key] = { pos, part, side, eyeY: isDual ? 0.05 : -0.024, mouthY: isDual ? 0.239 : 0.258 };
+                return cache[key];
+            };
 
-                const resize = () => {
-                    const r = container.getBoundingClientRect(); if (r.width <= 0 || r.height <= 0) return;
-                    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-                    w = r.width; h = r.height; canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-                };
-                resize();
+            let aid = resolveAid(st.personaId), emo = PAL[st.emotion] ? st.emotion : 'CONFUSED', mode = 'anime', retTm = null;
+            let w = Math.max(1, container.clientWidth), h = Math.max(1, container.clientHeight);
+            let rotY = 0, rotX = 0, targetRotY = 0, targetRotX = 0, dragging = false, lx = 0, ly = 0, px = -9999, py = -9999;
+            let td = genTargets('anime', aid, emo);
+            const curC1 = PAL[emo].c1.slice(), curC2 = PAL[emo].c2.slice(), curC3 = PAL[emo].c3.slice(), curBl = PAL[emo].blush.slice();
+            const pts = Array.from({ length: count }, (_, i) => ({ x: (Math.random() - 0.5) * 3.8, y: (Math.random() - 0.5) * 2.8, z: (Math.random() - 0.5) * 1.8, vx: 0, vy: 0, vz: 0, tx: td.pos[i * 3], ty: td.pos[i * 3 + 1], tz: td.pos[i * 3 + 2], part: td.part[i], side: td.side[i], sz: 0.96 + Math.random() * 1.18, sd: Math.random() * 6.28 }));
 
-                const onDown = (e) => { dragging = true; lx = e.clientX; ly = e.clientY; };
-                const onMove = (e) => {
-                    const r = canvas.getBoundingClientRect(); px = e.clientX - r.left; py = e.clientY - r.top;
-                    if (dragging) { targetRotY = Math.max(-0.55, Math.min(0.55, targetRotY + (e.clientX - lx) * 0.005)); targetRotX = Math.max(-0.28, Math.min(0.28, targetRotX + (e.clientY - ly) * 0.004)); lx = e.clientX; ly = e.clientY; }
-                };
-                const onUp = () => { dragging = false; };
-                const onLeave = () => { px = -9999; py = -9999; };
-                const onTStart = (e) => { if (e.touches && e.touches[0]) { dragging = true; lx = e.touches[0].clientX; ly = e.touches[0].clientY; } };
-                const onTMove = (e) => {
-                    if (dragging && e.touches && e.touches[0]) {
-                        const r = canvas.getBoundingClientRect(); px = e.touches[0].clientX - r.left; py = e.touches[0].clientY - r.top;
-                        targetRotY = Math.max(-0.55, Math.min(0.55, targetRotY + (e.touches[0].clientX - lx) * 0.006)); targetRotX = Math.max(-0.28, Math.min(0.28, targetRotX + (e.touches[0].clientY - ly) * 0.005)); lx = e.touches[0].clientX; ly = e.touches[0].clientY;
+            const apply = (m, a, e) => {
+                mode = m; aid = a; emo = PAL[e] ? e : 'CONFUSED'; td = genTargets(m, aid, emo);
+                for (let i = 0; i < count; i++) {
+                    const p = pts[i];
+                    p.vx += (Math.random() - 0.5) * 0.16; p.vy += (Math.random() - 0.5) * 0.16; p.vz += (Math.random() - 0.5) * 0.14;
+                    p.tx = td.pos[i * 3]; p.ty = td.pos[i * 3 + 1]; p.tz = td.pos[i * 3 + 2]; p.part = td.part[i]; p.side = td.side[i];
+                }
+                if (m === 'text') { targetRotY = 0; targetRotX = 0; }
+            };
+
+            const resize = () => {
+                const r = container.getBoundingClientRect(); if (r.width <= 0 || r.height <= 0) return;
+                const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+                w = r.width; h = r.height; canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            };
+            resize();
+
+            const onDown = (e) => { dragging = true; lx = e.clientX; ly = e.clientY; };
+            const onMove = (e) => {
+                const r = canvas.getBoundingClientRect(); px = e.clientX - r.left; py = e.clientY - r.top;
+                if (dragging) { targetRotY = Math.max(-0.55, Math.min(0.55, targetRotY + (e.clientX - lx) * 0.005)); targetRotX = Math.max(-0.28, Math.min(0.28, targetRotX + (e.clientY - ly) * 0.004)); lx = e.clientX; ly = e.clientY; }
+            };
+            const onUp = () => { dragging = false; };
+            const onLeave = () => { px = -9999; py = -9999; };
+            const onTStart = (e) => { if (e.touches && e.touches[0]) { dragging = true; lx = e.touches[0].clientX; ly = e.touches[0].clientY; } };
+            const onTMove = (e) => {
+                if (dragging && e.touches && e.touches[0]) {
+                    const r = canvas.getBoundingClientRect(); px = e.touches[0].clientX - r.left; py = e.touches[0].clientY - r.top;
+                    targetRotY = Math.max(-0.55, Math.min(0.55, targetRotY + (e.touches[0].clientX - lx) * 0.006)); targetRotX = Math.max(-0.28, Math.min(0.28, targetRotX + (e.touches[0].clientY - ly) * 0.005)); lx = e.touches[0].clientX; ly = e.touches[0].clientY;
+                }
+            };
+            const onTEnd = () => { dragging = false; px = -9999; py = -9999; };
+
+            canvas.addEventListener('mousedown', onDown); window.addEventListener('mousemove', onMove); window.addEventListener('mouseup', onUp); canvas.addEventListener('mouseleave', onLeave);
+            canvas.addEventListener('touchstart', onTStart, { passive: true }); window.addEventListener('touchmove', onTMove, { passive: true }); window.addEventListener('touchend', onTEnd); window.addEventListener('resize', resize);
+            if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { cache = {}; }).catch(() => {});
+
+            let alive = true, raf = null, last = performance.now(), blinkTimer = 2.8, smoothAmp = 0;
+            const loop = (now) => {
+                if (!alive) return; raf = requestAnimationFrame(loop); if (document.hidden || w <= 0 || h <= 0) return;
+                const dt = Math.min(0.05, Math.max(0.001, (now - last) / 1000)); last = now; const t = now * 0.001;
+                if (!dragging) { targetRotY = Math.sin(t * 0.55) * (mode === 'text' ? 0.12 : 0.17); targetRotX = Math.cos(t * 0.42) * 0.042; }
+                rotY += (targetRotY - rotY) * (1 - Math.exp(-dt * 6)); rotX += (targetRotX - rotX) * (1 - Math.exp(-dt * 6));
+                const pal = PAL[emo] || PAL.CONFUSED, kl = 1 - Math.exp(-dt * 4.5);
+                for (let c = 0; c < 3; c++) { curC1[c] += (pal.c1[c] - curC1[c]) * kl; curC2[c] += (pal.c2[c] - curC2[c]) * kl; curC3[c] += (pal.c3[c] - curC3[c]) * kl; curBl[c] += (pal.blush[c] - curBl[c]) * kl; }
+                blinkTimer -= dt; if (blinkTimer <= 0) blinkTimer = 2.8 + Math.random() * 2.4;
+                const blinkClose = (emo !== 'CALM' && blinkTimer < 0.14) ? Math.sin((blinkTimer / 0.14) * Math.PI) : 0;
+
+                let tgtAmp = 0;
+                if (st.isSpeaking) {
+                    const liveAmp = typeof st.getAudioAmplitude === 'function' ? st.getAudioAmplitude() : -1;
+                    tgtAmp = (typeof liveAmp === 'number' && liveAmp >= 0) ? Math.min(1, liveAmp) : (0.20 + 0.46 * Math.abs(Math.sin(t * 8.2) * Math.cos(t * 3.4)));
+                }
+                smoothAmp += (tgtAmp - smoothAmp) * (1 - Math.exp(-dt * (tgtAmp > smoothAmp ? 22 : 14)));
+
+                const cosY = Math.cos(rotY), sinY = Math.sin(rotY), cosX = Math.cos(rotX), sinX = Math.sin(rotX);
+                const cx = w * 0.5, cy = h * (w < 640 ? 0.40 : 0.43), foc = Math.min(w, h) * (w < 640 ? 0.54 : 0.50);
+                ctx.clearRect(0, 0, w, h);
+
+                const coreR = foc * (0.68 + smoothAmp * 0.08);
+                const coreG = ctx.createRadialGradient(cx, cy, 6, cx, cy, coreR);
+                coreG.addColorStop(0, `rgba(${Math.round(curC2[0])},${Math.round(curC2[1])},${Math.round(curC2[2])},${(0.20 + smoothAmp * 0.08).toFixed(3)})`);
+                coreG.addColorStop(0.55, `rgba(${Math.round(curC3[0])},${Math.round(curC3[1])},${Math.round(curC3[2])},0.06)`);
+                coreG.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = coreG; ctx.beginPath(); ctx.arc(cx, cy, coreR, 0, Math.PI * 2); ctx.fill();
+
+                const isDual = aid === 'dual';
+                const c1r = Math.round(curC1[0]), c1g = Math.round(curC1[1]), c1b = Math.round(curC1[2]);
+                const c2r = Math.round(curC2[0]), c2g = Math.round(curC2[1]), c2b = Math.round(curC2[2]);
+                const c3r = Math.round(curC3[0]), c3g = Math.round(curC3[1]), c3b = Math.round(curC3[2]);
+                const blr = Math.round(curBl[0]), blg = Math.round(curBl[1]), blb = Math.round(curBl[2]);
+
+                ctx.globalCompositeOperation = 'lighter';
+                for (let i = 0; i < count; i++) {
+                    const p = pts[i];
+                    let gx = p.tx, gy = p.ty + Math.sin(t * 1.45) * (mode === 'anime' ? 0.018 : 0.008), gz = p.tz;
+                    if (mode === 'anime') {
+                        const speakingSide = !isDual || (st.activeSpeaker === 'mother' ? p.side === 1 : p.side === 0);
+                        if (p.part === 3 && smoothAmp > 0.03 && speakingSide) gy += (p.ty >= td.mouthY ? 1 : -0.4) * smoothAmp * 0.052;
+                        if (p.part === 1 && blinkClose > 0.05) gy = td.eyeY + (gy - td.eyeY) * (1 - blinkClose * 0.85);
+                        if (p.part === 4 && p.ty > 0.1) gx += Math.sin(t * 1.7 + p.sd) * 0.012;
+                        if (p.part === 5 && p.ty < -0.1) gy += Math.sin(t * 3.0 + p.sd) * 0.016;
+                    } else if (smoothAmp > 0.04) {
+                        gz += Math.sin(t * 8 + p.sd) * smoothAmp * 0.032;
                     }
-                };
-                const onTEnd = () => { dragging = false; px = -9999; py = -9999; };
+                    p.vx = (p.vx + (gx - p.x) * 0.082) * 0.81; p.vy = (p.vy + (gy - p.y) * 0.082) * 0.81; p.vz = (p.vz + (gz - p.z) * 0.082) * 0.81;
+                    p.x += p.vx; p.y += p.vy; p.z += p.vz;
 
-                canvas.addEventListener('mousedown', onDown); window.addEventListener('mousemove', onMove); window.addEventListener('mouseup', onUp); canvas.addEventListener('mouseleave', onLeave);
-                canvas.addEventListener('touchstart', onTStart, { passive: true }); window.addEventListener('touchmove', onTMove, { passive: true }); window.addEventListener('touchend', onTEnd); window.addEventListener('resize', resize);
-                if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { cache = {}; }).catch(() => {});
-
-                let alive = true, raf = null, last = performance.now(), blinkTimer = 2.8, smoothAmp = 0;
-                const loop = (now) => {
-                    if (!alive) return; raf = requestAnimationFrame(loop); if (document.hidden || w <= 0 || h <= 0) return;
-                    const dt = Math.min(0.05, Math.max(0.001, (now - last) / 1000)); last = now; const t = now * 0.001;
-                    if (!dragging) { targetRotY = Math.sin(t * 0.55) * (mode === 'text' ? 0.12 : 0.17); targetRotX = Math.cos(t * 0.42) * 0.042; }
-                    rotY += (targetRotY - rotY) * (1 - Math.exp(-dt * 6)); rotX += (targetRotX - rotX) * (1 - Math.exp(-dt * 6));
-                    const pal = PAL[emo] || PAL.CONFUSED, kl = 1 - Math.exp(-dt * 4.5);
-                    for (let c = 0; c < 3; c++) { curC1[c] += (pal.c1[c] - curC1[c]) * kl; curC2[c] += (pal.c2[c] - curC2[c]) * kl; curC3[c] += (pal.c3[c] - curC3[c]) * kl; curBl[c] += (pal.blush[c] - curBl[c]) * kl; }
-                    blinkTimer -= dt; if (blinkTimer <= 0) blinkTimer = 2.8 + Math.random() * 2.4;
-                    const blinkClose = (emo !== 'CALM' && blinkTimer < 0.14) ? Math.sin((blinkTimer / 0.14) * Math.PI) : 0;
-
-                    let tgtAmp = 0;
-                    if (st.isSpeaking) {
-                        const liveAmp = typeof st.getAudioAmplitude === 'function' ? st.getAudioAmplitude() : -1;
-                        tgtAmp = (typeof liveAmp === 'number' && liveAmp >= 0) ? Math.min(1, liveAmp) : (0.20 + 0.46 * Math.abs(Math.sin(t * 8.2) * Math.cos(t * 3.4)));
+                    const x1 = p.x * cosY - p.z * sinY, z1 = p.z * cosY + p.x * sinY;
+                    const y2 = p.y * cosX - z1 * sinX, z2 = z1 * cosX + p.y * sinX;
+                    const depth = 3.45 - z2; if (depth <= 0.4) continue;
+                    const persp = foc / depth;
+                    let sx = cx + x1 * persp, sy = cy + y2 * persp;
+                    if (px > -500) {
+                        const dx = sx - px, dy = sy - py, d2 = dx * dx + dy * dy;
+                        if (d2 < 5200 && d2 > 1) { const d = Math.sqrt(d2), push = (1 - d / 72) * 14; sx += (dx / d) * push; sy += (dy / d) * push; }
                     }
-                    smoothAmp += (tgtAmp - smoothAmp) * (1 - Math.exp(-dt * (tgtAmp > smoothAmp ? 22 : 14)));
 
-                    const cosY = Math.cos(rotY), sinY = Math.sin(rotY), cosX = Math.cos(rotX), sinX = Math.sin(rotX);
-                    const cx = w * 0.5, cy = h * (w < 640 ? 0.41 : 0.43), foc = Math.min(w, h) * (w < 640 ? 0.55 : 0.50);
-                    ctx.clearRect(0, 0, w, h);
-
-                    const coreR = foc * (0.68 + smoothAmp * 0.08);
-                    const coreG = ctx.createRadialGradient(cx, cy, 6, cx, cy, coreR);
-                    coreG.addColorStop(0, `rgba(${Math.round(curC2[0])},${Math.round(curC2[1])},${Math.round(curC2[2])},${(0.20 + smoothAmp * 0.08).toFixed(3)})`);
-                    coreG.addColorStop(0.55, `rgba(${Math.round(curC3[0])},${Math.round(curC3[1])},${Math.round(curC3[2])},0.06)`);
-                    coreG.addColorStop(1, 'rgba(0,0,0,0)');
-                    ctx.fillStyle = coreG; ctx.beginPath(); ctx.arc(cx, cy, coreR, 0, Math.PI * 2); ctx.fill();
-
-                    const isDual = aid === 'dual';
-                    const c1r = Math.round(curC1[0]), c1g = Math.round(curC1[1]), c1b = Math.round(curC1[2]);
-                    const c2r = Math.round(curC2[0]), c2g = Math.round(curC2[1]), c2b = Math.round(curC2[2]);
-                    const c3r = Math.round(curC3[0]), c3g = Math.round(curC3[1]), c3b = Math.round(curC3[2]);
-                    const blr = Math.round(curBl[0]), blg = Math.round(curBl[1]), blb = Math.round(curBl[2]);
-
-                    ctx.globalCompositeOperation = 'lighter';
-                    for (let i = 0; i < count; i++) {
-                        const p = pts[i];
-                        let gx = p.tx, gy = p.ty + Math.sin(t * 1.45) * (mode === 'anime' ? 0.018 : 0.008), gz = p.tz;
-                        if (mode === 'anime') {
-                            const speakingSide = !isDual || (st.activeSpeaker === 'mother' ? p.side === 1 : p.side === 0);
-                            if (p.part === 3 && smoothAmp > 0.03 && speakingSide) gy += (p.ty >= td.mouthY ? 1 : -0.4) * smoothAmp * 0.052;
-                            if (p.part === 1 && blinkClose > 0.05) gy = td.eyeY + (gy - td.eyeY) * (1 - blinkClose * 0.85);
-                            if (p.part === 4 && p.ty > 0.1) gx += Math.sin(t * 1.7 + p.sd) * 0.012;
-                            if (p.part === 5 && p.ty < -0.1) gy += Math.sin(t * 3.0 + p.sd) * 0.016;
-                        } else if (smoothAmp > 0.04) {
-                            gz += Math.sin(t * 8 + p.sd) * smoothAmp * 0.032;
-                        }
-                        p.vx = (p.vx + (gx - p.x) * 0.082) * 0.81; p.vy = (p.vy + (gy - p.y) * 0.082) * 0.81; p.vz = (p.vz + (gz - p.z) * 0.082) * 0.81;
-                        p.x += p.vx; p.y += p.vy; p.z += p.vz;
-
-                        const x1 = p.x * cosY - p.z * sinY, z1 = p.z * cosY + p.x * sinY;
-                        const y2 = p.y * cosX - z1 * sinX, z2 = z1 * cosX + p.y * sinX;
-                        const depth = 3.45 - z2; if (depth <= 0.4) continue;
-                        const persp = foc / depth;
-                        let sx = cx + x1 * persp, sy = cy + y2 * persp;
-                        if (px > -500) {
-                            const dx = sx - px, dy = sy - py, d2 = dx * dx + dy * dy;
-                            if (d2 < 5200 && d2 > 1) { const d = Math.sqrt(d2), push = (1 - d / 72) * 14; sx += (dx / d) * push; sy += (dy / d) * push; }
-                        }
-
-                        const isEye = p.part === 1, isBlush = p.part === 5, isFeat = isEye || p.part === 2 || p.part === 3;
-                        let alpha = isEye ? 0.95 : (isBlush ? 0.88 : (isFeat ? 0.90 : 0.72));
-                        if (mode === 'anime' && isDual && st.isSpeaking) {
-                            const activeSide = st.activeSpeaker === 'mother' ? p.side === 1 : p.side === 0;
-                            if (!activeSide) alpha *= 0.52;
-                        }
-                        const rad = Math.max(0.75, p.sz * (isEye ? 1.15 : (isBlush ? 1.10 : 0.98)) * (persp / 215));
-                        let r, g, b;
-                        if (mode === 'anime' && isBlush) { r = blr; g = blg; b = blb; }
-                        else if (mode === 'anime' && isDual) {
-                            if (p.side === 0) { r = isEye ? 255 : (p.part === 4 ? 125 : 224); g = isEye ? 255 : (p.part === 4 ? 211 : 246); b = 255; }
-                            else { r = isEye ? 255 : (p.part === 4 ? c3r : c1r); g = isEye ? 255 : (p.part === 4 ? c3g : c1g); b = isEye ? 255 : (p.part === 4 ? c3b : c1b); }
-                        } else if (isEye) { r = 255; g = 255; b = 255; }
-                        else if (p.part === 2 || p.part === 3) { r = c1r; g = c1g; b = c1b; }
-                        else if (p.part === 4) { r = i % 3 === 0 ? c2r : c3r; g = i % 3 === 0 ? c2g : c3g; b = i % 3 === 0 ? c2b : c3b; }
-                        else { r = i % 2 === 0 ? c1r : c2r; g = i % 2 === 0 ? c1g : c2g; b = i % 2 === 0 ? c1b : c2b; }
-
-                        ctx.fillStyle = `rgba(${r},${g},${b},${alpha.toFixed(3)})`;
-                        ctx.beginPath(); ctx.arc(sx, sy, rad, 0, Math.PI * 2); ctx.fill();
+                    const isEye = p.part === 1, isBlush = p.part === 5, isFeat = isEye || p.part === 2 || p.part === 3;
+                    let alpha = isEye ? 0.95 : (isBlush ? 0.88 : (isFeat ? 0.90 : 0.72));
+                    if (mode === 'anime' && isDual && st.isSpeaking) {
+                        const activeSide = st.activeSpeaker === 'mother' ? p.side === 1 : p.side === 0;
+                        if (!activeSide) alpha *= 0.52;
                     }
-                    ctx.globalCompositeOperation = 'source-over';
-                };
-                raf = requestAnimationFrame(loop);
-                return {
-                    update(next) {
-                        const pe = emo, pa = aid; Object.assign(st, next || {});
-                        const na = resolveAid(st.personaId), ne = PAL[st.emotion] ? st.emotion : pe;
-                        if (ne !== pe) { clearTimeout(retTm); apply('text', na, ne); retTm = setTimeout(() => apply('anime', na, ne), 2200); }
-                        else if (na !== pa) { clearTimeout(retTm); apply('anime', na, ne); }
-                    },
-                    toggleDisplayMode() { clearTimeout(retTm); const nm = mode === 'anime' ? 'text' : 'anime'; apply(nm, aid, emo); return nm; },
-                    destroy() {
-                        alive = false; clearTimeout(retTm); if (raf) cancelAnimationFrame(raf);
-                        canvas.removeEventListener('mousedown', onDown); window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); canvas.removeEventListener('mouseleave', onLeave);
-                        canvas.removeEventListener('touchstart', onTStart); window.removeEventListener('touchmove', onTMove); window.removeEventListener('touchend', onTEnd); window.removeEventListener('resize', resize);
-                        try { if (canvas.parentNode) canvas.parentNode.removeChild(canvas); } catch (_) {}
-                    }
-                };
+                    const rad = Math.max(0.75, p.sz * (isEye ? 1.15 : (isBlush ? 1.10 : 0.98)) * (persp / 215));
+                    let r, g, b;
+                    if (mode === 'anime' && isBlush) { r = blr; g = blg; b = blb; }
+                    else if (mode === 'anime' && isDual) {
+                        if (p.side === 0) { r = isEye ? 255 : (p.part === 4 ? 125 : 224); g = isEye ? 255 : (p.part === 4 ? 211 : 246); b = 255; }
+                        else { r = isEye ? 255 : (p.part === 4 ? c3r : c1r); g = isEye ? 255 : (p.part === 4 ? c3g : c1g); b = isEye ? 255 : (p.part === 4 ? c3b : c1b); }
+                    } else if (isEye) { r = 255; g = 255; b = 255; }
+                    else if (p.part === 2 || p.part === 3) { r = c1r; g = c1g; b = c1b; }
+                    else if (p.part === 4) { r = i % 3 === 0 ? c2r : c3r; g = i % 3 === 0 ? c2g : c3g; b = i % 3 === 0 ? c2b : c3b; }
+                    else { r = i % 2 === 0 ? c1r : c2r; g = i % 2 === 0 ? c1g : c2g; b = i % 2 === 0 ? c1b : c2b; }
+
+                    ctx.fillStyle = `rgba(${r},${g},${b},${alpha.toFixed(3)})`;
+                    ctx.beginPath(); ctx.arc(sx, sy, rad, 0, Math.PI * 2); ctx.fill();
+                }
+                ctx.globalCompositeOperation = 'source-over';
+            };
+            raf = requestAnimationFrame(loop);
+            return {
+                update(next) {
+                    const pe = emo, pa = aid; Object.assign(st, next || {});
+                    const na = resolveAid(st.personaId), ne = PAL[st.emotion] ? st.emotion : pe;
+                    if (ne !== pe) { clearTimeout(retTm); apply('text', na, ne); retTm = setTimeout(() => apply('anime', na, ne), 2200); }
+                    else if (na !== pa) { clearTimeout(retTm); apply('anime', na, ne); }
+                },
+                toggleDisplayMode() { clearTimeout(retTm); const nm = mode === 'anime' ? 'text' : 'anime'; apply(nm, aid, emo); return nm; },
+                destroy() {
+                    alive = false; clearTimeout(retTm); if (raf) cancelAnimationFrame(raf);
+                    canvas.removeEventListener('mousedown', onDown); window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); canvas.removeEventListener('mouseleave', onLeave);
+                    canvas.removeEventListener('touchstart', onTStart); window.removeEventListener('touchmove', onTMove); window.removeEventListener('touchend', onTEnd); window.removeEventListener('resize', resize);
+                    try { if (canvas.parentNode) canvas.parentNode.removeChild(canvas); } catch (_) {}
+                }
+            };
+        }
+
+        // ============================================================================
+        // 4. UI PRIMITIVES & 5-AXIS RADAR SVG
+        // ============================================================================
+        class SkillLabErrorBoundary extends React.Component {
+            constructor(props) { super(props); this.state = { hasError: false, err: null }; }
+            static getDerivedStateFromError(err) { return { hasError: true, err }; }
+            render() {
+                if (this.state.hasError) {
+                    return (
+                        <div className="min-h-dvh flex items-center justify-center p-6 bg-void-950 text-white">
+                            <div className="spatial-card max-w-md w-full rounded-3xl p-6 text-center space-y-4 border-rose-500/40">
+                                <h2 className="font-display font-bold text-lg text-rose-400">พบข้อผิดพลาดในห้องฝึก AI Skill Lab</h2>
+                                <p className="text-xs font-mono bg-rose-500/10 text-rose-200 p-3 rounded-xl overflow-auto">{String(this.state.err?.message || this.state.err)}</p>
+                                <button type="button" onClick={() => window.location.reload()} className="rjc2-pill-btn touch-target w-full py-3 rounded-full font-display font-bold text-sm">โหลดหน้าใหม่</button>
+                            </div>
+                        </div>
+                    );
+                }
+                return this.props.children;
             }
-<!-- ... existing code ... -->
+        }
+
+        function Icon({ name, size = 18, className = '' }) {
+            const Comp = LucideIcons[name] || LucideIcons.Sparkles || LucideIcons.Activity;
+            return Comp ? <Comp size={size} className={className} /> : null;
+        }
+
+        function ThemeToggleButton({ theme, onToggle, compact = false }) {
+            const isDark = theme === 'dark';
+            return (
+                <button type="button" onClick={onToggle} aria-label="สลับโหมดมืดหรือสว่าง" className="spatial-soft px-2.5 sm:px-3 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5 text-primary-adaptive shrink-0">
+                    <Icon name={isDark ? 'Sun' : 'Moon'} size={15} className={isDark ? 'text-amber-300' : 'text-indigo-600'} />
+                    {!compact && <span className="hidden sm:inline">{isDark ? 'โหมดสว่าง' : 'โหมดมืด'}</span>}
+                </button>
+            );
+        }
+
+        function ToastBanner({ toast }) {
+            if (!toast.visible) return null;
+            return (
+                <div className="fixed top-[calc(1rem+env(safe-area-inset-top,0px))] left-1/2 -translate-x-1/2 z-[170] w-[92vw] max-w-md pointer-events-none">
+                    <div className={`px-4 py-3 rounded-2xl shadow-2xl border backdrop-blur-2xl flex items-center gap-2 text-xs sm:text-sm font-bold text-white ${
+                        toast.type === 'error' ? 'bg-rose-700/95 border-rose-400/60'
+                            : toast.type === 'info' ? 'bg-sky-700/95 border-sky-400/60'
+                                : 'bg-emerald-700/95 border-emerald-400/60'
+                    }`}>
+                        <Icon name={toast.type === 'error' ? 'AlertCircle' : toast.type === 'info' ? 'Sparkles' : 'CheckCircle2'} size={16} className="shrink-0" />
+                        <span>{toast.text}</span>
+                    </div>
+                </div>
+            );
+        }
+
+        function FiveAxisRadarSVG({ radarArr, theme, personaId }) {
+            const isDark = theme === 'dark';
+            const axes = SL.getRadarAxes(personaId);
+            const w = 310, h = 250, cx = w / 2, cy = h / 2, maxR = 72;
+            const pt = (idx, ratio) => {
+                const ang = (Math.PI * 2 * idx) / axes.length - Math.PI / 2;
+                return [cx + Math.cos(ang) * maxR * ratio, cy + Math.sin(ang) * maxR * ratio];
+            };
+            const valOf = (key) => {
+                const f = (radarArr || []).find(r => r.key === key);
+                return Math.max(0, Math.min(100, Number(f?.value || 0)));
+            };
+            const dataPts = axes.map((a, i) => pt(i, valOf(a.key) / 100));
+
+            return (
+                <svg viewBox={`0 0 ${w} ${h}`} className="w-full max-w-[320px] mx-auto overflow-visible">
+                    <defs>
+                        <linearGradient id="labRadarFill" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="#34d399" stopOpacity="0.48" />
+                            <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.22" />
+                        </linearGradient>
+                    </defs>
+                    {[0.25, 0.5, 0.75, 1].map((lv, li) => (
+                        <polygon key={li} points={axes.map((_, i) => pt(i, lv).join(',')).join(' ')} fill="none" stroke={isDark ? 'rgba(147,197,253,0.22)' : 'rgba(15,58,125,0.16)'} strokeWidth="1" />
+                    ))}
+                    {axes.map((_, i) => {
+                        const [x, y] = pt(i, 1);
+                        return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke={isDark ? 'rgba(147,197,253,0.20)' : 'rgba(15,58,125,0.14)'} strokeWidth="1" />;
+                    })}
+                    <polygon points={dataPts.map(p => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ')} fill="url(#labRadarFill)" stroke="#34d399" strokeWidth="2.4" />
+                    {dataPts.map(([x, y], i) => (
+                        <circle key={i} cx={x} cy={y} r="3.8" fill="#34d399" stroke={isDark ? '#030611' : '#ffffff'} strokeWidth="1.5" />
+                    ))}
+                    {axes.map((a, i) => {
+                        const [lx, ly] = pt(i, 1.36);
+                        return (
+                            <g key={a.key}>
+                                <text x={lx} y={ly - 4} textAnchor="middle" fill={isDark ? '#dbeafe' : '#284366'} fontSize="9.5" fontWeight="700">{a.shortTH}</text>
+                                <text x={lx} y={ly + 9} textAnchor="middle" fill={isDark ? '#6ee7b7' : '#047857'} fontSize="10.5" fontFamily="JetBrains Mono, monospace" fontWeight="700">{valOf(a.key)}</text>
+                            </g>
+                        );
+                    })}
+                </svg>
+            );
+        }
+
+        // ============================================================================
+        // 5. MAIN AI SKILL LAB 3D APPLICATION (5 PHASES • BENTO GRID • 2,800 PARTICLES)
+        // ============================================================================
+        function SkillLabApp() {
+            const isAdminPreview = useMemo(() => {
+                try { return new URLSearchParams(window.location.search).get('admin_preview') === '1'; }
+                catch (_) { return false; }
+            }, []);
+
+            const [theme, setTheme] = useState(() => {
+                try { const s = localStorage.getItem(THEME_KEY); if (s === 'light' || s === 'dark') return s; } catch (_) {}
+                return CONFIG.theme?.defaultMode === 'light' ? 'light' : 'dark';
+            });
+            useEffect(() => {
+                document.documentElement.setAttribute('data-theme', theme);
+                const meta = document.querySelector('meta[name="theme-color"]');
+                if (meta) meta.setAttribute('content', theme === 'dark' ? '#030611' : '#edf5fc');
+                try { localStorage.setItem(THEME_KEY, theme); } catch (_) {}
+            }, [theme]);
+            const toggleTheme = useCallback(() => setTheme(p => (p === 'dark' ? 'light' : 'dark')), []);
+
+            // Learner & Cloud Config
+            const [user, setUser] = useState(() => loadLearnerSessionSafe());
+            const [appsScriptUrl, setAppsScriptUrl] = useState(CONFIG.appsScriptUrl || '');
+
+            // Phase & Lobby Controls
+            const [phase, setPhase] = useState('lobby'); // lobby | briefing | negotiating | micro_drill | result
+            const [advisorGoal, setAdvisorGoal] = useState('balanced');
+            const [advisorAnswer, setAdvisorAnswer] = useState('');
+            const [modeId, setModeId] = useState('roleplay_th'); // roleplay_th | roleplay_en | micro_drill
+            const [difficultyId, setDifficultyId] = useState('normal'); // normal | hard
+            const [selectedPersonaId, setSelectedPersonaId] = useState('standard');
+            const [preEff, setPreEff] = useState({ e1: 3, e2: 3, e3: 3 });
+            const [postEff, setPostEff] = useState({ e1: 4, e2: 4, e3: 4 });
+
+            // Negotiating & Micro-Drill Stage States
+            const [messages, setMessages] = useState([]);
+            const [inputText, setInputText] = useState('');
+            const [isAiThinking, setIsAiThinking] = useState(false);
+            const [currentEmotion, setCurrentEmotion] = useState('CONFUSED');
+            const [trustScore, setTrustScore] = useState(45);
+            const [unlockedBarrierIds, setUnlockedBarrierIds] = useState([]);
+            const [silenceCount, setSilenceCount] = useState(0);
+            const [silenceTimer, setSilenceTimer] = useState(0);
+            const [triggerTotal, setTriggerTotal] = useState(0);
+            const [particleMode, setParticleMode] = useState('anime'); // anime | text
+            const [activeSpeakerKey, setActiveSpeakerKey] = useState('primary');
+            const [activeSpeakerBadge, setActiveSpeakerBadge] = useState('');
+            const [currentActionCue, setCurrentActionCue] = useState('');
+            const [latestCaption, setLatestCaption] = useState('');
+            const [showCaptions, setShowCaptions] = useState(false);
+            const [showHistoryModal, setShowHistoryModal] = useState(false);
+            const [hintBanner, setHintBanner] = useState('');
+            const [voicePhase, setVoicePhase] = useState('idle'); // idle | loading | speaking
+
+            // Micro-Drill & Mic Self-Reflection States
+            const [drillIdx, setDrillIdx] = useState(0);
+            const [drillResults, setDrillResults] = useState([]);
+            const [currentDrillFeedback, setCurrentDrillFeedback] = useState(null);
+            const [isRecordingMic, setIsRecordingMic] = useState(false);
+            const [learnerVoiceClips, setLearnerVoiceClips] = useState([]);
+            const [evalResult, setEvalResult] = useState(null);
+            const [toast, setToast] = useState({ visible: false, text: '', type: 'success' });
+
+            // Refs for Particle Stage, Studio Audio & Real Lip-Sync Analyser
+            const stageContainerRef = useRef(null);
+            const particleCtrlRef = useRef(null);
+            const sharedAudioRef = useRef(null);
+            const audioUrlRef = useRef(null);
+            const audioCtxRef = useRef(null);
+            const analyserRef = useRef(null);
+            const ampBufRef = useRef(null);
+            const voiceSessionRef = useRef(0);
+            const voiceAbortRef = useRef(null);
+            const speechRecRef = useRef(null);
+            const mediaRecRef = useRef(null);
+            const micChunksRef = useRef([]);
+            const micStartTsRef = useRef(0);
+
+            const showToast = useCallback((text, type = 'success') => {
+                setToast({ visible: true, text: String(text), type });
+                setTimeout(() => setToast(p => ({ ...p, visible: false })), 3300);
+            }, []);
+
+            const MODES = useMemo(() => ([
+                { id: 'roleplay_th', label: 'Roleplay ภาษาไทย', icon: 'MessageSquareHeart', lang: 'th', isDrill: false },
+                { id: 'roleplay_en', label: 'Roleplay English', icon: 'Globe2', lang: 'en', isDrill: false },
+                { id: 'micro_drill', label: 'Micro-Drill 4 ด่านหนัก', icon: 'Zap', lang: 'th', isDrill: true }
+            ]), []);
+
+            const personas = useMemo(() => SL.getPersonas(), []);
+            const drillStages = useMemo(() => SL.MICRO_DRILL_STAGES || MICRO_DRILL_STAGES, []);
+            const selectedMode = useMemo(() => MODES.find(m => m.id === modeId) || MODES[0], [MODES, modeId]);
+            const activePersona = useMemo(() => personas.find(p => p.id === selectedPersonaId) || personas[0], [personas, selectedPersonaId]);
+            const effectivePersonaId = selectedMode.isDrill ? (drillStages[drillIdx]?.personaId || 'standard') : activePersona.id;
+            const learnerProfession = useMemo(() => SL.resolveProfessionGroup(user), [user]);
+            const activeRec = useMemo(() => SL.computeLabRecommendation(user, advisorGoal), [user, advisorGoal]);
+            const clinicalBadges = useMemo(() => SL.computeClinicalBadges(user), [user]);
+            const browserGuard = useMemo(() => SL.detectInAppBrowser(), []);
+            const quickReplies = useMemo(() => SL.getCoachQuickReplies(activePersona.id, selectedMode.lang), [activePersona.id, selectedMode.lang]);
+
+            useEffect(() => {
+                const el = document.getElementById('skilllab-root');
+                if (el) el.dataset.mounted = 'true';
+            }, []);
+
+            // Firebase Cloud Settings Sync
+            useEffect(() => {
+                if (!isCloudConfigured || !fbAuth || !fbDb) return;
+                let active = true;
+                let unsub = null;
+                const unsubAuth = onAuthStateChanged(fbAuth, async (fbUser) => {
+                    if (!active) return;
+                    if (!fbUser && !isAdminPreview) { try { await signInAnonymously(fbAuth); } catch (_) {} return; }
+                    if (unsub) unsub();
+                    unsub = onSnapshot(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_config', 'settings'), (snap) => {
+                        if (snap.exists() && snap.data()?.appsScriptUrl) setAppsScriptUrl(snap.data().appsScriptUrl);
+                    }, () => {});
+                });
+                return () => { active = false; unsubAuth(); if (unsub) unsub(); };
+            }, [isAdminPreview]);
+
+            // ============================================================================
+            // 6. REAL AUDIO LIP-SYNC ANALYSER & STUDIO 24kHz TTS ENGINE
+            // ============================================================================
+            const getLiveAudioAmplitude = useCallback(() => {
+                const an = analyserRef.current, buf = ampBufRef.current;
+                if (!an || !buf) return -1;
+                try {
+                    an.getByteTimeDomainData(buf);
+                    let sum = 0;
+                    for (let i = 0; i < buf.length; i++) { const n = (buf[i] - 128) / 128; sum += n * n; }
+                    const rms = Math.sqrt(sum / buf.length);
+                    return rms < 0.012 ? 0 : Math.min(1, (rms - 0.012) * 6.8);
+                } catch (_) { return -1; }
+            }, []);
+
+            const ensureSharedAudioWithAnalyser = useCallback(() => {
+                if (!sharedAudioRef.current) {
+                    const a = new Audio();
+                    a.playsInline = true;
+                    a.setAttribute('playsinline', '');
+                    a.crossOrigin = 'anonymous';
+                    sharedAudioRef.current = a;
+                }
+                if (!analyserRef.current) {
+                    try {
+                        const AC = window.AudioContext || window.webkitAudioContext;
+                        if (AC) {
+                            const ctx = new AC();
+                            const src = ctx.createMediaElementSource(sharedAudioRef.current);
+                            const an = ctx.createAnalyser();
+                            an.fftSize = 256;
+                            src.connect(an);
+                            an.connect(ctx.destination);
+                            audioCtxRef.current = ctx;
+                            analyserRef.current = an;
+                            ampBufRef.current = new Uint8Array(an.fftSize);
+                        }
+                    } catch (_) {}
+                }
+                if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
+                    audioCtxRef.current.resume().catch(() => {});
+                }
+                return sharedAudioRef.current;
+            }, []);
+
+            const stopAllAiVoice = useCallback(() => {
+                voiceSessionRef.current += 1;
+                if (voiceAbortRef.current) { try { voiceAbortRef.current.abort(); } catch (_) {} voiceAbortRef.current = null; }
+                if (sharedAudioRef.current) {
+                    try { sharedAudioRef.current.onended = null; sharedAudioRef.current.onerror = null; sharedAudioRef.current.pause(); } catch (_) {}
+                }
+                if (audioUrlRef.current) { try { URL.revokeObjectURL(audioUrlRef.current); } catch (_) {} audioUrlRef.current = null; }
+                if ('speechSynthesis' in window) { try { window.speechSynthesis.cancel(); } catch (_) {} }
+                setVoicePhase('idle');
+            }, []);
+            useEffect(() => () => stopAllAiVoice(), [stopAllAiVoice]);
+
+            const playRelativeSegments = useCallback(async (fullText, personaIdForVoice, emotionId, lang = 'th') => {
+                stopAllAiVoice();
+                const sid = voiceSessionRef.current;
+                const ctrl = new AbortController();
+                voiceAbortRef.current = ctrl;
+                const personaObj = personas.find(p => p.id === personaIdForVoice) || activePersona;
+                const segments = SL.splitDualSpeakerSegments(fullText, personaObj);
+                const emoStyle = EMOTIONS_DATA[emotionId]?.style || '';
+                const langCode = lang === 'en' ? 'en-US' : 'th-TH';
+
+                setLatestCaption(fullText);
+                setVoicePhase('loading');
+                const a = ensureSharedAudioWithAnalyser();
+
+                for (let i = 0; i < segments.length; i++) {
+                    if (voiceSessionRef.current !== sid || ctrl.signal.aborted) return;
+                    const seg = segments[i];
+                    setActiveSpeakerKey(seg.speakerKey);
+                    setActiveSpeakerBadge(seg.badgeTH);
+
+                    const blob = await fetchStudioTtsBlob({
+                        appsScriptUrl,
+                        text: seg.text,
+                        voiceName: seg.voiceName || 'Sulafat',
+                        languageCode: langCode,
+                        style: emoStyle,
+                        signal: ctrl.signal
+                    });
+                    if (voiceSessionRef.current !== sid || ctrl.signal.aborted) return;
+                    if (!blob || blob.size === 0) continue;
+
+                    setVoicePhase('speaking');
+                    if (audioUrlRef.current) { try { URL.revokeObjectURL(audioUrlRef.current); } catch (_) {} }
+                    const url = URL.createObjectURL(blob);
+                    audioUrlRef.current = url;
+                    await new Promise(resolve => {
+                        a.muted = false; a.src = url; a.onended = () => resolve(true); a.onerror = () => resolve(false);
+                        try { a.load(); } catch (_) {}
+                        const p = a.play();
+                        if (p && typeof p.catch === 'function') p.catch(() => resolve(false));
+                    });
+                }
+                if (voiceSessionRef.current === sid) setVoicePhase('idle');
+            }, [stopAllAiVoice, personas, activePersona, appsScriptUrl, ensureSharedAudioWithAnalyser]);
+
+            const playStepGuide = useCallback(async (cacheKey, text) => {
+                if (voicePhase !== 'idle') { stopAllAiVoice(); return; }
+                stopAllAiVoice();
+                const sid = voiceSessionRef.current;
+                const ctrl = new AbortController();
+                voiceAbortRef.current = ctrl;
+                setVoicePhase('loading');
+                const a = ensureSharedAudioWithAnalyser();
+                const blob = await fetchStudioTtsBlob({
+                    appsScriptUrl, text, voiceName: 'Sulafat', languageCode: 'th-TH',
+                    style: 'พูดภาษาไทยด้วยน้ำเสียงผู้หญิงที่อบอุ่น นุ่มนวล คมชัดระดับสตูดิโอ', cacheKey, signal: ctrl.signal
+                });
+                if (voiceSessionRef.current !== sid || ctrl.signal.aborted) return;
+                if (!blob) { setVoicePhase('idle'); showToast('ไม่สามารถเชื่อมต่อเสียง AI สตูดิโอได้ชั่วคราวค่ะ', 'info'); return; }
+                setVoicePhase('speaking');
+                const url = URL.createObjectURL(blob);
+                audioUrlRef.current = url;
+                await new Promise(resolve => {
+                    a.muted = false; a.src = url; a.onended = () => resolve(true); a.onerror = () => resolve(false);
+                    try { a.load(); } catch (_) {}
+                    const p = a.play();
+                    if (p && typeof p.catch === 'function') p.catch(() => resolve(false));
+                });
+                if (voiceSessionRef.current === sid) setVoicePhase('idle');
+            }, [voicePhase, stopAllAiVoice, ensureSharedAudioWithAnalyser, appsScriptUrl, showToast]);
+
+            // Mount & Sync 2,800-Particle Warm Friendly Anime Stage
+            useEffect(() => {
+                if ((phase !== 'negotiating' && phase !== 'micro_drill') || !stageContainerRef.current) return;
+                const ctrl = mountParticleAnime2800(stageContainerRef.current, {
+                    personaId: effectivePersonaId,
+                    emotion: currentEmotion,
+                    trust: trustScore,
+                    isSpeaking: voicePhase === 'speaking',
+                    activeSpeaker: activeSpeakerKey,
+                    getAudioAmplitude: getLiveAudioAmplitude
+                });
+                particleCtrlRef.current = ctrl;
+                return () => {
+                    ctrl.destroy();
+                    particleCtrlRef.current = null;
+                };
+            }, [phase]);
+
+            useEffect(() => {
+                if (!particleCtrlRef.current) return;
+                particleCtrlRef.current.update({
+                    personaId: effectivePersonaId,
+                    emotion: currentEmotion,
+                    trust: trustScore,
+                    isSpeaking: voicePhase === 'speaking',
+                    activeSpeaker: activeSpeakerKey,
+                    getAudioAmplitude: getLiveAudioAmplitude
+                });
+            }, [effectivePersonaId, currentEmotion, trustScore, voicePhase, activeSpeakerKey, getLiveAudioAmplitude]);
+
+            // ============================================================================
+            // 7. CONSULTATION, MICRO-DRILL, SILENCE 2.5s, MIC & EVALUATION HANDLERS
+            // ============================================================================
+            const handleApplyRec = () => {
+                setSelectedPersonaId(activeRec.personaId);
+                setModeId(activeRec.modeId);
+                setDifficultyId(activeRec.difficultyId);
+                showToast(`เลือกเคสที่ AI แนะนำแล้ว: ${activeRec.headline}`);
+            };
+
             const handleEnterBriefingOrDrill = () => {
                 stopAllAiVoice();
                 setParticleMode('anime');
+                setLearnerVoiceClips([]);
+                setHintBanner('');
                 if (selectedMode.isDrill) {
-                    const st0 = drillStages[0] || {};
+                    const st0 = drillStages[0] || MICRO_DRILL_STAGES[0];
                     setDrillIdx(0);
                     setDrillResults([]);
                     setCurrentDrillFeedback(null);
                     setCurrentEmotion(st0.emotion || 'CONFUSED');
                     setActiveSpeakerKey('primary');
-                    setActiveSpeakerBadge(st0.badgeTH || 'ด่าน 1/4');
-                    setCurrentActionCue(st0.actionTH || '');
+                    setActiveSpeakerBadge(st0.badgeTH);
+                    setCurrentActionCue(st0.actionTH);
+                    setLatestCaption(st0.promptTH);
                     setInputText('');
                     setPhase('micro_drill');
-                    if (SL.SoundFX) SL.SoundFX.playDoorKnock();
-                    setTimeout(() => playRelativeSegments(st0.promptTH || '', st0.personaId || 'standard', st0.emotion || 'CONFUSED', 'th'), 350);
+                    setTimeout(() => playRelativeSegments(st0.promptTH, st0.personaId, st0.emotion, 'th'), 320);
                 } else {
                     setPhase('briefing');
                 }
@@ -406,12 +1494,267 @@
             const handleStartConsultation = () => {
                 stopAllAiVoice();
                 setParticleMode('anime');
-                if (SL.SoundFX) SL.SoundFX.playDoorKnock();
                 const isEn = selectedMode.lang === 'en';
                 const openingSpeech = isEn ? (activePersona.openingEN || activePersona.openingTH) : activePersona.openingTH;
-                const openingAction = isEn ? (activePersona.openingActionEN || activePersona.openingActionTH) : activePersona.openingActionTH;
                 const initEmo = activePersona.openingEmotion || 'CONFUSED';
-<!-- ... existing code ... -->
+                setMessages([{ role: 'ai', text: openingSpeech, emotion: initEmo, at: Date.now() }]);
+                setCurrentEmotion(initEmo);
+                setTrustScore(42);
+                setUnlockedBarrierIds([]);
+                setSilenceCount(0);
+                setTriggerTotal(0);
+                setActiveSpeakerKey('primary');
+                setActiveSpeakerBadge(activePersona.speakerRoleTH);
+                setCurrentActionCue(activePersona.openingActionTH);
+                setLatestCaption(openingSpeech);
+                setHintBanner('');
+                setInputText('');
+                setPhase('negotiating');
+                setTimeout(() => playRelativeSegments(openingSpeech, activePersona.id, initEmo, selectedMode.lang), 320);
+            };
+
+            const handleTherapeuticSilence = () => {
+                if (silenceTimer > 0) return;
+                setSilenceTimer(3);
+                const iv = setInterval(() => {
+                    setSilenceTimer(prev => {
+                        if (prev <= 1) {
+                            clearInterval(iv);
+                            setSilenceCount(c => c + 1);
+                            setTrustScore(t => Math.min(100, t + 6));
+                            showToast('✓ ใช้ความเงียบเยียวยา 2.5 วินาทีสำเร็จ! (+6 ความไว้วางใจ)');
+                            return 0;
+                        }
+                        return prev - 1;
+                    });
+                }, 900);
+            };
+
+            const handleToggleMic = async () => {
+                if (isRecordingMic) {
+                    setIsRecordingMic(false);
+                    if (speechRecRef.current) { try { speechRecRef.current.stop(); } catch (_) {} }
+                    if (mediaRecRef.current && mediaRecRef.current.state !== 'inactive') { try { mediaRecRef.current.stop(); } catch (_) {} }
+                    return;
+                }
+                const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SR) { showToast('เบราว์เซอร์นี้ไม่รองรับการพิมพ์ด้วยเสียง สามารถพิมพ์ข้อความโต้ตอบได้ทันทีค่ะ', 'info'); return; }
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    micChunksRef.current = [];
+                    micStartTsRef.current = Date.now();
+                    const mr = new MediaRecorder(stream);
+                    mr.ondataavailable = (ev) => { if (ev.data.size > 0) micChunksRef.current.push(ev.data); };
+                    mr.onstop = () => {
+                        stream.getTracks().forEach(t => t.stop());
+                        const blob = new Blob(micChunksRef.current, { type: 'audio/webm' });
+                        const dur = Math.max(1, Math.round((Date.now() - micStartTsRef.current) / 1000));
+                        setLearnerVoiceClips(prev => [...prev.slice(-4), { audioUrl: URL.createObjectURL(blob), durationSec: dur }]);
+                    };
+                    mr.start();
+                    mediaRecRef.current = mr;
+
+                    const rec = new SR();
+                    rec.lang = selectedMode.lang === 'en' ? 'en-US' : 'th-TH';
+                    rec.interimResults = false;
+                    rec.onresult = (ev) => {
+                        const transcript = ev.results?.[0]?.[0]?.transcript || '';
+                        if (transcript) setInputText(prev => (prev ? `${prev} ${transcript}` : transcript));
+                    };
+                    rec.onerror = () => setIsRecordingMic(false);
+                    rec.onend = () => {
+                        setIsRecordingMic(false);
+                        if (mediaRecRef.current && mediaRecRef.current.state !== 'inactive') { try { mediaRecRef.current.stop(); } catch (_) {} }
+                    };
+                    speechRecRef.current = rec;
+                    rec.start();
+                    setIsRecordingMic(true);
+                    showToast('🎙️ กำลังรับเสียงพูดของท่าน (บันทึกเฉพาะใน RAM เพื่อฟังย้อนหลัง • PDPA 100%)', 'info');
+                } catch (_) {
+                    showToast('ไม่ได้รับสิทธิ์ไมโครโฟน สามารถพิมพ์หรือแตะปุ่มแนวทางคำพูดแทนได้ค่ะ', 'error');
+                }
+            };
+
+            const handleSendMessage = async (e, overrideText = null) => {
+                if (e) e.preventDefault();
+                const txt = String(overrideText ?? inputText).trim();
+                if (!txt || isAiThinking) return;
+                setInputText('');
+
+                if (phase === 'micro_drill') {
+                    const st = drillStages[drillIdx];
+                    const fb = SL.evaluateMicroDrillAnswer(st, txt);
+                    setCurrentDrillFeedback(fb);
+                    setDrillResults(prev => [...prev, { stageId: st.id, score: fb.score, answer: txt }]);
+                    setCurrentEmotion(fb.passed ? 'CALM' : 'HESITANT');
+                    return;
+                }
+
+                stopAllAiVoice();
+                const triggers = SL.detectTriggerPhrases(txt);
+                const nextTriggerTotal = triggerTotal + triggers.length;
+                if (triggers.length > 0) {
+                    setTriggerTotal(nextTriggerTotal);
+                    showToast(`⚠️ พบคำที่อาจกระทบจิตใจ (${triggers.join(', ')}) แนะนำเลี่ยงใช้ในห้องรับรองจริงค่ะ`, 'error');
+                }
+
+                const nextMessages = [...messages, { role: 'user', text: txt, at: Date.now() }];
+                setMessages(nextMessages);
+                const learnerTexts = nextMessages.filter(m => m.role === 'user').map(m => m.text);
+                const nextUnlocked = SL.evaluateBarriersUnlocked(activePersona.id, learnerTexts);
+                setUnlockedBarrierIds(nextUnlocked);
+                setIsAiThinking(true);
+
+                let replyText = '';
+                let nextEmo = triggers.length > 0 ? 'ANGRY' : (nextUnlocked.length >= 3 ? 'CALM' : (nextUnlocked.length >= 2 ? 'HESITANT' : (nextUnlocked.length >= 1 ? 'SAD' : currentEmotion)));
+                let nextTrust = Math.max(10, Math.min(100, trustScore + (triggers.length > 0 ? -15 : (nextUnlocked.length > unlockedBarrierIds.length ? 16 : 6))));
+
+                if (appsScriptUrl && navigator.onLine) {
+                    try {
+                        const ctrl = new AbortController();
+                        const tm = setTimeout(() => ctrl.abort(), 14000);
+                        const convoHistory = nextMessages.slice(-6).map(m => `${m.role === 'user' ? 'ผู้เข้าฝึก' : 'คู่สนทนา'}: ${m.text}`).join('\n');
+                        const rawRes = await fetch(appsScriptUrl, {
+                            method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                            body: JSON.stringify({
+                                action: 'callGemini',
+                                prompt: `เคส: ${activePersona.titleTH}\nบทบาทของคุณ: ${activePersona.speakerRoleTH}\nประวัติสนทนา:\n${convoHistory}\n\nให้ตอบกลับในบทบาทคู่สนทนา 2-3 ประโยคภาษา${selectedMode.lang === 'en' ? 'อังกฤษ' : 'ไทย'}อย่างเป็นธรรมชาติ โดยขึ้นต้นด้วยแท็กอารมณ์ [EMOTION:SHOCK|CONFUSED|ANGRY|SAD|HESITANT|CALM] ตามอารมณ์ที่สมจริง (หากเคส 3 ให้ตอบสลับ [ภรรยา]: ... [คุณแม่]: ...)`,
+                                systemInstruction: 'คุณคือคู่สนทนาในห้องฝึกสื่อสาร AI Skill Lab 3D โรงพยาบาลราชวิถี ตอบสมจริงตามหลักจิตวิทยาและคลินิก ไม่ใช้ Markdown'
+                            }),
+                            signal: ctrl.signal
+                        });
+                        clearTimeout(tm);
+                        const d = JSON.parse((await rawRes.text()) || '{}');
+                        if (d?.status === 'success' && d.text) {
+                            const raw = String(d.text).replace(/[*#]/g, '').trim();
+                            const m = raw.match(/\[EMOTION:(SHOCK|CONFUSED|ANGRY|SAD|HESITANT|CALM)\]/i);
+                            if (m) nextEmo = m[1].toUpperCase();
+                            replyText = raw.replace(/\[EMOTION:[^\]]+\]/gi, '').trim();
+                        }
+                    } catch (_) {}
+                }
+
+                if (!replyText) {
+                    if (triggers.length > 0) {
+                        replyText = 'ทำไมพูดกับครอบครัวแบบนี้ล่ะคะ... พวกเรากำลังเสียใจมาก อย่ามาเร่งรัดหรือพูดแบบนี้เลยค่ะ';
+                    } else if (nextUnlocked.length >= 3) {
+                        replyText = activePersona.id === 'sbar_doctor'
+                            ? 'รับทราบครับ รายงาน SBAR ชัดเจนครบถ้วนมาก ผมสั่งสารน้ำและ DDAVP ให้เดี๋ยวนี้ แล้วประสานทีม TC/ODC ได้เลยครับ'
+                            : 'ขอบคุณมากนะคะที่อธิบายอย่างอ่อนโยนและให้เกียรติครอบครัวขนาดนี้ ตอนนี้ใจสงบและวางใจขึ้นมากแล้วค่ะ';
+                    } else if (nextUnlocked.length >= 1) {
+                        replyText = activePersona.id === 'sbar_doctor'
+                            ? 'เข้าใจสถานการณ์แล้วครับ ช่วยประเมินผลแล็บกับแผนการรักษาที่ต้องการเสนอเพิ่มเติมอีกนิดครับ'
+                            : 'พอเข้าใจขึ้นบ้างแล้วค่ะ... แต่ในใจยังห่วงและอยากขอเวลาทำความเข้าใจอีกนิดนะคะ';
+                    } else {
+                        replyText = 'ยังสับสนและทำใจยากมากเลยค่ะ ช่วยค่อยๆ อธิบายให้ครอบครัวสบายใจกว่านี้ได้ไหมคะ?';
+                    }
+                }
+
+                setCurrentEmotion(nextEmo);
+                setTrustScore(nextTrust);
+                setMessages(prev => [...prev, { role: 'ai', text: replyText, emotion: nextEmo, at: Date.now() }]);
+                setIsAiThinking(false);
+                playRelativeSegments(replyText, activePersona.id, nextEmo, selectedMode.lang);
+            };
+
+            const handleNextDrillStage = () => {
+                stopAllAiVoice();
+                setCurrentDrillFeedback(null);
+                if (drillIdx + 1 < drillStages.length) {
+                    const nextIdx = drillIdx + 1;
+                    const st = drillStages[nextIdx];
+                    setDrillIdx(nextIdx);
+                    setCurrentEmotion(st.emotion);
+                    setActiveSpeakerBadge(st.badgeTH);
+                    setCurrentActionCue(st.actionTH);
+                    setLatestCaption(st.promptTH);
+                    setTimeout(() => playRelativeSegments(st.promptTH, st.personaId, st.emotion, 'th'), 280);
+                } else {
+                    const avg = drillResults.length > 0 ? Math.round(drillResults.reduce((s, x) => s + x.score, 0) / drillResults.length) : 85;
+                    setEvalResult({
+                        score: avg,
+                        radar: RADAR_AXES_FAMILY.map((a, i) => ({ key: a.key, labelTH: a.labelTH, value: Math.min(98, avg + (i % 2 === 0 ? 2 : -2)) })),
+                        summary: `ซ้อม Micro-Drill ครบทั้ง ${drillStages.length} ด่านคำถามหนักสำเร็จด้วยคะแนนเฉลี่ย ${avg}/100 ค่ะ`,
+                        goldenMoment: drillResults[0]?.answer || 'ตอบคำถามหนักได้อย่างสุภาพและเป็นระบบ',
+                        turningPoint: 'ลองนำทักษะที่ฝึกใน 4 ด่านนี้ไปซ้อมจริงในโหมด Roleplay เต็มรูปแบบต่อได้เลยค่ะ'
+                    });
+                    setPhase('result');
+                }
+            };
+
+            const handleFinishAndEvaluate = () => {
+                stopAllAiVoice();
+                const res = SL.evaluateConversationFallback({
+                    personaId: activePersona.id,
+                    messages,
+                    unlockedIds: unlockedBarrierIds,
+                    silenceCount,
+                    triggerTotal
+                });
+                setEvalResult(res);
+                setPhase('result');
+            };
+
+            const handleReturnToDashboard = async () => {
+                stopAllAiVoice();
+                const preAvg = Number(((preEff.e1 + preEff.e2 + preEff.e3) / 3).toFixed(2));
+                const postAvg = Number(((postEff.e1 + postEff.e2 + postEff.e3) / 3).toFixed(2));
+                const score = Number(evalResult?.score || 85);
+                const prevHist = Array.isArray(user?.skillLabHistory) ? user.skillLabHistory : [];
+                const blindTranscript = messages.map((m, idx) => ({ turn: idx + 1, role: m.role === 'user' ? 'LEARNER' : 'RELATIVE', text: m.text }));
+                const newEntry = {
+                    at: new Date().toISOString(),
+                    personaId: effectivePersonaId,
+                    difficultyId,
+                    score,
+                    silenceCount,
+                    triggerTotal,
+                    radar: evalResult?.radar || [],
+                    preSelfEfficacyAvg: preAvg,
+                    postSelfEfficacyAvg: postAvg,
+                    blindTranscript
+                };
+                const nextBest = Math.max(Number(user?.skillLabBestScore || 0), score);
+                const nextUser = {
+                    ...user,
+                    skillLabPassed: true,
+                    skillLabBestScore: nextBest,
+                    preSelfEfficacyAvg: preAvg,
+                    postSelfEfficacyAvg: postAvg,
+                    skillLabHistory: [...prevHist, newEntry].slice(-15)
+                };
+                setUser(nextUser);
+                saveLearnerSessionSafe(nextUser);
+
+                if (!isAdminPreview && fbDb && nextUser?.id) {
+                    try {
+                        await setDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', String(nextUser.id)), nextUser, { merge: true });
+                        if (typeof CORE.buildAnonTelemetryId === 'function' && typeof CORE.buildExecutiveTelemetryPayload === 'function') {
+                            const anonId = CORE.buildAnonTelemetryId(nextUser.id);
+                            await setDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'executive_telemetry', anonId), CORE.buildExecutiveTelemetryPayload(nextUser), { merge: true });
+                        }
+                    } catch (_) {}
+                }
+                showToast('บันทึกผล AI Skill Lab ขึ้น Cloud เรียบร้อย กำลังกลับห้องเรียนหลักค่ะ');
+                setTimeout(() => { window.location.href = './index.html?return=dashboard'; }, 600);
+            };
+
+            const handleDownloadDebriefPng = () => {
+                const ok = SL.downloadDebriefCardPng({ user, persona: activePersona, evalResult });
+                showToast(ok ? 'ดาวน์โหลดใบสรุปผล AI Skill Lab (PNG) เรียบร้อยค่ะ' : 'ไม่สามารถสร้างภาพได้ในขณะนี้ค่ะ', ok ? 'success' : 'error');
+            };
+
+            // ============================================================================
+            // 8. RENDER PHASES
+            // ============================================================================
+            return (
+                <div className="min-h-dvh relative flex flex-col pt-safe pb-safe">
+                    <div className="spatial-aura" />
+                    <div className="spatial-grid" />
+                    {voicePhase !== 'idle' && (
+                        <div className="fixed top-0 left-0 right-0 z-50 pointer-events-none"><div className="rjc-ambient-bar" /></div>
+                    )}
+
                     {/* ==================== PHASE 1: LOBBY (ADAPTIVE BENTO GRID มืด/สว่าง) ==================== */}
                     {phase === 'lobby' && (
                         <>
@@ -432,7 +1775,7 @@
                                     </div>
                                     <div className="flex items-center gap-1.5 shrink-0">
                                         <button type="button" onClick={() => playStepGuide('lab_lobby', 'ยินดีต้อนรับสู่ห้องฝึกสื่อสารสามมิติ เอไอสกิลแล็บ ค่ะ ท่านสามารถเลือกเคสฝึกตามคำแนะนำของเอไอ หรือเลือกฝึกโหมดไมโครดริลล์สี่ด่านคำถามหนักได้เลยค่ะ')} className="spatial-soft px-3 py-1.5 rounded-xl text-xs font-bold text-prism-adaptive inline-flex items-center gap-1.5">
-                                            <Icon name="Volume2" size={14} /> <span className="hidden sm:inline">ฟังแนะนำ</span>
+                                            <Icon name={voicePhase !== 'idle' ? 'Square' : 'Volume2'} size={14} /> <span className="hidden sm:inline">{voicePhase !== 'idle' ? 'หยุดเสียง' : 'ฟังแนะนำ'}</span>
                                         </button>
                                         <ThemeToggleButton theme={theme} onToggle={toggleTheme} />
                                     </div>
@@ -442,14 +1785,14 @@
                             <main className="relative z-10 max-w-7xl w-full mx-auto px-3.5 sm:px-6 py-5 sm:py-6 space-y-4 flex-1">
                                 {browserGuard.isInApp && (
                                     <div className="spatial-card rounded-2xl p-3.5 border-amber-400/50 flex flex-wrap items-center justify-between gap-2 text-xs">
-                                        <span className="text-amber-200 font-bold">ตรวจพบการใช้งานผ่าน {browserGuard.appName} — แนะนำเปิดใน Safari / Chrome เพื่อให้ไมค์และเสียง AI ทำงานสมบูรณ์ค่ะ</span>
+                                        <span className="text-amber-300 font-bold">ตรวจพบการใช้งานผ่าน {browserGuard.appName} — แนะนำเปิดใน Safari / Chrome เพื่อให้ไมค์และเสียง AI ทำงานสมบูรณ์ค่ะ</span>
                                         <button type="button" onClick={() => { copyTextSafe(browserGuard.externalUrl); showToast('คัดลอกลิงก์แล้ว วางใน Safari หรือ Chrome ได้เลยค่ะ'); }} className="px-3 py-1.5 rounded-xl bg-amber-400 text-void-950 font-extrabold">
                                             คัดลอกลิงก์เปิดในเบราว์เซอร์
                                         </button>
                                     </div>
                                 )}
 
-                                {/* BENTO ROW 1: AI LAB ADVISOR (Col 8) + CLINICAL TELEMETRY & BADGES (Col 4) */}
+                                {/* BENTO ROW 1: AI LAB ADVISOR (Col 8) + EMPATHY GAUGE & BADGES (Col 4) */}
                                 <section className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
                                     <div className="lg:col-span-8 spatial-card rounded-[1.75rem] p-4 sm:p-5 flex flex-col justify-between gap-3 border-prism-400/35">
                                         <div className="space-y-2.5">
@@ -492,7 +1835,6 @@
                                         </div>
                                     </div>
 
-                                    {/* BENTO CARD: BEST EMPATHY GAUGE & CLINICAL BADGES */}
                                     <div className="lg:col-span-4 spatial-card rounded-[1.75rem] p-4 sm:p-5 flex flex-col justify-between gap-3">
                                         <div className="flex items-center justify-between gap-2">
                                             <div>
@@ -517,7 +1859,7 @@
                                         </div>
                                         <div className="flex flex-wrap gap-1">
                                             {clinicalBadges.map(b => (
-                                                <span key={b.id} title={b.descTH} className={`px-2 py-0.5 rounded-full font-mono text-[10px] font-bold border ${b.earned ? 'bg-amber-400/20 border-amber-400/50 text-amber-300' : 'spatial-soft text-muted-adaptive opacity-65'}`}>
+                                                <span key={b.id} title={b.descTH} className={`px-2 py-0.5 rounded-full font-mono text-[10px] font-bold border ${b.earned ? 'bg-amber-400/20 border-amber-400/50 text-amber-400' : 'spatial-soft text-muted-adaptive opacity-65'}`}>
                                                     {b.earned ? '★ ' : '○ '}{b.titleTH}
                                                 </span>
                                             ))}
@@ -548,17 +1890,17 @@
                                             </button>
                                             <button type="button" onClick={() => setDifficultyId('hard')} className={`p-3 rounded-2xl border text-left ${difficultyId === 'hard' ? 'bg-rose-500/20 border-rose-400' : 'spatial-soft'}`}>
                                                 <p className="font-display font-extrabold text-xs text-rose-400">Hard Mode ⚡</p>
-                                                <p className="text-[10.5px] text-muted-adaptive mt-0.5">ไร้ตัวช่วย + เหตุการณ์แทรก</p>
+                                                <p className="text-[10.5px] text-muted-adaptive mt-0.5">ไร้ตัวช่วย + ทดสอบเสมือนจริง</p>
                                             </button>
                                         </div>
                                     </div>
                                 </section>
 
-                                {/* BENTO ROW 3: 6 CLINICAL PERSONAS BENTO GRID */}
+                                {/* BENTO ROW 3: 6 CLINICAL PERSONAS */}
                                 {!selectedMode.isDrill && (
                                     <section className="space-y-2.5">
-                                        <div className="flex flex-wrap items-center justify-between gap-2 px-1">
-                                            <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">3. เลือกเคสสถานการณ์จำลอง (ฝูงอนุภาค 2,800 ดวง: อนิเมะอบอุ่นเป็นมิตร ⇄ ข้อความตามอารมณ์ &amp; เปลี่ยนสี)</span>
+                                        <div className="px-1">
+                                            <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">3. เลือกเคสสถานการณ์จำลอง (อนุภาค 2,800 ดวง: อนิเมะอบอุ่นเป็นมิตร ⇄ ข้อความตามอารมณ์ &amp; เปลี่ยนสี)</span>
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
                                             {personas.map(p => {
@@ -579,7 +1921,7 @@
                                     </section>
                                 )}
 
-                                {/* BENTO ROW 4: PRE-PRACTICE SELF-EFFICACY (R2R) + START CTA */}
+                                {/* BENTO ROW 4: PRE-PRACTICE SELF-EFFICACY + START CTA */}
                                 <section className="spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3.5">
                                     <div className="flex flex-wrap items-center justify-between gap-2">
                                         <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">PRE-PRACTICE SELF-EFFICACY (ประเมินความมั่นใจก่อนฝึก • R2R • 1–5)</span>
@@ -604,10 +1946,61 @@
                             </main>
                         </>
                     )}
-<!-- ... existing code ... -->
+
+                    {/* ==================== PHASE 2: ICU BRIEFING (BENTO CARD) ==================== */}
+                    {phase === 'briefing' && (
+                        <main className="relative z-10 max-w-3xl w-full mx-auto px-4 py-7 space-y-5 flex-1 flex flex-col justify-center">
+                            <div className="spatial-card rounded-[2rem] p-5 sm:p-7 space-y-5 border-prism-400/40">
+                                <div className="flex items-center justify-between gap-2">
+                                    <button type="button" onClick={() => setPhase('lobby')} className="spatial-soft px-3.5 py-2 rounded-xl text-xs font-bold text-primary-adaptive inline-flex items-center gap-1.5">
+                                        <Icon name="ArrowLeft" size={14} /> กลับหน้าเลือกเคส
+                                    </button>
+                                    <span className="px-3 py-1 rounded-full bg-prism-500/20 text-prism-adaptive font-mono text-[10px] font-bold">
+                                        {activePersona.tagTH} • {difficultyId.toUpperCase()}
+                                    </span>
+                                </div>
+
+                                <div>
+                                    <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">ICU CLINICAL BRIEFING FILE</span>
+                                    <h1 className="font-display font-extrabold text-xl sm:text-2xl text-primary-adaptive mt-1">{activePersona.titleTH}</h1>
+                                    <p className="text-xs sm:text-sm text-secondary-adaptive mt-1">{activePersona.descTH}</p>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                                    <div className="spatial-soft rounded-2xl p-3.5 space-y-1">
+                                        <span className="font-mono text-[10px] text-prism-adaptive font-bold block">ข้อมูลผู้ป่วย (PATIENT)</span>
+                                        <p className="font-bold text-primary-adaptive">{activePersona.icuBrief?.patient}</p>
+                                    </div>
+                                    <div className="spatial-soft rounded-2xl p-3.5 space-y-1">
+                                        <span className="font-mono text-[10px] text-accent-adaptive font-bold block">สัญญาณชีพ (VITALS)</span>
+                                        <p className="font-mono font-bold text-primary-adaptive">{activePersona.icuBrief?.vitals}</p>
+                                    </div>
+                                    <div className="sm:col-span-2 spatial-soft rounded-2xl p-3.5 space-y-1">
+                                        <span className="font-mono text-[10px] text-amber-400 font-bold block">สถานะทางคลินิก (CLINICAL STATUS)</span>
+                                        <p className="font-semibold text-primary-adaptive">{activePersona.icuBrief?.brainDeath}</p>
+                                    </div>
+                                </div>
+
+                                <div className="spatial-soft rounded-2xl p-4 space-y-2 text-xs">
+                                    <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase block">เป้าหมายสำคัญ 3 ปมที่ควรสื่อสารให้ครบในเคสนี้</span>
+                                    {(activePersona.barriers || []).map((b, bi) => (
+                                        <div key={b.id} className="flex items-start gap-2 text-secondary-adaptive">
+                                            <span className="font-mono font-bold text-prism-adaptive">{bi + 1}.</span>
+                                            <span>{b.labelTH}</span>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <button type="button" onClick={handleStartConsultation} className="rjc2-pill-btn touch-target w-full py-4 rounded-full font-display font-extrabold text-sm sm:text-base">
+                                    เคาะประตูเข้าห้องรับรอง &amp; เริ่มสนทนา (อนุภาคอนิเมะ 2,800 ดวง) →
+                                </button>
+                            </div>
+                        </main>
+                    )}
+
                     {/* ==================== PHASE 3 & 4: FULLSCREEN 2,800-PARTICLE ANIME STAGE & MICRO-DRILL ==================== */}
                     {(phase === 'negotiating' || phase === 'micro_drill') && (
-                        <div className="holo-stage-bg fixed inset-0 z-20 flex flex-col justify-between overflow-hidden select-none">
+                        <div className="holo-stage-bg fixed inset-0 z-20 flex flex-col justify-between overflow-hidden select-none text-white">
                             {/* Aura Clouds Background Layer */}
                             <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden opacity-45" aria-hidden="true">
                                 <div className="lab-cloud-drift top-[16%] w-[52vw] max-w-[540px] h-28 rounded-full bg-sky-400/20 blur-3xl" style={{ '--c-dur': '90s', '--c-del': '-24s' }} />
@@ -616,8 +2009,167 @@
 
                             {/* 2,800-Particle Warm Friendly Anime ⇄ Emotion Text Stage */}
                             <div ref={stageContainerRef} className="fixed inset-0 z-10 cursor-grab active:cursor-grabbing" />
-<!-- ... existing code ... -->
-                    {/* ==================== PHASE 5: ADAPTIVE BENTO GRID 5-AXIS RADAR RESULT & DEBRIEF PNG ==================== */}
+
+                            {/* Top HUD */}
+                            <header className="relative z-20 max-w-5xl w-full mx-auto px-3 sm:px-5 pt-[calc(0.75rem+env(safe-area-inset-top,0px))] flex flex-wrap items-center justify-between gap-2 pointer-events-none">
+                                <div className="flex items-center gap-1.5 pointer-events-auto min-w-0">
+                                    <button type="button" onClick={() => { stopAllAiVoice(); setPhase('lobby'); }} className="stage-hud-glass w-9 h-9 rounded-xl flex items-center justify-center shrink-0">
+                                        <Icon name="ArrowLeft" size={16} />
+                                    </button>
+                                    <div className="stage-hud-glass px-3 h-9 rounded-xl flex items-center gap-2 text-xs min-w-0">
+                                        <span className="w-2.5 h-2.5 rounded-full animate-pulse shrink-0" style={{ backgroundColor: EMOTIONS_DATA[currentEmotion]?.color || '#38bdf8' }} />
+                                        <span className="font-display font-bold truncate">{activeSpeakerBadge || activePersona.speakerRoleTH}</span>
+                                        <span className="text-white/25">•</span>
+                                        <span className="font-mono text-[11px] font-bold shrink-0" style={{ color: EMOTIONS_DATA[currentEmotion]?.color || '#67e8f9' }}>
+                                            {EMOTIONS_DATA[currentEmotion]?.labelTH || currentEmotion}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-1.5 pointer-events-auto flex-wrap">
+                                    {phase === 'negotiating' && (
+                                        <div className="stage-hud-glass px-2.5 h-9 rounded-xl flex items-center gap-1.5 text-[11px] font-mono">
+                                            <span className="text-emerald-300 font-bold">ปม {unlockedBarrierIds.length}/3</span>
+                                            <span className="text-white/25">|</span>
+                                            <span className="text-cyan-300 font-bold">วางใจ {trustScore}%</span>
+                                        </div>
+                                    )}
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            if (particleCtrlRef.current) {
+                                                const nextM = particleCtrlRef.current.toggleDisplayMode();
+                                                setParticleMode(nextM);
+                                            }
+                                        }}
+                                        className="stage-hud-glass px-3 h-9 rounded-xl text-[11px] font-bold text-cyan-200 hover:border-cyan-300"
+                                    >
+                                        {particleMode === 'anime' ? '✨ ข้อความอารมณ์' : '👤 อนิเมะ 2.5D'}
+                                    </button>
+                                    <button type="button" onClick={() => setShowCaptions(v => !v)} className={`stage-hud-glass px-2.5 h-9 rounded-xl text-[11px] font-mono font-bold ${showCaptions ? 'border-emerald-400 text-emerald-300' : 'text-slate-300'}`}>
+                                        CC
+                                    </button>
+                                    {phase === 'negotiating' && difficultyId === 'normal' && (
+                                        <button type="button" onClick={() => setHintBanner(SL.getRemainingBarrierHint(activePersona.id, unlockedBarrierIds))} className="stage-hud-glass px-2.5 h-9 rounded-xl text-[11px] font-bold text-amber-300">
+                                            💡 คำใบ้
+                                        </button>
+                                    )}
+                                    {phase === 'negotiating' && (
+                                        <button type="button" onClick={() => setShowHistoryModal(true)} className="stage-hud-glass px-2.5 h-9 rounded-xl text-[11px] font-bold text-sky-200">
+                                            ประวัติ ({messages.length})
+                                        </button>
+                                    )}
+                                    {voicePhase !== 'idle' && (
+                                        <button type="button" onClick={stopAllAiVoice} className="px-2.5 h-9 rounded-xl bg-rose-600 text-white text-[11px] font-bold inline-flex items-center gap-1">
+                                            <span className="rjc-wave-eq"><span /><span /><span /></span> หยุดเสียง
+                                        </button>
+                                    )}
+                                    {phase === 'negotiating' && (
+                                        <button type="button" onClick={handleFinishAndEvaluate} className="rjc2-pill-btn px-3.5 h-9 rounded-xl font-display font-extrabold text-xs">
+                                            จบเคส &amp; ประเมินผล →
+                                        </button>
+                                    )}
+                                </div>
+                            </header>
+
+                            {/* Bottom Interactive Controls */}
+                            <div className="relative z-20 max-w-4xl w-full mx-auto px-3 sm:px-5 pb-[calc(0.9rem+env(safe-area-inset-bottom,0px))] space-y-2 pointer-events-none">
+                                {currentActionCue && (
+                                    <div className="flex justify-center">
+                                        <span className="stage-hud-glass px-3.5 py-1 rounded-full text-[11px] text-amber-200/95 italic">{currentActionCue}</span>
+                                    </div>
+                                )}
+
+                                {(showCaptions || phase === 'micro_drill') && latestCaption && (
+                                    <div className="flex justify-center">
+                                        <div className="stage-hud-glass px-4 py-2.5 rounded-2xl text-xs sm:text-sm text-sky-50 text-center max-w-2xl pointer-events-auto leading-relaxed">
+                                            “{latestCaption}”
+                                        </div>
+                                    </div>
+                                )}
+
+                                {hintBanner && (
+                                    <div className="stage-hud-glass px-4 py-2.5 rounded-2xl border-amber-400/50 text-xs text-amber-200 flex items-center justify-between gap-2 pointer-events-auto">
+                                        <span>💡 {hintBanner}</span>
+                                        <button type="button" onClick={() => setHintBanner('')} className="text-white/60 hover:text-white font-bold">✕</button>
+                                    </div>
+                                )}
+
+                                {/* Micro-Drill Feedback Card */}
+                                {phase === 'micro_drill' && currentDrillFeedback && (
+                                    <div className="stage-hud-glass rounded-2xl p-4 space-y-2.5 border-emerald-400/50 pointer-events-auto text-xs">
+                                        <div className="flex items-center justify-between">
+                                            <span className="font-mono font-bold text-emerald-300">ผลประเมินด่าน {drillIdx + 1}/{drillStages.length}: {currentDrillFeedback.score}/100</span>
+                                            <button type="button" onClick={handleNextDrillStage} className="rjc2-pill-btn px-4 py-1.5 rounded-full font-display font-extrabold text-xs">
+                                                {drillIdx + 1 < drillStages.length ? 'ไปด่านถัดไป →' : 'ดูสรุปผล Micro-Drill →'}
+                                            </button>
+                                        </div>
+                                        <p className="text-sky-100">{currentDrillFeedback.feedbackTH}</p>
+                                        <div className="p-2.5 rounded-xl bg-white/10 text-emerald-200">
+                                            <b>แนวทางตัวอย่าง:</b> “{drillStages[drillIdx]?.modelAnswerTH}”
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Input Dock */}
+                                <div className="stage-hud-glass rounded-[1.5rem] p-3 sm:p-3.5 space-y-2.5 pointer-events-auto">
+                                    {phase === 'negotiating' && difficultyId === 'normal' && (
+                                        <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
+                                            {quickReplies.map((qr, qi) => (
+                                                <button key={qi} type="button" disabled={isAiThinking} onClick={() => handleSendMessage(null, qr)} className="shrink-0 px-3 py-1.5 rounded-xl bg-white/[0.08] hover:bg-white/[0.15] border border-sky-200/20 text-[11px] text-sky-100 text-left max-w-[260px] truncate">
+                                                    ✦ {qr}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+                                        {phase === 'negotiating' && (
+                                            <button type="button" onClick={handleTherapeuticSilence} disabled={silenceTimer > 0} className="touch-target px-3 rounded-xl bg-white/[0.08] border border-emerald-300/35 text-emerald-200 text-xs font-bold shrink-0" title="เว้นความเงียบเยียวยา 2.5 วินาที">
+                                                {silenceTimer > 0 ? `⏳ ${silenceTimer}s` : '🤫 เงียบ 2.5s'}
+                                            </button>
+                                        )}
+                                        <button type="button" onClick={handleToggleMic} className={`touch-target w-11 rounded-xl border flex items-center justify-center shrink-0 ${isRecordingMic ? 'bg-rose-600 border-rose-300 text-white animate-pulse' : 'bg-white/[0.08] border-sky-200/25 text-sky-100'}`} title="พูดผ่านไมโครโฟน">
+                                            <Icon name={isRecordingMic ? 'MicOff' : 'Mic'} size={18} />
+                                        </button>
+                                        <input
+                                            type="text"
+                                            value={inputText}
+                                            onChange={e => setInputText(e.target.value)}
+                                            disabled={isAiThinking || (phase === 'micro_drill' && Boolean(currentDrillFeedback))}
+                                            placeholder={selectedMode.lang === 'en' ? 'Type or speak your empathetic response...' : 'พิมพ์หรือกดไมค์เพื่อสื่อสารกับคู่สนทนา...'}
+                                            className="touch-target flex-1 px-3.5 py-2 rounded-xl text-sm bg-white/[0.09] border border-sky-200/25 text-white placeholder:text-slate-400 focus:outline-none focus:border-cyan-300"
+                                        />
+                                        <button type="submit" disabled={!inputText.trim() || isAiThinking} className="rjc2-pill-btn touch-target px-4 sm:px-5 rounded-xl font-display font-extrabold text-xs sm:text-sm shrink-0 disabled:opacity-45">
+                                            {isAiThinking ? '...' : 'ส่ง →'}
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            {/* Chat History Modal */}
+                            {showHistoryModal && (
+                                <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+                                    <div className="stage-hud-glass w-full max-w-lg max-h-[80vh] rounded-[1.75rem] p-5 flex flex-col gap-3">
+                                        <div className="flex items-center justify-between border-b border-white/15 pb-2.5">
+                                            <h3 className="font-display font-bold text-base">ประวัติบทสนทนา ({messages.length} ข้อความ)</h3>
+                                            <button type="button" onClick={() => setShowHistoryModal(false)} className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center">✕</button>
+                                        </div>
+                                        <div className="flex-1 overflow-y-auto custom-scrollbar space-y-2.5 text-xs pr-1">
+                                            {messages.map((m, i) => (
+                                                <div key={i} className={`p-3 rounded-2xl ${m.role === 'user' ? 'bg-emerald-500/20 border border-emerald-400/35 ml-6' : 'bg-white/10 border border-white/15 mr-6'}`}>
+                                                    <span className="font-mono text-[10px] font-bold block mb-1 text-cyan-300">{m.role === 'user' ? 'ท่าน (ผู้เข้าฝึก)' : activePersona.speakerRoleTH}</span>
+                                                    <p className="leading-relaxed text-slate-100">{m.text}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* ==================== PHASE 5: ADAPTIVE BENTO GRID 5-AXIS RADAR RESULT ==================== */}
                     {phase === 'result' && evalResult && (
                         <main className="relative z-10 max-w-5xl w-full mx-auto px-3.5 sm:px-6 py-6 sm:py-8 space-y-4 flex-1">
                             <div className="flex flex-wrap items-center justify-between gap-2">
@@ -636,7 +2188,6 @@
                             </div>
 
                             <section className="grid grid-cols-1 md:grid-cols-12 gap-4 items-stretch">
-                                {/* BENTO 1: SCORE HERO CARD */}
                                 <div className="md:col-span-5 spatial-card rounded-[1.75rem] p-5 sm:p-6 flex flex-col justify-between gap-4 border-aurora-400/40">
                                     <div>
                                         <p className="text-[11px] text-muted-adaptive font-mono uppercase">
@@ -660,13 +2211,11 @@
                                     </div>
                                 </div>
 
-                                {/* BENTO 2: 5-AXIS RADAR CARD */}
                                 <div className="md:col-span-7 spatial-card rounded-[1.75rem] p-4 sm:p-5 flex flex-col justify-center">
                                     <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase mb-1">5-AXIS CLINICAL COMPETENCY RADAR</span>
                                     <FiveAxisRadarSVG radarArr={evalResult.radar} theme={theme} personaId={effectivePersonaId} />
                                 </div>
 
-                                {/* BENTO 3 & 4: GOLDEN MOMENT + TURNING POINT */}
                                 <div className="md:col-span-6 spatial-card rounded-[1.75rem] p-5 bg-aurora-500/10 border-aurora-400/40 space-y-1.5 text-xs">
                                     <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">★ ประโยคทองที่ทำได้ดีเยี่ยม (GOLDEN MOMENT)</span>
                                     <p className="text-primary-adaptive text-sm leading-relaxed">{evalResult.goldenMoment}</p>
@@ -676,7 +2225,6 @@
                                     <p className="text-primary-adaptive text-sm leading-relaxed">{evalResult.turningPoint}</p>
                                 </div>
 
-                                {/* BENTO 5: VOICE CLIPS + POST SELF-EFFICACY + ACTIONS */}
                                 <div className="md:col-span-12 spatial-card rounded-[1.75rem] p-5 space-y-4">
                                     {learnerVoiceClips.length > 0 && (
                                         <div className="spatial-soft rounded-2xl p-4 space-y-2 text-xs">
@@ -732,10 +2280,12 @@
         const root = createRoot(document.getElementById('skilllab-root'));
         root.render(<SkillLabErrorBoundary><SkillLabApp /></SkillLabErrorBoundary>);
     </script>
-    <!-- โหลด Babel ท้ายสุดหลังสคริปต์ทั้งหมด พร้อม CDN สำรองป้องกันหน้าหมุนค้าง -->
+
+    <!-- โหลด Babel ท้ายสุดพร้อม CDN สำรองป้องกันหน้าหมุนค้าง -->
     <script
         src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"
         onerror="(function(){var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js';s.onload=function(){if(window.Babel&&window.Babel.transformScriptTags)window.Babel.transformScriptTags();};document.body.appendChild(s);})();"
     ></script>
 </body>
 </html>
+```
