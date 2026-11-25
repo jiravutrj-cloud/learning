@@ -1641,11 +1641,37 @@
                 setShowPwaGuide(true);
             };
 
-            // Keynote Sync (เฉพาะตอนอยู่หน้าต้นดอกท้อ landing)
+              // Keynote Sync (รอโหลด keynote-launch.js จนพร้อมชัวร์ 100% แก้ Race Condition)
             useEffect(() => {
-                if (window.RJCLOUD_KEYNOTE && typeof window.RJCLOUD_KEYNOTE.sync === 'function') {
-                    window.RJCLOUD_KEYNOTE.sync({ isLanding: screen === 'landing', isAdminPreview, appsScriptUrl });
+                let tries = 0;
+                let pollId = null;
+                const runSync = () => {
+                    if (window.RJCLOUD_KEYNOTE && typeof window.RJCLOUD_KEYNOTE.sync === 'function') {
+                        window.RJCLOUD_KEYNOTE.sync({ isLanding: screen === 'landing', isAdminPreview, appsScriptUrl });
+                        return true;
+                    }
+                    return false;
+                };
+                if (!runSync()) {
+                    pollId = setInterval(() => {
+                        tries += 1;
+                        if (runSync() || tries >= 40) {
+                            clearInterval(pollId);
+                            pollId = null;
+                        }
+                    }, 120);
                 }
+                const onKeynoteReady = () => {
+                    if (runSync() && pollId) {
+                        clearInterval(pollId);
+                        pollId = null;
+                    }
+                };
+                window.addEventListener('rjcloud-keynote-ready', onKeynoteReady);
+                return () => {
+                    if (pollId) clearInterval(pollId);
+                    window.removeEventListener('rjcloud-keynote-ready', onKeynoteReady);
+                };
             }, [screen, isAdminPreview, appsScriptUrl]);
 
             // Firebase Cloud Settings & Live Content Sync
