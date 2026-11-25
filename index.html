@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#000000">
+    <meta name="theme-color" content="#020510">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>rjcloud.organ 2.0 — Organ Transplantation Center of Rajavithi Hospital</title>
 
-    <!-- ซิงค์โหมดมืด/สว่าง + โหลดไฟล์ร่วมเฉพาะเมื่ออยู่บนโดเมนเว็บจริง (ป้องกัน 404 ในโหมดพรีวิว) -->
+    <!-- ซิงค์โหมดมืด/สว่างทันที + โหลดไฟล์ร่วมเฉพาะเมื่ออยู่บนโดเมนเว็บจริง (ป้องกัน 404 ในโหมดพรีวิว) -->
     <script>
       (function () {
         try {
@@ -173,13 +173,42 @@
       .spatial-input { background: var(--input-bg); border: 1px solid var(--input-border); color: var(--input-text); }
       .spatial-input:focus { outline: none; border-color: #38bdf8; box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.22); }
 
-      /* ปุ่ม Pill หลัก พร้อมแสงสะท้อนพาดผ่านแบบ GPU Transform นุ่มละมุน */
+      /* ปุ่มลิงก์บริการด้านล่างหน้าแรก (คอนทราสต์คมชัด 100% ทั้งโหมดมืดและสว่าง + ลื่นบนมือถือ) */
+      .landing-service-pill {
+        background: linear-gradient(145deg, rgba(10, 32, 74, 0.86) 0%, rgba(5, 18, 46, 0.94) 100%);
+        border: 1px solid rgba(186, 230, 253, 0.34);
+        color: #f8fafc !important;
+        box-shadow: 0 10px 26px -10px rgba(0, 8, 28, 0.72), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+        transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      .landing-service-pill:hover {
+        background: linear-gradient(145deg, rgba(18, 52, 114, 0.94) 0%, rgba(8, 26, 66, 0.98) 100%);
+        border-color: rgba(125, 211, 252, 0.65);
+        transform: translateY(-1.5px);
+      }
+      .landing-install-pill {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.28) 0%, rgba(14, 165, 233, 0.30) 100%);
+        border: 1px solid rgba(110, 231, 183, 0.56);
+        color: #ecfdf5 !important;
+        box-shadow: 0 12px 28px -10px rgba(16, 185, 129, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+        transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+        cursor: pointer;
+      }
+      .landing-install-pill:hover {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.44) 0%, rgba(14, 165, 233, 0.46) 100%);
+        border-color: rgba(167, 243, 208, 0.85);
+        transform: translateY(-1.5px);
+      }
+
+      /* ปุ่ม Pill พร้อมแสงสะท้อนเนื้อนุ่ม GPU-accelerated */
       .rjc2-pill-btn {
         position: relative;
         overflow: hidden;
         background: linear-gradient(95deg, #d7fbe6 0%, #c6f3f9 48%, #b3c8ff 100%);
         color: #050b16 !important;
-        box-shadow: 0 10px 28px -8px rgba(134, 239, 172, 0.42), 0 0 0 1px rgba(255, 255, 255, 0.72) inset;
+        box-shadow: 0 10px 28px -6px rgba(134, 239, 172, 0.48), 0 0 0 1px rgba(255, 255, 255, 0.78) inset;
         transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease;
         text-decoration: none;
         cursor: pointer;
@@ -187,52 +216,20 @@
       .rjc2-pill-btn::after {
         content: '';
         position: absolute;
-        top: -24%;
+        top: -20%;
         left: 0;
-        width: 56%;
-        height: 148%;
-        background: linear-gradient(105deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.38) 50%, rgba(255, 255, 255, 0) 100%);
-        transform: translate3d(-150%, 0, 0) skewX(-22deg);
-        will-change: transform, opacity;
+        width: 48%;
+        height: 140%;
+        background: linear-gradient(105deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.55) 50%, rgba(255, 255, 255, 0) 100%);
         pointer-events: none;
+        will-change: transform, opacity;
         animation: btnSheenSweep 6.2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
       }
       .rjc2-pill-btn:hover {
-        transform: translateY(-2px) scale(1.02);
-        box-shadow: 0 16px 36px -8px rgba(147, 197, 253, 0.62), 0 0 24px rgba(187, 247, 208, 0.45), 0 0 0 1.25px rgba(255, 255, 255, 0.88) inset;
+        transform: translateY(-1.5px) scale(1.02);
+        box-shadow: 0 14px 34px -6px rgba(147, 197, 253, 0.7), 0 0 22px rgba(187, 247, 208, 0.55), 0 0 0 1.5px rgba(255, 255, 255, 0.92) inset;
       }
       .rjc2-pill-btn:active { transform: scale(0.97); }
-
-      /* ปุ่มบริการสาธารณะ & ปุ่มติดตั้ง PWA ด้านล่างหน้าแรก (สีเข้มคมชัดตลอดเวลา ไม่กลืนขาวในโหมดสว่าง) */
-      .landing-service-pill {
-        background: linear-gradient(145deg, rgba(7, 24, 58, 0.84) 0%, rgba(4, 14, 38, 0.92) 100%);
-        border: 1px solid rgba(186, 230, 253, 0.38);
-        color: #f0f9ff !important;
-        box-shadow: 0 10px 24px -8px rgba(0, 8, 28, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.16);
-        transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
-        text-decoration: none;
-        cursor: pointer;
-      }
-      .landing-service-pill:hover {
-        background: linear-gradient(145deg, rgba(14, 42, 92, 0.92) 0%, rgba(8, 24, 60, 0.96) 100%);
-        border-color: rgba(110, 231, 183, 0.68);
-        transform: translateY(-1.5px);
-      }
-      .landing-service-pill:active { transform: scale(0.97); }
-
-      .landing-install-pill {
-        background: linear-gradient(135deg, rgba(16, 185, 129, 0.24) 0%, rgba(14, 165, 233, 0.28) 100%), rgba(5, 20, 48, 0.88);
-        border: 1px solid rgba(110, 231, 183, 0.58);
-        color: #d1fae5 !important;
-        box-shadow: 0 10px 26px -8px rgba(16, 185, 129, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.22);
-        transition: transform 0.18s ease, border-color 0.18s ease;
-        cursor: pointer;
-      }
-      .landing-install-pill:hover {
-        border-color: rgba(167, 243, 208, 0.92);
-        transform: translateY(-1.5px);
-      }
-      .landing-install-pill:active { transform: scale(0.97); }
 
       .text-primary-adaptive { color: var(--text-main); }
       .text-secondary-adaptive { color: var(--text-secondary); }
@@ -242,29 +239,34 @@
       html[data-theme="dark"] select option { background-color: #061229; color: #f8fafc; }
 
       /* ============================================================================
-       * 2. EPIC LANDING HERO ATMOSPHERE & LIQUID GLASS CHAMBER (ULTRA-SMOOTH & SOFT)
+       * 2. XIANXIA CELESTIAL HERO ATMOSPHERE & LIQUID GLASS CHAMBER (ULTRA-SMOOTH)
        * ============================================================================ */
       .hero-atmosphere {
         isolation: isolate;
         contain: layout paint;
         background: linear-gradient(
           180deg,
-          #000000 0%,
-          #000000 21%,
-          #030c1e 36%,
-          #07255e 52%,
-          #165cc4 70%,
-          #4b98e8 85%,
-          #a9d6f7 95%,
-          #c9e7fc 100%
+          #020510 0%,
+          #040c1f 18%,
+          #071a38 36%,
+          #0e305f 54%,
+          #1d5594 71%,
+          #4d8cc4 85%,
+          #a7d0ee 95%,
+          #cbe4f7 100%
         );
+      }
+      .hero-vignette {
+        background:
+          radial-gradient(ellipse 76% 68% at 50% 44%, rgba(0, 0, 0, 0) 42%, rgba(2, 6, 18, 0.56) 100%),
+          linear-gradient(180deg, rgba(1, 4, 12, 0.44) 0%, rgba(1, 4, 12, 0) 20%, rgba(1, 4, 12, 0) 86%, rgba(188, 224, 248, 0.28) 100%);
       }
       .lower-landing-bg {
         background: linear-gradient(
           180deg,
-          #c9e7fc 0%,
-          #93c5f0 10%,
-          #16448e 36%,
+          #cbe4f7 0%,
+          #90bfe7 10%,
+          #163f7d 36%,
           #061430 68%,
           #020612 100%
         );
@@ -275,9 +277,9 @@
         -webkit-clip-path: url(#idxLiquidGlassClipNorm);
         background: radial-gradient(
           circle at var(--gx, 32%) var(--gy, 28%),
-          rgba(255, 255, 255, 0.14) 0%,
-          rgba(186, 224, 255, 0.06) 44%,
-          rgba(15, 58, 130, 0.12) 78%,
+          rgba(255, 250, 244, 0.14) 0%,
+          rgba(216, 232, 255, 0.065) 44%,
+          rgba(16, 48, 108, 0.14) 78%,
           rgba(255, 255, 255, 0.03) 100%
         );
         backdrop-filter: blur(5px) saturate(135%) brightness(1.04);
@@ -286,28 +288,28 @@
       }
       /* ใช้พื้นกระจกใสไล่เฉดนุ่มแทน backdrop-filter หนักๆ บนมือถือ เพื่อให้เลื่อนขึ้น-ลงลื่นเนียน 60fps */
       .liquid-glass-mobile {
-        background: linear-gradient(155deg, rgba(16, 68, 162, 0.56) 0%, rgba(12, 62, 152, 0.5) 52%, rgba(18, 72, 160, 0.66) 100%);
-        border: 1px solid rgba(224, 242, 254, 0.34);
-        box-shadow: 0 22px 46px -14px rgba(0, 18, 56, 0.44), inset 0 1px 1px rgba(255, 255, 255, 0.38), inset 0 0 28px rgba(125, 211, 252, 0.12);
+        background: linear-gradient(155deg, rgba(16, 52, 126, 0.58) 0%, rgba(13, 46, 114, 0.52) 52%, rgba(22, 58, 128, 0.68) 100%);
+        border: 1px solid rgba(254, 243, 235, 0.32);
+        box-shadow: 0 22px 46px -14px rgba(0, 12, 42, 0.48), inset 0 1px 1px rgba(255, 255, 255, 0.36), inset 0 0 28px rgba(249, 168, 212, 0.1);
         transform: translateZ(0);
       }
       #idx-liquid-glass-stage { container-type: inline-size; }
       .hero-eyebrow {
         letter-spacing: 0.045em;
         background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.28);
-        box-shadow: 0 4px 16px rgba(0, 14, 44, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        border: 1px solid rgba(254, 240, 215, 0.3);
+        box-shadow: 0 4px 16px rgba(0, 14, 44, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.28);
         text-shadow: 0 1px 8px rgba(0, 12, 42, 0.55);
       }
       .hero-headline {
         font-weight: 500;
         letter-spacing: -0.015em;
-        text-shadow: 0 2px 14px rgba(0, 10, 38, 0.85), 0 1px 4px rgba(0, 12, 42, 0.72), 0 0 26px rgba(147, 210, 255, 0.22);
+        text-shadow: 0 2px 14px rgba(0, 10, 38, 0.85), 0 1px 4px rgba(0, 12, 42, 0.72), 0 0 26px rgba(253, 224, 200, 0.22);
       }
       .hero-year-highlight {
         font-weight: 700;
         letter-spacing: -0.015em;
-        background: linear-gradient(95deg, #ffffff 0%, #fffbeb 42%, #fde68a 74%, #bae6fd 100%);
+        background: linear-gradient(95deg, #ffffff 0%, #fffbeb 42%, #fde68a 74%, #fbcfe8 100%);
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
@@ -322,143 +324,97 @@
         text-shadow: 0 0 10px rgba(254, 249, 195, 0.82), 0 0 24px rgba(253, 224, 71, 0.4), 0 0 42px rgba(250, 204, 21, 0.22);
       }
       .rajavithi-watermark {
-        color: rgba(38, 68, 112, 0.88);
+        color: rgba(34, 62, 104, 0.9);
         letter-spacing: 0.06em;
-        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
       }
 
       /* ============================================================================
-       * 3. LIVING TREE, STARS, CLOUDS & ULTRA-SMOOTH SOFT ANIMATIONS (GPU ONLY)
+       * 3. XIANXIA CELESTIAL ANIMATIONS (GPU-ONLY • ULTRA-SMOOTH 60FPS)
        * ============================================================================ */
-      @keyframes treeCanopySway {
-        0%, 100% { transform: rotate(0deg) scale(1); }
-        34% { transform: rotate(1.0deg) scale(1.005); }
-        68% { transform: rotate(-0.9deg) scale(1.003); }
-      }
-      @keyframes branchSwayLeft {
-        0%, 100% { transform: rotate(0deg); }
-        42% { transform: rotate(-1.9deg); }
-        76% { transform: rotate(1.1deg); }
-      }
-      @keyframes branchSwayRight {
-        0%, 100% { transform: rotate(0deg); }
-        38% { transform: rotate(1.9deg); }
-        76% { transform: rotate(-1.1deg); }
-      }
       @keyframes leafFlutterOrganic {
-        0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.92; }
-        35% { transform: rotate(var(--fl-rot, 6deg)) scale(1.06); opacity: 1; }
-        68% { transform: rotate(calc(var(--fl-rot, 6deg) * -0.5)) scale(0.98); opacity: 0.94; }
-      }
-      @keyframes leafAuraHaloSync {
-        0%, 100% { opacity: 0.16; transform: scale(0.84); }
-        35% { opacity: 0.72; transform: scale(1.52); }
-        68% { opacity: 0.26; transform: scale(1.04); }
-      }
-      @keyframes nodePulseGlow {
-        0%, 100% { opacity: 0.58; transform: scale(1); }
-        50% { opacity: 0.95; transform: scale(1.22); }
+        0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.82; }
+        45% { transform: rotate(var(--fl-rot, 5deg)) scale(1.05); opacity: 0.96; }
       }
       @keyframes twinkleStar {
-        0%, 100% { opacity: 0.18; transform: scale(0.85); }
-        50% { opacity: 0.88; transform: scale(1.26); }
+        0%, 100% { opacity: 0.16; transform: scale(0.85); }
+        50% { opacity: 0.86; transform: scale(1.24); }
       }
       @keyframes meteorStreak {
         0% { opacity: 0; transform: rotate(var(--ang, -32deg)) translateX(130px) scaleX(0.35); }
-        5% { opacity: 0.82; }
-        18% { opacity: 0.72; transform: rotate(var(--ang, -32deg)) translateX(-380px) scaleX(1.08); }
+        5% { opacity: 0.76; }
+        18% { opacity: 0.64; transform: rotate(var(--ang, -32deg)) translateX(-380px) scaleX(1.08); }
         28%, 100% { opacity: 0; transform: rotate(var(--ang, -32deg)) translateX(-640px) scaleX(0.55); }
       }
-      @keyframes cloudDriftAcross {
-        0% { transform: translate3d(-44vw, 0, 0); }
-        100% { transform: translate3d(118vw, 0, 0); }
-      }
-      @keyframes cloudBankFloat {
-        0%, 100% { transform: translate3d(0, 0, 0); }
-        50% { transform: translate3d(14px, -6px, 0); }
-      }
-      @keyframes cloudBankFloatAlt {
-        0%, 100% { transform: translate3d(0, 0, 0); }
-        50% { transform: translate3d(-14px, -5px, 0); }
-      }
       @keyframes heartBeatGlow {
-        0%, 100% { transform: scale(1); opacity: 0.86; }
+        0%, 100% { transform: scale(1); opacity: 0.84; }
         24% { transform: scale(1.13); opacity: 1; }
-        46% { transform: scale(1.02); opacity: 0.9; }
-        64% { transform: scale(1.09); opacity: 0.98; }
+        46% { transform: scale(1.02); opacity: 0.88; }
+        64% { transform: scale(1.09); opacity: 0.96; }
       }
       @keyframes auroraCurtainWave {
-        0%, 100% { transform: translate3d(-3%, 0, 0) scaleY(1); opacity: 0.48; }
-        45% { transform: translate3d(3%, -2%, 0) scaleY(1.06); opacity: 0.72; }
+        0%, 100% { transform: translate3d(-3%, 0, 0) scaleY(1); opacity: 0.42; }
+        45% { transform: translate3d(3%, -2%, 0) scaleY(1.05); opacity: 0.66; }
       }
       @keyframes auroraCurtainAlt {
-        0%, 100% { transform: translate3d(3%, 0, 0) scaleY(1.03); opacity: 0.36; }
-        50% { transform: translate3d(-4%, -2%, 0) scaleY(0.94); opacity: 0.62; }
+        0%, 100% { transform: translate3d(3%, 0, 0) scaleY(1.02); opacity: 0.34; }
+        50% { transform: translate3d(-4%, -2%, 0) scaleY(0.94); opacity: 0.56; }
       }
       @keyframes btnSheenSweep {
         0%, 66% { transform: translate3d(-150%, 0, 0) skewX(-22deg); opacity: 0; }
-        74% { opacity: 0.9; }
-        94% { transform: translate3d(260%, 0, 0) skewX(-22deg); opacity: 0.75; }
+        74% { opacity: 0.85; }
+        94% { transform: translate3d(260%, 0, 0) skewX(-22deg); opacity: 0.7; }
         100% { transform: translate3d(270%, 0, 0) skewX(-22deg); opacity: 0; }
       }
       @keyframes rjcAmbientRun { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
       @keyframes rjcWaveBar { 0%, 100% { transform: scaleY(0.28); opacity: 0.65; } 50% { transform: scaleY(1); opacity: 1; } }
       @keyframes appSpin { to { transform: rotate(360deg); } }
 
-      .tree-living-root { transform-origin: 260px 398px; animation: treeCanopySway 10s ease-in-out infinite; }
-      .branch-group-left { transform-origin: 252px 236px; animation: branchSwayLeft 7.2s ease-in-out infinite; }
-      .branch-group-right { transform-origin: 268px 236px; animation: branchSwayRight 7.8s ease-in-out infinite; animation-delay: -1.4s; }
-      .living-leaf { transform-box: fill-box; transform-origin: center; animation: leafFlutterOrganic var(--dur, 4.6s) ease-in-out infinite; animation-delay: var(--del, 0s); }
-      .leaf-aura-halo { transform-box: fill-box; transform-origin: center; pointer-events: none; animation: leafAuraHaloSync var(--dur, 4.6s) ease-in-out infinite; animation-delay: var(--del, 0s); }
-      .cloud-node-pulse { transform-box: fill-box; transform-origin: center; animation: nodePulseGlow 3.6s ease-in-out infinite; }
+      .living-leaf { transform-box: fill-box; transform-origin: center; animation: leafFlutterOrganic var(--dur, 5.2s) ease-in-out infinite; animation-delay: var(--del, 0s); }
+      .heart-leaf-beat { transform-box: fill-box; transform-origin: center; animation: heartBeatGlow 4.4s ease-in-out infinite; animation-delay: var(--h-del, 0s); }
 
-      .heart-leaf-beat {
-        transform-box: fill-box;
-        transform-origin: center;
-        animation: heartBeatGlow 4.4s ease-in-out infinite;
-        animation-delay: var(--h-del, 0s);
-      }
-      /* ออโรราแบบ Radial Gradient นุ่มละมุนในตัว ไม่ใช้ filter:blur() หนักเครื่องมือถือ */
+      /* ออโรราหยกทอง-ชมพูท้อแบบ Radial Gradient ละมุนในตัว ไม่ใช้ filter:blur() หนักเครื่องมือถือ */
       .aurora-curtain-primary {
         background:
-          radial-gradient(ellipse 50% 80% at 28% 58%, rgba(52, 211, 153, 0.22) 0%, rgba(56, 189, 248, 0.1) 50%, rgba(0, 0, 0, 0) 78%),
-          radial-gradient(ellipse 52% 74% at 68% 52%, rgba(56, 189, 248, 0.2) 0%, rgba(192, 132, 252, 0.13) 52%, rgba(0, 0, 0, 0) 80%);
+          radial-gradient(ellipse 52% 80% at 26% 56%, rgba(52, 211, 153, 0.2) 0%, rgba(56, 189, 248, 0.09) 50%, rgba(0, 0, 0, 0) 78%),
+          radial-gradient(ellipse 52% 74% at 72% 50%, rgba(249, 168, 212, 0.16) 0%, rgba(192, 132, 252, 0.11) 52%, rgba(0, 0, 0, 0) 80%);
         will-change: transform, opacity;
         animation: auroraCurtainWave 18s ease-in-out infinite;
       }
       .aurora-curtain-secondary {
         background:
-          radial-gradient(ellipse 54% 70% at 52% 46%, rgba(110, 231, 183, 0.17) 0%, rgba(168, 85, 247, 0.12) 46%, rgba(0, 0, 0, 0) 76%),
-          radial-gradient(ellipse 40% 66% at 80% 60%, rgba(244, 114, 182, 0.13) 0%, rgba(0, 0, 0, 0) 72%);
+          radial-gradient(ellipse 54% 70% at 50% 42%, rgba(254, 240, 178, 0.16) 0%, rgba(110, 231, 183, 0.1) 46%, rgba(0, 0, 0, 0) 76%),
+          radial-gradient(ellipse 40% 66% at 80% 60%, rgba(244, 114, 182, 0.12) 0%, rgba(0, 0, 0, 0) 72%);
         will-change: transform, opacity;
         animation: auroraCurtainAlt 22s ease-in-out infinite;
       }
 
       .twinkle-star {
-        position: absolute; border-radius: 9999px; background: rgba(240, 249, 255, 0.88);
-        box-shadow: 0 0 8px 1px rgba(186, 230, 253, 0.55);
+        position: absolute; border-radius: 9999px; background: rgba(255, 250, 240, 0.9);
+        box-shadow: 0 0 8px 1px rgba(254, 240, 178, 0.45);
         animation: twinkleStar var(--tw-dur, 4.4s) ease-in-out infinite;
         animation-delay: var(--tw-del, 0s);
       }
       .shooting-star {
         position: absolute; width: var(--len, 145px); height: 1.5px; border-radius: 9999px; opacity: 0;
-        background: linear-gradient(90deg, rgba(255, 255, 255, 0.68) 0%, var(--trail-col, rgba(186, 230, 253, 0.45)) 32%, rgba(192, 132, 252, 0.1) 68%, rgba(255, 255, 255, 0) 100%);
-        animation: meteorStreak var(--m-dur, 8.2s) cubic-bezier(0.2, 0.6, 0.35, 1) infinite;
+        background: linear-gradient(90deg, rgba(255, 252, 235, 0.68) 0%, var(--trail-col, rgba(254, 240, 178, 0.42)) 32%, rgba(249, 168, 212, 0.12) 68%, rgba(255, 255, 255, 0) 100%);
+        animation: meteorStreak var(--m-dur, 8.6s) cubic-bezier(0.2, 0.6, 0.35, 1) infinite;
         animation-delay: var(--m-del, 0s);
         will-change: transform, opacity;
       }
       .shooting-star::before {
         content: ''; position: absolute; left: -2px; top: 50%; width: 4px; height: 4px; transform: translateY(-50%);
-        border-radius: 9999px; background: rgba(255, 255, 255, 0.82);
-        box-shadow: 0 0 10px 3px rgba(186, 230, 253, 0.55);
+        border-radius: 9999px; background: rgba(255, 254, 244, 0.84);
+        box-shadow: 0 0 10px 3px rgba(254, 240, 178, 0.52);
       }
-      .hero-cloud-drift { position: absolute; left: 0; will-change: transform; animation: cloudDriftAcross var(--c-dur, 92s) linear infinite; animation-delay: var(--c-del, 0s); }
-      .hero-cloud-bank-l { position: absolute; will-change: transform; animation: cloudBankFloat 16s ease-in-out infinite; }
-      .hero-cloud-bank-r { position: absolute; will-change: transform; animation: cloudBankFloatAlt 19s ease-in-out infinite; }
-      .hero-cloud-haze {
-        background: radial-gradient(ellipse 90% 60% at 50% 100%, rgba(255, 255, 255, 0.58) 0%, rgba(224, 242, 254, 0.3) 46%, rgba(125, 211, 252, 0) 80%);
+
+      /* Canvas ชั้นหลัง (z-12): รัศมีจันทราหยกทอง + ลำแสงสวรรค์ + ทะเลหมอกฟุ้งเนื้อละเอียด Procedural fBm Mist */
+      #idx-mist-backdrop-canvas {
+        position: absolute; inset: 0; width: 100%; height: 100%;
+        pointer-events: none; z-index: 12;
+        transform: translateZ(0);
       }
-      /* Canvas แสงแอมเบียนฟุ้งนุ่ม วางเหนือกรอบกระจกและต้นไม้ (pointer-events:none) เพื่อให้แสงไหลเชื่อมจากขอบซ้าย-ขวาขึ้นสู่กิ่งไม้ได้อย่างเนียนสนิท */
+      /* Canvas ชั้นหน้า (z-24): แสงปราณแอมเบียนจากกรอบซ้าย-ขวาขึ้นสู่กิ่ง + ดอกท้อ 5 กลีบผลิบานสด + กลีบดอกท้อลอยพริ้ว */
       #idx-solar-flare-canvas {
         position: absolute; inset: 0; width: 100%; height: 100%;
         pointer-events: none; z-index: 24;
@@ -487,11 +443,8 @@
         body.printing-cneu-letter #individual-cert-letter { display: block !important; background: #ffffff !important; color: #0f172a !important; padding: 12mm !important; }
       }
       @media (prefers-reduced-motion: reduce) {
-        .tree-living-root, .branch-group-left, .branch-group-right,
-        .living-leaf, .leaf-aura-halo, .shooting-star,
-        .hero-cloud-drift, .hero-cloud-bank-l, .hero-cloud-bank-r,
-        .heart-leaf-beat, .aurora-curtain-primary,
-        .aurora-curtain-secondary, .rjc2-pill-btn::after {
+        .living-leaf, .shooting-star, .heart-leaf-beat,
+        .aurora-curtain-primary, .aurora-curtain-secondary, .rjc2-pill-btn::after {
           animation: none !important;
         }
       }
@@ -515,8 +468,8 @@
 <body>
     <!-- หน้าจอโหลดเริ่มต้น -->
     <div id="app-root">
-        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000000;color:#f8fafc;font-family:-apple-system,'Anuphan','Prompt',sans-serif;gap:14px;padding:24px;text-align:center;">
-            <div style="width:46px;height:46px;border:3px solid rgba(56,189,248,0.22);border-top-color:#6ee7b7;border-right-color:#38bdf8;border-radius:9999px;animation:appSpin 0.85s linear infinite;"></div>
+        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#020510;color:#f8fafc;font-family:-apple-system,'Anuphan','Prompt',sans-serif;gap:14px;padding:24px;text-align:center;">
+            <div style="width:46px;height:46px;border:3px solid rgba(251,207,232,0.22);border-top-color:#f9a8d4;border-right-color:#fde68a;border-radius:9999px;animation:appSpin 0.85s linear infinite;"></div>
             <div style="font-weight:800;font-size:17px;">กำลังเปิดแพลตฟอร์ม rjcloud.organ 2.0...</div>
             <div style="font-size:12px;color:#93b4d8;">Organ Transplantation Center of Rajavithi Hospital • Cloud AI</div>
         </div>
@@ -731,7 +684,7 @@
             } catch (_) {}
         }
 
-        // Studio 24kHz TTS Helpers (Gemini 3.8 Flash TTS ผ่าน Code.gs — ไม่ใช้เสียงเบราว์เซอร์)
+        // Studio 24kHz TTS Helpers (ไม่ใช้เสียงเบราว์เซอร์ 100%)
         function pcmToWavBlobSafe(base64PCM, sampleRate = 24000) {
             try {
                 if (typeof CORE.pcm16ToWavBlob === 'function') return CORE.pcm16ToWavBlob(base64PCM, sampleRate);
@@ -863,7 +816,7 @@
         }
 
         // ============================================================================
-        // 2. SHARED UI PRIMITIVES & PWA INSTALL GUIDE MODAL
+        // 2. SHARED UI PRIMITIVES
         // ============================================================================
         class AppErrorBoundary extends React.Component {
             constructor(props) { super(props); this.state = { hasError: false, err: null }; }
@@ -935,36 +888,33 @@
             );
         }
 
-        function InstallAppModal({ open, onClose }) {
+        function PwaInstallGuideModal({ open, onClose, isIos }) {
             if (!open) return null;
-            const isIos = /iPhone|iPad|iPod/i.test(navigator.userAgent || '');
             return (
-                <div className="no-print-letter fixed inset-0 z-[165] bg-slate-950/78 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
-                    <div className="spatial-card w-full sm:max-w-md rounded-t-[2rem] sm:rounded-[2rem] p-6 space-y-4 text-left">
+                <div className="no-print-letter fixed inset-0 z-[175] bg-slate-950/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
+                    <div className="spatial-card w-full sm:max-w-md rounded-t-[2rem] sm:rounded-[2rem] p-6 space-y-4 border-aurora-400/45 text-left">
                         <div className="flex items-start justify-between gap-2">
                             <div>
-                                <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">INSTALL AS MOBILE APP (PWA)</span>
-                                <h3 className="font-display font-extrabold text-lg text-primary-adaptive mt-0.5">ติดตั้ง rjcloud.organ 2.0 ไว้บนหน้าจอหลัก</h3>
+                                <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">PWA • INSTALL APP ON HOME SCREEN</span>
+                                <h3 className="font-display font-extrabold text-lg text-primary-adaptive mt-0.5">ติดตั้ง rjcloud.organ 2.0 เป็นแอป</h3>
                             </div>
-                            <button type="button" onClick={onClose} className="spatial-soft w-8 h-8 rounded-xl flex items-center justify-center text-muted-adaptive shrink-0">
+                            <button type="button" onClick={onClose} className="spatial-soft w-9 h-9 rounded-xl flex items-center justify-center text-muted-adaptive">
                                 <Icon name="X" size={16} />
                             </button>
                         </div>
-
                         {isIos ? (
                             <ol className="space-y-2.5 text-xs sm:text-sm text-secondary-adaptive pl-4 list-decimal leading-relaxed">
-                                <li>แตะปุ่ม <b>แชร์ (Share)</b> รูปสี่เหลี่ยมมีลูกศรชี้ขึ้น ที่แถบด้านล่างของ Safari</li>
-                                <li>เลื่อนลงมาแล้วเลือก <b>“เพิ่มไปยังหน้าจอโฮม (Add to Home Screen)”</b></li>
-                                <li>แตะ <b>“เพิ่ม (Add)”</b> มุมขวาบน เพื่อเปิดใช้งานเต็มจอเหมือนแอปเนทีฟค่ะ</li>
+                                <li>เปิดหน้านี้ด้วย <b>Safari</b> บน iPhone หรือ iPad</li>
+                                <li>แตะไอคอน <b>แชร์ (Share • สี่เหลี่ยมมีลูกศรชี้ขึ้น)</b> ที่แถบด้านล่างหน้าจอ</li>
+                                <li>เลื่อนลงมาแล้วแตะ <b>“เพิ่มไปยังหน้าจอโฮม (Add to Home Screen)”</b> แล้วกด <b>เพิ่ม</b> ค่ะ</li>
                             </ol>
                         ) : (
                             <ol className="space-y-2.5 text-xs sm:text-sm text-secondary-adaptive pl-4 list-decimal leading-relaxed">
-                                <li>แตะไอคอนเมนู <b>จุดสามจุด (⋮)</b> มุมขวาบนของเบราว์เซอร์ Chrome / Edge</li>
-                                <li>เลือก <b>“ติดตั้งแอป (Install app)”</b> หรือ <b>“เพิ่มลงหน้าจอหลัก (Add to Home screen)”</b></li>
-                                <li>กดยืนยัน <b>“ติดตั้ง (Install)”</b> เพื่อใช้งานเต็มจอและอ่านคลังคำพูดออฟไลน์ใน ICU/ER ค่ะ</li>
+                                <li>แตะปุ่มเมนู <b>จุดสามจุด (⋮)</b> ที่มุมขวาบนของเบราว์เซอร์ Chrome / Edge</li>
+                                <li>เลือกคำสั่ง <b>“ติดตั้งแอป (Install app)”</b> หรือ <b>“เพิ่มลงในหน้าจอหลัก”</b></li>
+                                <li>กดยืนยัน <b>ติดตั้ง</b> เพื่อเปิดใช้งานแบบเต็มจอและอ่านสรุปออฟไลน์ใน ICU/ER ได้ทันทีค่ะ</li>
                             </ol>
                         )}
-
                         <button type="button" onClick={onClose} className="rjc2-pill-btn touch-target w-full py-3 rounded-full font-display font-extrabold text-sm">
                             เข้าใจแล้ว
                         </button>
@@ -974,10 +924,14 @@
         }
 
         // ============================================================================
-        // 3. EPIC LANDING HERO SCREEN (ULTRA-SMOOTH SOFT AMBIENT FLOW + 60FPS SCROLL)
+        // 3. XIANXIA CELESTIAL PEACH BLOSSOM HERO SCREEN
+        //    - ต้นดอกท้อแดนเซียน (Calligraphic Peach Tree) + ใบหยก + ดอกหัวใจแห่งชีวิต
+        //    - ทิวเขาหมึกจีน (Shan-Shui Peaks) + รัศมีจันทราหยกทอง + ทะเลหมอกฟุ้งเนื้อละเอียด 4-Octave fBm
+        //    - แสงแอมเบียนเนื้อนุ่มไหลจากกรอบซ้าย–ขวาขึ้นสู่ 8 กิ่ง -> แตะกิ่งใด ดอกท้อ 5 กลีบตรงจุดนั้นผลิบานทันที!
         // ============================================================================
         function LandingHeroScreen({ onStartAuth, hasSavedSession, onResumeDashboard, showInstallBtn, onInstallApp }) {
             const heroStageRef = useRef(null);
+            const mistCanvasRef = useRef(null);
             const flareCanvasRef = useRef(null);
             const treeSvgRef = useRef(null);
             const glassStageRef = useRef(null);
@@ -990,45 +944,168 @@
             const mFitLine1Ref = useRef(null);
             const mFitLine2Ref = useRef(null);
 
-            const leftLeaves = useMemo(() => ([
-                { cx: 86, cy: 254, rx: 14, ry: 7, rot: -24 }, { cx: 104, cy: 282, rx: 13, ry: 6.5, rot: -40 },
-                { cx: 78, cy: 220, rx: 14, ry: 7, rot: -8 }, { cx: 88, cy: 184, rx: 14, ry: 7, rot: 14 },
-                { cx: 110, cy: 146, rx: 13, ry: 6.5, rot: 28 }, { cx: 144, cy: 110, rx: 13, ry: 6.5, rot: 42 },
-                { cx: 176, cy: 76, rx: 13, ry: 6.5, rot: 56 }, { cx: 212, cy: 54, rx: 12, ry: 6, rot: 72 },
-                { cx: 136, cy: 174, rx: 11, ry: 5.5, rot: 12 }, { cx: 152, cy: 210, rx: 11, ry: 5.5, rot: -18 },
-                { cx: 192, cy: 134, rx: 11, ry: 5.5, rot: 36 }, { cx: 222, cy: 98, rx: 11, ry: 5.5, rot: 62 },
-                { cx: 122, cy: 240, rx: 12, ry: 6, rot: -25 }
+            // ใบท้อสีหยกอ่อนแซมตามกิ่งก้าน (ไม่บังดอกท้อ 5 กลีบที่จะผลิบานตามแสงแอมเบียน)
+            const jadeLeaves = useMemo(() => ([
+                { cx: 146, cy: 236, rx: 10, ry: 4.2, rot: -26 }, { cx: 194, cy: 224, rx: 9, ry: 3.8, rot: -12 },
+                { cx: 126, cy: 186, rx: 10, ry: 4.2, rot: 14 },  { cx: 174, cy: 184, rx: 9, ry: 3.8, rot: 22 },
+                { cx: 158, cy: 136, rx: 9.5, ry: 4, rot: 36 },   { cx: 208, cy: 102, rx: 9, ry: 3.8, rot: 54 },
+                { cx: 316, cy: 224, rx: 9, ry: 3.8, rot: 14 },   { cx: 372, cy: 236, rx: 10, ry: 4.2, rot: 26 },
+                { cx: 344, cy: 184, rx: 9, ry: 3.8, rot: -18 },  { cx: 394, cy: 186, rx: 10, ry: 4.2, rot: -10 },
+                { cx: 356, cy: 136, rx: 9.5, ry: 4, rot: -34 },  { cx: 298, cy: 96, rx: 9, ry: 3.8, rot: -52 }
             ]), []);
 
-            const rightLeaves = useMemo(() => ([
-                { cx: 260, cy: 38, rx: 7, ry: 15, rot: 0 }, { cx: 308, cy: 54, rx: 12, ry: 6, rot: -72 },
-                { cx: 344, cy: 76, rx: 13, ry: 6.5, rot: -56 }, { cx: 376, cy: 110, rx: 13, ry: 6.5, rot: -42 },
-                { cx: 410, cy: 146, rx: 13, ry: 6.5, rot: -28 }, { cx: 432, cy: 184, rx: 14, ry: 7, rot: -14 },
-                { cx: 442, cy: 220, rx: 14, ry: 7, rot: 8 }, { cx: 434, cy: 254, rx: 14, ry: 7, rot: 24 },
-                { cx: 416, cy: 282, rx: 13, ry: 6.5, rot: 40 }, { cx: 384, cy: 174, rx: 11, ry: 5.5, rot: -12 },
-                { cx: 368, cy: 210, rx: 11, ry: 5.5, rot: 18 }, { cx: 328, cy: 134, rx: 11, ry: 5.5, rot: -36 },
-                { cx: 298, cy: 98, rx: 11, ry: 5.5, rot: -62 }, { cx: 398, cy: 240, rx: 12, ry: 6, rot: 25 }
-            ]), []);
-
-            // Unified Ultra-Smooth 60FPS Soft Ambient Canvas:
-            // - แสงแอมเบียนฟุ้งนุ่มวิ่งจากขอบซ้าย-ขวาของกรอบกระจก -> เชื่อมเข้าสู่โคนลำต้น -> แตกแขนงขึ้นสู่กิ่งและปลายใบด้านบน
-            // - ปรับแสงทุกดวง (สุริยคราส, ลำแสงสวรรค์, ละอองหิ่งห้อย) ให้ฟุ้งละมุนไร้เส้นแข็งกระด้าง
-            // - ไม่เรียก getBoundingClientRect() ใน touchmove และหยุดวาดเมื่อเลื่อนพ้นหน้า เพื่อการเลื่อนที่ลื่นติดนิ้ว
+            // Dual-Canvas Xianxia Engine:
+            // - Canvas หลัง (z-12): จันทราหยกทอง + ลำแสงสวรรค์นุ่มฟุ้ง + ทะเลหมอกฟุ้งเนื้อละเอียด Procedural 4-Octave fBm
+            // - Canvas หน้า (z-24): แสงปราณแอมเบียนวิ่งจากขอบกรอบกระจกซ้าย–ขวาขึ้นเชื่อมลำต้นและกิ่งก้าน
+            //   -> เมื่อแสงวิ่งถึงพิกัดของดอกท้อบนกิ่ง ดอกท้อ 5 กลีบจะผลิบานเรืองแสงและโปรยกลีบดอกท้อลอยพริ้วตามลม
             useEffect(() => {
-                const canvas = flareCanvasRef.current;
+                const bgCanvas = mistCanvasRef.current;
+                const fxCanvas = flareCanvasRef.current;
                 const stage = heroStageRef.current;
-                if (!canvas || !stage) return;
-                const ctx = canvas.getContext('2d');
-                if (!ctx) return;
+                if (!bgCanvas || !fxCanvas || !stage) return;
+                const bgCtx = bgCanvas.getContext('2d');
+                const fxCtx = fxCanvas.getContext('2d');
+                if (!bgCtx || !fxCtx) return;
 
                 const flare = {
                     targetMouseX: 0, targetMouseY: 0, mouseX: 0, mouseY: 0,
                     w: 0, h: 0, lastFitW: 0, inView: true,
-                    crestX: window.innerWidth * 0.5, crestY: window.innerHeight * 0.14,
+                    moonX: window.innerWidth * 0.5, moonY: window.innerHeight * 0.24,
                     treeLeft: 0, treeTop: 0, treeW: 360, treeH: 310
                 };
 
-                // Pre-render Soft Feathered Radial Glow Sprites ครั้งเดียว (วาดเร็ว 60fps และขอบนุ่มฟุ้งเหมือนแสงจริง)
+                // =========================================================================
+                // A. PROCEDURAL 4-OCTAVE fBm VOLUMETRIC MIST SPRITES (หมอกฟุ้งละเอียด ไร้เส้นขอบ)
+                // =========================================================================
+                const hash2D = (ix, iy) => {
+                    const n = Math.sin(ix * 127.1 + iy * 311.7) * 43758.5453123;
+                    return n - Math.floor(n);
+                };
+                const valueNoise2D = (x, y) => {
+                    const ix = Math.floor(x), iy = Math.floor(y);
+                    const fx = x - ix, fy = y - iy;
+                    const ux = fx * fx * (3 - 2 * fx);
+                    const uy = fy * fy * (3 - 2 * fy);
+                    const a = hash2D(ix, iy);
+                    const b = hash2D(ix + 1, iy);
+                    const c = hash2D(ix, iy + 1);
+                    const d = hash2D(ix + 1, iy + 1);
+                    return a + (b - a) * ux + (c - a) * uy + (a - b - c + d) * ux * uy;
+                };
+                const fbm4 = (x, y) => {
+                    let v = 0, amp = 0.5, freq = 1;
+                    for (let i = 0; i < 4; i++) {
+                        v += amp * valueNoise2D(x * freq, y * freq);
+                        freq *= 2.04;
+                        amp *= 0.5;
+                    }
+                    return v;
+                };
+                const smoothstep = (e0, e1, x) => {
+                    const t = Math.max(0, Math.min(1, (x - e0) / Math.max(0.0001, e1 - e0)));
+                    return t * t * (3 - 2 * t);
+                };
+
+                const bakeMistSprite = ({ width, height, freqX, freqY, seed, domes, shadowRGB, midRGB, hiRGB, maxAlpha, threshold = 0.16, softness = 0.62 }) => {
+                    const off = document.createElement('canvas');
+                    off.width = width;
+                    off.height = height;
+                    const octx = off.getContext('2d');
+                    const img = octx.createImageData(width, height);
+                    const data = img.data;
+
+                    for (let py = 0; py < height; py++) {
+                        const v = py / (height - 1);
+                        const edgeY = smoothstep(0.0, 0.28, v) * smoothstep(1.0, 0.76, v);
+                        if (edgeY <= 0.001) continue;
+                        for (let px = 0; px < width; px++) {
+                            const u = px / (width - 1);
+                            const edgeX = smoothstep(0.0, 0.24, u) * smoothstep(1.0, 0.76, u);
+                            if (edgeX <= 0.001) continue;
+
+                            let dome = 0;
+                            for (let k = 0; k < domes.length; k++) {
+                                const dm = domes[k];
+                                const dx = (u - dm.x) / dm.rx;
+                                const dy = (v - dm.y) / dm.ry;
+                                const val = Math.exp(-0.5 * (dx * dx + dy * dy)) * dm.w;
+                                dome = val > dome ? (dome + val * (1 - dome * 0.62)) : (dome + val * 0.34);
+                            }
+                            if (dome <= 0.02) continue;
+
+                            const qx = fbm4(u * freqX + seed, v * freqY + seed * 0.7);
+                            const qy = fbm4(u * freqX + seed + 6.3, v * freqY + seed + 2.9);
+                            const n = fbm4(u * freqX + qx * 1.18 + 3.1, v * freqY + qy * 0.88 + 1.7);
+                            const nUp = fbm4(u * freqX + qx * 1.18 + 3.1, (v - 0.055) * freqY + qy * 0.88 + 1.7);
+
+                            const rawDensity = dome * (0.24 + 1.24 * n);
+                            const alpha = smoothstep(threshold, threshold + softness, rawDensity) * edgeX * edgeY * maxAlpha;
+                            if (alpha <= 0.004) continue;
+
+                            const ridgeLight = Math.max(0, Math.min(1, (n - nUp) * 3.8 + (1 - v) * 0.56 + 0.24));
+                            const hi = Math.pow(ridgeLight, 1.5);
+                            let r, g, b;
+                            if (hi < 0.55) {
+                                const f = hi / 0.55;
+                                r = shadowRGB[0] + (midRGB[0] - shadowRGB[0]) * f;
+                                g = shadowRGB[1] + (midRGB[1] - shadowRGB[1]) * f;
+                                b = shadowRGB[2] + (midRGB[2] - shadowRGB[2]) * f;
+                            } else {
+                                const f = (hi - 0.55) / 0.45;
+                                r = midRGB[0] + (hiRGB[0] - midRGB[0]) * f;
+                                g = midRGB[1] + (hiRGB[1] - midRGB[1]) * f;
+                                b = midRGB[2] + (hiRGB[2] - midRGB[2]) * f;
+                            }
+                            const idx = (py * width + px) * 4;
+                            data[idx] = Math.round(r);
+                            data[idx + 1] = Math.round(g);
+                            data[idx + 2] = Math.round(b);
+                            data[idx + 3] = Math.round(Math.min(255, alpha * 255));
+                        }
+                    }
+                    octx.putImageData(img, 0, 0);
+                    return off;
+                };
+
+                const mistSprites = {
+                    seaBase: bakeMistSprite({
+                        width: 240, height: 112, freqX: 4.8, freqY: 2.8, seed: 2.4,
+                        domes: [
+                            { x: 0.22, y: 0.62, rx: 0.26, ry: 0.28, w: 0.92 },
+                            { x: 0.50, y: 0.58, rx: 0.30, ry: 0.30, w: 0.98 },
+                            { x: 0.78, y: 0.64, rx: 0.26, ry: 0.28, w: 0.92 }
+                        ],
+                        shadowRGB: [24, 68, 134], midRGB: [152, 206, 245], hiRGB: [255, 252, 244], maxAlpha: 0.78
+                    }),
+                    valleyLeft: bakeMistSprite({
+                        width: 220, height: 120, freqX: 4.4, freqY: 3.1, seed: 7.9,
+                        domes: [
+                            { x: 0.30, y: 0.62, rx: 0.26, ry: 0.28, w: 0.95 },
+                            { x: 0.60, y: 0.54, rx: 0.24, ry: 0.28, w: 0.88 }
+                        ],
+                        shadowRGB: [32, 72, 138], midRGB: [176, 218, 250], hiRGB: [255, 248, 244], maxAlpha: 0.72
+                    }),
+                    valleyRight: bakeMistSprite({
+                        width: 220, height: 120, freqX: 4.5, freqY: 3.0, seed: 13.5,
+                        domes: [
+                            { x: 0.40, y: 0.54, rx: 0.24, ry: 0.28, w: 0.88 },
+                            { x: 0.70, y: 0.62, rx: 0.26, ry: 0.28, w: 0.95 }
+                        ],
+                        shadowRGB: [28, 76, 142], midRGB: [168, 222, 248], hiRGB: [252, 254, 246], maxAlpha: 0.72
+                    }),
+                    wispVeil: bakeMistSprite({
+                        width: 210, height: 92, freqX: 5.2, freqY: 3.2, seed: 21.3,
+                        domes: [
+                            { x: 0.36, y: 0.52, rx: 0.24, ry: 0.26, w: 0.88 },
+                            { x: 0.64, y: 0.50, rx: 0.24, ry: 0.26, w: 0.84 }
+                        ],
+                        shadowRGB: [56, 108, 178], midRGB: [198, 232, 255], hiRGB: [255, 250, 236], maxAlpha: 0.52, threshold: 0.2, softness: 0.58
+                    })
+                };
+
+                // =========================================================================
+                // B. PRE-BAKED SOFT GLOW & 5-PETAL PEACH BLOSSOM SPRITES (คมสวย + 60FPS)
+                // =========================================================================
                 const createSoftGlowSprite = (stops) => {
                     const sc = document.createElement('canvas');
                     sc.width = 64; sc.height = 64;
@@ -1041,23 +1118,91 @@
                 };
 
                 const glowSprites = {
-                    pink: createSoftGlowSprite([[0, 'rgba(255,248,255,0.92)'], [0.24, 'rgba(245,208,254,0.58)'], [0.58, 'rgba(217,70,239,0.18)'], [1, 'rgba(168,85,247,0)']]),
-                    mint: createSoftGlowSprite([[0, 'rgba(248,255,252,0.92)'], [0.24, 'rgba(167,243,208,0.58)'], [0.58, 'rgba(56,189,248,0.18)'], [1, 'rgba(14,165,233,0)']]),
-                    gold: createSoftGlowSprite([[0, 'rgba(255,254,244,0.94)'], [0.26, 'rgba(254,240,178,0.54)'], [0.62, 'rgba(186,230,253,0.16)'], [1, 'rgba(56,189,248,0)']]),
-                    cyan: createSoftGlowSprite([[0, 'rgba(244,252,255,0.9)'], [0.28, 'rgba(186,230,253,0.52)'], [0.64, 'rgba(125,211,252,0.14)'], [1, 'rgba(56,189,248,0)']])
+                    peach: createSoftGlowSprite([[0, 'rgba(255,248,252,0.95)'], [0.24, 'rgba(251,207,232,0.62)'], [0.58, 'rgba(244,114,182,0.22)'], [1, 'rgba(244,114,182,0)']]),
+                    gold:  createSoftGlowSprite([[0, 'rgba(255,254,244,0.96)'], [0.25, 'rgba(254,240,178,0.58)'], [0.60, 'rgba(251,191,36,0.18)'], [1, 'rgba(251,191,36,0)']]),
+                    jade:  createSoftGlowSprite([[0, 'rgba(244,255,250,0.94)'], [0.25, 'rgba(167,243,208,0.56)'], [0.58, 'rgba(56,189,248,0.18)'], [1, 'rgba(56,189,248,0)']])
                 };
 
-                const leafNodes = [
-                    ...leftLeaves.map(l => ({ sx: l.cx, sy: l.cy, sprite: 'pink' })),
-                    ...rightLeaves.map(l => ({ sx: l.cx, sy: l.cy, sprite: 'mint' })),
-                    { sx: 132, sy: 208, sprite: 'pink' },
-                    { sx: 172, sy: 162, sprite: 'gold' }
+                const createPeachBlossomSprite = (outerCol, midCol, coreCol) => {
+                    const sz = 96;
+                    const sc = document.createElement('canvas');
+                    sc.width = sz; sc.height = sz;
+                    const c = sc.getContext('2d');
+                    const cx = sz / 2, cy = sz / 2;
+
+                    const halo = c.createRadialGradient(cx, cy, 2, cx, cy, 44);
+                    halo.addColorStop(0, 'rgba(255, 240, 246, 0.52)');
+                    halo.addColorStop(0.55, 'rgba(244, 114, 182, 0.2)');
+                    halo.addColorStop(1, 'rgba(244, 114, 182, 0)');
+                    c.fillStyle = halo;
+                    c.beginPath(); c.arc(cx, cy, 44, 0, Math.PI * 2); c.fill();
+
+                    for (let i = 0; i < 5; i++) {
+                        c.save();
+                        c.translate(cx, cy);
+                        c.rotate((i * Math.PI * 2) / 5 - Math.PI / 2);
+                        const pg = c.createLinearGradient(0, -4, 0, -34);
+                        pg.addColorStop(0, coreCol);
+                        pg.addColorStop(0.45, midCol);
+                        pg.addColorStop(1, outerCol);
+                        c.fillStyle = pg;
+                        c.beginPath();
+                        c.moveTo(0, -3);
+                        c.bezierCurveTo(-13, -10, -16, -28, -4.5, -34);
+                        c.quadraticCurveTo(0, -29.5, 4.5, -34);
+                        c.bezierCurveTo(16, -28, 13, -10, 0, -3);
+                        c.closePath();
+                        c.fill();
+                        c.strokeStyle = 'rgba(255, 255, 255, 0.48)';
+                        c.lineWidth = 0.85;
+                        c.stroke();
+                        c.restore();
+                    }
+
+                    for (let s = 0; s < 7; s++) {
+                        const a = (s * Math.PI * 2) / 7;
+                        const sx = cx + Math.cos(a) * 10;
+                        const sy = cy + Math.sin(a) * 10;
+                        c.strokeStyle = 'rgba(254, 243, 199, 0.85)';
+                        c.lineWidth = 1;
+                        c.beginPath(); c.moveTo(cx, cy); c.lineTo(sx, sy); c.stroke();
+                        c.fillStyle = '#fde68a';
+                        c.beginPath(); c.arc(sx, sy, 1.8, 0, Math.PI * 2); c.fill();
+                    }
+                    c.fillStyle = '#fffbeb';
+                    c.beginPath(); c.arc(cx, cy, 3.6, 0, Math.PI * 2); c.fill();
+                    return sc;
+                };
+
+                const createBudSprite = () => {
+                    const sc = document.createElement('canvas');
+                    sc.width = 40; sc.height = 40;
+                    const c = sc.getContext('2d');
+                    const g = c.createRadialGradient(20, 20, 2, 20, 20, 14);
+                    g.addColorStop(0, 'rgba(255, 241, 246, 0.92)');
+                    g.addColorStop(0.5, 'rgba(244, 114, 182, 0.56)');
+                    g.addColorStop(1, 'rgba(244, 114, 182, 0)');
+                    c.fillStyle = g;
+                    c.beginPath(); c.arc(20, 20, 14, 0, Math.PI * 2); c.fill();
+                    c.fillStyle = '#f9a8d4';
+                    c.beginPath();
+                    c.ellipse(20, 20, 4.2, 6.2, 0.25, 0, Math.PI * 2);
+                    c.fill();
+                    return sc;
+                };
+
+                const blossomSprites = [
+                    createPeachBlossomSprite('#fff5f9', '#fbcfe8', '#f472b6'),
+                    createPeachBlossomSprite('#fff8fb', '#f9a8d4', '#ec4899'),
+                    createPeachBlossomSprite('#fffbeb', '#fde2f3', '#f472b6')
                 ];
+                const budSprite = createBudSprite();
 
-                // ระบบเส้นทางแสงแอมเบียนต่อเนื่อง (กรอบกระจกซ้าย/ขวา -> เชื่อมโคนต้นไม้ -> ลำต้น -> แตกกิ่งด้านบน)
+                // =========================================================================
+                // C. AMBIENT QI ROUTES (กรอบกระจกซ้าย–ขวา -> ลำต้น -> 8 กิ่งดอกท้อ) + 40 BLOSSOM NODES
+                // =========================================================================
                 let ambientRoutes = [];
-
-                const smoothPulse = (u) => (u > 0.82 ? Math.sin(((u - 0.82) / 0.18) * Math.PI) : 0);
+                let blossomNodes = [];
 
                 const sampleCatmullRomArc = (pts, samples = 96) => {
                     if (!pts || pts.length < 2) return [];
@@ -1072,13 +1217,13 @@
                         for (let s = 0; s < subPerSeg; s++) {
                             const t = s / subPerSeg;
                             const t2 = t * t, t3 = t2 * t;
-                            const x = 0.5 * ((2 * p1.x) + (-p0.x + p2.x) * t + (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * t2 + (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * t3);
-                            const y = 0.5 * ((2 * p1.y) + (-p0.y + p2.y) * t + (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * t2 + (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * t3);
-                            dense.push({ x, y });
+                            dense.push({
+                                x: 0.5 * ((2 * p1.x) + (-p0.x + p2.x) * t + (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * t2 + (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * t3),
+                                y: 0.5 * ((2 * p1.y) + (-p0.y + p2.y) * t + (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * t2 + (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * t3)
+                            });
                         }
                     }
                     dense.push(pts[pts.length - 1]);
-
                     const cum = [0];
                     for (let i = 1; i < dense.length; i++) {
                         cum.push(cum[i - 1] + Math.hypot(dense[i].x - dense[i - 1].x, dense[i].y - dense[i - 1].y));
@@ -1099,7 +1244,19 @@
                     return out;
                 };
 
-                const rebuildAmbientRoutes = (heroRect) => {
+                const sampleRoutePoint = (pts, u) => {
+                    const maxIdx = pts.length - 1;
+                    const clamped = Math.max(0, Math.min(1, u)) * maxIdx;
+                    const i0 = Math.floor(clamped);
+                    const i1 = Math.min(maxIdx, i0 + 1);
+                    const f = clamped - i0;
+                    return {
+                        x: pts[i0].x + (pts[i1].x - pts[i0].x) * f,
+                        y: pts[i0].y + (pts[i1].y - pts[i0].y) * f
+                    };
+                };
+
+                const rebuildRoutesAndBlossoms = (heroRect) => {
                     if (flare.treeW <= 0 || flare.treeH <= 0) return;
                     const svgPt = (sx, sy) => ({
                         x: flare.treeLeft + ((sx - 30) / 460) * flare.treeW,
@@ -1118,7 +1275,6 @@
                             const gy = gr.top - heroRect.top;
                             const gw = gr.width;
                             const gh = gr.height;
-
                             if (isDesktop) {
                                 leftGlassArc = [
                                     { x: gx + gw * 0.45, y: gy + gh * 0.98 },
@@ -1159,82 +1315,98 @@
                         }
                     }
 
-                    const leftTrunk = [svgPt(188, 384), svgPt(226, 342), svgPt(246, 294), svgPt(252, 248)];
-                    const rightTrunk = [svgPt(332, 384), svgPt(294, 342), svgPt(272, 294), svgPt(266, 248)];
+                    const leftTrunk = [svgPt(188, 386), svgPt(226, 344), svgPt(247, 294), svgPt(253, 244)];
+                    const rightTrunk = [svgPt(332, 386), svgPt(294, 344), svgPt(271, 294), svgPt(266, 244)];
 
-                    const leftBranches = [
-                        { pts: [svgPt(248, 240), svgPt(198, 224), svgPt(148, 232), svgPt(86, 254)], sprite: 'pink', dur: 6.8, phase: 0.0 },
-                        { pts: [svgPt(242, 210), svgPt(188, 186), svgPt(138, 186), svgPt(88, 184)], sprite: 'pink', dur: 7.4, phase: 0.27 },
-                        { pts: [svgPt(245, 180), svgPt(202, 145), svgPt(156, 130), svgPt(110, 146)], sprite: 'gold', dur: 7.9, phase: 0.54 },
-                        { pts: [svgPt(254, 150), svgPt(228, 110), svgPt(202, 82), svgPt(176, 76)], sprite: 'pink', dur: 8.2, phase: 0.78 }
-                    ];
-                    const rightBranches = [
-                        { pts: [svgPt(272, 240), svgPt(322, 224), svgPt(374, 232), svgPt(434, 254)], sprite: 'mint', dur: 7.0, phase: 0.14 },
-                        { pts: [svgPt(276, 210), svgPt(332, 186), svgPt(380, 186), svgPt(432, 184)], sprite: 'cyan', dur: 7.6, phase: 0.41 },
-                        { pts: [svgPt(274, 180), svgPt(318, 145), svgPt(364, 130), svgPt(410, 146)], sprite: 'mint', dur: 8.1, phase: 0.66 },
-                        { pts: [svgPt(262, 165), svgPt(260, 118), svgPt(260, 78), svgPt(260, 38)], sprite: 'gold', dur: 6.6, phase: 0.88 }
+                    const branchDefs = [
+                        { glass: leftGlassArc, trunk: leftTrunk, pts: [svgPt(248, 240), svgPt(198, 224), svgPt(148, 232), svgPt(82, 256)], sprite: 'peach', dur: 6.6, phase: 0.00 },
+                        { glass: leftGlassArc, trunk: leftTrunk, pts: [svgPt(244, 208), svgPt(190, 184), svgPt(138, 182), svgPt(76, 204)], sprite: 'gold',  dur: 7.2, phase: 0.26 },
+                        { glass: leftGlassArc, trunk: leftTrunk, pts: [svgPt(246, 178), svgPt(202, 144), svgPt(156, 128), svgPt(104, 142)], sprite: 'peach', dur: 7.8, phase: 0.52 },
+                        { glass: leftGlassArc, trunk: leftTrunk, pts: [svgPt(254, 148), svgPt(228, 108), svgPt(198, 78), svgPt(162, 68)],  sprite: 'gold',  dur: 8.1, phase: 0.78 },
+                        { glass: rightGlassArc, trunk: rightTrunk, pts: [svgPt(272, 240), svgPt(322, 224), svgPt(374, 232), svgPt(438, 256)], sprite: 'peach', dur: 6.9, phase: 0.14 },
+                        { glass: rightGlassArc, trunk: rightTrunk, pts: [svgPt(276, 208), svgPt(332, 184), svgPt(382, 182), svgPt(444, 204)], sprite: 'jade',  dur: 7.5, phase: 0.40 },
+                        { glass: rightGlassArc, trunk: rightTrunk, pts: [svgPt(274, 178), svgPt(318, 144), svgPt(364, 128), svgPt(416, 142)], sprite: 'peach', dur: 8.0, phase: 0.65 },
+                        { glass: rightGlassArc, trunk: rightTrunk, pts: [svgPt(262, 162), svgPt(260, 118), svgPt(260, 76),  svgPt(260, 38)],  sprite: 'gold',  dur: 6.4, phase: 0.88 }
                     ];
 
-                    ambientRoutes = [
-                        ...leftBranches.map(b => ({
-                            pts: sampleCatmullRomArc([...leftGlassArc, ...leftTrunk, ...b.pts], 96),
-                            sprite: b.sprite,
-                            dur: b.dur,
-                            phase: b.phase
-                        })),
-                        ...rightBranches.map(b => ({
-                            pts: sampleCatmullRomArc([...rightGlassArc, ...rightTrunk, ...b.pts], 96),
-                            sprite: b.sprite,
-                            dur: b.dur,
-                            phase: b.phase
-                        }))
-                    ];
+                    ambientRoutes = branchDefs.map(b => ({
+                        pts: sampleCatmullRomArc([...b.glass, ...b.trunk, ...b.pts], 98),
+                        sprite: b.sprite,
+                        dur: b.dur,
+                        phase: b.phase
+                    }));
+
+                    const prevStates = blossomNodes;
+                    const nextNodes = [];
+                    const scaleRef = Math.max(0.68, Math.min(1.18, flare.treeW / 620));
+                    const uStops = [0.64, 0.73, 0.82, 0.90, 0.98];
+
+                    ambientRoutes.forEach((rt, rIdx) => {
+                        uStops.forEach((u, kIdx) => {
+                            const pt = sampleRoutePoint(rt.pts, u);
+                            const seed = rIdx * 13 + kIdx * 7;
+                            const jitterX = Math.sin(seed * 2.1) * 14 * scaleRef;
+                            const jitterY = Math.cos(seed * 1.7) * 12 * scaleRef;
+                            const id = nextNodes.length;
+                            const prev = prevStates[id];
+                            nextNodes.push({
+                                routeIdx: rIdx,
+                                u,
+                                x: pt.x + jitterX,
+                                y: pt.y + jitterY,
+                                baseSize: (16 + ((seed % 5) * 3.4)) * scaleRef,
+                                rot: (seed * 0.72) % (Math.PI * 2),
+                                spriteIdx: seed % blossomSprites.length,
+                                bloom: prev ? prev.bloom : (0.14 + (kIdx % 2) * 0.14),
+                                haloFlash: prev ? prev.haloFlash : 0,
+                                lastTriggerTs: prev ? prev.lastTriggerTs : 0
+                            });
+                        });
+                    });
+                    blossomNodes = nextNodes;
                 };
 
-                const sampleRoutePoint = (pts, u) => {
-                    const maxIdx = pts.length - 1;
-                    const clamped = Math.max(0, Math.min(1, u)) * maxIdx;
-                    const i0 = Math.floor(clamped);
-                    const i1 = Math.min(maxIdx, i0 + 1);
-                    const f = clamped - i0;
-                    return {
-                        x: pts[i0].x + (pts[i1].x - pts[i0].x) * f,
-                        y: pts[i0].y + (pts[i1].y - pts[i0].y) * f
-                    };
-                };
-
+                // =========================================================================
+                // D. FLOATING PEACH PETALS, FIREFLIES & TOUCH-TO-BLOOM RIPPLES
+                // =========================================================================
+                const driftingPetals = [];
                 const fireflies = [];
                 const bloomRipples = [];
-                const floatingHearts = [];
-                const SPRITE_KEYS = ['gold', 'mint', 'cyan', 'pink'];
                 let lastTrailTs = 0;
-                let lastAutoWispTs = 0;
 
-                const spawnFirefly = (x, y, boosted = false, fixedSprite = null) => {
-                    if (fireflies.length >= 48) fireflies.shift();
-                    const angle = Math.random() * Math.PI * 2;
-                    const speed = boosted ? (0.55 + Math.random() * 1.45) : (0.12 + Math.random() * 0.38);
-                    fireflies.push({
-                        x: x + (Math.random() - 0.5) * (boosted ? 12 : 8),
-                        y: y + (Math.random() - 0.5) * (boosted ? 12 : 8),
-                        vx: Math.cos(angle) * speed,
-                        vy: Math.sin(angle) * speed - (boosted ? 0.72 : 0.36),
-                        r: boosted ? (5.5 + Math.random() * 5.5) : (4.2 + Math.random() * 4.2),
+                const spawnPeachPetal = (x, y, boosted = false) => {
+                    if (driftingPetals.length >= 44) driftingPetals.shift();
+                    driftingPetals.push({
+                        x: x + (Math.random() - 0.5) * 10,
+                        y: y + (Math.random() - 0.5) * 8,
+                        vx: (boosted ? (Math.random() - 0.35) * 1.3 : 0.22 + Math.random() * 0.48),
+                        vy: boosted ? -(0.35 + Math.random() * 0.55) : (0.18 + Math.random() * 0.42),
+                        rx: 3.4 + Math.random() * 2.8,
+                        ry: 2.0 + Math.random() * 1.5,
+                        rot: Math.random() * Math.PI * 2,
+                        vRot: (Math.random() - 0.5) * 0.055,
+                        flipSeed: Math.random() * Math.PI * 2,
                         life: 0,
-                        maxLife: boosted ? (1.1 + Math.random() * 0.7) : (1.1 + Math.random() * 0.8),
-                        twinkle: Math.random() * Math.PI * 2,
-                        sprite: fixedSprite || SPRITE_KEYS[Math.floor(Math.random() * SPRITE_KEYS.length)]
+                        maxLife: 3.8 + Math.random() * 2.8,
+                        color: Math.random() > 0.35 ? '#fbcfe8' : '#fff1f5'
                     });
                 };
 
-                const spawnLeafWispOnCanvas = (count = 1) => {
-                    if (flare.treeW <= 0) return;
-                    for (let i = 0; i < count; i++) {
-                        const lf = leafNodes[Math.floor(Math.random() * leafNodes.length)];
-                        const px = flare.treeLeft + ((lf.sx - 30) / 460) * flare.treeW;
-                        const py = flare.treeTop + ((lf.sy - 14) / 394) * flare.treeH;
-                        spawnFirefly(px, py, false, lf.sprite);
-                    }
+                const spawnFirefly = (x, y, boosted = false, fixedSprite = null) => {
+                    if (fireflies.length >= 44) fireflies.shift();
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = boosted ? (0.5 + Math.random() * 1.35) : (0.12 + Math.random() * 0.36);
+                    fireflies.push({
+                        x: x + (Math.random() - 0.5) * 10,
+                        y: y + (Math.random() - 0.5) * 10,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed - (boosted ? 0.65 : 0.34),
+                        r: boosted ? (5.2 + Math.random() * 4.8) : (4.0 + Math.random() * 3.8),
+                        life: 0,
+                        maxLife: 1.1 + Math.random() * 0.75,
+                        twinkle: Math.random() * Math.PI * 2,
+                        sprite: fixedSprite || (Math.random() > 0.45 ? 'gold' : 'peach')
+                    });
                 };
 
                 const spawnBloomBurst = (clientX, clientY) => {
@@ -1244,38 +1416,22 @@
                     if (x < 0 || y < 0 || x > rect.width || y > rect.height) return;
 
                     if (bloomRipples.length >= 5) bloomRipples.shift();
-                    bloomRipples.push({ x, y, r: 10, maxR: Math.min(rect.width, rect.height) * 0.22 + 42, life: 0, maxLife: 1.15 });
+                    bloomRipples.push({ x, y, r: 10, maxR: Math.min(rect.width, rect.height) * 0.25 + 52, life: 0, maxLife: 1.15 });
 
-                    for (let i = 0; i < 12; i++) spawnFirefly(x, y, true);
-                    spawnLeafWispOnCanvas(3);
+                    for (let i = 0; i < 10; i++) spawnFirefly(x, y, true);
+                    for (let i = 0; i < 5; i++) spawnPeachPetal(x, y, true);
 
-                    for (let i = 0; i < 4; i++) {
-                        if (floatingHearts.length >= 16) floatingHearts.shift();
-                        floatingHearts.push({
-                            x: x + (Math.random() - 0.5) * 28,
-                            y: y + (Math.random() - 0.5) * 16,
-                            vx: (Math.random() - 0.5) * 0.55,
-                            vy: -(0.72 + Math.random() * 0.75),
-                            size: 4.5 + Math.random() * 3.5,
-                            sway: Math.random() * Math.PI * 2,
-                            life: 0,
-                            maxLife: 1.55 + Math.random() * 0.7,
-                            color: i % 2 === 0 ? 'rgba(249, 168, 212, 0.9)' : 'rgba(254, 240, 178, 0.9)'
-                        });
+                    const wakeRadius = Math.max(150, flare.treeW * 0.42);
+                    const nowTs = performance.now();
+                    for (let i = 0; i < blossomNodes.length; i++) {
+                        const b = blossomNodes[i];
+                        if (Math.hypot(b.x - x, b.y - y) < wakeRadius) {
+                            b.lastTriggerTs = nowTs;
+                            b.bloom = 1.0;
+                            b.haloFlash = 1.0;
+                            if (Math.random() < 0.45) spawnPeachPetal(b.x, b.y, true);
+                        }
                     }
-                };
-
-                const drawMiniHeart = (c, hx, hy, sz, col, alpha) => {
-                    c.save();
-                    c.translate(hx, hy);
-                    c.globalAlpha = alpha;
-                    c.fillStyle = col;
-                    c.beginPath();
-                    c.moveTo(0, sz * 0.35);
-                    c.bezierCurveTo(-sz * 0.55, -sz * 0.35, -sz * 1.15, sz * 0.25, 0, sz * 1.05);
-                    c.bezierCurveTo(sz * 1.15, sz * 0.25, sz * 0.55, -sz * 0.35, 0, sz * 0.35);
-                    c.fill();
-                    c.restore();
                 };
 
                 const fitLineToWidth = (el, targetW, minPx, maxPx) => {
@@ -1294,16 +1450,18 @@
                     const nw = Math.max(1, Math.round(heroRect.width));
                     const nh = Math.max(1, Math.round(heroRect.height));
 
-                    // ล็อกขนาด Canvas: ไม่อัปเดตซ้ำเมื่อความสูงขยับเล็กน้อยจากแถบ URL มือถือ (แก้สะดุดตอนเลื่อนขึ้นลง 100%)
                     const widthChanged = Math.abs(nw - flare.w) > 3;
                     const majorHeightChanged = Math.abs(nh - flare.h) > 120;
                     if (flare.w === 0 || widthChanged || majorHeightChanged || forceTextRefit) {
                         const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
                         flare.w = nw;
                         flare.h = nh;
-                        canvas.width = Math.round(nw * dpr);
-                        canvas.height = Math.round(nh * dpr);
-                        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                        [bgCanvas, fxCanvas].forEach((c) => {
+                            c.width = Math.round(nw * dpr);
+                            c.height = Math.round(nh * dpr);
+                        });
+                        bgCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                        fxCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
                         if (treeSvgRef.current) {
                             const tr = treeSvgRef.current.getBoundingClientRect();
@@ -1312,8 +1470,8 @@
                                 flare.treeTop = tr.top - heroRect.top;
                                 flare.treeW = tr.width;
                                 flare.treeH = tr.height;
-                                flare.crestX = flare.treeLeft + tr.width * 0.5;
-                                flare.crestY = flare.treeTop + tr.height * (nw < 768 ? 0.04 : 0.075);
+                                flare.moonX = flare.treeLeft + tr.width * 0.5;
+                                flare.moonY = flare.treeTop + tr.height * (nw < 768 ? 0.34 : 0.32);
                             }
                         }
 
@@ -1334,33 +1492,33 @@
                             }
                         }
 
-                        rebuildAmbientRoutes(heroRect);
+                        rebuildRoutesAndBlossoms(heroRect);
                     }
                 };
 
-                const drawSoftOrb = (x, y, r, stops) => {
-                    const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+                const drawSoftOrb = (c, x, y, r, stops) => {
+                    const g = c.createRadialGradient(x, y, 0, x, y, r);
                     for (let i = 0; i < stops.length; i++) g.addColorStop(stops[i][0], stops[i][1]);
-                    ctx.fillStyle = g;
-                    ctx.beginPath();
-                    ctx.arc(x, y, r, 0, Math.PI * 2);
-                    ctx.fill();
+                    c.fillStyle = g;
+                    c.beginPath();
+                    c.arc(x, y, r, 0, Math.PI * 2);
+                    c.fill();
                 };
 
-                const drawSoftLightBeam = (ox, oy, ang, len, halfW, colInner, colMid) => {
-                    ctx.save();
-                    ctx.translate(ox, oy);
-                    ctx.rotate(ang);
-                    ctx.scale(1, halfW / len);
-                    const g = ctx.createRadialGradient(len * 0.34, 0, 0, len * 0.34, 0, len * 0.66);
+                const drawSoftLightBeam = (c, ox, oy, ang, len, halfW, colInner, colMid) => {
+                    c.save();
+                    c.translate(ox, oy);
+                    c.rotate(ang);
+                    c.scale(1, halfW / len);
+                    const g = c.createRadialGradient(len * 0.34, 0, 0, len * 0.34, 0, len * 0.66);
                     g.addColorStop(0, colInner);
                     g.addColorStop(0.45, colMid);
                     g.addColorStop(1, 'rgba(0, 0, 0, 0)');
-                    ctx.fillStyle = g;
-                    ctx.beginPath();
-                    ctx.arc(len * 0.34, 0, len * 0.66, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.restore();
+                    c.fillStyle = g;
+                    c.beginPath();
+                    c.arc(len * 0.34, 0, len * 0.66, 0, Math.PI * 2);
+                    c.fill();
+                    c.restore();
                 };
 
                 let alive = true, rafId = null, prevFrameTs = performance.now();
@@ -1372,125 +1530,205 @@
                     const dt = Math.min(0.05, Math.max(0.001, (now - prevFrameTs) / 1000));
                     prevFrameTs = now;
 
-                    if (now - lastAutoWispTs > 620) {
-                        lastAutoWispTs = now;
-                        spawnLeafWispOnCanvas(1);
-                    }
-
                     const w = flare.w, h = flare.h;
-                    ctx.clearRect(0, 0, w, h);
-
-                    flare.mouseX += (flare.targetMouseX - flare.mouseX) * 0.05;
-                    flare.mouseY += (flare.targetMouseY - flare.mouseY) * 0.05;
-
-                    const t = now * 0.001;
-                    const k = 0.85 * (0.93 + 0.07 * Math.sin(t * 0.95));
                     const minDim = Math.min(w, h);
+                    const t = now * 0.001;
+                    const k = 0.88 * (0.93 + 0.07 * Math.sin(t * 0.85));
 
-                    ctx.globalCompositeOperation = 'lighter';
+                    flare.mouseX += (flare.targetMouseX - flare.mouseX) * 0.045;
+                    flare.mouseY += (flare.targetMouseY - flare.mouseY) * 0.045;
 
-                    // 1. วงโค้งสุริยคราสแบบฟุ้งนุ่ม (Soft Diffused Horizon Glow — ไม่มีเส้นแข็ง 2px)
-                    const arcR = Math.max(w * 0.62, 520);
-                    const arcCx = flare.crestX + flare.mouseX * 10;
-                    const arcCy = flare.crestY + arcR + flare.mouseY * 5;
+                    // =========================================================================
+                    // LAYER 1 (bgCtx): จันทราหยกทอง + ลำแสงสวรรค์ + ทะเลหมอกฟุ้งเนื้อละเอียด 4-Octave fBm
+                    // =========================================================================
+                    bgCtx.clearRect(0, 0, w, h);
 
-                    ctx.save();
-                    const makeArcGrad = (alphaMult) => {
-                        const ag = ctx.createLinearGradient(w * 0.14, flare.crestY, w * 0.86, flare.crestY);
-                        ag.addColorStop(0, 'rgba(56, 189, 248, 0)');
-                        ag.addColorStop(0.26, `rgba(56, 189, 248, ${(0.2 * k * alphaMult).toFixed(3)})`);
-                        ag.addColorStop(0.46, `rgba(186, 230, 253, ${(0.44 * k * alphaMult).toFixed(3)})`);
-                        ag.addColorStop(0.51, `rgba(255, 252, 224, ${(0.62 * k * alphaMult).toFixed(3)})`);
-                        ag.addColorStop(0.64, `rgba(110, 231, 183, ${(0.36 * k * alphaMult).toFixed(3)})`);
-                        ag.addColorStop(0.84, `rgba(129, 140, 248, ${(0.14 * k * alphaMult).toFixed(3)})`);
-                        ag.addColorStop(1, 'rgba(56, 189, 248, 0)');
-                        return ag;
-                    };
-                    ctx.lineCap = 'round';
-                    ctx.strokeStyle = makeArcGrad(0.24);
-                    ctx.lineWidth = 34;
-                    ctx.beginPath(); ctx.arc(arcCx, arcCy, arcR, Math.PI * 1.28, Math.PI * 1.72); ctx.stroke();
+                    const mx = flare.moonX + flare.mouseX * 12;
+                    const my = flare.moonY + flare.mouseY * 6;
+                    const moonR = Math.min(w * 0.24, minDim * 0.25, 165);
 
-                    ctx.strokeStyle = makeArcGrad(0.36);
-                    ctx.lineWidth = 14;
-                    ctx.beginPath(); ctx.arc(arcCx, arcCy, arcR, Math.PI * 1.29, Math.PI * 1.71); ctx.stroke();
+                    bgCtx.save();
+                    bgCtx.globalCompositeOperation = 'lighter';
 
-                    ctx.strokeStyle = makeArcGrad(0.55);
-                    ctx.lineWidth = 5;
-                    ctx.beginPath(); ctx.arc(arcCx, arcCy, arcR, Math.PI * 1.31, Math.PI * 1.69); ctx.stroke();
-                    ctx.restore();
+                    drawSoftOrb(bgCtx, mx, my, moonR * 2.55, [
+                        [0, `rgba(255, 252, 238, ${(0.34 * k).toFixed(3)})`],
+                        [0.24, `rgba(254, 240, 198, ${(0.20 * k).toFixed(3)})`],
+                        [0.52, `rgba(125, 211, 252, ${(0.11 * k).toFixed(3)})`],
+                        [0.78, `rgba(249, 168, 212, ${(0.05 * k).toFixed(3)})`],
+                        [1, 'rgba(0, 0, 0, 0)']
+                    ]);
+                    drawSoftOrb(bgCtx, mx, my, moonR * 0.96, [
+                        [0, `rgba(255, 254, 248, ${(0.52 * k).toFixed(3)})`],
+                        [0.64, `rgba(254, 246, 224, ${(0.28 * k).toFixed(3)})`],
+                        [0.88, `rgba(254, 240, 178, ${(0.12 * k).toFixed(3)})`],
+                        [1, 'rgba(254, 240, 178, 0)']
+                    ]);
 
-                    const fx = arcCx + Math.sin(t * 0.2) * Math.min(w * 0.032, 30);
-                    const fy = arcCy - Math.sqrt(Math.max(0, arcR * arcR - Math.pow(fx - arcCx, 2)));
+                    bgCtx.save();
+                    bgCtx.translate(mx, my);
+                    bgCtx.rotate(t * 0.08);
+                    bgCtx.strokeStyle = `rgba(254, 240, 178, ${(0.16 * k).toFixed(3)})`;
+                    bgCtx.lineWidth = 1.6;
+                    bgCtx.setLineDash([28, 18, 8, 22]);
+                    bgCtx.beginPath(); bgCtx.arc(0, 0, moonR * 1.18, 0, Math.PI * 2); bgCtx.stroke();
+                    bgCtx.setLineDash([]);
+                    bgCtx.restore();
 
-                    // 2. ลำแสงสวรรค์แบบฟุ้งนุ่มไร้ขอบตัด (Feathered Soft Light Plumes — ไม่เป็นสามเหลี่ยมเส้นแข็ง)
-                    const rayAngles = [-0.46, -0.22, 0.0, 0.22, 0.44];
-                    const rayLen = h * 0.66;
+                    const rayAngles = [-0.46, -0.21, 0.02, 0.24, 0.48];
+                    const rayLen = h * 0.72;
                     for (let i = 0; i < rayAngles.length; i++) {
-                        const sway = Math.sin(t * 0.35 + i * 1.4) * 0.035 + flare.mouseX * 0.024;
+                        const sway = Math.sin(t * 0.32 + i * 1.4) * 0.032 + flare.mouseX * 0.02;
                         const ang = Math.PI * 0.5 + rayAngles[i] + sway;
-                        const pulse = 0.038 + 0.016 * Math.sin(t * 0.7 + i * 1.8);
+                        const pulse = 0.034 + 0.015 * Math.sin(t * 0.65 + i * 1.7);
                         drawSoftLightBeam(
-                            fx, fy, ang, rayLen, minDim * 0.14,
-                            `rgba(254, 249, 205, ${(pulse * 1.45 * k).toFixed(3)})`,
+                            bgCtx, mx, my - moonR * 0.35, ang, rayLen, minDim * 0.145,
+                            `rgba(254, 249, 210, ${(pulse * 1.45 * k).toFixed(3)})`,
                             i % 2 === 0
-                                ? `rgba(147, 210, 252, ${(pulse * 0.82 * k).toFixed(3)})`
-                                : `rgba(167, 243, 208, ${(pulse * 0.78 * k).toFixed(3)})`
+                                ? `rgba(147, 210, 252, ${(pulse * 0.78 * k).toFixed(3)})`
+                                : `rgba(249, 168, 212, ${(pulse * 0.72 * k).toFixed(3)})`
                         );
                     }
+                    bgCtx.restore();
 
-                    // 3. ดวงแสง Solar Flare นุ่มละมุน + ม่านแสงแนวนอนบางเบา (ไม่เป็นเส้นเลเซอร์แข็ง)
-                    drawSoftOrb(fx, fy, minDim * 0.34, [
-                        [0, `rgba(255, 254, 246, ${(0.56 * k).toFixed(3)})`],
-                        [0.2, `rgba(254, 240, 188, ${(0.34 * k).toFixed(3)})`],
-                        [0.48, `rgba(125, 211, 252, ${(0.14 * k).toFixed(3)})`],
-                        [1, 'rgba(0, 0, 0, 0)']
-                    ]);
-                    ctx.save();
-                    ctx.translate(fx, fy);
-                    ctx.scale(1, 0.045);
-                    drawSoftOrb(0, 0, w * 0.36, [
-                        [0, `rgba(255, 255, 255, ${(0.36 * k).toFixed(3)})`],
-                        [0.35, `rgba(186, 230, 253, ${(0.18 * k).toFixed(3)})`],
-                        [1, 'rgba(0, 0, 0, 0)']
-                    ]);
-                    ctx.restore();
+                    // ทะเลหมอกฟุ้งเนื้อละเอียด 5 ชั้นลอยสวนกันช้าๆ
+                    bgCtx.save();
+                    bgCtx.globalCompositeOperation = 'source-over';
+                    const driftA = ((t * 14) % (w * 1.3)) - w * 0.3;
+                    const driftB = w - (((t * 10) % (w * 1.35)));
 
-                    // 4. แสงแอมเบียนอัลต้าสมูทวิ่งจากขอบกรอบกระจกซ้าย–ขวา -> เชื่อมลำต้น -> แตกกิ่งด้านบน (Zero Hard Lines!)
+                    bgCtx.globalAlpha = 0.76;
+                    bgCtx.drawImage(mistSprites.seaBase, -w * 0.12 + Math.sin(t * 0.16) * 28, h * 0.62, w * 1.24, h * 0.42);
+                    bgCtx.globalAlpha = 0.72;
+                    bgCtx.drawImage(mistSprites.valleyLeft, -w * 0.18 + Math.sin(t * 0.22) * 22, h * 0.50, w * 0.78, h * 0.42);
+                    bgCtx.globalAlpha = 0.72;
+                    bgCtx.drawImage(mistSprites.valleyRight, w * 0.40 - Math.sin(t * 0.2 + 1.1) * 22, h * 0.49, w * 0.78, h * 0.43);
+                    bgCtx.globalAlpha = 0.48;
+                    bgCtx.drawImage(mistSprites.wispVeil, driftA - w * 0.35, h * 0.44, w * 0.85, h * 0.28);
+                    bgCtx.globalAlpha = 0.42;
+                    bgCtx.drawImage(mistSprites.wispVeil, driftB - w * 0.42, h * 0.68, w * 0.78, h * 0.26);
+                    bgCtx.restore();
+
+                    // =========================================================================
+                    // LAYER 2 (fxCtx): แสงปราณแอมเบียน -> ปลุกดอกท้อ 5 กลีบผลิบานสด -> กลีบดอกลอยพริ้ว
+                    // =========================================================================
+                    fxCtx.clearRect(0, 0, w, h);
+
+                    const activeHeads = [];
                     const isSmallScreen = w < 768;
                     const tailSteps = isSmallScreen ? 14 : 18;
-                    const tailSpan = 0.21;
+                    const tailSpan = 0.20;
                     const baseGlowRadius = isSmallScreen ? 15 : 19;
+
+                    fxCtx.save();
+                    fxCtx.globalCompositeOperation = 'lighter';
 
                     for (let r = 0; r < ambientRoutes.length; r++) {
                         const rt = ambientRoutes[r];
                         if (!rt.pts || rt.pts.length < 4) continue;
                         const rawP = ((t / rt.dur) + rt.phase) % 1;
-                        const headU = rawP - 0.04 * Math.sin(rawP * Math.PI * 2);
+                        const headU = rawP - 0.035 * Math.sin(rawP * Math.PI * 2);
                         const envFade = Math.sin(Math.min(1, Math.max(0, rawP)) * Math.PI);
-                        const spriteImg = glowSprites[rt.sprite] || glowSprites.mint;
+                        const spriteImg = glowSprites[rt.sprite] || glowSprites.peach;
+                        activeHeads.push(headU);
 
                         for (let s = 0; s < tailSteps; s++) {
                             const frac = s / (tailSteps - 1);
                             const u = headU - frac * tailSpan;
                             if (u < 0 || u > 1) continue;
                             const pt = sampleRoutePoint(rt.pts, u);
-                            const taper = Math.pow(1 - frac, 1.45);
-                            const rad = baseGlowRadius * (0.45 + taper * 0.95);
-                            ctx.globalAlpha = Math.max(0, Math.min(0.62, taper * envFade * 0.44));
-                            ctx.drawImage(spriteImg, pt.x - rad, pt.y - rad, rad * 2, rad * 2);
+                            const taper = Math.pow(1 - frac, 1.48);
+                            const rad = baseGlowRadius * (0.44 + taper * 0.94);
+                            fxCtx.globalAlpha = Math.max(0, Math.min(0.62, taper * envFade * 0.44));
+                            fxCtx.drawImage(spriteImg, pt.x - rad, pt.y - rad, rad * 2, rad * 2);
                         }
 
                         if (headU >= 0 && headU <= 1) {
                             const hp = sampleRoutePoint(rt.pts, headU);
-                            const headR = baseGlowRadius * (1.28 + 0.35 * smoothPulse(headU));
-                            ctx.globalAlpha = Math.max(0, Math.min(0.75, envFade * 0.62));
-                            ctx.drawImage(glowSprites.gold, hp.x - headR, hp.y - headR, headR * 2, headR * 2);
+                            const headR = baseGlowRadius * 1.32;
+                            fxCtx.globalAlpha = Math.max(0, Math.min(0.76, envFade * 0.64));
+                            fxCtx.drawImage(glowSprites.gold, hp.x - headR, hp.y - headR, headR * 2, headR * 2);
                         }
                     }
-                    ctx.globalAlpha = 1;
+                    fxCtx.restore();
 
-                    // 5. ระลอกคลื่นแสงฟุ้งนุ่มเมื่อแตะหน้าจอ (Soft Touch-to-Bloom)
+                    // อัปเดตและวาดดอกท้อ 5 กลีบ (เมื่อแสงแอมเบียนวิ่งถึงกิ่ง ดอกท้อตรงจุดนั้นจะผลิบานเรืองแสงและโปรยกลีบ!)
+                    for (let i = 0; i < blossomNodes.length; i++) {
+                        const b = blossomNodes[i];
+                        const rHeadU = activeHeads[b.routeIdx] !== undefined ? activeHeads[b.routeIdx] : -1;
+
+                        if (rHeadU >= b.u - 0.015 && rHeadU <= b.u + 0.075 && now - b.lastTriggerTs > 2200) {
+                            b.lastTriggerTs = now;
+                            b.haloFlash = 1.0;
+                            if (Math.random() < 0.55) spawnPeachPetal(b.x, b.y, false);
+                            if (Math.random() < 0.30) spawnFirefly(b.x, b.y, false, 'peach');
+                        }
+
+                        const sinceTrigger = (now - b.lastTriggerTs) * 0.001;
+                        const targetBloom = sinceTrigger < 4.4 ? 1.0 : 0.22;
+                        const rate = targetBloom > b.bloom ? 4.8 : 0.42;
+                        b.bloom += (targetBloom - b.bloom) * (1 - Math.exp(-dt * rate));
+                        b.haloFlash = Math.max(0, b.haloFlash - dt * 0.85);
+
+                        const swayX = Math.sin(t * 1.15 + i * 0.9) * 1.8;
+                        const swayY = Math.cos(t * 0.95 + i * 1.1) * 1.4;
+                        const bx = b.x + swayX;
+                        const by = b.y + swayY;
+
+                        if (b.haloFlash > 0.02) {
+                            fxCtx.save();
+                            fxCtx.globalCompositeOperation = 'lighter';
+                            fxCtx.globalAlpha = b.haloFlash * 0.65;
+                            const hr = b.baseSize * (1.5 + (1 - b.haloFlash) * 0.9);
+                            fxCtx.drawImage(glowSprites.peach, bx - hr, by - hr, hr * 2, hr * 2);
+                            fxCtx.restore();
+                        }
+
+                        if (b.bloom < 0.34) {
+                            const budR = b.baseSize * (0.58 + b.bloom * 0.5);
+                            fxCtx.globalAlpha = 0.82;
+                            fxCtx.drawImage(budSprite, bx - budR, by - budR, budR * 2, budR * 2);
+                        }
+                        if (b.bloom > 0.16) {
+                            const openFrac = Math.min(1, (b.bloom - 0.16) / 0.84);
+                            const drawSz = b.baseSize * (0.36 + openFrac * 0.92);
+                            fxCtx.save();
+                            fxCtx.translate(bx, by);
+                            fxCtx.rotate(b.rot + Math.sin(t * 0.8 + i) * 0.08 + (1 - openFrac) * 0.5);
+                            fxCtx.globalAlpha = Math.min(0.98, 0.25 + openFrac * 0.75);
+                            fxCtx.drawImage(blossomSprites[b.spriteIdx], -drawSz, -drawSz, drawSz * 2, drawSz * 2);
+                            fxCtx.restore();
+                        }
+                    }
+                    fxCtx.globalAlpha = 1;
+
+                    // วาดกลีบดอกท้อลอยพริ้วตามสายลมแดนเซียน
+                    for (let i = driftingPetals.length - 1; i >= 0; i--) {
+                        const p = driftingPetals[i];
+                        p.life += dt;
+                        const prog = p.life / p.maxLife;
+                        if (prog >= 1 || p.y > h + 20 || p.x > w + 40) { driftingPetals.splice(i, 1); continue; }
+                        p.x += (p.vx + Math.sin(t * 1.8 + p.flipSeed) * 0.32) * (dt * 60);
+                        p.y += p.vy * (dt * 60);
+                        p.vy = Math.min(0.68, p.vy + dt * 0.18);
+                        p.rot += p.vRot * (dt * 60);
+                        const fade = Math.sin(prog * Math.PI);
+                        const tiltScale = 0.42 + 0.58 * Math.abs(Math.cos(t * 2.4 + p.flipSeed));
+
+                        fxCtx.save();
+                        fxCtx.translate(p.x, p.y);
+                        fxCtx.rotate(p.rot);
+                        fxCtx.scale(1, tiltScale);
+                        fxCtx.globalAlpha = Math.max(0, fade * 0.84);
+                        fxCtx.fillStyle = p.color;
+                        fxCtx.beginPath();
+                        fxCtx.ellipse(0, 0, p.rx, p.ry, 0, 0, Math.PI * 2);
+                        fxCtx.fill();
+                        fxCtx.restore();
+                    }
+
+                    // ระลอกคลื่นปราณ Touch-to-Bloom และละอองหิ่งห้อยทอง
+                    fxCtx.save();
+                    fxCtx.globalCompositeOperation = 'lighter';
                     for (let i = bloomRipples.length - 1; i >= 0; i--) {
                         const rp = bloomRipples[i];
                         rp.life += dt;
@@ -1498,15 +1736,13 @@
                         if (prog >= 1) { bloomRipples.splice(i, 1); continue; }
                         const curR = rp.r + (rp.maxR - rp.r) * (1 - Math.pow(1 - prog, 2.4));
                         const alpha = (1 - prog) * 0.36;
-                        drawSoftOrb(rp.x, rp.y, curR, [
+                        drawSoftOrb(fxCtx, rp.x, rp.y, curR, [
                             [0, 'rgba(0,0,0,0)'],
-                            [0.68, 'rgba(186,230,253,0)'],
-                            [0.86, `rgba(186,230,253,${alpha.toFixed(3)})`],
-                            [1, 'rgba(244,114,182,0)']
+                            [0.68, 'rgba(251,207,232,0)'],
+                            [0.86, `rgba(251,207,232,${alpha.toFixed(3)})`],
+                            [1, 'rgba(254,240,178,0)']
                         ]);
                     }
-
-                    // 6. ละอองหิ่งห้อยแสงดาว & ละอองออร่าจากใบไม้ (ใช้ Soft Glow Sprite ฟุ้งนุ่ม)
                     for (let i = fireflies.length - 1; i >= 0; i--) {
                         const f = fireflies[i];
                         f.life += dt;
@@ -1517,29 +1753,18 @@
                         f.vy *= 0.986;
                         const fade = Math.sin(prog * Math.PI);
                         const glowR = f.r * (1.2 + 0.3 * Math.sin(t * 6.5 + f.twinkle));
-                        ctx.globalAlpha = Math.max(0, fade * 0.72);
+                        fxCtx.globalAlpha = Math.max(0, fade * 0.72);
                         const sp = glowSprites[f.sprite] || glowSprites.gold;
-                        ctx.drawImage(sp, f.x - glowR, f.y - glowR, glowR * 2, glowR * 2);
+                        fxCtx.drawImage(sp, f.x - glowR, f.y - glowR, glowR * 2, glowR * 2);
                     }
-                    ctx.globalAlpha = 1;
-
-                    // 7. ละอองหัวใจจิ๋วเรืองแสงลอยขึ้นเมื่อแตะ
-                    for (let i = floatingHearts.length - 1; i >= 0; i--) {
-                        const ht = floatingHearts[i];
-                        ht.life += dt;
-                        const prog = ht.life / ht.maxLife;
-                        if (prog >= 1) { floatingHearts.splice(i, 1); continue; }
-                        ht.x += (ht.vx + Math.sin(t * 2.8 + ht.sway) * 0.38) * (dt * 60);
-                        ht.y += ht.vy * (dt * 60);
-                        drawMiniHeart(ctx, ht.x, ht.y, ht.size * (0.8 + prog * 0.35), ht.color, Math.sin(prog * Math.PI) * 0.76);
-                    }
+                    fxCtx.restore();
                 };
 
                 const onMouseMove = (e) => {
                     flare.targetMouseX = (e.clientX / Math.max(1, window.innerWidth) - 0.5) * 2;
                     flare.targetMouseY = (e.clientY / Math.max(1, window.innerHeight) - 0.5) * 2;
                     const nowTs = performance.now();
-                    if (nowTs - lastTrailTs > 42) {
+                    if (nowTs - lastTrailTs > 46) {
                         lastTrailTs = nowTs;
                         const sRect = stage.getBoundingClientRect();
                         if (e.clientX >= sRect.left && e.clientX <= sRect.right && e.clientY >= sRect.top && e.clientY <= sRect.bottom) {
@@ -1611,7 +1836,7 @@
                     stage.removeEventListener('touchstart', onTouchStart);
                     stage.removeEventListener('touchend', onTouchEnd);
                 };
-            }, [leftLeaves, rightLeaves]);
+            }, []);
 
             return (
                 <div className="min-h-[100svh] w-full flex flex-col text-white">
@@ -1624,9 +1849,9 @@
                         </defs>
                     </svg>
 
-                    {/* ==================== FULLSCREEN EPIC HERO STAGE (100svh เลื่อนขึ้นลงลื่นไม่สะดุด) ==================== */}
+                    {/* ==================== FULLSCREEN XIANXIA PEACH BLOSSOM STAGE (100svh) ==================== */}
                     <section ref={heroStageRef} className="hero-atmosphere relative min-h-[100svh] w-full flex flex-col justify-between overflow-hidden">
-                        {/* Layer A (z-5): หมู่ดาวระยิบระยับ 11 ดวง + ดาวตกเฉียง 4 เส้น */}
+                        {/* Layer A (z-5): หมู่ดาวระยิบระยับ + ดาวตกสีทองมุก */}
                         <div className="absolute inset-0 pointer-events-none overflow-hidden z-[5]" aria-hidden="true">
                             <span className="twinkle-star top-[5%] left-[11%] w-[2px] h-[2px]" style={{ '--tw-dur': '3.8s', '--tw-del': '0.3s' }} />
                             <span className="twinkle-star top-[11%] left-[24%] w-[1.5px] h-[1.5px]" style={{ '--tw-dur': '4.6s', '--tw-del': '1.4s' }} />
@@ -1637,166 +1862,131 @@
                             <span className="twinkle-star top-[22%] left-[7%] w-[1.5px] h-[1.5px]" style={{ '--tw-dur': '5.5s', '--tw-del': '2.5s' }} />
                             <span className="twinkle-star top-[18%] left-[34%] w-[1.5px] h-[1.5px]" style={{ '--tw-dur': '3.9s', '--tw-del': '1.1s' }} />
                             <span className="twinkle-star top-[24%] left-[86%] w-[2px] h-[2px]" style={{ '--tw-dur': '4.4s', '--tw-del': '0.2s' }} />
-                            <span className="twinkle-star top-[16%] left-[54%] w-[1.5px] h-[1.5px]" style={{ '--tw-dur': '4.7s', '--tw-del': '2.9s' }} />
-                            <span className="twinkle-star top-[28%] left-[19%] w-[1.5px] h-[1.5px]" style={{ '--tw-dur': '5.0s', '--tw-del': '0.8s' }} />
 
-                            <span className="shooting-star top-[8%] left-[72%]" style={{ '--len': '155px', '--ang': '-31deg', '--m-dur': '7.4s', '--m-del': '0.5s', '--trail-col': 'rgba(186,230,253,0.62)' }} />
-                            <span className="shooting-star top-[28%] left-[90%]" style={{ '--len': '168px', '--ang': '-34deg', '--m-dur': '8.8s', '--m-del': '2.1s', '--trail-col': 'rgba(167,243,208,0.58)' }} />
-                            <span className="shooting-star top-[5%] left-[46%]" style={{ '--len': '130px', '--ang': '-28deg', '--m-dur': '10.2s', '--m-del': '4.5s', '--trail-col': 'rgba(240,171,252,0.52)' }} />
-                            <span className="shooting-star top-[17%] left-[84%]" style={{ '--len': '145px', '--ang': '-33deg', '--m-dur': '8.0s', '--m-del': '3.2s', '--trail-col': 'rgba(186,230,253,0.58)' }} />
+                            <span className="shooting-star top-[8%] left-[72%]" style={{ '--len': '155px', '--ang': '-31deg', '--m-dur': '7.8s', '--m-del': '0.5s', '--trail-col': 'rgba(254,240,178,0.62)' }} />
+                            <span className="shooting-star top-[26%] left-[90%]" style={{ '--len': '165px', '--ang': '-34deg', '--m-dur': '9.2s', '--m-del': '2.4s', '--trail-col': 'rgba(251,207,232,0.58)' }} />
+                            <span className="shooting-star top-[6%] left-[46%]" style={{ '--len': '130px', '--ang': '-28deg', '--m-dur': '10.6s', '--m-del': '4.8s', '--trail-col': 'rgba(167,243,208,0.52)' }} />
                         </div>
 
-                        {/* Layer A2 (z-8): ม่านแสงออโรราพลิ้วไหวเหนือขอบฟ้า (Radial นุ่มละมุน GPU-Only) */}
-                        <div className="absolute inset-0 pointer-events-none overflow-hidden z-[8]" aria-hidden="true">
+                        {/* Layer A2 (z-7): ม่านแสงออโรราหยก–ทอง–ท้อ */}
+                        <div className="absolute inset-0 pointer-events-none overflow-hidden z-[7]" aria-hidden="true">
                             <div className="aurora-curtain-primary absolute -top-[4%] -left-[12%] w-[124%] h-[62%]" />
                             <div className="aurora-curtain-secondary absolute top-[8%] -left-[8%] w-[116%] h-[54%]" />
                         </div>
 
-                        {/* Layer B (z-11): ชั้นเมฆนุ่มลอยผ่านและโอบซ้าย–ขวาด้านล่าง + หมอกขอบฟ้า */}
-                        <div className="absolute inset-0 pointer-events-none overflow-hidden z-[11]" aria-hidden="true">
-                            <svg width="0" height="0" className="absolute">
+                        {/* Layer B (z-9): ทิวเขาหมึกจีนแดนเซียน (Shan-Shui Ink-Wash Peaks โอบซ้าย–ขวา) */}
+                        <div className="absolute inset-x-0 bottom-[14%] h-[52%] pointer-events-none overflow-hidden z-[9]" aria-hidden="true">
+                            <svg viewBox="0 0 1440 420" preserveAspectRatio="none" className="w-full h-full">
                                 <defs>
-                                    <linearGradient id="idxCloudSilver" x1="0%" y1="0%" x2="0%" y2="100%">
-                                        <stop offset="0%" stopColor="#ffffff" stopOpacity="0.68" />
-                                        <stop offset="48%" stopColor="#e0f2fe" stopOpacity="0.34" />
-                                        <stop offset="100%" stopColor="#60a5fa" stopOpacity="0" />
+                                    <linearGradient id="shanFar" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" stopColor="#143261" stopOpacity="0.58" />
+                                        <stop offset="65%" stopColor="#1d4d88" stopOpacity="0.24" />
+                                        <stop offset="100%" stopColor="#4b89c4" stopOpacity="0" />
                                     </linearGradient>
-                                    <linearGradient id="idxCloudSoft" x1="0%" y1="0%" x2="0%" y2="100%">
-                                        <stop offset="0%" stopColor="#ffffff" stopOpacity="0.58" />
-                                        <stop offset="58%" stopColor="#bae6fd" stopOpacity="0.26" />
-                                        <stop offset="100%" stopColor="#93c5fd" stopOpacity="0" />
+                                    <linearGradient id="shanNear" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" stopColor="#091b3b" stopOpacity="0.78" />
+                                        <stop offset="68%" stopColor="#12366b" stopOpacity="0.32" />
+                                        <stop offset="100%" stopColor="#3572b0" stopOpacity="0" />
                                     </linearGradient>
                                 </defs>
+                                <path d="M-20 420 L-20 210 C60 170 120 112 195 142 C270 172 340 245 435 280 L540 420 Z" fill="url(#shanFar)" />
+                                <path d="M1460 420 L1460 198 C1365 156 1290 98 1210 138 C1130 178 1065 250 960 284 L860 420 Z" fill="url(#shanFar)" />
+                                <path d="M-20 420 L-20 264 C55 212 108 164 176 202 C240 238 295 292 380 326 L440 420 Z" fill="url(#shanNear)" stroke="rgba(186,230,253,0.16)" strokeWidth="1.2" />
+                                <path d="M1460 420 L1460 258 C1382 204 1322 158 1252 198 C1185 236 1125 294 1035 328 L975 420 Z" fill="url(#shanNear)" stroke="rgba(254,240,178,0.16)" strokeWidth="1.2" />
                             </svg>
-                            <div className="hero-cloud-drift top-[54%] w-[56vw] max-w-[660px] min-w-[260px] opacity-50" style={{ '--c-dur': '96s', '--c-del': '-54s' }}>
-                                <svg viewBox="0 0 480 160" className="w-full h-auto overflow-visible">
-                                    <path d="M36 128 C20 128 16 112 30 102 C40 94 58 92 72 96 C84 64 124 46 160 60 C186 24 248 18 286 48 C318 38 358 54 370 82 C398 78 426 90 434 108 C452 108 462 120 452 128 Z" fill="url(#idxCloudSilver)" />
-                                </svg>
-                            </div>
-                            <div className="hero-cloud-bank-l bottom-[8%] -left-[8%] w-[58vw] max-w-[640px] opacity-65">
-                                <svg viewBox="0 0 520 180" className="w-full h-auto overflow-visible">
-                                    <path d="M10 164 C10 126 42 104 82 108 C100 68 154 48 202 68 C236 32 308 26 354 60 C392 52 436 70 452 104 C484 104 510 124 510 164 Z" fill="url(#idxCloudSoft)" />
-                                </svg>
-                            </div>
-                            <div className="hero-cloud-bank-r bottom-[7%] -right-[8%] w-[60vw] max-w-[660px] opacity-65">
-                                <svg viewBox="0 0 540 185" className="w-full h-auto overflow-visible">
-                                    <path d="M24 168 C16 130 48 106 90 110 C112 72 166 56 214 74 C252 34 328 28 378 64 C418 54 468 72 486 108 C516 110 534 132 530 168 Z" fill="url(#idxCloudSilver)" />
-                                </svg>
-                            </div>
-                            <div className="hero-cloud-haze absolute inset-x-0 bottom-0 h-[34%]" />
                         </div>
 
-                        {/* Layer C (z-24): Unified Soft Ambient Canvas (แสงแอมเบียนเชื่อมกรอบซ้าย-ขวาขึ้นต้นไม้ + สุริยคราส & ลำแสงนุ่มฟุ้ง) */}
+                        {/* Layer C (z-12): จันทราหยกทอง + ลำแสงสวรรค์ + ทะเลหมอกฟุ้งเนื้อละเอียด Procedural fBm */}
+                        <canvas id="idx-mist-backdrop-canvas" ref={mistCanvasRef} aria-hidden="true" />
+
+                        {/* Layer C2 (z-14): แสงเงาภาพยนตร์ Chiaroscuro Vignette */}
+                        <div className="hero-vignette absolute inset-0 pointer-events-none z-[14]" aria-hidden="true" />
+
+                        {/* Layer E (z-24): แสงปราณแอมเบียนจากกรอบซ้าย–ขวาขึ้นสู่กิ่ง + ดอกท้อ 5 กลีบผลิบานสด + กลีบดอกลอยพริ้ว */}
                         <canvas id="idx-solar-flare-canvas" ref={flareCanvasRef} aria-hidden="true" />
 
-                        {/* Layer D (z-20): ต้นไม้มีชีวิต + กรอบกระจก Liquid Glass (วางคร่อมโคนต้นไม้ ไม่ทับลายน้ำราชวิถี) */}
+                        {/* Layer D (z-20): ต้นดอกท้อแดนเซียน + กรอบกระจก Liquid Glass + ลายน้ำราชวิถี */}
                         <main className="relative z-20 flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 flex flex-col items-center justify-end pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-6 pt-[calc(2.5rem+env(safe-area-inset-top,0px))] sm:pt-6">
                             <div className="relative w-full max-w-[1200px] flex flex-col items-center">
-                                {/* กล่องครอบต้นไม้ + กรอบกระจก Desktop */}
                                 <div className="relative w-full flex flex-col items-center select-none z-10">
+                                    {/* ต้นดอกท้อแดนเซียนทรงพู่กันจีน (ดอกท้อ 5 กลีบ 40 ช่อวาดและผลิบานสดบน Canvas ตรงแนว 8 กิ่งนี้เป๊ะ!) */}
                                     <div className="w-[min(112vw,440px)] sm:w-[660px] md:w-[min(90vw,86svh,860px)] lg:w-[min(88vw,90svh,960px)] xl:w-[min(86vw,92svh,1040px)] md:pb-6 lg:pb-7 pointer-events-none">
                                         <svg ref={treeSvgRef} viewBox="30 14 460 394" className="w-full h-auto overflow-visible" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <defs>
-                                                <linearGradient id="tTrunk" x1="170" y1="400" x2="350" y2="170" gradientUnits="userSpaceOnUse">
-                                                    <stop offset="0%" stopColor="#c064c9" /><stop offset="45%" stopColor="#7c7ce8" /><stop offset="100%" stopColor="#48b8d0" />
+                                                <linearGradient id="peachTrunk" x1="160" y1="400" x2="350" y2="120" gradientUnits="userSpaceOnUse">
+                                                    <stop offset="0%" stopColor="#3b264d" /><stop offset="48%" stopColor="#5a3868" /><stop offset="100%" stopColor="#7a4c7a" />
                                                 </linearGradient>
-                                                <linearGradient id="tLeft" x1="80" y1="240" x2="260" y2="60" gradientUnits="userSpaceOnUse">
-                                                    <stop offset="0%" stopColor="#b25cc4" /><stop offset="55%" stopColor="#9061d6" /><stop offset="100%" stopColor="#6084db" />
+                                                <linearGradient id="peachBarkRim" x1="160" y1="390" x2="340" y2="80" gradientUnits="userSpaceOnUse">
+                                                    <stop offset="0%" stopColor="#f9a8d4" stopOpacity="0.26" /><stop offset="55%" stopColor="#fde68a" stopOpacity="0.46" /><stop offset="100%" stopColor="#fbcfe8" stopOpacity="0.55" />
                                                 </linearGradient>
-                                                <linearGradient id="tRight" x1="260" y1="60" x2="450" y2="240" gradientUnits="userSpaceOnUse">
-                                                    <stop offset="0%" stopColor="#5da9d9" /><stop offset="55%" stopColor="#4cb8b0" /><stop offset="100%" stopColor="#64c79c" />
+                                                <linearGradient id="peachBranchL" x1="252" y1="240" x2="82" y2="70" gradientUnits="userSpaceOnUse">
+                                                    <stop offset="0%" stopColor="#5c3a6a" /><stop offset="60%" stopColor="#854e82" /><stop offset="100%" stopColor="#b9729e" />
                                                 </linearGradient>
-                                                <radialGradient id="auraPinkGrad" cx="50%" cy="50%" r="50%">
-                                                    <stop offset="0%" stopColor="#f5d0fe" stopOpacity="0.82" /><stop offset="45%" stopColor="#d946ef" stopOpacity="0.38" /><stop offset="100%" stopColor="#a855f7" stopOpacity="0" />
-                                                </radialGradient>
-                                                <radialGradient id="auraCyanGrad" cx="50%" cy="50%" r="50%">
-                                                    <stop offset="0%" stopColor="#ccfbf1" stopOpacity="0.82" /><stop offset="45%" stopColor="#2dd4bf" stopOpacity="0.38" /><stop offset="100%" stopColor="#38bdf8" stopOpacity="0" />
-                                                </radialGradient>
-                                                <radialGradient id="auraHeartGrad" cx="50%" cy="50%" r="50%">
-                                                    <stop offset="0%" stopColor="#fff1f2" stopOpacity="0.88" /><stop offset="48%" stopColor="#f472b6" stopOpacity="0.46" /><stop offset="100%" stopColor="#c084fc" stopOpacity="0" />
+                                                <linearGradient id="peachBranchR" x1="268" y1="240" x2="444" y2="60" gradientUnits="userSpaceOnUse">
+                                                    <stop offset="0%" stopColor="#573968" /><stop offset="60%" stopColor="#7c4e82" /><stop offset="100%" stopColor="#b0709c" />
+                                                </linearGradient>
+                                                <radialGradient id="peachHeartAura" cx="50%" cy="50%" r="50%">
+                                                    <stop offset="0%" stopColor="#fff1f5" stopOpacity="0.88" /><stop offset="48%" stopColor="#f472b6" stopOpacity="0.44" /><stop offset="100%" stopColor="#f472b6" stopOpacity="0" />
                                                 </radialGradient>
                                             </defs>
 
-                                            <g className="tree-living-root">
-                                                {/* ลำต้นและรากแก้วเรืองแสง (แสงแอมเบียนไหลเชื่อมต่อเนื่องด้วย Canvas ฟุ้งนุ่มไร้เส้นแข็ง) */}
-                                                <path d="M160 400 C212 378 246 334 252 258 C258 210 228 176 190 152" stroke="url(#tTrunk)" strokeWidth="8.5" strokeLinecap="round" opacity="0.9" />
-                                                <path d="M360 400 C308 378 272 334 266 258 C260 208 292 176 332 150" stroke="url(#tTrunk)" strokeWidth="8.5" strokeLinecap="round" opacity="0.9" />
-                                                <path d="M210 396 C240 356 276 312 264 250 C252 202 260 153 260 110" stroke="url(#tTrunk)" strokeWidth="7.2" strokeLinecap="round" opacity="0.84" />
-                                                <path d="M310 396 C278 356 242 310 256 246" stroke="#b66ad0" strokeWidth="5.8" strokeLinecap="round" opacity="0.74" />
+                                            {/* ลำต้นและรากต้นดอกท้อทรงพู่กันจีน + เส้น Rim Light จันทราบางๆ */}
+                                            <g strokeLinecap="round">
+                                                <path d="M164 402 C214 378 247 334 253 256 C258 208 228 176 190 150" stroke="url(#peachTrunk)" strokeWidth="10" opacity="0.94" />
+                                                <path d="M356 402 C306 378 271 334 266 256 C260 208 292 176 332 148" stroke="url(#peachTrunk)" strokeWidth="9.5" opacity="0.94" />
+                                                <path d="M214 398 C242 356 274 312 262 248 C252 200 260 150 260 106" stroke="url(#peachTrunk)" strokeWidth="7.8" opacity="0.9" />
+                                                <path d="M308 398 C278 356 244 310 256 246" stroke="#4d315e" strokeWidth="6" opacity="0.82" />
+                                                <path d="M170 398 C218 374 249 332 254 256 C258 210 230 178 192 152" stroke="url(#peachBarkRim)" strokeWidth="2.2" />
+                                                <path d="M350 398 C302 374 270 332 265 256 C260 210 290 178 330 150" stroke="url(#peachBarkRim)" strokeWidth="2.2" />
+                                            </g>
 
-                                                {/* กิ่งและใบไม้ฝั่งซ้าย (13 ใบ + ใบหัวใจ 2 ใบ) */}
-                                                <g className="branch-group-left">
-                                                    <g stroke="url(#tLeft)" strokeLinecap="round" opacity="0.9">
-                                                        <path d="M248 240 C200 223 148 230 104 250" strokeWidth="4.5" />
-                                                        <path d="M242 210 C188 186 140 183 96 196" strokeWidth="4.5" />
-                                                        <path d="M245 180 C202 143 162 126 128 132" strokeWidth="4" />
-                                                        <path d="M254 150 C228 110 206 84 184 72" strokeWidth="3.8" />
-                                                        <path d="M190 196 C166 170 152 154 146 140" strokeWidth="2.8" />
-                                                        <path d="M172 230 C148 250 132 264 118 272" strokeWidth="2.6" />
-                                                    </g>
-                                                    <g opacity="0.96">
-                                                        {leftLeaves.map((lf, idx) => {
-                                                            const dur = `${(3.6 + ((idx * 0.73) % 2.4)).toFixed(2)}s`;
-                                                            const del = `${(-((idx * 0.67) % 4.2)).toFixed(2)}s`;
-                                                            return (
-                                                                <g key={`ll-${idx}`}>
-                                                                    <circle cx={lf.cx} cy={lf.cy} r={(Math.max(lf.rx, lf.ry) * 1.75).toFixed(1)} fill="url(#auraPinkGrad)" className="leaf-aura-halo" style={{ '--dur': dur, '--del': del }} />
-                                                                    <g transform={`rotate(${lf.rot} ${lf.cx} ${lf.cy})`}>
-                                                                        <ellipse cx={lf.cx} cy={lf.cy} rx={lf.rx} ry={lf.ry} fill="#d06ee0" opacity="0.94" className="living-leaf" style={{ '--dur': dur, '--del': del, '--fl-rot': `${((idx % 2 === 0 ? 1 : -1) * (5 + (idx % 4) * 1.3)).toFixed(1)}deg` }} />
-                                                                    </g>
-                                                                </g>
-                                                            );
-                                                        })}
-                                                    </g>
-                                                    <g className="leaf-aura-halo" style={{ '--dur': '4.6s', '--del': '0.4s' }}><circle cx="132" cy="208" r="24" fill="url(#auraHeartGrad)" /></g>
-                                                    <g className="leaf-aura-halo" style={{ '--dur': '5.1s', '--del': '1.8s' }}><circle cx="172" cy="162" r="24" fill="url(#auraHeartGrad)" /></g>
-                                                    <g stroke="#f5d0fe" strokeWidth="1.9" fill="rgba(217,70,239,0.38)">
-                                                        <path className="heart-leaf-beat" style={{ '--h-del': '1.5s' }} d="M132 202 C128 196 118 198 120 206 C122 212 132 218 132 218 C132 218 142 212 144 206 C146 198 136 196 132 202 Z" />
-                                                        <path className="heart-leaf-beat" style={{ '--h-del': '2.1s' }} d="M172 156 C168 150 158 152 160 160 C162 166 172 172 172 172 C172 172 182 166 184 160 C186 152 176 150 172 156 Z" />
-                                                    </g>
-                                                </g>
+                                            {/* กิ่งดอกท้อ 4 แขนงฝั่งซ้าย */}
+                                            <g stroke="url(#peachBranchL)" strokeLinecap="round" opacity="0.94">
+                                                <path d="M248 240 C198 224 148 232 82 256" strokeWidth="4.8" />
+                                                <path d="M244 208 C190 184 138 182 76 204" strokeWidth="4.6" />
+                                                <path d="M246 178 C202 144 156 128 104 142" strokeWidth="4.1" />
+                                                <path d="M254 148 C228 108 198 78 162 68" strokeWidth="3.7" />
+                                                <path d="M190 194 C166 168 150 152 138 136" strokeWidth="2.6" />
+                                                <path d="M170 232 C146 250 128 264 110 274" strokeWidth="2.4" />
+                                            </g>
 
-                                                {/* กิ่งและใบไม้ฝั่งขวา (14 ใบ + ยอดใบไม้บนสุด) */}
-                                                <g className="branch-group-right">
-                                                    <g stroke="url(#tRight)" strokeLinecap="round" opacity="0.9">
-                                                        <path d="M272 240 C322 222 374 230 418 250" strokeWidth="4.5" />
-                                                        <path d="M276 210 C332 186 380 183 424 196" strokeWidth="4.5" />
-                                                        <path d="M274 180 C318 143 358 126 392 132" strokeWidth="4" />
-                                                        <path d="M266 150 C292 110 314 84 336 72" strokeWidth="3.8" />
-                                                        <path d="M260 118 L260 52" strokeWidth="3.4" />
-                                                        <path d="M332 196 C356 170 370 154 376 140" strokeWidth="2.8" />
-                                                        <path d="M348 230 C372 250 388 264 402 272" strokeWidth="2.6" />
-                                                    </g>
-                                                    <g opacity="0.96">
-                                                        {rightLeaves.map((lf, idx) => {
-                                                            const dur = `${(3.6 + ((idx * 0.73) % 2.4)).toFixed(2)}s`;
-                                                            const del = `${(-((idx * 0.67) % 4.2)).toFixed(2)}s`;
-                                                            return (
-                                                                <g key={`rl-${idx}`}>
-                                                                    <circle cx={lf.cx} cy={lf.cy} r={(Math.max(lf.rx, lf.ry) * 1.75).toFixed(1)} fill="url(#auraCyanGrad)" className="leaf-aura-halo" style={{ '--dur': dur, '--del': del }} />
-                                                                    <g transform={`rotate(${lf.rot} ${lf.cx} ${lf.cy})`}>
-                                                                        <ellipse cx={lf.cx} cy={lf.cy} rx={lf.rx} ry={lf.ry} fill="#5ed9d0" opacity="0.94" className="living-leaf" style={{ '--dur': dur, '--del': del, '--fl-rot': `${((idx % 2 === 0 ? 1 : -1) * (5 + (idx % 4) * 1.3)).toFixed(1)}deg` }} />
-                                                                    </g>
-                                                                </g>
-                                                            );
-                                                        })}
-                                                    </g>
-                                                </g>
+                                            {/* กิ่งดอกท้อ 4 แขนงฝั่งขวา + ยอดกลาง */}
+                                            <g stroke="url(#peachBranchR)" strokeLinecap="round" opacity="0.94">
+                                                <path d="M272 240 C322 224 374 232 438 256" strokeWidth="4.8" />
+                                                <path d="M276 208 C332 184 382 182 444 204" strokeWidth="4.6" />
+                                                <path d="M274 178 C318 144 364 128 416 142" strokeWidth="4.1" />
+                                                <path d="M262 162 C260 118 260 76 260 38" strokeWidth="3.6" />
+                                                <path d="M266 148 C294 108 320 82 354 70" strokeWidth="3.4" />
+                                                <path d="M332 194 C356 168 372 152 384 136" strokeWidth="2.6" />
+                                                <path d="M350 232 C374 250 392 264 410 274" strokeWidth="2.4" />
+                                            </g>
 
-                                                {/* วงแหวนโหนดคลาวด์ 6 จุด (ปรับเส้นให้นุ่มละมุน) */}
-                                                <g stroke="rgba(165, 243, 252, 0.72)" strokeWidth="1.7" fill="rgba(56,189,248,0.22)">
-                                                    <circle className="cloud-node-pulse" style={{ animationDelay: '0s' }} cx="298" cy="148" r="6" />
-                                                    <circle className="cloud-node-pulse" style={{ animationDelay: '0.8s' }} cx="338" cy="166" r="5" />
-                                                    <circle className="cloud-node-pulse" style={{ animationDelay: '1.5s' }} cx="352" cy="114" r="5.5" />
-                                                    <circle className="cloud-node-pulse" style={{ animationDelay: '0.4s' }} cx="242" cy="128" r="5" />
-                                                    <circle className="cloud-node-pulse" style={{ animationDelay: '1.9s' }} cx="204" cy="166" r="5.5" />
-                                                    <circle className="cloud-node-pulse" style={{ animationDelay: '1.1s' }} cx="318" cy="216" r="4.5" />
-                                                </g>
+                                            {/* ใบท้อสีหยกอ่อนแซมอย่างอ่อนช้อย */}
+                                            <g opacity="0.86">
+                                                {jadeLeaves.map((lf, idx) => (
+                                                    <g key={`jl-${idx}`} transform={`rotate(${lf.rot} ${lf.cx} ${lf.cy})`}>
+                                                        <ellipse
+                                                            cx={lf.cx} cy={lf.cy} rx={lf.rx} ry={lf.ry}
+                                                            fill={idx % 2 === 0 ? '#5eead4' : '#6ee7b7'}
+                                                            opacity="0.72"
+                                                            className="living-leaf"
+                                                            style={{ '--dur': `${(4.2 + (idx % 4) * 0.7).toFixed(1)}s`, '--del': `${(-idx * 0.45).toFixed(2)}s`, '--fl-rot': `${(idx % 2 === 0 ? 5 : -5)}deg` }}
+                                                        />
+                                                    </g>
+                                                ))}
+                                            </g>
+
+                                            {/* ดอกหัวใจแห่งการให้ชีวิต 2 ดวง */}
+                                            <circle cx="132" cy="208" r="22" fill="url(#peachHeartAura)" />
+                                            <circle cx="172" cy="162" r="22" fill="url(#peachHeartAura)" />
+                                            <g stroke="#fbcfe8" strokeWidth="1.9" fill="rgba(244,114,182,0.42)">
+                                                <path className="heart-leaf-beat" style={{ '--h-del': '1.2s' }} d="M132 202 C128 196 118 198 120 206 C122 212 132 218 132 218 C132 218 142 212 144 206 C146 198 136 196 132 202 Z" />
+                                                <path className="heart-leaf-beat" style={{ '--h-del': '2.1s' }} d="M172 156 C168 150 158 152 160 160 C162 166 172 172 172 172 C172 172 182 166 184 160 C186 152 176 150 172 156 Z" />
                                             </g>
                                         </svg>
                                     </div>
 
-                                    {/* Desktop Liquid Glass Chamber (ขอบกระจกนุ่มละมุน + แสงแอมเบียนเชื่อมซ้าย-ขวาขึ้นต้นไม้อัตโนมัติ) */}
+                                    {/* Desktop Liquid Glass Chamber */}
                                     <div
                                         id="idx-liquid-glass-stage"
                                         ref={glassStageRef}
@@ -1807,10 +1997,10 @@
                                         <svg viewBox="0 0 760 208" className="absolute inset-0 w-full h-full pointer-events-none" fill="none" preserveAspectRatio="none">
                                             <defs>
                                                 <linearGradient id="idxGlassRimStroke" x1="4" y1="4" x2="756" y2="204" gradientUnits="userSpaceOnUse">
-                                                    <stop offset="0%" stopColor="rgba(255,255,255,0.62)" />
-                                                    <stop offset="28%" stopColor="rgba(224,242,254,0.44)" />
-                                                    <stop offset="55%" stopColor="rgba(255,255,255,0.32)" />
-                                                    <stop offset="82%" stopColor="rgba(186,230,253,0.26)" />
+                                                    <stop offset="0%" stopColor="rgba(255,250,245,0.62)" />
+                                                    <stop offset="28%" stopColor="rgba(254,240,198,0.44)" />
+                                                    <stop offset="55%" stopColor="rgba(255,255,255,0.30)" />
+                                                    <stop offset="82%" stopColor="rgba(251,207,232,0.28)" />
                                                     <stop offset="100%" stopColor="rgba(255,255,255,0.56)" />
                                                 </linearGradient>
                                                 <linearGradient id="idxGlassTopHighlight" x1="20" y1="4" x2="420" y2="128" gradientUnits="userSpaceOnUse">
@@ -1828,8 +2018,8 @@
 
                                         <div className="relative z-10 w-full h-full">
                                             <div ref={textFitBoxRef} className="absolute top-[6%] left-[2.8%] w-[68.8%] flex flex-col justify-start items-start gap-1">
-                                                <span className="hero-eyebrow inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[10.5px] lg:text-[11.5px] font-medium text-cyan-50/95 shrink-0">
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 shadow-[0_0_8px_#6ee7b7]" />
+                                                <span className="hero-eyebrow inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[10.5px] lg:text-[11.5px] font-medium text-amber-50/95 shrink-0">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-pink-300 shadow-[0_0_8px_#f9a8d4]" />
                                                     e-Learning Organ Donation Training
                                                 </span>
                                                 <h1 ref={fitLine1Ref} className="hero-headline font-display text-white whitespace-nowrap block m-0" style={{ fontSize: '25px', lineHeight: 1.22 }}>
@@ -1859,11 +2049,11 @@
                                     </div>
                                 </div>
 
-                                {/* Mobile Liquid Glass Card (ผูก ref ให้แสงแอมเบียนไหลจากขอบซ้าย-ขวาขึ้นไปเชื่อมต้นไม้อัตโนมัติ ไม่มีเส้นแข็ง) */}
+                                {/* Mobile Liquid Glass Card */}
                                 <div ref={mobileGlassRef} className="md:hidden relative z-20 -mt-14 w-full max-w-[366px] liquid-glass-mobile rounded-[1.75rem] px-4 pt-4 pb-3 text-center space-y-2.5 overflow-hidden">
                                     <div className="relative z-10 flex justify-center">
-                                        <span className="hero-eyebrow inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[11px] font-medium text-cyan-50/95">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 shadow-[0_0_8px_#6ee7b7]" />
+                                        <span className="hero-eyebrow inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[11px] font-medium text-amber-50/95">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-pink-300 shadow-[0_0_8px_#f9a8d4]" />
                                             e-Learning Organ Donation Training
                                         </span>
                                     </div>
@@ -1893,7 +2083,7 @@
                                     </div>
                                 </div>
 
-                                {/* ลายน้ำโรงพยาบาลราชวิถี (อยู่ด้านล่างกรอบกระจกชัดเจน ไม่โดนทับ) */}
+                                {/* ลายน้ำโรงพยาบาลราชวิถี */}
                                 <div className="relative z-10 text-center mt-2.5 sm:mt-3 select-none">
                                     <p className="rajavithi-watermark font-display font-bold text-[26px] sm:text-4xl md:text-[42px] leading-none m-0">
                                         RAJAVITHI HOSPITAL
@@ -1963,39 +2153,15 @@
             }, [theme]);
             const toggleTheme = useCallback(() => setTheme(p => (p === 'dark' ? 'light' : 'dark')), []);
 
-            // PWA Install State (รองรับติดตั้งเป็นแอปบน Android/Chrome และคู่มือ 3 ขั้นตอนบน iOS Safari)
-            const [deferredInstallPrompt, setDeferredInstallPrompt] = useState(null);
-            const [isStandaloneApp, setIsStandaloneApp] = useState(() => {
+            // PWA Install States
+            const [deferredPrompt, setDeferredPrompt] = useState(null);
+            const [isStandalonePwa, setIsStandalonePwa] = useState(() => {
                 try {
-                    return Boolean(window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone);
+                    return Boolean(window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true);
                 } catch (_) { return false; }
             });
-            const [installModalOpen, setInstallModalOpen] = useState(false);
-
-            useEffect(() => {
-                try {
-                    const loc = window.location;
-                    const isRealHost = (loc.protocol === 'https:' || loc.hostname === 'localhost') && !/(googleusercontent|webcontainer|sandbox|srcdoc|blob:)/i.test(loc.href);
-                    if ('serviceWorker' in navigator && isRealHost) {
-                        navigator.serviceWorker.register('./sw.js').catch(() => {});
-                    }
-                } catch (_) {}
-
-                const onBeforeInstall = (e) => {
-                    e.preventDefault();
-                    setDeferredInstallPrompt(e);
-                };
-                const onAppInstalled = () => {
-                    setDeferredInstallPrompt(null);
-                    setIsStandaloneApp(true);
-                };
-                window.addEventListener('beforeinstallprompt', onBeforeInstall);
-                window.addEventListener('appinstalled', onAppInstalled);
-                return () => {
-                    window.removeEventListener('beforeinstallprompt', onBeforeInstall);
-                    window.removeEventListener('appinstalled', onAppInstalled);
-                };
-            }, []);
+            const [showPwaGuide, setShowPwaGuide] = useState(false);
+            const isIosDevice = useMemo(() => /iPad|iPhone|iPod/i.test(navigator.userAgent || ''), []);
 
             // Cloud & Course Config
             const [appsScriptUrl, setAppsScriptUrl] = useState(CONFIG.appsScriptUrl || '');
@@ -2005,7 +2171,7 @@
             const [lessons, setLessons] = useState(() => (Array.isArray(window.INITIAL_LESSONS) && window.INITIAL_LESSONS.length > 0 ? window.INITIAL_LESSONS : FALLBACK_LESSONS));
             const [quizList, setQuizList] = useState(() => parseRawQuizSafe(window.QUIZ_QUESTIONS_RAW));
 
-            // Session & Navigation State (ไม่เด้งกลับหน้าต้นไม้เมื่อกลับมาจาก AI Skill Lab)
+            // Session & Navigation State
             const [user, setUser] = useState(() => {
                 const saved = loadSessionTwoLayer();
                 if (saved?.id) return saved;
@@ -2055,7 +2221,7 @@
             const [editProfileOpen, setEditProfileOpen] = useState(false);
             const [editForm, setEditForm] = useState({ professionGroup: 'พยาบาล', name: '', nameEN: '', position: '', hospital: '', phone: '' });
 
-            // Studio AI Voice Guide State (ไร้ซับไตเติล)
+            // Studio AI Voice Guide State
             const [guideVoiceState, setGuideVoiceState] = useState({ activeKey: '', status: 'idle' });
             const [toast, setToast] = useState({ visible: false, text: '', type: 'success' });
 
@@ -2071,30 +2237,55 @@
                 setTimeout(() => setToast(p => ({ ...p, visible: false })), 3400);
             }, []);
 
-            const handleInstallAppClick = useCallback(async () => {
-                if (deferredInstallPrompt) {
-                    try {
-                        deferredInstallPrompt.prompt();
-                        const res = await deferredInstallPrompt.userChoice;
-                        setDeferredInstallPrompt(null);
-                        if (res && res.outcome === 'accepted') {
-                            showToast('กำลังติดตั้งแอป rjcloud.organ 2.0 ลงหน้าจอหลักค่ะ');
-                        }
-                        return;
-                    } catch (_) {}
-                }
-                setInstallModalOpen(true);
-            }, [deferredInstallPrompt, showToast]);
-
+            // Mount, Service Worker & PWA Install Prompt Registration
             useEffect(() => {
                 const el = document.getElementById('app-root');
                 if (el) el.dataset.mounted = 'true';
                 if (returnToDashboard && user?.id) {
                     try { window.history.replaceState({}, '', './index.html'); } catch (_) {}
                 }
-            }, []);
 
-            // Keynote Sync (เฉพาะตอนอยู่หน้าต้นไม้ landing)
+                try {
+                    const loc = window.location;
+                    const isRealHost = (loc.protocol === 'https:' || loc.hostname === 'localhost') && !/(googleusercontent|webcontainer|sandbox|srcdoc|blob:)/i.test(loc.href);
+                    if ('serviceWorker' in navigator && isRealHost) {
+                        navigator.serviceWorker.register('./sw.js').catch(() => {});
+                    }
+                } catch (_) {}
+
+                const onBeforeInstall = (e) => {
+                    e.preventDefault();
+                    setDeferredPrompt(e);
+                };
+                const onAppInstalled = () => {
+                    setDeferredPrompt(null);
+                    setIsStandalonePwa(true);
+                    showToast('ติดตั้งแอป rjcloud.organ 2.0 ลงบนหน้าจอหลักเรียบร้อยแล้วค่ะ');
+                };
+                window.addEventListener('beforeinstallprompt', onBeforeInstall);
+                window.addEventListener('appinstalled', onAppInstalled);
+                return () => {
+                    window.removeEventListener('beforeinstallprompt', onBeforeInstall);
+                    window.removeEventListener('appinstalled', onAppInstalled);
+                };
+            }, [showToast]);
+
+            const handleInstallPwaClick = async () => {
+                if (deferredPrompt && typeof deferredPrompt.prompt === 'function') {
+                    try {
+                        deferredPrompt.prompt();
+                        const choice = await deferredPrompt.userChoice;
+                        if (choice && choice.outcome === 'accepted') {
+                            setDeferredPrompt(null);
+                            showToast('กำลังติดตั้งแอป rjcloud.organ 2.0 ลงบนอุปกรณ์ของท่านค่ะ');
+                        }
+                        return;
+                    } catch (_) {}
+                }
+                setShowPwaGuide(true);
+            };
+
+            // Keynote Sync (เฉพาะตอนอยู่หน้าต้นดอกท้อ landing)
             useEffect(() => {
                 if (window.RJCLOUD_KEYNOTE && typeof window.RJCLOUD_KEYNOTE.sync === 'function') {
                     window.RJCLOUD_KEYNOTE.sync({ isLanding: screen === 'landing', isAdminPreview, appsScriptUrl });
@@ -2148,7 +2339,6 @@
                 [user, certTemplate, cneuConfig, liveConfig.hours]
             );
 
-            // Sync Certificate Form Fields when entering cert_confirm
             useEffect(() => {
                 if (screen === 'cert_confirm' && user) {
                     setCertNameTH(user.name || '');
@@ -2157,11 +2347,10 @@
                 }
             }, [screen, user]);
 
-            // Render Certificate Canvas when on certificate screen
             useEffect(() => {
                 if (screen !== 'certificate' || !certCanvasRef.current || !user) return;
                 const code = user.certificateCode || `${certTemplate.certPrefix || 'RJC-2027'}-DEMO01`;
-                const verifyUrl = typeof CERT.buildVerifyUrl === 'function' ? CERT.buildVerifyUrl(code, certTemplate.certPrefix) : `${window.location.origin}/verify.html?code=${encodeURIComponent(code)}`;
+                const verifyUrl = typeof CERT.buildVerifyUrl === 'function' ? CERT.buildVerifyUrl(code, certTemplate.certPrefix) : `https://learn.coerj.com/verify.html?code=${encodeURIComponent(code)}`;
                 const mergedTpl = {
                     ...certTemplate,
                     cneuActivityCode: cneuConfig.activityCode,
@@ -2178,7 +2367,7 @@
             }, [screen, user, certTemplate, cneuConfig, liveConfig.hours, userCreditMeta]);
 
             // ============================================================================
-            // 5. STUDIO 24kHz AI VOICE GUIDE ENGINE (AUTO-PLAY + MANUAL REPLAY • NO SUBTITLES)
+            // 5. STUDIO 24kHz AI VOICE GUIDE ENGINE (ZERO BROWSER VOICE)
             // ============================================================================
             const stopGuideVoice = useCallback(() => {
                 voiceSessionRef.current += 1;
@@ -2489,10 +2678,10 @@
                             hasSavedSession={Boolean(user?.id)}
                             onResumeDashboard={() => setScreen('dashboard')}
                             onStartAuth={() => setScreen('auth')}
-                            showInstallBtn={!isStandaloneApp}
-                            onInstallApp={handleInstallAppClick}
+                            showInstallBtn={!isStandalonePwa}
+                            onInstallApp={handleInstallPwaClick}
                         />
-                        <InstallAppModal open={installModalOpen} onClose={() => setInstallModalOpen(false)} />
+                        <PwaInstallGuideModal open={showPwaGuide} onClose={() => setShowPwaGuide(false)} isIos={isIosDevice} />
                         <ToastBanner toast={toast} />
                     </>
                 );
@@ -2523,10 +2712,9 @@
                                 </div>
                             </div>
                             <div className="flex items-center gap-1.5 shrink-0">
-                                {!isStandaloneApp && (
-                                    <button type="button" onClick={handleInstallAppClick} title="ติดตั้งเป็นแอปบนมือถือ (PWA)" className="spatial-soft px-2.5 py-1.5 rounded-xl text-xs font-bold text-accent-adaptive inline-flex items-center gap-1 shrink-0">
-                                        <Icon name="Smartphone" size={14} />
-                                        <span className="hidden md:inline">ติดตั้งแอป</span>
+                                {!isStandalonePwa && (
+                                    <button type="button" onClick={handleInstallPwaClick} title="ติดตั้งเป็นแอป (PWA)" className="spatial-soft px-2.5 py-2 rounded-xl text-xs font-bold text-accent-adaptive inline-flex items-center gap-1 shrink-0">
+                                        <Icon name="Smartphone" size={14} /> <span className="hidden md:inline">ติดตั้งแอป</span>
                                     </button>
                                 )}
                                 {currentStepVoiceGuide && (
@@ -2609,7 +2797,6 @@
                                             })}
                                         </div>
 
-                                        {/* เงื่อนไขสำคัญ: แสดงกล่อง CNEU เฉพาะเมื่อเลือก "พยาบาล" เท่านั้น (แพทย์/สหวิชาชีพไม่แสดงข้อความ CNEU ใดๆ) */}
                                         {authProfile.professionGroup === 'พยาบาล' && (cneuConfig.activityCode || cneuConfig.cneuCredits) && (
                                             <div className="p-3.5 rounded-2xl bg-aurora-500/15 border border-aurora-400/50 space-y-1">
                                                 <p className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">✓ สิทธิ์รับหน่วยคะแนนการศึกษาต่อเนื่องทางการพยาบาล (CNEU • สภาการพยาบาล)</p>
@@ -2682,7 +2869,6 @@
                     {/* ==================== SCREEN: MAIN DASHBOARD ==================== */}
                     {screen === 'dashboard' && user && (
                         <main className="no-print-letter relative z-10 max-w-6xl w-full mx-auto px-3.5 sm:px-6 py-5 space-y-5 flex-1">
-                            {/* 5-Step Progress Tracker */}
                             <section className="spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3.5">
                                 <div className="flex flex-wrap items-center justify-between gap-2">
                                     <div>
@@ -2916,31 +3102,4 @@
                                     <p style={{ fontSize: '13px', margin: 0 }}>{cneuConfig.courseName}</p>
                                 </div>
                                 <p style={{ fontSize: '14px', lineHeight: 1.9 }}>
-                                    หนังสือฉบับนี้ขอรับรองว่า <b>{user.name}</b> ({userCreditMeta.professionGroup}) {userCreditMeta.licenseLabelTH}: <b>{user.license}</b> สังกัด <b>{user.hospital}</b> ได้ผ่านการอบรมและประเมินผลตามเกณฑ์มาตรฐานหลักสูตรประจำปี 2027 (ผ่านเกณฑ์ชั่วโมงอบรม, AI Skill Lab 3D และ Post-test ≥ 80%) เป็นที่เรียบร้อยแล้ว
-                                </p>
-                                <p style={{ fontSize: '14px', fontWeight: 700, color: userCreditMeta.isNurseCneu ? '#047857' : '#0369a1', margin: '14px 0' }}>
-                                    การรับรอง: {userCreditMeta.lineTextTH} • รหัสอ้างอิงประกาศนียบัตร: {user.certificateCode}
-                                </p>
-                                <p style={{ fontSize: '13px', marginTop: '24px' }}>ออกให้ ณ วันที่ {formatThaiDateSafe(user.certificateIssuedAt)}</p>
-                                <div style={{ marginTop: '48px', textAlign: 'right', paddingRight: '24px', fontSize: '13px' }}>
-                                    <p>ลงชื่อ .......................................................</p>
-                                    <p style={{ fontWeight: 700 }}>({certTemplate.signerName})</p>
-                                    <p>{certTemplate.signerPosition}</p>
-                                </div>
-                            </article>
-                        </>
-                    )}
-
-                    <InstallAppModal open={installModalOpen} onClose={() => setInstallModalOpen(false)} />
-                    <ToastBanner toast={toast} />
-                </div>
-            );
-        }
-
-        const root = createRoot(document.getElementById('app-root'));
-        root.render(<AppErrorBoundary><LearnerApp /></AppErrorBoundary>);
-    </script>
-    <!-- โหลด Babel ท้ายสุดหลังสคริปต์ทั้งหมด เพื่อให้แน่ใจว่าโค้ดครบ 100% ก่อนคอมไพล์ -->
-    <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
-</body>
-</html>
+                                    หนังสือฉบับนี้ขอรับรองว่า <b>{user.name}</b> ({userCreditMeta.professionGroup}) {userCreditMeta.licenseLabelTH}: <b>{user.license}</b> สังกัด
