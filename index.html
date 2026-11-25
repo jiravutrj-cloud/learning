@@ -44,6 +44,11 @@
               const s = document.createElement('script');
               s.src = src;
               s.async = false;
+              if (src.indexOf('keynote-launch.js') !== -1) {
+                s.onload = function () {
+                  try { window.dispatchEvent(new Event('rjcloud-keynote-ready')); } catch (_) {}
+                };
+              }
               s.onerror = function () {};
               document.head.appendChild(s);
             });
