@@ -1,46 +1,3 @@
-
-Gemini
-แชทใหม่
-คลัง
-กำหนดเวลาแล้ว
-ปรับแต่ง
-วิดีโอ
-Notebook ใหม่
-rjcloud.organ 2.0
-พัฒนาระบบ E-Learning ต่อ
-การสนทนากับ Gemini
-รับทราบบทบาทและบริบทของโปรเจกต์ rjcloud.organ 2.0 ครบถ้วนทุกจุดแล้วค่ะ ยินดีมากที่ได้มาลุยงานต่อด้วยกันในแชทใหม่ที่เบาและลื่นขึ้นนะคะ 🌸✨
-
-ขอทวนประเด็นสำคัญที่ปักหมุดไว้ตรงกันก่อนเริ่มงานค่ะ:
-
-สถาปัตยกรรมและเสียงพากย์: Single-file HTML + React 18 บน GitHub Pages (Zero-Build), Firebase 11 (rj-cloud-organ), GAS Gateway พร้อมเสียงสตูดิโอ 24kHz จาก Gemini TTS เท่านั้น (ไม่ใช้เสียงหุ่นยนต์ของเบราว์เซอร์)
-
-ดีไซน์และฟีเจอร์หลัก: คงหน้าแรกต้นดอกท้อแดนเซียน + ม่านเปิดตัว Welcome, ระบบเข้าสู่ระบบ 3 ขั้นตอนเดิม, ธีม Adaptive Bento Grid สลับโหมดมืด/สว่าง, ปุ่ม PDF และกล่อง AI สรุป 1 นาทีทุกบทเรียน รวมถึง AI Skill Lab อนุภาคอนิเมะ 2,800 ดวง
-
-กฎคลินิกและ PDPA: คัดกรองและแสดง CNEU เฉพาะกลุ่มวิชาชีพพยาบาล เท่านั้น ส่วน executive.html และ verify.html ยึดหลัก Zero-PII และโหมดประหยัดโควต้า Eco 1-Read
-
-กติกาการทำงาน: แก้ทีละ 1 ไฟล์ ส่งโค้ดฉบับสมบูรณ์ครบทุกบรรทัดแบบไม่ละโค้ด และเช็กความสะอาดของไฟล์ให้พร้อมอัปโหลดขึ้น GitHub Pages ทันที   
-code_artifact.md
-
-สำหรับ งานด่วนที่ 1 เรื่อง Race Condition ของ keynote-launch.js ใน index.html ที่ทำให้หน้า Welcome หายตอนเข้าเว็บครั้งแรก (โดยต้องแสดงเฉพาะตอนอยู่ screen === 'landing' และไม่มี ?return=dashboard หรือ ?license=) พร้อมลุยช่วยไล่เช็กและแก้ให้ชัวร์ 100% เลยค่ะ   
-code_artifact.md
-
-ส่งไฟล์ index.html (และหากสะดวก แนบ keynote-launch.js มาดูจังหวะเรียก window.RJCLOUD_KEYNOTE.sync(...) คู่กันด้วยก็ได้นะคะ) มาได้เลยค่ะ เดี๋ยวช่วยจัดการให้เรียบร้อยค่ะ 💻🌿
-
-ตรวจสอบทั้งไฟล์ index.html และ keynote-launch.js เรียบร้อยแล้วค่ะ เจอสาเหตุชัดเลยค่ะ 🎯
-
-ใน index.html เดิม สคริปต์ ./keynote-launch.js ถูกต่อคิวโหลดเป็นไฟล์สุดท้ายด้วย async = false ทำให้ต้องรอไฟล์อื่น (data.js, hero-peach-engine.js ฯลฯ) โหลดจบก่อน ระหว่างนั้น React เรนเดอร์เสร็จไปแล้วและรัน useEffect เช็ก window.RJCLOUD_KEYNOTE ไม่เจอ จึงข้ามคำสั่งเปิดม่าน Welcome ไปเลยค่ะ
-
-สรุปจุดที่ปรับแก้ใน index.html รอบนี้ค่ะ
-ปลดล็อกคิวโหลด keynote-launch.js ใน <head>: เปลี่ยนเฉพาะ ./keynote-launch.js ให้โหลดแบบ async = true (เนื่องจากไฟล์นี้ทำงานอิสระได้ทันทีไม่ต้องรอไฟล์อื่น) พร้อมติด id="rjcloud-keynote-script" และส่งสัญญาณ rjcloud:keynote-ready ทันทีใน onload
-
-ดักจับการพร้อมใช้งานแบบ 3 ชั้นใน useEffect: หาก React เรนเดอร์เสร็จก่อนสคริปต์โหลดจบ ระบบจะรอรับทั้งเหตุการณ์ rjcloud:keynote-ready, script.onload และมี Polling สำรองทุก 100 มิลลิวินาที (หยุดอัตโนมัติทันทีที่ซิงค์สำเร็จและเคลียร์ memory เรียบร้อยเมื่อเปลี่ยนหน้า)
-
-คัดกรองเงื่อนไขการแสดงหน้า Welcome แม่นยำ 100%: แสดงเฉพาะตอนอยู่ screen === 'landing' และไม่ใช่ ?return=dashboard, ?license= หรือโหมด ?admin_preview= ค่ะ
-
-ด้านล่างเป็นโค้ด index.html ฉบับสมบูรณ์ครบทุกบรรทัด พร้อมนำไปอัปโหลดขึ้น GitHub Pages ได้ทันทีค่ะ 🌸💻
-
-HTML
 <!DOCTYPE html>
 <html lang="th" data-theme="dark">
 <head>
@@ -253,11 +210,605 @@ HTML
         transform: translateY(-1.5px);
       }
       .landing-install-pill {
-        background: linear-gradient(135deg, rgba(16, 185, 129, 0.28) 0%, rgba(
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.28) 0%, rgba(14, 165, 233, 0.30) 100%);
+        border: 1px solid rgba(110, 231, 183, 0.56);
+        color: #ecfdf5 !important;
+        box-shadow: 0 12px 28px -10px rgba(16, 185, 129, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+        transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+        cursor: pointer;
+      }
+      .landing-install-pill:hover {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.44) 0%, rgba(14, 165, 233, 0.46) 100%);
+        border-color: rgba(167, 243, 208, 0.85);
+        transform: translateY(-1.5px);
+      }
 
+      /* ปุ่ม Pill พร้อมแสงสะท้อนเนื้อนุ่ม GPU-accelerated */
+      .rjc2-pill-btn {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(95deg, #d7fbe6 0%, #c6f3f9 48%, #b3c8ff 100%);
+        color: #050b16 !important;
+        box-shadow: 0 10px 28px -6px rgba(134, 239, 172, 0.48), 0 0 0 1px rgba(255, 255, 255, 0.78) inset;
+        transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      .rjc2-pill-btn::after {
+        content: '';
+        position: absolute;
+        top: -20%;
+        left: 0;
+        width: 48%;
+        height: 140%;
+        background: linear-gradient(105deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.55) 50%, rgba(255, 255, 255, 0) 100%);
+        pointer-events: none;
+        will-change: transform, opacity;
+        animation: btnSheenSweep 8.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+      }
+      .rjc2-pill-btn:hover {
+        transform: translateY(-1.5px) scale(1.02);
+        box-shadow: 0 14px 34px -6px rgba(147, 197, 253, 0.7), 0 0 22px rgba(187, 247, 208, 0.55), 0 0 0 1.5px rgba(255, 255, 255, 0.92) inset;
+      }
+      .rjc2-pill-btn:active { transform: scale(0.97); }
 
+      .text-primary-adaptive { color: var(--text-main); }
+      .text-secondary-adaptive { color: var(--text-secondary); }
+      .text-muted-adaptive { color: var(--text-muted); }
+      .text-accent-adaptive { color: var(--accent-text); }
+      .text-prism-adaptive { color: var(--accent-prism); }
+      html[data-theme="dark"] select option { background-color: #061229; color: #f8fafc; }
 
+      /* ============================================================================
+       * 2. XIANXIA BLOCKBUSTER NIGHT ATMOSPHERE, LIQUID GLASS & WATER TEXT (60FPS)
+       * ============================================================================ */
+      .hero-atmosphere {
+        isolation: isolate;
+        contain: layout paint;
+        background: linear-gradient(
+          180deg,
+          #01030a 0%,
+          #030816 17%,
+          #06142d 36%,
+          #0b244a 55%,
+          #103363 73%,
+          #092044 84%,
+          #05132b 93%,
+          #030b1c 100%
+        );
+      }
+      .hero-vignette {
+        background:
+          radial-gradient(ellipse 76% 64% at 48% 40%, rgba(0, 0, 0, 0) 40%, rgba(1, 3, 12, 0.58) 100%),
+          linear-gradient(180deg, rgba(1, 3, 10, 0.45) 0%, rgba(1, 3, 10, 0) 18%, rgba(1, 3, 10, 0) 88%, rgba(2, 7, 18, 0.42) 100%);
+      }
+      .lower-landing-bg {
+        background: linear-gradient(180deg, #030b1c 0%, #041026 24%, #030b1e 60%, #020612 100%);
+      }
 
-Gemini เป็น AI และอาจทำผิดพลาดได้
+      .liquid-glass-backdrop {
+        clip-path: url(#idxLiquidGlassClipNorm);
+        -webkit-clip-path: url(#idxLiquidGlassClipNorm);
+        background: radial-gradient(
+          circle at var(--gx, 32%) var(--gy, 28%),
+          rgba(255, 250, 244, 0.16) 0%,
+          rgba(206, 228, 255, 0.09) 42%,
+          rgba(10, 34, 84, 0.34) 78%,
+          rgba(6, 20, 54, 0.24) 100%
+        );
+        backdrop-filter: blur(8px) saturate(140%) brightness(1.04);
+        -webkit-backdrop-filter: blur(8px) saturate(140%) brightness(1.04);
+        transition: background 0.25s ease;
+      }
+      .liquid-glass-mobile {
+        background: linear-gradient(155deg, rgba(11, 38, 96, 0.72) 0%, rgba(9, 32, 82, 0.68) 52%, rgba(15, 44, 102, 0.78) 100%);
+        border: 1px solid rgba(254, 243, 235, 0.36);
+        box-shadow: 0 22px 46px -14px rgba(0, 10, 36, 0.56), inset 0 1px 1px rgba(255, 255, 255, 0.38), inset 0 0 28px rgba(249, 168, 212, 0.12);
+        transform: translateZ(0);
+      }
+      #idx-liquid-glass-stage { container-type: inline-size; }
 
-Validating startup initialization scenarios and script rendering integrity
+      .hero-eyebrow {
+        letter-spacing: 0.045em;
+        background: rgba(255, 255, 255, 0.11);
+        border: 1px solid rgba(254, 240, 215, 0.34);
+        box-shadow: 0 4px 16px rgba(0, 14, 44, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        text-shadow: 0 1px 8px rgba(0, 12, 42, 0.6);
+      }
+      .hero-headline {
+        font-weight: 500;
+        letter-spacing: -0.015em;
+        text-shadow: 0 2px 14px rgba(0, 8, 32, 0.9), 0 1px 4px rgba(0, 10, 38, 0.8), 0 0 26px rgba(253, 224, 200, 0.22);
+      }
+      .hero-year-highlight {
+        font-weight: 700;
+        letter-spacing: -0.015em;
+        background: linear-gradient(95deg, #ffffff 0%, #fffbeb 42%, #fde68a 74%, #fbcfe8 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        padding-top: 0.04em;
+        padding-bottom: 0.04em;
+        filter: drop-shadow(0 3px 14px rgba(0, 10, 40, 0.85)) drop-shadow(0 0 22px rgba(253, 224, 71, 0.34));
+      }
+      .beta-glow {
+        font-weight: 300;
+        color: #fffce0;
+        letter-spacing: 0.015em;
+        text-shadow: 0 0 10px rgba(254, 249, 195, 0.82), 0 0 24px rgba(253, 224, 71, 0.4), 0 0 42px rgba(250, 204, 21, 0.22);
+      }
+
+      /* ข้อความ RAJAVITHI HOSPITAL & COE แบบเนื้อน้ำเคลื่อนไหวอัลต้าสมูท (Seamless GPU Loop) */
+      .water-title-wrap {
+        width: min(94vw, 680px);
+        filter: drop-shadow(0 2px 10px rgba(56, 189, 248, 0.22));
+      }
+      .water-wave-primary { will-change: transform; animation: waterFlowLeft380 10.5s linear infinite; }
+      .water-wave-secondary { will-change: transform; animation: waterFlowRight260 14.5s linear infinite; }
+      .water-wave-sub { will-change: transform; animation: waterFlowLeft240 9.2s linear infinite; }
+      .water-caustic-band { will-change: transform, opacity; animation: waterCausticGlide 11s ease-in-out infinite; }
+      .water-reflect-layer {
+        transform-box: fill-box;
+        transform-origin: center top;
+        will-change: transform, opacity;
+        animation: waterReflectSway 7.2s ease-in-out infinite;
+      }
+
+      /* ============================================================================
+       * 3. GPU ANIMATIONS & LAYER STACKING
+       * ============================================================================ */
+      @keyframes leafFlutterOrganic {
+        0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.78; }
+        45% { transform: rotate(var(--fl-rot, 5deg)) scale(1.06); opacity: 0.96; }
+      }
+      @keyframes twinkleStar {
+        0%, 100% { opacity: 0.16; transform: scale(0.85); }
+        50% { opacity: 0.88; transform: scale(1.24); }
+      }
+      @keyframes meteorStreak {
+        0% { opacity: 0; transform: rotate(var(--ang, -32deg)) translateX(130px) scaleX(0.35); }
+        5% { opacity: 0.78; }
+        18% { opacity: 0.64; transform: rotate(var(--ang, -32deg)) translateX(-380px) scaleX(1.08); }
+        28%, 100% { opacity: 0; transform: rotate(var(--ang, -32deg)) translateX(-640px) scaleX(0.55); }
+      }
+      @keyframes auroraCurtainWave {
+        0%, 100% { transform: translate3d(-3%, 0, 0) scaleY(1); opacity: 0.40; }
+        45% { transform: translate3d(3%, -2%, 0) scaleY(1.06); opacity: 0.64; }
+      }
+      @keyframes auroraCurtainAlt {
+        0%, 100% { transform: translate3d(3%, 0, 0) scaleY(1.02); opacity: 0.32; }
+        50% { transform: translate3d(-4%, -2%, 0) scaleY(0.94); opacity: 0.54; }
+      }
+      @keyframes btnSheenSweep {
+        0%, 66% { transform: translate3d(-150%, 0, 0) skewX(-22deg); opacity: 0; }
+        74% { opacity: 0.85; }
+        94% { transform: translate3d(260%, 0, 0) skewX(-22deg); opacity: 0.7; }
+        100% { transform: translate3d(270%, 0, 0) skewX(-22deg); opacity: 0; }
+      }
+      @keyframes waterFlowLeft380 { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-380px, 0, 0); } }
+      @keyframes waterFlowRight260 { 0% { transform: translate3d(-260px, 0, 0); } 100% { transform: translate3d(0, 0, 0); } }
+      @keyframes waterFlowLeft240 { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-240px, 0, 0); } }
+      @keyframes waterCausticGlide {
+        0%, 100% { transform: translate3d(-240px, 0, 0); opacity: 0.28; }
+        50% { transform: translate3d(240px, 0, 0); opacity: 0.62; }
+      }
+      @keyframes waterReflectSway {
+        0%, 100% { transform: translate3d(-3px, 0, 0) scaleY(-0.46) skewX(-3deg); opacity: 0.26; }
+        50% { transform: translate3d(3px, 0.8px, 0) scaleY(-0.50) skewX(3deg); opacity: 0.36; }
+      }
+      @keyframes rjcAmbientRun { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+      @keyframes rjcWaveBar { 0%, 100% { transform: scaleY(0.28); opacity: 0.65; } 50% { transform: scaleY(1); opacity: 1; } }
+      @keyframes appSpin { to { transform: rotate(360deg); } }
+
+      .living-leaf { transform-box: fill-box; transform-origin: center; animation: leafFlutterOrganic var(--dur, 5.2s) ease-in-out infinite; animation-delay: var(--del, 0s); }
+      .aurora-curtain-primary {
+        background:
+          radial-gradient(ellipse 52% 80% at 24% 52%, rgba(45, 212, 191, 0.18) 0%, rgba(56, 189, 248, 0.09) 50%, rgba(0, 0, 0, 0) 78%),
+          radial-gradient(ellipse 52% 74% at 76% 48%, rgba(249, 168, 212, 0.15) 0%, rgba(168, 85, 247, 0.10) 52%, rgba(0, 0, 0, 0) 80%);
+        will-change: transform, opacity;
+        animation: auroraCurtainWave 18s ease-in-out infinite;
+      }
+      .aurora-curtain-secondary {
+        background:
+          radial-gradient(ellipse 54% 70% at 50% 38%, rgba(254, 240, 178, 0.16) 0%, rgba(94, 234, 212, 0.10) 46%, rgba(0, 0, 0, 0) 76%),
+          radial-gradient(ellipse 40% 66% at 82% 58%, rgba(244, 114, 182, 0.10) 0%, rgba(0, 0, 0, 0) 72%);
+        will-change: transform, opacity;
+        animation: auroraCurtainAlt 22s ease-in-out infinite;
+      }
+      .twinkle-star {
+        position: absolute; border-radius: 9999px; background: rgba(255, 250, 240, 0.9);
+        box-shadow: 0 0 8px 1px rgba(254, 240, 178, 0.45);
+        animation: twinkleStar var(--tw-dur, 4.4s) ease-in-out infinite;
+        animation-delay: var(--tw-del, 0s);
+      }
+      .shooting-star {
+        position: absolute; width: var(--len, 145px); height: 1.5px; border-radius: 9999px; opacity: 0;
+        background: linear-gradient(90deg, rgba(255, 252, 235, 0.68) 0%, var(--trail-col, rgba(254, 240, 178, 0.42)) 32%, rgba(249, 168, 212, 0.12) 68%, rgba(255, 255, 255, 0) 100%);
+        animation: meteorStreak var(--m-dur, 8.6s) cubic-bezier(0.2, 0.6, 0.35, 1) infinite;
+        animation-delay: var(--m-del, 0s);
+        will-change: transform, opacity;
+      }
+      .shooting-star::before {
+        content: ''; position: absolute; left: -2px; top: 50%; width: 4px; height: 4px; transform: translateY(-50%);
+        border-radius: 9999px; background: rgba(255, 254, 244, 0.84);
+        box-shadow: 0 0 10px 3px rgba(254, 240, 178, 0.52);
+      }
+
+      /* z-12: จันทรา + นกกระเรียน + โคมลอย + ทิวเขา 4 ระยะ AI Hologram + หมอกเย็น + ผิวน้ำทะเลสาบกระจก */
+      #idx-mist-backdrop-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 12; transform: translateZ(0); }
+      /* z-18: อยู่หน้ากิ่งไม้ (z-15) แต่หลังกรอบกระจก (z-25) -> แสงแอมเบียน + พุ่มดอกท้อใหญ่เต็มต้น + ฝนกลีบดอกท้อ */
+      #idx-solar-flare-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 18; transform: translateZ(0); }
+
+      .rjc-ambient-bar {
+        height: 4px; width: 100%;
+        background: linear-gradient(90deg, #6ee7b7, #38bdf8, #818cf8, #f0abfc, #fde68a, #6ee7b7);
+        background-size: 300% 100%;
+        animation: rjcAmbientRun 2s linear infinite;
+        box-shadow: 0 0 18px rgba(56, 189, 248, 0.85);
+      }
+      .rjc-wave-eq { display: inline-flex; align-items: center; gap: 2.5px; height: 13px; }
+      .rjc-wave-eq span { width: 2.5px; height: 100%; border-radius: 9999px; background: linear-gradient(180deg, #fde68a, #6ee7b7, #38bdf8); animation: rjcWaveBar 0.82s ease-in-out infinite; }
+      .rjc-wave-eq span:nth-child(2) { animation-delay: 0.14s; }
+      .rjc-wave-eq span:nth-child(3) { animation-delay: 0.28s; }
+
+      .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+      .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(147, 197, 253, 0.36); border-radius: 999px; }
+
+      /* พิมพ์หนังสือรับรองรายบุคคล A4 */
+      #individual-cert-letter { display: none; }
+      @media print {
+        body.printing-cneu-letter .no-print-letter { display: none !important; }
+        body.printing-cneu-letter #individual-cert-letter { display: block !important; background: #ffffff !important; color: #0f172a !important; padding: 12mm !important; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .living-leaf, .shooting-star, .aurora-curtain-primary, .aurora-curtain-secondary,
+        .rjc2-pill-btn::after, .water-wave-primary, .water-wave-secondary,
+        .water-wave-sub, .water-caustic-band, .water-reflect-layer {
+          animation: none !important;
+        }
+      }
+    </style>
+
+    <!-- ESM Import Map (React 18, Lucide Icons, Firebase 11) -->
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@18.2.0",
+        "react-dom": "https://esm.sh/react-dom@18.2.0",
+        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+        "lucide-react": "https://esm.sh/lucide-react@0.344.0?external=react",
+        "firebase/app": "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"
+      }
+    }
+    </script>
+</head>
+<body>
+    <!-- หน้าจอโหลดเริ่มต้น -->
+    <div id="app-root">
+        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#01030a;color:#f8fafc;font-family:-apple-system,'Anuphan','Prompt',sans-serif;gap:14px;padding:24px;text-align:center;">
+            <div style="width:46px;height:46px;border:3px solid rgba(251,207,232,0.22);border-top-color:#f9a8d4;border-right-color:#fde68a;border-radius:9999px;animation:appSpin 0.85s linear infinite;"></div>
+            <div style="font-weight:800;font-size:17px;">กำลังเปิดแพลตฟอร์ม rjcloud.organ 2.0...</div>
+            <div style="font-size:12px;color:#93b4d8;">Organ Transplantation Center of Rajavithi Hospital • Cloud AI</div>
+        </div>
+    </div>
+
+    <!-- Global Error Guard -->
+    <script>
+      window.addEventListener('error', function (ev) {
+        const src = String(ev.filename || (ev.target && ev.target.src) || '');
+        if (/(data|learning-core|cert-engine|hero-peach-engine|keynote-launch)\.js|styles\.css/i.test(src)) return;
+        const root = document.getElementById('app-root');
+        if (root && !root.dataset.mounted && ev.message) {
+          const safeMsg = String(ev.message || 'Unknown error').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          root.innerHTML =
+            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#020612;color:#f8fafc;font-family:Sarabun,sans-serif;">' +
+            '<div style="max-width:440px;width:100%;background:#061229;border:1px solid rgba(244,63,94,0.4);border-radius:24px;padding:24px;text-align:center;">' +
+            '<h2 style="color:#fda4af;font-weight:700;margin:0 0 8px;">ไม่สามารถเปิดระบบได้ชั่วคราว</h2>' +
+            '<p style="font-size:13px;color:#dbeafe;margin:0 0 16px;">' + safeMsg + '</p>' +
+            '<button onclick="window.location.reload()" style="padding:12px 24px;border:none;border-radius:14px;background:#34d399;color:#020612;font-weight:700;cursor:pointer;">โหลดหน้าใหม่</button>' +
+            '</div></div>';
+        }
+      });
+    </script>
+
+    <script type="text/babel" data-type="module" data-presets="react">
+        import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+        import { createRoot } from 'react-dom/client';
+        import * as LucideIcons from 'lucide-react';
+        import { initializeApp, getApps, getApp } from 'firebase/app';
+        import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
+
+        // ============================================================================
+        // 1. CONFIGURATION, DEFAULTS, PROFESSION-AWARE HELPERS & SESSION STORAGE
+        // ============================================================================
+        const CORE = window['RJCLOUD_CORE'] || {};
+        const CERT = window['RJCLOUD_CERT'] || {};
+        const STORAGE_KEY = 'rjcloud_organ_state_v2027';
+        const SESSION_BACKUP_KEY = 'rjcloud_active_session_v2027';
+
+        const BUILTIN_CONFIG = {
+            appName: 'rjcloud.organ',
+            appId: 'rjcloud-organ-2027',
+            contactEmail: 'rjcloud.organ@gmail.com',
+            theme: { defaultMode: 'dark', storageKey: 'rjcloud_theme' },
+            learningRules: { minStudyPercent: 80, minPosttestPercent: 80 },
+            firebaseConfig: {
+                apiKey: 'AIzaSyCpvK0FCVVk9dt0ylHn_VzUStl7540UsbY',
+                authDomain: 'rj-cloud-organ.firebaseapp.com',
+                projectId: 'rj-cloud-organ',
+                storageBucket: 'rj-cloud-organ.firebasestorage.app',
+                messagingSenderId: '1030088973707',
+                appId: '1:1030088973707:web:8104bb1d90ac6a58f8e38e'
+            },
+            appsScriptUrl: 'https://script.google.com/macros/s/AKfycbwuN8MeZhhhomEhpkfXtpoTP341cugDqw1DbQPK_6NSHun2pGZCE0Kfc3eH4YYJ6aWQIg/exec'
+        };
+
+        const CONFIG = typeof CORE.getResolvedConfig === 'function'
+            ? CORE.getResolvedConfig()
+            : {
+                ...BUILTIN_CONFIG,
+                ...(window.RJCLOUD_CONFIG || {}),
+                theme: { ...BUILTIN_CONFIG.theme, ...(window.RJCLOUD_CONFIG?.theme || {}) },
+                learningRules: { ...BUILTIN_CONFIG.learningRules, ...(window.RJCLOUD_CONFIG?.learningRules || {}) },
+                firebaseConfig: (window.RJCLOUD_CONFIG?.firebaseConfig?.apiKey) ? window.RJCLOUD_CONFIG.firebaseConfig : BUILTIN_CONFIG.firebaseConfig,
+                appsScriptUrl: window.RJCLOUD_CONFIG?.appsScriptUrl || BUILTIN_CONFIG.appsScriptUrl
+            };
+
+        const THEME_KEY = CONFIG.theme?.storageKey || 'rjcloud_theme';
+        const MIN_STUDY_PERCENT = Number(CONFIG.learningRules?.minStudyPercent || 80);
+        const MIN_POSTTEST_PERCENT = Number(CONFIG.learningRules?.minPosttestPercent || 80);
+
+        const PROFESSION_OPTIONS = [
+            { id: 'พยาบาล', label: 'พยาบาล', desc: 'พยาบาลวิชาชีพ / พยาบาล TC / ICU / ER / OR', defaultPos: 'พยาบาลวิชาชีพชำนาญการ', icon: 'HeartPulse' },
+            { id: 'แพทย์', label: 'แพทย์', desc: 'แพทย์ / อาจารย์แพทย์ / แพทย์ประจำบ้าน', defaultPos: 'นายแพทย์ชำนาญการ', icon: 'Stethoscope' },
+            { id: 'บุคลากรสหวิชาชีพ', label: 'บุคลากรสหวิชาชีพ', desc: 'เภสัชกร / เทคนิคการแพทย์ / สังคมสงเคราะห์ / สหวิชาชีพ', defaultPos: 'บุคลากรสหวิชาชีพ', icon: 'Users' }
+        ];
+
+        const HEALTH_REGIONS = [
+            'เขตสุขภาพที่ 1', 'เขตสุขภาพที่ 2', 'เขตสุขภาพที่ 3', 'เขตสุขภาพที่ 4',
+            'เขตสุขภาพที่ 5', 'เขตสุขภาพที่ 6', 'เขตสุขภาพที่ 7', 'เขตสุขภาพที่ 8',
+            'เขตสุขภาพที่ 9', 'เขตสุขภาพที่ 10', 'เขตสุขภาพที่ 11', 'เขตสุขภาพที่ 12',
+            'เขตสุขภาพที่ 13 (กทม. / กรมการแพทย์)', 'อื่นๆ / หน่วยงานอิสระ'
+        ];
+
+        const DEFAULT_CNEU_CONFIG = CORE.DEFAULT_CNEU_CONFIG || {
+            activityCode: 'CNEU-2027-0148',
+            cneuCredits: '8.0',
+            trainingHours: '8',
+            cmeActivityCode: '',
+            cmeCredits: '',
+            courseName: 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ (rjcloud.organ)',
+            orgName: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ โรงพยาบาลราชวิถี',
+            batchLabel: 'รุ่นที่ 1 ประจำปีงบประมาณ 2570',
+            dateRange: '1 – 31 มกราคม 2570',
+            approverName: 'ผู้อำนวยการศูนย์ความเป็นเลิศทางการแพทย์',
+            approverPosition: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ'
+        };
+
+        const DEFAULT_CERT_TEMPLATE = window.DEFAULT_CERT_TEMPLATE || CORE.DEFAULT_CERT_TEMPLATE || {
+            certPrefix: 'RJC-2027',
+            orgTitleTH: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ',
+            orgTitleEN: 'rjcloud.organ • Clinical Organ Donation & Transplantation Network',
+            courseTitleTH: 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ',
+            courseTitleEN: 'Organ Donation & Transplantation Clinical Coordination Program',
+            subtitleTH: 'ขอมอบประกาศนียบัตรฉบับนี้เพื่อแสดงว่า',
+            completionTextTH: 'ได้ผ่านการอบรมและประเมินผลตามเกณฑ์มาตรฐานหลักสูตรประจำปี 2027',
+            signerName: 'ผู้อำนวยการศูนย์ความเป็นเลิศทางการแพทย์',
+            signerPosition: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ',
+            logoUrl: '',
+            signatureUrl: ''
+        };
+
+        const FALLBACK_LESSONS = [
+            { id: 1, title: 'บทที่ 1: ยุทธศาสตร์และเป้าหมายการพัฒนาระบบบริการสุขภาพ (Service plan)', summary: '• เป้าหมาย Service Plan: เพิ่มจำนวนผู้บริจาคอวัยวะสมองตายและผู้ได้รับการปลูกถ่ายอวัยวะอย่างทั่วถึงทั้ง 13 เขตสุขภาพ\n• ความโปร่งใสระดับชาติ: การจัดสรรอวัยวะดำเนินการผ่านระบบคอมพิวเตอร์กลางของศูนย์รับบริจาคอวัยวะสภากาชาดไทย (ODC)\n• บทบาททีมผู้บริหารและพยาบาล TC: วางระบบคัดกรอง Potential Donor ใน ICU/ER และสนับสนุนทีมประสานงานอย่างเป็นระบบ', videoId: '', documentUrl: '' },
+            { id: 2, title: 'บทที่ 2: จริยธรรม กฎหมายที่เกี่ยวข้องกับการรับบริจาคอวัยวะ และบทบาทของศูนย์ฯ', summary: '• ประกาศแพทยสภา: การวินิจฉัยภาวะสมองตายต้องตรวจยืนยันโดยแพทย์ผู้เชี่ยวชาญ 3 ท่าน ครบ 2 ครั้งห่างกันอย่างน้อย 6 ชั่วโมง\n• หลักจริยธรรม Autonomy & Family Consent: เคารพเจตนาผู้เสียชีวิตและไม่ฝืนใจญาติสายตรง เพื่อรักษาความสงบสุขของครอบครัว\n• สิทธิประโยชน์ครอบครัวผู้บริจาค: ไม่มีค่าใช้จ่ายเพิ่มเติม และจัดสรรอวัยวะเป็นธรรมไร้การซื้อขาย', videoId: '', documentUrl: '' },
+            { id: 3, title: 'บทที่ 3: การคัดกรอง Potential Donor ในหอผู้ป่วย ICU / ER', summary: '• เกณฑ์คัดกรองหลัก: ผู้ป่วย GCS = 3 (E1V1M1), Fixed Dilated Pupils และพึ่งเครื่องช่วยหายใจ\n• การรายงานแบบ SBAR: แจ้งแพทย์เวรและพยาบาล TC ทันทีพร้อมสัญญาณชีพและผล Lab สำคัญ\n• การติดตามต่อเนื่อง: เฝ้าระวังภาวะแทรกซ้อนเพื่อคงสภาพอวัยวะให้สมบูรณ์ที่สุด', videoId: '', documentUrl: '' },
+            { id: 4, title: 'บทที่ 4: การดูแลพยุงอวัยวะ (Donor Management) & ภาวะเบาจืด (DI)', summary: '• เป้าหมายสัญญาณชีพ: คงค่า MAP ≥ 65 mmHg, SpO₂ ≥ 95% และควบคุมอุณหภูมิกายให้เหมาะสม\n• การจัดการภาวะเบาจืด (Central DI): เมื่อปัสสาวะใสออกมาก (> 200–300 mL/hr) และ Na สูง พิจารณาให้สารน้ำและยา Desmopressin (DDAVP)\n• ความสำคัญของเวลา: การพยุงอวัยวะที่ดีช่วยเพิ่มอัตราความสำเร็จของการปลูกถ่ายให้ผู้รับอวัยวะหลายชีวิต', videoId: '', documentUrl: '' },
+            { id: 5, title: 'บทที่ 5: ศิลปะการสื่อสารกับครอบครัว (SPIKES, Decoupling & ความเงียบ 2.5 วิ)', summary: '• หลัก Decoupling: แยกช่วงเวลาแจ้งข่าวภาวะสมองตายออกจากการเจรจาขอรับบริจาคอวัยวะให้ญาติมีเวลาตั้งสติ\n• การเว้นความเงียบเยียวยา (Therapeutic Silence ≥ 2.5 วิ): เปิดพื้นที่ปลอดภัยให้ญาติระบายความโศกเศร้าโดยไม่เร่งรัด\n• ถ้อยคำอ่อนโยน: หลีกเลี่ยงคำว่า "ถอดเครื่อง/ศพ" และใช้คำว่า "ยุติเครื่องพยุงชีพอย่างสงบ / ดูแลร่างอย่างสมเกียรติ"', videoId: '', documentUrl: '' },
+            { id: 6, title: 'บทที่ 6: การดูแลตกแต่งร่างอย่างสมเกียรติและติดตามเยียวยาครอบครัว', summary: '• มาตรฐานการตกแต่งร่าง: ทีมศัลยแพทย์และพยาบาลตกแต่งร่างอย่างประณีตเรียบร้อย สามารถทำพิธีทางศาสนาได้ตามปกติ\n• การส่งต่อบุญกุศล: ยกย่องเกียรติคุณผู้บริจาคและมอบพวงหรีด/ใบประกาศเชิดชูเกียรติจากสภากาชาดไทย\n• การติดตามเยียวยาจิตใจ: ดูแลและสอบถามทุกข์สุขครอบครัวหลังการสูญเสียอย่างต่อเนื่อง', videoId: '', documentUrl: '' }
+        ];
+
+        const FALLBACK_QUIZ = [
+            { id: 1, domain: 'brain_death_donor', question: 'การวินิจฉัยยืนยันภาวะสมองตายตามประกาศแพทยสภา ต้องดำเนินการอย่างไร?', options: ['แพทย์ 1 ท่านตรวจครั้งเดียว', 'แพทย์ผู้เชี่ยวชาญ 3 ท่านตรวจยืนยันครบ 2 ครั้ง ห่างกันอย่างน้อย 6 ชั่วโมง', 'พยาบาล ICU ประเมินจาก GCS 3 เท่านั้น', 'ญาติลงนามยินยอมแทนการตรวจ'], answer: 1 },
+            { id: 2, domain: 'family_communication', question: 'หลักการ "Decoupling" ในการสื่อสารกับญาติผู้ป่วยสมองตายหมายถึงข้อใด?', options: ['รีบขอรับบริจาคทันทีที่แจ้งข่าวร้าย', 'แยกช่วงเวลาการแจ้งข่าวภาวะสมองตายออกจากการพูดคุยเรื่องการบริจาคอวัยวะให้ญาติมีเวลาตั้งสติ', 'ปิดเครื่องช่วยหายใจก่อนแจ้งญาติ', 'ให้ญาติตัดสินใจภายใน 10 นาที'], answer: 1 },
+            { id: 3, domain: 'policy_ethics', question: 'หากผู้ป่วยมีบัตรแสดงความจำนงบริจาคอวัยวะ แต่คุณแม่คัดค้านอย่างรุนแรง ตามหลักจริยธรรมไทยควรปฏิบัติอย่างไร?', options: ['บังคับดำเนินการตามบัตรทันที', 'วางตัวเป็นกลาง รับฟังทั้งสองฝ่าย ไม่ฝืนใจญาติสายตรง และให้เวลาครอบครัวปรึกษากัน', 'ปฏิเสธไม่พูดคุยกับคุณแม่', 'แจ้งความดำเนินคดี'], answer: 1 },
+            { id: 4, domain: 'policy_ethics', question: 'การจัดสรรอวัยวะในประเทศไทยดำเนินการอย่างไรและครอบครัวต้องเสียค่าใช้จ่ายเพิ่มหรือไม่?', options: ['จัดสรรผ่านระบบคอมพิวเตอร์กลาง ODC สภากาชาดไทยตามความเข้ากันได้ของเนื้อเยื่อ และครอบครัวไม่มีค่าใช้จ่ายเพิ่มเติม', 'ให้ผู้ที่จ่ายเงินสูงกว่าก่อน', 'ให้โรงพยาบาลเลือกเองตามความสนิท', 'ครอบครัวต้องจ่ายค่าผ่าตัดเก็บอวัยวะเอง'], answer: 0 },
+            { id: 5, domain: 'brain_death_donor', question: 'เมื่อดูแล Potential Donor พบปัสสาวะใสออก 640 mL/hr และ Na 154 mEq/L สงสัยภาวะใดและควรเสนอการรักษาใด?', options: ['ภาวะไตวายเฉียบพลัน ให้ขับปัสสาวะเพิ่ม', 'ภาวะเบาจืดจากสมอง (Central Diabetes Insipidus) พิจารณาให้สารน้ำและยา DDAVP (Desmopressin)', 'ภาวะน้ำเกิน งดสารน้ำทุกชนิด', 'ไม่ต้องรายงานแพทย์'], answer: 1 }
+        ];
+
+        const POCKET_PHRASES = [
+            { cat: 'อธิบายเครื่องช่วยหายใจ', th: 'เข้าใจเลยค่ะว่าเห็นหน้าอกท่านยังขยับและตัวอุ่นแล้วทำใจเชื่อยากมาก เกิดจากเครื่องช่วยหายใจที่เป่าลมแทน ส่วนก้านสมองหยุดทำงานถาวรซึ่งแพทย์ 3 ท่านตรวจยืนยันครบ 2 ครั้งแล้วค่ะ', en: 'I understand it is deeply confusing to see his chest rising—the ventilator is breathing for him, while three physicians have confirmed irreversible brain death.' },
+            { cat: 'ตอบเรื่องความเชื่อ/พิธีศาสนา', th: 'เราเคารพความเชื่อของครอบครัวเสมอค่ะ ในทางศาสนาการมอบอวัยวะช่วยต่อชีวิตคือทานบารมีอันยิ่งใหญ่ และทีมแพทย์จะตกแต่งร่างให้เรียบร้อยสมบูรณ์ ทำพิธีทางศาสนาได้ตามปกติค่ะ', en: 'We deeply respect your spiritual beliefs. Our surgical team restores the body with the utmost dignity so your family can hold all traditional ceremonies.' },
+            { cat: 'ชี้แจงโปร่งใส ODC & ไม่มีค่าใช้จ่าย', th: 'การจัดสรรอวัยวะทำผ่านระบบคอมพิวเตอร์ของศูนย์รับบริจาคอวัยวะสภากาชาดไทย (ODC) ตามความเข้ากันได้ของเนื้อเยื่อ ไม่มีการลัดคิว และครอบครัวไม่มีค่าใช้จ่ายเพิ่มเติมเลยค่ะ', en: 'Allocation is managed transparently through the Thai Red Cross Organ Donation Centre computer matching system at zero additional cost to your family.' },
+            { cat: 'วางตัวเป็นกลางเคสครอบครัวเห็นต่าง', th: 'สัมผัสได้ถึงความรักที่ทุกท่านมีให้ผู้ป่วยค่ะ ตามจริยธรรมไทยเราจะไม่ฝืนใจญาติสายตรงเด็ดขาด ขอให้ครอบครัวมีเวลาส่วนตัวปรึกษากันก่อนโดยไม่เร่งรัดนะคะ', en: 'We see how deeply you all love him. We will never rush or force any decision—please take all the private time your family needs.' }
+        ];
+
+        const SUS_QUESTIONS = [
+            { key: 's1', pos: true, label: '1. ฉันอยากกลับมาใช้ระบบนี้เพื่อทบทวนความรู้และฝึกสื่อสารอีกอย่างสม่ำเสมอ' },
+            { key: 's2', pos: false, label: '2. ฉันรู้สึกว่าระบบมีความซับซ้อนเกินความจำเป็น' },
+            { key: 's3', pos: true, label: '3. ฉันรู้สึกว่าระบบนี้ใช้งานง่ายและเข้าใจขั้นตอนได้ทันที' },
+            { key: 's4', pos: false, label: '4. ฉันรู้สึกว่าต้องให้ผู้เชี่ยวชาญช่วยสอนจึงจะใช้งานได้' },
+            { key: 's5', pos: true, label: '5. ฉันรู้สึกมั่นใจขณะใช้งานระบบนี้บนอุปกรณ์ของฉัน' }
+        ];
+
+        const FALLBACK_JADE_LEAVES = [
+            { cx: 112, cy: 220, rx: 11, ry: 4.5, rot: -22 }, { cx: 184, cy: 212, rx: 10, ry: 4.0, rot: -10 },
+            { cx: 92,  cy: 176, rx: 11, ry: 4.4, rot: 12 },  { cx: 168, cy: 172, rx: 10, ry: 4.0, rot: 18 },
+            { cx: 140, cy: 132, rx: 10, ry: 4.2, rot: 28 },  { cx: 212, cy: 118, rx: 9.5, ry: 4.0, rot: 36 },
+            { cx: 188, cy: 84,  rx: 9.5, ry: 4.0, rot: 46 }, { cx: 254, cy: 64,  rx: 9.0, ry: 3.8, rot: 58 },
+            { cx: 528, cy: 220, rx: 11, ry: 4.5, rot: 22 },  { cx: 456, cy: 212, rx: 10, ry: 4.0, rot: 10 },
+            { cx: 548, cy: 176, rx: 11, ry: 4.4, rot: -12 }, { cx: 472, cy: 172, rx: 10, ry: 4.0, rot: -18 },
+            { cx: 500, cy: 132, rx: 10, ry: 4.2, rot: -28 }, { cx: 428, cy: 118, rx: 9.5, ry: 4.0, rot: -36 },
+            { cx: 452, cy: 84,  rx: 9.5, ry: 4.0, rot: -46 }, { cx: 386, cy: 64,  rx: 9.0, ry: 3.8, rot: -58 }
+        ];
+
+        function resolveLessonDocUrl(ls) {
+            if (!ls || typeof ls !== 'object') return '';
+            return String(ls.documentUrl || ls.docUrl || ls.pdfUrl || ls.materialUrl || ls.slidesUrl || '').trim();
+        }
+
+        function buildDefaultOneMinSummary(ls) {
+            if (!ls) return '';
+            const direct = String(ls.summary || ls.aiSummary || ls.oneMinSummary || '').trim();
+            if (direct) return direct;
+            const globalMap = window.LESSON_AI_SUMMARIES || window.AI_LESSON_SUMMARIES || {};
+            if (ls.id && globalMap[ls.id]) return String(globalMap[ls.id]);
+
+            const title = String(ls.title || '');
+            if (/service\s*plan|ยุทธศาสตร์|นโยบาย/i.test(title)) {
+                return '• เป้าหมาย Service Plan: เพิ่มอัตราการบริจาคอวัยวะและดวงตาอย่างทั่วถึงครบทั้ง 13 เขตสุขภาพ\n• ความโปร่งใสระดับชาติ: จัดสรรอวัยวะผ่านระบบคอมพิวเตอร์กลาง ODC สภากาชาดไทยตามความเข้ากันได้ของเนื้อเยื่อ\n• บทบาทผู้บริหารและทีม TC: สร้างเครือข่ายส่งต่อและเฝ้าระวัง Potential Donor ในหอผู้ป่วย ICU/ER อย่างเป็นระบบ';
+            }
+            if (/ดวงตา|กระจกตา|cornea/i.test(title)) {
+                return '• ช่วงเวลาทอง (Golden Period): ควรจัดเก็บดวงตาภายใน 6–8 ชั่วโมงหลังเสียชีวิต เพื่อรักษาคุณภาพกระจกตา\n• การคัดกรองเบื้องต้น: ตรวจสอบข้อห้ามทางการแพทย์ การติดเชื้อในกระแสเลือด และสภาพกระจกตา\n• การประสานงานศูนย์ดวงตาฯ: แจ้งข้อมูลผู้บริจาคและดูแลปิดเปลือกตาอย่างนุ่มนวลเพื่อคงความชุ่มชื้น';
+            }
+            if (/จริยธรรม|กฎหมาย/i.test(title)) {
+                return '• มาตรฐานกฎหมายและแพทยสภา: วินิจฉัยสมองตายโดยแพทย์ 3 ท่าน ครบ 2 ครั้งห่างกันอย่างน้อย 6 ชั่วโมง\n• หลักจริยธรรม: เคารพการตัดสินใจของครอบครัว (Family Consent) ไม่บังคับฝืนใจ และคุ้มครองความลับ PDPA\n• สิทธิประโยชน์ครอบครัว: ครอบครัวผู้บริจาคไม่มีค่าใช้จ่ายเพิ่มเติม และได้รับการยกย่องเชิดชูเกียรติ';
+            }
+            if (/สมองตาย|จัดสรร|ODC/i.test(title)) {
+                return '• การคัดกรองและยืนยันสมองตาย: ตรวจ GCS = 3, ปฏิกิริยาก้านสมอง (Brainstem Reflexes) และ Apnea Test ตามเกณฑ์\n• การพยุงอวัยวะ (Donor Management): คุม BP/MAP ≥ 65 mmHg และจัดการภาวะเบาจืด (DI) ด้วยสารน้ำและ DDAVP\n• หลักการจัดสรร ODC: อิงความเข้ากันได้ของหมู่เลือด เนื้อเยื่อ (HLA) และความเร่งด่วนทางการแพทย์';
+            }
+            if (/ไต|ปลูกถ่าย|ผ่าตัด|ขนส่ง|cold/i.test(title)) {
+                return '• การเตรียมผู้ป่วยและเนื้อเยื่อ: ตรวจ HLA Typing, Crossmatch และควบคุมการติดเชื้อก่อนปลูกถ่าย\n• มาตรฐาน Cold Chain: ควบคุมอุณหภูมิบรรจุไตที่ 2–4°C และคุม Cold Ischemic Time ให้สั้นที่สุด\n• การดูแลหลังปลูกถ่าย: เฝ้าระวังภาวะสลัดอวัยวะ (Rejection), ปริมาณปัสสาวะ และวินัยการรับประทานยากดภูมิคุ้มกัน';
+            }
+            if (/สื่อสาร|ญาติ|ครอบครัว|จิตใจ/i.test(title)) {
+                return '• หลัก SPIKES & Decoupling: แยกช่วงแจ้งข่าวภาวะสมองตายออกจากการสนทนาเรื่องการบริจาคอวัยวะ\n• พลังความเงียบเยียวยา (2.5 วินาที): เปิดพื้นที่ให้ครอบครัวตั้งสติและรับฟังความรู้สึกโดยไม่เร่งรัด\n• การให้เกียรติสูงสุด: ยืนยันการตกแต่งร่างประณีตให้ทำพิธีทางศาสนาได้ตามปกติทุกประการ';
+            }
+            return `• หัวใจสำคัญของบทเรียน: ${title}\n• การประยุกต์ใช้หน้างาน ICU/ER/TC: คัดกรองและประสานงานตามมาตรฐานปี 2027 ร่วมกับทีมสหสาขาวิชาชีพและศูนย์ ODC สภากาชาดไทย\n• จริยธรรมและความปลอดภัย: ยึดประโยชน์ผู้ป่วย เคารพครอบครัว และคุ้มครองข้อมูลส่วนบุคคลตามหลัก PDPA`;
+        }
+
+        function resolveProfessionGroupSafe(u) {
+            if (typeof CERT.resolveProfessionGroup === 'function') return CERT.resolveProfessionGroup(u);
+            const ex = String(u?.professionGroup || '').trim();
+            if (ex === 'พยาบาล' || ex === 'แพทย์' || ex === 'บุคลากรสหวิชาชีพ') return ex;
+            const txt = `${u?.name || ''} ${u?.position || ''}`;
+            if (/(นพ\.|พญ\.|แพทย์|doctor|\bm\.?d\.?\b)/i.test(txt) && !/พยาบาล/.test(txt)) return 'แพทย์';
+            if (/(พว\.|พยาบาล|nurse|\brn\b)/i.test(txt)) return 'พยาบาล';
+            return 'บุคลากรสหวิชาชีพ';
+        }
+
+        function resolveCreditMetaSafe(u, tpl, cneu) {
+            if (typeof CERT.getCertificateCreditMeta === 'function') return CERT.getCertificateCreditMeta(u, tpl, cneu);
+            const prof = resolveProfessionGroupSafe(u);
+            const isNurse = typeof u?.cneuEligible === 'boolean' ? u.cneuEligible : prof === 'พยาบาล';
+            const hrs = String(cneu?.trainingHours || tpl?.trainingHours || u?.trainingHours || '8').trim() || '8';
+            const code = String(cneu?.activityCode || tpl?.cneuActivityCode || '').trim();
+            const cr = String(cneu?.cneuCredits || tpl?.cneuCredits || '').trim();
+            if (isNurse) {
+                const lineTextTH = (code || cr)
+                    ? [code ? `รหัสกิจกรรม CNEU: ${code}` : '', cr ? `จำนวน ${cr} หน่วยคะแนน` : ''].filter(Boolean).join(' • ')
+                    : `จำนวน ${hrs} ชั่วโมงการฝึกอบรมมาตรฐานวิชาชีพ`;
+                return { professionGroup: 'พยาบาล', isNurseCneu: true, creditType: 'CNEU', letterHeadingTH: 'หนังสือรับรองการสำเร็จการอบรมและหน่วยคะแนนการศึกษาต่อเนื่อง (CNEU)', licenseLabelTH: 'เลขที่ใบอนุญาตประกอบวิชาชีพการพยาบาล', lineTextTH, trainingHours: hrs, cneuActivityCode: code, cneuCredits: cr };
+            }
+            if (prof === 'แพทย์') {
+                return { professionGroup: 'แพทย์', isNurseCneu: false, creditType: 'HOURS', letterHeadingTH: 'หนังสือรับรองการสำเร็จการอบรมและชั่วโมงการฝึกอบรมวิชาการ', licenseLabelTH: 'เลขที่ใบอนุญาตประกอบวิชาชีพเวชกรรม', lineTextTH: `จำนวน ${hrs} ชั่วโมงการฝึกอบรมวิชาการทางการแพทย์`, trainingHours: hrs, cneuActivityCode: '', cneuCredits: '' };
+            }
+            return { professionGroup: 'บุคลากรสหวิชาชีพ', isNurseCneu: false, creditType: 'HOURS', letterHeadingTH: 'หนังสือรับรองการสำเร็จการอบรมและชั่วโมงพัฒนาบุคลากร', licenseLabelTH: 'เลขที่ใบอนุญาตวิชาชีพ / รหัสประจำตัวบุคลากร', lineTextTH: `จำนวน ${hrs} ชั่วโมงการพัฒนาสมรรถนะวิชาชีพ`, trainingHours: hrs, cneuActivityCode: '', cneuCredits: '' };
+        }
+
+        function parseRawQuizSafe(raw) {
+            if (!Array.isArray(raw) || raw.length === 0) return FALLBACK_QUIZ;
+            if (typeof CORE.parseRawExams === 'function') return CORE.parseRawExams(raw);
+            return raw.map((str, idx) => {
+                const parts = String(str).split('|').map(s => s.trim());
+                return { id: idx + 1, domain: 'policy_ethics', question: (parts[0] || '').replace(/^[0-9]+\.\s*/, ''), options: parts.slice(1, Math.max(2, parts.length - 1)), answer: parseInt((parts[parts.length - 1] || '0').replace(/[^0-9]/g, ''), 10) || 0 };
+            });
+        }
+
+        function loadSessionTwoLayer() {
+            for (const item of [{ s: localStorage, k: STORAGE_KEY }, { s: sessionStorage, k: SESSION_BACKUP_KEY }]) {
+                try {
+                    const parsed = JSON.parse(item.s.getItem(item.k) || 'null');
+                    if (parsed?.user?.id) return parsed.user;
+                } catch (_) {}
+            }
+            return null;
+        }
+        function saveSessionTwoLayer(u) {
+            if (!u?.id) return;
+            const payload = JSON.stringify({ user: u, savedAt: Date.now() });
+            try { localStorage.setItem(STORAGE_KEY, payload); } catch (_) {}
+            try { sessionStorage.setItem(SESSION_BACKUP_KEY, payload); } catch (_) {}
+        }
+        function clearSessionTwoLayer() {
+            try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
+            try { sessionStorage.removeItem(SESSION_BACKUP_KEY); } catch (_) {}
+        }
+
+        // Firebase Initialization
+        let fbApp = null, fbAuth = null, fbDb = null;
+        const isCloudConfigured = Boolean(CONFIG.firebaseConfig?.apiKey && CONFIG.firebaseConfig?.projectId);
+        if (isCloudConfigured) {
+            try {
+                fbApp = getApps().length === 0 ? initializeApp(CONFIG.firebaseConfig) : getApp();
+                fbAuth = getAuth(fbApp);
+                fbDb = getFirestore(fbApp);
+            } catch (_) {}
+        }
+
+        // Studio 24kHz TTS Helpers (Zero Browser Voice)
+        function pcmToWavBlobSafe(base64PCM, sampleRate = 24000) {
+            try {
+                if (typeof CORE.pcm16ToWavBlob === 'function') return CORE.pcm16ToWavBlob(base64PCM, sampleRate);
+                const bin = window.atob(base64PCM);
+                const bytes = new Uint8Array(bin.length);
+                for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+                const off = (bytes.length > 44 && bytes[0] === 0x52 && bytes[1] === 0x49) ? 44 : 0;
+                const pcmLen = Math.max(0, bytes.length - off);
+                const buf = new ArrayBuffer(44 + pcmLen);
+                const v = new DataView(buf);
+                const ws = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+                ws(0, 'RIFF'); v.setUint32(4, 36 + pcmLen, true); ws(8, 'WAVE'); ws(12, 'fmt ');
+                v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+                v.setUint32(24, sampleRate, true); v.setUint32(28, sampleRate * 2, true);
+                v.setUint16(32, 2, true); v.setUint16(34, 16, true); ws(36, 'data'); v.setUint32(40, pcmLen, true);
+                new Uint8Array(buf, 44).set(bytes.subarray(off));
+                return new Blob([buf], { type: 'audio/wav' });
+            } catch (_) { return null; }
+        }
+
+        async function fetchStudioGuideBlob({ appsScriptUrl, text, cacheKey, signal }) {
+            if (cacheKey && typeof CORE.getCachedAudio === 'function') {
+                try { const hit = await CORE.getCachedAudio(cacheKey); if (hit && hit.size > 0) return hit; } catch (_) {}
+            }
+            if (!appsScriptUrl || !navigator.onLine) return null;
+            for (let attempt = 0; attempt < 2; attempt++) {
+                if (signal?.aborted) return null;
+                const ctrl = new AbortController();
+                const onAbort = () => ctrl.abort();
+                if (signal) signal.addEventListener('abort', onAbort, { once: true });
+                const tm = setTimeout(() => ctrl.abort(), 45000);
+                try {
+                    const cleanSpeech = typeof CORE.prepareNaturalThaiSpeech === 'function' ? CORE.prepareNaturalThaiSpeech(text) : text;
+                    const rawRes = await fetch(appsScriptUrl, {
+                        method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ action: 'callGeminiTTS', text: cleanSpeech, voiceName: 'Sulafat', languageCode: 'th-TH', style: 'พูดภาษาไทยด้วยน้ำเสียงผู้หญิงที่อบอุ่น นุ่มนวล คมชัดระดับสตูดิโอ เป็นมิตรเหมือนผู้ดูแลหลักสูตร' }),
+                        signal: ctrl.signal
+                    });
+                    clearTimeout(tm);
+                    if (signal) signal.removeEventListener('abort', onAbort);
+                    if (signal?.aborted) return null;
+                    const res = JSON.parse((await rawRes.text()) || '{}');
+                    if (res?.status === 'success' && res.inlineData?.data) {
+                        const rateMatch = String(res.inlineData.mimeType || '').match(/rate=(\d+)/);
+                        const blob = pcmToWavBlobSafe(res.inlineData.data, parseInt(rateMatch ? rateMatch[1] : '24000', 10));
+                        if (blob && blob.size > 0) {
+                            if (cacheKey && typeof CORE.setCachedAudio === 'function') CORE.setCachedAudio(cacheKey, blob).catch(() => {});
+                            return blob;
+                        }
+                    }
+                } catch (_) {
+                    clearTimeout(tm);
+                    if (signal) signal.removeEventListener('abort', onAbort);
+                }
+                if (attempt === 0 && !signal?.aborted) await new Promise(r => setTimeout(r, 1000));
+            }
+            return null;
+        }
+
+        function formatThaiDateSafe(isoStr) {
+            try {
+                const d = isoStr ? new Date(isoStr) : new Date();
+                if (isNaN(
