@@ -784,7 +784,7 @@
             const [lessons, setLessons] = useState(() => (Array.isArray(window.INITIAL_LESSONS) && window.INITIAL_LESSONS.length > 0 ? window.INITIAL_LESSONS : (CORE.FALLBACK_LESSONS || [])));
             const [quizList, setQuizList] = useState(() => (typeof CORE.parseRawExams === 'function' ? CORE.parseRawExams(window.QUIZ_QUESTIONS_RAW) : []));
 
-            // Session & Navigation State (เริ่มที่หน้าต้นดอกท้อ landing เสมอ ยกเว้นกลับจากหน้าย่อย/เปิดโหมดพรีวิว)
+            // Session & Navigation State
             const [user, setUser] = useState(() => loadSessionTwoLayer());
             const [screen, setScreen] = useState(() => {
                 if (adminPreviewMode) return adminPreviewMode.startsWith('auth') ? 'auth' : adminPreviewMode;
@@ -861,7 +861,7 @@
                 setShowPwaGuide(true);
             };
 
-            // Keynote Sync (รอ keynote-launch.js โหลดเสร็จชัวร์ 100% ป้องกัน Race Condition ของหน้า Welcome)
+            // Keynote Sync (รอ keynote-launch.js โหลดเสร็จชัวร์ 100%)
             useEffect(() => {
                 let tries = 0, pollId = null;
                 const runSync = () => {
