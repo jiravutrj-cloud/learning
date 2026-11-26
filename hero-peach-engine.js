@@ -232,17 +232,17 @@
     sc.width = sz;
     sc.height = sz;
     const c = sc.getContext('2d');
-    const cx = 120, cy = 120, r = 84;
+    const cx = 120, cy = 120, r = 92;
 
-    // 1. ออร่าหยกทองนุ่มนวลรอบดวงจันทร์
-    const outerHalo = c.createRadialGradient(cx, cy, r * 0.72, cx, cy, r * 1.38);
-    outerHalo.addColorStop(0, 'rgba(255, 251, 232, 0.48)');
-    outerHalo.addColorStop(0.48, 'rgba(254, 240, 186, 0.20)');
-    outerHalo.addColorStop(0.80, 'rgba(110, 231, 183, 0.08)');
+    // 1. ออร่าหยกทองสว่างนุ่มนวลรอบดวงจันทร์
+    const outerHalo = c.createRadialGradient(cx, cy, r * 0.68, cx, cy, r * 1.42);
+    outerHalo.addColorStop(0, 'rgba(255, 252, 232, 0.62)');
+    outerHalo.addColorStop(0.45, 'rgba(254, 240, 186, 0.28)');
+    outerHalo.addColorStop(0.78, 'rgba(110, 231, 183, 0.12)');
     outerHalo.addColorStop(1, 'rgba(0, 0, 0, 0)');
     c.fillStyle = outerHalo;
     c.beginPath();
-    c.arc(cx, cy, r * 1.38, 0, Math.PI * 2);
+    c.arc(cx, cy, r * 1.42, 0, Math.PI * 2);
     c.fill();
 
     // 2. ดวงจันทร์ทรงกลมหลัก
@@ -261,13 +261,13 @@
 
     // 3. เงาพื้นผิวจันทรา (Lunar Maria) 7 จุดสมจริง
     const maria = [
-      { ox: -0.28, oy: -0.18, rx: 0.34, ry: 0.24, rot: -0.35, a: 0.13 },
-      { ox:  0.14, oy: -0.26, rx: 0.28, ry: 0.20, rot:  0.25, a: 0.11 },
-      { ox:  0.24, oy:  0.08, rx: 0.32, ry: 0.22, rot:  0.50, a: 0.14 },
-      { ox: -0.12, oy:  0.22, rx: 0.26, ry: 0.18, rot: -0.20, a: 0.10 },
-      { ox:  0.02, oy: -0.02, rx: 0.22, ry: 0.16, rot:  0.12, a: 0.09 },
-      { ox: -0.36, oy:  0.14, rx: 0.18, ry: 0.14, rot:  0.40, a: 0.08 },
-      { ox:  0.34, oy: -0.10, rx: 0.16, ry: 0.12, rot: -0.30, a: 0.09 }
+      { ox: -0.28, oy: -0.18, rx: 0.34, ry: 0.24, rot: -0.35, a: 0.16 },
+      { ox:  0.14, oy: -0.26, rx: 0.28, ry: 0.20, rot:  0.25, a: 0.14 },
+      { ox:  0.24, oy:  0.08, rx: 0.32, ry: 0.22, rot:  0.50, a: 0.17 },
+      { ox: -0.12, oy:  0.22, rx: 0.26, ry: 0.18, rot: -0.20, a: 0.13 },
+      { ox:  0.02, oy: -0.02, rx: 0.22, ry: 0.16, rot:  0.12, a: 0.12 },
+      { ox: -0.36, oy:  0.14, rx: 0.18, ry: 0.14, rot:  0.40, a: 0.11 },
+      { ox:  0.34, oy: -0.10, rx: 0.16, ry: 0.12, rot: -0.30, a: 0.12 }
     ];
     for (let i = 0; i < maria.length; i++) {
       const m = maria[i];
@@ -292,7 +292,7 @@
     // 4. ขอบแสงเรืองด้านใน
     const rim = c.createRadialGradient(cx, cy, r * 0.82, cx, cy, r);
     rim.addColorStop(0, 'rgba(255, 255, 255, 0)');
-    rim.addColorStop(1, 'rgba(255, 253, 240, 0.36)');
+    rim.addColorStop(1, 'rgba(255, 253, 240, 0.42)');
     c.fillStyle = rim;
     c.beginPath();
     c.arc(cx, cy, r, 0, Math.PI * 2);
@@ -1009,12 +1009,12 @@
       const leftRoot = svgPt(262, 382);
       const rightRoot = svgPt(378, 382);
       const buildPeakCascadeArc = function (peakPt, rootPt, sideSign, arcIdx) {
-        const midX1 = peakPt.x + (rootPt.x - peakPt.x) * 0.34;
-        const midY1 = peakPt.y + (rootPt.y - peakPt.y) * 0.42 + (arcIdx % 2 === 0 ? 18 : -10);
-        const midX2 = peakPt.x + (rootPt.x - peakPt.x) * 0.72;
-        const midY2 = Math.min(state.waterY - 14, peakPt.y + (rootPt.y - peakPt.y) * 0.88 + 12);
+        const midX1 = peakPt.x + (rootPt.x - peakPt.x) * 0.30;
+        const midY1 = peakPt.y + (rootPt.y - peakPt.y) * 0.38 + (arcIdx % 2 === 0 ? 14 : -12);
+        const midX2 = peakPt.x + (rootPt.x - peakPt.x) * 0.68;
+        const midY2 = Math.min(state.waterY - 16, peakPt.y + (rootPt.y - peakPt.y) * 0.85 + 8);
         return [
-          { x: peakPt.x, y: peakPt.y - 4 },
+          { x: peakPt.x, y: peakPt.y - 6 },
           { x: midX1, y: midY1 },
           { x: midX2, y: midY2 },
           { x: rootPt.x + sideSign * 6, y: rootPt.y }
@@ -1489,9 +1489,9 @@
       fxCtx.clearRect(0, 0, w, h);
 
       const activeHeads = [];
-      const tailSteps = w < 768 ? 22 : 30;
-      const tailSpan = 0.22;
-      const baseGlowRadius = w < 768 ? 15 : 19;
+      const tailSteps = w < 768 ? 24 : 34;
+      const tailSpan = 0.25;
+      const baseGlowRadius = w < 768 ? 16 : 21;
 
       fxCtx.save();
       fxCtx.globalCompositeOperation = 'lighter';
@@ -1500,7 +1500,7 @@
         if (!rt.pts || rt.pts.length < 4) continue;
         const rawP = ((t / rt.dur) + rt.phase) % 1;
         const headU = rawP - 0.016 * Math.sin(rawP * Math.PI * 2);
-        const envFade = Math.pow(Math.sin(Math.min(1, Math.max(0, rawP)) * Math.PI), 0.82);
+        const envFade = Math.pow(Math.sin(Math.min(1, Math.max(0, rawP)) * Math.PI), 0.78);
         const spriteImg = sprites.glow[rt.sprite] || sprites.glow.peach;
         activeHeads.push(headU);
 
@@ -1509,15 +1509,15 @@
           const u = headU - frac * tailSpan;
           if (u < 0 || u > 1) continue;
           const pt = sampleRoutePoint(rt.pts, u);
-          const taper = Math.pow(1 - frac, 1.35);
-          const rad = baseGlowRadius * (0.48 + taper * 0.92);
-          fxCtx.globalAlpha = Math.max(0, Math.min(0.46, taper * envFade * 0.30));
+          const taper = Math.pow(1 - frac, 1.28);
+          const rad = baseGlowRadius * (0.50 + taper * 0.96);
+          fxCtx.globalAlpha = Math.max(0, Math.min(0.54, taper * envFade * 0.36));
           fxCtx.drawImage(spriteImg, pt.x - rad, pt.y - rad, rad * 2, rad * 2);
         }
         if (headU >= 0 && headU <= 1) {
           const hp = sampleRoutePoint(rt.pts, headU);
-          const headR = baseGlowRadius * 1.38;
-          fxCtx.globalAlpha = Math.max(0, Math.min(0.72, envFade * 0.58));
+          const headR = baseGlowRadius * 1.45;
+          fxCtx.globalAlpha = Math.max(0, Math.min(0.78, envFade * 0.64));
           fxCtx.drawImage(sprites.glow.gold, hp.x - headR, hp.y - headR, headR * 2, headR * 2);
         }
       }
