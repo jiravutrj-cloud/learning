@@ -95,6 +95,52 @@
     return t * t * (3 - 2 * t);
   }
 
+  function hash3D(x, y, z) {
+    const n = Math.sin(x * 127.1 + y * 311.7 + z * 74.7) * 43758.5453123;
+    return n - Math.floor(n);
+  }
+
+  function noise3D(x, y, z) {
+    const ix = Math.floor(x);
+    const iy = Math.floor(y);
+    const iz = Math.floor(z);
+    const fx = x - ix;
+    const fy = y - iy;
+    const fz = z - iz;
+    const ux = fx * fx * (3 - 2 * fx);
+    const uy = fy * fy * (3 - 2 * fy);
+    const uz = fz * fz * (3 - 2 * fz);
+
+    const n000 = hash3D(ix, iy, iz);
+    const n100 = hash3D(ix + 1, iy, iz);
+    const n010 = hash3D(ix, iy + 1, iz);
+    const n110 = hash3D(ix + 1, iy + 1, iz);
+    const n001 = hash3D(ix, iy, iz + 1);
+    const n101 = hash3D(ix + 1, iy, iz + 1);
+    const n011 = hash3D(ix, iy + 1, iz + 1);
+    const n111 = hash3D(ix + 1, iy + 1, iz + 1);
+
+    const nx00 = n000 + (n100 - n000) * ux;
+    const nx10 = n010 + (n110 - n010) * ux;
+    const nx01 = n001 + (n101 - n001) * ux;
+    const nx11 = n011 + (n111 - n011) * ux;
+    const nxy0 = nx00 + (nx10 - nx00) * uy;
+    const nxy1 = nx01 + (nx11 - nx01) * uy;
+    return nxy0 + (nxy1 - nxy0) * uz;
+  }
+
+  function fbm3D(x, y, z, octaves) {
+    let sum = 0;
+    let amp = 0.5;
+    let freq = 1.0;
+    for (let i = 0; i < octaves; i++) {
+      sum += amp * noise3D(x * freq, y * freq, z * freq);
+      freq *= 2.08;
+      amp *= 0.5;
+    }
+    return sum;
+  }
+
   // ============================================================================
   // 2. PRE-BAKED OFFSCREEN SPRITE FACTORIES (อบครั้งเดียวใช้ได้ตลอด ลื่น 60FPS)
   // ============================================================================
@@ -227,77 +273,152 @@
   }
 
   function bakeMoonSprite() {
-    const sz = 240;
+    // ดวงจันทร์สมจริง 3 มิติ โทน "ทองอุ่นคู่โคมลอย (Warm Harvest Moon)" — 384px คมกริบและเบาเครื่องบนมือถือ
+    const sz = 384;
     const sc = document.createElement('canvas');
     sc.width = sz;
     sc.height = sz;
     const c = sc.getContext('2d');
-    const cx = 120, cy = 120, r = 92;
+    const img = c.createImageData(sz, sz);
+    const data = img.data;
 
-    // 1. ออร่าหยกทองสว่างนุ่มนวลรอบดวงจันทร์
-    const outerHalo = c.createRadialGradient(cx, cy, r * 0.68, cx, cy, r * 1.42);
-    outerHalo.addColorStop(0, 'rgba(255, 252, 232, 0.62)');
-    outerHalo.addColorStop(0.45, 'rgba(254, 240, 186, 0.28)');
-    outerHalo.addColorStop(0.78, 'rgba(110, 231, 183, 0.12)');
-    outerHalo.addColorStop(1, 'rgba(0, 0, 0, 0)');
-    c.fillStyle = outerHalo;
-    c.beginPath();
-    c.arc(cx, cy, r * 1.42, 0, Math.PI * 2);
-    c.fill();
+    const cx = sz * 0.5;
+    const cy = sz * 0.5;
+    const R = sz * 0.455;
 
-    // 2. ดวงจันทร์ทรงกลมหลัก
-    c.save();
-    c.beginPath();
-    c.arc(cx, cy, r, 0, Math.PI * 2);
-    c.clip();
+    const hiRGB = [255, 244, 214];
+    const midRGB = [242, 206, 148];
+    const mariaRGB = [144, 108, 76];
+    const rimRGB = [254, 235, 182];
 
-    const baseG = c.createRadialGradient(cx - r * 0.26, cy - r * 0.26, r * 0.08, cx + r * 0.12, cy + r * 0.14, r * 1.15);
-    baseG.addColorStop(0, '#fffef7');
-    baseG.addColorStop(0.52, '#fef3c7');
-    baseG.addColorStop(0.84, '#f3d89b');
-    baseG.addColorStop(1, '#d8b473');
-    c.fillStyle = baseG;
-    c.fillRect(cx - r, cy - r, r * 2, r * 2);
-
-    // 3. เงาพื้นผิวจันทรา (Lunar Maria) 7 จุดสมจริง
-    const maria = [
-      { ox: -0.28, oy: -0.18, rx: 0.34, ry: 0.24, rot: -0.35, a: 0.16 },
-      { ox:  0.14, oy: -0.26, rx: 0.28, ry: 0.20, rot:  0.25, a: 0.14 },
-      { ox:  0.24, oy:  0.08, rx: 0.32, ry: 0.22, rot:  0.50, a: 0.17 },
-      { ox: -0.12, oy:  0.22, rx: 0.26, ry: 0.18, rot: -0.20, a: 0.13 },
-      { ox:  0.02, oy: -0.02, rx: 0.22, ry: 0.16, rot:  0.12, a: 0.12 },
-      { ox: -0.36, oy:  0.14, rx: 0.18, ry: 0.14, rot:  0.40, a: 0.11 },
-      { ox:  0.34, oy: -0.10, rx: 0.16, ry: 0.12, rot: -0.30, a: 0.12 }
+    const mariaBasins = [
+      { x: -0.26, y: -0.24, r: 0.36, d: 0.85 },
+      { x:  0.14, y: -0.24, r: 0.25, d: 0.78 },
+      { x:  0.30, y:  0.00, r: 0.27, d: 0.82 },
+      { x:  0.48, y: -0.14, r: 0.14, d: 0.72 },
+      { x: -0.46, y:  0.04, r: 0.34, d: 0.76 },
+      { x: -0.16, y:  0.18, r: 0.24, d: 0.68 },
+      { x:  0.34, y:  0.22, r: 0.20, d: 0.65 },
+      { x: -0.02, y: -0.44, r: 0.22, d: 0.55 }
     ];
-    for (let i = 0; i < maria.length; i++) {
-      const m = maria[i];
-      const mxp = cx + m.ox * r;
-      const myp = cy + m.oy * r;
-      const mrad = Math.max(m.rx, m.ry) * r;
-      const mg = c.createRadialGradient(mxp, myp, mrad * 0.1, mxp, myp, mrad);
-      mg.addColorStop(0, 'rgba(148, 124, 88, ' + m.a + ')');
-      mg.addColorStop(0.65, 'rgba(164, 140, 102, ' + (m.a * 0.55).toFixed(3) + ')');
-      mg.addColorStop(1, 'rgba(164, 140, 102, 0)');
-      c.save();
-      c.translate(mxp, myp);
-      c.rotate(m.rot);
-      c.scale(m.rx / Math.max(m.rx, m.ry), m.ry / Math.max(m.rx, m.ry));
-      c.fillStyle = mg;
-      c.beginPath();
-      c.arc(0, 0, mrad, 0, Math.PI * 2);
-      c.fill();
-      c.restore();
+
+    const craters = [
+      { x: -0.12, y:  0.62, r: 0.068, ray: true,  depth: 0.90 },
+      { x: -0.28, y: -0.04, r: 0.056, ray: true,  depth: 0.75 },
+      { x: -0.48, y:  0.08, r: 0.036, ray: true,  depth: 0.55 },
+      { x:  0.22, y:  0.38, r: 0.045, ray: false, depth: 0.45 },
+      { x:  0.05, y:  0.46, r: 0.052, ray: false, depth: 0.40 },
+      { x: -0.34, y:  0.38, r: 0.042, ray: false, depth: 0.42 },
+      { x:  0.44, y:  0.36, r: 0.038, ray: false, depth: 0.38 },
+      { x: -0.04, y: -0.58, r: 0.040, ray: false, depth: 0.42 },
+      { x:  0.36, y: -0.42, r: 0.036, ray: false, depth: 0.38 },
+      { x: -0.56, y: -0.26, r: 0.034, ray: false, depth: 0.35 }
+    ];
+    for (let i = 0; i < 20; i++) {
+      const ang = i * 2.39996;
+      const rad = 0.22 + ((i * 37) % 66) / 100;
+      craters.push({
+        x: Math.cos(ang) * rad,
+        y: Math.sin(ang) * rad,
+        r: 0.016 + ((i * 19) % 24) / 1000,
+        ray: false,
+        depth: 0.26 + ((i * 13) % 22) / 100
+      });
     }
 
-    // 4. ขอบแสงเรืองด้านใน
-    const rim = c.createRadialGradient(cx, cy, r * 0.82, cx, cy, r);
-    rim.addColorStop(0, 'rgba(255, 255, 255, 0)');
-    rim.addColorStop(1, 'rgba(255, 253, 240, 0.42)');
-    c.fillStyle = rim;
-    c.beginPath();
-    c.arc(cx, cy, r, 0, Math.PI * 2);
-    c.fill();
-    c.restore();
+    const lx = -0.32;
+    const ly = -0.28;
+    const lz = 0.905;
+
+    for (let py = 0; py < sz; py++) {
+      const ny = (py - cy) / R;
+      const ny2 = ny * ny;
+      for (let px = 0; px < sz; px++) {
+        const nx = (px - cx) / R;
+        const r2 = nx * nx + ny2;
+        if (r2 > 1.03) continue;
+
+        const dist = Math.sqrt(r2);
+        const edgeAlpha = dist <= 0.985 ? 1.0 : Math.max(0, (1.008 - dist) / 0.023);
+        if (edgeAlpha <= 0.001) continue;
+
+        const nz = Math.sqrt(Math.max(0, 1.0 - Math.min(1, r2)));
+        const warpX = fbm3D(nx * 2.2 + 4.1, ny * 2.2, nz * 2.2, 3) * 0.24;
+        const warpY = fbm3D(nx * 2.2, ny * 2.2 + 7.3, nz * 2.2, 3) * 0.24;
+        const macroNoise = fbm3D((nx + warpX) * 2.6, (ny + warpY) * 2.6, nz * 2.6, 4);
+        const microNoise = fbm3D(nx * 14.5 + 2.1, ny * 14.5 - 1.4, nz * 14.5, 4);
+        const fineGrain = fbm3D(nx * 34.0, ny * 34.0, nz * 34.0, 2);
+
+        let mariaMask = 0;
+        for (let m = 0; m < mariaBasins.length; m++) {
+          const mb = mariaBasins[m];
+          const dx = nx - mb.x + (macroNoise - 0.5) * 0.16;
+          const dy = ny - mb.y + (macroNoise - 0.5) * 0.14;
+          const d = Math.hypot(dx, dy) / mb.r;
+          if (d < 1.35) {
+            const v = Math.exp(-d * d * 2.2) * mb.d;
+            if (v > mariaMask) mariaMask = v;
+          }
+        }
+        mariaMask = Math.min(1, mariaMask * (0.65 + macroNoise * 0.72));
+
+        let craterShade = 0;
+        let ejectaBright = 0;
+        for (let k = 0; k < craters.length; k++) {
+          const cr = craters[k];
+          const dx = nx - cr.x;
+          const dy = ny - cr.y;
+          const d = Math.hypot(dx, dy);
+          if (d < cr.r * 1.45) {
+            const u = d / cr.r;
+            if (u < 0.85) {
+              const slope = (dx * lx + dy * ly) / (cr.r + 0.001);
+              craterShade += (-0.12 + slope * 0.24) * cr.depth * (1 - u * 0.4);
+            } else {
+              const rimBell = Math.exp(-Math.pow((u - 1.0) / 0.22, 2));
+              const slope = -(dx * lx + dy * ly) / (cr.r + 0.001);
+              craterShade += (0.14 + slope * 0.18) * rimBell * cr.depth;
+            }
+          }
+          if (cr.ray && d < 0.72 && d > cr.r * 0.7) {
+            const ang = Math.atan2(dy, dx);
+            const streak = Math.pow(0.5 + 0.5 * Math.sin(ang * 11 + cr.x * 20) * Math.cos(ang * 5 - 1.2), 2.6);
+            ejectaBright += streak * Math.exp(-d * 3.8) * 0.26 * cr.depth;
+          }
+        }
+
+        const terrain = Math.max(0, Math.min(1,
+          0.78 - mariaMask * 0.44 + (microNoise - 0.5) * 0.24 + (fineGrain - 0.5) * 0.10 + craterShade + ejectaBright
+        ));
+
+        const ndotl = Math.max(0, nx * lx + ny * ly + nz * lz);
+        const diffuse = 0.62 + 0.38 * Math.pow(ndotl, 0.55);
+        const limb = 0.76 + 0.24 * Math.pow(nz, 0.32);
+        const rimGlow = Math.pow(1 - nz, 3.2) * Math.max(0, ndotl) * 0.18;
+
+        let r, g, b;
+        if (terrain < 0.48) {
+          const f = terrain / 0.48;
+          r = mariaRGB[0] + (midRGB[0] - mariaRGB[0]) * f;
+          g = mariaRGB[1] + (midRGB[1] - mariaRGB[1]) * f;
+          b = mariaRGB[2] + (midRGB[2] - mariaRGB[2]) * f;
+        } else {
+          const f = (terrain - 0.48) / 0.52;
+          r = midRGB[0] + (hiRGB[0] - midRGB[0]) * f;
+          g = midRGB[1] + (hiRGB[1] - midRGB[1]) * f;
+          b = midRGB[2] + (hiRGB[2] - midRGB[2]) * f;
+        }
+
+        const lightMul = diffuse * limb;
+        const idx = (py * sz + px) * 4;
+        data[idx] = Math.round(Math.min(255, r * lightMul + rimRGB[0] * rimGlow));
+        data[idx + 1] = Math.round(Math.min(255, g * lightMul + rimRGB[1] * rimGlow));
+        data[idx + 2] = Math.round(Math.min(255, b * lightMul + rimRGB[2] * rimGlow));
+        data[idx + 3] = Math.round(edgeAlpha * 255);
+      }
+    }
+
+    c.putImageData(img, 0, 0);
     return sc;
   }
 
@@ -1302,39 +1423,48 @@
       // ==================== LAYER 1 (bgCtx • z-12) ====================
       bgCtx.clearRect(0, 0, w, h);
 
-      // ดวงจันทราหยกทองเอียงซ้ายเหนือต้นดอกท้อ
+      // ดวงจันทร์สมจริงโทนทองอุ่นคู่โคมลอย (Warm Harvest Moon) เอียงซ้ายเหนือต้นดอกท้อ
       const mx = state.moonX + state.mouseX * 14;
       const my = state.moonY + state.mouseY * 7;
       const moonR = Math.min(w * 0.145, minDim * 0.155, 102);
 
       bgCtx.save();
       bgCtx.globalCompositeOperation = 'lighter';
-      drawSoftOrb(bgCtx, mx, my, moonR * 3.1, [
-        [0, 'rgba(255, 252, 236, ' + (0.34 * k).toFixed(3) + ')'],
-        [0.20, 'rgba(254, 240, 186, ' + (0.22 * k).toFixed(3) + ')'],
-        [0.44, 'rgba(110, 231, 183, ' + (0.12 * k).toFixed(3) + ')'],
-        [0.70, 'rgba(56, 189, 248, ' + (0.06 * k).toFixed(3) + ')'],
+      drawSoftOrb(bgCtx, mx, my, moonR * 3.25, [
+        [0, 'rgba(255, 236, 178, ' + (0.42 * k).toFixed(3) + ')'],
+        [0.24, 'rgba(255, 224, 152, ' + (0.22 * k).toFixed(3) + ')'],
+        [0.52, 'rgba(251, 146, 60, ' + (0.10 * k).toFixed(3) + ')'],
+        [0.80, 'rgba(56, 189, 248, ' + (0.05 * k).toFixed(3) + ')'],
         [1, 'rgba(0, 0, 0, 0)']
       ]);
+      // วงแหวนทรงกลดทองอุ่นจางๆ รอบดวงจันทร์
+      const lunarRing = bgCtx.createRadialGradient(mx, my, moonR * 1.42, mx, my, moonR * 1.82);
+      lunarRing.addColorStop(0, 'rgba(0, 0, 0, 0)');
+      lunarRing.addColorStop(0.5, 'rgba(255, 230, 168, ' + (0.08 * k).toFixed(3) + ')');
+      lunarRing.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      bgCtx.fillStyle = lunarRing;
+      bgCtx.beginPath();
+      bgCtx.arc(mx, my, moonR * 1.82, 0, Math.PI * 2);
+      bgCtx.fill();
       bgCtx.restore();
 
       bgCtx.save();
-      bgCtx.globalAlpha = 0.94;
-      bgCtx.drawImage(sprites.moon, mx - moonR * 1.15, my - moonR * 1.15, moonR * 2.3, moonR * 2.3);
+      bgCtx.globalAlpha = 0.98;
+      bgCtx.drawImage(sprites.moon, mx - moonR * 1.10, my - moonR * 1.10, moonR * 2.20, moonR * 2.20);
       bgCtx.restore();
 
       bgCtx.save();
       bgCtx.globalCompositeOperation = 'lighter';
       bgCtx.translate(mx, my);
       bgCtx.rotate(t * 0.06);
-      bgCtx.strokeStyle = 'rgba(254, 240, 178, ' + (0.18 * k).toFixed(3) + ')';
-      bgCtx.lineWidth = 1.3;
+      bgCtx.strokeStyle = 'rgba(254, 224, 152, ' + (0.16 * k).toFixed(3) + ')';
+      bgCtx.lineWidth = 1.25;
       bgCtx.setLineDash([28, 16, 8, 18]);
       bgCtx.beginPath();
       bgCtx.arc(0, 0, moonR * 1.18, 0, Math.PI * 2);
       bgCtx.stroke();
       bgCtx.rotate(-t * 0.11);
-      bgCtx.strokeStyle = 'rgba(167, 243, 208, ' + (0.12 * k).toFixed(3) + ')';
+      bgCtx.strokeStyle = 'rgba(251, 186, 116, ' + (0.11 * k).toFixed(3) + ')';
       bgCtx.setLineDash([14, 24]);
       bgCtx.beginPath();
       bgCtx.arc(0, 0, moonR * 1.42, 0, Math.PI * 2);
