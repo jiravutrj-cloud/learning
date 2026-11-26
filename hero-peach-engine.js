@@ -1364,6 +1364,11 @@
         tr.life += dt;
         const p = tr.life / tr.maxLife;
         if (p >= 1) { craneTrails.splice(i, 1); continue; }
+        bgCtx.globalAlpha = (1 - p) * 0.45;
+        bgCtx.drawImage(sprites.glow.jade, tr.x - tr.r, tr.y - tr.r, tr.r * 2, tr.r * 2);
+      }
+      bgCtx.restore();
+
       // ข้อ 1 Helper: วาดโคมลอยแยกชั้นความลึก 3 ระยะ (ลอยสูงขึ้นไปถึงดวงจันทร์และขอบฟ้าด้านบน)
       const drawLanternsForPlane = function (planeId) {
         bgCtx.save();
