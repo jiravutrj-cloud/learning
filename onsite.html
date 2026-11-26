@@ -537,15 +537,21 @@
             useEffect(() => {
                 if (!isCloudConfigured || !fbAuth) { setAuthReady(true); return; }
                 let active = true;
-                const unsub = onAuthStateChanged(fbAuth, async (fbUser) => {
-                    if (!active) return;
-                    if (!fbUser) {
-                        try { await signInAnonymously(fbAuth); } catch (_) { if (active) setAuthReady(true); }
-                        return;
-                    }
-                    setAuthReady(true);
-                }, () => { if (active) setAuthReady(true); });
-                return () => { active = false; unsub(); };
+                const safetyTimer = setTimeout(() => { if (active) setAuthReady(true); }, 5000);
+                let unsub = () => {};
+                try {
+                    unsub = onAuthStateChanged(fbAuth, async (fbUser) => {
+                        if (!active) return;
+                        if (!fbUser) {
+                            try { await signInAnonymously(fbAuth); } catch (_) { if (active) setAuthReady(true); }
+                            return;
+                        }
+                        setAuthReady(true);
+                    }, () => { if (active) setAuthReady(true); });
+                } catch (_) {
+                    if (active) setAuthReady(true);
+                }
+                return () => { active = false; clearTimeout(safetyTimer); try { unsub(); } catch (_) {} };
             }, []);
 
             // Step 2: Subscribe to Settings, Historical Events Archive & All Registrations (Rule 1 & 2)
