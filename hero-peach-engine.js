@@ -861,19 +861,19 @@
     let ambientRoutes = [];
     let blossomNodes = [];
 
-    // ข้อ 1: โคมลอยอธิษฐาน 18 ดวง ไล่ระดับความลึก 3 ชั้น ลอยเอื่อยขึ้นสู่ท้องฟ้ายามค่ำคืน
+    // ข้อ 1: โคมลอยอธิษฐาน 18 ดวง ไล่ระดับความลึก 3 ชั้น ลอยเอื่อยสูงขึ้นไปถึงดวงจันทร์และขอบฟ้าด้านบน
     const skyLanterns = [];
     for (let i = 0; i < 18; i++) {
-      const isLeft = i % 2 === 0;
-      const laneIdx = Math.floor(i / 2);
       const plane = (i % 3) + 1; // 1 = ไกล, 2 = กลาง, 3 = ใกล้หุบเขา
-      const baseScale = plane === 1 ? 0.28 : (plane === 2 ? 0.44 : 0.62);
+      const baseScale = plane === 1 ? 0.28 : (plane === 2 ? 0.44 : 0.60);
+      // กระจายทั้งฝั่งซ้าย (ผ่านแนวพระจันทร์ 0.14–0.28), กลางบน และฝั่งขวา
+      const xPos = i % 3 === 0
+        ? (0.06 + ((i * 0.043) % 0.28))
+        : (i % 3 === 1 ? (0.64 + ((i * 0.045) % 0.32)) : (0.14 + ((i * 0.058) % 0.72)));
       skyLanterns.push({
-        xFrac: isLeft
-          ? (0.04 + ((laneIdx * 0.048) % 0.36))
-          : (0.60 + ((laneIdx * 0.048) % 0.36)),
-        yFrac: 0.10 + ((i * 0.115) % 0.72),
-        speed: (0.0085 + plane * 0.0042) + (i % 3) * 0.0022,
+        xFrac: xPos,
+        yFrac: 0.02 + ((i * 0.088) % 0.80),
+        speed: (0.0065 + plane * 0.0032) + (i % 3) * 0.0016,
         scale: baseScale + (i % 3) * 0.07,
         plane: plane,
         swaySeed: i * 1.65,
@@ -1024,25 +1024,25 @@
       const leftTrunk = [svgPt(292, 336), svgPt(308, 282), svgPt(312, 232)];
       const rightTrunk = [svgPt(348, 336), svgPt(332, 282), svgPt(328, 232)];
 
-      // แสงลมปราณ 12 สาย ไหลลงมาจากยอดเขาของแต่ละลูก (ซ้าย 6 ลูก / ขวา 6 ลูก) เข้าสู่ลำต้นและแผ่ขึ้นปลุก 12 กิ่งดอกท้อ
+      // แสงลมปราณ 12 สาย ไหลช้าอัลตร้าสมูท (24–30 วิ) ลงมาจากยอดเขาของแต่ละลูกเข้าสู่ลำต้นและแผ่ขึ้นปลุก 12 กิ่งดอกท้อ
       const branchDefs = [
-        { peakArc: buildPeakCascadeArc(allLeftPeaks[0 % allLeftPeaks.length], leftRoot, -1, 0),  trunk: leftTrunk,  bPts: [svgPt(308, 224), svgPt(236, 212), svgPt(148, 216), svgPt(64,  234)], sprite: 'peach', dur: 13.6, phase: 0.00 },
-        { peakArc: buildPeakCascadeArc(allLeftPeaks[1 % allLeftPeaks.length], leftRoot, -1, 1),  trunk: leftTrunk,  bPts: [svgPt(306, 202), svgPt(222, 180), svgPt(132, 174), svgPt(46,  188)], sprite: 'gold',  dur: 14.4, phase: 0.14 },
-        { peakArc: buildPeakCascadeArc(allLeftPeaks[2 % allLeftPeaks.length], leftRoot, -1, 2),  trunk: leftTrunk,  bPts: [svgPt(308, 178), svgPt(232, 146), svgPt(156, 128), svgPt(84,  136)], sprite: 'peach', dur: 15.2, phase: 0.28 },
-        { peakArc: buildPeakCascadeArc(allLeftPeaks[3 % allLeftPeaks.length], leftRoot, -1, 3),  trunk: leftTrunk,  bPts: [svgPt(312, 154), svgPt(254, 114), svgPt(194, 86),  svgPt(136, 82)],  sprite: 'jade',  dur: 15.8, phase: 0.42 },
-        { peakArc: buildPeakCascadeArc(allLeftPeaks[4 % allLeftPeaks.length], leftRoot, -1, 4),  trunk: leftTrunk,  bPts: [svgPt(316, 134), svgPt(280, 86),  svgPt(242, 54),  svgPt(206, 44)],  sprite: 'gold',  dur: 14.6, phase: 0.56 },
-        { peakArc: buildPeakCascadeArc(allLeftPeaks[5 % allLeftPeaks.length], leftRoot, -1, 5),  trunk: leftTrunk,  bPts: [svgPt(248, 198), svgPt(202, 166), svgPt(168, 146), svgPt(134, 152)], sprite: 'peach', dur: 15.0, phase: 0.70 },
-        { peakArc: buildPeakCascadeArc(allRightPeaks[0 % allRightPeaks.length], rightRoot, 1, 0), trunk: rightTrunk, bPts: [svgPt(332, 224), svgPt(404, 212), svgPt(492, 216), svgPt(576, 234)], sprite: 'peach', dur: 14.0, phase: 0.08 },
-        { peakArc: buildPeakCascadeArc(allRightPeaks[1 % allRightPeaks.length], rightRoot, 1, 1), trunk: rightTrunk, bPts: [svgPt(334, 202), svgPt(418, 180), svgPt(508, 174), svgPt(594, 188)], sprite: 'jade',  dur: 14.8, phase: 0.22 },
-        { peakArc: buildPeakCascadeArc(allRightPeaks[2 % allRightPeaks.length], rightRoot, 1, 2), trunk: rightTrunk, bPts: [svgPt(332, 178), svgPt(408, 146), svgPt(484, 128), svgPt(556, 136)], sprite: 'peach', dur: 15.6, phase: 0.36 },
-        { peakArc: buildPeakCascadeArc(allRightPeaks[3 % allRightPeaks.length], rightRoot, 1, 3), trunk: rightTrunk, bPts: [svgPt(328, 154), svgPt(386, 114), svgPt(446, 86),  svgPt(504, 82)],  sprite: 'gold',  dur: 16.0, phase: 0.50 },
-        { peakArc: buildPeakCascadeArc(allRightPeaks[4 % allRightPeaks.length], rightRoot, 1, 4), trunk: rightTrunk, bPts: [svgPt(324, 134), svgPt(360, 86),  svgPt(398, 54),  svgPt(434, 44)],  sprite: 'peach', dur: 14.4, phase: 0.64 },
-        { peakArc: buildPeakCascadeArc(allRightPeaks[5 % allRightPeaks.length], rightRoot, 1, 5), trunk: rightTrunk, bPts: [svgPt(320, 152), svgPt(318, 106), svgPt(320, 62),  svgPt(320, 26)],  sprite: 'gold',  dur: 13.2, phase: 0.80 }
+        { peakArc: buildPeakCascadeArc(allLeftPeaks[0 % allLeftPeaks.length], leftRoot, -1, 0),  trunk: leftTrunk,  bPts: [svgPt(308, 224), svgPt(236, 212), svgPt(148, 216), svgPt(64,  234)], sprite: 'peach', dur: 24.5, phase: 0.00 },
+        { peakArc: buildPeakCascadeArc(allLeftPeaks[1 % allLeftPeaks.length], leftRoot, -1, 1),  trunk: leftTrunk,  bPts: [svgPt(306, 202), svgPt(222, 180), svgPt(132, 174), svgPt(46,  188)], sprite: 'gold',  dur: 26.0, phase: 0.14 },
+        { peakArc: buildPeakCascadeArc(allLeftPeaks[2 % allLeftPeaks.length], leftRoot, -1, 2),  trunk: leftTrunk,  bPts: [svgPt(308, 178), svgPt(232, 146), svgPt(156, 128), svgPt(84,  136)], sprite: 'peach', dur: 27.5, phase: 0.28 },
+        { peakArc: buildPeakCascadeArc(allLeftPeaks[3 % allLeftPeaks.length], leftRoot, -1, 3),  trunk: leftTrunk,  bPts: [svgPt(312, 154), svgPt(254, 114), svgPt(194, 86),  svgPt(136, 82)],  sprite: 'jade',  dur: 28.8, phase: 0.42 },
+        { peakArc: buildPeakCascadeArc(allLeftPeaks[4 % allLeftPeaks.length], leftRoot, -1, 4),  trunk: leftTrunk,  bPts: [svgPt(316, 134), svgPt(280, 86),  svgPt(242, 54),  svgPt(206, 44)],  sprite: 'gold',  dur: 26.6, phase: 0.56 },
+        { peakArc: buildPeakCascadeArc(allLeftPeaks[5 % allLeftPeaks.length], leftRoot, -1, 5),  trunk: leftTrunk,  bPts: [svgPt(248, 198), svgPt(202, 166), svgPt(168, 146), svgPt(134, 152)], sprite: 'peach', dur: 27.2, phase: 0.70 },
+        { peakArc: buildPeakCascadeArc(allRightPeaks[0 % allRightPeaks.length], rightRoot, 1, 0), trunk: rightTrunk, bPts: [svgPt(332, 224), svgPt(404, 212), svgPt(492, 216), svgPt(576, 234)], sprite: 'peach', dur: 25.2, phase: 0.08 },
+        { peakArc: buildPeakCascadeArc(allRightPeaks[1 % allRightPeaks.length], rightRoot, 1, 1), trunk: rightTrunk, bPts: [svgPt(334, 202), svgPt(418, 180), svgPt(508, 174), svgPt(594, 188)], sprite: 'jade',  dur: 26.8, phase: 0.22 },
+        { peakArc: buildPeakCascadeArc(allRightPeaks[2 % allRightPeaks.length], rightRoot, 1, 2), trunk: rightTrunk, bPts: [svgPt(332, 178), svgPt(408, 146), svgPt(484, 128), svgPt(556, 136)], sprite: 'peach', dur: 28.2, phase: 0.36 },
+        { peakArc: buildPeakCascadeArc(allRightPeaks[3 % allRightPeaks.length], rightRoot, 1, 3), trunk: rightTrunk, bPts: [svgPt(328, 154), svgPt(386, 114), svgPt(446, 86),  svgPt(504, 82)],  sprite: 'gold',  dur: 29.4, phase: 0.50 },
+        { peakArc: buildPeakCascadeArc(allRightPeaks[4 % allRightPeaks.length], rightRoot, 1, 4), trunk: rightTrunk, bPts: [svgPt(324, 134), svgPt(360, 86),  svgPt(398, 54),  svgPt(434, 44)],  sprite: 'peach', dur: 26.2, phase: 0.64 },
+        { peakArc: buildPeakCascadeArc(allRightPeaks[5 % allRightPeaks.length], rightRoot, 1, 5), trunk: rightTrunk, bPts: [svgPt(320, 152), svgPt(318, 106), svgPt(320, 62),  svgPt(320, 26)],  sprite: 'gold',  dur: 24.0, phase: 0.80 }
       ];
 
       ambientRoutes = branchDefs.map(function (b) {
-        const gtSamples = sampleCatmullRomArc(b.peakArc.concat(b.trunk), 56);
-        const fullSamples = sampleCatmullRomArc(b.peakArc.concat(b.trunk, b.bPts), 190);
+        const gtSamples = sampleCatmullRomArc(b.peakArc.concat(b.trunk), 72);
+        const fullSamples = sampleCatmullRomArc(b.peakArc.concat(b.trunk, b.bPts), 260);
         let gtLen = 0;
         let fullLen = 0;
         for (let i = 1; i < gtSamples.length; i++) {
@@ -1364,10 +1364,7 @@
         tr.life += dt;
         const p = tr.life / tr.maxLife;
         if (p >= 1) { craneTrails.splice(i, 1); continue; }
-        bgCtx.globalAlpha = (1 - p) * 0.45;
-        bgCtx.drawImage(sprites.glow.jade, tr.x - tr.r, tr.y - tr.r, tr.r * 2, tr.r * 2);
-      }
-      // ข้อ 1 Helper: วาดโคมลอยแยกชั้นความลึก 3 ระยะ (ไกล / กลาง / ใกล้หุบเขา)
+      // ข้อ 1 Helper: วาดโคมลอยแยกชั้นความลึก 3 ระยะ (ลอยสูงขึ้นไปถึงดวงจันทร์และขอบฟ้าด้านบน)
       const drawLanternsForPlane = function (planeId) {
         bgCtx.save();
         bgCtx.globalCompositeOperation = 'lighter';
@@ -1375,18 +1372,21 @@
           const ln = skyLanterns[i];
           if (ln.plane !== planeId) continue;
           if (!reducedMotion) ln.yFrac -= dt * ln.speed;
-          if (ln.yFrac < -0.08) {
-            ln.yFrac = 0.82 + Math.random() * 0.12;
-            ln.xFrac = i % 2 === 0 ? (0.04 + Math.random() * 0.36) : (0.60 + Math.random() * 0.36);
+          if (ln.yFrac < -0.10) {
+            ln.yFrac = 0.84 + Math.random() * 0.10;
+            ln.xFrac = i % 3 === 0
+              ? (0.06 + Math.random() * 0.28)
+              : (i % 3 === 1 ? (0.64 + Math.random() * 0.32) : (0.14 + Math.random() * 0.72));
           }
           const parallax = planeId === 1 ? 5 : (planeId === 2 ? 11 : 17);
-          const lx = ln.xFrac * w + Math.sin(t * 0.55 + ln.swaySeed) * (14 + planeId * 4) + state.mouseX * parallax;
+          const lx = ln.xFrac * w + Math.sin(t * 0.48 + ln.swaySeed) * (14 + planeId * 4) + state.mouseX * parallax;
           const ly = ln.yFrac * h;
-          const fade = smoothstep(-0.06, 0.12, ln.yFrac) * smoothstep(0.84, 0.68, ln.yFrac);
-          const flicker = 0.84 + 0.16 * Math.sin(t * 5.2 + ln.flickerSeed);
+          // คงความสว่างชัดไปจนถึงระดับดวงจันทร์และขอบฟ้าด้านบนสุด (-0.08 ถึง 0.02 ค่อยๆ จางหาย)
+          const fade = smoothstep(-0.08, 0.02, ln.yFrac) * smoothstep(0.86, 0.70, ln.yFrac);
+          const flicker = 0.86 + 0.14 * Math.sin(t * 4.6 + ln.flickerSeed);
           const dw = 48 * ln.scale * (w < 768 ? 0.78 : 1.0);
           const dh = 56 * ln.scale * (w < 768 ? 0.78 : 1.0);
-          const planeAlpha = planeId === 1 ? 0.65 : (planeId === 2 ? 0.85 : 0.96);
+          const planeAlpha = planeId === 1 ? 0.68 : (planeId === 2 ? 0.86 : 0.96);
           bgCtx.globalAlpha = Math.max(0, fade * flicker * planeAlpha);
           bgCtx.drawImage(sprites.lantern, lx - dw * 0.5, ly - dh * 0.5, dw, dh);
         }
@@ -1489,9 +1489,9 @@
       fxCtx.clearRect(0, 0, w, h);
 
       const activeHeads = [];
-      const tailSteps = w < 768 ? 24 : 34;
-      const tailSpan = 0.25;
-      const baseGlowRadius = w < 768 ? 16 : 21;
+      const tailSteps = w < 768 ? 36 : 52;
+      const tailSpan = 0.34;
+      const baseGlowRadius = w < 768 ? 15 : 20;
 
       fxCtx.save();
       fxCtx.globalCompositeOperation = 'lighter';
@@ -1499,8 +1499,8 @@
         const rt = ambientRoutes[r];
         if (!rt.pts || rt.pts.length < 4) continue;
         const rawP = ((t / rt.dur) + rt.phase) % 1;
-        const headU = rawP - 0.016 * Math.sin(rawP * Math.PI * 2);
-        const envFade = Math.pow(Math.sin(Math.min(1, Math.max(0, rawP)) * Math.PI), 0.78);
+        const headU = rawP - 0.012 * Math.sin(rawP * Math.PI * 2);
+        const envFade = Math.pow(Math.sin(Math.min(1, Math.max(0, rawP)) * Math.PI), 0.68);
         const spriteImg = sprites.glow[rt.sprite] || sprites.glow.peach;
         activeHeads.push(headU);
 
@@ -1509,15 +1509,15 @@
           const u = headU - frac * tailSpan;
           if (u < 0 || u > 1) continue;
           const pt = sampleRoutePoint(rt.pts, u);
-          const taper = Math.pow(1 - frac, 1.28);
-          const rad = baseGlowRadius * (0.50 + taper * 0.96);
-          fxCtx.globalAlpha = Math.max(0, Math.min(0.54, taper * envFade * 0.36));
+          const taper = Math.pow(1 - frac, 1.42);
+          const rad = baseGlowRadius * (0.44 + taper * 0.92);
+          fxCtx.globalAlpha = Math.max(0, Math.min(0.42, taper * envFade * 0.28));
           fxCtx.drawImage(spriteImg, pt.x - rad, pt.y - rad, rad * 2, rad * 2);
         }
         if (headU >= 0 && headU <= 1) {
           const hp = sampleRoutePoint(rt.pts, headU);
-          const headR = baseGlowRadius * 1.45;
-          fxCtx.globalAlpha = Math.max(0, Math.min(0.78, envFade * 0.64));
+          const headR = baseGlowRadius * 1.42;
+          fxCtx.globalAlpha = Math.max(0, Math.min(0.74, envFade * 0.62));
           fxCtx.drawImage(sprites.glow.gold, hp.x - headR, hp.y - headR, headR * 2, headR * 2);
         }
       }
