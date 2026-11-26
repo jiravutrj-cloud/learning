@@ -878,5 +878,168 @@
     openAudioCacheDb: openAudioCacheDb,
     getCachedAudio: getCachedAudio,
     setCachedAudio: setCachedAudio
+    /* ==========================================================================
+   PATCH: Constants, Clinical Pocket Guide, R2R SUS & 24kHz Studio Audio Helper
+   (วางต่อท้ายสุดของไฟล์ learning-core.js)
+   ========================================================================== */
+(function attachRjCloudCoreExtras(globalScope) {
+  const core = (globalScope.RJLearningCore = globalScope.RJLearningCore || {});
+
+  // 1. กลุ่มวิชาชีพ (กฎเหล็ก: CNEU แสดงเฉพาะกลุ่ม "พยาบาล" เท่านั้น)
+  core.PROFESSION_OPTIONS = [
+    { id: "nurse", label: "พยาบาล", en: "Registered Nurse", cneuEligible: true },
+    { id: "doctor", label: "แพทย์", en: "Physician", cneuEligible: false },
+    { id: "allied", label: "บุคลากรสหวิชาชีพ", en: "Allied Health Professional", cneuEligible: false }
+  ];
+
+  // 2. เขตสุขภาพ 1 - 13 (กระทรวงสาธารณสุข)
+  core.HEALTH_REGIONS = [
+    "เขตสุขภาพที่ 1 (เชียงใหม่ และภาคเหนือตอนบน)",
+    "เขตสุขภาพที่ 2 (พิษณุโลก และภาคเหนือตอนล่าง)",
+    "เขตสุขภาพที่ 3 (นครสวรรค์ และภาคกลางตอนบน)",
+    "เขตสุขภาพที่ 4 (สระบุรี และปริมณฑลตอนเหนือ)",
+    "เขตสุขภาพที่ 5 (ราชบุรี และภาคตะวันตก)",
+    "เขตสุขภาพที่ 6 (ชลบุรี และภาคตะวันออก)",
+    "เขตสุขภาพที่ 7 (ขอนแก่น และอีสานตอนกลาง)",
+    "เขตสุขภาพที่ 8 (อุดรธานี และอีสานตอนบน)",
+    "เขตสุขภาพที่ 9 (นครราชสีมา และอีสานตอนล่าง 1)",
+    "เขตสุขภาพที่ 10 (อุบลราชธานี และอีสานตอนล่าง 2)",
+    "เขตสุขภาพที่ 11 (สุราษฎร์ธานี และภาคใต้ตอนบน)",
+    "เขตสุขภาพที่ 12 (สงขลา และภาคใต้ตอนล่าง)",
+    "เขตสุขภาพที่ 13 (กรุงเทพมหานคร)"
+  ];
+
+  // 3. วลีสื่อสารฉุกเฉินหน้างาน ICU (Pocket Phrases สำหรับเจรจาขอรับบริจาคอวัยวะ)
+  core.POCKET_PHRASES = [
+    {
+      stage: "เปิดบทสนทนาด้วยความเห็นอกเห็นใจ",
+      phrase: "หมอและทีมพยาบาลเสียใจอย่างสุดซึ้งกับการสูญเสียครั้งนี้ค่ะ เราดูแลท่านอย่างเต็มที่ที่สุดแล้ว และอยากอยู่เป็นกำลังใจให้ครอบครัวในช่วงเวลาที่ยากลำบากนี้"
+    },
+    {
+      stage: "อธิบายภาวะสมองตายอย่างชัดเจน",
+      phrase: "ผลการตรวจยืนยันตามเกณฑ์แพทยสภาพบว่าก้านสมองหยุดทำงานอย่างถาวรแล้ว เครื่องช่วยหายใจเพียงพยุงให้หัวใจเต้นชั่วคราว แต่ท่านไม่สามารถฟื้นกลับมาได้อีก"
+    },
+    {
+      stage: "เสนอทางเลือกแห่งการให้ (ไม่กดดัน)",
+      phrase: "ในวาระสุดท้ายนี้ มีอีกหนึ่งบุญกุศลอันยิ่งใหญ่ที่ครอบครัวอาจพิจารณาได้ คือการบริจาคอวัยวะเพื่อต่อชีวิตให้ผู้ป่วยวิกฤตอีกหลายชีวิต ไม่ทราบว่าท่านเคยพูดคุยเรื่องนี้ไว้บ้างไหมคะ"
+    },
+    {
+      stage: "คลายความกังวลเรื่องร่างกายและพิธีกรรม",
+      phrase: "ทีมศัลยแพทย์จะดูแลร่างกายของท่านด้วยความเคารพสูงสุดเหมือนการผ่าตัดทั่วไป แผลจะถูกเย็บปิดอย่างเรียบร้อย สามารถประกอบพิธีทางศาสนาได้ตามปกติทุกประการค่ะ"
+    }
+  ];
+
+  // 4. แบบประเมินความพึงพอใจและการใช้งานระบบมาตรฐาน R2R (SUS 10 ข้อ)
+  core.SUS_QUESTIONS = [
+    "1. ฉันต้องการกลับมาใช้งานระบบ rjcloud.organ 2.0 นี้อย่างสม่ำเสมอ",
+    "2. ฉันรู้สึกว่าระบบนี้มีความซับซ้อนเกินความจำเป็น",
+    "3. ฉันคิดว่าระบบนี้ใช้งานง่ายและเข้าใจได้ทันที",
+    "4. ฉันคิดว่าฉันจำเป็นต้องมีผู้เชี่ยวชาญคอยช่วยเหลือจึงจะใช้งานระบบนี้ได้",
+    "5. ฉันพบว่าฟังก์ชันต่างๆ (บทเรียน, AI สรุป, Skill Lab) เชื่อมโยงกันได้อย่างลงตัว",
+    "6. ฉันรู้สึกว่ามีหลายส่วนในระบบที่ทำงานไม่สอดคล้องกัน",
+    "7. ฉันเชื่อว่าบุคลากรทางการแพทย์ส่วนใหญ่สามารถเรียนรู้การใช้งานระบบนี้ได้อย่างรวดเร็ว",
+    "8. ฉันรู้สึกว่าระบบนี้ใช้งานยุ่งยากและไม่คล่องตัว",
+    "9. ฉันรู้สึกมั่นใจขณะใช้งานระบบนี้ในการเรียนรู้และสอบวัดผล",
+    "10. ฉันต้องเรียนรู้สิ่งใหม่ๆ มากมายก่อนจะเริ่มใช้งานระบบนี้ได้"
+  ];
+
+  // 5. ตัวช่วยสร้างบทสรุป 1 นาทีมาตรฐานสำหรับแต่ละบทเรียน
+  core.buildDefaultOneMinSummary = function buildDefaultOneMinSummary(lesson) {
+    if (!lesson) return "สรุปเนื้อหาสำคัญของบทเรียนเพื่อการประยุกต์ใช้จริงในคลินิก";
+    if (lesson.oneMinSummary && String(lesson.oneMinSummary).trim()) {
+      return String(lesson.oneMinSummary).trim();
+    }
+    const title = lesson.title || "บทเรียนหลัก";
+    const keyPoints = Array.isArray(lesson.keyPoints) && lesson.keyPoints.length > 0
+      ? lesson.keyPoints.map((p, idx) => `${idx + 1}. ${p}`).join("\n")
+      : "1. ทำความเข้าใจเกณฑ์มาตรฐานทางคลินิกและขั้นตอนปฏิบัติที่ถูกต้อง\n2. ประสานงานทีมสหวิชาชีพและสื่อสารกับครอบครัวผู้ป่วยอย่างอ่อนโยน\n3. บันทึกข้อมูลและตรวจสอบความถูกต้องตามระเบียบศูนย์รับบริจาคอวัยวะ";
+    return `สรุปสาระสำคัญ 1 นาที — ${title}\n${keyPoints}`;
+  };
+
+  // 6. ตัวช่วยแปลงลิงก์เอกสาร PDF / Google Drive ให้ฝังแสดงผลได้ทันที
+  core.resolveLessonDocUrl = function resolveLessonDocUrl(lesson) {
+    const raw = (lesson && (lesson.docUrl || lesson.pdfUrl || lesson.url)) || "";
+    if (!raw) return "";
+    const trimmed = String(raw).trim();
+    // แปลงลิงก์ Google Drive /view หรือ /edit เป็น /preview สำหรับ iframe
+    const driveMatch = trimmed.match(/drive\.google\.com\/file\/d\/([^/]+)/i);
+    if (driveMatch && driveMatch[1]) {
+      return `https://drive.google.com/file/d/${driveMatch[1]}/preview`;
+    }
+    return trimmed;
+  };
+
+  // 7. ตัวช่วยสร้างไฟล์เสียง AI สตูดิโอ 24kHz เท่านั้น (ผ่าน Code.gs -> Gemini TTS)
+  // กฎเหล็ก: ห้ามตกกลับไปใช้ window.speechSynthesis ของเบราว์เซอร์โดยเด็ดขาด
+  function pcm16ToWavBlob(pcmBytes, sampleRate = 24000) {
+    // หากเป็นไฟล์ WAV อยู่แล้ว (ขึ้นต้นด้วย "RIFF") ส่งคืนทันที
+    if (
+      pcmBytes.length >= 4 &&
+      pcmBytes[0] === 0x52 && pcmBytes[1] === 0x49 &&
+      pcmBytes[2] === 0x46 && pcmBytes[3] === 0x46
+    ) {
+      return new Blob([pcmBytes], { type: "audio/wav" });
+    }
+    const numChannels = 1;
+    const bitsPerSample = 16;
+    const byteRate = (sampleRate * numChannels * bitsPerSample) / 8;
+    const blockAlign = (numChannels * bitsPerSample) / 8;
+    const dataSize = pcmBytes.length;
+    const buffer = new ArrayBuffer(44 + dataSize);
+    const view = new DataView(buffer);
+
+    const writeStr = (offset, str) => {
+      for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+    };
+
+    writeStr(0, "RIFF");
+    view.setUint32(4, 36 + dataSize, true);
+    writeStr(8, "WAVE");
+    writeStr(12, "fmt ");
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true); // PCM
+    view.setUint16(22, numChannels, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, byteRate, true);
+    view.setUint16(32, blockAlign, true);
+    view.setUint16(34, bitsPerSample, true);
+    writeStr(36, "data");
+    view.setUint32(40, dataSize, true);
+
+    new Uint8Array(buffer, 44).set(pcmBytes);
+    return new Blob([buffer], { type: "audio/wav" });
+  }
+
+  core.fetchStudioGuideBlob = async function fetchStudioGuideBlob(text, gasUrl, voiceName = "Sulafat") {
+    const cleanText = String(text || "").trim();
+    if (!cleanText) throw new Error("ไม่มีข้อความสำหรับสร้างเสียงสตูดิโอ");
+    if (!gasUrl) throw new Error("ไม่พบปลายทางเซิร์ฟเวอร์เสียงสตูดิโอ (GAS URL)");
+
+    const res = await fetch(gasUrl, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      redirect: "follow",
+      body: JSON.stringify({
+        action: "callGeminiTTS",
+        text: cleanText,
+        voiceName
+      })
+    });
+
+    if (!res.ok) throw new Error(`เชื่อมต่อระบบเสียงสตูดิโอไม่สำเร็จ (${res.status})`);
+    const data = await res.json();
+    const base64Audio = data.audioBase64 || data.audio || (data.data && data.data.audioBase64);
+    if (!base64Audio) {
+      throw new Error(data.error || "ไม่พบข้อมูลเสียง 24kHz จากเซิร์ฟเวอร์");
+    }
+
+    const binaryStr = atob(base64Audio);
+    const bytes = new Uint8Array(binaryStr.length);
+    for (let i = 0; i < binaryStr.length; i++) {
+      bytes[i] = binaryStr.charCodeAt(i);
+    }
+    return pcm16ToWavBlob(bytes, 24000);
+  };
+})(window);
   };
 })(window);
