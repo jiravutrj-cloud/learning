@@ -227,43 +227,76 @@
   }
 
   function bakeMoonSprite() {
-    const sz = 220;
+    const sz = 240;
     const sc = document.createElement('canvas');
     sc.width = sz;
     sc.height = sz;
     const c = sc.getContext('2d');
-    const cx = 110, cy = 110, r = 82;
+    const cx = 120, cy = 120, r = 84;
 
-    const baseG = c.createRadialGradient(cx - 16, cy - 16, 8, cx, cy, r);
-    baseG.addColorStop(0, 'rgba(255, 254, 245, 0.98)');
-    baseG.addColorStop(0.52, 'rgba(254, 246, 214, 0.92)');
-    baseG.addColorStop(0.84, 'rgba(248, 228, 168, 0.78)');
-    baseG.addColorStop(1, 'rgba(167, 243, 208, 0.0)');
-    c.fillStyle = baseG;
+    // 1. ออร่าหยกทองนุ่มนวลรอบดวงจันทร์
+    const outerHalo = c.createRadialGradient(cx, cy, r * 0.72, cx, cy, r * 1.38);
+    outerHalo.addColorStop(0, 'rgba(255, 251, 232, 0.48)');
+    outerHalo.addColorStop(0.48, 'rgba(254, 240, 186, 0.20)');
+    outerHalo.addColorStop(0.80, 'rgba(110, 231, 183, 0.08)');
+    outerHalo.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    c.fillStyle = outerHalo;
     c.beginPath();
-    c.arc(cx, cy, r, 0, Math.PI * 2);
+    c.arc(cx, cy, r * 1.38, 0, Math.PI * 2);
     c.fill();
 
+    // 2. ดวงจันทร์ทรงกลมหลัก
     c.save();
     c.beginPath();
-    c.arc(cx, cy, r * 0.92, 0, Math.PI * 2);
+    c.arc(cx, cy, r, 0, Math.PI * 2);
     c.clip();
+
+    const baseG = c.createRadialGradient(cx - r * 0.26, cy - r * 0.26, r * 0.08, cx + r * 0.12, cy + r * 0.14, r * 1.15);
+    baseG.addColorStop(0, '#fffef7');
+    baseG.addColorStop(0.52, '#fef3c7');
+    baseG.addColorStop(0.84, '#f3d89b');
+    baseG.addColorStop(1, '#d8b473');
+    c.fillStyle = baseG;
+    c.fillRect(cx - r, cy - r, r * 2, r * 2);
+
+    // 3. เงาพื้นผิวจันทรา (Lunar Maria) 7 จุดสมจริง
     const maria = [
-      { x: -24, y: -14, rx: 28, ry: 22, a: 0.09 },
-      { x: 18,  y: -22, rx: 22, ry: 18, a: 0.07 },
-      { x: 14,  y: 18,  rx: 32, ry: 24, a: 0.08 },
-      { x: -12, y: 26,  rx: 20, ry: 14, a: 0.06 }
+      { ox: -0.28, oy: -0.18, rx: 0.34, ry: 0.24, rot: -0.35, a: 0.13 },
+      { ox:  0.14, oy: -0.26, rx: 0.28, ry: 0.20, rot:  0.25, a: 0.11 },
+      { ox:  0.24, oy:  0.08, rx: 0.32, ry: 0.22, rot:  0.50, a: 0.14 },
+      { ox: -0.12, oy:  0.22, rx: 0.26, ry: 0.18, rot: -0.20, a: 0.10 },
+      { ox:  0.02, oy: -0.02, rx: 0.22, ry: 0.16, rot:  0.12, a: 0.09 },
+      { ox: -0.36, oy:  0.14, rx: 0.18, ry: 0.14, rot:  0.40, a: 0.08 },
+      { ox:  0.34, oy: -0.10, rx: 0.16, ry: 0.12, rot: -0.30, a: 0.09 }
     ];
     for (let i = 0; i < maria.length; i++) {
       const m = maria[i];
-      const mg = c.createRadialGradient(cx + m.x, cy + m.y, 2, cx + m.x, cy + m.y, m.rx);
-      mg.addColorStop(0, 'rgba(120, 148, 168, ' + m.a + ')');
-      mg.addColorStop(1, 'rgba(120, 148, 168, 0)');
+      const mxp = cx + m.ox * r;
+      const myp = cy + m.oy * r;
+      const mrad = Math.max(m.rx, m.ry) * r;
+      const mg = c.createRadialGradient(mxp, myp, mrad * 0.1, mxp, myp, mrad);
+      mg.addColorStop(0, 'rgba(148, 124, 88, ' + m.a + ')');
+      mg.addColorStop(0.65, 'rgba(164, 140, 102, ' + (m.a * 0.55).toFixed(3) + ')');
+      mg.addColorStop(1, 'rgba(164, 140, 102, 0)');
+      c.save();
+      c.translate(mxp, myp);
+      c.rotate(m.rot);
+      c.scale(m.rx / Math.max(m.rx, m.ry), m.ry / Math.max(m.rx, m.ry));
       c.fillStyle = mg;
       c.beginPath();
-      c.ellipse(cx + m.x, cy + m.y, m.rx, m.ry, 0.3, 0, Math.PI * 2);
+      c.arc(0, 0, mrad, 0, Math.PI * 2);
       c.fill();
+      c.restore();
     }
+
+    // 4. ขอบแสงเรืองด้านใน
+    const rim = c.createRadialGradient(cx, cy, r * 0.82, cx, cy, r);
+    rim.addColorStop(0, 'rgba(255, 255, 255, 0)');
+    rim.addColorStop(1, 'rgba(255, 253, 240, 0.36)');
+    c.fillStyle = rim;
+    c.beginPath();
+    c.arc(cx, cy, r, 0, Math.PI * 2);
+    c.fill();
     c.restore();
     return sc;
   }
@@ -598,7 +631,24 @@
       hc.fill();
     }
 
-    return { normal: normalOff, holo: holoOff };
+    // เก็บพิกัดยอดเขาจริงของภูเขาลูกนี้ (ฝั่งซ้ายและฝั่งขวา) เพื่อใช้เป็นจุดกำเนิดแสงลมปราณไหลลงมาจากยอดเขา
+    const leftPeaks = [];
+    const rightPeaks = [];
+    for (let s = 0; s < cfg.spires.length; s++) {
+      const sp = cfg.spires[s];
+      const centerIdx = Math.round(sp.x * steps);
+      const searchRad = Math.max(2, Math.round(sp.w * steps * 0.45));
+      let bestPt = ridgePts[Math.max(0, Math.min(steps, centerIdx))];
+      for (let j = Math.max(0, centerIdx - searchRad); j <= Math.min(steps, centerIdx + searchRad); j++) {
+        if (ridgePts[j] && ridgePts[j].y < bestPt.y) bestPt = ridgePts[j];
+      }
+      if (bestPt) {
+        if (sp.x < 0.5) leftPeaks.push({ x: bestPt.x, y: bestPt.y });
+        else rightPeaks.push({ x: bestPt.x, y: bestPt.y });
+      }
+    }
+
+    return { normal: normalOff, holo: holoOff, leftPeaks: leftPeaks, rightPeaks: rightPeaks };
   }
 
   function buildFourMountainPlanes(w, h) {
@@ -811,17 +861,23 @@
     let ambientRoutes = [];
     let blossomNodes = [];
 
-    // ข้อ 1: โคมลอยอธิษฐาน 9 ดวง ลอยขึ้นช้าๆ แทรกทิวเขาและม่านหมอกเย็น
+    // ข้อ 1: โคมลอยอธิษฐาน 18 ดวง ไล่ระดับความลึก 3 ชั้น ลอยเอื่อยขึ้นสู่ท้องฟ้ายามค่ำคืน
     const skyLanterns = [];
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < 18; i++) {
+      const isLeft = i % 2 === 0;
+      const laneIdx = Math.floor(i / 2);
+      const plane = (i % 3) + 1; // 1 = ไกล, 2 = กลาง, 3 = ใกล้หุบเขา
+      const baseScale = plane === 1 ? 0.28 : (plane === 2 ? 0.44 : 0.62);
       skyLanterns.push({
-        xFrac: i < 5 ? (0.06 + i * 0.085) : (0.62 + (i - 5) * 0.085),
-        yFrac: 0.22 + ((i * 0.13) % 0.62),
-        speed: 0.011 + (i % 4) * 0.0045,
-        scale: 0.34 + (i % 3) * 0.16,
-        plane: i % 2 === 0 ? 1 : 2,
-        swaySeed: i * 1.9,
-        flickerSeed: i * 2.7
+        xFrac: isLeft
+          ? (0.04 + ((laneIdx * 0.048) % 0.36))
+          : (0.60 + ((laneIdx * 0.048) % 0.36)),
+        yFrac: 0.10 + ((i * 0.115) % 0.72),
+        speed: (0.0085 + plane * 0.0042) + (i % 3) * 0.0022,
+        scale: baseScale + (i % 3) * 0.07,
+        plane: plane,
+        swaySeed: i * 1.65,
+        flickerSeed: i * 2.35
       });
     }
 
@@ -925,80 +981,68 @@
 
       const isDesktop = state.w >= 768;
       const glassEl = isDesktop ? refs.glassStage : refs.mobileGlass;
-      let leftGlassArc = [];
-      let rightGlassArc = [];
       let glassTopSafeY = heroRect.height * 0.62;
 
       if (glassEl) {
         const gr = glassEl.getBoundingClientRect();
         if (gr.width > 0 && gr.height > 0) {
-          const gx = gr.left - heroRect.left;
-          const gy = gr.top - heroRect.top;
-          const gw = gr.width;
-          const gh = gr.height;
-          glassTopSafeY = gy - 14;
-          if (isDesktop) {
-            leftGlassArc = [
-              { x: gx + gw * 0.44, y: gy + gh * 0.98 },
-              { x: gx + gw * 0.255, y: gy + gh * 0.94 },
-              { x: gx + gw * 0.238, y: gy + gh * 0.56 },
-              { x: gx + gw * 0.025, y: gy + gh * 0.535 },
-              { x: gx + gw * 0.008, y: gy + gh * 0.28 },
-              { x: gx + gw * 0.032, y: gy + gh * 0.03 },
-              { x: gx + gw * 0.28, y: gy + gh * 0.015 }
-            ];
-            rightGlassArc = [
-              { x: gx + gw * 0.56, y: gy + gh * 0.98 },
-              { x: gx + gw * 0.96, y: gy + gh * 0.96 },
-              { x: gx + gw * 0.992, y: gy + gh * 0.68 },
-              { x: gx + gw * 0.97, y: gy + gh * 0.39 },
-              { x: gx + gw * 0.75, y: gy + gh * 0.36 },
-              { x: gx + gw * 0.735, y: gy + gh * 0.06 },
-              { x: gx + gw * 0.58, y: gy + gh * 0.015 }
-            ];
-          } else {
-            leftGlassArc = [
-              { x: gx + gw * 0.44, y: gy + gh },
-              { x: gx + 20, y: gy + gh - 3 },
-              { x: gx + 2, y: gy + gh * 0.72 },
-              { x: gx + 2, y: gy + gh * 0.30 },
-              { x: gx + 20, y: gy + 4 },
-              { x: gx + gw * 0.28, y: gy + 1 }
-            ];
-            rightGlassArc = [
-              { x: gx + gw * 0.56, y: gy + gh },
-              { x: gx + gw - 20, y: gy + gh - 3 },
-              { x: gx + gw - 2, y: gy + gh * 0.72 },
-              { x: gx + gw - 2, y: gy + gh * 0.30 },
-              { x: gx + gw - 20, y: gy + 4 },
-              { x: gx + gw * 0.72, y: gy + 1 }
-            ];
-          }
+          glassTopSafeY = (gr.top - heroRect.top) - 14;
         }
       }
 
-      const leftTrunk = [svgPt(254, 386), svgPt(292, 336), svgPt(308, 282), svgPt(312, 232)];
-      const rightTrunk = [svgPt(386, 386), svgPt(348, 336), svgPt(332, 282), svgPt(328, 232)];
+      // รวบรวมพิกัดยอดเขาจริงของภูเขาแต่ละลูก (ทั้งฝั่งซ้ายและฝั่งขวา)
+      const allLeftPeaks = [];
+      const allRightPeaks = [];
+      for (let m = 0; m < mountainLayers.length; m++) {
+        const ly = mountainLayers[m];
+        if (ly && Array.isArray(ly.leftPeaks)) {
+          for (let k = 0; k < ly.leftPeaks.length; k++) allLeftPeaks.push(ly.leftPeaks[k]);
+        }
+        if (ly && Array.isArray(ly.rightPeaks)) {
+          for (let k = 0; k < ly.rightPeaks.length; k++) allRightPeaks.push(ly.rightPeaks[k]);
+        }
+      }
+      if (allLeftPeaks.length === 0) allLeftPeaks.push({ x: state.w * 0.12, y: state.h * 0.48 });
+      if (allRightPeaks.length === 0) allRightPeaks.push({ x: state.w * 0.88, y: state.h * 0.48 });
 
-      // แสงปราณแอมเบียนไหลช้าอัลต้าสมูท (13.2–16.0 วิ) จากกรอบกระจกซ้าย–ขวาขึ้นเชื่อม 12 กิ่ง
+      // สร้างเส้นทางแสงลมปราณไหลลงมาจากยอดเขาแต่ละลูก -> ผ่านสันเขา/หมอกหุบเขา -> รวมเข้าสู่โคนต้นดอกท้อ
+      const leftRoot = svgPt(262, 382);
+      const rightRoot = svgPt(378, 382);
+      const buildPeakCascadeArc = function (peakPt, rootPt, sideSign, arcIdx) {
+        const midX1 = peakPt.x + (rootPt.x - peakPt.x) * 0.34;
+        const midY1 = peakPt.y + (rootPt.y - peakPt.y) * 0.42 + (arcIdx % 2 === 0 ? 18 : -10);
+        const midX2 = peakPt.x + (rootPt.x - peakPt.x) * 0.72;
+        const midY2 = Math.min(state.waterY - 14, peakPt.y + (rootPt.y - peakPt.y) * 0.88 + 12);
+        return [
+          { x: peakPt.x, y: peakPt.y - 4 },
+          { x: midX1, y: midY1 },
+          { x: midX2, y: midY2 },
+          { x: rootPt.x + sideSign * 6, y: rootPt.y }
+        ];
+      };
+
+      const leftTrunk = [svgPt(292, 336), svgPt(308, 282), svgPt(312, 232)];
+      const rightTrunk = [svgPt(348, 336), svgPt(332, 282), svgPt(328, 232)];
+
+      // แสงลมปราณ 12 สาย ไหลลงมาจากยอดเขาของแต่ละลูก (ซ้าย 6 ลูก / ขวา 6 ลูก) เข้าสู่ลำต้นและแผ่ขึ้นปลุก 12 กิ่งดอกท้อ
       const branchDefs = [
-        { glass: leftGlassArc,  trunk: leftTrunk,  bPts: [svgPt(308, 224), svgPt(236, 212), svgPt(148, 216), svgPt(64,  234)], sprite: 'peach', dur: 13.6, phase: 0.00 },
-        { glass: leftGlassArc,  trunk: leftTrunk,  bPts: [svgPt(306, 202), svgPt(222, 180), svgPt(132, 174), svgPt(46,  188)], sprite: 'gold',  dur: 14.4, phase: 0.14 },
-        { glass: leftGlassArc,  trunk: leftTrunk,  bPts: [svgPt(308, 178), svgPt(232, 146), svgPt(156, 128), svgPt(84,  136)], sprite: 'peach', dur: 15.2, phase: 0.28 },
-        { glass: leftGlassArc,  trunk: leftTrunk,  bPts: [svgPt(312, 154), svgPt(254, 114), svgPt(194, 86),  svgPt(136, 82)],  sprite: 'jade',  dur: 15.8, phase: 0.42 },
-        { glass: leftGlassArc,  trunk: leftTrunk,  bPts: [svgPt(316, 134), svgPt(280, 86),  svgPt(242, 54),  svgPt(206, 44)],  sprite: 'gold',  dur: 14.6, phase: 0.56 },
-        { glass: leftGlassArc,  trunk: leftTrunk,  bPts: [svgPt(248, 198), svgPt(202, 166), svgPt(168, 146), svgPt(134, 152)], sprite: 'peach', dur: 15.0, phase: 0.70 },
-        { glass: rightGlassArc, trunk: rightTrunk, bPts: [svgPt(332, 224), svgPt(404, 212), svgPt(492, 216), svgPt(576, 234)], sprite: 'peach', dur: 14.0, phase: 0.08 },
-        { glass: rightGlassArc, trunk: rightTrunk, bPts: [svgPt(334, 202), svgPt(418, 180), svgPt(508, 174), svgPt(594, 188)], sprite: 'jade',  dur: 14.8, phase: 0.22 },
-        { glass: rightGlassArc, trunk: rightTrunk, bPts: [svgPt(332, 178), svgPt(408, 146), svgPt(484, 128), svgPt(556, 136)], sprite: 'peach', dur: 15.6, phase: 0.36 },
-        { glass: rightGlassArc, trunk: rightTrunk, bPts: [svgPt(328, 154), svgPt(386, 114), svgPt(446, 86),  svgPt(504, 82)],  sprite: 'gold',  dur: 16.0, phase: 0.50 },
-        { glass: rightGlassArc, trunk: rightTrunk, bPts: [svgPt(324, 134), svgPt(360, 86),  svgPt(398, 54),  svgPt(434, 44)],  sprite: 'peach', dur: 14.4, phase: 0.64 },
-        { glass: rightGlassArc, trunk: rightTrunk, bPts: [svgPt(320, 152), svgPt(318, 106), svgPt(320, 62),  svgPt(320, 26)],  sprite: 'gold',  dur: 13.2, phase: 0.80 }
+        { peakArc: buildPeakCascadeArc(allLeftPeaks[0 % allLeftPeaks.length], leftRoot, -1, 0),  trunk: leftTrunk,  bPts: [svgPt(308, 224), svgPt(236, 212), svgPt(148, 216), svgPt(64,  234)], sprite: 'peach', dur: 13.6, phase: 0.00 },
+        { peakArc: buildPeakCascadeArc(allLeftPeaks[1 % allLeftPeaks.length], leftRoot, -1, 1),  trunk: leftTrunk,  bPts: [svgPt(306, 202), svgPt(222, 180), svgPt(132, 174), svgPt(46,  188)], sprite: 'gold',  dur: 14.4, phase: 0.14 },
+        { peakArc: buildPeakCascadeArc(allLeftPeaks[2 % allLeftPeaks.length], leftRoot, -1, 2),  trunk: leftTrunk,  bPts: [svgPt(308, 178), svgPt(232, 146), svgPt(156, 128), svgPt(84,  136)], sprite: 'peach', dur: 15.2, phase: 0.28 },
+        { peakArc: buildPeakCascadeArc(allLeftPeaks[3 % allLeftPeaks.length], leftRoot, -1, 3),  trunk: leftTrunk,  bPts: [svgPt(312, 154), svgPt(254, 114), svgPt(194, 86),  svgPt(136, 82)],  sprite: 'jade',  dur: 15.8, phase: 0.42 },
+        { peakArc: buildPeakCascadeArc(allLeftPeaks[4 % allLeftPeaks.length], leftRoot, -1, 4),  trunk: leftTrunk,  bPts: [svgPt(316, 134), svgPt(280, 86),  svgPt(242, 54),  svgPt(206, 44)],  sprite: 'gold',  dur: 14.6, phase: 0.56 },
+        { peakArc: buildPeakCascadeArc(allLeftPeaks[5 % allLeftPeaks.length], leftRoot, -1, 5),  trunk: leftTrunk,  bPts: [svgPt(248, 198), svgPt(202, 166), svgPt(168, 146), svgPt(134, 152)], sprite: 'peach', dur: 15.0, phase: 0.70 },
+        { peakArc: buildPeakCascadeArc(allRightPeaks[0 % allRightPeaks.length], rightRoot, 1, 0), trunk: rightTrunk, bPts: [svgPt(332, 224), svgPt(404, 212), svgPt(492, 216), svgPt(576, 234)], sprite: 'peach', dur: 14.0, phase: 0.08 },
+        { peakArc: buildPeakCascadeArc(allRightPeaks[1 % allRightPeaks.length], rightRoot, 1, 1), trunk: rightTrunk, bPts: [svgPt(334, 202), svgPt(418, 180), svgPt(508, 174), svgPt(594, 188)], sprite: 'jade',  dur: 14.8, phase: 0.22 },
+        { peakArc: buildPeakCascadeArc(allRightPeaks[2 % allRightPeaks.length], rightRoot, 1, 2), trunk: rightTrunk, bPts: [svgPt(332, 178), svgPt(408, 146), svgPt(484, 128), svgPt(556, 136)], sprite: 'peach', dur: 15.6, phase: 0.36 },
+        { peakArc: buildPeakCascadeArc(allRightPeaks[3 % allRightPeaks.length], rightRoot, 1, 3), trunk: rightTrunk, bPts: [svgPt(328, 154), svgPt(386, 114), svgPt(446, 86),  svgPt(504, 82)],  sprite: 'gold',  dur: 16.0, phase: 0.50 },
+        { peakArc: buildPeakCascadeArc(allRightPeaks[4 % allRightPeaks.length], rightRoot, 1, 4), trunk: rightTrunk, bPts: [svgPt(324, 134), svgPt(360, 86),  svgPt(398, 54),  svgPt(434, 44)],  sprite: 'peach', dur: 14.4, phase: 0.64 },
+        { peakArc: buildPeakCascadeArc(allRightPeaks[5 % allRightPeaks.length], rightRoot, 1, 5), trunk: rightTrunk, bPts: [svgPt(320, 152), svgPt(318, 106), svgPt(320, 62),  svgPt(320, 26)],  sprite: 'gold',  dur: 13.2, phase: 0.80 }
       ];
 
       ambientRoutes = branchDefs.map(function (b) {
-        const gtSamples = sampleCatmullRomArc(b.glass.concat(b.trunk), 56);
-        const fullSamples = sampleCatmullRomArc(b.glass.concat(b.trunk, b.bPts), 190);
+        const gtSamples = sampleCatmullRomArc(b.peakArc.concat(b.trunk), 56);
+        const fullSamples = sampleCatmullRomArc(b.peakArc.concat(b.trunk, b.bPts), 190);
         let gtLen = 0;
         let fullLen = 0;
         for (let i = 1; i < gtSamples.length; i++) {
@@ -1323,9 +1367,7 @@
         bgCtx.globalAlpha = (1 - p) * 0.45;
         bgCtx.drawImage(sprites.glow.jade, tr.x - tr.r, tr.y - tr.r, tr.r * 2, tr.r * 2);
       }
-      bgCtx.restore();
-
-      // ข้อ 1 Helper: วาดโคมลอยแยกชั้นความลึก
+      // ข้อ 1 Helper: วาดโคมลอยแยกชั้นความลึก 3 ระยะ (ไกล / กลาง / ใกล้หุบเขา)
       const drawLanternsForPlane = function (planeId) {
         bgCtx.save();
         bgCtx.globalCompositeOperation = 'lighter';
@@ -1335,15 +1377,17 @@
           if (!reducedMotion) ln.yFrac -= dt * ln.speed;
           if (ln.yFrac < -0.08) {
             ln.yFrac = 0.82 + Math.random() * 0.12;
-            ln.xFrac = i < 5 ? (0.05 + Math.random() * 0.34) : (0.61 + Math.random() * 0.34);
+            ln.xFrac = i % 2 === 0 ? (0.04 + Math.random() * 0.36) : (0.60 + Math.random() * 0.36);
           }
-          const lx = ln.xFrac * w + Math.sin(t * 0.55 + ln.swaySeed) * 18 + state.mouseX * (planeId === 1 ? 6 : 12);
+          const parallax = planeId === 1 ? 5 : (planeId === 2 ? 11 : 17);
+          const lx = ln.xFrac * w + Math.sin(t * 0.55 + ln.swaySeed) * (14 + planeId * 4) + state.mouseX * parallax;
           const ly = ln.yFrac * h;
           const fade = smoothstep(-0.06, 0.12, ln.yFrac) * smoothstep(0.84, 0.68, ln.yFrac);
           const flicker = 0.84 + 0.16 * Math.sin(t * 5.2 + ln.flickerSeed);
           const dw = 48 * ln.scale * (w < 768 ? 0.78 : 1.0);
           const dh = 56 * ln.scale * (w < 768 ? 0.78 : 1.0);
-          bgCtx.globalAlpha = Math.max(0, fade * flicker * (planeId === 1 ? 0.72 : 0.92));
+          const planeAlpha = planeId === 1 ? 0.65 : (planeId === 2 ? 0.85 : 0.96);
+          bgCtx.globalAlpha = Math.max(0, fade * flicker * planeAlpha);
           bgCtx.drawImage(sprites.lantern, lx - dw * 0.5, ly - dh * 0.5, dw, dh);
         }
         bgCtx.restore();
@@ -1403,6 +1447,7 @@
       bgCtx.restore();
 
       drawSmartMountainPlane(2, state.mouseX * 15, 0.96, 0.92);
+      drawLanternsForPlane(3);
 
       bgCtx.save();
       bgCtx.globalAlpha = 0.44;
