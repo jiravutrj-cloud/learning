@@ -54,21 +54,24 @@
 
   // Audio state (Studio 24kHz AI Host + Silky WebAudio Ambient Pad)
   let hostPlaying = false;
+  let hostLoading = false;
   let hostSegmentIdx = 0;
   let hostSessionId = 0;
   let hostAudioEl = null;
   let hostBlobUrl = null;
+  let activeVoiceSource = null;
 
   let musicEnabled = false;
-  let musicCtx = null;
+  let sharedAudioCtx = null;
   let musicMasterGain = null;
+  let voiceMasterGain = null;
   let musicOscs = [];
+  const prefetchedBlobs = {};
 
-  // Pre-rendered volumetric mist sprites
-  let denseMistSprite = null;
-  let silkyWispSprite = null;
-  let mistBanks = [];
-  let frostMotes = [];
+  const FALLBACK_GAS_URL =
+    'https://script.google.com/macros/s/AKfycbwuN8MeZhhhomEhpkfXtpoTP341cugDqw1DbQPK_6NSHun2pGZCE0Kfc3eH4YYJ6aWQIg/exec';
+  const SILENT_WAV_DATA_URI =
+    'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
 
   // Deterministic PRNG for silky organic mist texture
   function createRng(seed) {
@@ -488,43 +491,96 @@
   }
 
   // ============================================================================
-  // SOFT CINEMATIC AMBIENT PAD (WEB AUDIO API — ZERO EXTERNAL LINK FAILURES)
+  // SHARED UNLOCKED AUDIO CONTEXT + SOFT AMBIENT PAD (IMMUNE TO AUTOPLAY BLOCK)
   // ============================================================================
-  function startAmbientMusic() {
+  function unlockAudioOnUserGesture() {
+    // 1. Create & resume shared Web AudioContext synchronously inside click/tap
     try {
       const AC = global.AudioContext || global.webkitAudioContext;
-      if (!AC) return;
-      if (!musicCtx) {
-        musicCtx = new AC();
-        musicMasterGain = musicCtx.createGain();
-        musicMasterGain.gain.setValueAtTime(0.0001, musicCtx.currentTime);
-        musicMasterGain.connect(musicCtx.destination);
+      if (AC) {
+        if (!sharedAudioCtx) {
+          sharedAudioCtx = new AC();
+          voiceMasterGain = sharedAudioCtx.createGain();
+          voiceMasterGain.gain.setValueAtTime(1.0, sharedAudioCtx.currentTime);
+          voiceMasterGain.connect(sharedAudioCtx.destination);
+        }
+        if (sharedAudioCtx.state === 'suspended') {
+          sharedAudioCtx.resume().catch(function () {});
+        }
+        // Trigger a silent 1-sample buffer to guarantee iOS Safari hardware unlock
+        const silentBuf = sharedAudioCtx.createBuffer(1, 1, 22050);
+        const silentSrc = sharedAudioCtx.createBufferSource();
+        silentSrc.buffer = silentBuf;
+        silentSrc.connect(sharedAudioCtx.destination);
+        silentSrc.start(0);
+      }
+    } catch (_) {}
+
+    // 2. Also pre-unlock HTMLAudioElement synchronously as secondary fallback
+    try {
+      if (!hostAudioEl) {
+        hostAudioEl = new Audio();
+        hostAudioEl.playsInline = true;
+        hostAudioEl.setAttribute('playsinline', '');
+      }
+      hostAudioEl.muted = true;
+      hostAudioEl.src = SILENT_WAV_DATA_URI;
+      const p = hostAudioEl.play();
+      if (p && typeof p.then === 'function') {
+        p.then(function () {
+          try { hostAudioEl.pause(); hostAudioEl.muted = false; } catch (_) {}
+        }).catch(function () {});
+      }
+    } catch (_) {}
+  }
+
+  function applyMusicDucking(isDucking) {
+    try {
+      if (!sharedAudioCtx || !musicMasterGain || !musicEnabled) return;
+      const now = sharedAudioCtx.currentTime;
+      const targetGain = isDucking ? 0.045 : 0.11;
+      musicMasterGain.gain.cancelScheduledValues(now);
+      musicMasterGain.gain.setValueAtTime(Math.max(0.0001, musicMasterGain.gain.value), now);
+      musicMasterGain.gain.linearRampToValueAtTime(targetGain, now + 0.45);
+    } catch (_) {}
+  }
+
+  function startAmbientMusic() {
+    try {
+      unlockAudioOnUserGesture();
+      if (!sharedAudioCtx) return;
+
+      if (!musicMasterGain) {
+        musicMasterGain = sharedAudioCtx.createGain();
+        musicMasterGain.gain.setValueAtTime(0.0001, sharedAudioCtx.currentTime);
+        musicMasterGain.connect(sharedAudioCtx.destination);
 
         // Warm cinematic Dmaj9 / ethereal sanctuary chord
         const freqs = [146.83, 220.0, 277.18, 329.63, 440.0];
-        const filter = musicCtx.createBiquadFilter();
+        const filter = sharedAudioCtx.createBiquadFilter();
         filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(720, musicCtx.currentTime);
+        filter.frequency.setValueAtTime(720, sharedAudioCtx.currentTime);
         filter.connect(musicMasterGain);
 
         musicOscs = freqs.map(function (f, idx) {
-          const osc = musicCtx.createOscillator();
-          const g = musicCtx.createGain();
+          const osc = sharedAudioCtx.createOscillator();
+          const g = sharedAudioCtx.createGain();
           osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
-          osc.frequency.setValueAtTime(f, musicCtx.currentTime);
-          osc.detune.setValueAtTime((idx - 2) * 3.5, musicCtx.currentTime);
-          g.gain.setValueAtTime(idx === 0 ? 0.16 : 0.085, musicCtx.currentTime);
+          osc.frequency.setValueAtTime(f, sharedAudioCtx.currentTime);
+          osc.detune.setValueAtTime((idx - 2) * 3.5, sharedAudioCtx.currentTime);
+          g.gain.setValueAtTime(idx === 0 ? 0.16 : 0.085, sharedAudioCtx.currentTime);
           osc.connect(g);
           g.connect(filter);
           osc.start();
           return osc;
         });
       }
-      if (musicCtx.state === 'suspended') musicCtx.resume().catch(function () {});
-      const now = musicCtx.currentTime;
+      if (sharedAudioCtx.state === 'suspended') sharedAudioCtx.resume().catch(function () {});
+      const now = sharedAudioCtx.currentTime;
+      const targetGain = hostPlaying ? 0.045 : 0.11;
       musicMasterGain.gain.cancelScheduledValues(now);
       musicMasterGain.gain.setValueAtTime(Math.max(0.0001, musicMasterGain.gain.value), now);
-      musicMasterGain.gain.linearRampToValueAtTime(0.11, now + 1.4);
+      musicMasterGain.gain.linearRampToValueAtTime(targetGain, now + 1.2);
       musicEnabled = true;
       updateControlLabels();
     } catch (_) {}
@@ -533,8 +589,8 @@
   function stopAmbientMusic() {
     musicEnabled = false;
     try {
-      if (musicCtx && musicMasterGain) {
-        const now = musicCtx.currentTime;
+      if (sharedAudioCtx && musicMasterGain) {
+        const now = sharedAudioCtx.currentTime;
         musicMasterGain.gain.cancelScheduledValues(now);
         musicMasterGain.gain.setValueAtTime(musicMasterGain.gain.value, now);
         musicMasterGain.gain.linearRampToValueAtTime(0.0001, now + 0.55);
@@ -545,10 +601,148 @@
 
   // ============================================================================
   // STUDIO 24kHz AI HOST NARRATION (STRICTLY NO BROWSER SPEECH SYNTHESIS!)
+  // Uses unlocked Web Audio AudioBufferSourceNode so async fetch NEVER gets blocked
   // ============================================================================
+  function resolveGasEndpoint() {
+    if (currentGasUrl) return currentGasUrl;
+    const core = global.RJCLOUD_CORE || global.RJLearningCore || {};
+    if (typeof core.getResolvedConfig === 'function') {
+      const cfg = core.getResolvedConfig();
+      if (cfg && cfg.appsScriptUrl) return cfg.appsScriptUrl;
+    }
+    if (global.RJCLOUD_CONFIG && global.RJCLOUD_CONFIG.appsScriptUrl) {
+      return global.RJCLOUD_CONFIG.appsScriptUrl;
+    }
+    return FALLBACK_GAS_URL;
+  }
+
+  function fallbackPcmToWav(base64Audio, sampleRate) {
+    const rate = sampleRate || 24000;
+    const cleanB64 = String(base64Audio || '').replace(/^data:audio\/[^;]+;base64,/, '').trim();
+    const bin = global.atob(cleanB64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    const isRiff = bytes.length > 44 && bytes[0] === 0x52 && bytes[1] === 0x49 && bytes[2] === 0x46 && bytes[3] === 0x46;
+    if (isRiff) return new Blob([bytes], { type: 'audio/wav' });
+
+    const buf = new ArrayBuffer(44 + bytes.length);
+    const v = new DataView(buf);
+    const ws = function (o, s) { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+    ws(0, 'RIFF'); v.setUint32(4, 36 + bytes.length, true); ws(8, 'WAVE'); ws(12, 'fmt ');
+    v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+    v.setUint32(24, rate, true); v.setUint32(28, rate * 2, true);
+    v.setUint16(32, 2, true); v.setUint16(34, 16, true); ws(36, 'data'); v.setUint32(40, bytes.length, true);
+    new Uint8Array(buf, 44).set(bytes);
+    return new Blob([buf], { type: 'audio/wav' });
+  }
+
+  async function fetchSegmentBlob(idx) {
+    if (prefetchedBlobs[idx] instanceof Blob && prefetchedBlobs[idx].size > 44) {
+      return prefetchedBlobs[idx];
+    }
+    const seg = HOST_SEGMENTS[idx];
+    if (!seg) return null;
+    const endpoint = resolveGasEndpoint();
+    const core = global.RJCLOUD_CORE || global.RJLearningCore || {};
+
+    let blob = null;
+    if (typeof core.fetchStudioGuideBlob === 'function') {
+      blob = await core.fetchStudioGuideBlob(seg.text, endpoint, seg.voice);
+    } else if (endpoint) {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        redirect: 'follow',
+        body: JSON.stringify({ action: 'callGeminiTTS', text: seg.text, voiceName: seg.voice })
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const rawTxt = await res.text();
+      const data = JSON.parse(rawTxt || '{}');
+      const b64 =
+        data.audioBase64 ||
+        data.audio ||
+        data.audioContent ||
+        (data.inlineData && data.inlineData.data) ||
+        (data.data && (data.data.audioBase64 || data.data.audio || data.data.audioContent));
+      if (b64) {
+        blob = typeof core.pcm16ToWavBlob === 'function'
+          ? core.pcm16ToWavBlob(b64, 24000)
+          : fallbackPcmToWav(b64, 24000);
+      }
+    }
+
+    if (blob instanceof Blob && blob.size > 44) {
+      prefetchedBlobs[idx] = blob;
+      return blob;
+    }
+    return null;
+  }
+
+  async function playWavBlobReliably(blob, sid) {
+    // Primary path: Play via already-unlocked Web Audio AudioContext (100% immune to mobile autoplay blocks)
+    if (sharedAudioCtx && voiceMasterGain && typeof blob.arrayBuffer === 'function') {
+      try {
+        if (sharedAudioCtx.state === 'suspended') {
+          await sharedAudioCtx.resume();
+        }
+        const arrBuf = await blob.arrayBuffer();
+        if (hostSessionId !== sid || !isLandingNow) return false;
+        const decoded = await sharedAudioCtx.decodeAudioData(arrBuf.slice(0));
+        if (hostSessionId !== sid || !isLandingNow) return false;
+
+        return await new Promise(function (resolve) {
+          const src = sharedAudioCtx.createBufferSource();
+          src.buffer = decoded;
+          src.connect(voiceMasterGain);
+          activeVoiceSource = src;
+          src.onended = function () {
+            if (activeVoiceSource === src) activeVoiceSource = null;
+            resolve(true);
+          };
+          src.start(0);
+        });
+      } catch (_) {
+        // Fall through to HTMLAudioElement if decodeAudioData fails
+      }
+    }
+
+    // Secondary path: Pre-unlocked HTMLAudioElement
+    if (!hostAudioEl) {
+      hostAudioEl = new Audio();
+      hostAudioEl.playsInline = true;
+      hostAudioEl.setAttribute('playsinline', '');
+    }
+    if (hostBlobUrl) {
+      try { URL.revokeObjectURL(hostBlobUrl); } catch (_) {}
+    }
+    hostBlobUrl = URL.createObjectURL(blob);
+
+    return await new Promise(function (resolve) {
+      hostAudioEl.muted = false;
+      hostAudioEl.volume = 1.0;
+      hostAudioEl.src = hostBlobUrl;
+      hostAudioEl.onended = function () { resolve(true); };
+      hostAudioEl.onerror = function () { resolve(false); };
+      try { hostAudioEl.load(); } catch (_) {}
+      const p = hostAudioEl.play();
+      if (p && typeof p.catch === 'function') {
+        p.catch(function () { resolve(false); });
+      }
+    });
+  }
+
   function stopHostNarration() {
     hostSessionId += 1;
     hostPlaying = false;
+    hostLoading = false;
+    if (activeVoiceSource) {
+      try {
+        activeVoiceSource.onended = null;
+        activeVoiceSource.stop();
+        activeVoiceSource.disconnect();
+      } catch (_) {}
+      activeVoiceSource = null;
+    }
     if (hostAudioEl) {
       try {
         hostAudioEl.onended = null;
@@ -560,75 +754,77 @@
       try { URL.revokeObjectURL(hostBlobUrl); } catch (_) {}
       hostBlobUrl = null;
     }
+    applyMusicDucking(false);
     updateControlLabels();
   }
 
-  async function playHostSegment(idx) {
-    const core = global.RJCLOUD_CORE || global.RJLearningCore || {};
-    if (typeof core.fetchStudioGuideBlob !== 'function') {
-      stopHostNarration();
-      return;
-    }
+  async function playHostSegment(idx, sid, earliestPlayTs) {
+    if (hostSessionId !== sid || !isLandingNow) return;
     if (idx >= HOST_SEGMENTS.length) {
       stopHostNarration();
       return;
     }
 
-    const sid = hostSessionId;
     hostSegmentIdx = idx;
     hostPlaying = true;
+    hostLoading = true;
     updateControlLabels();
 
-    const seg = HOST_SEGMENTS[idx];
     try {
-      const blob = await core.fetchStudioGuideBlob(seg.text, currentGasUrl, seg.voice);
+      const blob = await fetchSegmentBlob(idx);
       if (hostSessionId !== sid || !isLandingNow) return;
       if (!blob || blob.size <= 44) {
         stopHostNarration();
         return;
       }
 
-      if (!hostAudioEl) {
-        hostAudioEl = new Audio();
-        hostAudioEl.playsInline = true;
-        hostAudioEl.setAttribute('playsinline', '');
+      // If already cached and mist just started parting, wait a tiny smooth beat before speaking
+      if (earliestPlayTs) {
+        const waitMs = earliestPlayTs - performance.now();
+        if (waitMs > 30) {
+          await new Promise(function (r) { setTimeout(r, waitMs); });
+          if (hostSessionId !== sid || !isLandingNow) return;
+        }
       }
-      if (hostBlobUrl) {
-        try { URL.revokeObjectURL(hostBlobUrl); } catch (_) {}
+
+      hostLoading = false;
+      applyMusicDucking(true);
+      updateControlLabels();
+
+      // Prefetch next co-host segment in background for zero gap between speakers
+      if (idx + 1 < HOST_SEGMENTS.length) {
+        fetchSegmentBlob(idx + 1).catch(function () {});
       }
-      hostBlobUrl = URL.createObjectURL(blob);
 
-      await new Promise(function (resolve) {
-        hostAudioEl.muted = false;
-        hostAudioEl.src = hostBlobUrl;
-        hostAudioEl.onended = function () { resolve(true); };
-        hostAudioEl.onerror = function () { resolve(false); };
-        try { hostAudioEl.load(); } catch (_) {}
-        const p = hostAudioEl.play();
-        if (p && typeof p.catch === 'function') p.catch(function () { resolve(false); });
-      });
-
-      if (hostSessionId === sid && isLandingNow && hostPlaying) {
-        playHostSegment(idx + 1);
+      const played = await playWavBlobReliably(blob, sid);
+      if (hostSessionId === sid && isLandingNow && hostPlaying && played) {
+        playHostSegment(idx + 1, sid, 0);
+      } else if (hostSessionId === sid) {
+        stopHostNarration();
       }
     } catch (_) {
       if (hostSessionId === sid) stopHostNarration();
     }
   }
 
-  function startHostNarration() {
+  function startHostNarration(earliestPlayTs) {
+    unlockAudioOnUserGesture();
     stopHostNarration();
     const sid = ++hostSessionId;
-    if (sid) playHostSegment(0);
+    playHostSegment(0, sid, earliestPlayTs || 0);
   }
 
   function updateControlLabels() {
     if (hostBtnEl) {
       const seg = HOST_SEGMENTS[hostSegmentIdx] || HOST_SEGMENTS[0];
       hostBtnEl.classList.toggle('rj-active', hostPlaying);
-      hostBtnEl.textContent = hostPlaying
-        ? '❚❚ พิธีกร' + seg.role + ' AI (' + (hostSegmentIdx + 1) + '/' + HOST_SEGMENTS.length + ') • หยุด'
-        : '▶ พิธีกร AI';
+      if (hostPlaying && hostLoading) {
+        hostBtnEl.textContent = '⏳ กำลังเตรียมเสียงพิธีกร AI...';
+      } else if (hostPlaying) {
+        hostBtnEl.textContent = '❚❚ พิธีกร' + seg.role + ' AI (' + (hostSegmentIdx + 1) + '/' + HOST_SEGMENTS.length + ') • หยุด';
+      } else {
+        hostBtnEl.textContent = '▶ พิธีกร AI';
+      }
     }
     if (musicBtnEl) {
       musicBtnEl.classList.toggle('rj-active', musicEnabled);
@@ -638,7 +834,7 @@
 
   function updateControlsVisibility() {
     if (!controlsEl) return;
-    const show = isLandingNow && hasDismissedGate && !isTransitioning;
+    const show = isLandingNow && hasDismissedGate;
     controlsEl.classList.toggle('rj-show', show);
     updateControlLabels();
   }
@@ -689,6 +885,9 @@
         isTransitioning = true;
         revealStartTs = performance.now();
 
+        // Unlock Web Audio + HTMLAudio synchronously inside the tap/click gesture
+        unlockAudioOnUserGesture();
+
         // Freeze current drift positions as smooth starting coordinates for outward mist parting
         for (let i = 0; i < mistBanks.length; i++) {
           mistBanks[i].baseX = mistBanks[i].x;
@@ -698,11 +897,10 @@
         if (cardEl) cardEl.classList.add('rj-dissolving');
         rootEl.style.pointerEvents = 'none';
 
-        // Start gentle ambient pad + 24kHz studio AI host narration (if configured)
+        // Start ambient pad + begin fetching & playing 24kHz studio AI co-hosts immediately
         startAmbientMusic();
-        setTimeout(function () {
-          if (isLandingNow) startHostNarration();
-        }, 750);
+        startHostNarration(performance.now() + 550);
+        updateControlsVisibility();
       });
     }
 
@@ -721,7 +919,7 @@
     if (hostBtnEl) {
       hostBtnEl.addEventListener('click', function () {
         if (hostPlaying) stopHostNarration();
-        else startHostNarration();
+        else startHostNarration(0);
       });
     }
     if (musicBtnEl) {
