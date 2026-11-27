@@ -1,16 +1,7 @@
 /* ============================================================================
- * rjcloud.organ 2.0 — Core Learning, Central Data Center, PDPA & 24kHz Audio Engine
+ * organ cloud 2.0 — Core Learning, Central Data Center, PDPA & 24kHz Audio Engine
  * File: learning-core.js (Zero-Build Standalone Module)
  * Public Exports: window.RJCLOUD_CORE (Alias: window.RJLearningCore)
- *
- * โครงสร้างภายในไฟล์ (ครบสมบูรณ์ทั้ง 7 ส่วน 100%):
- * 1. Configuration & Built-in Fallback Defaults (Production 2027)
- * 2. Central Data Center 2.0 (Multi-Course Hub & Auto-Classification Read-Only)
- * 3. Exam Parser & 4-Domain AI Diagnostic Roadmap Engine
- * 4. Role-Adaptive Profile, CNEU Nurse-Only Filter, Study Timer & Thai Date
- * 5. PDPA Privacy Masking (Pre-OTP) & Zero-PII Executive Telemetry Builder
- * 6. Natural Thai Speech Polisher, Anti-Hiss 24kHz WAV DSP & IndexedDB Cache (v4)
- * 7. Clinical Pocket Guide, R2R SUS & Public API Export
  * ============================================================================ */
 
 (function (global) {
@@ -20,9 +11,9 @@
   // 1. CONFIGURATION & BUILT-IN FALLBACK DEFAULTS
   // ============================================================================
   const BUILTIN_CONFIG = {
-    appName: 'rjcloud.organ',
-    themeName: 'rjcloud.organ 2.0',
-    edition: 'rjcloud.organ 2.0 • Cloud AI (2027)',
+    appName: 'organ cloud',
+    themeName: 'organ cloud 2.0',
+    edition: 'organ cloud 2.0 • Cloud AI (2027)',
     taglineEN: 'e-Learning Organ Donation Training',
     contactEmail: 'rjcloud.organ@gmail.com',
     appId: 'rjcloud-organ-2027',
@@ -33,7 +24,7 @@
       minPosttestPercent: 80
     },
     theme: {
-      name: 'rjcloud.organ 2.0',
+      name: 'organ cloud 2.0',
       subtitle: 'Cloud AI',
       defaultMode: 'dark',
       storageKey: 'rjcloud_theme'
@@ -84,7 +75,7 @@
       cmeCredits: '',
       trainingHours: '8',
       orgTitleTH: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ',
-      orgTitleEN: 'rjcloud.organ • Clinical Organ Donation & Transplantation Network',
+      orgTitleEN: 'organ cloud 2.0 • Clinical Organ Donation & Transplantation Network',
       courseTitleTH: 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ',
       courseTitleEN: 'Organ Donation & Transplantation Clinical Coordination Program',
       subtitleTH: 'ขอมอบประกาศนียบัตรฉบับนี้เพื่อแสดงว่า',
@@ -101,7 +92,7 @@
   const DEFAULT_CNEU_CONFIG = {
     logoUrl: '',
     orgName: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ โรงพยาบาลราชวิถี',
-    courseName: 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ (rjcloud.organ)',
+    courseName: 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ (organ cloud 2.0)',
     activityCode: 'CNEU-2027-0148',
     batchLabel: 'รุ่นที่ 1 ประจำปีงบประมาณ 2570',
     cneuCredits: '8.0',
@@ -270,7 +261,7 @@
     { key: 'skillLab', labelTH: 'ประโยชน์ของห้องฝึกสื่อสาร 3 มิติ AI Skill Lab ต่อการปฏิบัติงานจริง' },
     { key: 'usability', labelTH: 'ความสะดวกในการใช้งานและความสวยงามของแพลตฟอร์ม' },
     { key: 'confidence', labelTH: 'ความมั่นใจที่เพิ่มขึ้นในการดูแลผู้บริจาคและสื่อสารกับครอบครัว' },
-    { key: 'overall', labelTH: 'ความพึงพอใจภาพรวมต่อหลักสูตร rjcloud.organ 2.0' }
+    { key: 'overall', labelTH: 'ความพึงพอใจภาพรวมต่อหลักสูตร organ cloud 2.0' }
   ];
 
   // ============================================================================
@@ -353,7 +344,7 @@
 
   // แบบประเมินความพึงพอใจและการใช้งานระบบมาตรฐาน R2R (SUS 10 ข้อ)
   const SUS_QUESTIONS = [
-    '1. ฉันต้องการกลับมาใช้งานระบบ rjcloud.organ 2.0 นี้อย่างสม่ำเสมอ',
+    '1. ฉันต้องการกลับมาใช้งานระบบ organ cloud 2.0 นี้อย่างสม่ำเสมอ',
     '2. ฉันรู้สึกว่าระบบนี้มีความซับซ้อนเกินความจำเป็น',
     '3. ฉันคิดว่าระบบนี้ใช้งานง่ายและเข้าใจได้ทันที',
     '4. ฉันคิดว่าฉันจำเป็นต้องมีผู้เชี่ยวชาญคอยช่วยเหลือจึงจะใช้งานระบบนี้ได้',
@@ -1212,11 +1203,20 @@
       throw new Error('เชื่อมต่อระบบเสียงสตูดิโอไม่สำเร็จ (HTTP ' + res.status + ')');
     }
 
-    const data = await res.json();
+    const rawText = await res.text();
+    let data = {};
+    try {
+      data = JSON.parse(rawText || '{}');
+    } catch (_) {
+      throw new Error('ข้อมูลตอบกลับจากเซิร์ฟเวอร์เสียงสตูดิโอไม่ถูกต้อง');
+    }
+
     const base64Audio =
       data.audioBase64 ||
       data.audio ||
-      (data.data && (data.data.audioBase64 || data.data.audio));
+      data.audioContent ||
+      (data.inlineData && data.inlineData.data) ||
+      (data.data && (data.data.audioBase64 || data.data.audio || data.data.audioContent));
 
     if (!base64Audio) {
       throw new Error(data.error || 'ไม่พบข้อมูลเสียงสตูดิโอ 24kHz จากเซิร์ฟเวอร์');
