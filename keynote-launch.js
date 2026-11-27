@@ -743,6 +743,17 @@
 
     return await new Promise(function (resolve) {
       hostAudioEl.muted = false;
+      hostAudioEl.src = hostBlobUrl;
+      hostAudioEl.onended = function () { resolve(true); };
+      hostAudioEl.onerror = function () { resolve(false); };
+      try { hostAudioEl.load(); } catch (_) {}
+      const p = hostAudioEl.play();
+      if (p && typeof p.catch === 'function') {
+        p.catch(function () { resolve(false); });
+      }
+    });
+  }
+
   function stopHostNarration(keepErrorMsg) {
     hostSessionId += 1;
     hostPlaying = false;
@@ -867,7 +878,7 @@
   // DOM CREATION & WELCOME BUTTON TRIGGER
   // ============================================================================
   function ensureDom() {
-    if (rootEl) return;
+    if (rootEl || !document.body) return;
     injectStyles();
 
     rootEl = document.createElement('div');
