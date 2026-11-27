@@ -33,10 +33,10 @@
 
             [
               './data.js',
-              './learning-core.js?v=202715',
+              './learning-core.js?v=202716',
               './cert-engine.js',
-              './hero-peach-engine.js?v=202715',
-              './keynote-launch.js?v=202715'
+              './hero-peach-engine.js?v=202716',
+              './keynote-launch.js?v=202716'
             ].forEach(function (src) {
               const s = document.createElement('script');
               s.src = src;
@@ -1535,9 +1535,11 @@
 
             useEffect(() => {
                 const syncKeynote = () => {
-                    if (window.RJCLOUD_KEYNOTE && typeof window.RJCLOUD_KEYNOTE.sync === 'function') {
-                        window.RJCLOUD_KEYNOTE.sync({ isLanding: screen === 'landing', appsScriptUrl });
-                    }
+                    try {
+                        if (window.RJCLOUD_KEYNOTE && typeof window.RJCLOUD_KEYNOTE.sync === 'function') {
+                            window.RJCLOUD_KEYNOTE.sync({ isLanding: screen === 'landing', appsScriptUrl });
+                        }
+                    } catch (_) {}
                 };
                 syncKeynote();
                 window.addEventListener('rjcloud-keynote-ready', syncKeynote);
