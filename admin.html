@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Admin Mission Control — rjcloud.organ 2.0</title>
 
-    <!-- ซิงค์โหมดมืด/สว่างทันที + โหลดไฟล์ร่วมเฉพาะเมื่ออยู่บนโดเมนเว็บจริง (ป้องกัน 404 ในโหมดพรีวิว) -->
+    <!-- ซิงค์โหมดมืด/สว่างทันที + โหลดไฟล์โมดูลกลางเฉพาะบนโดเมนจริง (Zero-Build GitHub Pages) -->
     <script>
       (function () {
         try {
@@ -31,12 +31,7 @@
             manifest.href = './manifest.json';
             document.head.appendChild(manifest);
 
-            const css = document.createElement('link');
-            css.rel = 'stylesheet';
-            css.href = './styles.css';
-            document.head.appendChild(css);
-
-            ['./data.js', './learning-core.js', './cert-engine.js'].forEach(function (src) {
+            ['./data.js', './learning-core.js?v=202705', './cert-engine.js'].forEach(function (src) {
               const s = document.createElement('script');
               s.src = src;
               s.async = false;
@@ -99,7 +94,7 @@
         --grid-line: rgba(147, 197, 253, 0.055);
         --aura-1: rgba(22, 92, 196, 0.34);
         --aura-2: rgba(56, 189, 248, 0.22);
-        --aura-3: rgba(168, 85, 247, 0.16);
+        --aura-3: rgba(249, 168, 212, 0.14);
       }
       html[data-theme="light"] {
         --bg-page: #edf6fd;
@@ -123,7 +118,7 @@
         --grid-line: rgba(22, 92, 196, 0.04);
         --aura-1: rgba(75, 152, 232, 0.24);
         --aura-2: rgba(169, 214, 247, 0.36);
-        --aura-3: rgba(192, 132, 252, 0.14);
+        --aura-3: rgba(244, 114, 182, 0.12);
       }
 
       * { box-sizing: border-box; }
@@ -175,7 +170,7 @@
         -webkit-backdrop-filter: blur(24px) saturate(160%);
         border-top: 1px solid var(--surface-border);
       }
-      .spatial-soft { background: var(--surface-soft); border: 1px solid var(--surface-border); }
+      .spatial-soft { background: var(--surface-soft); border: 1px solid var(--surface-border); transition: background 0.18s ease, border-color 0.18s ease; }
       .spatial-soft:hover { background: var(--surface-soft-hover); }
       .spatial-input { background: var(--input-bg); border: 1px solid var(--input-border); color: var(--input-text); }
       .spatial-input:focus { outline: none; border-color: #38bdf8; box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.22); }
@@ -187,9 +182,26 @@
         box-shadow: 0 10px 28px -6px rgba(134, 239, 172, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.72) inset;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
         text-decoration: none;
+        cursor: pointer;
       }
-      .rjc2-pill-btn:hover { transform: translateY(-1px) scale(1.015); }
-      .rjc2-pill-btn:active { transform: scale(0.98); }
+      .rjc2-pill-btn:hover:not(:disabled) { transform: translateY(-1px) scale(1.015); }
+      .rjc2-pill-btn:active:not(:disabled) { transform: scale(0.98); }
+      .rjc2-pill-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+      .btn-peach-ambient {
+        background: #ffffff;
+        color: #1a162b !important;
+        font-weight: 700;
+        border-radius: 9999px;
+        border: 1.5px solid rgba(251, 182, 206, 0.92);
+        box-shadow: 0 0 0 3px rgba(253, 164, 175, 0.22), 0 10px 26px -6px rgba(249, 168, 212, 0.55);
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .btn-peach-ambient:hover:not(:disabled) {
+        transform: translateY(-1.5px);
+        box-shadow: 0 0 0 5px rgba(253, 164, 175, 0.28), 0 14px 32px -4px rgba(244, 114, 182, 0.68);
+      }
 
       .text-primary-adaptive { color: var(--text-main); }
       .text-secondary-adaptive { color: var(--text-secondary); }
@@ -244,7 +256,7 @@
         <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#020612;color:#f8fafc;font-family:-apple-system,'Anuphan','Prompt',sans-serif;gap:14px;padding:24px;text-align:center;">
             <div style="width:46px;height:46px;border:3px solid rgba(56,189,248,0.22);border-top-color:#6ee7b7;border-right-color:#38bdf8;border-radius:9999px;animation:adminSpin 0.85s linear infinite;"></div>
             <div style="font-weight:800;font-size:17px;">กำลังเปิดศูนย์ควบคุม Admin Mission Control...</div>
-            <div style="font-size:12px;color:#93b4d8;">rjcloud.organ 2.0 • Profession-Filtered CNEU, Onsite QR Hub &amp; R2R Studio</div>
+            <div style="font-size:12px;color:#93b4d8;">rjcloud.organ 2.0 • Central Data Center (Production Only)</div>
         </div>
     </div>
 
@@ -252,7 +264,7 @@
     <script>
       window.addEventListener('error', function (ev) {
         const src = String(ev.filename || (ev.target && ev.target.src) || '');
-        if (src.includes('data.js') || src.includes('learning-core.js') || src.includes('cert-engine.js') || src.includes('styles.css') || src.includes('qrcode')) return;
+        if (/(data|learning-core|cert-engine)\.js|styles\.css|qrcode/i.test(src)) return;
         const root = document.getElementById('admin-root');
         if (root && !root.dataset.mounted && ev.message) {
           const safeMsg = String(ev.message || 'Unknown error').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -276,10 +288,10 @@
         import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
 
         // ============================================================================
-        // 1. CONFIGURATION, DEFAULTS & PROFESSION-AWARE CNEU ENGINE
+        // 1. PRODUCTION CONFIGURATION, COURSE CATALOG DEFAULTS & CNEU HELPERS
         // ============================================================================
-        const CORE = window['RJCLOUD_CORE'] || {};
-        const CERT = window['RJCLOUD_CERT'] || {};
+        const CORE = window.RJCLOUD_CORE || window.RJLearningCore || {};
+        const CERT = window.RJCLOUD_CERT || {};
 
         const BUILTIN_CONFIG = {
             appName: 'rjcloud.organ',
@@ -317,7 +329,32 @@
         const DEFAULT_ONLINE_COURSE_NAME = 'หลักสูตรออนไลน์การรับบริจาคและปลูกถ่ายอวัยวะ (rjcloud.organ 2.0)';
         const PROFESSION_LIST = ['พยาบาล', 'แพทย์', 'บุคลากรสหวิชาชีพ'];
 
-        const DEFAULT_CERT_TEMPLATE = window.DEFAULT_CERT_TEMPLATE || {
+        const DEFAULT_COURSE_CATALOG = Array.isArray(CORE.DEFAULT_COURSE_CATALOG) && CORE.DEFAULT_COURSE_CATALOG.length > 0
+            ? CORE.DEFAULT_COURSE_CATALOG
+            : [
+                {
+                    id: 'organ_donation_core',
+                    code: 'ODC-CORE-2027',
+                    titleTH: 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ',
+                    titleEN: 'Organ Donation & Transplantation Clinical Coordination Program',
+                    subtitleTH: 'มาตรฐานศูนย์ความเป็นเลิศทางการแพทย์ โรงพยาบาลราชวิถี',
+                    trainingHours: 8,
+                    cneuCredits: '8.0',
+                    active: true
+                },
+                {
+                    id: 'kidney_transplant_surgery',
+                    code: 'KTS-SURG-2027',
+                    titleTH: 'หลักสูตรการผ่าตัดปลูกถ่ายไตและการดูแลผู้ป่วยระยะผ่าตัด',
+                    titleEN: 'Kidney Transplantation Surgery & Perioperative Care Program',
+                    subtitleTH: 'สำหรับทีมศัลยกรรม อายุรกรรมโรคไต และพยาบาลห้องผ่าตัด/ICU',
+                    trainingHours: 8,
+                    cneuCredits: '8.0',
+                    active: true
+                }
+            ];
+
+        const DEFAULT_CERT_TEMPLATE = window.DEFAULT_CERT_TEMPLATE || CORE.DEFAULT_CERT_TEMPLATE || {
             certPrefix: 'RJC-2027',
             orgTitleTH: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ',
             orgTitleEN: 'rjcloud.organ • Clinical Organ Donation & Transplantation Network',
@@ -331,7 +368,7 @@
             signatureUrl: ''
         };
 
-        const DEFAULT_CNEU_CONFIG = {
+        const DEFAULT_CNEU_CONFIG = CORE.DEFAULT_CNEU_CONFIG || {
             logoUrl: '',
             orgName: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ โรงพยาบาลราชวิถี',
             courseName: 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ (rjcloud.organ)',
@@ -350,7 +387,7 @@
         };
 
         function buildDefaultOnsiteUnlockLocal() {
-            const d = new Date(Date.now() + 24 * 60 * 60 * 1000);
+            const d = new Date();
             d.setHours(16, 0, 0, 0);
             const pad = n => String(n).padStart(2, '0');
             return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
@@ -358,8 +395,9 @@
 
         const DEFAULT_ONSITE_CONFIG = {
             eventId: 'ONSITE-2570-01',
+            targetCourseId: 'organ_donation_core',
             activityTitle: 'การอบรมเชิงปฏิบัติการการรับบริจาคและปลูกถ่ายอวัยวะ รุ่นที่ 1/2570',
-            eventDate: '15 – 16 มกราคม 2570',
+            eventDate: '15 มกราคม 2570',
             venueAndOrganizer: 'ห้องประชุมพิบูลสงคราม โรงพยาบาลราชวิถี (ศูนย์ความเป็นเลิศทางการแพทย์ฯ)',
             unlockAtLocal: buildDefaultOnsiteUnlockLocal(),
             unlockAt: new Date(buildDefaultOnsiteUnlockLocal()).toISOString(),
@@ -410,80 +448,6 @@
             return `${hrs} ชม. พัฒนาสมรรถนะวิชาชีพ`;
         }
 
-        function buildDemoUsers(onsiteCfg) {
-            return [
-                {
-                    id: '4511128901', license: '4511128901', name: 'พว.กัญญารัตน์ วัฒนากูล', nameEN: 'Kanyarat Wattanakul, RN',
-                    professionGroup: 'พยาบาล', cneuEligible: true,
-                    email: 'kanyarat@demo.go.th', phone: '0812345678', position: 'พยาบาลวิชาชีพชำนาญการ (TC)',
-                    department: 'กรมการแพทย์', hospital: 'รพ.ราชวิถี', province: 'กรุงเทพมหานคร',
-                    userType: 'เรียนต่อเนื่อง', studyHoursExempt: true, progress: 100,
-                    hoursStatusLabel: 'ชั่วโมงครบ (เทียบโอน)', hoursActivityName: onsiteCfg.activityTitle,
-                    hoursActivityDate: onsiteCfg.eventDate, hoursActivityVenue: onsiteCfg.venueAndOrganizer,
-                    status: 'ผ่าน', pretest: '28/40', posttest: '37/40',
-                    skillLabPassed: true, skillLabBestScore: 92,
-                    preSelfEfficacyAvg: 3.0, postSelfEfficacyAvg: 4.67, susScore: 90, satisfactionScore: 4.9,
-                    certificateClaimed: true, certificateCode: 'RJC-2027-NURSE01', certificateIssuedAt: new Date().toISOString(),
-                    skillLabHistory: [{
-                        at: new Date().toISOString(), personaId: 'conflict', difficultyId: 'hard', score: 92,
-                        silenceCount: 3, triggerTotal: 0, avgVocalCalm: 91,
-                        blindTranscript: [
-                            { turn: 1, role: 'RELATIVE', text: '[ภรรยา]: พี่ต้นทำบัตรบริจาคไว้... [คุณแม่]: แม่ไม่ยอมเด็ดขาด!' },
-                            { turn: 2, role: 'LEARNER', text: 'สัมผัสได้ถึงความรักของทั้งสองท่านค่ะ เราจะไม่ฝืนใจคุณแม่เด็ดขาดแม้มีบัตรจำนง ขอให้ครอบครัวมีเวลาส่วนตัวคุยกันก่อนนะคะ' }
-                        ]
-                    }]
-                },
-                {
-                    id: '1100123456', license: '1100123456', name: 'นพ.กิตติพงษ์ สุวรรณภูมิ', nameEN: 'Kittipong Suwannaphum, MD',
-                    professionGroup: 'แพทย์', cneuEligible: false,
-                    email: 'kittipong@demo.go.th', phone: '0823456789', position: 'นายแพทย์ชำนาญการพิเศษ',
-                    department: 'เขตสุขภาพที่ 1', hospital: 'รพ.นครพิงค์', province: 'เชียงใหม่',
-                    userType: 'เรียนต่อเนื่อง', studyHoursExempt: true, progress: 100,
-                    hoursStatusLabel: 'ชั่วโมงครบ (เทียบโอน)', hoursActivityName: onsiteCfg.activityTitle,
-                    hoursActivityDate: onsiteCfg.eventDate, hoursActivityVenue: onsiteCfg.venueAndOrganizer,
-                    status: 'ผ่าน', pretest: '31/40', posttest: '38/40',
-                    skillLabPassed: true, skillLabBestScore: 88,
-                    preSelfEfficacyAvg: 3.33, postSelfEfficacyAvg: 4.67, susScore: 88, satisfactionScore: 4.8,
-                    certificateClaimed: true, certificateCode: 'RJC-2027-MD0002', certificateIssuedAt: new Date().toISOString(),
-                    skillLabHistory: [{ at: new Date().toISOString(), personaId: 'sbar_doctor', difficultyId: 'normal', score: 88, silenceCount: 1, triggerTotal: 0 }]
-                },
-                {
-                    id: '4511128903', license: '4511128903', name: 'พว.สุกัญญา แสงจันทร์', nameEN: 'Sukanya Saengchan, RN',
-                    professionGroup: 'พยาบาล', cneuEligible: true,
-                    email: 'sukanya@demo.go.th', phone: '0834567890', position: 'พยาบาลวิชาชีพ ICU',
-                    department: 'เขตสุขภาพที่ 7', hospital: 'รพ.ขอนแก่น', province: 'ขอนแก่น',
-                    userType: 'เรียนใหม่', studyHoursExempt: false, progress: 88,
-                    hoursStatusLabel: 'ชั่วโมงครบ', hoursActivityName: DEFAULT_ONLINE_COURSE_NAME,
-                    status: 'ผ่าน', pretest: '24/40', posttest: '35/40',
-                    skillLabPassed: true, skillLabBestScore: 84,
-                    preSelfEfficacyAvg: 2.67, postSelfEfficacyAvg: 4.33, susScore: 85, satisfactionScore: 4.8,
-                    certificateClaimed: true, certificateCode: 'RJC-2027-NURSE03', certificateIssuedAt: new Date().toISOString(),
-                    skillLabHistory: [{ at: new Date().toISOString(), personaId: 'standard', difficultyId: 'normal', score: 84, silenceCount: 2, triggerTotal: 0 }]
-                },
-                {
-                    id: '7700128904', license: '7700128904', name: 'ภญ.ปิยะนุช ศรีสวัสดิ์', nameEN: 'Piyanuch Srisawat, PharmD',
-                    professionGroup: 'บุคลากรสหวิชาชีพ', cneuEligible: false,
-                    email: 'piyanuch@demo.go.th', phone: '0845678901', position: 'เภสัชกรคลินิก',
-                    department: 'กรมการแพทย์', hospital: 'รพ.นพรัตนราชธานี', province: 'กรุงเทพมหานคร',
-                    userType: 'เรียนต่อเนื่อง', studyHoursExempt: true, progress: 100,
-                    hoursStatusLabel: 'ชั่วโมงครบ (เทียบโอน)', hoursActivityName: onsiteCfg.activityTitle,
-                    status: 'ผ่าน', pretest: '26/40', posttest: '36/40',
-                    skillLabPassed: true, skillLabBestScore: 86,
-                    preSelfEfficacyAvg: 3.0, postSelfEfficacyAvg: 4.5, susScore: 90, satisfactionScore: 4.9,
-                    certificateClaimed: true, certificateCode: 'RJC-2027-ALLIED4', certificateIssuedAt: new Date().toISOString(),
-                    skillLabHistory: [{ at: new Date().toISOString(), personaId: 'distrust', difficultyId: 'normal', score: 86, silenceCount: 2, triggerTotal: 0 }]
-                }
-            ];
-        }
-
-        function buildDemoOnsiteRegistrants(onsiteCfg) {
-            return [
-                { id: '4511128901', license: '4511128901', name: 'พว.กัญญารัตน์ วัฒนากูล', professionGroup: 'พยาบาล', cneuEligible: true, position: 'พยาบาลวิชาชีพชำนาญการ (TC)', region: 'เขตสุขภาพที่ 13 (กทม. / กรมการแพทย์)', province: 'กรุงเทพมหานคร', hospital: 'รพ.ราชวิถี', email: 'kanyarat@demo.go.th', phone: '0812345678', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: onsiteCfg.unlockAt },
-                { id: '1100123456', license: '1100123456', name: 'นพ.กิตติพงษ์ สุวรรณภูมิ', professionGroup: 'แพทย์', cneuEligible: false, position: 'นายแพทย์ชำนาญการพิเศษ', region: 'เขตสุขภาพที่ 1', province: 'เชียงใหม่', hospital: 'รพ.นครพิงค์', email: 'kittipong@demo.go.th', phone: '0823456789', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: onsiteCfg.unlockAt },
-                { id: '7700128904', license: '7700128904', name: 'ภญ.ปิยะนุช ศรีสวัสดิ์', professionGroup: 'บุคลากรสหวิชาชีพ', cneuEligible: false, position: 'เภสัชกรคลินิก', region: 'เขตสุขภาพที่ 13 (กทม. / กรมการแพทย์)', province: 'กรุงเทพมหานคร', hospital: 'รพ.นพรัตนราชธานี', email: 'piyanuch@demo.go.th', phone: '0845678901', registeredAt: new Date().toISOString(), revoked: false, onsiteUnlockAt: onsiteCfg.unlockAt }
-            ];
-        }
-
         // ============================================================================
         // 2. FIREBASE INITIALIZATION, QR GENERATOR & UTILITY HELPERS
         // ============================================================================
@@ -500,7 +464,7 @@
         function resolveOnsitePublicUrl() {
             try {
                 const loc = window.location;
-                if (loc && (loc.protocol === 'https:' || loc.protocol === 'http:') && !loc.hostname.includes('usercontent') && !loc.hostname.includes('sandbox')) {
+                if (loc && (loc.protocol === 'https:' || loc.protocol === 'http:') && !/(usercontent|sandbox|srcdoc)/i.test(loc.hostname)) {
                     return new URL('./onsite.html', loc.href).toString();
                 }
             } catch (_) {}
@@ -589,7 +553,7 @@
                 ctx.fillStyle = '#0f172a'; ctx.font = '700 22px "JetBrains Mono", monospace';
                 ctx.fillText(url, 500, 1042, 860);
                 ctx.fillStyle = '#0369a1'; ctx.font = '600 20px "Sarabun", sans-serif';
-                ctx.fillText('เปิดรับสมัครล่วงหน้า • ซิงค์สิทธิ์เข้า rjcloud.organ 2.0 อัตโนมัติตามกำหนดเวลา', 500, 1094, 860);
+                ctx.fillText(`เปิดสิทธิ์เข้า rjcloud.organ 2.0: ${formatThaiDateTimeFull(onsiteCfg?.unlockAt)}`, 500, 1094, 860);
                 ctx.fillStyle = '#64748b'; ctx.font = '600 18px "Prompt", sans-serif';
                 ctx.fillText('ORGAN TRANSPLANTATION CENTER OF RAJAVITHI HOSPITAL', 500, 1148, 860);
             }
@@ -612,7 +576,17 @@
             return u.status === 'ผ่าน' || parsePosttestScorePct(u.posttest) >= MIN_POSTTEST_PERCENT;
         }
         function isHoursExemptUser(u) {
-            return Boolean(u && (u.studyHoursExempt || u.userType === 'เรียนต่อเนื่อง'));
+            return Boolean(u && (u.studyHoursExempt || u.userType === 'เทียบโอน' || u.classificationCode === 'CREDIT_TRANSFER'));
+        }
+
+        function resolveClassificationBadge(u) {
+            if (isHoursExemptUser(u)) {
+                return { label: 'เทียบโอน', cls: 'bg-emerald-500/20 border-emerald-400/45 text-emerald-300' };
+            }
+            if (u?.userType === 'เรียนต่อเนื่อง' || u?.classificationCode === 'CONTINUING') {
+                return { label: 'เรียนต่อเนื่อง', cls: 'bg-sky-500/20 border-sky-400/45 text-sky-300' };
+            }
+            return { label: 'เรียนใหม่', cls: 'bg-pink-400/20 border-pink-300/45 text-pink-200' };
         }
 
         function resolveLearnerStatusInfo(u) {
@@ -625,15 +599,15 @@
             const hasPre = Boolean(u.pretest && u.pretest !== '-');
 
             const activityName = exempt
-                ? (u.hoursActivityName || 'ผู้เรียนต่อเนื่อง / ผ่านการอบรมมาตรฐานมาก่อนแล้ว')
+                ? (u.hoursActivityName || 'กิจกรรมอบรม Onsite ที่ยืนยันแล้ว')
                 : (studyEnough ? (u.hoursActivityName || DEFAULT_ONLINE_COURSE_NAME) : '');
-            const hoursLabel = exempt ? 'ชั่วโมงครบ (เทียบโอน)' : (studyEnough ? 'ชั่วโมงครบ' : `กำลังสะสมชั่วโมง (${Math.round(Number(u.progress || 0))}%)`);
+            const hoursLabel = exempt ? 'เทียบโอน (ยกเว้นชั่วโมง 100%)' : (studyEnough ? 'ชั่วโมงครบ' : `กำลังสะสมชั่วโมง (${Math.round(Number(u.progress || 0))}%)`);
 
             let statusLabel = 'ลงทะเบียนแล้ว';
             if (passed && bestLab >= 85) statusLabel = 'ผู้เชี่ยวชาญคลินิก';
             else if (passed) statusLabel = 'สำเร็จหลักสูตร';
             else if (labDone) statusLabel = 'ผ่าน AI Skill Lab 3D';
-            else if (exempt) statusLabel = 'ชั่วโมงครบ (เทียบโอน)';
+            else if (exempt) statusLabel = 'เทียบโอน (ชั่วโมงครบ)';
             else if (studyEnough) statusLabel = 'ชั่วโมงครบ';
             else if (hasPre || Number(u.progress || 0) > 0) statusLabel = 'กำลังสะสมชั่วโมง';
 
@@ -845,7 +819,7 @@
         }
 
         // ============================================================================
-        // 4. MAIN ADMIN MISSION CONTROL APPLICATION
+        // 4. MAIN PRODUCTION ADMIN MISSION CONTROL APPLICATION
         // ============================================================================
         function AdminApp() {
             const [theme, setTheme] = useState(() => {
@@ -863,7 +837,7 @@
             }, [theme]);
             const toggleTheme = useCallback(() => setTheme(p => (p === 'dark' ? 'light' : 'dark')), []);
 
-            // Auth Session State
+            // Auth Session State (Production Only — No Demo Mode)
             const [adminSession, setAdminSession] = useState(null);
             const [loginEmail, setLoginEmail] = useState(CONFIG.contactEmail || 'rjcloud.organ@gmail.com');
             const [loginPassword, setLoginPassword] = useState('');
@@ -872,16 +846,24 @@
             // Navigation State
             const [activeTab, setActiveTab] = useState('users'); // users | onsite | cert | live | content | sync | overview
             const [certSubTab, setCertSubTab] = useState('cneu'); // designer | cneu
-            const [certPreviewProf, setCertPreviewProf] = useState('พยาบาล'); // พยาบาล | แพทย์ | บุคลากรสหวิชาชีพ
-            const [reportMode, setReportMode] = useState('nurse_cneu'); // nurse_cneu | doctor_hours | allied_hours | all_exec
-            const [contentSubTab, setContentSubTab] = useState('lessons');
+            const [certPreviewProf, setCertPreviewProf] = useState('พยาบาล');
+            const [reportMode, setReportMode] = useState('nurse_cneu');
+            const [contentSubTab, setContentSubTab] = useState('courses'); // courses | lessons | quiz
 
-            // Data States
+            // Cloud Data States
             const [usersList, setUsersList] = useState([]);
+            const [courseCatalog, setCourseCatalog] = useState(() => DEFAULT_COURSE_CATALOG);
+            const [newCourseForm, setNewCourseForm] = useState({
+                id: '', code: '', titleTH: '', titleEN: '', subtitleTH: '', trainingHours: 8, cneuCredits: '8.0', active: true
+            });
+            const [showAddCourseForm, setShowAddCourseForm] = useState(false);
+
             const [onsiteConfig, setOnsiteConfig] = useState(() => ({ ...DEFAULT_ONSITE_CONFIG }));
             const [onsiteDraft, setOnsiteDraft] = useState(() => ({ ...DEFAULT_ONSITE_CONFIG }));
             const [onsiteRegistrants, setOnsiteRegistrants] = useState([]);
+            const [onsiteEventFilter, setOnsiteEventFilter] = useState('ALL');
             const [onsiteLinkCopied, setOnsiteLinkCopied] = useState(false);
+
             const [certTemplate, setCertTemplate] = useState(() => ({ ...DEFAULT_CERT_TEMPLATE }));
             const [cneuConfig, setCneuConfig] = useState(() => ({ ...DEFAULT_CNEU_CONFIG }));
             const [liveConfig, setLiveConfig] = useState(() => ({ ...DEFAULT_LIVE_CONFIG }));
@@ -897,7 +879,7 @@
                 questionSets: [parseRawExams(window.QUIZ_QUESTIONS_RAW || [])]
             }));
 
-            // Filters & Forms State
+            // Filters & Modals State
             const [searchTerm, setSearchTerm] = useState('');
             const [filterType, setFilterType] = useState('ALL');
             const [filterProf, setFilterProf] = useState('ALL');
@@ -924,7 +906,7 @@
 
             const showToast = useCallback((text, type = 'success') => {
                 setToast({ visible: true, text: String(text), type });
-                setTimeout(() => setToast(p => ({ ...p, visible: false })), 3300);
+                setTimeout(() => setToast(p => ({ ...p, visible: false })), 3400);
             }, []);
 
             const askConfirm = useCallback((opts) => {
@@ -943,16 +925,16 @@
                     if (fbUser && fbUser.email) {
                         const allowed = (CONFIG.adminEmails || [CONFIG.contactEmail]).map(x => x.toLowerCase());
                         if (allowed.includes(fbUser.email.toLowerCase())) {
-                            setAdminSession({ email: fbUser.email, isDemo: false });
+                            setAdminSession({ email: fbUser.email });
                         }
                     }
                 });
                 return () => unsub();
             }, []);
 
-            // Live Firestore Subscriptions (Active only after Admin Authentication)
+            // Live Firestore Subscriptions (Active only after Verified Admin Login)
             useEffect(() => {
-                if (!adminSession || adminSession.isDemo || !fbDb) return;
+                if (!adminSession || !fbDb) return;
 
                 const unsubUsers = onSnapshot(
                     collection(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users'),
@@ -982,6 +964,9 @@
                         if (data.liveConfig) setLiveConfig(p => ({ ...p, ...data.liveConfig }));
                         if (data.certTemplate) setCertTemplate(p => ({ ...p, ...data.certTemplate }));
                         if (data.cneuConfig) setCneuConfig(p => ({ ...p, ...data.cneuConfig }));
+                        if (Array.isArray(data.courseCatalog) && data.courseCatalog.length > 0) {
+                            setCourseCatalog(data.courseCatalog);
+                        }
                         if (data.onsiteConfig) {
                             const merged = {
                                 ...DEFAULT_ONSITE_CONFIG,
@@ -1063,7 +1048,7 @@
             }, [activeTab, certSubTab, certPreviewProf, certTemplate, cneuConfig, liveConfig.hours]);
 
             // ============================================================================
-            // 5. ACTION HANDLERS (AUTH, USERS, ONSITE LINK/QR, CERT, REPORTS, R2R)
+            // 5. ACTION HANDLERS (AUTH, COURSE CATALOG, USERS, ONSITE, CERT, REPORTS, R2R)
             // ============================================================================
             const handleCopyOnsiteLink = () => {
                 copyTextSafe(onsitePublicUrl);
@@ -1083,7 +1068,7 @@
             const handleAdminLogin = async (e) => {
                 e.preventDefault();
                 if (!isCloudConfigured || !fbAuth) {
-                    showToast('ไม่พบการเชื่อมต่อ Firebase กรุณาใช้ปุ่มทดลองเปิดโหมดตัวอย่างด้านล่างค่ะ', 'error');
+                    showToast('ไม่พบการเชื่อมต่อฐานข้อมูล Firebase กรุณาตรวจสอบอินเทอร์เน็ตค่ะ', 'error');
                     return;
                 }
                 const allowed = (CONFIG.adminEmails || [CONFIG.contactEmail]).map(x => x.toLowerCase());
@@ -1094,7 +1079,7 @@
                 setLoginBusy(true);
                 try {
                     await signInWithEmailAndPassword(fbAuth, loginEmail.trim(), loginPassword);
-                    setAdminSession({ email: loginEmail.trim(), isDemo: false });
+                    setAdminSession({ email: loginEmail.trim() });
                     showToast('เข้าสู่ศูนย์ควบคุม Admin Mission Control สำเร็จค่ะ');
                 } catch (_) {
                     showToast('อีเมลหรือรหัสผ่านไม่ถูกต้อง กรุณาตรวจสอบใน Firebase Auth ค่ะ', 'error');
@@ -1103,38 +1088,100 @@
                 }
             };
 
-            const handleEnterDemoMode = () => {
-                setAdminSession({ email: 'demo-preview@rjcloud.organ', isDemo: true });
-                setUsersList(buildDemoUsers(onsiteConfig));
-                setOnsiteRegistrants(buildDemoOnsiteRegistrants(onsiteConfig));
-                showToast('เข้าสู่โหมดพรีวิวตัวอย่าง (มีครบทั้ง พยาบาล แพทย์ และสหวิชาชีพ ให้ทดสอบคัดกรอง CNEU ได้ทันทีค่ะ)', 'info');
-            };
-
             const handleAdminLogout = () => {
-                if (!adminSession?.isDemo && fbAuth) signOut(fbAuth).catch(() => {});
+                if (fbAuth) signOut(fbAuth).catch(() => {});
                 setAdminSession(null); setUsersList([]); setOnsiteRegistrants([]);
                 showToast('ออกจากระบบผู้ดูแลแล้วค่ะ');
             };
 
-            const persistSettings = async (patchObj) => {
-                if (adminSession?.isDemo || !fbDb) {
-                    showToast('บันทึกการตั้งค่า (โหมดตัวอย่าง) เรียบร้อยค่ะ');
-                    return;
-                }
+            const persistSettings = async (patchObj, customMsg = 'บันทึกการตั้งค่าขึ้น Cloud เรียบร้อยค่ะ') => {
+                if (!fbDb) { showToast('ไม่พบการเชื่อมต่อ Firestore ค่ะ', 'error'); return false; }
                 try {
                     await setDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_config', 'settings'), patchObj, { merge: true });
-                    showToast('บันทึกการตั้งค่าขึ้น Cloud เรียบร้อยค่ะ');
+                    showToast(customMsg);
+                    return true;
                 } catch (err) {
                     showToast('บันทึกไม่สำเร็จ: ' + err.message, 'error');
+                    return false;
                 }
+            };
+
+            // Course Catalog Handlers (เพิ่ม / แก้ไข / เปิด-ปิด / ลบ ซิงค์สดไปหน้า index.html)
+            const handleUpdateCourseField = (idx, field, val) => {
+                setCourseCatalog(prev => prev.map((c, i) => (i === idx ? { ...c, [field]: val } : c)));
+            };
+
+            const handleToggleCourseActive = async (idx) => {
+                const target = courseCatalog[idx];
+                if (!target) return;
+                const activeCount = courseCatalog.filter(c => c.active !== false).length;
+                if (target.active !== false && activeCount <= 1) {
+                    showToast('ต้องเปิดแสดงผลอย่างน้อย 1 หลักสูตรในระบบค่ะ', 'error');
+                    return;
+                }
+                const nextCatalog = courseCatalog.map((c, i) => (i === idx ? { ...c, active: c.active === false } : c));
+                setCourseCatalog(nextCatalog);
+                await persistSettings(
+                    { courseCatalog: nextCatalog },
+                    nextCatalog[idx].active ? `เปิดแสดงหลักสูตร "${target.titleTH}" หน้าเว็บแล้วค่ะ` : `ซ่อนหลักสูตร "${target.titleTH}" จากหน้าลงทะเบียนแล้วค่ะ`
+                );
+            };
+
+            const handleAddCourse = async (e) => {
+                e.preventDefault();
+                if (!newCourseForm.titleTH.trim()) {
+                    showToast('กรุณากรอกชื่อหลักสูตร (ภาษาไทย) ค่ะ', 'error');
+                    return;
+                }
+                const rawId = newCourseForm.id.trim() || `course_${Date.now().toString(36)}`;
+                const cleanId = rawId.toLowerCase().replace(/[^a-z0-9_-]/g, '_');
+                if (courseCatalog.some(c => c.id === cleanId)) {
+                    showToast(`รหัส ID หลักสูตร "${cleanId}" ซ้ำกับหลักสูตรที่มีอยู่แล้วค่ะ`, 'error');
+                    return;
+                }
+                const newItem = {
+                    id: cleanId,
+                    code: newCourseForm.code.trim().toUpperCase() || `RJC-${String(courseCatalog.length + 1).padStart(2, '0')}`,
+                    titleTH: newCourseForm.titleTH.trim(),
+                    titleEN: newCourseForm.titleEN.trim(),
+                    subtitleTH: newCourseForm.subtitleTH.trim(),
+                    trainingHours: Number(newCourseForm.trainingHours) || 8,
+                    cneuCredits: String(newCourseForm.cneuCredits || '8.0').trim(),
+                    active: Boolean(newCourseForm.active)
+                };
+                const nextCatalog = [...courseCatalog, newItem];
+                setCourseCatalog(nextCatalog);
+                const ok = await persistSettings({ courseCatalog: nextCatalog }, `เพิ่มหลักสูตร "${newItem.titleTH}" ขึ้น Cloud เรียบร้อยค่ะ`);
+                if (ok) {
+                    setNewCourseForm({ id: '', code: '', titleTH: '', titleEN: '', subtitleTH: '', trainingHours: 8, cneuCredits: '8.0', active: true });
+                    setShowAddCourseForm(false);
+                }
+            };
+
+            const handleDeleteCourse = (course) => {
+                if (courseCatalog.length <= 1) {
+                    showToast('ไม่สามารถลบหลักสูตรสุดท้ายออกได้ค่ะ', 'error');
+                    return;
+                }
+                askConfirm({
+                    title: 'ยืนยันการลบหลักสูตร',
+                    message: `ต้องการลบหลักสูตร "${course.titleTH}" (${course.id}) ออกจากรายการหลักสูตรใช่หรือไม่? (ประวัติผู้เรียนเดิมในฐานข้อมูลจะไม่ถูกลบ)`,
+                    danger: true,
+                    confirmText: 'ลบหลักสูตร',
+                    onConfirm: async () => {
+                        const nextCatalog = courseCatalog.filter(c => c.id !== course.id);
+                        if (!nextCatalog.some(c => c.active !== false) && nextCatalog[0]) {
+                            nextCatalog[0] = { ...nextCatalog[0], active: true };
+                        }
+                        setCourseCatalog(nextCatalog);
+                        await persistSettings({ courseCatalog: nextCatalog }, 'ลบหลักสูตรและซิงค์ขึ้น Cloud เรียบร้อยค่ะ');
+                    }
+                });
             };
 
             const persistContent = async (nextContent) => {
                 setContentConfig(nextContent);
-                if (adminSession?.isDemo || !fbDb) {
-                    showToast('บันทึกบทเรียนและข้อสอบ (โหมดตัวอย่าง) เรียบร้อยค่ะ');
-                    return;
-                }
+                if (!fbDb) { showToast('ไม่พบการเชื่อมต่อ Firestore ค่ะ', 'error'); return; }
                 try {
                     const setsMap = {};
                     (nextContent.questionSets || []).forEach((arr, idx) => { setsMap[String(idx)] = arr; });
@@ -1152,10 +1199,7 @@
                 const uid = u.id || getUserLicense(u);
                 const merged = { ...u, ...changes, license: getUserLicense(u) };
                 setUsersList(prev => prev.map(x => ((x.id || getUserLicense(x)) === uid ? merged : x)));
-                if (adminSession?.isDemo || !fbDb) {
-                    showToast('อัปเดตข้อมูลผู้เรียนเรียบร้อยแล้วค่ะ');
-                    return;
-                }
+                if (!fbDb) return;
                 try {
                     await setDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', uid), merged, { merge: true });
                     showToast('อัปเดตข้อมูลผู้เรียนเรียบร้อยแล้วค่ะ');
@@ -1173,7 +1217,7 @@
                     confirmText: 'ลบผู้เรียน',
                     onConfirm: async () => {
                         setUsersList(prev => prev.filter(x => (x.id || getUserLicense(x)) !== uid));
-                        if (!adminSession?.isDemo && fbDb) {
+                        if (fbDb) {
                             try { await deleteDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', uid)); } catch (_) {}
                         }
                         showToast('ลบข้อมูลผู้เรียนเรียบร้อยค่ะ');
@@ -1183,29 +1227,31 @@
 
             const handleAddManualUser = async (e) => {
                 e.preventDefault();
-                const cleanLic = manualForm.license.replace(/[^a-zA-Z0-9]/g, '').trim();
+                const cleanLic = manualForm.license.replace(/[^a-zA-Z0-9_-]/g, '').toUpperCase().trim();
                 if (!cleanLic || !manualForm.name.trim()) {
                     showToast('กรุณากรอกชื่อ–นามสกุล และเลขที่ใบอนุญาตให้ครบถ้วนค่ะ', 'error');
                     return;
                 }
-                const isExempt = manualForm.userType === 'เรียนต่อเนื่อง';
+                const isExempt = manualForm.userType === 'เทียบโอน';
                 const prof = manualForm.professionGroup || 'พยาบาล';
                 const newUser = {
                     id: cleanLic, license: cleanLic, name: manualForm.name.trim(),
                     professionGroup: prof, cneuEligible: prof === 'พยาบาล',
                     email: manualForm.email.trim(), phone: manualForm.phone.trim(),
                     department: manualForm.department.trim(), hospital: manualForm.hospital.trim(),
-                    userType: isExempt ? 'เรียนต่อเนื่อง' : 'เรียนใหม่',
+                    userType: isExempt ? 'เทียบโอน' : 'เรียนใหม่',
+                    classificationCode: isExempt ? 'CREDIT_TRANSFER' : 'NEW_LEARNER',
                     studyHoursExempt: isExempt,
-                    hoursStatusLabel: isExempt ? 'ชั่วโมงครบ (เทียบโอน)' : 'กำลังสะสมชั่วโมง',
-                    hoursActivityName: isExempt ? (manualForm.hoursActivityName.trim() || onsiteConfig.activityTitle || 'ผู้เรียนต่อเนื่อง / ผ่านการอบรมมาตรฐานมาก่อนแล้ว') : '',
+                    hoursStatusLabel: isExempt ? 'เทียบโอน (ยกเว้นชั่วโมง 100%)' : 'กำลังสะสมชั่วโมง',
+                    hoursActivityName: isExempt ? (manualForm.hoursActivityName.trim() || onsiteConfig.activityTitle || 'กิจกรรมอบรม Onsite') : '',
                     hoursActivityDate: isExempt ? (onsiteConfig.eventDate || '') : '',
                     hoursActivityVenue: isExempt ? (onsiteConfig.venueAndOrganizer || '') : '',
                     status: 'กำลังเรียน', progress: isExempt ? 100 : 0, studySeconds: 0,
-                    pretest: '-', posttest: '-', skillLabPassed: false, skillLabHistory: [], lastVideoId: 1
+                    pretest: '-', posttest: '-', skillLabPassed: false, skillLabHistory: [], lastVideoId: 1,
+                    createdAt: new Date().toISOString()
                 };
                 setUsersList(prev => [newUser, ...prev.filter(x => (x.id || getUserLicense(x)) !== cleanLic)]);
-                if (!adminSession?.isDemo && fbDb) {
+                if (fbDb) {
                     try {
                         await setDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', cleanLic), newUser, { merge: true });
                     } catch (err) { showToast('เพิ่มผู้เรียนไม่สำเร็จ: ' + err.message, 'error'); return; }
@@ -1218,7 +1264,7 @@
             const handleOpenTransferModal = (u) => {
                 setTransferModal({
                     open: true, user: u, studyHoursExempt: true,
-                    hoursActivityName: u.hoursActivityName || onsiteConfig.activityTitle || 'ผู้เรียนต่อเนื่อง / ผ่านการอบรมมาตรฐานมาก่อนแล้ว',
+                    hoursActivityName: u.hoursActivityName || onsiteConfig.activityTitle || 'กิจกรรมอบรม Onsite ที่ยืนยันแล้ว',
                     hoursActivityDate: u.hoursActivityDate || onsiteConfig.eventDate || '',
                     hoursActivityVenue: u.hoursActivityVenue || onsiteConfig.venueAndOrganizer || ''
                 });
@@ -1230,11 +1276,12 @@
                 if (!target) return;
                 const exempt = Boolean(transferModal.studyHoursExempt);
                 await handleUpdateUser(target, {
-                    userType: exempt ? 'เรียนต่อเนื่อง' : 'เรียนใหม่',
+                    userType: exempt ? 'เทียบโอน' : 'เรียนใหม่',
+                    classificationCode: exempt ? 'CREDIT_TRANSFER' : 'NEW_LEARNER',
                     studyHoursExempt: exempt,
                     progress: exempt ? 100 : Number(target.progress || 0),
-                    hoursStatusLabel: exempt ? 'ชั่วโมงครบ (เทียบโอน)' : (Number(target.progress || 0) >= MIN_STUDY_PERCENT ? 'ชั่วโมงครบ' : 'กำลังสะสมชั่วโมง'),
-                    hoursActivityName: exempt ? (transferModal.hoursActivityName.trim() || 'ผู้เรียนต่อเนื่อง / ผ่านการอบรมมาตรฐานมาก่อนแล้ว') : '',
+                    hoursStatusLabel: exempt ? 'เทียบโอน (ยกเว้นชั่วโมง 100%)' : (Number(target.progress || 0) >= MIN_STUDY_PERCENT ? 'ชั่วโมงครบ' : 'กำลังสะสมชั่วโมง'),
+                    hoursActivityName: exempt ? (transferModal.hoursActivityName.trim() || 'กิจกรรมอบรม Onsite') : '',
                     hoursActivityDate: exempt ? transferModal.hoursActivityDate.trim() : '',
                     hoursActivityVenue: exempt ? transferModal.hoursActivityVenue.trim() : ''
                 });
@@ -1244,45 +1291,49 @@
             const handleSaveOnsiteConfig = async () => {
                 const dt = new Date(onsiteDraft.unlockAtLocal || buildDefaultOnsiteUnlockLocal());
                 const unlockIso = isNaN(dt.getTime()) ? new Date().toISOString() : dt.toISOString();
-                const nextCfg = { ...onsiteDraft, unlockAt: unlockIso, forceUnlocked: Boolean(onsiteDraft.forceUnlocked) };
+                const nextCfg = {
+                    ...onsiteDraft,
+                    targetCourseId: onsiteDraft.targetCourseId || courseCatalog[0]?.id || 'organ_donation_core',
+                    unlockAt: unlockIso,
+                    forceUnlocked: Boolean(onsiteDraft.forceUnlocked)
+                };
                 setOnsiteConfig(nextCfg); setOnsiteDraft(nextCfg);
-                await persistSettings({ onsiteConfig: nextCfg });
+                await persistSettings({ onsiteConfig: nextCfg }, 'บันทึกการตั้งค่ากิจกรรม Onsite และเวลาเปิดระบบขึ้น Cloud แล้วค่ะ');
             };
 
             const handleBatchSyncOnsiteToLearners = async () => {
-                const activeList = onsiteRegistrants.filter(r => !r.revoked);
-                if (activeList.length === 0) { showToast('ยังไม่มีผู้สมัคร Onsite ที่พร้อมซิงค์ค่ะ', 'info'); return; }
-                if (adminSession?.isDemo || !fbDb) {
-                    showToast(`จำลองซิงค์กำหนดเวลา สิทธิ์เทียบโอน และกลุ่มวิชาชีพครบ ${activeList.length} รายเรียบร้อยค่ะ`);
-                    return;
-                }
+                const activeList = filteredOnsiteRegistrants.filter(r => !r.revoked && !r.cancelled);
+                if (activeList.length === 0) { showToast('ยังไม่มีผู้สมัคร Onsite ที่พร้อมซิงค์ในรายการนี้ค่ะ', 'info'); return; }
+                if (!fbDb) return;
                 setOnsiteSyncing(true);
                 let okCount = 0;
                 try {
                     for (const r of activeList) {
-                        const lic = String(r.license || r.id || '').trim();
+                        const lic = String(r.license || '').trim().toUpperCase();
                         if (!lic) continue;
                         const prof = resolveProfessionGroupSafe(r);
                         const isNurse = prof === 'พยาบาล';
+                        const targetCid = r.targetCourseId || onsiteConfig.targetCourseId || 'organ_donation_core';
                         await setDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', lic), {
-                            id: lic, license: lic, name: r.name, email: r.email || '', phone: r.phone || '',
+                            id: lic, license: lic, activeCourseId: targetCid,
+                            name: r.name, email: r.email || '', phone: r.phone || '',
                             position: r.position || prof, professionGroup: prof, cneuEligible: isNurse,
                             trainingHours: String(cneuConfig.trainingHours || '8'),
                             cneuActivityCode: isNurse ? (cneuConfig.activityCode || '') : '',
                             cneuCredits: isNurse ? (cneuConfig.cneuCredits || '') : '',
                             department: r.region || 'กรมการแพทย์', hospital: r.hospital || '', province: r.province || '',
-                            userType: 'เรียนต่อเนื่อง', studyHoursExempt: true, progress: 100,
-                            hoursStatusLabel: 'ชั่วโมงครบ (เทียบโอน)',
-                            hoursActivityName: onsiteConfig.activityTitle,
-                            hoursActivityDate: onsiteConfig.eventDate,
+                            userType: 'เทียบโอน', classificationCode: 'CREDIT_TRANSFER', studyHoursExempt: true, progress: 100,
+                            hoursStatusLabel: 'เทียบโอน (ยกเว้นชั่วโมง 100%)',
+                            hoursActivityName: r.eventName || onsiteConfig.activityTitle,
+                            hoursActivityDate: r.eventDate || onsiteConfig.eventDate,
                             hoursActivityVenue: onsiteConfig.venueAndOrganizer,
-                            onsiteEventId: onsiteConfig.eventId,
+                            onsiteEventId: r.eventId || onsiteConfig.eventId,
                             onsiteUnlockAt: onsiteConfig.unlockAt,
                             onsiteForceUnlocked: Boolean(onsiteConfig.forceUnlocked)
                         }, { merge: true });
                         okCount += 1;
                     }
-                    showToast(`ซิงค์กำหนดเวลาและสิทธิ์แยกตามวิชาชีพเข้า rjcloud.organ 2.0 ครบ ${okCount} รายเรียบร้อยค่ะ`);
+                    showToast(`ซิงค์สิทธิ์เทียบโอนและเวลาเปิดระบบเข้า rjcloud.organ 2.0 ครบ ${okCount} รายเรียบร้อยค่ะ`);
                 } catch (err) {
                     showToast('ซิงค์ไม่สำเร็จบางรายการ: ' + err.message, 'error');
                 } finally {
@@ -1291,36 +1342,40 @@
             };
 
             const handleToggleOnsiteRevoke = (reg) => {
-                const nextRevoked = !reg.revoked;
+                const isCurrentlyCancelled = Boolean(reg.revoked || reg.cancelled);
+                const nextCancelled = !isCurrentlyCancelled;
+                const docKey = String(reg.id || reg.license || '').trim();
+                const lic = String(reg.license || reg.id || '').trim().toUpperCase();
                 askConfirm({
-                    title: nextRevoked ? 'ยกเลิกสิทธิ์เทียบโอน (ไม่มาเซ็นชื่อหน้างาน)' : 'คืนสิทธิ์เทียบโอน Onsite',
-                    message: nextRevoked
-                        ? `ต้องการยกเลิกสิทธิ์เทียบโอนของ "${reg.name}" (${reg.license}) หรือไม่?`
-                        : `ต้องการคืนสิทธิ์ "ชั่วโมงครบ (เทียบโอน)" ให้ "${reg.name}" หรือไม่?`,
-                    danger: nextRevoked,
-                    confirmText: nextRevoked ? 'ยกเลิกสิทธิ์เทียบโอน' : 'คืนสิทธิ์เทียบโอน',
+                    title: nextCancelled ? 'ยกเลิกสิทธิ์เทียบโอน (ไม่มาเซ็นชื่อหน้างาน)' : 'คืนสิทธิ์เทียบโอน Onsite',
+                    message: nextCancelled
+                        ? `ต้องการยกเลิกสิทธิ์เทียบโอนของ "${reg.name}" (${lic}) หรือไม่?`
+                        : `ต้องการคืนสิทธิ์ "เทียบโอน (ยกเว้นชั่วโมง 100%)" ให้ "${reg.name}" หรือไม่?`,
+                    danger: nextCancelled,
+                    confirmText: nextCancelled ? 'ยกเลิกสิทธิ์เทียบโอน' : 'คืนสิทธิ์เทียบโอน',
                     onConfirm: async () => {
-                        const lic = String(reg.license || reg.id || '').trim();
-                        setOnsiteRegistrants(prev => prev.map(x => ((x.license || x.id) === lic ? { ...x, revoked: nextRevoked } : x)));
-                        if (!adminSession?.isDemo && fbDb) {
+                        setOnsiteRegistrants(prev => prev.map(x => ((x.id || x.license) === docKey ? { ...x, revoked: nextCancelled, cancelled: nextCancelled, status: nextCancelled ? 'cancelled' : 'confirmed' } : x)));
+                        if (fbDb) {
                             try {
-                                await setDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'onsite_registrations', lic), { revoked: nextRevoked }, { merge: true });
+                                await setDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'onsite_registrations', docKey), {
+                                    revoked: nextCancelled, cancelled: nextCancelled, status: nextCancelled ? 'cancelled' : 'confirmed'
+                                }, { merge: true });
                                 await setDoc(
                                     doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', lic),
-                                    nextRevoked
-                                        ? { studyHoursExempt: false, userType: 'เรียนใหม่', hoursStatusLabel: 'กำลังสะสมชั่วโมง', progress: 0 }
-                                        : { studyHoursExempt: true, userType: 'เรียนต่อเนื่อง', progress: 100, hoursStatusLabel: 'ชั่วโมงครบ (เทียบโอน)', hoursActivityName: onsiteConfig.activityTitle, onsiteUnlockAt: onsiteConfig.unlockAt, onsiteForceUnlocked: Boolean(onsiteConfig.forceUnlocked) },
+                                    nextCancelled
+                                        ? { studyHoursExempt: false, userType: 'เรียนใหม่', classificationCode: 'NEW_LEARNER', hoursStatusLabel: 'กำลังสะสมชั่วโมง', progress: 0 }
+                                        : { studyHoursExempt: true, userType: 'เทียบโอน', classificationCode: 'CREDIT_TRANSFER', progress: 100, hoursStatusLabel: 'เทียบโอน (ยกเว้นชั่วโมง 100%)', hoursActivityName: reg.eventName || onsiteConfig.activityTitle, onsiteUnlockAt: onsiteConfig.unlockAt, onsiteForceUnlocked: Boolean(onsiteConfig.forceUnlocked) },
                                     { merge: true }
                                 );
                             } catch (err) { showToast('อัปเดตไม่สำเร็จ: ' + err.message, 'error'); return; }
                         }
-                        showToast(nextRevoked ? 'ยกเลิกสิทธิ์เทียบโอนเรียบร้อยค่ะ' : 'คืนสิทธิ์เทียบโอนเรียบร้อยค่ะ');
+                        showToast(nextCancelled ? 'ยกเลิกสิทธิ์เทียบโอนเรียบร้อยค่ะ' : 'คืนสิทธิ์เทียบโอนเรียบร้อยค่ะ');
                     }
                 });
             };
 
             const handleRebuildGlobalSummary = async () => {
-                if (adminSession?.isDemo || !fbDb) { showToast('จำลองรีเฟรชเอกสาร executive_summary/global สำเร็จค่ะ'); return; }
+                if (!fbDb) return;
                 setRebuildingSummary(true);
                 try {
                     const summary = {
@@ -1356,19 +1411,20 @@
             const handleExportCSV = () => {
                 const headers = [
                     'ชื่อ-สกุล', 'กลุ่มวิชาชีพ', 'สิทธิ์ CNEU', 'เลขใบประกอบวิชาชีพ', 'อีเมล', 'เบอร์โทร',
-                    'ตำแหน่ง', 'สังกัด', 'หน่วยงาน/โรงพยาบาล', 'สิทธิ์การเรียน',
+                    'ตำแหน่ง', 'สังกัด', 'หน่วยงาน/โรงพยาบาล', 'ประเภทผู้เรียน',
                     'สถานะปัจจุบัน', 'สถานะชั่วโมงอบรม', 'กิจกรรมอ้างอิงชั่วโมง',
                     'สถานะสอบ', 'Pretest', 'Posttest', 'ความคืบหน้า (%)',
-                    'Empathy Index (AI Lab)', 'ความมั่นใจก่อนฝึก (1-5)', 'ความมั่นใจหลังฝึก (1-5)',
+                    'AI Skill Lab Score', 'ความมั่นใจก่อนฝึก (1-5)', 'ความมั่นใจหลังฝึก (1-5)',
                     'SUS Score (0-100)', 'CSAT เฉลี่ย', 'รหัสประกาศนียบัตร'
                 ];
                 const rows = usersList.map(u => {
                     const st = getUserFiveStepStatus(u);
                     const info = resolveLearnerStatusInfo(u);
                     const prof = resolveProfessionGroupSafe(u);
+                    const cls = resolveClassificationBadge(u);
                     return [
                         u.name, prof, isNurseCneuUser(u) ? 'ใช่ (พยาบาล)' : 'ไม่ใช่', getUserLicense(u), u.email, u.phone,
-                        u.position, u.department, u.hospital, isHoursExemptUser(u) ? 'เรียนต่อเนื่อง' : 'เรียนใหม่',
+                        u.position, u.department, u.hospital, cls.label,
                         info.statusLabel, info.hoursLabel, info.activityName || '-',
                         u.status, u.pretest, u.posttest, isHoursExemptUser(u) ? 100 : (u.progress || 0),
                         st.bestLab ?? '-', u.preSelfEfficacyAvg ?? '-', u.postSelfEfficacyAvg ?? '-',
@@ -1380,28 +1436,27 @@
             };
 
             const handleExportBlindTranscriptCsv = () => {
-                const headers = ['Blind_Case_ID', 'Persona', 'Difficulty', 'AI_Supervisor_Score', 'Silence_2_5s_Count', 'Trigger_Words', 'Vocal_Calm_Score', 'Pre_SelfEfficacy', 'Post_SelfEfficacy', 'Blind_Transcript_ZeroPII', 'Expert_Rater_1_Score', 'Expert_Rater_2_Score', 'Expert_Notes'];
+                const headers = ['Blind_Case_ID', 'Case_ID', 'Difficulty', 'AI_Supervisor_Score', 'Decision', 'Silence_2_5s_Count', 'Trigger_Words', 'Pre_SelfEfficacy', 'Post_SelfEfficacy', 'Blind_Transcript_ZeroPII'];
                 const rows = [];
                 let caseNo = 0;
                 usersList.forEach(u => {
                     (Array.isArray(u.skillLabHistory) ? u.skillLabHistory : []).forEach(h => {
-                        if (!Array.isArray(h?.blindTranscript) || h.blindTranscript.length === 0) return;
                         caseNo += 1;
                         rows.push([
-                            `CASE-${String(caseNo).padStart(3, '0')}`, h.personaId || '-', h.difficultyId || 'normal',
-                            h.score ?? '-', h.silenceCount ?? 0, h.triggerTotal ?? 0, h.avgVocalCalm ?? '-',
+                            `CASE-${String(caseNo).padStart(3, '0')}`, h.caseId || h.personaId || '-', h.difficultyId || 'normal',
+                            h.score ?? '-', h.decisionCode || '-', h.silenceCount ?? 0, h.triggerTotal ?? 0,
                             h.preSelfEfficacyAvg ?? u.preSelfEfficacyAvg ?? '-', h.postSelfEfficacyAvg ?? u.postSelfEfficacyAvg ?? '-',
-                            h.blindTranscript.map(t => `[T${t.turn} ${t.role}]: ${t.text}`).join(' | '), '', '', ''
+                            Array.isArray(h.blindTranscript) ? h.blindTranscript.map(t => `[T${t.turn} ${t.role}]: ${t.text}`).join(' | ') : '-'
                         ].map(escapeCsvCell).join(','));
                     });
                 });
-                if (rows.length === 0) { showToast('ยังไม่มีบทสนทนา AI Skill Lab สำหรับส่งออก Blind Transcript ค่ะ', 'info'); return; }
-                triggerCsvDownload(`rjcloud_R2R_Blind_Transcript_${new Date().toISOString().split('T')[0]}.csv`, headers, rows);
-                showToast(`ส่งออก Blind Transcript (${rows.length} เคส • Zero-PII) สำหรับพยาบาล TC ประเมินเทียบ AI แล้วค่ะ`);
+                if (rows.length === 0) { showToast('ยังไม่มีประวัติฝึก AI Skill Lab สำหรับส่งออก R2R ค่ะ', 'info'); return; }
+                triggerCsvDownload(`rjcloud_R2R_SkillLab_${new Date().toISOString().split('T')[0]}.csv`, headers, rows);
+                showToast(`ส่งออกข้อมูลวิจัย R2R (${rows.length} รอบฝึก • Zero-PII) เรียบร้อยแล้วค่ะ`);
             };
 
             // ============================================================================
-            // 6. COMPUTED STATS & PROFESSION-FILTERED CNEU / ACADEMIC REPORTS
+            // 6. COMPUTED STATS, ONSITE ARCHIVE & PROFESSION-FILTERED CNEU REPORTS
             // ============================================================================
             const quickStats = useMemo(() => {
                 let passed = 0, lab = 0, exempt = 0, csatSum = 0, csatN = 0, susSum = 0, susN = 0;
@@ -1447,32 +1502,40 @@
                 });
             }, [usersList, searchTerm, filterType, filterProf]);
 
+            const onsiteEventIds = useMemo(() => {
+                const set = new Set();
+                if (onsiteConfig.eventId) set.add(onsiteConfig.eventId);
+                onsiteRegistrants.forEach(r => { if (r.eventId) set.add(r.eventId); });
+                return Array.from(set);
+            }, [onsiteConfig.eventId, onsiteRegistrants]);
+
             const filteredOnsiteRegistrants = useMemo(() => {
                 const q = onsiteSearch.trim().toLowerCase();
                 return onsiteRegistrants
                     .filter(r => {
+                        if (onsiteEventFilter !== 'ALL' && String(r.eventId || '') !== onsiteEventFilter) return false;
                         if (onsiteFilterProf !== 'ALL' && r.professionGroup !== onsiteFilterProf) return false;
                         if (q) {
-                            const hay = `${r.name} ${r.license} ${r.hospital} ${r.province} ${r.region} ${r.professionGroup}`.toLowerCase();
+                            const hay = `${r.name} ${r.license} ${r.hospital} ${r.province} ${r.region} ${r.professionGroup} ${r.eventId || ''}`.toLowerCase();
                             if (!hay.includes(q)) return false;
                         }
                         return true;
                     })
                     .sort((a, b) => String(b.registeredAt || '').localeCompare(String(a.registeredAt || '')));
-            }, [onsiteRegistrants, onsiteSearch, onsiteFilterProf]);
+            }, [onsiteRegistrants, onsiteSearch, onsiteFilterProf, onsiteEventFilter]);
 
             const onsiteStats = useMemo(() => {
-                const active = onsiteRegistrants.filter(r => !r.revoked);
+                const scoped = onsiteEventFilter === 'ALL' ? onsiteRegistrants : onsiteRegistrants.filter(r => String(r.eventId || '') === onsiteEventFilter);
+                const active = scoped.filter(r => !r.revoked && !r.cancelled);
                 return {
                     total: active.length,
-                    revoked: onsiteRegistrants.length - active.length,
+                    revoked: scoped.length - active.length,
                     doctor: active.filter(r => r.professionGroup === 'แพทย์').length,
                     nurse: active.filter(r => r.professionGroup === 'พยาบาล').length,
                     allied: active.filter(r => r.professionGroup === 'บุคลากรสหวิชาชีพ').length
                 };
-            }, [onsiteRegistrants]);
+            }, [onsiteRegistrants, onsiteEventFilter]);
 
-            // แยกผู้สอบผ่านตามกลุ่มวิชาชีพอย่างเคร่งครัด (CNEU คัดเฉพาะพยาบาลวิชาชีพ 100%)
             const passedBreakdown = useMemo(() => {
                 const allPassed = usersList.filter(parsePosttestPassed);
                 const nurses = allPassed.filter(isNurseCneuUser);
@@ -1485,52 +1548,40 @@
                 const hrs = String(cneuConfig.trainingHours || liveConfig.hours || 8);
                 if (reportMode === 'nurse_cneu') {
                     return {
-                        id: 'nurse_cneu',
-                        fileTag: 'CNEU_Nurses_Only',
-                        badgeColor: 'text-emerald-800',
+                        id: 'nurse_cneu', fileTag: 'CNEU_Nurses_Only', badgeColor: 'text-emerald-800',
                         topHeading: 'รายงานสรุปรายชื่อผู้สำเร็จการอบรมเพื่อขอรับรองหน่วยคะแนนการศึกษาต่อเนื่อง (CNEU • เฉพาะพยาบาลวิชาชีพ)',
                         creditSummary: `รหัสกิจกรรม CNEU: ${cneuConfig.activityCode || '-'} • จำนวน ${cneuConfig.cneuCredits || '-'} หน่วยคะแนน • ${cneuConfig.batchLabel} • ${cneuConfig.dateRange}`,
-                        licenseCol: 'เลขที่ใบอนุญาตฯ การพยาบาล',
-                        rows: passedBreakdown.nurses,
+                        licenseCol: 'เลขที่ใบอนุญาตฯ การพยาบาล', rows: passedBreakdown.nurses,
                         certifyText: `ข้าพเจ้าขอรับรองว่ารายชื่อพยาบาลวิชาชีพผู้สำเร็จการอบรมจำนวน ${passedBreakdown.nurses.length} ราย ข้างต้น (คัดกรองเฉพาะผู้มีสิทธิ์รับหน่วยคะแนน CNEU ตามระเบียบสภาการพยาบาลแล้ว) เป็นผู้ผ่านการยืนยันตัวตนด้วยรหัส OTP ผ่านเกณฑ์ชั่วโมงการอบรม ผ่าน AI Skill Lab และสอบวัดผลหลังเรียน (Post-test) ≥ 80% ถูกต้องตรงตามฐานข้อมูล rjcloud.organ`
                     };
                 }
                 if (reportMode === 'doctor_hours') {
                     const hasCme = Boolean(cneuConfig.cmeActivityCode || cneuConfig.cmeCredits);
                     return {
-                        id: 'doctor_hours',
-                        fileTag: 'Doctors_Training_Hours',
-                        badgeColor: 'text-sky-800',
+                        id: 'doctor_hours', fileTag: 'Doctors_Training_Hours', badgeColor: 'text-sky-800',
                         topHeading: 'รายงานสรุปรายชื่อแพทย์ผู้สำเร็จการอบรมและรับรองชั่วโมงการฝึกอบรมวิชาการ',
                         creditSummary: hasCme
                             ? `รหัสกิจกรรม CME: ${cneuConfig.cmeActivityCode || '-'} • จำนวน ${cneuConfig.cmeCredits || '-'} หน่วยคะแนน • ${cneuConfig.batchLabel} • ${cneuConfig.dateRange}`
                             : `รับรองจำนวน ${hrs} ชั่วโมงการฝึกอบรมวิชาการทางการแพทย์ • ${cneuConfig.batchLabel} • ${cneuConfig.dateRange}`,
-                        licenseCol: 'เลขที่ใบอนุญาตฯ เวชกรรม',
-                        rows: passedBreakdown.doctors,
-                        certifyText: `ข้าพเจ้าขอรับรองว่ารายชื่อแพทย์ผู้สำเร็จการอบรมจำนวน ${passedBreakdown.doctors.length} ราย ข้างต้น เป็นผู้ผ่านเกณฑ์ชั่วโมงการฝึกอบรมวิชาการ ผ่าน AI Skill Lab และสอบวัดผลหลังเรียน (Post-test) ≥ 80% ถูกต้องตรงตามฐานข้อมูล rjcloud.organ เพื่อใช้เป็นหลักฐานพัฒนาสมรรถนะและประกอบการพิจารณาทางวิชาชีพ`
+                        licenseCol: 'เลขที่ใบอนุญาตฯ เวชกรรม', rows: passedBreakdown.doctors,
+                        certifyText: `ข้าพเจ้าขอรับรองว่ารายชื่อแพทย์ผู้สำเร็จการอบรมจำนวน ${passedBreakdown.doctors.length} ราย ข้างต้น เป็นผู้ผ่านเกณฑ์ชั่วโมงการฝึกอบรมวิชาการ ผ่าน AI Skill Lab และสอบวัดผลหลังเรียน (Post-test) ≥ 80% ถูกต้องตรงตามฐานข้อมูล rjcloud.organ`
                     };
                 }
                 if (reportMode === 'allied_hours') {
                     return {
-                        id: 'allied_hours',
-                        fileTag: 'Allied_Health_Hours',
-                        badgeColor: 'text-indigo-800',
+                        id: 'allied_hours', fileTag: 'Allied_Health_Hours', badgeColor: 'text-indigo-800',
                         topHeading: 'รายงานสรุปรายชื่อบุคลากรสหวิชาชีพผู้สำเร็จการอบรมและรับรองชั่วโมงพัฒนาบุคลากร',
                         creditSummary: `รับรองจำนวน ${hrs} ชั่วโมงการพัฒนาสมรรถนะวิชาชีพ • ${cneuConfig.batchLabel} • ${cneuConfig.dateRange}`,
-                        licenseCol: 'เลขใบอนุญาต / รหัสบุคลากร',
-                        rows: passedBreakdown.allied,
+                        licenseCol: 'เลขใบอนุญาต / รหัสบุคลากร', rows: passedBreakdown.allied,
                         certifyText: `ข้าพเจ้าขอรับรองว่ารายชื่อบุคลากรสหวิชาชีพผู้สำเร็จการอบรมจำนวน ${passedBreakdown.allied.length} ราย ข้างต้น เป็นผู้ผ่านเกณฑ์ชั่วโมงการอบรม ผ่าน AI Skill Lab และสอบวัดผลหลังเรียน (Post-test) ≥ 80% ถูกต้องตรงตามฐานข้อมูล rjcloud.organ`
                     };
                 }
                 return {
-                    id: 'all_exec',
-                    fileTag: 'All_Professions_Summary',
-                    badgeColor: 'text-slate-800',
+                    id: 'all_exec', fileTag: 'All_Professions_Summary', badgeColor: 'text-slate-800',
                     topHeading: 'รายงานสรุปรายชื่อผู้สำเร็จการอบรมทั้งหมดแยกตามกลุ่มวิชาชีพ (สำหรับผู้บริหารและต้นสังกัด)',
                     creditSummary: `รวมทุกกลุ่มวิชาชีพ ${passedBreakdown.allPassed.length} ราย (พยาบาล ${passedBreakdown.nurses.length} • แพทย์ ${passedBreakdown.doctors.length} • สหวิชาชีพ ${passedBreakdown.allied.length}) • ${cneuConfig.batchLabel} • ${cneuConfig.dateRange}`,
-                    licenseCol: 'เลขใบอนุญาต / รหัส',
-                    rows: passedBreakdown.allPassed,
-                    certifyText: `รายงานฉบับนี้สรุปรายชื่อผู้สำเร็จการอบรมทุกกลุ่มวิชาชีพจำนวน ${passedBreakdown.allPassed.length} ราย โดยมอบเกียรติและมาตรฐานการประเมินเท่าเทียมกันทุกวิชาชีพ (ทั้งนี้การขอรับรองหน่วยคะแนน CNEU จะจัดส่งเฉพาะรายชื่อพยาบาลวิชาชีพจำนวน ${passedBreakdown.nurses.length} ราย ไปยังสภาการพยาบาล)`
+                    licenseCol: 'เลขใบอนุญาต / รหัส', rows: passedBreakdown.allPassed,
+                    certifyText: `รายงานฉบับนี้สรุปรายชื่อผู้สำเร็จการอบรมทุกกลุ่มวิชาชีพจำนวน ${passedBreakdown.allPassed.length} ราย (ทั้งนี้การขอรับรองหน่วยคะแนน CNEU จะจัดส่งเฉพาะรายชื่อพยาบาลวิชาชีพจำนวน ${passedBreakdown.nurses.length} ราย ไปยังสภาการพยาบาล)`
                 };
             }, [reportMode, passedBreakdown, cneuConfig, liveConfig.hours]);
 
@@ -1549,51 +1600,26 @@
                 showToast(`ส่งออก CSV "${activeReportMeta.fileTag}" จำนวน ${activeReportMeta.rows.length} รายเรียบร้อยค่ะ`);
             };
 
-            const inspectorGroups = useMemo(() => ([
-                {
-                    groupTitle: '1. หน้าแรก & ระบบลงทะเบียน (คัดกรอง CNEU ตามวิชาชีพ + Onsite)',
-                    items: [
-                        { id: 'landing', title: 'หน้าแรกผู้เรียน (Landing 2.0)', desc: 'กรอบกระจก Liquid Glass แสงคริสตัล, ต้นไม้มีชีวิต (ชีพจรแสง+ออโรรา+หิ่งห้อย) และลิงก์บริการสาธารณะ', url: './index.html?admin_preview=landing', icon: 'Home' },
-                        { id: 'onsite', title: 'รับสมัครอบรม Onsite & พิมพ์ใบเซ็นชื่อ PDF', desc: 'แสดง CNEU เฉพาะพยาบาล, ตรวจ/แก้ไขรายชื่อเอง และคัดกรอง PDF หน้างาน', url: './onsite.html?admin_preview=1', icon: 'ClipboardList' },
-                        { id: 'auth1', title: 'ลงทะเบียน ขั้นที่ 1/3', desc: 'หน้ากรอกเลขที่ใบอนุญาต + ปุ่มทดลอง 3 กลุ่มวิชาชีพ', url: './index.html?admin_preview=auth1', icon: 'UserCheck' },
-                        { id: 'auth2', title: 'ลงทะเบียน ขั้นที่ 2/3', desc: 'เลือก พยาบาล -> แสดงกล่อง CNEU ทันที / แพทย์ & สหวิชาชีพไม่แสดง CNEU', url: './index.html?admin_preview=auth2', icon: 'FileText' },
-                        { id: 'auth3', title: 'ลงทะเบียน ขั้นที่ 3/3 (OTP)', desc: 'หน้ากรอกรหัสยืนยันตัวตน OTP 6 หลัก', url: './index.html?admin_preview=auth3', icon: 'ShieldCheck' }
-                    ]
-                },
-                {
-                    groupTitle: '2. ห้องเรียนผู้เรียน, AI Skill Lab 3 มิติ และใบประกาศนียบัตร',
-                    items: [
-                        { id: 'pretest', title: 'แบบทดสอบก่อนเรียน (Pre-test)', desc: 'วัดพื้นฐาน 4 หมวดคลินิก + AI Roadmap', url: './index.html?admin_preview=pretest', icon: 'ClipboardCheck' },
-                        { id: 'dashboard', title: 'ห้องเรียน 20 บท + AI Study Companion', desc: 'วิดีโอ, สรุปเสียง AI สตูดิโอ และ Fast-Track เทียบโอน', url: './index.html?admin_preview=dashboard', icon: 'MonitorPlay' },
-                        { id: 'live', title: 'ห้องถ่ายทอดสด (Live Stream)', desc: 'หน้ารับชมบรรยายสดและดาวน์โหลดเอกสาร', url: './index.html?admin_preview=live', icon: 'Radio' },
-                        { id: 'profile', title: 'โปรไฟล์ผู้เรียน & PDPA Self-Service', desc: 'แสดงกลุ่มวิชาชีพ, สิทธิ์ CNEU/ชม.อบรม และแก้ไข/ลบข้อมูลเอง', url: './index.html?admin_preview=profile', icon: 'User' },
-                        { id: 'skilllab', title: 'ห้องฝึกสื่อสาร 3 มิติ AI Skill Lab', desc: 'ตัวละครโฮโลแกรมอนิเมะ 3 มิติปรับเพศ/จำนวนคนอัตโนมัติ (เคส 3 มี 2 คน), Real Audio Lip-Sync, ปุ่ม CC, คำใบ้เจาะปม & เรดาร์ SBAR', url: './aiskilllab.html?admin_preview=1', icon: 'Bot' },
-                        { id: 'posttest', title: 'แบบทดสอบหลังเรียน (Post-test ≥ 80%)', desc: 'วัดผลหลังเรียนพร้อมวิเคราะห์จุดอ่อน', url: './index.html?admin_preview=posttest', icon: 'FileCheck2' },
-                        { id: 'cert_confirm', title: 'ประเมินผล & SUS Score (R2R)', desc: 'ยืนยันชื่อและทำแบบประเมินความพึงพอใจ + SUS', url: './index.html?admin_preview=cert_confirm', icon: 'Star' },
-                        { id: 'certificate', title: 'ประกาศนียบัตรดิจิทัล & หนังสือรับรองรายบุคคล', desc: 'Canvas PDF/PNG + หนังสือรับรองตรงตามวิชาชีพ (CNEU / ชั่วโมงอบรม)', url: './index.html?admin_preview=certificate', icon: 'Award' }
-                    ]
-                },
-                {
-                    groupTitle: '3. ระบบตรวจสอบสาธารณะ & Dashboard ผู้บริหาร',
-                    items: [
-                        { id: 'verify', title: 'หน้าตรวจสอบใบประกาศฯ QR 3 มิติ', desc: 'ตรวจรหัสประกาศนียบัตรจากทะเบียนสาธารณะ certificates', url: './verify.html?code=RJC-2027-DEMO01', icon: 'QrCode' },
-                        { id: 'executive', title: 'Dashboard 13 เขตสุขภาพ (Zero-PII)', desc: 'สถิติภาพรวม 13 เขต, Eco 1-Read, SUS & Self-Efficacy', url: './executive.html?admin_preview=1', icon: 'BarChart3' }
-                    ]
-                }
+            const inspectorLinks = useMemo(() => ([
+                { title: 'หน้าหลักผู้เรียน (index.html)', desc: 'ฉากต้นดอกท้อ, การ์ดเลือกหลักสูตร, ยืนยันตัวตน OTP จริง และห้องเรียน', url: './index.html', icon: 'Home' },
+                { title: 'ศูนย์ลงทะเบียน Onsite (onsite.html)', desc: 'ลงทะเบียนรวมศูนย์ + บัตร Digital Onsite Pass + คลังรายชื่อย้อนหลัง PDF', url: './onsite.html', icon: 'ClipboardList' },
+                { title: 'ห้องฝึก AI Skill Lab 3D (aiskilllab.html)', desc: 'โฮโลแกรมหัวใจ 3 มิติ 10 สเต็ปตามวิดีโอ รพ.ราชวิถี + เสียงสตูดิโอ 24kHz', url: './aiskilllab.html', icon: 'HeartPulse' },
+                { title: 'ตรวจสอบใบประกาศฯ QR (verify.html)', desc: 'ตรวจรหัสประกาศนียบัตรดิจิทัลจากฐานข้อมูลสาธารณะ', url: './verify.html', icon: 'QrCode' },
+                { title: 'Dashboard ผู้บริหาร 13 เขต (executive.html)', desc: 'สถิติภาพรวม 13 เขตสุขภาพแบบ Zero-PII + Eco 1-Read', url: './executive.html', icon: 'BarChart3' }
             ]), []);
 
             const navItems = [
                 { id: 'users', label: 'ผู้เรียน', icon: 'Users' },
                 { id: 'onsite', label: 'Onsite', icon: 'ClipboardList' },
+                { id: 'content', label: 'หลักสูตร', icon: 'GraduationCap' },
                 { id: 'cert', label: 'ประกาศฯ', icon: 'Award' },
                 { id: 'live', label: 'Live สด', icon: 'Radio' },
-                { id: 'content', label: 'บทเรียน', icon: 'BookOpen' },
                 { id: 'sync', label: 'Cloud', icon: 'Database' },
-                { id: 'overview', label: 'ตรวจหน้า', icon: 'Eye' }
+                { id: 'overview', label: 'ลิงก์ระบบ', icon: 'ExternalLink' }
             ];
 
             // ============================================================================
-            // 7. LOGIN GATE (PDPA PROTECTION)
+            // 7. PRODUCTION LOGIN GATE (ZERO DEMO / FIREBASE ADMIN AUTH ONLY)
             // ============================================================================
             if (!adminSession) {
                 return (
@@ -1610,21 +1636,20 @@
                                 <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-aurora-400 to-prism-400 text-void-950 flex items-center justify-center mx-auto">
                                     <Icon name="ShieldCheck" size={24} />
                                 </div>
+                                <span className="font-mono text-[10px] font-bold text-pink-300 uppercase tracking-wider">PRODUCTION ONLY • ADMIN ACCESS</span>
                                 <h1 className="font-display font-extrabold text-xl text-primary-adaptive">Admin Mission Control</h1>
-                                <p className="text-xs text-secondary-adaptive">rjcloud.organ 2.0 • จัดการผู้เรียน คัดกรอง CNEU เฉพาะพยาบาล ลิงก์/QR Onsite และวิจัย R2R</p>
+                                <p className="text-xs text-secondary-adaptive">rjcloud.organ 2.0 • จัดการหลักสูตร ผู้เรียน Onsite คัดกรอง CNEU และข้อมูลวิจัย R2R</p>
                             </div>
                             <form onSubmit={handleAdminLogin} className="space-y-3.5">
                                 <FieldInput label="อีเมลผู้ดูแลระบบ (Firebase Auth)" type="email" required value={loginEmail} onChange={e => setLoginEmail(e.target.value)} />
                                 <FieldInput label="รหัสผ่าน" type="password" required value={loginPassword} onChange={e => setLoginPassword(e.target.value)} placeholder="รหัสผ่านผู้ดูแลระบบ" />
-                                <button type="submit" disabled={loginBusy} className="rjc2-pill-btn touch-target w-full py-3.5 rounded-full font-display font-extrabold text-sm">
-                                    {loginBusy ? 'กำลังยืนยันตัวตน...' : 'เข้าสู่ระบบหลังบ้าน (ข้อมูลจริง Cloud)'}
+                                <button type="submit" disabled={loginBusy} className="btn-peach-ambient touch-target w-full py-3.5 font-display font-extrabold text-sm">
+                                    {loginBusy ? 'กำลังยืนยันตัวตน...' : 'เข้าสู่ศูนย์ควบคุมผู้ดูแลระบบ →'}
                                 </button>
                             </form>
-                            <div className="pt-3 border-t border-white/10 text-center">
-                                <button type="button" onClick={handleEnterDemoMode} className="spatial-soft touch-target w-full py-2.5 rounded-2xl text-xs font-bold text-prism-adaptive">
-                                    ทดลองเปิดศูนย์ควบคุมด้วยข้อมูลตัวอย่าง (Preview Mode)
-                                </button>
-                            </div>
+                            <p className="text-[11px] text-center text-muted-adaptive pt-1">
+                                ระบบปิดเฉพาะผู้ดูแลระบบศูนย์ความเป็นเลิศทางการแพทย์ โรงพยาบาลราชวิถี (PDPA Protected)
+                            </p>
                         </div>
                         <ToastBanner toast={toast} />
                     </div>
@@ -1632,7 +1657,7 @@
             }
 
             // ============================================================================
-            // 8. MAIN ADMIN MISSION CONTROL WORKSPACE
+            // 8. MAIN PRODUCTION ADMIN WORKSPACE
             // ============================================================================
             return (
                 <div className="min-h-dvh relative flex flex-col pt-safe pb-dock-safe lg:pb-10">
@@ -1645,11 +1670,9 @@
                                 <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-aurora-400 to-prism-400 text-void-950 flex items-center justify-center font-display font-extrabold text-xs shrink-0">AD</div>
                                 <div className="min-w-0">
                                     <span className="font-display font-extrabold text-sm sm:text-base text-primary-adaptive block leading-none truncate">
-                                        rjcloud<span className="text-accent-adaptive">.organ</span> <span className="font-mono text-[10px] text-prism-adaptive">ADMIN</span>
+                                        rjcloud<span className="text-accent-adaptive">.organ</span> <span className="font-mono text-[10px] text-prism-adaptive">ADMIN 2.0</span>
                                     </span>
-                                    <span className="text-[10px] font-mono text-muted-adaptive block truncate">
-                                        {adminSession.isDemo ? 'DEMO PREVIEW MODE' : adminSession.email}
-                                    </span>
+                                    <span className="text-[10px] font-mono text-muted-adaptive block truncate">{adminSession.email}</span>
                                 </div>
                             </div>
 
@@ -1681,26 +1704,26 @@
 
                     <main className="relative z-10 max-w-7xl w-full mx-auto px-3.5 sm:px-6 pt-5 space-y-5">
 
-                        {/* ==================== TAB 1: USERS 5-STEP TELEMETRY & PROFESSION FILTER ==================== */}
+                        {/* ==================== TAB 1: USERS 5-STEP TELEMETRY & AUTO-CLASSIFICATION ==================== */}
                         {activeTab === 'users' && (
                             <div className="space-y-5">
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <div>
-                                        <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">5-STEP TELEMETRY • PROFESSION &amp; R2R EXPORTS</span>
+                                        <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">CENTRAL DATA CENTER • 5-STEP TELEMETRY &amp; R2R</span>
                                         <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive">จัดการผู้เรียน กลุ่มวิชาชีพ สิทธิ์เทียบโอน และข้อมูลวิจัย R2R</h2>
                                     </div>
                                     <div className="flex flex-wrap gap-2">
-                                        <button type="button" onClick={() => setActiveTab('onsite')} className="spatial-soft touch-target px-3.5 py-2 rounded-full text-xs font-bold text-accent-adaptive border-aurora-400/45 inline-flex items-center gap-1.5">
-                                            <Icon name="QrCode" size={15} /> ลิงก์ &amp; QR รับสมัคร Onsite
+                                        <button type="button" onClick={() => { setActiveTab('content'); setContentSubTab('courses'); }} className="spatial-soft touch-target px-3.5 py-2 rounded-full text-xs font-bold text-pink-300 border-pink-300/40 inline-flex items-center gap-1.5">
+                                            <Icon name="GraduationCap" size={15} /> จัดการหลักสูตร ({courseCatalog.filter(c => c.active !== false).length})
                                         </button>
                                         <button type="button" onClick={() => setShowAddUser(v => !v)} className="rjc2-pill-btn touch-target px-4 py-2 rounded-full font-display font-extrabold text-xs inline-flex items-center gap-1.5">
                                             <Icon name="UserPlus" size={15} /> เพิ่มผู้เรียน
                                         </button>
                                         <button type="button" onClick={handleExportCSV} className="spatial-soft touch-target px-3.5 py-2 rounded-full text-xs font-bold text-primary-adaptive inline-flex items-center gap-1.5">
-                                            <Icon name="FileSpreadsheet" size={15} className="text-accent-adaptive" /> ส่งออก CSV ผู้เรียน
+                                            <Icon name="FileSpreadsheet" size={15} className="text-accent-adaptive" /> CSV ผู้เรียน
                                         </button>
                                         <button type="button" onClick={handleExportBlindTranscriptCsv} className="spatial-soft touch-target px-3.5 py-2 rounded-full text-xs font-bold text-prism-adaptive inline-flex items-center gap-1.5">
-                                            <Icon name="Microscope" size={15} /> Blind Transcript (R2R)
+                                            <Icon name="Microscope" size={15} /> Export R2R
                                         </button>
                                     </div>
                                 </div>
@@ -1732,14 +1755,14 @@
                                                 <label className="block text-xs font-bold text-secondary-adaptive mb-1 ml-1">สิทธิ์ชั่วโมงการเรียน</label>
                                                 <select value={manualForm.userType} onChange={e => setManualForm(p => ({ ...p, userType: e.target.value }))} className="touch-target spatial-input w-full px-3.5 py-2 rounded-xl text-sm">
                                                     <option value="เรียนใหม่">เรียนใหม่ (สะสมชั่วโมง ≥ 80%)</option>
-                                                    <option value="เรียนต่อเนื่อง">เทียบโอน (ชั่วโมงครบ 100%)</option>
+                                                    <option value="เทียบโอน">เทียบโอน (ยกเว้นชั่วโมง 100%)</option>
                                                 </select>
                                             </div>
                                             <FieldInput label="โรงพยาบาล / หน่วยงาน" value={manualForm.hospital} onChange={e => setManualForm(p => ({ ...p, hospital: e.target.value }))} />
                                             <FieldInput label="สังกัด / เขตสุขภาพ" value={manualForm.department} onChange={e => setManualForm(p => ({ ...p, department: e.target.value }))} />
                                             <FieldInput label="อีเมล" type="email" value={manualForm.email} onChange={e => setManualForm(p => ({ ...p, email: e.target.value }))} placeholder="name@hospital.go.th" />
-                                            {manualForm.userType === 'เรียนต่อเนื่อง' && (
-                                                <FieldInput className="sm:col-span-2" label="ชื่อกิจกรรมอ้างอิงสิทธิ์ ชั่วโมงครบ (เทียบโอน)" value={manualForm.hoursActivityName} onChange={e => setManualForm(p => ({ ...p, hoursActivityName: e.target.value }))} placeholder={onsiteConfig.activityTitle} />
+                                            {manualForm.userType === 'เทียบโอน' && (
+                                                <FieldInput className="sm:col-span-2" label="ชื่อกิจกรรมอ้างอิงสิทธิ์เทียบโอน" value={manualForm.hoursActivityName} onChange={e => setManualForm(p => ({ ...p, hoursActivityName: e.target.value }))} placeholder={onsiteConfig.activityTitle} />
                                             )}
                                         </div>
                                         <div className="flex justify-end gap-2 pt-1">
@@ -1776,7 +1799,7 @@
                                         <table className="w-full text-left border-collapse">
                                             <thead className="spatial-thead font-mono text-[10px] uppercase text-muted-adaptive">
                                                 <tr>
-                                                    <th className="py-3 px-4">ผู้เรียน / สถานะปัจจุบัน / กิจกรรมอ้างอิง</th>
+                                                    <th className="py-3 px-4">ผู้เรียน / ประเภทอัตโนมัติ / กิจกรรมอ้างอิง</th>
                                                     <th className="py-3 px-3">กลุ่มวิชาชีพ &amp; CNEU</th>
                                                     <th className="py-3 px-3">ความคืบหน้า 5 ขั้นตอน</th>
                                                     <th className="py-3 px-3">Pre / Post</th>
@@ -1788,12 +1811,16 @@
                                                     const lic = getUserLicense(u);
                                                     const st = getUserFiveStepStatus(u);
                                                     const info = resolveLearnerStatusInfo(u);
+                                                    const clsBadge = resolveClassificationBadge(u);
                                                     const prof = resolveProfessionGroupSafe(u);
                                                     const isNurse = isNurseCneuUser(u);
                                                     return (
                                                         <tr key={u.id || lic} className="hover:bg-white/[0.03] transition-colors">
                                                             <td className="py-3.5 px-4">
-                                                                <p className="font-display font-bold text-sm text-primary-adaptive">{u.name || 'ไม่ระบุชื่อ'}</p>
+                                                                <div className="flex items-center gap-2 flex-wrap">
+                                                                    <p className="font-display font-bold text-sm text-primary-adaptive">{u.name || 'ไม่ระบุชื่อ'}</p>
+                                                                    <span className={`px-2 py-0.5 rounded-full border font-mono text-[10px] font-bold ${clsBadge.cls}`}>{clsBadge.label}</span>
+                                                                </div>
                                                                 <p className="text-[11px] text-muted-adaptive">
                                                                     <span className="font-mono text-prism-adaptive">{lic}</span> • {u.hospital || '-'} • <span className="text-accent-adaptive font-semibold">{info.statusLabel}</span>
                                                                 </p>
@@ -1826,7 +1853,7 @@
                                                             </td>
                                                             <td className="py-3.5 px-4 text-right">
                                                                 <div className="inline-flex items-center gap-1.5">
-                                                                    <button type="button" onClick={() => handleOpenTransferModal(u)} className="px-2.5 py-1.5 rounded-xl spatial-soft text-prism-adaptive hover:border-prism-400 font-bold text-[11px]">กิจกรรม/เทียบโอน</button>
+                                                                    <button type="button" onClick={() => handleOpenTransferModal(u)} className="px-2.5 py-1.5 rounded-xl spatial-soft text-prism-adaptive hover:border-prism-400 font-bold text-[11px]">เทียบโอน</button>
                                                                     <button type="button" onClick={() => handleUpdateUser(u, { status: u.status === 'ผ่าน' ? 'กำลังเรียน' : 'ผ่าน' })} className={`px-2.5 py-1.5 rounded-xl font-bold text-[11px] border ${u.status === 'ผ่าน' ? 'bg-aurora-500/20 border-aurora-400/40 text-accent-adaptive' : 'spatial-soft text-secondary-adaptive'}`}>
                                                                         {u.status === 'ผ่าน' ? 'ผ่านแล้ว ✓' : 'กำลังเรียน'}
                                                                     </button>
@@ -1850,12 +1877,16 @@
                                             const lic = getUserLicense(u);
                                             const st = getUserFiveStepStatus(u);
                                             const info = resolveLearnerStatusInfo(u);
+                                            const clsBadge = resolveClassificationBadge(u);
                                             const prof = resolveProfessionGroupSafe(u);
                                             return (
                                                 <div key={u.id || lic} className="py-3.5 space-y-2.5">
                                                     <div className="flex items-start justify-between gap-2">
                                                         <div className="min-w-0">
-                                                            <p className="font-display font-bold text-sm text-primary-adaptive truncate">{u.name || 'ไม่ระบุชื่อ'}</p>
+                                                            <div className="flex items-center gap-1.5 flex-wrap">
+                                                                <p className="font-display font-bold text-sm text-primary-adaptive truncate">{u.name || 'ไม่ระบุชื่อ'}</p>
+                                                                <span className={`px-2 py-0.5 rounded-full border font-mono text-[10px] font-bold ${clsBadge.cls}`}>{clsBadge.label}</span>
+                                                            </div>
                                                             <p className="text-xs text-muted-adaptive truncate"><span className="font-mono text-prism-adaptive">{lic}</span> • {prof} • {u.hospital || '-'}</p>
                                                             <p className="text-[11px] font-semibold text-accent-adaptive truncate">สถานะ: {info.statusLabel}</p>
                                                         </div>
@@ -1876,20 +1907,20 @@
                             </div>
                         )}
 
-                        {/* ==================== TAB 2: ONSITE REGISTRATION HUB (LINK + QR + AUTO-UNLOCK) ==================== */}
+                        {/* ==================== TAB 2: ONSITE REGISTRATION HUB (TARGET COURSE + 16:00 UNLOCK + ARCHIVE) ==================== */}
                         {activeTab === 'onsite' && (
                             <div className="space-y-5">
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <div>
-                                        <span className="px-2.5 py-0.5 rounded-full bg-aurora-500/20 text-accent-adaptive font-mono text-[10px] font-bold">ONSITE REGISTRATION HUB • INVITATION LINK &amp; QR CODE</span>
-                                        <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive mt-1">ลงทะเบียนอบรม Onsite, ลิงก์ &amp; QR Code แนบหนังสือเชิญประชุม</h2>
+                                        <span className="px-2.5 py-0.5 rounded-full bg-aurora-500/20 text-accent-adaptive font-mono text-[10px] font-bold">CENTRAL ONSITE HUB • MULTI-COURSE LINKING</span>
+                                        <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive mt-1">ตั้งค่ากิจกรรม Onsite, เวลาเปิดระบบ และคลังรายชื่อย้อนหลัง</h2>
                                     </div>
                                     <div className="flex flex-wrap gap-2 shrink-0">
                                         <a href="./onsite.html" target="_blank" rel="noreferrer" className="spatial-soft touch-target px-4 py-2.5 rounded-full font-display font-bold text-xs text-primary-adaptive inline-flex items-center gap-1.5">
-                                            <Icon name="ExternalLink" size={14} className="text-prism-adaptive" /> เปิดหน้าลงทะเบียน (onsite.html)
+                                            <Icon name="ExternalLink" size={14} className="text-prism-adaptive" /> เปิดหน้า onsite.html
                                         </a>
                                         <a href="./onsite.html?mode=organizer" target="_blank" rel="noreferrer" className="rjc2-pill-btn touch-target px-5 py-2.5 rounded-full font-display font-extrabold text-xs inline-flex items-center justify-center gap-1.5">
-                                            <Icon name="Printer" size={15} /> พิมพ์ใบเซ็นชื่อหน้างาน (PDF)
+                                            <Icon name="Printer" size={15} /> พิมพ์ใบเซ็นชื่อ (PDF)
                                         </a>
                                     </div>
                                 </div>
@@ -1897,10 +1928,10 @@
                                 <section className="spatial-card rounded-[1.75rem] p-5 sm:p-6 border-aurora-400/45 grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
                                     <div className="lg:col-span-8 space-y-3.5">
                                         <div>
-                                            <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">INVITATION DISTRIBUTION • คัดกรอง CNEU อัตโนมัติตั้งแต่หน้าสมัคร</span>
-                                            <h3 className="font-display font-extrabold text-lg text-primary-adaptive mt-0.5">ช่องทางส่งต่อให้ผู้เข้าอบรมลงทะเบียนล่วงหน้า (`onsite.html`)</h3>
+                                            <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">INVITATION QR &amp; DIGITAL ONSITE PASS</span>
+                                            <h3 className="font-display font-extrabold text-lg text-primary-adaptive mt-0.5">ช่องทางส่งต่อให้ผู้เข้าอบรมลงทะเบียน (`onsite.html`)</h3>
                                             <p className="text-xs text-secondary-adaptive mt-1 leading-relaxed">
-                                                คัดลอกลิงก์หรือดาวน์โหลดไฟล์ <b>QR Code (PNG ความละเอียดสูง)</b> แนบหนังสือเชิญประชุมราชการ เมื่อผู้สมัครเลือก <b>พยาบาล</b> ระบบจะแสดงรหัสกิจกรรม CNEU ล่วงหน้าทันที ส่วน <b>แพทย์ / สหวิชาชีพ</b> จะไม่ขึ้นข้อความ CNEU และได้รับรองชั่วโมงการฝึกอบรมมาตรฐานแทนค่ะ
+                                                เมื่อผู้เข้าอบรมลงทะเบียนเสร็จ ระบบจะออก <b>บัตรเข้าสอบดิจิทัล (Digital Onsite Pass Card)</b> พร้อม QR Code และลิงก์ <b>https://learn.coerj.com</b> ให้บันทึกลงโทรศัพท์ เพื่อสแกนเข้าทำแบบทดสอบทันทีเมื่อถึงเวลาเปิดระบบ (เช่น 16:00 น.) ค่ะ
                                             </p>
                                         </div>
 
@@ -1914,7 +1945,7 @@
 
                                         <div className="flex flex-wrap gap-2 pt-1">
                                             <button type="button" onClick={() => handleDownloadOnsiteQr('poster')} className="rjc2-pill-btn touch-target px-4 py-2.5 rounded-full font-display font-extrabold text-xs inline-flex items-center gap-1.5">
-                                                <Icon name="Download" size={15} /> ดาวน์โหลด QR Code พร้อมหัวข้อกิจกรรม (PNG)
+                                                <Icon name="Download" size={15} /> ดาวน์โหลดโปสเตอร์ QR (PNG)
                                             </button>
                                             <button type="button" onClick={() => handleDownloadOnsiteQr('raw')} className="spatial-soft touch-target px-4 py-2.5 rounded-full font-display font-bold text-xs text-prism-adaptive inline-flex items-center gap-1.5">
                                                 <Icon name="QrCode" size={15} /> ดาวน์โหลดเฉพาะ QR ล้วน (PNG)
@@ -1925,7 +1956,7 @@
                                     <div className="lg:col-span-4 flex flex-col items-center justify-center gap-2 p-4 rounded-2xl spatial-soft text-center">
                                         <LiveQrCanvas url={onsitePublicUrl} size={172} />
                                         <span className="font-mono text-[10px] font-bold text-accent-adaptive">{onsiteConfig.eventId}</span>
-                                        <span className="text-[11px] text-muted-adaptive leading-tight">สแกนทดสอบหรือกดดาวน์โหลด PNG เพื่อวางในหนังสือเชิญประชุม</span>
+                                        <span className="text-[11px] text-muted-adaptive leading-tight">วางในหนังสือเชิญประชุมหรือขึ้นจอห้องประชุม</span>
                                     </div>
                                 </section>
 
@@ -1939,14 +1970,28 @@
 
                                 <div className="spatial-card rounded-[1.75rem] p-5 sm:p-6 space-y-4 border-prism-400/35">
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                        <FieldInput label="รหัสกิจกรรม / รุ่น (Event ID)" value={onsiteDraft.eventId} onChange={e => setOnsiteDraft(p => ({ ...p, eventId: e.target.value }))} />
+                                        <FieldInput label="รหัสกิจกรรม / รุ่น (Event ID — แยกรุ่นไม่ทับของเดิม)" value={onsiteDraft.eventId} onChange={e => setOnsiteDraft(p => ({ ...p, eventId: e.target.value }))} />
+                                        <div>
+                                            <label className="block text-xs font-bold text-secondary-adaptive mb-1 ml-1">ผูกหลักสูตรปลายทางสำหรับเทียบโอน *</label>
+                                            <select
+                                                value={onsiteDraft.targetCourseId || courseCatalog[0]?.id || 'organ_donation_core'}
+                                                onChange={e => setOnsiteDraft(p => ({ ...p, targetCourseId: e.target.value }))}
+                                                className="touch-target spatial-input w-full px-3.5 py-2 rounded-xl text-sm font-bold"
+                                            >
+                                                {courseCatalog.map(c => (
+                                                    <option key={c.id} value={c.id}>
+                                                        {c.titleTH} ({c.code}){c.active === false ? ' [ซ่อนอยู่]' : ''}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <FieldInput className="sm:col-span-2" label="ชื่อกิจกรรมอบรม Onsite" value={onsiteDraft.activityTitle} onChange={e => setOnsiteDraft(p => ({ ...p, activityTitle: e.target.value }))} />
                                         <FieldInput label="วัน/เดือน/ปี ที่จัดกิจกรรม" value={onsiteDraft.eventDate} onChange={e => setOnsiteDraft(p => ({ ...p, eventDate: e.target.value }))} />
-                                        <FieldInput className="sm:col-span-2" label="ชื่อกิจกรรมมาตรฐาน" value={onsiteDraft.activityTitle} onChange={e => setOnsiteDraft(p => ({ ...p, activityTitle: e.target.value }))} />
-                                        <FieldInput className="sm:col-span-2" label="สถานที่ / หน่วยงานที่จัด" value={onsiteDraft.venueAndOrganizer} onChange={e => setOnsiteDraft(p => ({ ...p, venueAndOrganizer: e.target.value }))} />
+                                        <FieldInput label="สถานที่ / หน่วยงานที่จัด" value={onsiteDraft.venueAndOrganizer} onChange={e => setOnsiteDraft(p => ({ ...p, venueAndOrganizer: e.target.value }))} />
                                         <div className="sm:col-span-2 p-4 rounded-2xl bg-prism-500/15 border border-prism-400/35 space-y-2">
-                                            <label className="block text-xs font-bold text-prism-adaptive">วันและเวลาที่เปิดสิทธิ์ให้ผู้สมัคร Onsite เข้า rjcloud.organ 2.0 อัตโนมัติ</label>
+                                            <label className="block text-xs font-bold text-prism-adaptive">วันและเวลาที่เปิดให้เข้า rjcloud.organ 2.0 (แสดงบนบัตร Digital Onsite Pass เช่น 16:00 น.)</label>
                                             <input type="datetime-local" value={onsiteDraft.unlockAtLocal} onChange={e => setOnsiteDraft(p => ({ ...p, unlockAtLocal: e.target.value }))} className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-xl font-mono text-sm font-bold" />
-                                            <p className="text-[11px] text-secondary-adaptive">ปัจจุบันตั้งไว้: <b className="text-accent-adaptive">{formatThaiDateTimeFull(onsiteConfig.unlockAt)}</b></p>
+                                            <p className="text-[11px] text-secondary-adaptive">เวลาเปิดระบบปัจจุบัน: <b className="text-accent-adaptive">{formatThaiDateTimeFull(onsiteConfig.unlockAt)}</b></p>
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
@@ -1960,20 +2005,24 @@
                                         </label>
                                     </div>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                                        <button type="button" onClick={handleSaveOnsiteConfig} className="rjc2-pill-btn touch-target py-3.5 rounded-full font-display font-extrabold text-xs sm:text-sm">บันทึกหัวข้อกิจกรรม &amp; กำหนดเวลาขึ้น Cloud</button>
+                                        <button type="button" onClick={handleSaveOnsiteConfig} className="rjc2-pill-btn touch-target py-3.5 rounded-full font-display font-extrabold text-xs sm:text-sm">บันทึกกิจกรรม &amp; เวลาเปิดระบบขึ้น Cloud</button>
                                         <button type="button" disabled={onsiteSyncing} onClick={handleBatchSyncOnsiteToLearners} className="spatial-soft touch-target py-3.5 rounded-full font-display font-bold text-xs sm:text-sm text-accent-adaptive border-aurora-400/45 disabled:opacity-50">
-                                            {onsiteSyncing ? 'กำลังซิงค์...' : `ซิงค์กำหนดเวลาให้ผู้สมัครทุกคน (${onsiteStats.total} ราย)`}
+                                            {onsiteSyncing ? 'กำลังซิงค์...' : `ซิงค์สิทธิ์เทียบโอนให้ผู้สมัคร (${onsiteStats.total} ราย)`}
                                         </button>
                                     </div>
                                 </div>
 
                                 <div className="spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3.5">
-                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-2.5">
                                         <div className="relative flex-1">
                                             <Icon name="Search" size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-adaptive" />
-                                            <input value={onsiteSearch} onChange={e => setOnsiteSearch(e.target.value)} placeholder="ค้นหารายชื่อผู้สมัคร Onsite..." className="touch-target spatial-input w-full pl-10 pr-4 py-2 rounded-2xl text-xs sm:text-sm" />
+                                            <input value={onsiteSearch} onChange={e => setOnsiteSearch(e.target.value)} placeholder="ค้นหารายชื่อผู้สมัคร Onsite, เลขใบอนุญาต, โรงพยาบาล..." className="touch-target spatial-input w-full pl-10 pr-4 py-2 rounded-2xl text-xs sm:text-sm" />
                                         </div>
-                                        <div className="flex gap-1.5 overflow-x-auto">
+                                        <div className="flex flex-wrap gap-1.5">
+                                            <select value={onsiteEventFilter} onChange={e => setOnsiteEventFilter(e.target.value)} className="spatial-input px-3 py-2 rounded-xl text-xs font-bold">
+                                                <option value="ALL">ทุกรุ่นกิจกรรม ({onsiteRegistrants.length})</option>
+                                                {onsiteEventIds.map(evId => <option key={evId} value={evId}>รุ่น {evId}</option>)}
+                                            </select>
                                             {['ALL', 'แพทย์', 'พยาบาล', 'บุคลากรสหวิชาชีพ'].map(pg => (
                                                 <button key={pg} type="button" onClick={() => setOnsiteFilterProf(pg)} className={`px-3 py-2 rounded-xl text-xs font-bold shrink-0 ${onsiteFilterProf === pg ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'spatial-soft text-secondary-adaptive'}`}>
                                                     {pg === 'ALL' ? 'ทุกวิชาชีพ' : pg}
@@ -1985,7 +2034,7 @@
                                         <table className="w-full text-left border-collapse text-xs">
                                             <thead className="spatial-thead font-mono text-[10px] uppercase text-muted-adaptive">
                                                 <tr>
-                                                    <th className="py-3 px-3">ผู้สมัคร / เลขใบอนุญาต</th>
+                                                    <th className="py-3 px-3">ผู้สมัคร / เลขใบอนุญาต / รุ่น</th>
                                                     <th className="py-3 px-3">กลุ่มวิชาชีพ</th>
                                                     <th className="py-3 px-3">โรงพยาบาล / จังหวัด / เขตสุขภาพ</th>
                                                     <th className="py-3 px-3">สถานะเทียบโอน</th>
@@ -1993,23 +2042,32 @@
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y divide-white/10">
-                                                {filteredOnsiteRegistrants.map(r => (
-                                                    <tr key={r.id || r.license} className={r.revoked ? 'opacity-55' : ''}>
-                                                        <td className="py-3 px-3"><p className="font-bold text-primary-adaptive">{r.name}</p><p className="font-mono text-[11px] text-prism-adaptive">{r.license}</p></td>
-                                                        <td className="py-3 px-3 font-semibold text-secondary-adaptive">{r.professionGroup || '-'}</td>
-                                                        <td className="py-3 px-3"><p className="font-semibold text-primary-adaptive">{r.hospital}</p><p className="text-[11px] text-muted-adaptive">จ.{r.province || '-'} • {r.region || '-'}</p></td>
-                                                        <td className="py-3 px-3">
-                                                            <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold ${r.revoked ? 'bg-rose-500/20 text-rose-300' : 'bg-aurora-500/20 text-accent-adaptive'}`}>
-                                                                {r.revoked ? 'ยกเลิกสิทธิ์แล้ว' : 'ชั่วโมงครบ (เทียบโอน)'}
-                                                            </span>
-                                                        </td>
-                                                        <td className="py-3 px-3 text-right">
-                                                            <button type="button" onClick={() => handleToggleOnsiteRevoke(r)} className={`px-3 py-1.5 rounded-xl font-bold text-[11px] ${r.revoked ? 'bg-aurora-500/20 text-accent-adaptive' : 'bg-rose-500/15 border border-rose-400/35 text-rose-300'}`}>
-                                                                {r.revoked ? 'คืนสิทธิ์เทียบโอน' : 'ยกเลิกสิทธิ์ (ไม่มางาน)'}
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                ))}
+                                                {filteredOnsiteRegistrants.map(r => {
+                                                    const isCancel = Boolean(r.revoked || r.cancelled);
+                                                    return (
+                                                        <tr key={r.id || r.license} className={isCancel ? 'opacity-55' : ''}>
+                                                            <td className="py-3 px-3">
+                                                                <p className="font-bold text-primary-adaptive">{r.name}</p>
+                                                                <p className="font-mono text-[11px] text-prism-adaptive">{r.license} {r.eventId ? `• ${r.eventId}` : ''}</p>
+                                                            </td>
+                                                            <td className="py-3 px-3 font-semibold text-secondary-adaptive">{r.professionGroup || '-'}</td>
+                                                            <td className="py-3 px-3"><p className="font-semibold text-primary-adaptive">{r.hospital}</p><p className="text-[11px] text-muted-adaptive">จ.{r.province || '-'} • {r.region || '-'}</p></td>
+                                                            <td className="py-3 px-3">
+                                                                <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold ${isCancel ? 'bg-rose-500/20 text-rose-300' : 'bg-aurora-500/20 text-accent-adaptive'}`}>
+                                                                    {isCancel ? 'ยกเลิกสิทธิ์แล้ว' : 'เทียบโอน 100%'}
+                                                                </span>
+                                                            </td>
+                                                            <td className="py-3 px-3 text-right">
+                                                                <button type="button" onClick={() => handleToggleOnsiteRevoke(r)} className={`px-3 py-1.5 rounded-xl font-bold text-[11px] ${isCancel ? 'bg-aurora-500/20 text-accent-adaptive' : 'bg-rose-500/15 border border-rose-400/35 text-rose-300'}`}>
+                                                                    {isCancel ? 'คืนสิทธิ์เทียบโอน' : 'ยกเลิกสิทธิ์ (ไม่มางาน)'}
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })}
+                                                {filteredOnsiteRegistrants.length === 0 && (
+                                                    <tr><td colSpan="5" className="py-8 text-center text-muted-adaptive">ยังไม่มีรายชื่อผู้ลงทะเบียน Onsite ในตัวกรองนี้ค่ะ</td></tr>
+                                                )}
                                             </tbody>
                                         </table>
                                     </div>
@@ -2017,7 +2075,173 @@
                             </div>
                         )}
 
-                        {/* ==================== TAB 3: CERTIFICATE DESIGNER & PROFESSION-FILTERED CNEU / ACADEMIC REPORT STUDIO ==================== */}
+                        {/* ==================== TAB 3: COURSE CATALOG MANAGER, LESSONS & QUIZ ==================== */}
+                        {activeTab === 'content' && (
+                            <div className="space-y-4">
+                                <div className="flex flex-wrap items-center justify-between gap-2">
+                                    <div className="inline-flex p-1 rounded-2xl spatial-soft gap-1">
+                                        <button type="button" onClick={() => setContentSubTab('courses')} className={`px-4 py-2 rounded-xl text-xs font-bold ${contentSubTab === 'courses' ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'text-secondary-adaptive'}`}>
+                                            จัดการหลักสูตร ({courseCatalog.length})
+                                        </button>
+                                        <button type="button" onClick={() => setContentSubTab('lessons')} className={`px-4 py-2 rounded-xl text-xs font-bold ${contentSubTab === 'lessons' ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'text-secondary-adaptive'}`}>
+                                            บทเรียน ({contentConfig.lessons.length})
+                                        </button>
+                                        <button type="button" onClick={() => setContentSubTab('quiz')} className={`px-4 py-2 rounded-xl text-xs font-bold ${contentSubTab === 'quiz' ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'text-secondary-adaptive'}`}>
+                                            คลังข้อสอบ ({(contentConfig.questionSets[0] || []).length})
+                                        </button>
+                                    </div>
+
+                                    {contentSubTab === 'courses' ? (
+                                        <div className="flex flex-wrap gap-2">
+                                            <button type="button" onClick={() => setShowAddCourseForm(v => !v)} className="spatial-soft px-4 py-2.5 rounded-full text-xs font-bold text-pink-300 border-pink-300/45 inline-flex items-center gap-1.5">
+                                                <Icon name="Plus" size={14} /> เพิ่มหลักสูตรใหม่
+                                            </button>
+                                            <button type="button" onClick={() => persistSettings({ courseCatalog }, 'บันทึกรายการหลักสูตรทั้งหมดขึ้น Cloud และอัปเดตหน้าเว็บแล้วค่ะ')} className="rjc2-pill-btn px-5 py-2.5 rounded-full font-display font-extrabold text-xs inline-flex items-center gap-1.5">
+                                                <Icon name="Save" size={14} /> บันทึกการแก้ไขหลักสูตรขึ้น Cloud
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <button type="button" onClick={() => persistContent(contentConfig)} className="rjc2-pill-btn px-5 py-2.5 rounded-full font-display font-extrabold text-xs">
+                                            บันทึกบทเรียนและข้อสอบขึ้น Cloud
+                                        </button>
+                                    )}
+                                </div>
+
+                                {/* SUB-TAB A: COURSE CATALOG MANAGEMENT (ADD / EDIT / TOGGLE ACTIVE / DELETE) */}
+                                {contentSubTab === 'courses' && (
+                                    <div className="space-y-4">
+                                        <div className="spatial-card rounded-[1.75rem] p-4 sm:p-5 border-pink-300/35 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                            <div>
+                                                <span className="font-mono text-[10px] font-bold text-pink-300 uppercase">MULTI-COURSE HUB • REAL-TIME SYNC TO INDEX.HTML &amp; ONSITE.HTML</span>
+                                                <h3 className="font-display font-extrabold text-base sm:text-lg text-primary-adaptive mt-0.5">ควบคุมหลักสูตรที่แสดงหน้ายืนยันตัวตนบุคลากร</h3>
+                                                <p className="text-xs text-secondary-adaptive mt-0.5">หลักสูตรที่เปิดสถานะ <b>“เปิดแสดงผล”</b> จะปรากฏเป็นการ์ดเลือกหลักสูตรบนหน้าแรกทันที และหากกด <b>“ปิดซ่อนไว้”</b> จะไม่แสดงให้ผู้เรียนเลือกค่ะ</p>
+                                            </div>
+                                            <div className="flex gap-2 text-xs font-mono shrink-0">
+                                                <span className="px-3 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-300 font-bold">เปิดสอน {courseCatalog.filter(c => c.active !== false).length}</span>
+                                                <span className="px-3 py-1.5 rounded-xl spatial-soft text-muted-adaptive font-bold">ซ่อนไว้ {courseCatalog.filter(c => c.active === false).length}</span>
+                                            </div>
+                                        </div>
+
+                                        {showAddCourseForm && (
+                                            <form onSubmit={handleAddCourse} className="spatial-card rounded-[1.75rem] p-5 space-y-3.5 border-aurora-400/45">
+                                                <div className="flex items-center justify-between">
+                                                    <h4 className="font-display font-bold text-sm text-accent-adaptive">เพิ่มหลักสูตรใหม่เข้าศูนย์กลางข้อมูล</h4>
+                                                    <button type="button" onClick={() => setShowAddCourseForm(false)} className="text-muted-adaptive hover:text-primary-adaptive"><Icon name="X" size={16} /></button>
+                                                </div>
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                                                    <FieldInput className="sm:col-span-2" label="ชื่อหลักสูตร (ภาษาไทย) *" required value={newCourseForm.titleTH} onChange={e => setNewCourseForm(p => ({ ...p, titleTH: e.target.value }))} placeholder="เช่น หลักสูตรการดูแลผู้ป่วยปลูกถ่ายตับ 2027" />
+                                                    <FieldInput label="รหัสหลักสูตร (Code)" value={newCourseForm.code} onChange={e => setNewCourseForm(p => ({ ...p, code: e.target.value }))} placeholder="เช่น LTX-2027" />
+                                                    <FieldInput label="Course ID (ภาษาอังกฤษ ไม่มีเว้นวรรค)" value={newCourseForm.id} onChange={e => setNewCourseForm(p => ({ ...p, id: e.target.value }))} placeholder="เว้นว่าง = สร้างอัตโนมัติ" />
+                                                    <FieldInput className="sm:col-span-2" label="คำอธิบายสั้น / ชื่ออังกฤษ (แสดงใต้ชื่อหลักสูตร)" value={newCourseForm.subtitleTH} onChange={e => setNewCourseForm(p => ({ ...p, subtitleTH: e.target.value }))} placeholder="เช่น สำหรับแพทย์ พยาบาล ICU และห้องผ่าตัด" />
+                                                    <FieldInput label="จำนวนชั่วโมงอบรม" type="number" min="1" max="100" value={newCourseForm.trainingHours} onChange={e => setNewCourseForm(p => ({ ...p, trainingHours: e.target.value }))} />
+                                                    <FieldInput label="หน่วยคะแนน CNEU (พยาบาล)" value={newCourseForm.cneuCredits} onChange={e => setNewCourseForm(p => ({ ...p, cneuCredits: e.target.value }))} placeholder="8.0" />
+                                                </div>
+                                                <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+                                                    <label className="inline-flex items-center gap-2 text-xs font-bold text-primary-adaptive cursor-pointer">
+                                                        <input type="checkbox" checked={Boolean(newCourseForm.active)} onChange={e => setNewCourseForm(p => ({ ...p, active: e.target.checked }))} className="w-4 h-4 accent-aurora-500" />
+                                                        <span>เปิดแสดงผลบนหน้าลงทะเบียนทันที</span>
+                                                    </label>
+                                                    <div className="flex gap-2">
+                                                        <button type="button" onClick={() => setShowAddCourseForm(false)} className="spatial-soft px-4 py-2 rounded-xl text-xs font-bold text-secondary-adaptive">ยกเลิก</button>
+                                                        <button type="submit" className="rjc2-pill-btn px-5 py-2 rounded-xl font-display font-extrabold text-xs">+ เพิ่มและบันทึกขึ้น Cloud</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        )}
+
+                                        <div className="space-y-3">
+                                            {courseCatalog.map((c, idx) => {
+                                                const isActive = c.active !== false;
+                                                return (
+                                                    <div key={c.id || idx} className={`spatial-card rounded-[1.5rem] p-4 sm:p-5 space-y-3 transition-all ${isActive ? 'border-emerald-400/35' : 'opacity-70 border-slate-500/30'}`}>
+                                                        <div className="flex flex-wrap items-center justify-between gap-2">
+                                                            <div className="flex items-center gap-2 flex-wrap">
+                                                                <span className="px-2.5 py-0.5 rounded-lg spatial-soft font-mono text-[11px] font-bold text-prism-adaptive">ID: {c.id}</span>
+                                                                <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${isActive ? 'bg-emerald-500/20 border-emerald-400/45 text-emerald-300' : 'bg-slate-500/20 border-slate-400/35 text-slate-300'}`}>
+                                                                    {isActive ? '● เปิดแสดงผลหน้าเว็บ' : '○ ปิดซ่อนไว้'}
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex items-center gap-1.5">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handleToggleCourseActive(idx)}
+                                                                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all ${isActive ? 'bg-amber-400/15 border-amber-400/45 text-amber-300 hover:bg-amber-400/25' : 'bg-emerald-500/20 border-emerald-400/45 text-emerald-300 hover:bg-emerald-500/30'}`}
+                                                                >
+                                                                    {isActive ? 'ปิดซ่อนหลักสูตร' : 'เปิดแสดงผล'}
+                                                                </button>
+                                                                <button type="button" onClick={() => handleDeleteCourse(c)} className="p-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-400" title="ลบหลักสูตร">
+                                                                    <Icon name="Trash2" size={15} />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-2.5 text-xs">
+                                                            <div className="lg:col-span-5">
+                                                                <label className="block text-[11px] text-muted-adaptive mb-1">ชื่อหลักสูตร (ไทย)</label>
+                                                                <input value={c.titleTH || ''} onChange={e => handleUpdateCourseField(idx, 'titleTH', e.target.value)} className="spatial-input w-full px-3 py-2 rounded-xl font-bold" />
+                                                            </div>
+                                                            <div className="lg:col-span-3">
+                                                                <label className="block text-[11px] text-muted-adaptive mb-1">คำอธิบายสั้น / ชื่ออังกฤษ</label>
+                                                                <input value={c.subtitleTH || c.titleEN || ''} onChange={e => handleUpdateCourseField(idx, 'subtitleTH', e.target.value)} className="spatial-input w-full px-3 py-2 rounded-xl" />
+                                                            </div>
+                                                            <div className="lg:col-span-2">
+                                                                <label className="block text-[11px] text-muted-adaptive mb-1">รหัส (Code)</label>
+                                                                <input value={c.code || ''} onChange={e => handleUpdateCourseField(idx, 'code', e.target.value)} className="spatial-input w-full px-3 py-2 rounded-xl font-mono" />
+                                                            </div>
+                                                            <div className="lg:col-span-1">
+                                                                <label className="block text-[11px] text-muted-adaptive mb-1">ชั่วโมง</label>
+                                                                <input type="number" min="1" max="100" value={c.trainingHours || 8} onChange={e => handleUpdateCourseField(idx, 'trainingHours', Number(e.target.value) || 8)} className="spatial-input w-full px-2.5 py-2 rounded-xl font-mono text-center" />
+                                                            </div>
+                                                            <div className="lg:col-span-1">
+                                                                <label className="block text-[11px] text-muted-adaptive mb-1">CNEU</label>
+                                                                <input value={c.cneuCredits || ''} onChange={e => handleUpdateCourseField(idx, 'cneuCredits', e.target.value)} className="spatial-input w-full px-2.5 py-2 rounded-xl font-mono text-center" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* SUB-TAB B: LESSONS */}
+                                {contentSubTab === 'lessons' && (
+                                    <div className="spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3">
+                                        {contentConfig.lessons.map((l, idx) => (
+                                            <div key={l.id || idx} className="spatial-soft p-3.5 rounded-2xl grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-center text-xs">
+                                                <span className="sm:col-span-1 font-mono font-bold text-prism-adaptive">#{l.id}</span>
+                                                <input value={l.title || ''} onChange={e => { const next = [...contentConfig.lessons]; next[idx] = { ...l, title: e.target.value }; setContentConfig(p => ({ ...p, lessons: next })); }} placeholder="ชื่อบทเรียน" className="sm:col-span-5 spatial-input px-3 py-2 rounded-xl" />
+                                                <input value={l.videoId || ''} onChange={e => { const next = [...contentConfig.lessons]; next[idx] = { ...l, videoId: e.target.value }; setContentConfig(p => ({ ...p, lessons: next })); }} placeholder="Google Drive Video ID" className="sm:col-span-3 spatial-input px-3 py-2 rounded-xl font-mono" />
+                                                <input value={l.documentUrl || ''} onChange={e => { const next = [...contentConfig.lessons]; next[idx] = { ...l, documentUrl: e.target.value }; setContentConfig(p => ({ ...p, lessons: next })); }} placeholder="URL เอกสาร PDF" className="sm:col-span-3 spatial-input px-3 py-2 rounded-xl" />
+                                            </div>
+                                        ))}
+                                        <button type="button" onClick={() => setContentConfig(p => ({ ...p, lessons: [...p.lessons, { id: p.lessons.length + 1, title: `บทเรียนที่ ${p.lessons.length + 1}`, videoId: '', documentUrl: '' }] }))} className="spatial-soft px-4 py-2 rounded-xl text-xs font-bold text-accent-adaptive">
+                                            + เพิ่มบทเรียนใหม่
+                                        </button>
+                                    </div>
+                                )}
+
+                                {/* SUB-TAB C: QUIZ */}
+                                {contentSubTab === 'quiz' && (
+                                    <div className="spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3 max-h-[600px] overflow-y-auto custom-scrollbar">
+                                        {(contentConfig.questionSets[0] || []).map((q, idx) => (
+                                            <div key={q.id || idx} className="spatial-soft p-3.5 rounded-2xl space-y-2 text-xs">
+                                                <p className="font-bold text-primary-adaptive"><span className="font-mono text-prism-adaptive mr-1.5">{idx + 1}.</span>{q.question}</p>
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                                                    {(q.options || []).map((op, oi) => (
+                                                        <div key={oi} className={`px-2.5 py-1.5 rounded-lg ${Number(q.answer) === oi ? 'bg-aurora-500/20 text-accent-adaptive font-bold' : 'text-secondary-adaptive'}`}>
+                                                            {Number(q.answer) === oi ? '✓ ' : ''}{op}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* ==================== TAB 4: CERTIFICATE DESIGNER & CNEU REPORT STUDIO ==================== */}
                         {activeTab === 'cert' && (
                             <div className="space-y-5">
                                 <div className="no-print flex flex-wrap items-center justify-between gap-2">
@@ -2078,12 +2302,11 @@
 
                                 {certSubTab === 'cneu' && (
                                     <div className="space-y-5">
-                                        {/* ตัวตั้งค่า CNEU ล่วงหน้า (แสดงเฉพาะตอนผู้เรียนเลือกพยาบาล) + ชั่วโมงมาตรฐานสำหรับแพทย์/สหวิชาชีพ */}
                                         <div className="no-print spatial-card rounded-[1.75rem] p-5 space-y-4">
                                             <div className="flex flex-wrap items-center justify-between gap-2">
                                                 <div>
                                                     <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">PRE-CONFIGURED CNEU &amp; TRAINING HOURS SETTINGS</span>
-                                                    <h3 className="font-display font-extrabold text-base text-primary-adaptive">ตั้งค่ารหัสกิจกรรม CNEU ล่วงหน้า &amp; ชั่วโมงการอบรมมาตรฐาน</h3>
+                                                    <h3 className="font-display font-extrabold text-base text-primary-adaptive">ตั้งค่ารหัสกิจกรรม CNEU (เฉพาะพยาบาล) &amp; ชั่วโมงการอบรมมาตรฐาน</h3>
                                                 </div>
                                                 <button type="button" onClick={() => persistSettings({ cneuConfig })} className="rjc2-pill-btn px-5 py-2 rounded-full font-display font-extrabold text-xs">
                                                     บันทึกข้อมูล CNEU / ชม.อบรม ขึ้น Cloud
@@ -2100,7 +2323,6 @@
                                                 <FieldInput label="ช่วงวันที่จัดอบรม" value={cneuConfig.dateRange} onChange={e => setCneuConfig(p => ({ ...p, dateRange: e.target.value }))} />
                                             </div>
 
-                                            {/* ปุ่มสลับชุดรายงานแยกตามวิชาชีพ (CNEU คัดเฉพาะพยาบาล 100%) */}
                                             <div className="pt-3 border-t border-white/10 space-y-2.5">
                                                 <div className="flex flex-wrap items-center justify-between gap-2">
                                                     <span className="text-xs font-bold text-prism-adaptive">เลือกชุดรายงานที่ต้องการตรวจสอบ / พิมพ์ PDF / ส่งออก CSV:</span>
@@ -2128,19 +2350,9 @@
                                                         </button>
                                                     ))}
                                                 </div>
-
-                                                {reportMode === 'nurse_cneu' && (passedBreakdown.doctors.length > 0 || passedBreakdown.allied.length > 0) && (
-                                                    <div className="p-3 rounded-xl bg-aurora-500/15 border border-aurora-400/40 text-xs text-accent-adaptive font-bold flex items-center gap-2">
-                                                        <Icon name="ShieldCheck" size={16} className="shrink-0" />
-                                                        <span>
-                                                            ระบบคัดกรองเฉพาะพยาบาลวิชาชีพให้แล้ว 100% — แยกกลุ่มแพทย์ ({passedBreakdown.doctors.length} ราย) และบุคลากรสหวิชาชีพ ({passedBreakdown.allied.length} ราย) ไปไว้ในชุดรายงานเฉพาะวิชาชีพของตนเองโดยไม่ปะปนในเอกสารส่งสภาการพยาบาลค่ะ
-                                                        </span>
-                                                    </div>
-                                                )}
                                             </div>
                                         </div>
 
-                                        {/* เอกสาร A4 พร้อมพิมพ์ / Export PDF */}
                                         <article id="cneu-print-root" className="cneu-paper rounded-2xl p-6 sm:p-10 space-y-5 max-w-4xl mx-auto">
                                             <div className="text-center border-b-2 border-slate-800 pb-4 space-y-1">
                                                 <p className={`text-xs font-bold uppercase ${activeReportMeta.badgeColor}`}>{activeReportMeta.topHeading}</p>
@@ -2221,7 +2433,7 @@
                             </div>
                         )}
 
-                        {/* ==================== TAB 4: LIVE STREAM CONTROL ==================== */}
+                        {/* ==================== TAB 5: LIVE STREAM CONTROL ==================== */}
                         {activeTab === 'live' && (
                             <div className="spatial-card max-w-2xl rounded-[1.75rem] p-5 sm:p-6 space-y-4">
                                 <div>
@@ -2238,7 +2450,7 @@
                                     </div>
                                     <FieldInput label="ชั่วโมงเรียนเป้าหมาย (ชม.)" type="number" min="1" max="40" value={liveConfig.hours} onChange={e => setLiveConfig(p => ({ ...p, hours: Number(e.target.value) || 8 }))} />
                                     <FieldInput className="sm:col-span-2" label="หัวข้อการบรรยายสด" value={liveConfig.topic} onChange={e => setLiveConfig(p => ({ ...p, topic: e.target.value }))} />
-                                    <FieldInput className="sm:col-span-2" label="URL วิดีโอ Embed (YouTube Live / Zoom Web)" value={liveConfig.url} onChange={e => setLiveConfig(p => ({ ...p, url: e.target.value }))} placeholder="https://www.youtube.com/embed/..." />
+                                    <FieldInput className="sm:col-span-2" label="URL วิดีโอ Embed (YouTube Live / Vimeo / Zoom)" value={liveConfig.url} onChange={e => setLiveConfig(p => ({ ...p, url: e.target.value }))} placeholder="https://..." />
                                     <FieldInput className="sm:col-span-2" label="URL เอกสารประกอบการบรรยาย" value={liveConfig.documentUrl} onChange={e => setLiveConfig(p => ({ ...p, documentUrl: e.target.value }))} placeholder="https://..." />
                                 </div>
                                 <label className="spatial-soft p-3.5 rounded-2xl flex items-center justify-between gap-2 text-xs cursor-pointer">
@@ -2248,54 +2460,6 @@
                                 <button type="button" onClick={() => persistSettings({ liveConfig })} className="rjc2-pill-btn touch-target w-full py-3.5 rounded-full font-display font-extrabold text-sm">
                                     บันทึกการตั้งค่า Live สดขึ้น Cloud
                                 </button>
-                            </div>
-                        )}
-
-                        {/* ==================== TAB 5: LESSONS & QUIZ CONTENT MANAGER ==================== */}
-                        {activeTab === 'content' && (
-                            <div className="space-y-4">
-                                <div className="flex flex-wrap items-center justify-between gap-2">
-                                    <div className="inline-flex p-1 rounded-2xl spatial-soft gap-1">
-                                        <button type="button" onClick={() => setContentSubTab('lessons')} className={`px-4 py-2 rounded-xl text-xs font-bold ${contentSubTab === 'lessons' ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'text-secondary-adaptive'}`}>บทเรียน ({contentConfig.lessons.length})</button>
-                                        <button type="button" onClick={() => setContentSubTab('quiz')} className={`px-4 py-2 rounded-xl text-xs font-bold ${contentSubTab === 'quiz' ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'text-secondary-adaptive'}`}>คลังข้อสอบ ({(contentConfig.questionSets[0] || []).length})</button>
-                                    </div>
-                                    <button type="button" onClick={() => persistContent(contentConfig)} className="rjc2-pill-btn px-5 py-2.5 rounded-full font-display font-extrabold text-xs">
-                                        บันทึกเนื้อหาทั้งหมดขึ้น Cloud
-                                    </button>
-                                </div>
-
-                                {contentSubTab === 'lessons' && (
-                                    <div className="spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3">
-                                        {contentConfig.lessons.map((l, idx) => (
-                                            <div key={l.id || idx} className="spatial-soft p-3.5 rounded-2xl grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-center text-xs">
-                                                <span className="sm:col-span-1 font-mono font-bold text-prism-adaptive">#{l.id}</span>
-                                                <input value={l.title || ''} onChange={e => { const next = [...contentConfig.lessons]; next[idx] = { ...l, title: e.target.value }; setContentConfig(p => ({ ...p, lessons: next })); }} placeholder="ชื่อบทเรียน" className="sm:col-span-5 spatial-input px-3 py-2 rounded-xl" />
-                                                <input value={l.videoId || ''} onChange={e => { const next = [...contentConfig.lessons]; next[idx] = { ...l, videoId: e.target.value }; setContentConfig(p => ({ ...p, lessons: next })); }} placeholder="Google Drive Video ID" className="sm:col-span-3 spatial-input px-3 py-2 rounded-xl font-mono" />
-                                                <input value={l.documentUrl || ''} onChange={e => { const next = [...contentConfig.lessons]; next[idx] = { ...l, documentUrl: e.target.value }; setContentConfig(p => ({ ...p, lessons: next })); }} placeholder="URL เอกสาร PDF" className="sm:col-span-3 spatial-input px-3 py-2 rounded-xl" />
-                                            </div>
-                                        ))}
-                                        <button type="button" onClick={() => setContentConfig(p => ({ ...p, lessons: [...p.lessons, { id: p.lessons.length + 1, title: `บทเรียนที่ ${p.lessons.length + 1}`, videoId: '', documentUrl: '' }] }))} className="spatial-soft px-4 py-2 rounded-xl text-xs font-bold text-accent-adaptive">
-                                            + เพิ่มบทเรียนใหม่
-                                        </button>
-                                    </div>
-                                )}
-
-                                {contentSubTab === 'quiz' && (
-                                    <div className="spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3 max-h-[600px] overflow-y-auto custom-scrollbar">
-                                        {(contentConfig.questionSets[0] || []).map((q, idx) => (
-                                            <div key={q.id || idx} className="spatial-soft p-3.5 rounded-2xl space-y-2 text-xs">
-                                                <p className="font-bold text-primary-adaptive"><span className="font-mono text-prism-adaptive mr-1.5">{idx + 1}.</span>{q.question}</p>
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-                                                    {(q.options || []).map((op, oi) => (
-                                                        <div key={oi} className={`px-2.5 py-1.5 rounded-lg ${Number(q.answer) === oi ? 'bg-aurora-500/20 text-accent-adaptive font-bold' : 'text-secondary-adaptive'}`}>
-                                                            {Number(q.answer) === oi ? '✓ ' : ''}{op}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
                             </div>
                         )}
 
@@ -2326,29 +2490,24 @@
                             </div>
                         )}
 
-                        {/* ==================== TAB 7: PAGE INSPECTOR (15 SCREENS) ==================== */}
+                        {/* ==================== TAB 7: PRODUCTION SYSTEM DIRECTORY ==================== */}
                         {activeTab === 'overview' && (
-                            <div className="space-y-5">
+                            <div className="space-y-4">
                                 <div>
-                                    <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">SYSTEM QUALITY ASSURANCE</span>
-                                    <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive mt-1">ศูนย์ตรวจสอบทุกหน้าจอในระบบ (ครบทั้ง 15 หน้า)</h2>
+                                    <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">PRODUCTION SYSTEM DIRECTORY</span>
+                                    <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive mt-1">ทางลัดเข้าถึงทุกโมดูล Production ในระบบ</h2>
                                 </div>
-                                {inspectorGroups.map(grp => (
-                                    <div key={grp.groupTitle} className="spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3">
-                                        <h3 className="font-display font-bold text-sm text-accent-adaptive">{grp.groupTitle}</h3>
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-                                            {grp.items.map(it => (
-                                                <a key={it.id} href={it.url} target="_blank" rel="noreferrer" className="spatial-soft hover:border-aurora-400 p-3.5 rounded-2xl flex items-start gap-3 transition-all">
-                                                    <div className="w-9 h-9 rounded-xl bg-aurora-500/15 text-accent-adaptive flex items-center justify-center shrink-0"><Icon name={it.icon} size={17} /></div>
-                                                    <div className="min-w-0">
-                                                        <p className="font-display font-bold text-xs sm:text-sm text-primary-adaptive">{it.title}</p>
-                                                        <p className="text-[11px] text-muted-adaptive mt-0.5 leading-snug">{it.desc}</p>
-                                                    </div>
-                                                </a>
-                                            ))}
-                                        </div>
-                                    </div>
-                                ))}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                    {inspectorLinks.map(it => (
+                                        <a key={it.url} href={it.url} target="_blank" rel="noreferrer" className="spatial-card hover:border-aurora-400 p-4 rounded-[1.5rem] flex items-start gap-3 transition-all">
+                                            <div className="w-10 h-10 rounded-xl bg-aurora-500/15 text-accent-adaptive flex items-center justify-center shrink-0"><Icon name={it.icon} size={18} /></div>
+                                            <div className="min-w-0">
+                                                <p className="font-display font-bold text-sm text-primary-adaptive">{it.title}</p>
+                                                <p className="text-xs text-muted-adaptive mt-0.5 leading-snug">{it.desc}</p>
+                                            </div>
+                                        </a>
+                                    ))}
+                                </div>
                             </div>
                         )}
                     </main>
@@ -2375,14 +2534,14 @@
                         </div>
                     </nav>
 
-                    {/* Modal มอบสิทธิ์ ชั่วโมงครบ (เทียบโอน) และระบุชื่อกิจกรรมมาตรฐานรายบุคคล */}
+                    {/* Modal มอบสิทธิ์เทียบโอนรายบุคคล */}
                     {transferModal.open && transferModal.user && (
                         <div className="no-print fixed inset-0 z-[132] bg-slate-950/75 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
                             <form onSubmit={handleSaveTransferModal} className="spatial-card w-full sm:max-w-lg rounded-t-[2rem] sm:rounded-[2rem] p-6 space-y-4">
                                 <div className="flex items-start justify-between gap-2">
                                     <div>
-                                        <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">FAST-TRACK HOURS &amp; ACTIVITY REFERENCE</span>
-                                        <h3 className="font-display font-extrabold text-lg text-primary-adaptive">จัดการสิทธิ์ชั่วโมงอบรม &amp; กิจกรรมอ้างอิง</h3>
+                                        <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">CREDIT TRANSFER &amp; ACTIVITY REFERENCE</span>
+                                        <h3 className="font-display font-extrabold text-lg text-primary-adaptive">จัดการสิทธิ์เทียบโอนชั่วโมงอบรม</h3>
                                         <p className="text-xs text-secondary-adaptive">{transferModal.user.name} ({getUserLicense(transferModal.user)})</p>
                                     </div>
                                     <button type="button" onClick={() => setTransferModal(p => ({ ...p, open: false, user: null }))} className="spatial-soft w-8 h-8 rounded-xl flex items-center justify-center text-muted-adaptive">
@@ -2392,7 +2551,7 @@
 
                                 <label className="spatial-soft p-3.5 rounded-2xl flex items-center justify-between gap-3 cursor-pointer">
                                     <div>
-                                        <p className="text-sm font-bold text-accent-adaptive">มอบสิทธิ์ “ชั่วโมงครบ (เทียบโอน)” 100%</p>
+                                        <p className="text-sm font-bold text-accent-adaptive">มอบสิทธิ์ “เทียบโอน (ยกเว้นชั่วโมง 100%)”</p>
                                         <p className="text-xs text-muted-adaptive">ผู้เรียนสามารถทำ Pre-test → AI Skill Lab 3D → Post-test ≥ 80% ได้ทันทีโดยไม่ต้องสะสมเวลาวิดีโอซ้ำ</p>
                                     </div>
                                     <input type="checkbox" checked={Boolean(transferModal.studyHoursExempt)} onChange={e => setTransferModal(p => ({ ...p, studyHoursExempt: e.target.checked }))} className="w-5 h-5 accent-aurora-500 shrink-0" />
@@ -2401,7 +2560,7 @@
                                 {transferModal.studyHoursExempt && (
                                     <div className="space-y-3">
                                         <FieldInput label="ชื่อกิจกรรมอ้างอิง *" required value={transferModal.hoursActivityName} onChange={e => setTransferModal(p => ({ ...p, hoursActivityName: e.target.value }))} placeholder="เช่น การอบรมเชิงปฏิบัติการรับบริจาคอวัยวะ รุ่นที่ 1/2570" />
-                                        <FieldInput label="วัน/เดือน/ปี ที่จัดกิจกรรม" value={transferModal.hoursActivityDate} onChange={e => setTransferModal(p => ({ ...p, hoursActivityDate: e.target.value }))} placeholder="เช่น 15 – 16 มกราคม 2570" />
+                                        <FieldInput label="วัน/เดือน/ปี ที่จัดกิจกรรม" value={transferModal.hoursActivityDate} onChange={e => setTransferModal(p => ({ ...p, hoursActivityDate: e.target.value }))} placeholder="เช่น 15 มกราคม 2570" />
                                         <FieldInput label="สถานที่ / หน่วยงานที่จัด" value={transferModal.hoursActivityVenue} onChange={e => setTransferModal(p => ({ ...p, hoursActivityVenue: e.target.value }))} placeholder="เช่น ห้องประชุมพิบูลสงคราม โรงพยาบาลราชวิถี" />
                                     </div>
                                 )}
@@ -2423,7 +2582,11 @@
         const root = createRoot(document.getElementById('admin-root'));
         root.render(<AdminErrorBoundary><AdminApp /></AdminErrorBoundary>);
     </script>
-    <!-- โหลด Babel ท้ายสุดหลังสคริปต์ทั้งหมด เพื่อให้แน่ใจว่าโค้ดครบ 100% ก่อนคอมไพล์ -->
-    <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
+
+    <!-- @babel/standalone พร้อม CDN สำรอง (cdnjs) ป้องกันหน้าหมุนค้าง -->
+    <script
+        src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"
+        onerror="(function(){var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js';s.onload=function(){if(window.Babel&&window.Babel.transformScriptTags)window.Babel.transformScriptTags();};document.body.appendChild(s);})();"
+    ></script>
 </body>
 </html>
