@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#030611">
+    <meta name="theme-color" content="#1c222b">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>AI Skill Lab 3D — โฮโลแกรมหัวใจ 3 มิติ 10 สเต็ป | rjcloud.organ 2.0</title>
+    <title>AI Skill Lab 3D — โฮโลแกรมหัวใจ 3 มิติ 10 สเต็ป | organ cloud 2.0</title>
 
     <!-- ซิงค์โหมดมืด/สว่างทันที + โหลดโมดูลกลาง (Zero-Build GitHub Pages) -->
     <script>
@@ -16,7 +16,7 @@
           const mode = saved === 'light' ? 'light' : 'dark';
           document.documentElement.setAttribute('data-theme', mode);
           const meta = document.querySelector('meta[name="theme-color"]');
-          if (meta) meta.setAttribute('content', mode === 'dark' ? '#030611' : '#edf5fc');
+          if (meta) meta.setAttribute('content', mode === 'dark' ? '#1c222b' : '#e6ebf0');
         } catch (_) {}
 
         try {
@@ -31,7 +31,7 @@
             manifest.href = './manifest.json';
             document.head.appendChild(manifest);
 
-            ['./data.js', './learning-core.js?v=202705'].forEach(function (src) {
+            ['./data.js', './learning-core.js?v=202711'].forEach(function (src) {
               const s = document.createElement('script');
               s.src = src;
               s.async = false;
@@ -55,12 +55,12 @@
           theme: {
             extend: {
               fontFamily: {
-                display: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Anuphan', 'Prompt', 'sans-serif'],
+                display: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Prompt', 'Anuphan', 'sans-serif'],
                 sans: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'Anuphan', 'Sarabun', 'sans-serif'],
-                mono: ['SF Mono', 'ui-monospace', 'JetBrains Mono', 'monospace']
+                mono: ['JetBrains Mono', 'SF Mono', 'ui-monospace', 'monospace']
               },
               colors: {
-                void: { 950: '#030611', 900: '#061229', 800: '#0c1f42', 700: '#153263' },
+                void: { 950: '#141920', 900: '#1c222b', 800: '#262f3d', 700: '#323d4f' },
                 aurora: { 200: '#a7f3d0', 300: '#6ee7b7', 400: '#34d399', 500: '#10b981', 600: '#059669' },
                 prism: { 200: '#bae6fd', 300: '#7dd3fc', 400: '#38bdf8', 500: '#0ea5e9', 600: '#0284c7' }
               }
@@ -72,66 +72,68 @@
 
     <style>
       /* ============================================================================
-       * 1. ADAPTIVE BENTO GRID THEME TOKENS (DARK OBSIDIAN & LIGHT CRYSTAL GLASS)
+       * 1. NEUMORPHIC SOFT UI SYSTEM TOKENS — organ cloud 2.0 (LIGHT & DARK)
+       *    High-Contrast Dark Mode Typography (WCAG AA/AAA Verified)
        * ============================================================================ */
-      :root, html[data-theme="dark"] {
-        --bg-page: #030611;
-        --text-main: #f8fafc;
-        --text-secondary: #cbd5e1;
-        --text-muted: #94a3b8;
-        --glass-bg: linear-gradient(155deg, rgba(16, 26, 52, 0.80) 0%, rgba(7, 13, 28, 0.92) 100%);
-        --glass-border: rgba(148, 197, 255, 0.18);
-        --glass-border-hover: rgba(253, 164, 175, 0.45);
-        --glass-shadow: 0 24px 60px -20px rgba(0, 4, 18, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.16);
-        --header-bg: rgba(3, 6, 17, 0.84);
-        --surface-soft: rgba(255, 255, 255, 0.048);
-        --surface-soft-hover: rgba(255, 255, 255, 0.095);
-        --surface-border: rgba(148, 197, 255, 0.16);
-        --input-bg: rgba(5, 10, 24, 0.84);
-        --input-border: rgba(148, 197, 255, 0.24);
-        --input-text: #f8fafc;
-        --accent-text: #6ee7b7;
-        --accent-prism: #67e8f9;
-        --grid-line: rgba(148, 197, 255, 0.038);
-        --aura-1: rgba(16, 185, 129, 0.14);
-        --aura-2: rgba(56, 189, 248, 0.16);
-        --aura-3: rgba(249, 168, 212, 0.12);
-      }
-      html[data-theme="light"] {
-        --bg-page: #edf5fc;
-        --text-main: #0f172a;
-        --text-secondary: #334155;
-        --text-muted: #64748b;
-        --glass-bg: linear-gradient(155deg, rgba(255, 255, 255, 0.94) 0%, rgba(236, 246, 255, 0.88) 100%);
-        --glass-border: rgba(255, 255, 255, 0.96);
-        --glass-border-hover: rgba(244, 63, 94, 0.38);
-        --glass-shadow: 0 20px 46px -18px rgba(15, 58, 125, 0.16), 0 0 0 1px rgba(148, 184, 222, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.96);
-        --header-bg: rgba(244, 249, 255, 0.90);
-        --surface-soft: rgba(255, 255, 255, 0.80);
-        --surface-soft-hover: rgba(255, 255, 255, 0.98);
-        --surface-border: rgba(148, 184, 222, 0.36);
-        --input-bg: rgba(255, 255, 255, 0.96);
-        --input-border: rgba(148, 184, 222, 0.65);
-        --input-text: #0f172a;
-        --accent-text: #047857;
-        --accent-prism: #0284c7;
-        --grid-line: rgba(15, 58, 125, 0.045);
-        --aura-1: rgba(16, 185, 129, 0.14);
-        --aura-2: rgba(56, 189, 248, 0.18);
-        --aura-3: rgba(251, 113, 133, 0.12);
+      :root, html[data-theme="light"] {
+        --neu-bg: #e6ebf0;
+        --neu-header-bg: rgba(230, 235, 240, 0.92);
+        --neu-light: #ffffff;
+        --neu-dark: #c5ced9;
+        --neu-border: rgba(255, 255, 255, 0.74);
+        --neu-border-soft: rgba(255, 255, 255, 0.50);
+        --neu-text: #1f2b38;
+        --neu-text-sub: #47586b;
+        --neu-text-muted: #64768a;
+        --neu-teal: #247870;
+        --neu-teal-soft: rgba(36, 120, 112, 0.22);
+        --neu-rose: #d9486b;
+        --neu-rose-soft: rgba(217, 72, 107, 0.20);
+        --neu-amber: #b45309;
+        --neu-sky: #0369a1;
+        --shadow-raised-lg: 12px 12px 26px var(--neu-dark), -12px -12px 26px var(--neu-light);
+        --shadow-raised: 7px 7px 15px var(--neu-dark), -7px -7px 15px var(--neu-light);
+        --shadow-raised-sm: 4px 4px 9px var(--neu-dark), -4px -4px 9px var(--neu-light);
+        --shadow-pressed: inset 6px 6px 12px var(--neu-dark), inset -6px -6px 12px var(--neu-light);
+        --shadow-pressed-deep: inset 8px 8px 15px #b7c2ce, inset -7px -7px 14px #ffffff;
+        --shadow-pressed-sm: inset 4px 4px 8px var(--neu-dark), inset -4px -4px 8px var(--neu-light);
       }
 
-      * { box-sizing: border-box; }
+      html[data-theme="dark"] {
+        --neu-bg: #1c222b;
+        --neu-header-bg: rgba(28, 34, 43, 0.94);
+        --neu-light: #2d3746;
+        --neu-dark: #0e1218;
+        --neu-border: rgba(255, 255, 255, 0.085);
+        --neu-border-soft: rgba(255, 255, 255, 0.055);
+        --neu-text: #f4f7fb;
+        --neu-text-sub: #c9d6e6;
+        --neu-text-muted: #9eb0c7;
+        --neu-teal: #5eead4;
+        --neu-teal-soft: rgba(94, 234, 212, 0.28);
+        --neu-rose: #fda4af;
+        --neu-rose-soft: rgba(253, 164, 175, 0.28);
+        --neu-amber: #fde68a;
+        --neu-sky: #7dd3fc;
+        --shadow-raised-lg: 12px 12px 26px var(--neu-dark), -10px -10px 22px var(--neu-light);
+        --shadow-raised: 7px 7px 15px var(--neu-dark), -6px -6px 14px var(--neu-light);
+        --shadow-raised-sm: 4px 4px 9px var(--neu-dark), -4px -4px 9px var(--neu-light);
+        --shadow-pressed: inset 6px 6px 12px var(--neu-dark), inset -5px -5px 11px var(--neu-light);
+        --shadow-pressed-deep: inset 8px 8px 16px #090c10, inset -6px -6px 13px #313c4d;
+        --shadow-pressed-sm: inset 4px 4px 8px var(--neu-dark), inset -3px -3px 7px var(--neu-light);
+      }
+
+      *, *::before, *::after { box-sizing: border-box; }
       html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
       body {
         margin: 0;
         padding: 0;
         font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Anuphan', 'Sarabun', sans-serif;
-        background-color: var(--bg-page);
-        color: var(--text-main);
+        background-color: var(--neu-bg);
+        color: var(--neu-text);
         overflow-x: hidden;
         -webkit-font-smoothing: antialiased;
-        transition: background-color 0.28s ease, color 0.28s ease;
+        transition: background-color 0.32s ease, color 0.32s ease;
       }
 
       .touch-target { min-height: 44px; touch-action: manipulation; }
@@ -139,81 +141,115 @@
       .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
       @media (max-width: 768px) { input, select, textarea { font-size: 16px !important; } }
 
-      .spatial-aura {
-        position: fixed; inset: 0; z-index: 0; pointer-events: none;
-        background:
-          radial-gradient(ellipse 90% 55% at 50% 108%, var(--aura-1) 0%, transparent 66%),
-          radial-gradient(circle at 86% 14%, var(--aura-2) 0%, transparent 48%),
-          radial-gradient(circle at 14% 28%, var(--aura-3) 0%, transparent 46%);
+      .neu-header {
+        background: var(--neu-header-bg);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border-bottom: 1px solid var(--neu-border-soft);
       }
-      .spatial-grid {
-        position: fixed; inset: 0; z-index: 0; pointer-events: none;
-        background-image: linear-gradient(to right, var(--grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
-        background-size: 44px 44px;
-        mask-image: radial-gradient(ellipse at center, black 42%, transparent 94%);
-        -webkit-mask-image: radial-gradient(ellipse at center, black 42%, transparent 94%);
+      .neu-card {
+        background: var(--neu-bg);
+        border-radius: 28px;
+        border: 1px solid var(--neu-border);
+        box-shadow: var(--shadow-raised-lg);
+        transition: background-color 0.32s ease, box-shadow 0.25s ease, border-color 0.25s ease;
       }
-      .spatial-card {
-        background: var(--glass-bg);
-        backdrop-filter: blur(24px) saturate(165%);
-        -webkit-backdrop-filter: blur(24px) saturate(165%);
-        border: 1px solid var(--glass-border);
-        box-shadow: var(--glass-shadow);
-        transition: border-color 0.22s ease, box-shadow 0.22s ease, background 0.28s ease;
+      .neu-inset {
+        background: var(--neu-bg);
+        border-radius: 20px;
+        border: 1px solid var(--neu-border-soft);
+        box-shadow: var(--shadow-pressed);
       }
-      .spatial-card:hover { border-color: var(--glass-border-hover); }
-      .spatial-header {
-        background: var(--header-bg);
-        backdrop-filter: blur(22px) saturate(160%);
-        -webkit-backdrop-filter: blur(22px) saturate(160%);
-        border-bottom: 1px solid var(--surface-border);
-      }
-      .spatial-soft { background: var(--surface-soft); border: 1px solid var(--surface-border); transition: background 0.18s ease, border-color 0.18s ease; }
-      .spatial-soft:hover { background: var(--surface-soft-hover); }
-
-      /* ปุ่มขาวขอบแสงแอมเบียนชมพูดอกท้อ (Signature CTA) */
-      .btn-peach-ambient {
-        position: relative;
-        overflow: hidden;
+      .neu-btn {
+        background: var(--neu-bg);
+        color: var(--neu-text);
+        border-radius: 9999px;
+        border: 1px solid var(--neu-border);
+        box-shadow: var(--shadow-raised);
+        cursor: pointer;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 0.5rem;
-        background: #ffffff;
-        color: #1a162b !important;
-        font-weight: 700;
-        border-radius: 9999px;
-        border: 1.5px solid rgba(251, 182, 206, 0.92);
-        box-shadow:
-          0 0 0 3px rgba(253, 164, 175, 0.22),
-          0 10px 28px -6px rgba(249, 168, 212, 0.62),
-          0 0 22px rgba(253, 164, 175, 0.34),
-          inset 0 1px 0 rgba(255, 255, 255, 1);
+        gap: 0.4rem;
         text-decoration: none;
+        transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+      }
+      .neu-btn:hover:not(:disabled) { transform: translateY(-1.5px); color: var(--neu-teal); }
+      .neu-btn:active:not(:disabled),
+      .neu-btn.is-tapping:not(:disabled),
+      .neu-btn.is-pressed {
+        transform: translateY(1.5px) scale(0.978);
+        box-shadow: var(--shadow-pressed-deep);
+        border-color: var(--neu-teal-soft);
+        color: var(--neu-teal);
+      }
+      .neu-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+      .neu-btn-teal {
+        background: linear-gradient(145deg, #258077 0%, #1b615a 100%);
+        color: #ffffff !important;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.24);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 9999px;
+        box-shadow: 6px 6px 14px var(--neu-dark), -5px -5px 14px var(--neu-light);
         cursor: pointer;
-        transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease, border-color 0.22s ease;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
+        text-decoration: none;
+        transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease, filter 0.2s ease;
       }
-      .btn-peach-ambient:hover:not(:disabled) {
-        transform: translateY(-1.5px) scale(1.015);
-        border-color: #fb7185;
-        box-shadow: 0 0 0 5px rgba(253, 164, 175, 0.30), 0 14px 34px -4px rgba(244, 114, 182, 0.72), inset 0 1px 0 #ffffff;
+      .neu-btn-teal:hover:not(:disabled) { transform: translateY(-1.5px); filter: brightness(1.07); }
+      .neu-btn-teal:active:not(:disabled),
+      .neu-btn-teal.is-tapping:not(:disabled) {
+        transform: translateY(1.5px) scale(0.975);
+        background: linear-gradient(145deg, #1a5c56 0%, #22756d 100%);
+        box-shadow: inset 5px 5px 11px rgba(8, 34, 31, 0.72), inset -4px -4px 9px rgba(94, 234, 212, 0.24);
       }
-      .btn-peach-ambient:active:not(:disabled) { transform: scale(0.98); }
-      .btn-peach-ambient:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
+      .neu-btn-teal:disabled { opacity: 0.48; cursor: not-allowed; }
 
-      .text-primary-adaptive { color: var(--text-main); }
-      .text-secondary-adaptive { color: var(--text-secondary); }
-      .text-muted-adaptive { color: var(--text-muted); }
-      .text-accent-adaptive { color: var(--accent-text); }
-      .text-prism-adaptive { color: var(--accent-prism); }
+      .neu-step-pill {
+        background: var(--neu-bg);
+        border-radius: 20px;
+        border: 1px solid var(--neu-border);
+        box-shadow: var(--shadow-raised-sm);
+        cursor: pointer;
+        user-select: none;
+        transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease, border-color 0.22s ease;
+      }
+      .neu-step-pill:hover { transform: translateY(-1px); }
+      .neu-step-pill:active,
+      .neu-step-pill.is-tapping,
+      .neu-step-pill.is-active {
+        transform: translateY(1.5px) scale(0.982);
+        box-shadow: var(--shadow-pressed-deep);
+        border-color: var(--neu-teal-soft);
+      }
+      .neu-step-pill.is-active-rose {
+        transform: translateY(1.5px) scale(0.982);
+        box-shadow: var(--shadow-pressed-deep);
+        border-color: var(--neu-rose-soft);
+      }
 
-      /* เวทีโฮโลแกรมหัวใจ 3 มิติสมจริง (Volumetric Consultation Chamber) */
+      .neu-icon-well {
+        width: 48px; height: 48px; border-radius: 9999px;
+        display: inline-flex; align-items: center; justify-content: center;
+        background: var(--neu-bg); box-shadow: var(--shadow-pressed-sm);
+        color: var(--neu-teal); flex-shrink: 0;
+      }
+
+      /* เวทีโฮโลแกรมหัวใจ 3 มิติสมจริง (Volumetric Consultation Chamber — คงความสวยคมชัดเต็มระบบ) */
       .holo-stage-bg {
         background:
           radial-gradient(ellipse 68% 58% at 50% 44%, #0b1b3d 0%, #050c20 50%, #01030a 100%);
       }
       .stage-hud-glass {
-        background: linear-gradient(155deg, rgba(10, 20, 42, 0.80) 0%, rgba(4, 10, 24, 0.92) 100%);
+        background: linear-gradient(155deg, rgba(14, 22, 38, 0.84) 0%, rgba(7, 12, 24, 0.94) 100%);
         backdrop-filter: blur(20px) saturate(165%);
         -webkit-backdrop-filter: blur(20px) saturate(165%);
         border: 1px solid rgba(148, 197, 255, 0.22);
@@ -227,20 +263,19 @@
 
       .rjc-ambient-bar {
         height: 4px; width: 100%;
-        background: linear-gradient(90deg, #6ee7b7, #38bdf8, #f9a8d4, #fde68a, #6ee7b7);
+        background: linear-gradient(90deg, #2a887f, #5eead4, #fda4af, #5eead4, #2a887f);
         background-size: 300% 100%;
         animation: rjcAmbientRun 2s linear infinite;
-        box-shadow: 0 0 18px rgba(249, 168, 212, 0.85);
       }
       .rjc-wave-eq { display: inline-flex; align-items: center; gap: 2.5px; height: 13px; }
-      .rjc-wave-eq span { width: 2.5px; height: 100%; border-radius: 9999px; background: linear-gradient(180deg, #fde68a, #f9a8d4, #38bdf8); animation: rjcWaveBar 0.82s ease-in-out infinite; }
+      .rjc-wave-eq span { width: 2.5px; height: 100%; border-radius: 9999px; background: linear-gradient(180deg, #fde68a, #fda4af, #5eead4); animation: rjcWaveBar 0.82s ease-in-out infinite; }
       .rjc-wave-eq span:nth-child(2) { animation-delay: 0.14s; }
       .rjc-wave-eq span:nth-child(3) { animation-delay: 0.28s; }
 
       .no-scrollbar::-webkit-scrollbar { display: none; }
       .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
-      .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(147, 197, 253, 0.36); border-radius: 999px; }
+      .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--neu-dark); border-radius: 999px; }
     </style>
 
     <!-- ESM Import Map (React 18, Lucide Icons, Firebase 11) -->
@@ -261,14 +296,14 @@
 <body>
     <!-- หน้าจอโหลดเริ่มต้น -->
     <div id="skilllab-root">
-        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#030611;color:#f8fafc;font-family:-apple-system,'Anuphan','Prompt',sans-serif;gap:14px;padding:24px;text-align:center;">
-            <div style="width:46px;height:46px;border:3px solid rgba(251,207,232,0.22);border-top-color:#f9a8d4;border-right-color:#38bdf8;border-radius:9999px;animation:labSpin 0.85s linear infinite;"></div>
-            <div style="font-weight:800;font-size:17px;">กำลังเปิดห้องฝึกสื่อสาร AI Skill Lab 3D...</div>
-            <div style="font-size:12px;color:#93b4d8;">การเจรจาขอรับบริจาคอวัยวะ 10 สเต็ป • Volumetric 3D Heart Hologram</div>
+        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#1c222b;color:#f4f7fb;font-family:-apple-system,'Anuphan','Prompt',sans-serif;gap:14px;padding:24px;text-align:center;">
+            <div style="width:46px;height:46px;border:3px solid rgba(94,234,212,0.22);border-top-color:#5eead4;border-right-color:#fda4af;border-radius:9999px;animation:labSpin 0.85s linear infinite;"></div>
+            <div style="font-weight:800;font-size:17px;">กำลังเปิดห้องฝึกสื่อสาร AI Skill Lab 3D (organ cloud 2.0)...</div>
+            <div style="font-size:12px;color:#9eb0c7;">การเจรจาขอรับบริจาคอวัยวะ 10 สเต็ป • Volumetric 3D Heart Hologram</div>
         </div>
     </div>
 
-    <!-- Global Error Guard -->
+    <!-- Global Error Guard + Global Tactile Sinking Press Feedback -->
     <script>
       window.addEventListener('error', function (ev) {
         const src = String(ev.filename || (ev.target && ev.target.src) || '');
@@ -277,13 +312,24 @@
         if (root && !root.dataset.mounted && ev.message) {
           const safeMsg = String(ev.message || 'Unknown error').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
           root.innerHTML =
-            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#030611;color:#f8fafc;font-family:Sarabun,sans-serif;">' +
-            '<div style="max-width:440px;width:100%;background:#061229;border:1px solid rgba(244,63,94,0.4);border-radius:24px;padding:24px;text-align:center;">' +
+            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#1c222b;color:#f4f7fb;font-family:Sarabun,sans-serif;">' +
+            '<div style="max-width:440px;width:100%;background:#1c222b;border:1px solid rgba(253,164,175,0.4);border-radius:28px;padding:24px;text-align:center;box-shadow:12px 12px 26px #0e1218,-10px -10px 22px #2d3746;">' +
             '<h2 style="color:#fda4af;font-weight:700;margin:0 0 8px;">ไม่สามารถเปิดห้องฝึก AI Skill Lab ได้ชั่วคราว</h2>' +
-            '<p style="font-size:13px;color:#dbeafe;margin:0 0 16px;">' + safeMsg + '</p>' +
-            '<button onclick="window.location.reload()" style="padding:12px 24px;border:none;border-radius:14px;background:#ffffff;color:#1a162b;font-weight:700;cursor:pointer;">โหลดหน้าใหม่</button>' +
+            '<p style="font-size:13px;color:#c9d6e6;margin:0 0 16px;">' + safeMsg + '</p>' +
+            '<button onclick="window.location.reload()" style="padding:12px 24px;border:none;border-radius:9999px;background:#247870;color:#ffffff;font-weight:700;cursor:pointer;">โหลดหน้าใหม่</button>' +
             '</div></div>';
         }
+      });
+
+      document.addEventListener('pointerdown', function (e) {
+        const el = e.target && e.target.closest ? e.target.closest('.neu-btn, .neu-btn-teal, .neu-step-pill') : null;
+        if (!el || el.disabled) return;
+        el.classList.add('is-tapping');
+        const release = function () {
+          setTimeout(function () { el.classList.remove('is-tapping'); }, 110);
+        };
+        window.addEventListener('pointerup', release, { once: true });
+        window.addEventListener('pointercancel', release, { once: true });
       });
     </script>
 
@@ -303,7 +349,7 @@
         const SESSION_BACKUP_KEY = 'rjcloud_active_session_v2027';
 
         const BUILTIN_CONFIG = {
-            appName: 'rjcloud.organ',
+            appName: 'organ cloud',
             appId: 'rjcloud-organ-2027',
             theme: { defaultMode: 'dark', storageKey: 'rjcloud_theme' },
             firebaseConfig: {
@@ -383,189 +429,179 @@
         }
 
         // ============================================================================
-        // 2. OFFICIAL RAJAVITHI 10-STEP CLINICAL PROTOCOL (3 CHAPTERS + STEP 10 FREE WILL)
-        // อ้างอิงสื่อการสอนมาตรฐาน รพ.ราชวิถี (PMD RJ):
-        //   บทที่ 1: จุดเริ่มต้นของความหวังสุดท้าย (Steps 1–3)
-        //   บทที่ 2: ดูแลคนที่ยังอยู่ (Steps 4–6)
-        //   บทที่ 3: เพื่อคนที่เดินต่อไป (Steps 7–10)
+        // 2. OFFICIAL 10-STEP CLINICAL NEGOTIATION PROTOCOL (RAJAVITHI HOSPITAL)
         // ============================================================================
         const OFFICIAL_CASE = {
-            id: 'rajavithi_official_10step',
-            titleTH: 'การเจรจาขอรับบริจาคอวัยวะจากครอบครัวผู้เสียชีวิตสมองตาย',
-            subtitleTH: 'สถานการณ์จำลองมาตรฐานเดียวตามวิดีโอหลักสูตร (ศูนย์ความเป็นเลิศทางการแพทย์ โรงพยาบาลราชวิถี)',
-            relativeName: 'คุณแพรว (ลูกสาว / ตัวแทนญาติสายตรง)',
+            id: 'rajavithi_10step_official_2027',
+            titleTH: 'การเจรจาขอรับบริจาคอวัยวะ 10 สเต็ป (กรณีศึกษา รพ.ราชวิถี)',
+            subtitleTH: 'เคสผู้ป่วยอุบัติเหตุทางศีรษะรุนแรง (Severe TBI) ยืนยันภาวะสมองตายสมบูรณ์ในหอผู้ป่วยวิกฤต (ICU)',
+            relativeName: 'คุณแพรว (ภรรยาผู้ป่วย)',
             icuBrief: {
-                patient: 'ชายไทย อายุ 52 ปี • อุบัติเหตุทางศีรษะรุนแรง (Severe TBI / Brain Hemorrhage)',
-                vitals: 'BP 110/68 mmHg • HR 86 /min • SpO₂ 99% (On Ventilator & Vasopressor low dose)',
-                brainDeath: 'คณะแพทย์ 3 ท่านตรวจยืนยันภาวะสมองตายครบ 2 ครั้งห่างกัน ≥ 6 ชั่วโมง ตามประกาศแพทยสภาแล้ว',
-                setting: 'ห้องให้คำปรึกษาที่เป็นส่วนตัว เงียบสงบ หน้าหอผู้ป่วยวิกฤตศัลยกรรม (SICU) โรงพยาบาลราชวิถี'
+                patient: 'นายธนากร (อายุ 38 ปี) อุบัติเหตุจราจร ได้รับบาดเจ็บทางศีรษะรุนแรง (Severe TBI) เข้ารักษาใน ICU ศัลยกรรมประสาทมาแล้ว 3 วัน',
+                vitals: 'GCS E1VTM1 (3) • BP 108/68 mmHg (on Norepinephrine) • HR 84 bpm • SpO2 99% (Ventilator)',
+                brainDeath: 'คณะแพทย์ 3 ท่านตรวจยืนยันภาวะสมองตายครบ 2 ครั้ง ห่างกัน 6 ชั่วโมง พร้อมผล Apnea Test ยืนยันก้านสมองหยุดทำงานถาวรแล้ว',
+                setting: 'ห้องรับรองญาติที่เป็นส่วนตัว เงียบสงบ จัดเตรียมน้ำดื่ม กระดาษทิชชู และมีทีมพยาบาลผู้ประสานงานรับบริจาคอวัยวะ (TC) ร่วมดูแลอย่างใกล้ชิด'
             }
         };
 
         const EMOTIONS = {
-            SHOCK:    { id: 'SHOCK',    labelTH: 'ช็อก / ตกใจ',    color: '#fb7185' },
-            CONFUSED: { id: 'CONFUSED', labelTH: 'สับสน / สงสัย',  color: '#38bdf8' },
-            SAD:      { id: 'SAD',      labelTH: 'โศกเศร้า',       color: '#c084fc' },
-            ANGRY:    { id: 'ANGRY',    labelTH: 'ตึงเครียด',      color: '#fb923c' },
-            HESITANT: { id: 'HESITANT', labelTH: 'ลังเล / ครุ่นคิด', color: '#fbbf24' },
-            CALM:     { id: 'CALM',     labelTH: 'สงบ / วางใจ',    color: '#34d399' }
+            SHOCK:    { labelTH: 'ช็อก / ตกใจ',        holoText: 'ช็อก • ยังทำใจไม่ได้',     color: '#38bdf8', rgb: [56, 189, 248],  bpm: 102 },
+            CONFUSED: { labelTH: 'สับสน / ไม่เข้าใจ',   holoText: 'สับสน • หัวใจยังเต้น',     color: '#a78bfa', rgb: [167, 139, 250], bpm: 92 },
+            SAD:      { labelTH: 'โศกเศร้า / เสียใจ',   holoText: 'โศกเศร้า • สูญเสีย',       color: '#60a5fa', rgb: [96, 165, 250],  bpm: 74 },
+            ANGRY:    { labelTH: 'กังวล / ไม่ไว้วางใจ', holoText: 'กังวล • ต้องการความจริงใจ', color: '#fb7185', rgb: [251, 113, 133], bpm: 112 },
+            HESITANT: { labelTH: 'ลังเล / ครุ่นคิด',    holoText: 'ลังเล • ขอคิดทบทวน',       color: '#fbbf24', rgb: [251, 191, 36],  bpm: 80 },
+            CALM:     { labelTH: 'สงบ / เปิดใจรับฟัง',  holoText: 'สงบ • เข้าใจและวางใจ',     color: '#34d399', rgb: [52, 211, 153],  bpm: 66 }
         };
-
-        const RADAR_AXES = [
-            { key: 'setting', labelTH: 'ห้องรับรอง & สัมพันธภาพ', shortTH: 'สัมพันธภาพ' },
-            { key: 'empathy', labelTH: 'รับรู้อารมณ์ & ความเงียบ', shortTH: 'อารมณ์ร่วม' },
-            { key: 'clarity', labelTH: 'ความชัดภาวะสมองตาย', shortTH: 'สมองตาย' },
-            { key: 'trust',   labelTH: 'ความโปร่งใส ODC & ศาสนา', shortTH: 'ความโปร่งใส' },
-            { key: 'dignity', labelTH: 'เกียรติร่าง & อิสระตัดสินใจ', shortTH: 'ไม่เร่งรัด' }
-        ];
-
-        const SELF_EFFICACY_ITEMS = [
-            { key: 'e1', labelTH: '1. มั่นใจในการอธิบายภาวะสมองตายและเครื่องช่วยหายใจอย่างอ่อนโยน' },
-            { key: 'e2', labelTH: '2. มั่นใจในการดูแลจิตใจญาติและตอบข้อกังวลเรื่องความเชื่อ/ODC' },
-            { key: 'e3', labelTH: '3. มั่นใจในการเปิดพื้นที่ให้ครอบครัวตัดสินใจเองโดยไม่กดดัน' }
-        ];
-
-        const TRIGGER_WORDS = ['ถอดเครื่อง', 'ศพ', 'รีบเซ็น', 'บังคับ', 'อย่าเรื่องมาก', 'ไม่ช่วยก็ตาย', 'เสียเปล่า', 'ตัดอวัยวะ'];
 
         const TEN_STEPS = [
             {
-                step: 1, chapter: 'บทที่ 1: จุดเริ่มต้นของความหวังสุดท้าย',
-                titleTH: 'เชิญเข้าห้องส่วนตัว & สร้างสัมพันธภาพ',
-                goalTH: 'แนะนำตัวด้วยความสุภาพ เชิญนั่งในพื้นที่ส่วนตัว และแสดงความเสียใจอย่างจริงใจ',
-                cueTH: 'คุณแพรวเดินเข้ามาในห้องรับรอง มือสั่น แววตาตื่นตระหนก',
+                step: 1,
+                chapter: 'บทที่ 1: เตรียมพื้นที่และรับมืออารมณ์',
+                titleTH: 'สร้างสัมพันธภาพและแสดงความเสียใจอย่างจริงใจ',
+                goalTH: 'แนะนำตัวด้วยความสุภาพ นั่งระดับเดียวกับญาติ และแสดงความเห็นอกเห็นใจต่อความสูญเสีย',
+                cueTH: 'คุณแพรวนั่งกุมมือแน่น ดวงตาแดงก่ำ ยังตกใจหลังทราบข่าวจากแพทย์',
                 emotion: 'SHOCK',
-                relativeLineTH: 'สวัสดีค่ะคุณพยาบาล... เมื่อกี้คุณหมอเพิ่งแจ้งอาการคุณพ่อ หนูยังมือสั่นทำอะไรไม่ถูกเลยค่ะ',
-                hintTH: 'แนะนำตัว แจ้งบทบาททีมดูแล เชิญคุณแพรวนั่งพักให้สบาย และกล่าวแสดงความเสียใจอย่างอบอุ่นค่ะ',
-                keywords: ['เสียใจ', 'เชิญนั่ง', 'สวัสดี', 'ดูแล', 'เต็มที่', 'พยาบาล', 'ทีม', 'อยู่ตรงนี้'],
+                relativeLineTH: 'คุณพยาบาลคะ... เมื่อกี้คุณหมอเพิ่งบอกว่าพี่กรสมองตายแล้ว มันหมายความว่ายังไงคะ พี่เขายังตัวอุ่นอยู่เลยนะคะ...',
+                hintTH: 'เริ่มต้นด้วยการแสดงความเสียใจอย่างจริงใจ อยู่เคียงข้าง และเปิดพื้นที่ให้ญาติได้ระบายความรู้สึกก่อนอธิบายเรื่องอื่นค่ะ',
+                keywords: ['เสียใจ', 'เห็นใจ', 'เข้าใจ', 'เต็มที่', 'เคียงข้าง', 'กำลังใจ', 'รับฟัง', 'ช็อก'],
                 quickReplies: [
-                    'เชิญนั่งพักตรงนี้ก่อนนะคะคุณแพรว ดิฉันเป็นพยาบาลผู้ประสานงาน ขอแสดงความเสียใจอย่างสุดซึ้งกับการสูญเสียคุณพ่อด้วยนะคะ',
-                    'ทีมแพทย์และพยาบาลดูแลคุณพ่ออย่างสุดความสามารถแล้วค่ะ ตอนนี้เราอยู่ในห้องส่วนตัว ค่อยๆ หายใจลึกๆ นะคะ'
+                    'หมอและทีมพยาบาลเสียใจอย่างสุดซึ้งกับการสูญเสียครั้งนี้ค่ะ เราดูแลคุณธนากรอย่างเต็มที่ที่สุดแล้ว และอยากอยู่เคียงข้างคุณแพรวในช่วงเวลาที่ยากลำบากนี้นะคะ',
+                    'เข้าใจเลยค่ะว่าเป็นเรื่องที่กะทันหันและทำใจยากมาก ให้เวลาคุณแพรวค่อยๆ หายใจลึกๆ นะคะ ทีมพยาบาลอยู่ตรงนี้พร้อมรับฟังและตอบทุกข้อสงสัยค่ะ'
                 ]
             },
             {
-                step: 2, chapter: 'บทที่ 1: จุดเริ่มต้นของความหวังสุดท้าย',
-                titleTH: 'ประเมินการรับรู้และรับฟังความรู้สึกของญาติ',
-                goalTH: 'ถามความเข้าใจของญาติต่ออาการปัจจุบัน และรับฟังความโศกเศร้าโดยไม่ขัดจังหวะ',
-                cueTH: 'คุณแพรวกลั้นน้ำตา พยายามเรียบเรียงสิ่งที่ได้ยินจากแพทย์',
+                step: 2,
+                chapter: 'บทที่ 1: เตรียมพื้นที่และรับมืออารมณ์',
+                titleTH: 'ประเมินความเข้าใจและรับฟังความรู้สึกของญาติ',
+                goalTH: 'ถามความเข้าใจของญาติอย่างอ่อนโยนและเว้นจังหวะรับฟังโดยไม่ขัดจังหวะ',
+                cueTH: 'คุณแพรวร้องไห้สะอื้นเบาๆ มองไปทางประตูห้อง ICU ด้วยความสับสน',
                 emotion: 'SAD',
-                relativeLineTH: 'คุณหมอบอกว่าสมองคุณพ่อไม่ทำงานแล้ว... แต่มันกะทันหันเกินไป เมื่อวานพ่อยังคุยกับหนูอยู่เลยค่ะ',
-                hintTH: 'สะท้อนความรู้สึกสูญเสียอย่างอ่อนโยน ยอมรับว่าเหตุการณ์เกิดขึ้นกะทันหันมากและเปิดให้คุณแพรวระบายได้ค่ะ',
-                keywords: ['เข้าใจ', 'กะทันหัน', 'ทำใจยาก', 'เสียใจ', 'รัก', 'ร้องไห้', 'ฟัง', 'หนักหนา'],
+                relativeLineTH: 'เมื่อวานพี่กรยังคุยกับลูกก่อนออกไปทำงานอยู่เลยค่ะ แพรวไม่รู้จะบอกลูกยังไงดี... พี่เขาจะไม่มีวันตื่นขึ้นมาอีกแล้วจริงๆ เหรอคะ',
+                hintTH: 'สะท้อนความรู้สึกโศกเศร้าของภรรยาและครอบครัว ยอมรับความเจ็บปวด และแนะนำให้กดปุ่ม "เงียบ 2.5s" เพื่อเว้นความเงียบเยียวยาค่ะ',
+                keywords: ['เข้าใจ', 'ยาก', 'ครอบครัว', 'ลูก', 'เวลา', 'เสียใจ', 'กอด', 'ค่อยๆ', 'อยู่ตรงนี้'],
                 quickReplies: [
-                    'เข้าใจเลยค่ะว่าเหตุการณ์เกิดขึ้นกะทันหันมากจนทำใจได้ยาก คุณแพรวร้องไห้ออกมาได้เลยนะคะ ดิฉันนั่งอยู่เป็นเพื่อนตรงนี้ค่ะ',
-                    'สัมผัสได้ถึงความรักที่คุณแพรวมีให้คุณพ่อค่ะ ช่วงเวลานี้หนักหนามากจริงๆ ไม่ต้องฝืนกลั้นนะคะ'
+                    'เข้าใจความเจ็บปวดของคุณแพรวและครอบครัวเลยค่ะ การต้องรับข่าวแบบนี้มันหนักหนามากจริงๆ ค่อยๆ ใช้เวลาตรงนี้ได้เลยนะคะ ไม่ต้องรีบค่ะ',
+                    'ทีมเราเห็นความรักความห่วงใยที่คุณแพรวมีให้คุณธนากรตลอดสามวันที่ผ่านมาค่ะ หากต้องการให้ช่วยดูแลเรื่องการสื่อสารกับครอบครัว ทีมพร้อมช่วยเสมอนะคะ'
                 ]
             },
             {
-                step: 3, chapter: 'บทที่ 1: จุดเริ่มต้นของความหวังสุดท้าย',
-                titleTH: 'อธิบายภาวะสมองตาย & เครื่องช่วยหายใจ (Decoupling)',
-                goalTH: 'คลายความสับสนเรื่องหน้าอกขยับ/ตัวอุ่น และยืนยันการตรวจโดยแพทย์ 3 ท่านครบ 2 ครั้ง',
-                cueTH: 'คุณแพรวมองออกไปทางห้อง ICU ด้วยแววตาสับสนและยังมีความหวังเล็กๆ',
+                step: 3,
+                chapter: 'บทที่ 1: เตรียมพื้นที่และรับมืออารมณ์',
+                titleTH: 'อธิบายความหมายของภาวะสมองตายอย่างชัดเจนและอ่อนโยน',
+                goalTH: 'อธิบายว่าก้านสมองหยุดทำงานถาวรตามเกณฑ์แพทยสภา และเครื่องช่วยหายใจเพียงพยุงให้หัวใจเต้นชั่วคราว',
+                cueTH: 'คุณแพรวขมวดคิ้ว สงสัยว่าเหตุใดหน้าจอมอนิเตอร์ยังมีคลื่นหัวใจและตัวผู้ป่วยยังอุ่น',
                 emotion: 'CONFUSED',
-                relativeLineTH: 'แต่เมื่อกี้หนูจับมือพ่อ ตัวพ่อยังอุ่น หน้าอกก็ยังขยับหายใจอยู่เลยนะคะ แบบนี้พ่อยังไม่เสียจริงๆ ใช่ไหมคะ?',
-                hintTH: 'อธิบายอย่างนุ่มนวลว่าหน้าอกขยับเกิดจากเครื่องช่วยหายใจเป่าลม แต่ก้านสมองหยุดทำงานถาวรซึ่งแพทย์ 3 ท่านตรวจยืนยันครบ 2 ครั้งห่าง 6 ชม. แล้วค่ะ',
-                keywords: ['เครื่องช่วยหายใจ', 'เป่าลม', 'ก้านสมอง', 'ถาวร', 'แพทย์ 3 ท่าน', '2 ครั้ง', '6 ชั่วโมง', 'สมองตาย'],
+                relativeLineTH: 'แต่ตอนเข้าไปเยี่ยม แพรวเห็นหน้าอกพี่เขายังขยับ หัวใจบนจอก็ยังเต้นอยู่นี่คะ แบบนี้เรียกว่าเสียชีวิตแล้วจริงๆ เหรอคะ',
+                hintTH: 'อธิบายชัดเจนแต่สุภาพว่าคณะแพทย์ 3 ท่านตรวจยืนยัน 2 ครั้งห่างกัน 6 ชั่วโมงแล้ว เครื่องช่วยหายใจและยาช่วยพยุงหัวใจชั่วคราว แต่สมองไม่สามารถกลับมาทำงานได้อีก',
+                keywords: ['ก้านสมอง', 'ถาวร', 'เครื่องช่วยหายใจ', 'หัวใจ', 'ตรวจ', '2 ครั้ง', 'แพทย์', 'แพทยสภา', 'ฟื้น'],
                 quickReplies: [
-                    'เข้าใจเลยค่ะว่าเห็นตัวคุณพ่อยังอุ่นและหน้าอกขยับแล้วทำใจเชื่อยากมาก หน้าอกที่ขยับเกิดจากเครื่องช่วยหายใจที่เป่าลมแทน ส่วนก้านสมองหยุดทำงานถาวรแล้วค่ะ',
-                    'คณะแพทย์ผู้เชี่ยวชาญ 3 ท่านได้ตรวจยืนยันตามเกณฑ์แพทยสภาครบ 2 ครั้ง ห่างกัน 6 ชั่วโมงแล้วค่ะ ในทางการแพทย์ถือว่าคุณพ่อจากไปอย่างสงบแล้ว'
+                    'เข้าใจความสับสนของคุณแพรวค่ะ ที่เห็นหน้าอกขยับและหัวใจเต้นเกิดจากเครื่องช่วยหายใจและยากระตุ้นช่วยพยุงไว้ชั่วคราว แต่ผลการตรวจยืนยันโดยคณะแพทย์ 3 ท่านครบ 2 ครั้งพบว่าก้านสมองหยุดทำงานถาวรแล้ว ท่านไม่สามารถฟื้นกลับมาได้อีกค่ะ',
+                    'ตามเกณฑ์แพทยสภา ภาวะสมองตายถือเป็นการเสียชีวิตทางการแพทย์และกฎหมายแล้วค่ะ เครื่องช่วยหายใจเพียงส่งออกซิเจนให้ร่างกายชั่วคราวเท่านั้นค่ะ'
                 ]
             },
             {
-                step: 4, chapter: 'บทที่ 2: ดูแลคนที่ยังอยู่',
-                titleTH: 'พื้นที่ปลอดภัย & ความเงียบเยียวยา (2.5 วินาที)',
-                goalTH: 'ให้เวลาครอบครัวตั้งสติ ใช้ความเงียบเยียวยา 2.5 วินาที และดูแลสภาพจิตใจคนที่ยังอยู่',
-                cueTH: 'คุณแพรวซบหน้าร้องไห้เงียบๆ ต้องใช้เวลาตั้งหลักทางอารมณ์',
+                step: 4,
+                chapter: 'บทที่ 2: แยกจังหวะและเปิดประเด็นอย่างให้เกียรติ',
+                titleTH: 'ใช้หลัก Decoupling แยกการแจ้งข่าวออกจากบทบาทผู้ประสานงาน',
+                goalTH: 'มั่นใจว่าญาติเข้าใจและยอมรับภาวะสมองตายแล้ว ก่อนขออนุญาตพูดคุยเรื่องทางเลือกแห่งการให้',
+                cueTH: 'คุณแพรวเริ่มเช็ดน้ำตา พยักหน้ารับทราบความจริงอย่างช้าๆ',
                 emotion: 'SAD',
-                relativeLineTH: 'ฮือ... หนูไม่เคยคิดเลยว่าจะต้องมาเสียคุณพ่อวันนี้... พ่อเป็นคนใจดี ชอบช่วยเหลือคนอื่นมาตลอดชีวิตเลยค่ะ',
-                hintTH: 'แนะนำกดปุ่ม "🤫 เงียบ 2.5s" แล้วเชิดชูคุณงามความดีของคุณพ่อก่อนค่อยๆ ถามความพร้อมค่ะ',
-                keywords: ['ใจดี', 'ช่วยเหลือ', 'ภูมิใจ', 'เวลา', 'อยู่เคียงข้าง', 'ไม่เร่ง', 'พัก', 'คุณความดี'],
+                relativeLineTH: 'แพรวพอเข้าใจแล้วค่ะ... แปลว่าตอนนี้พี่กรไปสบายแล้วจริงๆ แล้วหลังจากนี้แพรวต้องทำยังไงต่อบ้างคะ',
+                hintTH: 'ตรวจสอบความพร้อมของญาติก่อน และขออนุญาตอย่างสุภาพเพื่อแบ่งปันทางเลือกอันทรงคุณค่าในวาระสุดท้าย (ไม่เร่งรัด)',
+                keywords: ['ขออนุญาต', 'พร้อม', 'ทางเลือก', 'วาระสุดท้าย', 'ปรึกษา', 'เข้าใจ', 'ประสานงาน', 'เวลา'],
                 quickReplies: [
-                    'คุณพ่อเป็นท่านที่เปี่ยมด้วยเมตตาจริงๆ ค่ะ คุณแพรวคงภูมิใจในตัวคุณพ่อมากเลยนะคะ ให้เวลาคุณแพรวพักใจสักครู่ตรงนี้ได้เลยค่ะ',
-                    'ดิฉันอยู่เคียงข้างคุณแพรวตรงนี้นะคะ ไม่ต้องรีบเลยค่ะ ค่อยๆ ตั้งสติก่อนนะคะ'
+                    'ขอบคุณที่คุณแพรวเข้มแข็งมากนะคะ หากคุณแพรวพอมีจังหวะพร้อมฟัง ดิฉันในฐานะพยาบาลผู้ประสานงานขออนุญาตแนะนำอีกหนึ่งทางเลือกอันทรงคุณค่าในวาระสุดท้ายของคุณธนากรจะได้ไหมคะ',
+                    'หลังจากนี้ทีมพยาบาลจะดูแลทุกขั้นตอนให้เรียบร้อยค่ะ ก่อนอื่นขออนุญาตสอบถามว่าคุณแพรวพอสะดวกคุยเรื่องแนวทางการทำบุญกุศลครั้งสุดท้ายให้คุณธนากรสักครู่ไหมคะ'
                 ]
             },
             {
-                step: 5, chapter: 'บทที่ 2: ดูแลคนที่ยังอยู่',
-                titleTH: 'เปิดทางเลือกแห่งการให้ (บริจาคอวัยวะ) อย่างอ่อนโยน',
-                goalTH: 'เมื่อญาติรับรู้ภาวะสมองตายแล้ว ค่อยๆ เสนอทางเลือกการบริจาคอวัยวะเป็นทานบารมีครั้งสุดท้ายโดยไม่กดดัน',
-                cueTH: 'คุณแพรวเงยหน้าเช็ดน้ำตา เริ่มตั้งสติรับฟังได้มากขึ้น',
+                step: 5,
+                chapter: 'บทที่ 2: แยกจังหวะและเปิดประเด็นอย่างให้เกียรติ',
+                titleTH: 'เสนอทางเลือกการบริจาคอวัยวะด้วยความอ่อนโยน (ไม่กดดัน)',
+                goalTH: 'เชื่อมโยงคุณงามความดีของผู้ป่วย สอบถามเจตนารมณ์เดิม และเสนอการบริจาคอวัยวะเพื่อต่อชีวิตผู้ป่วยวิกฤต',
+                cueTH: 'คุณแพรวเงยหน้าขึ้นฟังด้วยความตั้งใจ มีแววตาลังเลเล็กน้อย',
                 emotion: 'HESITANT',
-                relativeLineTH: 'ขอบคุณคุณพยาบาลนะคะที่เข้าใจ... แล้วตอนนี้หนูกับครอบครัวต้องทำอย่างไรต่อดีคะ?',
-                hintTH: 'เชื่อมโยงความใจดีของคุณพ่อเพื่อเสนอทางเลือกการบริจาคอวัยวะช่วยต่อชีวิตผู้ป่วยวิกฤตอีกหลายชีวิต พร้อมถามว่าเคยคุยกันไว้หรือไม่ค่ะ',
-                keywords: ['บริจาคอวัยวะ', 'ทางเลือก', 'ต่อชีวิต', 'บุญ', 'ทานบารมี', 'ความตั้งใจ', 'พิจารณา', 'ผู้ป่วย'],
+                relativeLineTH: 'ทางเลือกเรื่องอะไรเหรอคะ... พี่กรเป็นคนชอบทำบุญ ช่วยเหลือคนอื่นมาตลอด แต่แพรวไม่แน่ใจว่าพี่เขาเคยคิดเรื่องนี้ไหม',
+                hintTH: 'กล่าวถึงการบริจาคอวัยวะในฐานะมหาทานอันยิ่งใหญ่ที่ช่วยต่อชีวิตผู้ป่วยที่รอคอยได้หลายชีวิต โดยย้ำว่าขึ้นอยู่กับการตัดสินใจของครอบครัว',
+                keywords: ['บริจาคอวัยวะ', 'ต่อชีวิต', 'บุญ', 'กุศล', 'ผู้ป่วย', 'เจตนารมณ์', 'ให้', 'ช่วยเหลือ'],
                 quickReplies: [
-                    'จากที่คุณแพรวเล่าว่าคุณพ่อชอบช่วยเหลือผู้อื่น มีอีกหนึ่งทางเลือกที่เป็นบุญกุศลครั้งสุดท้าย คือการบริจาคอวัยวะเพื่อต่อชีวิตผู้ป่วยวิกฤตอีกหลายชีวิต ไม่ทราบว่าคุณพ่อเคยพูดถึงเรื่องนี้ไว้บ้างไหมคะ',
-                    'นอกจากขั้นตอนดูแลหลังการเสียชีวิตตามปกติ ทางศูนย์ฯ ขอเสนอทางเลือกเรื่องการบริจาคอวัยวะให้ครอบครัวพิจารณาโดยไม่กดดันเลยค่ะ'
+                    'จากที่คุณแพรวเล่าว่าคุณธนากรเป็นคนใจบุญชอบช่วยเหลือผู้อื่น ทางเลือกนี้คือการบริจาคอวัยวะเพื่อต่อชีวิตให้ผู้ป่วยวิกฤตอีกหลายชีวิตค่ะ ไม่ทราบว่าท่านเคยพูดคุยหรือแสดงความจำนงเรื่องนี้ไว้บ้างไหมคะ',
+                    'การบริจาคอวัยวะถือเป็นมหาทานครั้งสุดท้ายที่ยิ่งใหญ่ ช่วยให้ผู้ป่วยที่รอความหวังได้กลับมามีชีวิตใหม่กับครอบครัวอีกครั้งค่ะ โดยทุกอย่างขึ้นอยู่กับการพิจารณาของคุณแพรวและครอบครัวนะคะ'
                 ]
             },
             {
-                step: 6, chapter: 'บทที่ 2: ดูแลคนที่ยังอยู่',
-                titleTH: 'คลายกังวลด้านความเชื่อและพิธีทางศาสนา',
-                goalTH: 'รับฟังและเคารพความเชื่อของครอบครัว อธิบายมุมมองบุญกุศลและการทำพิธีศาสนาได้ตามปกติ',
-                cueTH: 'คุณแพรวขมวดคิ้ว สีหน้ากังวลเมื่อนึกถึงคำผู้ใหญ่ที่บ้าน',
-                emotion: 'HESITANT',
-                relativeLineTH: 'หนูก็อยากให้พ่อได้ทำบุญใหญ่นะคะ แต่ญาติผู้ใหญ่ที่บ้านกลัวว่าชาติหน้าพ่อจะอวัยวะไม่ครบ 32 และกลัวทำพิธีศาสนาไม่ทันค่ะ',
-                hintTH: 'แสดงความเคารพในความเชื่อ อธิบายว่าการช่วยชีวิตคือทานบารมีอันยิ่งใหญ่ และสามารถประกอบพิธีทางศาสนาได้ตามประเพณีค่ะ',
-                keywords: ['เคารพ', 'ความเชื่อ', 'ศาสนา', 'ทานบารมี', 'บุญ', 'พิธี', 'ประเพณี', 'ปกติ'],
-                quickReplies: [
-                    'เราเคารพความเชื่อของครอบครัวเสมอค่ะ ในทางศาสนาการมอบอวัยวะเพื่อต่อชีวิตผู้อื่นถือเป็นทานบารมีอันยิ่งใหญ่ และครอบครัวสามารถประกอบพิธีทางศาสนาได้ตามปกติทุกประการค่ะ',
-                    'เข้าใจความห่วงใยของผู้ใหญ่เลยค่ะ ทางทีมแพทย์จะประสานเวลาให้เหมาะสมที่สุดเพื่อให้ครอบครัวประกอบพิธีรดน้ำและบำเพ็ญกุศลได้ตามประเพณีค่ะ'
-                ]
-            },
-            {
-                step: 7, chapter: 'บทที่ 3: เพื่อคนที่เดินต่อไป',
-                titleTH: 'ยืนยันการดูแลและตกแต่งร่างอย่างสมเกียรติ',
-                goalTH: 'สร้างความมั่นใจว่าทีมศัลยแพทย์ผ่าตัดด้วยความเคารพสูงสุดและตกแต่งร่างให้เรียบร้อยสมบูรณ์',
-                cueTH: 'คุณแพรวถามด้วยน้ำเสียงกังวลเรื่องสภาพร่างกายของคุณพ่อ',
-                emotion: 'CONFUSED',
-                relativeLineTH: 'แล้วร่างกายของคุณพ่อหลังผ่าตัดจะเป็นอย่างไรคะ? หนูไม่อยากเห็นพ่อเจ็บหรือร่างไม่เรียบร้อยเลยค่ะ',
-                hintTH: 'ยืนยันว่าคุณพ่อไม่รู้สึกเจ็บปวดแล้ว ทีมศัลยแพทย์จะดูแลเหมือนการผ่าตัดจริงและตกแต่งเย็บปิดแผลอย่างประณีตสมเกียรติที่สุดค่ะ',
-                keywords: ['ตกแต่งร่าง', 'เรียบร้อย', 'สมเกียรติ', 'ประณีต', 'ศัลยแพทย์', 'เคารพ', 'ไม่เจ็บ', 'สมบูรณ์'],
-                quickReplies: [
-                    'ขอให้คุณแพรววางใจได้เลยค่ะ คุณพ่อจะไม่รู้สึกเจ็บปวดใดๆ แล้ว ทีมศัลยแพทย์จะดูแลร่างกายของท่านด้วยความเคารพสูงสุดและตกแต่งเย็บปิดแผลอย่างประณีตเรียบร้อยเหมือนเดิมค่ะ',
-                    'เราดูแลร่างกายผู้บริจาคอย่างสมเกียรติที่สุดค่ะ สามารถสวมเสื้อผ้าและทำพิธีรดน้ำได้ตามปกติโดยไม่เห็นความผิดปกติค่ะ'
-                ]
-            },
-            {
-                step: 8, chapter: 'บทที่ 3: เพื่อคนที่เดินต่อไป',
-                titleTH: 'ชี้แจงความโปร่งใส ODC สภากาชาดไทย & ไม่มีค่าใช้จ่าย',
-                goalTH: 'อธิบายระบบจัดสรรอวัยวะของศูนย์รับบริจาคอวัยวะสภากาชาดไทย (ODC) และยืนยันไม่มีค่าใช้จ่ายเพิ่ม',
-                cueTH: 'คุณแพรวอยากมั่นใจว่าอวัยวะจะถึงมือผู้ป่วยที่เดือดร้อนจริงและไม่มีภาระค่าใช้จ่าย',
+                step: 6,
+                chapter: 'บทที่ 2: แยกจังหวะและเปิดประเด็นอย่างให้เกียรติ',
+                titleTH: 'คลายความกังวลเรื่องรูปลักษณ์ร่างกายและพิธีกรรมทางศาสนา',
+                goalTH: 'ยืนยันว่าทีมศัลยแพทย์ดูแลตกแต่งร่างอย่างประณีต เย็บปิดแผลเรียบร้อย และประกอบพิธีศาสนาได้ตามปกติ',
+                cueTH: 'คุณแพรวแสดงสีหน้ากังวลใจ กลัวว่าร่างของสามีจะไม่สมบูรณ์หรือจัดงานศพไม่ได้',
                 emotion: 'ANGRY',
-                relativeLineTH: 'ขอถามตรงๆ นะคะ อวัยวะจะส่งไปให้คนมีเงินลัดคิวหรือเปล่า แล้วบ้านหนูต้องเสียค่าผ่าตัดเก็บอวัยวะเพิ่มไหมคะ?',
-                hintTH: 'ชี้แจงอย่างใจเย็นว่าจัดสรรผ่านระบบคอมพิวเตอร์กลาง ODC สภากาชาดไทยตามความเข้ากันได้ของเนื้อเยื่อ ไร้การซื้อขาย และครอบครัวไม่มีค่าใช้จ่ายเพิ่มเติมค่ะ',
-                keywords: ['สภากาชาด', 'ODC', 'คอมพิวเตอร์', 'เนื้อเยื่อ', 'โปร่งใส', 'ไม่ลัดคิว', 'ไม่มีค่าใช้จ่าย', 'ไม่เสียเงิน'],
+                relativeLineTH: 'แต่แพรวกลัวค่ะ... ถ้าบริจาคไปแล้ว ร่างพี่กรจะไม่สมบูรณ์หรือเปล่าคะ แผลจะน่ากลัวไหม แล้วเราจะจัดงานศพตามพิธีศาสนาได้เหมือนเดิมไหมคะ',
+                hintTH: 'ให้ความมั่นใจเรื่องการผ่าตัดมาตรฐาน การเย็บปิดและตกแต่งร่างอย่างสมเกียรติ สวมเสื้อผ้าและประกอบพิธีทางศาสนาได้ตามปกติทุกประการ',
+                keywords: ['ศัลยแพทย์', 'เรียบร้อย', 'ประณีต', 'ตกแต่ง', 'เคารพ', 'พิธี', 'ศาสนา', 'ปกติ', 'สมเกียรติ', 'แผล'],
                 quickReplies: [
-                    'ยินดีชี้แจงอย่างโปร่งใสเลยค่ะ การจัดสรรอวัยวะดำเนินการผ่านระบบคอมพิวเตอร์กลางของศูนย์รับบริจาคอวัยวะสภากาชาดไทย (ODC) ตามความเข้ากันได้ของเนื้อเยื่อ ไม่มีการซื้อขายหรือลัดคิวเด็ดขาดค่ะ',
-                    'และครอบครัวผู้บริจาคไม่มีค่าใช้จ่ายเพิ่มเติมในส่วนการเก็บอวัยวะเลยค่ะ สภากาชาดไทยจะดูแลและมอบพวงหรีดพร้อมเกียรติบัตรเชิดชูเกียรติให้คุณพ่อด้วยค่ะ'
+                    'คลายกังวลได้เลยค่ะ ทีมศัลยแพทย์จะดูแลร่างกายของคุณธนากรด้วยความเคารพสูงสุดเหมือนการผ่าตัดทั่วไป แผลจะถูกเย็บปิดและตกแต่งร่างอย่างประณีตสมเกียรติ สามารถแต่งกายและประกอบพิธีทางศาสนาได้ตามปกติทุกประการค่ะ',
+                    'เข้าใจความกังวลของคุณแพรวมากค่ะ ร่างกายภายนอกของท่านจะเรียบร้อยสมบูรณ์ ครอบครัวสามารถทำพิธีรดน้ำศพและบำเพ็ญกุศลตามศาสนาได้อย่างสง่างามเหมือนเดิมทุกอย่างค่ะ'
                 ]
             },
             {
-                step: 9, chapter: 'บทที่ 3: เพื่อคนที่เดินต่อไป',
-                titleTH: 'ดูแลความเห็นพ้องในครอบครัวโดยไม่กดดัน',
-                goalTH: 'ยืนยันว่าจะไม่ฝืนใจญาติสายตรง ย้ำการเคารพมติของทุกคนในครอบครัวเพื่อให้คนที่ยังอยู่สบายใจ',
-                cueTH: 'คุณแพรวเริ่มผ่อนคลายลง แต่ยังห่วงความรู้สึกของแม่และน้องที่รออยู่ด้านนอก',
+                step: 7,
+                chapter: 'บทที่ 3: ความโปร่งใส ขั้นตอน และเคารพการตัดสินใจ',
+                titleTH: 'ตอบข้อสงสัยเรื่องความเชื่อ ชาติหน้า และคุณค่าทางจิตใจ',
+                goalTH: 'รับฟังความเชื่อด้วยความเคารพ ไม่โต้แย้ง และสะท้อนมุมมองกุศลแห่งการให้ชีวิต',
+                cueTH: 'คุณแพรวนึกถึงความกังวลของผู้ใหญ่ในบ้านเรื่องความเชื่อชาติหน้า',
                 emotion: 'HESITANT',
-                relativeLineTH: 'ฟังแล้วหนูสบายใจขึ้นเยอะเลยค่ะ แต่ด้านนอกยังมีคุณแม่กับน้องชายรออยู่ หนูกลัวว่าถ้าตัดสินใจคนเดียวแล้วทุกคนจะไม่สบายใจค่ะ',
-                hintTH: 'สนับสนุนให้คุณแพรวได้ปรึกษาคุณแม่และน้องชาย ยืนยันว่าไม่บังคับและพร้อมช่วยตอบคำถามทุกคนในครอบครัวค่ะ',
-                keywords: ['ปรึกษา', 'คุณแม่', 'ครอบครัว', 'ไม่บังคับ', 'ไม่ฝืนใจ', 'สบายใจ', 'ยินดีตอบ', 'พร้อม'],
+                relativeLineTH: 'คุณแม่พี่กรท่านเป็นผู้ใหญ่ค่ะ แพรวกลัวท่านจะไม่สบายใจ กลัวว่าถ้าบริจาคอวัยวะแล้วชาติหน้าพี่กรจะเกิดมามีอวัยวะไม่ครบ...',
+                hintTH: 'เคารพความรู้สึกของคุณแม่และครอบครัว อธิบายอย่างอ่อนโยนถึงแนวคิดบุญกุศลแห่งทานบารมีตามหลักศาสนาที่หลายครอบครัวได้รับความอิ่มใจ',
+                keywords: ['เคารพ', 'ความเชื่อ', 'บุญ', 'กุศล', 'ทาน', 'ศาสนา', 'คุณแม่', 'สบายใจ', 'อิ่มใจ', 'เมตตา'],
                 quickReplies: [
-                    'ดีมากเลยค่ะ ความสบายใจของคุณแม่ น้องชาย และทุกคนในครอบครัวสำคัญที่สุด เราจะไม่ฝืนใจใครเด็ดขาดค่ะ หากอยากให้ดิฉันช่วยอธิบายให้คุณแม่ฟังด้วยก็ยินดีมากเลยนะคะ',
-                    'ขอให้คุณแพรวพูดคุยกับคุณแม่และน้องชายได้อย่างเต็มที่เลยค่ะ ไม่ว่าครอบครัวจะเห็นตรงกันแบบไหน ทีมแพทย์และพยาบาลพร้อมดูแลคุณพ่ออย่างเต็มที่เหมือนเดิมค่ะ'
+                    'เคารพความรู้สึกและความห่วงใยของคุณแม่มากค่ะ ในทางศาสนาหลายท่านมองว่าการบริจาคอวัยวะคือการบำเพ็ญทานบารมีอันยิ่งใหญ่ เป็นบุญกุศลติดตัวไปส่งผลให้ท่านไปสู่สุคติและมีชีวิตที่สมบูรณ์ยิ่งขึ้นค่ะ',
+                    'เข้าใจความกังวลของผู้ใหญ่ในครอบครัวเลยค่ะ เราไม่จำเป็นต้องรีบตัดสินใจตอนนี้ และยินดีช่วยพูดคุยอธิบายให้คุณแม่คลายความกังวลด้วยความเคารพนะคะ'
                 ]
             },
             {
-                step: 10, chapter: 'บทที่ 3: เพื่อคนที่เดินต่อไป',
-                titleTH: 'เปิดพื้นที่ให้ญาติตัดสินใจด้วยตนเองอย่างอิสระ',
-                goalTH: 'ปิดการสนทนาอย่างอบอุ่น ย้ำอิสรภาพในการตัดสินใจของครอบครัวโดยไม่เร่งรัด (ญาติจะตัดสินใจเอง 1 ใน 3 ทางเลือก)',
-                cueTH: 'ช่วงเวลาสำคัญที่สุด: คุณแพรวกำลังรวบรวมความรู้สึกเพื่อแจ้งการตัดสินใจของตนเองและครอบครัว',
-                emotion: 'CALM',
-                relativeLineTH: 'คุณพยาบาลคะ ตอนนี้หนูเข้าใจข้อมูลทั้งหมดแล้วค่ะ เหลือแค่การตัดสินใจครั้งสุดท้ายของหนูกับครอบครัวแล้ว...',
-                hintTH: 'ย้ำอย่างอบอุ่นว่าครอบครัวมีสิทธิ์ตัดสินใจได้อย่างอิสระ ไม่ว่าจะยินยอม ขอกลับไปปรึกษาก่อน หรือไม่ยินยอม ทีมเราจะเคารพและดูแลอย่างเต็มที่ที่สุดค่ะ',
-                keywords: ['เคารพการตัดสินใจ', 'อิสระ', 'ไม่เร่งรัด', 'ไม่กดดัน', 'ไม่ว่าจะตัดสินใจ', 'ดูแลเต็มที่', 'เวลา', 'ยินดี'],
+                step: 8,
+                chapter: 'บทที่ 3: ความโปร่งใส ขั้นตอน และเคารพการตัดสินใจ',
+                titleTH: 'ชี้แจงความโปร่งใสในการจัดสรรอวัยวะ (ODC) และค่าใช้จ่าย',
+                goalTH: 'ยืนยันว่าจัดสรรผ่านศูนย์รับบริจาคอวัยวะสภากาชาดไทย (ODC) อย่างยุติธรรม และครอบครัวไม่มีค่าใช้จ่ายเพิ่ม',
+                cueTH: 'คุณแพรวอยากมั่นใจว่าอวัยวะจะไปถึงผู้ป่วยที่จำเป็นจริงๆ และไม่เป็นภาระค่าใช้จ่ายของครอบครัว',
+                emotion: 'CONFUSED',
+                relativeLineTH: 'แล้วอวัยวะจะถูกส่งไปให้ใครคะ จะมั่นใจได้ยังไงว่าไม่ได้เอาไปซื้อขาย แล้วครอบครัวแพรวต้องเสียค่าผ่าตัดเพิ่มไหมคะ',
+                hintTH: 'ระบุชัดเจนว่าศูนย์รับบริจาคอวัยวะสภากาชาดไทย (ODC) เป็นผู้จัดสรรตามคิวและความเข้ากันได้ทางการแพทย์อย่างโปร่งใส ไม่มีซื้อขาย และไม่มีค่าใช้จ่ายเพิ่มเติม',
+                keywords: ['สภากาชาดไทย', 'ODC', 'โปร่งใส', 'ยุติธรรม', 'ไม่มีค่าใช้จ่าย', 'ไม่เสีย', 'ฟรี', 'คิว', 'ซื้อขาย'],
                 quickReplies: [
-                    'ไม่ว่าคุณแพรวและครอบครัวจะตัดสินใจยินยอมบริจาค ขอกลับไปปรึกษากันก่อน หรือไม่สะดวกบริจาค ทีมแพทย์และพยาบาลเคารพการตัดสินใจของครอบครัวอย่างเต็มที่ และจะดูแลคุณพ่อจนวาระสุดท้ายอย่างดีที่สุดค่ะ',
-                    'ขอให้เป็นการตัดสินใจที่ทำให้คุณแพรวและคุณแม่สบายใจที่สุดนะคะ เราไม่เร่งรัดเลยค่ะ พร้อมเมื่อไรสามารถแจ้งดิฉันได้ทันทีนะคะ'
+                    'มั่นใจได้ร้อยเปอร์เซ็นต์ค่ะ การจัดสรรอวัยวะทุกชิ้นดูแลโดยศูนย์รับบริจาคอวัยวะสภากาชาดไทย (ODC) ตามระบบคิวและความเข้ากันได้ทางการแพทย์อย่างโปร่งใส ไม่มีการซื้อขาย และครอบครัวไม่มีค่าใช้จ่ายเพิ่มเติมใดๆ ในกระบวนการบริจาคเลยค่ะ',
+                    'ทุกขั้นตอนอยู่ภายใต้กฎหมายและศูนย์รับบริจาคอวัยวะสภากาชาดไทยค่ะ ค่าใช้จ่ายในการตรวจและการจัดเก็บอวัยวะทั้งหมดทางศูนย์และโรงพยาบาลเป็นผู้ดูแลให้ทั้งหมดค่ะ'
+                ]
+            },
+            {
+                step: 9,
+                chapter: 'บทที่ 3: ความโปร่งใส ขั้นตอน และเคารพการตัดสินใจ',
+                titleTH: 'อธิบายขั้นตอนหลังการยินยอมและระยะเวลาอย่างตรงไปตรงมา',
+                goalTH: 'แจ้งระยะเวลาโดยประมาณ การดูแลร่าง การขอขมา และเกียรติบัตรเชิดชูเกียรติจากสภากาชาดไทย',
+                cueTH: 'คุณแพรวเริ่มมีสีหน้าสงบลงและสอบถามรายละเอียดขั้นตอนเพื่อวางแผนกับญาติ',
+                emotion: 'CALM',
+                relativeLineTH: 'ถ้าครอบครัวตกลง ขั้นตอนจะใช้เวลานานไหมคะ แพรวกับลูกจะมีโอกาสได้เข้าไปบอกลาพี่กรก่อนไหมคะ',
+                hintTH: 'อธิบายขั้นตอนอย่างชัดเจนว่าใช้เวลาประสานงานและผ่าตัดประมาณ 12–24 ชั่วโมง ครอบครัวสามารถเข้าเยี่ยมบอกลาได้เต็มที่ และจะได้รับพวงหรีดและเกียรติบัตรเชิดชูเกียรติจากสภากาชาดไทย',
+                keywords: ['บอกลา', 'เยี่ยม', 'เวลา', 'ชั่วโมง', 'ขั้นตอน', 'ประสาน', 'สภากาชาด', 'เกียรติบัตร', 'ดูแล', 'ส่งร่าง'],
+                quickReplies: [
+                    'คุณแพรว ลูก และครอบครัวสามารถเข้าไปบอกลาและอยู่กับคุณธนากรได้อย่างเต็มที่เลยค่ะ ขั้นตอนประสานงานและจัดเก็บใช้เวลาประมาณ 12 ถึง 24 ชั่วโมง จากนั้นทีมจะตกแต่งร่างอย่างสมเกียรติส่งมอบให้ครอบครัว พร้อมประกาศเกียรติคุณเชิดชูเกียรติจากสภากาชาดไทยค่ะ',
+                    'เราจะแจ้งความคืบหน้าให้ครอบครัวทราบทุกช่วงเวลาค่ะ ระหว่างรอทีมผ่าตัดครอบครัวเข้าอยู่ใกล้ชิดได้เสมอ และหากมีข้อจำกัดเรื่องฤกษ์พิธีกรรม ทีมจะช่วยประสานให้ราบรื่นที่สุดค่ะ'
+                ]
+            },
+            {
+                step: 10,
+                chapter: 'บทที่ 3: ความโปร่งใส ขั้นตอน และเคารพการตัดสินใจ',
+                titleTH: 'เปิดพื้นที่ให้ครอบครัวตัดสินใจเองอย่างอิสระและเคารพทุกคำตอบ',
+                goalTH: 'ให้เวลาครอบครัวปรึกษากันอย่างอิสระ ยืนยันเคารพไม่ว่าจะตัดสินใจยินยอมหรือปฏิเสธ',
+                cueTH: 'ถึงช่วงเวลาสำคัญ สเต็ปที่ 10 — คุณแพรวกำลังชั่งใจเพื่อตัดสินใจครั้งสุดท้ายด้วยตนเอง',
+                emotion: 'CALM',
+                relativeLineTH: 'ขอบคุณคุณพยาบาลมากนะคะที่อธิบายทุกอย่างชัดเจนและใจเย็นกับแพรวมาก ตอนนี้แพรวกำลังจะตัดสินใจแล้วค่ะ...',
+                hintTH: 'ย้ำอย่างอบอุ่นว่าไม่ว่าครอบครัวจะตัดสินใจอย่างไร (ยินยอม / ขอปรึกษาญาติก่อน / ไม่ยินยอม) ทีมแพทย์พยาบาลเคารพและพร้อมดูแลอย่างดีที่สุดเท่าเทียมกันค่ะ',
+                keywords: ['เคารพ', 'ตัดสินใจ', 'อิสระ', 'ไม่กดดัน', 'เวลา', 'ปรึกษา', 'ยินดี', 'ดูแล', 'เต็มที่', 'ไม่ว่า'],
+                quickReplies: [
+                    'ไม่ว่าคุณแพรวและครอบครัวจะตัดสินใจอย่างไร จะยินยอม ขอปรึกษาคุณแม่ก่อน หรือไม่สะดวกบริจาค ทีมแพทย์และพยาบาลเคารพการตัดสินใจของครอบครัวอย่างที่สุด และจะดูแลคุณธนากรจนวาระสุดท้ายอย่างดีที่สุดเท่าเทียมกันค่ะ',
+                    'ให้เวลาคุณแพรวและครอบครัวตัดสินใจอย่างสบายใจที่สุดนะคะ ไม่มีแรงกดดันใดๆ เลยค่ะ ทีมพยาบาลอยู่ใกล้ๆ พร้อมดูแลครอบครัวเสมอค่ะ'
                 ]
             }
         ];
@@ -573,488 +609,371 @@
         const DECISION_OUTCOMES = {
             CONSENT: {
                 code: 'CONSENT',
-                badgeTH: '✓ ญาติตัดสินใจ: ยินยอมบริจาคอวัยวะ',
+                badgeTH: '✓ ผลสเต็ปที่ 10: ครอบครัวยินยอมบริจาคอวัยวะด้วยความเต็มใจ',
                 emotion: 'CALM',
                 colorClass: 'bg-emerald-500/20 border-emerald-400/55 text-emerald-200',
-                speechTH: 'ขอบคุณคุณพยาบาลมากๆ นะคะที่ดูแลหัวใจพวกเราอย่างอ่อนโยนและอธิบายทุกอย่างชัดเจนโดยไม่กดดันเลย หนูกับครอบครัวปรึกษากันแล้ว ยินยอมบริจาคอวัยวะของคุณพ่อค่ะ อยากให้บุญกุศลครั้งนี้ช่วยต่อชีวิตคนอื่นต่อไปค่ะ'
+                speechTH: 'ขอบคุณคุณพยาบาลที่ให้เกียรติและไม่กดดันแพรวเลยค่ะ พี่กรเป็นคนใจดีชอบช่วยคนอื่น แพรวเชื่อว่าพี่เขาคงภูมิใจ แพรวและครอบครัวยินยอมบริจาคอวัยวะของพี่กรเพื่อต่อชีวิตให้คนอื่นค่ะ'
             },
             THINKING: {
                 code: 'THINKING',
-                badgeTH: '⏳ ญาติตัดสินใจ: ขอกลับไปคิด / ปรึกษาครอบครัวก่อน',
+                badgeTH: '⏳ ผลสเต็ปที่ 10: ครอบครัวเปิดใจรับฟังและขอปรึกษาญาติผู้ใหญ่ก่อน',
                 emotion: 'HESITANT',
-                colorClass: 'bg-amber-400/20 border-amber-400/55 text-amber-200',
-                speechTH: 'ขอบคุณที่ให้ข้อมูลและไม่เร่งรัดนะคะ หนูพอเข้าใจมากขึ้นแล้ว แต่เรื่องนี้ใหญ่มากจริงๆ หนูขออนุญาตออกไปคุยกับคุณแม่และญาติผู้ใหญ่ให้ครบทุกคนก่อน แล้วจะกลับมาแจ้งคำตอบอีกทีนะคะ'
+                colorClass: 'bg-amber-500/20 border-amber-400/55 text-amber-200',
+                speechTH: 'ขอบคุณคุณพยาบาลที่อธิบายอย่างละเอียดและเข้าใจความรู้สึกของแพรวนะคะ เรื่องนี้เป็นเรื่องใหญ่ของบ้าน แพรวขอเวลาไปคุยกับคุณแม่และพี่น้องของพี่กรก่อน แล้วจะรีบแจ้งคุณพยาบาลนะคะ'
             },
             DECLINE: {
                 code: 'DECLINE',
-                badgeTH: '✕ ญาติตัดสินใจ: ไม่ยินยอมบริจาคอวัยวะ',
+                badgeTH: '○ ผลสเต็ปที่ 10: ครอบครัวตัดสินใจยังไม่ยินยอมบริจาคอวัยวะ',
                 emotion: 'SAD',
                 colorClass: 'bg-rose-500/20 border-rose-400/55 text-rose-200',
-                speechTH: 'หนูขอโทษด้วยนะคะ แต่ตอนนี้ใจหนูกับคุณแม่ยังรับไม่ไหวจริงๆ และยังมีหลายเรื่องที่กังวลอยู่ ครอบครัวขอตัดสินใจไม่บริจาคอวัยวะนะคะ ขอบคุณคุณพยาบาลที่ดูแลคุณพ่อมาตลอดค่ะ'
+                speechTH: 'ขอบคุณที่คุณพยาบาลมาอธิบายนะคะ แต่ตอนนี้ใจแพรวยังรับไม่ไหวจริงๆ และยังรู้สึกกังวลอยู่หลายอย่าง แพรวขออนุญาตยังไม่บริจาคนะคะ อยากพาร่างพี่กรกลับไปทำพิธีเลยค่ะ'
             }
         };
 
-        // ============================================================================
-        // 3. REALISTIC VOLUMETRIC 3D HEART HOLOGRAM ⇄ EMOTION TEXT MORPH ENGINE
-        // ปั้นหัวใจ 3 มิติโฟตอนิกส์ (เต้นตามจังหวะอารมณ์ + ขยายแสงตามเสียงจริง 24kHz)
-        // เมื่ออารมณ์ของญาติเปลี่ยน -> สลับเป็นข้อความอารมณ์ 3 มิติ 2.4 วิ -> กลับเป็นหัวใจ 3 มิติ
-        // ============================================================================
-        function mountVolumetricHeartHologram(container, initialState) {
-            if (!container) return { update() {}, toggleViewMode() { return 'heart'; }, destroy() {} };
+        const TRIGGER_WORDS = [
+            'รีบเซ็น', 'ไม่รอดแล้ว', 'ไร้ประโยชน์', 'เสียเวลา', 'ทำไมไม่ให้',
+            'ต้องบริจาค', 'ผ่าเอา', 'ควัก', 'ตายแน่', 'ไม่มีหวังแล้วรีบ', 'บังคับ'
+        ];
 
-            const st = {
-                emotion: 'SHOCK',
-                trust: 45,
-                isSpeaking: false,
-                step: 1,
-                getAudioAmplitude: null,
-                onViewModeChange: null,
-                ...(initialState || {})
-            };
+        const RADAR_AXES = [
+            { key: 'empathy',    shortTH: 'เห็นอกเห็นใจ',    labelTH: 'ความเห็นอกเห็นใจและรับฟัง (Empathy)' },
+            { key: 'clarity',    shortTH: 'อธิบายสมองตาย',    labelTH: 'ความชัดเจนเรื่องภาวะสมองตาย (Clarity)' },
+            { key: 'decoupling', shortTH: 'จังหวะสื่อสาร',     labelTH: 'การแยกจังหวะสื่อสาร (Decoupling)' },
+            { key: 'ethics',     shortTH: 'จริยธรรม & ร่างกาย', labelTH: 'ความโปร่งใสและดูแลร่างกาย (Ethics)' },
+            { key: 'autonomy',   shortTH: 'เคารพสิทธิ์ญาติ',   labelTH: 'ไม่กดดันและเคารพการตัดสินใจ (Autonomy)' }
+        ];
 
-            const PALETTES = {
-                SHOCK:    { textTop: 'ช็อก / ตกใจ',    textSub: 'SHOCK',    bpm: 1.62, core: [255, 232, 238], rim: [251, 113, 133], deep: [159, 18, 57] },
-                CONFUSED: { textTop: 'สับสน / สงสัย',  textSub: 'CONFUSED', bpm: 1.24, core: [224, 245, 255], rim: [56, 189, 248],  deep: [3, 105, 161] },
-                SAD:      { textTop: 'โศกเศร้า',       textSub: 'GRIEVING', bpm: 0.88, core: [243, 232, 255], rim: [192, 132, 252], deep: [107, 33, 168] },
-                ANGRY:    { textTop: 'ตึงเครียด!',      textSub: 'TENSE',    bpm: 1.56, core: [255, 237, 213], rim: [251, 146, 60],  deep: [154, 52, 18] },
-                HESITANT: { textTop: 'ครุ่นคิด / ลังเล', textSub: 'HESITANT', bpm: 1.12, core: [254, 249, 195], rim: [251, 191, 36],  deep: [146, 64, 14] },
-                CALM:     { textTop: 'สงบ • วางใจ',     textSub: 'CALM',     bpm: 1.00, core: [224, 255, 244], rim: [52, 211, 153],  deep: [6, 95, 70] }
-            };
+        const SELF_EFFICACY_ITEMS = [
+            { key: 'e1', labelTH: '1. ความมั่นใจในการอธิบายภาวะสมองตายให้ญาติเข้าใจอย่างอ่อนโยน' },
+            { key: 'e2', labelTH: '2. ความมั่นใจในการรับมืออารมณ์โศกเศร้า สับสน หรือคำถามความเชื่อ' },
+            { key: 'e3', labelTH: '3. ความมั่นใจในการเจรจาขอรับบริจาคอวัยวะโดยไม่กดดันครอบครัว' }
+        ];
+
+        // ============================================================================
+        // 3. VOLUMETRIC 3D PARTICLE HEART HOLOGRAM ENGINE (ULTRA-SMOOTH 60/120FPS)
+        //    - เต้นตามจังหวะชีพจรอารมณ์ + ตอบสนองคลื่นเสียง AI สตูดิโอ 24kHz แบบเรียลไทม์
+        //    - แปลงร่างเป็นข้อความอารมณ์ 3 มิติเมื่ออารมณ์ญาติเปลี่ยน แล้วคืนรูปเป็นหัวใจอัตโนมัติ
+        // ============================================================================
+        function mountVolumetricHeartHologram(container, initOpts = {}) {
+            if (!container) return { update: () => {}, toggleViewMode: () => 'heart', destroy: () => {} };
 
             const canvas = document.createElement('canvas');
-            canvas.style.cssText = 'display:block;width:100%;height:100%;';
+            canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;';
+            container.innerHTML = '';
             container.appendChild(canvas);
             const ctx = canvas.getContext('2d');
-            if (!ctx) return { update() {}, toggleViewMode() { return 'heart'; }, destroy() {} };
+            if (!ctx) return { update: () => {}, toggleViewMode: () => 'heart', destroy: () => {} };
 
-            const isMobile = window.innerWidth < 640;
-            const totalPts = isMobile ? 2100 : 3200;
+            let state = {
+                emotion: initOpts.emotion || 'SHOCK',
+                trust: Number(initOpts.trust ?? 46),
+                isSpeaking: Boolean(initOpts.isSpeaking),
+                step: Number(initOpts.step || 1),
+                getAudioAmplitude: initOpts.getAudioAmplitude || null,
+                onViewModeChange: initOpts.onViewModeChange || null
+            };
 
-            // สร้างพิกัดเป้าหมายของ "หัวใจ 3 มิติสมจริง" (เปลือกหัวใจ 3D นูนโค้ง + แกนหัวใจเรืองแสง + วงคลื่นชีพจร)
-            const heartPos = new Float32Array(totalPts * 3);
-            const heartZone = new Uint8Array(totalPts); // 0=เปลือกหัวใจ, 1=แกนในเรืองแสง, 2=วงแหวนชีพจร
-            const heartRim = new Float32Array(totalPts);
+            let W = container.clientWidth || window.innerWidth || 1024;
+            let H = container.clientHeight || window.innerHeight || 768;
+            let disposed = false;
+            let rafId = null;
 
-            for (let i = 0; i < totalPts; i++) {
-                const ratio = i / totalPts;
-                let hx = 0, hy = 0, hz = 0, zone = 0, rimW = 0.5;
+            let viewMode = 'heart'; // 'heart' | 'text'
+            let autoReturnTimer = null;
+            let currentRgb = [...(EMOTIONS[state.emotion]?.rgb || [56, 189, 248])];
+            let targetRgb = [...currentRgb];
 
-                if (ratio < 0.78) {
-                    const t = Math.random() * Math.PI * 2;
-                    const u = Math.pow(Math.random(), 0.36);
-                    const ox = (16 * Math.pow(Math.sin(t), 3)) / 17.2;
-                    const oy = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) / 17.2;
-                    hx = ox * u;
-                    hy = oy * u - 0.08;
-                    const dome = Math.sqrt(Math.max(0, 1 - u * u));
-                    const pinch = 0.72 + 0.28 * Math.exp(-oy * oy * 1.1);
-                    const zDepth = dome * 0.48 * pinch;
-                    hz = (Math.random() < 0.5 ? 1 : -1) * zDepth + (Math.random() - 0.5) * 0.018;
-                    zone = 0;
-                    rimW = u;
-                } else if (ratio < 0.90) {
-                    const t = Math.random() * Math.PI * 2;
-                    const u = Math.pow(Math.random(), 0.55) * 0.46;
-                    const ox = (16 * Math.pow(Math.sin(t), 3)) / 17.2;
-                    const oy = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) / 17.2;
-                    hx = ox * u;
-                    hy = oy * u - 0.08;
-                    hz = (Math.random() - 0.5) * 0.24 * (1 - u);
-                    zone = 1;
-                    rimW = 1.0;
-                } else {
-                    const ang = Math.random() * Math.PI * 2;
-                    const rad = 1.08 + (Math.random() - 0.5) * 0.04;
-                    hx = Math.cos(ang) * rad;
-                    hy = Math.sin(ang * 2) * 0.09 - 0.04;
-                    hz = Math.sin(ang) * rad * 0.62;
-                    zone = 2;
-                    rimW = 0.85;
-                }
+            // Interactive 3D orbit rotation
+            let rotY = 0;
+            let rotX = 0.08;
+            let velY = 0.24;
+            let dragging = false;
+            let lastPtrX = 0;
+            let lastPtrY = 0;
 
-                heartPos[i * 3] = hx;
-                heartPos[i * 3 + 1] = hy;
-                heartPos[i * 3 + 2] = hz;
-                heartZone[i] = zone;
-                heartRim[i] = rimW;
+            // Generate 900 volumetric 3D heart particles
+            const PARTICLE_COUNT = 900;
+            const particles = [];
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                const u = Math.random() * Math.PI * 2;
+                const sinU = Math.sin(u);
+                const hx = 16 * sinU * sinU * sinU;
+                const hy = -(13 * Math.cos(u) - 5 * Math.cos(2 * u) - 2 * Math.cos(3 * u) - Math.cos(4 * u));
+                const shell = Math.pow(Math.random(), 0.42);
+                const thick = (Math.random() - 0.5) * 2 * (1 - shell * 0.45) * 7.8;
+
+                const nx = (hx / 18) * shell;
+                const ny = (hy / 18) * shell;
+                const nz = thick / 18;
+
+                particles.push({
+                    hx: nx, hy: ny, hz: nz,
+                    tx: nx, ty: ny, tz: nz,
+                    x: nx, y: ny, z: nz,
+                    size: 1.15 + Math.random() * 1.9,
+                    ph: Math.random() * Math.PI * 2,
+                    bright: 0.55 + Math.random() * 0.45
+                });
             }
 
-            // แคชพิกัดเป้าหมายของ "ข้อความอารมณ์ 3 มิติ" แยกตามอารมณ์
-            let textCache = {};
-            const getTextTargets = (emoId) => {
-                const key = PALETTES[emoId] ? emoId : 'CONFUSED';
-                if (textCache[key]) return textCache[key];
-
-                const pal = PALETTES[key];
+            // Build 3D particle target coordinates from Thai emotion label text
+            function buildTextTargets(labelStr) {
                 const off = document.createElement('canvas');
-                off.width = 720;
-                off.height = 260;
+                off.width = 560;
+                off.height = 140;
                 const oc = off.getContext('2d');
-                oc.fillStyle = '#000000';
-                oc.fillRect(0, 0, off.width, off.height);
+                if (!oc) return;
+                oc.clearRect(0, 0, off.width, off.height);
                 oc.fillStyle = '#ffffff';
                 oc.textAlign = 'center';
                 oc.textBaseline = 'middle';
-
-                oc.font = '800 72px "Prompt", "Anuphan", sans-serif';
-                oc.fillText(pal.textTop, 360, 104, 670);
-                oc.font = '700 36px "Inter", "JetBrains Mono", sans-serif';
-                oc.fillText(pal.textSub, 360, 186, 600);
+                oc.font = '800 44px "Prompt", "Anuphan", sans-serif';
+                oc.fillText(String(labelStr || ''), off.width / 2, off.height / 2, off.width - 36);
 
                 const img = oc.getImageData(0, 0, off.width, off.height).data;
-                const sampled = [];
-                for (let y = 0; y < off.height; y += 2) {
-                    for (let x = 0; x < off.width; x += 2) {
-                        if (img[(y * off.width + x) * 4] > 110) sampled.push([x, y]);
+                const pts = [];
+                for (let y = 0; y < off.height; y += 4) {
+                    for (let x = 0; x < off.width; x += 4) {
+                        if (img[(y * off.width + x) * 4 + 3] > 110) {
+                            pts.push([
+                                ((x - off.width / 2) / (off.width * 0.34)),
+                                ((y - off.height / 2) / (off.width * 0.34)),
+                                (Math.random() - 0.5) * 0.14
+                            ]);
+                        }
                     }
                 }
-
-                const pos = new Float32Array(totalPts * 3);
-                const subFlag = new Uint8Array(totalPts);
-                for (let i = 0; i < totalPts; i++) {
-                    const pk = sampled.length > 0 ? sampled[Math.floor(Math.random() * sampled.length)] : [360, 130];
-                    pos[i * 3] = ((pk[0] - 360) / 185) + (Math.random() - 0.5) * 0.014;
-                    pos[i * 3 + 1] = ((pk[1] - 132) / 185) - 0.06 + (Math.random() - 0.5) * 0.014;
-                    pos[i * 3 + 2] = (Math.random() - 0.5) * 0.14;
-                    subFlag[i] = pk[1] > 152 ? 1 : 0;
+                if (pts.length === 0) return;
+                for (let i = 0; i < particles.length; i++) {
+                    const pick = pts[i % pts.length];
+                    particles[i].tx = pick[0] + (Math.random() - 0.5) * 0.015;
+                    particles[i].ty = pick[1] + (Math.random() - 0.5) * 0.015;
+                    particles[i].tz = pick[2];
                 }
+            }
+            buildTextTargets(EMOTIONS[state.emotion]?.holoText || 'ช็อก • ยังทำใจไม่ได้');
 
-                textCache[key] = { pos, subFlag };
-                return textCache[key];
-            };
-
-            const pts = Array.from({ length: totalPts }, (_, i) => ({
-                x: (Math.random() - 0.5) * 3.4,
-                y: (Math.random() - 0.5) * 2.6,
-                z: (Math.random() - 0.5) * 2.2,
-                vx: 0, vy: 0, vz: 0,
-                tx: heartPos[i * 3],
-                ty: heartPos[i * 3 + 1],
-                tz: heartPos[i * 3 + 2],
-                zone: heartZone[i],
-                rimW: heartRim[i],
-                isSubText: 0,
-                sz: 0.92 + Math.random() * 0.85,
-                seed: Math.random() * Math.PI * 2
+            // Background ambient stardust rings
+            const ambientDust = Array.from({ length: 65 }, () => ({
+                x: Math.random(), y: Math.random(),
+                r: 0.7 + Math.random() * 1.4,
+                vy: 0.005 + Math.random() * 0.011,
+                ph: Math.random() * Math.PI * 2
             }));
 
-            const motes = Array.from({ length: 48 }, () => ({
-                x: (Math.random() - 0.5) * 2.4,
-                y: 1.25 - Math.random() * 2.4,
-                vy: 0.08 + Math.random() * 0.14,
-                r: 0.8 + Math.random() * 1.4,
-                sd: Math.random() * 6.28
-            }));
-
-            let viewMode = 'heart'; // heart | text
-            let activeEmotion = PALETTES[st.emotion] ? st.emotion : 'SHOCK';
-            let morphBackTimer = null;
-
-            const setTargetsForMode = (nextMode, emoId, burstStrength = 0.14) => {
-                viewMode = nextMode;
-                activeEmotion = PALETTES[emoId] ? emoId : 'CONFUSED';
-                if (typeof st.onViewModeChange === 'function') st.onViewModeChange(viewMode);
-
-                if (viewMode === 'text') {
-                    const td = getTextTargets(activeEmotion);
-                    for (let i = 0; i < totalPts; i++) {
-                        const p = pts[i];
-                        p.tx = td.pos[i * 3];
-                        p.ty = td.pos[i * 3 + 1];
-                        p.tz = td.pos[i * 3 + 2];
-                        p.isSubText = td.subFlag[i];
-                        p.vx += (Math.random() - 0.5) * burstStrength;
-                        p.vy += (Math.random() - 0.5) * burstStrength;
-                        p.vz += (Math.random() - 0.5) * burstStrength;
-                    }
-                    targetRotY = 0;
-                    targetRotX = 0;
-                } else {
-                    for (let i = 0; i < totalPts; i++) {
-                        const p = pts[i];
-                        p.tx = heartPos[i * 3];
-                        p.ty = heartPos[i * 3 + 1];
-                        p.tz = heartPos[i * 3 + 2];
-                        p.isSubText = 0;
-                        p.vx += (Math.random() - 0.5) * burstStrength;
-                        p.vy += (Math.random() - 0.5) * burstStrength;
-                        p.vz += (Math.random() - 0.5) * burstStrength;
-                    }
-                }
-            };
-
-            let w = Math.max(1, container.clientWidth), h = Math.max(1, container.clientHeight);
-            let rotY = 0, rotX = 0.04, targetRotY = 0, targetRotX = 0.04;
-            let dragging = false, lx = 0, ly = 0;
-
-            const curCore = PALETTES[activeEmotion].core.slice();
-            const curRim = PALETTES[activeEmotion].rim.slice();
-            const curDeep = PALETTES[activeEmotion].deep.slice();
-
-            const resize = () => {
-                const r = container.getBoundingClientRect();
-                if (r.width <= 0 || r.height <= 0) return;
-                const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-                w = r.width; h = r.height;
-                canvas.width = Math.round(w * dpr);
-                canvas.height = Math.round(h * dpr);
+            function resize() {
+                const rect = container.getBoundingClientRect();
+                if (rect.width <= 0 || rect.height <= 0) return;
+                const dpr = Math.min(window.devicePixelRatio || 1, 2);
+                W = rect.width;
+                H = rect.height;
+                canvas.width = Math.round(W * dpr);
+                canvas.height = Math.round(H * dpr);
                 ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-            };
+            }
             resize();
 
-            const onDown = (e) => { dragging = true; lx = e.clientX; ly = e.clientY; };
-            const onMove = (e) => {
-                if (!dragging) return;
-                targetRotY = Math.max(-0.85, Math.min(0.85, targetRotY + (e.clientX - lx) * 0.0055));
-                targetRotX = Math.max(-0.32, Math.min(0.32, targetRotX + (e.clientY - ly) * 0.0045));
-                lx = e.clientX; ly = e.clientY;
-            };
-            const onUp = () => { dragging = false; };
-            const onTStart = (e) => { if (e.touches?.[0]) { dragging = true; lx = e.touches[0].clientX; ly = e.touches[0].clientY; } };
-            const onTMove = (e) => {
-                if (!dragging || !e.touches?.[0]) return;
-                targetRotY = Math.max(-0.85, Math.min(0.85, targetRotY + (e.touches[0].clientX - lx) * 0.0065));
-                targetRotX = Math.max(-0.32, Math.min(0.32, targetRotX + (e.touches[0].clientY - ly) * 0.005));
-                lx = e.touches[0].clientX; ly = e.touches[0].clientY;
-            };
-
-            canvas.addEventListener('mousedown', onDown);
-            window.addEventListener('mousemove', onMove);
-            window.addEventListener('mouseup', onUp);
-            canvas.addEventListener('touchstart', onTStart, { passive: true });
-            window.addEventListener('touchmove', onTMove, { passive: true });
-            window.addEventListener('touchend', onUp);
+            let ro = null;
+            if (typeof ResizeObserver !== 'undefined') {
+                ro = new ResizeObserver(resize);
+                ro.observe(container);
+            }
             window.addEventListener('resize', resize);
 
-            if (document.fonts && document.fonts.ready) {
-                document.fonts.ready.then(() => {
-                    textCache = {};
-                    if (viewMode === 'text') setTargetsForMode('text', activeEmotion, 0.04);
-                }).catch(() => {});
+            const onPtrDown = (e) => { dragging = true; lastPtrX = e.clientX; lastPtrY = e.clientY; };
+            const onPtrMove = (e) => {
+                if (!dragging) return;
+                const dx = e.clientX - lastPtrX;
+                const dy = e.clientY - lastPtrY;
+                lastPtrX = e.clientX;
+                lastPtrY = e.clientY;
+                rotY += dx * 0.008;
+                rotX = Math.max(-0.55, Math.min(0.55, rotX + dy * 0.006));
+                velY = dx * 0.04;
+            };
+            const onPtrUp = () => { dragging = false; };
+
+            canvas.addEventListener('pointerdown', onPtrDown);
+            window.addEventListener('pointermove', onPtrMove);
+            window.addEventListener('pointerup', onPtrUp);
+
+            function setMode(nextMode) {
+                viewMode = nextMode;
+                if (typeof state.onViewModeChange === 'function') state.onViewModeChange(viewMode);
             }
 
-            let alive = true, raf = null, last = performance.now(), smoothAmp = 0, beatPhase = 0;
+            let lastTs = performance.now();
+            let beatPhase = 0;
 
-            const loop = (now) => {
-                if (!alive) return;
-                raf = requestAnimationFrame(loop);
-                if (document.hidden || w <= 0 || h <= 0) return;
+            function render(now) {
+                if (disposed) return;
+                rafId = requestAnimationFrame(render);
+                if (document.hidden || W <= 0 || H <= 0) return;
 
-                const dt = Math.min(0.05, Math.max(0.001, (now - last) / 1000));
-                last = now;
+                const dt = Math.min(0.05, Math.max(0.001, (now - lastTs) * 0.001));
+                lastTs = now;
                 const t = now * 0.001;
 
-                const pal = PALETTES[activeEmotion] || PALETTES.CONFUSED;
-                const kl = 1 - Math.exp(-dt * 4.2);
-                for (let c = 0; c < 3; c++) {
-                    curCore[c] += (pal.core[c] - curCore[c]) * kl;
-                    curRim[c] += (pal.rim[c] - curRim[c]) * kl;
-                    curDeep[c] += (pal.deep[c] - curDeep[c]) * kl;
-                }
+                ctx.clearRect(0, 0, W, H);
 
+                // Smooth color interpolation
+                const cLerp = 1 - Math.exp(-dt * 2.6);
+                for (let c = 0; c < 3; c++) currentRgb[c] += (targetRgb[c] - currentRgb[c]) * cLerp;
+                const rCol = Math.round(currentRgb[0]);
+                const gCol = Math.round(currentRgb[1]);
+                const bCol = Math.round(currentRgb[2]);
+
+                // Lub-Dub physiological heartbeat pulse + live 24kHz voice amplitude
+                const emoMeta = EMOTIONS[state.emotion] || EMOTIONS.SHOCK;
+                const bpm = emoMeta.bpm || 80;
+                beatPhase = (beatPhase + dt * (bpm / 60)) % 1;
+                const lub = Math.exp(-Math.pow((beatPhase - 0.14) / 0.055, 2));
+                const dub = 0.65 * Math.exp(-Math.pow((beatPhase - 0.32) / 0.06, 2));
+                const liveAmp = typeof state.getAudioAmplitude === 'function' ? Math.max(0, state.getAudioAmplitude()) : 0;
+                const speakBoost = state.isSpeaking ? (liveAmp > 0.01 ? liveAmp * 0.14 : (0.04 + 0.04 * Math.sin(t * 14))) : 0;
+                const pulseScale = viewMode === 'heart' ? (1 + (lub + dub) * 0.085 + speakBoost) : (1 + speakBoost * 0.45);
+
+                // Smooth orbit rotation (levels facing front in text mode)
                 if (!dragging) {
                     if (viewMode === 'text') {
-                        targetRotY = Math.sin(t * 0.45) * 0.09;
-                        targetRotX = Math.cos(t * 0.35) * 0.025;
+                        rotY += (0 - rotY) * (1 - Math.exp(-dt * 4.5));
+                        rotX += (0 - rotX) * (1 - Math.exp(-dt * 4.5));
                     } else {
-                        targetRotY = Math.sin(t * 0.48) * 0.34;
-                        targetRotX = 0.03 + Math.cos(t * 0.36) * 0.045;
+                        velY += (0.28 - velY) * (1 - Math.exp(-dt * 1.8));
+                        rotY += velY * dt;
+                        rotX += (0.08 + Math.sin(t * 0.5) * 0.04 - rotX) * (1 - Math.exp(-dt * 2.0));
                     }
                 }
-                rotY += (targetRotY - rotY) * (1 - Math.exp(-dt * 5.2));
-                rotX += (targetRotX - rotX) * (1 - Math.exp(-dt * 5.2));
 
-                // จังหวะหัวใจเต้น Lub-Dub ปรับความเร็วตามอารมณ์ญาติ
-                beatPhase = (beatPhase + dt * pal.bpm) % 1;
-                const lub = Math.exp(-Math.pow((beatPhase - 0.14) / 0.055, 2));
-                const dub = 0.58 * Math.exp(-Math.pow((beatPhase - 0.30) / 0.065, 2));
-                const heartbeat = lub + dub;
+                const cx = W * 0.5;
+                const cy = H * (W < 640 ? 0.44 : 0.45);
+                const baseScale = Math.min(W, H) * (W < 640 ? 0.28 : 0.265);
 
-                // Real Audio Amplitude (24kHz Voice Pulse)
-                let tgtAmp = 0;
-                if (st.isSpeaking) {
-                    const live = typeof st.getAudioAmplitude === 'function' ? st.getAudioAmplitude() : -1;
-                    tgtAmp = (typeof live === 'number' && live >= 0) ? Math.min(1, live) : (0.18 + 0.45 * Math.abs(Math.sin(t * 8.2) * Math.cos(t * 3.5)));
-                }
-                smoothAmp += (tgtAmp - smoothAmp) * (1 - Math.exp(-dt * (tgtAmp > smoothAmp ? 22 : 14)));
-
-                const cx = w * 0.5;
-                const cy = h * (w < 640 ? 0.41 : 0.44);
-                const foc = Math.min(w, h) * (w < 640 ? 0.56 : 0.50);
-
-                ctx.clearRect(0, 0, w, h);
-
-                const rr = Math.round(curRim[0]), rg = Math.round(curRim[1]), rb = Math.round(curRim[2]);
-                const cr = Math.round(curCore[0]), cg = Math.round(curCore[1]), cb = Math.round(curCore[2]);
-                const dr = Math.round(curDeep[0]), dg = Math.round(curDeep[1]), db = Math.round(curDeep[2]);
-
-                // 1. กรวยแสงโฮโลแกรม & แท่นฉายวงแหวน 3 ชั้น
-                const baseY = cy + foc * 0.52;
-                const beamGrad = ctx.createLinearGradient(cx, baseY + 26, cx, cy - foc * 0.48);
-                beamGrad.addColorStop(0, `rgba(${rr},${rg},${rb},0.24)`);
-                beamGrad.addColorStop(0.45, `rgba(${rr},${rg},${rb},0.08)`);
-                beamGrad.addColorStop(1, 'rgba(0,0,0,0)');
-                ctx.fillStyle = beamGrad;
+                // 1. Central Volumetric Glow Aura
+                const auraR = baseScale * (1.55 + (lub + dub) * 0.25 + speakBoost);
+                const ag = ctx.createRadialGradient(cx, cy, 8, cx, cy, auraR);
+                ag.addColorStop(0, `rgba(${rCol},${gCol},${bCol},${(0.28 + speakBoost * 0.5).toFixed(3)})`);
+                ag.addColorStop(0.5, `rgba(${rCol},${gCol},${bCol},0.08)`);
+                ag.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = ag;
                 ctx.beginPath();
-                ctx.moveTo(cx - foc * 0.34, baseY + 18);
-                ctx.lineTo(cx + foc * 0.34, baseY + 18);
-                ctx.lineTo(cx + foc * 0.58, cy - foc * 0.46);
-                ctx.lineTo(cx - foc * 0.58, cy - foc * 0.46);
-                ctx.closePath();
+                ctx.arc(cx, cy, auraR, 0, Math.PI * 2);
                 ctx.fill();
 
-                const haloR = foc * (0.64 + heartbeat * 0.06 + smoothAmp * 0.09);
-                const halo = ctx.createRadialGradient(cx, cy - foc * 0.04, 8, cx, cy - foc * 0.04, haloR);
-                halo.addColorStop(0, `rgba(${rr},${rg},${rb},${(0.22 + heartbeat * 0.07 + smoothAmp * 0.08).toFixed(3)})`);
-                halo.addColorStop(0.55, `rgba(${dr},${dg},${db},0.08)`);
-                halo.addColorStop(1, 'rgba(0,0,0,0)');
-                ctx.fillStyle = halo;
-                ctx.beginPath(); ctx.arc(cx, cy - foc * 0.04, haloR, 0, Math.PI * 2); ctx.fill();
-
-                for (let ringIdx = 0; ringIdx < 3; ringIdx++) {
-                    const rxRing = foc * (0.26 + ringIdx * 0.11);
-                    const ryRing = rxRing * 0.22;
-                    ctx.save();
-                    ctx.translate(cx, baseY + 12 + ringIdx * 4);
-                    ctx.strokeStyle = `rgba(${rr},${rg},${rb},${(0.46 - ringIdx * 0.12).toFixed(2)})`;
-                    ctx.lineWidth = ringIdx === 0 ? 1.8 : 1.1;
-                    ctx.setLineDash(ringIdx === 1 ? [14, 9] : ringIdx === 2 ? [4, 8] : []);
-                    ctx.lineDashOffset = (ringIdx % 2 === 0 ? 1 : -1) * t * (18 + ringIdx * 8);
+                // 2. Holographic Floor Projection Rings
+                ctx.save();
+                ctx.translate(cx, cy + baseScale * 1.12);
+                ctx.scale(1, 0.24);
+                for (let ring = 0; ring < 2; ring++) {
+                    const rr = baseScale * (0.68 + ring * 0.34 + (lub * 0.06));
+                    ctx.strokeStyle = `rgba(${rCol},${gCol},${bCol},${ring === 0 ? 0.32 : 0.16})`;
+                    ctx.lineWidth = ring === 0 ? 1.8 : 1.1;
                     ctx.beginPath();
-                    ctx.ellipse(0, 0, rxRing, ryRing, 0, 0, Math.PI * 2);
+                    ctx.arc(0, 0, rr, 0, Math.PI * 2);
                     ctx.stroke();
-                    ctx.restore();
                 }
+                ctx.restore();
 
-                // 2. อัปเดตและฉายอนุภาค 3 มิติ (หัวใจ 3D ⇄ ข้อความอารมณ์)
-                const cosY = Math.cos(rotY), sinY = Math.sin(rotY);
-                const cosX = Math.cos(rotX), sinX = Math.sin(rotX);
-                const floatY = Math.sin(t * 1.4) * 0.022;
-                const scanY = -0.95 + ((t * 0.44) % 2.1);
-                const pulseScale = viewMode === 'heart' ? (1 + heartbeat * 0.068 + smoothAmp * 0.075) : (1 + smoothAmp * 0.028);
-
-                ctx.globalCompositeOperation = 'lighter';
-
-                for (let i = 0; i < totalPts; i++) {
-                    const p = pts[i];
-                    let gx = p.tx * pulseScale;
-                    let gy = p.ty * pulseScale + floatY;
-                    let gz = p.tz * pulseScale;
-
-                    if (viewMode === 'heart' && p.zone === 2) {
-                        const spin = t * 0.55;
-                        const cs = Math.cos(spin), sn = Math.sin(spin);
-                        const rx = gx * cs - gz * sn;
-                        const rz = gz * cs + gx * sn;
-                        gx = rx;
-                        gz = rz;
-                        gy += Math.sin(t * 4.5 + p.seed) * (0.018 + smoothAmp * 0.045);
-                    } else if (viewMode === 'text' && smoothAmp > 0.03) {
-                        gz += Math.sin(t * 9 + p.seed) * smoothAmp * 0.035;
-                    }
-
-                    p.vx = (p.vx + (gx - p.x) * 0.088) * 0.80;
-                    p.vy = (p.vy + (gy - p.y) * 0.088) * 0.80;
-                    p.vz = (p.vz + (gz - p.z) * 0.088) * 0.80;
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    p.z += p.vz;
-
-                    const x1 = p.x * cosY - p.z * sinY;
-                    const z1 = p.z * cosY + p.x * sinY;
-                    const y2 = p.y * cosX - z1 * sinX;
-                    const z2 = z1 * cosX + p.y * sinX;
-
-                    const depth = 3.15 - z2;
-                    if (depth <= 0.45) continue;
-                    const persp = foc / depth;
-                    const sx = cx + x1 * persp;
-                    const sy = cy + y2 * persp;
-
-                    const scanDist = Math.abs(p.y - scanY);
-                    const scanBoost = scanDist < 0.09 ? (1 - scanDist / 0.09) * 0.52 : 0;
-                    const depthShade = Math.max(0.32, Math.min(1, (z2 + 0.85) / 1.45));
-
-                    let alpha = viewMode === 'text'
-                        ? (p.isSubText ? 0.78 : 0.94)
-                        : ((p.zone === 1 ? 0.92 : (0.40 + p.rimW * 0.46)) * depthShade + scanBoost + heartbeat * 0.08);
-                    alpha = Math.min(0.98, alpha);
-
-                    const rad = Math.max(0.65, p.sz * (persp / 225) * (viewMode === 'text' ? 1.05 : (1 + scanBoost * 0.4 + heartbeat * 0.12)));
-
-                    let rCol, gCol, bCol;
-                    if (viewMode === 'text') {
-                        if (p.isSubText) { rCol = rr; gCol = rg; bCol = rb; }
-                        else { rCol = cr; gCol = cg; bCol = cb; }
-                    } else if (p.zone === 1 || scanBoost > 0.25) {
-                        rCol = 255; gCol = 255; bCol = 255;
-                    } else if (p.rimW > 0.76) {
-                        rCol = cr; gCol = cg; bCol = cb;
-                    } else {
-                        rCol = rr; gCol = rg; bCol = rb;
-                    }
-
-                    ctx.fillStyle = `rgba(${rCol},${gCol},${bCol},${alpha.toFixed(3)})`;
+                // 3. Ambient Rising Dust
+                for (let i = 0; i < ambientDust.length; i++) {
+                    const d = ambientDust[i];
+                    d.y -= d.vy * dt;
+                    if (d.y < 0.05) d.y = 0.95;
+                    const a = 0.15 + 0.38 * (0.5 + 0.5 * Math.sin(t * 2.2 + d.ph));
+                    ctx.fillStyle = `rgba(${rCol},${gCol},${bCol},${a.toFixed(2)})`;
                     ctx.beginPath();
-                    ctx.arc(sx, sy, rad, 0, Math.PI * 2);
+                    ctx.arc(d.x * W, d.y * H, d.r, 0, Math.PI * 2);
                     ctx.fill();
                 }
 
-                // 3. ละอองโฟตอนลอยขึ้นจากฐาน
-                for (let m = 0; m < motes.length; m++) {
-                    const mt = motes[m];
-                    mt.y -= mt.vy * dt;
-                    if (mt.y < -1.15) { mt.y = 1.2; mt.x = (Math.random() - 0.5) * 2.2; }
-                    const mx = cx + (mt.x + Math.sin(t + mt.sd) * 0.08) * (foc * 0.38);
-                    const my = cy + mt.y * (foc * 0.46);
-                    const ma = Math.max(0, 0.46 * (1 - Math.abs(mt.y) / 1.25));
-                    ctx.fillStyle = `rgba(${cr},${cg},${cb},${ma.toFixed(3)})`;
-                    ctx.beginPath(); ctx.arc(mx, my, mt.r, 0, Math.PI * 2); ctx.fill();
+                // 4. 3D Particle Morphing & Perspective Projection
+                const cosY = Math.cos(rotY), sinY = Math.sin(rotY);
+                const cosX = Math.cos(rotX), sinX = Math.sin(rotX);
+                const morphLerp = 1 - Math.exp(-dt * 4.4);
+                const fov = 3.2;
+
+                ctx.save();
+                ctx.globalCompositeOperation = 'lighter';
+                for (let i = 0; i < particles.length; i++) {
+                    const p = particles[i];
+                    const goalX = viewMode === 'text' ? p.tx : p.hx;
+                    const goalY = viewMode === 'text' ? p.ty : p.hy;
+                    const goalZ = viewMode === 'text' ? p.tz : p.hz;
+
+                    p.x += (goalX - p.x) * morphLerp;
+                    p.y += (goalY - p.y) * morphLerp;
+                    p.z += (goalZ - p.z) * morphLerp;
+
+                    const sx = p.x * pulseScale;
+                    const sy = p.y * pulseScale;
+                    const sz = p.z * pulseScale;
+
+                    // Rotate Y then X
+                    const x1 = sx * cosY - sz * sinY;
+                    const z1 = sx * sinY + sz * cosY;
+                    const y2 = sy * cosX - z1 * sinX;
+                    const z2 = sy * sinX + z1 * cosX;
+
+                    const depth = fov / (fov + z2 + 1.15);
+                    const px = cx + x1 * baseScale * depth;
+                    const py = cy + y2 * baseScale * depth;
+                    const pr = Math.max(0.7, p.size * depth * (viewMode === 'text' ? 1.15 : 1.05));
+                    const twinkle = 0.72 + 0.28 * Math.sin(t * 3.2 + p.ph);
+                    const alpha = Math.min(0.95, Math.max(0.14, depth * p.bright * twinkle));
+
+                    ctx.fillStyle = i % 7 === 0
+                        ? `rgba(255,248,252,${alpha.toFixed(2)})`
+                        : `rgba(${rCol},${gCol},${bCol},${alpha.toFixed(2)})`;
+                    ctx.beginPath();
+                    ctx.arc(px, py, pr, 0, Math.PI * 2);
+                    ctx.fill();
                 }
+                ctx.restore();
+            }
 
-                ctx.globalCompositeOperation = 'source-over';
-            };
-
-            raf = requestAnimationFrame(loop);
+            rafId = requestAnimationFrame(render);
 
             return {
-                update(next) {
-                    const prevEmo = activeEmotion;
-                    Object.assign(st, next || {});
-                    const nextEmo = PALETTES[st.emotion] ? st.emotion : prevEmo;
-                    // เมื่ออารมณ์ของญาติเปลี่ยน -> สลับเป็นข้อความอารมณ์ 2.4 วินาที แล้วกลับเป็นหัวใจ 3 มิติ
-                    if (nextEmo !== prevEmo) {
-                        clearTimeout(morphBackTimer);
-                        setTargetsForMode('text', nextEmo, 0.18);
-                        morphBackTimer = setTimeout(() => {
-                            if (alive) setTargetsForMode('heart', nextEmo, 0.14);
-                        }, 2400);
+                update: (nextOpts = {}) => {
+                    const prevEmotion = state.emotion;
+                    state = { ...state, ...nextOpts };
+                    const emo = EMOTIONS[state.emotion] || EMOTIONS.SHOCK;
+                    targetRgb = [...(emo.rgb || [56, 189, 248])];
+
+                    if (nextOpts.emotion && nextOpts.emotion !== prevEmotion) {
+                        buildTextTargets(emo.holoText || emo.labelTH);
+                        setMode('text');
+                        clearTimeout(autoReturnTimer);
+                        autoReturnTimer = setTimeout(() => {
+                            if (!disposed) setMode('heart');
+                        }, 2600);
                     }
                 },
-                toggleViewMode() {
-                    clearTimeout(morphBackTimer);
-                    const nm = viewMode === 'heart' ? 'text' : 'heart';
-                    setTargetsForMode(nm, activeEmotion, 0.14);
-                    return nm;
+                toggleViewMode: () => {
+                    clearTimeout(autoReturnTimer);
+                    const next = viewMode === 'heart' ? 'text' : 'heart';
+                    if (next === 'text') {
+                        const emo = EMOTIONS[state.emotion] || EMOTIONS.SHOCK;
+                        buildTextTargets(emo.holoText || emo.labelTH);
+                    }
+                    setMode(next);
+                    return next;
                 },
-                destroy() {
-                    alive = false;
-                    clearTimeout(morphBackTimer);
-                    if (raf) cancelAnimationFrame(raf);
-                    canvas.removeEventListener('mousedown', onDown);
-                    window.removeEventListener('mousemove', onMove);
-                    window.removeEventListener('mouseup', onUp);
-                    canvas.removeEventListener('touchstart', onTStart);
-                    window.removeEventListener('touchmove', onTMove);
-                    window.removeEventListener('touchend', onUp);
+                destroy: () => {
+                    disposed = true;
+                    clearTimeout(autoReturnTimer);
+                    if (rafId) cancelAnimationFrame(rafId);
+                    if (ro) { try { ro.disconnect(); } catch (_) {} }
                     window.removeEventListener('resize', resize);
-                    try { if (canvas.parentNode) canvas.parentNode.removeChild(canvas); } catch (_) {}
+                    canvas.removeEventListener('pointerdown', onPtrDown);
+                    window.removeEventListener('pointermove', onPtrMove);
+                    window.removeEventListener('pointerup', onPtrUp);
                 }
             };
         }
 
         // ============================================================================
-        // 4. SHARED UI COMPONENTS (5-AXIS RADAR, VIDEO MODAL, TOAST)
+        // 4. SHARED UI COMPONENTS (5-AXIS RADAR, VIDEO MODAL, TOAST — NEUMORPHIC)
         // ============================================================================
         class SkillLabErrorBoundary extends React.Component {
             constructor(props) { super(props); this.state = { hasError: false, err: null }; }
@@ -1062,11 +981,11 @@
             render() {
                 if (this.state.hasError) {
                     return (
-                        <div className="min-h-dvh flex items-center justify-center p-6 bg-void-950 text-white">
-                            <div className="spatial-card max-w-md w-full rounded-3xl p-6 text-center space-y-4 border-rose-500/40">
-                                <h2 className="font-display font-bold text-lg text-rose-400">พบข้อผิดพลาดในห้องฝึก AI Skill Lab</h2>
-                                <p className="text-xs font-mono bg-rose-500/10 text-rose-200 p-3 rounded-xl overflow-auto">{String(this.state.err?.message || this.state.err)}</p>
-                                <button type="button" onClick={() => window.location.reload()} className="btn-peach-ambient touch-target w-full py-3 font-display font-bold text-sm">โหลดหน้าใหม่</button>
+                        <div className="min-h-dvh flex items-center justify-center p-6 bg-[var(--neu-bg)] text-[var(--neu-text)]">
+                            <div className="neu-card max-w-md w-full p-6 text-center space-y-4">
+                                <h2 className="font-display font-bold text-lg text-[var(--neu-rose)]">พบข้อผิดพลาดในห้องฝึก AI Skill Lab</h2>
+                                <p className="text-xs font-mono neu-inset text-[var(--neu-text-sub)] p-3 overflow-auto">{String(this.state.err?.message || this.state.err)}</p>
+                                <button type="button" onClick={() => window.location.reload()} className="neu-btn-teal touch-target w-full py-3 font-display font-bold text-sm">โหลดหน้าใหม่</button>
                             </div>
                         </div>
                     );
@@ -1083,8 +1002,8 @@
         function ThemeToggleButton({ theme, onToggle, compact = false }) {
             const isDark = theme === 'dark';
             return (
-                <button type="button" onClick={onToggle} aria-label="สลับโหมดมืดหรือสว่าง" className="spatial-soft px-2.5 sm:px-3 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5 text-primary-adaptive shrink-0">
-                    <Icon name={isDark ? 'Sun' : 'Moon'} size={15} className={isDark ? 'text-amber-300' : 'text-indigo-600'} />
+                <button type="button" onClick={onToggle} aria-label="สลับโหมดมืดหรือสว่าง" className="neu-btn px-3 py-2 font-display font-bold text-xs shrink-0">
+                    <span>{isDark ? '☀️' : '🌙'}</span>
                     {!compact && <span className="hidden sm:inline">{isDark ? 'โหมดสว่าง' : 'โหมดมืด'}</span>}
                 </button>
             );
@@ -1093,13 +1012,9 @@
         function ToastBanner({ toast }) {
             if (!toast.visible) return null;
             return (
-                <div className="fixed top-[calc(1rem+env(safe-area-inset-top,0px))] left-1/2 -translate-x-1/2 z-[180] w-[92vw] max-w-md pointer-events-none">
-                    <div className={`px-4 py-3 rounded-2xl shadow-2xl border backdrop-blur-2xl flex items-center gap-2 text-xs sm:text-sm font-bold text-white ${
-                        toast.type === 'error' ? 'bg-rose-700/95 border-rose-400/60'
-                            : toast.type === 'info' ? 'bg-sky-700/95 border-sky-400/60'
-                                : 'bg-emerald-700/95 border-emerald-400/60'
-                    }`}>
-                        <Icon name={toast.type === 'error' ? 'AlertCircle' : toast.type === 'info' ? 'Sparkles' : 'CheckCircle2'} size={16} className="shrink-0" />
+                <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-[180] w-[92vw] max-w-md pointer-events-none">
+                    <div className="neu-card px-5 py-3.5 rounded-full flex items-center gap-2.5 text-xs sm:text-sm font-display font-bold text-[var(--neu-text)] border-[var(--neu-teal-soft)]">
+                        <Icon name={toast.type === 'error' ? 'AlertCircle' : toast.type === 'info' ? 'Sparkles' : 'CheckCircle2'} size={17} className={toast.type === 'error' ? 'text-[var(--neu-rose)] shrink-0' : 'text-[var(--neu-teal)] shrink-0'} />
                         <span>{toast.text}</span>
                     </div>
                 </div>
@@ -1109,18 +1024,18 @@
         function VideoReferenceModal({ open, onClose }) {
             if (!open) return null;
             return (
-                <div className="fixed inset-0 z-[170] bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
-                    <div className="spatial-card w-full max-w-4xl rounded-[2rem] p-4 sm:p-6 space-y-4 border-pink-300/40">
+                <div className="fixed inset-0 z-[170] bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6" onClick={onClose}>
+                    <div className="neu-card w-full max-w-4xl p-5 sm:p-6 space-y-4" onClick={e => e.stopPropagation()}>
                         <div className="flex items-start justify-between gap-2">
                             <div>
-                                <span className="font-mono text-[10px] font-bold text-pink-300 uppercase">OFFICIAL REFERENCE VIDEO • RAJAVITHI COE (VIMEO)</span>
-                                <h3 className="font-display font-extrabold text-base sm:text-lg text-primary-adaptive">{OFFICIAL_CASE.titleTH}</h3>
+                                <span className="font-mono text-[10px] font-bold text-[var(--neu-rose)] uppercase">OFFICIAL REFERENCE VIDEO • RAJAVITHI COE (VIMEO)</span>
+                                <h3 className="font-display font-extrabold text-base sm:text-lg text-[var(--neu-text)] m-0 mt-0.5">{OFFICIAL_CASE.titleTH}</h3>
                             </div>
-                            <button type="button" onClick={onClose} className="spatial-soft w-9 h-9 rounded-xl flex items-center justify-center text-primary-adaptive shrink-0">
+                            <button type="button" onClick={onClose} className="neu-btn w-9 h-9 shrink-0">
                                 <Icon name="X" size={16} />
                             </button>
                         </div>
-                        <div className="w-full aspect-video rounded-2xl overflow-hidden bg-black border border-white/15">
+                        <div className="w-full aspect-video rounded-2xl overflow-hidden bg-black neu-inset">
                             <iframe
                                 title="วิดีโอต้นแบบ การเจรจาขอรับบริจาคอวัยวะ รพ.ราชวิถี"
                                 src={VIDEO_EMBED_URL}
@@ -1130,10 +1045,10 @@
                             />
                         </div>
                         <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-                            <a href={VIDEO_URL} target="_blank" rel="noreferrer" className="text-prism-adaptive underline inline-flex items-center gap-1">
+                            <a href={VIDEO_URL} target="_blank" rel="noreferrer" className="text-[var(--neu-teal)] font-bold underline inline-flex items-center gap-1">
                                 <Icon name="ExternalLink" size={13} /> เปิดรับชมบน Vimeo
                             </a>
-                            <button type="button" onClick={onClose} className="btn-peach-ambient px-5 py-2 text-xs">ปิดวิดีโอและกลับหน้าเตรียมฝึก</button>
+                            <button type="button" onClick={onClose} className="neu-btn-teal px-5 py-2.5 text-xs font-display font-bold">ปิดวิดีโอและกลับหน้าเตรียมฝึก</button>
                         </div>
                     </div>
                 </div>
@@ -1157,27 +1072,27 @@
                 <svg viewBox={`0 0 ${w} ${h}`} className="w-full max-w-[330px] mx-auto overflow-visible">
                     <defs>
                         <linearGradient id="labRadarFill" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stopColor="#34d399" stopOpacity="0.48" />
-                            <stop offset="100%" stopColor="#f9a8d4" stopOpacity="0.26" />
+                            <stop offset="0%" stopColor={isDark ? '#5eead4' : '#247870'} stopOpacity="0.42" />
+                            <stop offset="100%" stopColor={isDark ? '#fda4af' : '#d9486b'} stopOpacity="0.24" />
                         </linearGradient>
                     </defs>
                     {[0.25, 0.5, 0.75, 1].map((lv, li) => (
-                        <polygon key={li} points={RADAR_AXES.map((_, i) => pt(i, lv).join(',')).join(' ')} fill="none" stroke={isDark ? 'rgba(147,197,253,0.22)' : 'rgba(15,58,125,0.16)'} strokeWidth="1" />
+                        <polygon key={li} points={RADAR_AXES.map((_, i) => pt(i, lv).join(',')).join(' ')} fill="none" stroke={isDark ? 'rgba(201,214,230,0.24)' : 'rgba(71,88,107,0.20)'} strokeWidth="1" />
                     ))}
                     {RADAR_AXES.map((_, i) => {
                         const [x, y] = pt(i, 1);
-                        return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke={isDark ? 'rgba(147,197,253,0.20)' : 'rgba(15,58,125,0.14)'} strokeWidth="1" />;
+                        return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke={isDark ? 'rgba(201,214,230,0.22)' : 'rgba(71,88,107,0.16)'} strokeWidth="1" />;
                     })}
-                    <polygon points={dataPts.map(p => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ')} fill="url(#labRadarFill)" stroke="#34d399" strokeWidth="2.4" />
+                    <polygon points={dataPts.map(p => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ')} fill="url(#labRadarFill)" stroke={isDark ? '#5eead4' : '#247870'} strokeWidth="2.4" />
                     {dataPts.map(([x, y], i) => (
-                        <circle key={i} cx={x} cy={y} r="3.8" fill="#f9a8d4" stroke={isDark ? '#030611' : '#ffffff'} strokeWidth="1.5" />
+                        <circle key={i} cx={x} cy={y} r="3.8" fill={isDark ? '#fda4af' : '#d9486b'} stroke={isDark ? '#1c222b' : '#e6ebf0'} strokeWidth="1.5" />
                     ))}
                     {RADAR_AXES.map((a, i) => {
                         const [lx, ly] = pt(i, 1.38);
                         return (
                             <g key={a.key}>
-                                <text x={lx} y={ly - 4} textAnchor="middle" fill={isDark ? '#dbeafe' : '#284366'} fontSize="9.5" fontWeight="700">{a.shortTH}</text>
-                                <text x={lx} y={ly + 9} textAnchor="middle" fill={isDark ? '#6ee7b7' : '#047857'} fontSize="10.5" fontFamily="JetBrains Mono, monospace" fontWeight="700">{valOf(a.key)}</text>
+                                <text x={lx} y={ly - 4} textAnchor="middle" fill={isDark ? '#f4f7fb' : '#1f2b38'} fontSize="9.5" fontWeight="700">{a.shortTH}</text>
+                                <text x={lx} y={ly + 9} textAnchor="middle" fill={isDark ? '#5eead4' : '#247870'} fontSize="10.5" fontFamily="JetBrains Mono, monospace" fontWeight="700">{valOf(a.key)}</text>
                             </g>
                         );
                     })}
@@ -1196,7 +1111,7 @@
             useEffect(() => {
                 document.documentElement.setAttribute('data-theme', theme);
                 const meta = document.querySelector('meta[name="theme-color"]');
-                if (meta) meta.setAttribute('content', theme === 'dark' ? '#030611' : '#edf5fc');
+                if (meta) meta.setAttribute('content', theme === 'dark' ? '#1c222b' : '#e6ebf0');
                 try { localStorage.setItem(THEME_KEY, theme); } catch (_) {}
             }, [theme]);
             const toggleTheme = useCallback(() => setTheme(p => (p === 'dark' ? 'light' : 'dark')), []);
@@ -1648,7 +1563,7 @@
                     ctx.fillStyle = g; ctx.fillRect(0, 0, 1200, 760);
                     ctx.strokeStyle = 'rgba(253,164,175,0.55)'; ctx.lineWidth = 3; ctx.strokeRect(30, 30, 1140, 700);
                     ctx.fillStyle = '#fda4af'; ctx.font = '700 18px JetBrains Mono, monospace';
-                    ctx.fillText('RJCLOUD.ORGAN 2.0 • AI SKILL LAB 10-STEP DEBRIEF REPORT', 64, 92);
+                    ctx.fillText('ORGAN CLOUD 2.0 • AI SKILL LAB 10-STEP DEBRIEF REPORT', 64, 92);
                     ctx.fillStyle = '#ffffff'; ctx.font = '800 32px Prompt, sans-serif';
                     ctx.fillText(OFFICIAL_CASE.titleTH, 64, 146, 1060);
                     ctx.fillStyle = '#bae6fd'; ctx.font = '600 22px Sarabun, sans-serif';
@@ -1717,25 +1632,23 @@
             };
 
             // ============================================================================
-            // 8. RENDER PHASES (PRODUCTION ONLY — REQUIRE VERIFIED MEDICAL SESSION)
+            // 8. RENDER PHASES (PRODUCTION ONLY — NEUMORPHIC SOFT UI + 3D HEART STAGE)
             // ============================================================================
             if (!user?.id) {
                 return (
-                    <div className="min-h-dvh relative flex items-center justify-center p-4 pt-safe pb-safe">
-                        <div className="spatial-aura" />
-                        <div className="spatial-grid" />
-                        <div className="spatial-card relative z-10 w-full max-w-md rounded-[2rem] p-6 sm:p-8 text-center space-y-5 border-pink-300/40">
-                            <div className="w-14 h-14 mx-auto rounded-2xl bg-pink-400/15 border border-pink-300/40 flex items-center justify-center text-pink-300">
+                    <div className="min-h-dvh relative flex items-center justify-center p-4 pt-safe pb-safe bg-[var(--neu-bg)] text-[var(--neu-text)]">
+                        <div className="neu-card relative z-10 w-full max-w-md p-6 sm:p-8 text-center space-y-5">
+                            <div className="neu-icon-well w-14 h-14 mx-auto text-[var(--neu-teal)]">
                                 <Icon name="ShieldCheck" size={28} />
                             </div>
                             <div className="space-y-1.5">
-                                <span className="font-mono text-[10px] font-bold text-pink-300 uppercase tracking-wider">PRODUCTION ONLY • VERIFIED ACCESS</span>
-                                <h1 className="font-display font-extrabold text-xl text-primary-adaptive">กรุณายืนยันตัวตนบุคลากรทางการแพทย์</h1>
-                                <p className="text-xs sm:text-sm text-secondary-adaptive leading-relaxed">
+                                <span className="font-mono text-[10px] font-bold text-[var(--neu-teal)] uppercase tracking-wider">organ cloud 2.0 • VERIFIED ACCESS</span>
+                                <h1 className="font-display font-extrabold text-xl text-[var(--neu-text)] m-0">กรุณายืนยันตัวตนบุคลากรทางการแพทย์</h1>
+                                <p className="text-xs sm:text-sm text-[var(--neu-text-sub)] leading-relaxed m-0">
                                     ห้องฝึกสื่อสาร AI Skill Lab 3D เป็นระบบปิดเฉพาะแพทย์ พยาบาล และบุคลากรสหวิชาชีพที่ยืนยันตัวตนด้วยเลขใบอนุญาตประกอบวิชาชีพและรหัส OTP แล้วเท่านั้นค่ะ
                                 </p>
                             </div>
-                            <a href="./index.html" className="btn-peach-ambient touch-target w-full py-3.5 font-display font-extrabold text-sm">
+                            <a href="./index.html" className="neu-btn-teal touch-target w-full py-3.5 font-display font-extrabold text-sm">
                                 ไปหน้ายืนยันตัวตน (เลขใบอนุญาต + OTP) →
                             </a>
                         </div>
@@ -1744,33 +1657,31 @@
             }
 
             return (
-                <div className="min-h-dvh relative flex flex-col pt-safe pb-safe">
-                    <div className="spatial-aura" />
-                    <div className="spatial-grid" />
+                <div className="min-h-dvh relative flex flex-col pt-safe pb-safe bg-[var(--neu-bg)] text-[var(--neu-text)]">
                     {voicePhase !== 'idle' && (
                         <div className="fixed top-0 left-0 right-0 z-50 pointer-events-none"><div className="rjc-ambient-bar" /></div>
                     )}
 
-                    {/* ==================== PHASE 1: LOBBY (1 UNIFIED OFFICIAL CASE • 10 STEPS) ==================== */}
+                    {/* ==================== PHASE 1: LOBBY (NEUMORPHIC SOFT UI) ==================== */}
                     {phase === 'lobby' && (
                         <>
-                            <header className="sticky top-0 z-30 spatial-header">
-                                <div className="max-w-6xl mx-auto px-3.5 sm:px-6 h-14 md:h-16 flex items-center justify-between gap-2">
-                                    <div className="flex items-center gap-2.5 min-w-0">
-                                        <a href="./index.html?return=dashboard" className="w-9 h-9 rounded-xl spatial-soft text-primary-adaptive flex items-center justify-center shrink-0">
+                            <header className="sticky top-0 z-30 neu-header">
+                                <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2">
+                                    <div className="flex items-center gap-3 min-w-0">
+                                        <a href="./index.html?return=dashboard" className="neu-btn w-10 h-10 shrink-0" aria-label="กลับห้องเรียน">
                                             <Icon name="ArrowLeft" size={18} />
                                         </a>
                                         <div className="min-w-0">
-                                            <span className="font-display font-extrabold text-sm sm:text-base text-primary-adaptive block leading-none truncate">
-                                                AI Skill Lab <span className="text-accent-adaptive">3D</span> <span className="font-mono text-[10px] text-pink-300">HEART HOLOGRAM</span>
+                                            <span className="font-display font-extrabold text-sm sm:text-base text-[var(--neu-text)] block leading-none truncate">
+                                                AI Skill Lab <span className="text-[var(--neu-teal)]">3D</span> <span className="font-mono text-[10px] text-[var(--neu-rose)]">organ cloud 2.0</span>
                                             </span>
-                                            <span className="text-[10px] font-mono text-muted-adaptive block truncate">
+                                            <span className="text-[10.5px] font-mono text-[var(--neu-text-muted)] block truncate mt-0.5">
                                                 {user.name} • {user.professionGroup || 'บุคลากรทางการแพทย์'}
                                             </span>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-1.5 shrink-0">
-                                        <button type="button" onClick={() => setShowVideoModal(true)} className="spatial-soft px-3 py-2 rounded-xl text-xs font-bold text-pink-300 inline-flex items-center gap-1.5">
+                                    <div className="flex items-center gap-2 shrink-0">
+                                        <button type="button" onClick={() => setShowVideoModal(true)} className="neu-btn px-3.5 py-2 text-xs font-bold text-[var(--neu-rose)]">
                                             <Icon name="PlayCircle" size={15} /> <span className="hidden sm:inline">ดูวิดีโอต้นแบบ</span>
                                         </button>
                                         <ThemeToggleButton theme={theme} onToggle={toggleTheme} />
@@ -1778,103 +1689,103 @@
                                 </div>
                             </header>
 
-                            <main className="relative z-10 max-w-6xl w-full mx-auto px-3.5 sm:px-6 py-5 sm:py-6 space-y-4 flex-1">
+                            <main className="relative z-10 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 space-y-5 flex-1">
                                 {/* HERO OFFICIAL CASE CARD */}
-                                <section className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
-                                    <div className="lg:col-span-8 spatial-card rounded-[1.75rem] p-5 sm:p-6 flex flex-col justify-between gap-4 border-pink-300/35">
+                                <section className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+                                    <div className="lg:col-span-8 neu-card p-5 sm:p-7 flex flex-col justify-between gap-4">
                                         <div className="space-y-2.5">
                                             <div className="flex flex-wrap items-center gap-2">
-                                                <span className="px-2.5 py-0.5 rounded-full bg-pink-400/15 border border-pink-300/40 text-pink-300 font-mono text-[10px] font-bold">
+                                                <span className="px-3 py-1 rounded-full font-mono text-[10px] font-bold text-[var(--neu-rose)] bg-[var(--neu-bg)] shadow-[var(--shadow-pressed-sm)]">
                                                     OFFICIAL CLINICAL CASE • PMD RJ
                                                 </span>
-                                                <span className="px-2.5 py-0.5 rounded-full bg-aurora-500/15 border border-aurora-400/40 text-accent-adaptive font-mono text-[10px] font-bold">
+                                                <span className="px-3 py-1 rounded-full font-mono text-[10px] font-bold text-[var(--neu-teal)] bg-[var(--neu-bg)] shadow-[var(--shadow-pressed-sm)]">
                                                     3 บท • 10 สเต็ปมาตรฐาน
                                                 </span>
                                             </div>
-                                            <h1 className="font-display font-extrabold text-xl sm:text-2xl text-primary-adaptive leading-snug">
+                                            <h1 className="font-display font-extrabold text-xl sm:text-2xl text-[var(--neu-text)] leading-snug m-0">
                                                 {OFFICIAL_CASE.titleTH}
                                             </h1>
-                                            <p className="text-xs sm:text-sm text-secondary-adaptive leading-relaxed">
+                                            <p className="text-xs sm:text-sm text-[var(--neu-text-sub)] leading-relaxed m-0">
                                                 {OFFICIAL_CASE.subtitleTH} — ฝึกสื่อสารกับ <b>โฮโลแกรมหัวใจ 3 มิติ</b> ที่เต้นและเปลี่ยนสีตามอารมณ์ แปลงร่างเป็นข้อความอารมณ์เมื่อความรู้สึกญาติเปลี่ยนแล้วกลับคืนเป็นหัวใจ พร้อมเสียง AI สตูดิโอ 24kHz จนถึง <b>สเต็ปที่ 10 ให้ญาติตัดสินใจเองอย่างอิสระ</b>
                                             </p>
                                         </div>
 
-                                        <div className="flex flex-wrap items-center gap-2.5 pt-2 border-t border-white/10">
-                                            <button type="button" onClick={() => setShowVideoModal(true)} className="spatial-soft px-4 py-2.5 rounded-2xl text-xs font-bold text-prism-adaptive inline-flex items-center gap-2">
-                                                <Icon name="PlayCircle" size={16} className="text-sky-400" />
+                                        <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-[var(--neu-border-soft)]">
+                                            <button type="button" onClick={() => setShowVideoModal(true)} className="neu-btn px-4 py-2.5 text-xs font-bold text-[var(--neu-teal)]">
+                                                <Icon name="PlayCircle" size={16} />
                                                 <span>ทบทวนวิดีโอต้นแบบก่อนฝึก (Vimeo)</span>
                                             </button>
-                                            <span className="text-[11px] font-mono text-muted-adaptive">คู่สนทนา: {OFFICIAL_CASE.relativeName}</span>
+                                            <span className="text-[11px] font-mono text-[var(--neu-text-muted)]">คู่สนทนา: {OFFICIAL_CASE.relativeName}</span>
                                         </div>
                                     </div>
 
                                     {/* MODE SELECTOR (NORMAL & HARD) */}
-                                    <div className="lg:col-span-4 spatial-card rounded-[1.75rem] p-5 flex flex-col justify-between gap-3">
+                                    <div className="lg:col-span-4 neu-card p-5 flex flex-col justify-between gap-3.5">
                                         <div>
-                                            <span className="font-mono text-[10px] font-bold text-amber-400 uppercase">เลือกระดับการฝึก (10 สเต็ป)</span>
-                                            <h2 className="font-display font-bold text-base text-primary-adaptive mt-0.5">Normal vs Hard Mode</h2>
+                                            <span className="font-mono text-[10px] font-bold text-[var(--neu-amber)] uppercase">เลือกระดับการฝึก (10 สเต็ป)</span>
+                                            <h2 className="font-display font-bold text-base text-[var(--neu-text)] mt-0.5 m-0">Normal vs Hard Mode</h2>
                                         </div>
                                         <div className="space-y-2.5">
-                                            <button type="button" onClick={() => setDifficultyId('normal')} className={`w-full p-3.5 rounded-2xl border text-left transition-all ${difficultyId === 'normal' ? 'bg-aurora-500/20 border-aurora-400 shadow' : 'spatial-soft'}`}>
+                                            <button type="button" onClick={() => setDifficultyId('normal')} className={`neu-step-pill ${difficultyId === 'normal' ? 'is-active' : ''} w-full p-3.5 text-left`}>
                                                 <div className="flex items-center justify-between">
-                                                    <span className="font-display font-extrabold text-sm text-primary-adaptive">Normal Mode (10 สเต็ป)</span>
-                                                    {difficultyId === 'normal' && <Icon name="CheckCircle2" size={16} className="text-accent-adaptive" />}
+                                                    <span className="font-display font-extrabold text-sm text-[var(--neu-text)]">Normal Mode (10 สเต็ป)</span>
+                                                    {difficultyId === 'normal' && <Icon name="CheckCircle2" size={16} className="text-[var(--neu-teal)]" />}
                                                 </div>
-                                                <p className="text-[11px] text-secondary-adaptive mt-1 leading-snug">แสดงเป้าหมายรายสเต็ป แนวทางคำพูด ปุ่มคำใบ้ และมิเตอร์ความไว้วางใจ เหมาะสำหรับฝึกตามลำดับวิดีโอ</p>
+                                                <p className="text-[11px] text-[var(--neu-text-sub)] mt-1 leading-snug m-0">แสดงเป้าหมายรายสเต็ป แนวทางคำพูด ปุ่มคำใบ้ และมิเตอร์ความไว้วางใจ เหมาะสำหรับฝึกตามลำดับวิดีโอ</p>
                                             </button>
-                                            <button type="button" onClick={() => setDifficultyId('hard')} className={`w-full p-3.5 rounded-2xl border text-left transition-all ${difficultyId === 'hard' ? 'bg-rose-500/20 border-rose-400 shadow' : 'spatial-soft'}`}>
+                                            <button type="button" onClick={() => setDifficultyId('hard')} className={`neu-step-pill ${difficultyId === 'hard' ? 'is-active-rose' : ''} w-full p-3.5 text-left`}>
                                                 <div className="flex items-center justify-between">
-                                                    <span className="font-display font-extrabold text-sm text-rose-400">Hard Mode ⚡ (10 สเต็ปเสมือนจริง)</span>
-                                                    {difficultyId === 'hard' && <Icon name="CheckCircle2" size={16} className="text-rose-400" />}
+                                                    <span className="font-display font-extrabold text-sm text-[var(--neu-rose)]">Hard Mode ⚡ (10 สเต็ปเสมือนจริง)</span>
+                                                    {difficultyId === 'hard' && <Icon name="CheckCircle2" size={16} className="text-[var(--neu-rose)]" />}
                                                 </div>
-                                                <p className="text-[11px] text-secondary-adaptive mt-1 leading-snug">ไร้แนวทางคำพูด ไร้คำใบ้ ซ่อนมิเตอร์ความไว้วางใจ ญาติมีปฏิกิริยาอารมณ์เข้มข้นเสมือนห้อง ICU จริง</p>
+                                                <p className="text-[11px] text-[var(--neu-text-sub)] mt-1 leading-snug m-0">ไร้แนวทางคำพูด ไร้คำใบ้ ซ่อนมิเตอร์ความไว้วางใจ ญาติมีปฏิกิริยาอารมณ์เข้มข้นเสมือนห้อง ICU จริง</p>
                                             </button>
                                         </div>
                                     </div>
                                 </section>
 
                                 {/* 10-STEP CLINICAL PROTOCOL ROADMAP */}
-                                <section className="spatial-card rounded-[1.75rem] p-5 space-y-3.5">
+                                <section className="neu-card p-5 sm:p-6 space-y-3.5">
                                     <div className="flex flex-wrap items-center justify-between gap-2">
                                         <div>
-                                            <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">10-STEP CLINICAL NEGOTIATION PROTOCOL</span>
-                                            <h2 className="font-display font-extrabold text-base sm:text-lg text-primary-adaptive">โครงสร้างการฝึก 10 สเต็ป (อ้างอิง 3 บทของวิดีโอต้นแบบ)</h2>
+                                            <span className="font-mono text-[10px] font-bold text-[var(--neu-teal)] uppercase">10-STEP CLINICAL NEGOTIATION PROTOCOL</span>
+                                            <h2 className="font-display font-extrabold text-base sm:text-lg text-[var(--neu-text)] m-0 mt-0.5">โครงสร้างการฝึก 10 สเต็ป (อ้างอิง 3 บทของวิดีโอต้นแบบ)</h2>
                                         </div>
-                                        <span className="font-mono text-[11px] font-bold text-pink-300">สเต็ปที่ 10 = ญาติตัดสินใจเองอิสระ</span>
+                                        <span className="font-mono text-[11px] font-bold text-[var(--neu-rose)]">สเต็ปที่ 10 = ญาติตัดสินใจเองอิสระ</span>
                                     </div>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 text-xs">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
                                         {TEN_STEPS.map(s => (
-                                            <div key={s.step} className={`p-3 rounded-2xl border space-y-1 ${s.step === 10 ? 'bg-pink-400/15 border-pink-300/45' : 'spatial-soft'}`}>
+                                            <div key={s.step} className={`neu-inset p-3.5 space-y-1 ${s.step === 10 ? 'border-[var(--neu-rose-soft)]' : ''}`}>
                                                 <div className="flex items-center justify-between gap-1">
-                                                    <span className="font-mono text-[10px] font-extrabold text-prism-adaptive">STEP {String(s.step).padStart(2, '0')}</span>
-                                                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: EMOTIONS[s.emotion]?.color }} />
+                                                    <span className="font-mono text-[10px] font-extrabold text-[var(--neu-teal)]">STEP {String(s.step).padStart(2, '0')}</span>
+                                                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: EMOTIONS[s.emotion]?.color }} />
                                                 </div>
-                                                <p className="font-display font-bold text-primary-adaptive leading-snug">{s.titleTH}</p>
-                                                <p className="text-[10.5px] text-muted-adaptive leading-snug">{s.chapter}</p>
+                                                <p className="font-display font-bold text-[var(--neu-text)] leading-snug m-0">{s.titleTH}</p>
+                                                <p className="text-[10.5px] text-[var(--neu-text-muted)] leading-snug m-0">{s.chapter}</p>
                                             </div>
                                         ))}
                                     </div>
                                 </section>
 
                                 {/* PRE-PRACTICE SELF-EFFICACY & START BUTTON */}
-                                <section className="spatial-card rounded-[1.75rem] p-5 space-y-4">
+                                <section className="neu-card p-5 sm:p-6 space-y-4">
                                     <div className="flex flex-wrap items-center justify-between gap-2">
-                                        <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">PRE-PRACTICE SELF-EFFICACY (ประเมินความมั่นใจก่อนฝึก • R2R • 1–5)</span>
-                                        <span className="font-mono text-[10px] text-muted-adaptive">Zero-PII • PDPA 100%</span>
+                                        <span className="font-mono text-[10px] font-bold text-[var(--neu-teal)] uppercase">PRE-PRACTICE SELF-EFFICACY (ประเมินความมั่นใจก่อนฝึก • R2R • 1–5)</span>
+                                        <span className="font-mono text-[10px] text-[var(--neu-text-muted)]">Zero-PII • PDPA 100%</span>
                                     </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 text-xs">
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
                                         {SELF_EFFICACY_ITEMS.map(it => (
-                                            <div key={it.key} className="spatial-soft p-3 rounded-2xl space-y-1.5">
-                                                <p className="text-secondary-adaptive leading-snug">{it.labelTH}</p>
-                                                <div className="flex gap-1">
+                                            <div key={it.key} className="neu-inset p-3.5 space-y-2">
+                                                <p className="text-[var(--neu-text-sub)] leading-snug m-0">{it.labelTH}</p>
+                                                <div className="flex gap-1.5">
                                                     {[1, 2, 3, 4, 5].map(n => (
-                                                        <button key={n} type="button" onClick={() => setPreEff(p => ({ ...p, [it.key]: n }))} className={`flex-1 py-1 rounded-lg font-mono font-bold ${preEff[it.key] === n ? 'bg-aurora-400 text-void-950' : 'spatial-soft text-secondary-adaptive'}`}>{n}</button>
+                                                        <button key={n} type="button" onClick={() => setPreEff(p => ({ ...p, [it.key]: n }))} className={`neu-btn flex-1 py-1.5 font-mono font-extrabold text-xs ${preEff[it.key] === n ? 'is-pressed' : ''}`}>{n}</button>
                                                     ))}
                                                 </div>
                                             </div>
                                         ))}
                                     </div>
-                                    <button type="button" onClick={() => setPhase('briefing')} className="btn-peach-ambient touch-target w-full py-4 font-display font-extrabold text-sm sm:text-base">
+                                    <button type="button" onClick={() => setPhase('briefing')} className="neu-btn-teal touch-target w-full py-4 font-display font-extrabold text-sm sm:text-base">
                                         เปิดแฟ้มเคส ICU &amp; เตรียมเข้าห้องรับรอง ({difficultyId === 'hard' ? 'Hard Mode ⚡' : 'Normal Mode • 10 สเต็ป'}) →
                                     </button>
                                 </section>
@@ -1882,49 +1793,49 @@
                         </>
                     )}
 
-                    {/* ==================== PHASE 2: ICU BRIEFING ==================== */}
+                    {/* ==================== PHASE 2: ICU BRIEFING (NEUMORPHIC SOFT UI) ==================== */}
                     {phase === 'briefing' && (
                         <main className="relative z-10 max-w-3xl w-full mx-auto px-4 py-7 space-y-5 flex-1 flex flex-col justify-center">
-                            <div className="spatial-card rounded-[2rem] p-5 sm:p-7 space-y-5 border-pink-300/40">
+                            <div className="neu-card p-6 sm:p-8 space-y-5">
                                 <div className="flex items-center justify-between gap-2">
-                                    <button type="button" onClick={() => setPhase('lobby')} className="spatial-soft px-3.5 py-2 rounded-xl text-xs font-bold text-primary-adaptive inline-flex items-center gap-1.5">
+                                    <button type="button" onClick={() => setPhase('lobby')} className="neu-btn px-4 py-2 text-xs font-bold">
                                         <Icon name="ArrowLeft" size={14} /> กลับหน้าหลัก Skill Lab
                                     </button>
-                                    <span className={`px-3 py-1 rounded-full font-mono text-[10px] font-bold ${difficultyId === 'hard' ? 'bg-rose-500/20 text-rose-300' : 'bg-aurora-500/20 text-accent-adaptive'}`}>
+                                    <span className={`px-3 py-1 rounded-full font-mono text-[10px] font-bold bg-[var(--neu-bg)] shadow-[var(--shadow-pressed-sm)] ${difficultyId === 'hard' ? 'text-[var(--neu-rose)]' : 'text-[var(--neu-teal)]'}`}>
                                         {difficultyId.toUpperCase()} MODE • 10 STEPS
                                     </span>
                                 </div>
 
                                 <div>
-                                    <span className="font-mono text-[10px] font-bold text-pink-300 uppercase">ICU CLINICAL BRIEFING FILE • RAJAVITHI COE</span>
-                                    <h1 className="font-display font-extrabold text-xl sm:text-2xl text-primary-adaptive mt-1">{OFFICIAL_CASE.titleTH}</h1>
-                                    <p className="text-xs sm:text-sm text-secondary-adaptive mt-1">คู่สนทนา: <b>{OFFICIAL_CASE.relativeName}</b></p>
+                                    <span className="font-mono text-[10px] font-bold text-[var(--neu-rose)] uppercase">ICU CLINICAL BRIEFING FILE • organ cloud 2.0</span>
+                                    <h1 className="font-display font-extrabold text-xl sm:text-2xl text-[var(--neu-text)] mt-1 m-0">{OFFICIAL_CASE.titleTH}</h1>
+                                    <p className="text-xs sm:text-sm text-[var(--neu-text-sub)] mt-1 m-0">คู่สนทนา: <b>{OFFICIAL_CASE.relativeName}</b></p>
                                 </div>
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                                    <div className="spatial-soft rounded-2xl p-3.5 space-y-1">
-                                        <span className="font-mono text-[10px] text-prism-adaptive font-bold block">ข้อมูลผู้ป่วย (PATIENT)</span>
-                                        <p className="font-bold text-primary-adaptive">{OFFICIAL_CASE.icuBrief.patient}</p>
+                                    <div className="neu-inset p-4 space-y-1">
+                                        <span className="font-mono text-[10px] text-[var(--neu-teal)] font-bold block">ข้อมูลผู้ป่วย (PATIENT)</span>
+                                        <p className="font-bold text-[var(--neu-text)] m-0">{OFFICIAL_CASE.icuBrief.patient}</p>
                                     </div>
-                                    <div className="spatial-soft rounded-2xl p-3.5 space-y-1">
-                                        <span className="font-mono text-[10px] text-accent-adaptive font-bold block">สัญญาณชีพ (VITALS)</span>
-                                        <p className="font-mono font-bold text-primary-adaptive">{OFFICIAL_CASE.icuBrief.vitals}</p>
+                                    <div className="neu-inset p-4 space-y-1">
+                                        <span className="font-mono text-[10px] text-[var(--neu-teal)] font-bold block">สัญญาณชีพ (VITALS)</span>
+                                        <p className="font-mono font-bold text-[var(--neu-text)] m-0">{OFFICIAL_CASE.icuBrief.vitals}</p>
                                     </div>
-                                    <div className="sm:col-span-2 spatial-soft rounded-2xl p-3.5 space-y-1">
-                                        <span className="font-mono text-[10px] text-amber-400 font-bold block">การยืนยันภาวะสมองตาย (BRAIN DEATH CONFIRMATION)</span>
-                                        <p className="font-semibold text-primary-adaptive">{OFFICIAL_CASE.icuBrief.brainDeath}</p>
+                                    <div className="sm:col-span-2 neu-inset p-4 space-y-1">
+                                        <span className="font-mono text-[10px] text-[var(--neu-amber)] font-bold block">การยืนยันภาวะสมองตาย (BRAIN DEATH CONFIRMATION)</span>
+                                        <p className="font-semibold text-[var(--neu-text)] m-0">{OFFICIAL_CASE.icuBrief.brainDeath}</p>
                                     </div>
-                                    <div className="sm:col-span-2 spatial-soft rounded-2xl p-3.5 space-y-1">
-                                        <span className="font-mono text-[10px] text-pink-300 font-bold block">สถานที่สนทนา (SETTING)</span>
-                                        <p className="text-secondary-adaptive">{OFFICIAL_CASE.icuBrief.setting}</p>
+                                    <div className="sm:col-span-2 neu-inset p-4 space-y-1">
+                                        <span className="font-mono text-[10px] text-[var(--neu-rose)] font-bold block">สถานที่สนทนา (SETTING)</span>
+                                        <p className="text-[var(--neu-text-sub)] m-0">{OFFICIAL_CASE.icuBrief.setting}</p>
                                     </div>
                                 </div>
 
-                                <div className="flex flex-col sm:flex-row gap-2.5">
-                                    <button type="button" onClick={() => setShowVideoModal(true)} className="spatial-soft touch-target px-5 py-3.5 rounded-full text-xs font-bold text-prism-adaptive inline-flex items-center justify-center gap-1.5">
+                                <div className="flex flex-col sm:flex-row gap-3">
+                                    <button type="button" onClick={() => setShowVideoModal(true)} className="neu-btn touch-target px-5 py-3.5 text-xs font-bold text-[var(--neu-teal)]">
                                         <Icon name="PlayCircle" size={16} /> ดูวิดีโอต้นแบบ
                                     </button>
-                                    <button type="button" onClick={handleStartConsultation} className="btn-peach-ambient touch-target flex-1 py-3.5 font-display font-extrabold text-sm sm:text-base">
+                                    <button type="button" onClick={handleStartConsultation} className="neu-btn-teal touch-target flex-1 py-3.5 font-display font-extrabold text-sm sm:text-base">
                                         เคาะประตูเข้าห้องรับรอง &amp; เปิด 3D Heart Hologram (Step 1/10) →
                                     </button>
                                 </div>
@@ -2053,7 +1964,7 @@
                                         <p className="text-xs sm:text-sm text-sky-100 leading-relaxed max-w-2xl mx-auto">
                                             ครบทั้ง 10 สเต็ปเรียบร้อยแล้วค่ะ ญาติได้ตัดสินใจด้วยตนเองอย่างอิสระแล้ว เชิญรับชมรายงานการประเมินผล 5 แกนสมรรถนะค่ะ
                                         </p>
-                                        <button type="button" onClick={handleOpenDebriefResult} className="btn-peach-ambient touch-target px-7 py-3 font-display font-extrabold text-sm">
+                                        <button type="button" onClick={handleOpenDebriefResult} className="neu-btn-teal touch-target px-7 py-3 font-display font-extrabold text-sm">
                                             ดูรายงานประเมินผล 5 แกน &amp; สรุปผลการตัดสินใจ →
                                         </button>
                                     </div>
@@ -2084,7 +1995,7 @@
                                                 placeholder={stepIdx === 9 ? 'สเต็ปที่ 10: เปิดพื้นที่ให้ญาติตัดสินใจเองอย่างอิสระ...' : `สเต็ปที่ ${stepIdx + 1}/10: พิมพ์หรือกดไมค์เพื่อสื่อสาร...`}
                                                 className="touch-target flex-1 px-3.5 py-2 rounded-xl text-sm bg-white/[0.09] border border-sky-200/25 text-white placeholder:text-slate-400 focus:outline-none focus:border-pink-300"
                                             />
-                                            <button type="submit" disabled={!inputText.trim() || isAiThinking} className="btn-peach-ambient touch-target px-4 sm:px-5 rounded-xl font-display font-extrabold text-xs sm:text-sm shrink-0">
+                                            <button type="submit" disabled={!inputText.trim() || isAiThinking} className="neu-btn-teal touch-target px-4 sm:px-5 rounded-xl font-display font-extrabold text-xs sm:text-sm shrink-0">
                                                 {isAiThinking ? '...' : 'ส่ง →'}
                                             </button>
                                         </form>
@@ -2116,66 +2027,66 @@
                         </div>
                     )}
 
-                    {/* ==================== PHASE 4: 5-AXIS DEBRIEF REPORT & AUTO-STEP TO POSTTEST ==================== */}
+                    {/* ==================== PHASE 4: 5-AXIS DEBRIEF REPORT (NEUMORPHIC SOFT UI) ==================== */}
                     {phase === 'result' && evalResult && (
-                        <main className="relative z-10 max-w-5xl w-full mx-auto px-3.5 sm:px-6 py-6 sm:py-8 space-y-4 flex-1">
-                            <div className="flex flex-wrap items-center justify-between gap-2">
+                        <main className="relative z-10 max-w-5xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-5 flex-1">
+                            <div className="flex flex-wrap items-center justify-between gap-3">
                                 <div>
-                                    <span className="font-mono text-[10px] font-bold text-pink-300 uppercase">RAJAVITHI 10-STEP AI SUPERVISOR DEBRIEF</span>
-                                    <h1 className="font-display font-extrabold text-xl sm:text-2xl text-primary-adaptive">{OFFICIAL_CASE.titleTH}</h1>
+                                    <span className="font-mono text-[10px] font-bold text-[var(--neu-rose)] uppercase">organ cloud 2.0 • 10-STEP AI SUPERVISOR DEBRIEF</span>
+                                    <h1 className="font-display font-extrabold text-xl sm:text-2xl text-[var(--neu-text)] m-0 mt-0.5">{OFFICIAL_CASE.titleTH}</h1>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <span className={`px-3 py-1 rounded-full border font-display font-bold text-xs ${evalResult.decision?.colorClass || ''}`}>
+                                    <span className="px-3.5 py-1.5 rounded-full bg-[var(--neu-bg)] shadow-[var(--shadow-pressed-sm)] border border-[var(--neu-teal-soft)] font-display font-bold text-xs text-[var(--neu-teal)]">
                                         {evalResult.decision?.badgeTH}
                                     </span>
                                     <ThemeToggleButton theme={theme} onToggle={toggleTheme} compact />
                                 </div>
                             </div>
 
-                            <section className="grid grid-cols-1 md:grid-cols-12 gap-4 items-stretch">
-                                <div className="md:col-span-5 spatial-card rounded-[1.75rem] p-5 sm:p-6 flex flex-col justify-between gap-4 border-aurora-400/40">
+                            <section className="grid grid-cols-1 md:grid-cols-12 gap-5 items-stretch">
+                                <div className="md:col-span-5 neu-card p-5 sm:p-6 flex flex-col justify-between gap-4">
                                     <div>
-                                        <p className="text-[11px] text-muted-adaptive font-mono uppercase">CLINICAL COMMUNICATION SCORE ({difficultyId.toUpperCase()})</p>
+                                        <p className="text-[11px] text-[var(--neu-text-muted)] font-mono uppercase m-0">CLINICAL COMMUNICATION SCORE ({difficultyId.toUpperCase()})</p>
                                         <div className="flex items-baseline gap-2 mt-2">
-                                            <span className="font-mono text-5xl sm:text-6xl font-extrabold text-accent-adaptive">{evalResult.score}</span>
-                                            <span className="font-mono text-xl text-muted-adaptive">/100</span>
+                                            <span className="font-mono text-5xl sm:text-6xl font-extrabold text-[var(--neu-teal)]">{evalResult.score}</span>
+                                            <span className="font-mono text-xl text-[var(--neu-text-muted)]">/100</span>
                                         </div>
-                                        <p className="text-xs sm:text-sm text-secondary-adaptive leading-relaxed mt-3">{evalResult.summary}</p>
+                                        <p className="text-xs sm:text-sm text-[var(--neu-text-sub)] leading-relaxed mt-3 m-0">{evalResult.summary}</p>
                                     </div>
-                                    <div className="grid grid-cols-2 gap-2 text-xs">
-                                        <div className="spatial-soft rounded-xl p-2.5">
-                                            <span className="font-mono text-[9.5px] text-muted-adaptive block">ความเงียบ 2.5 วิ</span>
-                                            <span className="font-mono font-bold text-prism-adaptive">{silenceCount} ครั้ง</span>
+                                    <div className="grid grid-cols-2 gap-2.5 text-xs">
+                                        <div className="neu-inset p-3">
+                                            <span className="font-mono text-[9.5px] text-[var(--neu-text-muted)] block">ความเงียบ 2.5 วิ</span>
+                                            <span className="font-mono font-bold text-[var(--neu-sky)]">{silenceCount} ครั้ง</span>
                                         </div>
-                                        <div className="spatial-soft rounded-xl p-2.5">
-                                            <span className="font-mono text-[9.5px] text-muted-adaptive block">ความครอบคลุม</span>
-                                            <span className="font-mono font-bold text-accent-adaptive">{matchedStepIds.length}/10 สเต็ป</span>
+                                        <div className="neu-inset p-3">
+                                            <span className="font-mono text-[9.5px] text-[var(--neu-text-muted)] block">ความครอบคลุม</span>
+                                            <span className="font-mono font-bold text-[var(--neu-teal)]">{matchedStepIds.length}/10 สเต็ป</span>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="md:col-span-7 spatial-card rounded-[1.75rem] p-4 sm:p-5 flex flex-col justify-center">
-                                    <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase mb-1">5-AXIS CLINICAL COMPETENCY RADAR</span>
+                                <div className="md:col-span-7 neu-card p-5 flex flex-col justify-center">
+                                    <span className="font-mono text-[10px] font-bold text-[var(--neu-teal)] uppercase mb-1">5-AXIS CLINICAL COMPETENCY RADAR</span>
                                     <FiveAxisRadarSVG radarArr={evalResult.radar} theme={theme} />
                                 </div>
 
-                                <div className="md:col-span-6 spatial-card rounded-[1.75rem] p-5 bg-aurora-500/10 border-aurora-400/40 space-y-1.5 text-xs">
-                                    <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">★ ประโยคทองที่ทำได้ดีเยี่ยม (GOLDEN MOMENT)</span>
-                                    <p className="text-primary-adaptive text-sm leading-relaxed">{evalResult.goldenMoment}</p>
+                                <div className="md:col-span-6 neu-card p-5 space-y-1.5 text-xs">
+                                    <span className="font-mono text-[10px] font-bold text-[var(--neu-teal)] uppercase">★ ประโยคทองที่ทำได้ดีเยี่ยม (GOLDEN MOMENT)</span>
+                                    <p className="text-[var(--neu-text)] text-sm leading-relaxed m-0">{evalResult.goldenMoment}</p>
                                 </div>
-                                <div className="md:col-span-6 spatial-card rounded-[1.75rem] p-5 bg-prism-500/10 border-prism-400/40 space-y-1.5 text-xs">
-                                    <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">✦ ข้อเสนอแนะเพิ่มเติม (TURNING POINT)</span>
-                                    <p className="text-primary-adaptive text-sm leading-relaxed">{evalResult.turningPoint}</p>
+                                <div className="md:col-span-6 neu-card p-5 space-y-1.5 text-xs">
+                                    <span className="font-mono text-[10px] font-bold text-[var(--neu-sky)] uppercase">✦ ข้อเสนอแนะเพิ่มเติม (TURNING POINT)</span>
+                                    <p className="text-[var(--neu-text)] text-sm leading-relaxed m-0">{evalResult.turningPoint}</p>
                                 </div>
 
-                                <div className="md:col-span-12 spatial-card rounded-[1.75rem] p-5 space-y-4">
+                                <div className="md:col-span-12 neu-card p-5 sm:p-6 space-y-4">
                                     {learnerVoiceClips.length > 0 && (
-                                        <div className="spatial-soft rounded-2xl p-4 space-y-2 text-xs">
-                                            <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">🎙️ ฟังเสียงตัวเองย้อนหลัง (เก็บเฉพาะใน RAM • PDPA 100%)</span>
+                                        <div className="neu-inset p-4 space-y-2 text-xs">
+                                            <span className="font-mono text-[10px] font-bold text-[var(--neu-teal)] uppercase">🎙️ ฟังเสียงตัวเองย้อนหลัง (เก็บเฉพาะใน RAM • PDPA 100%)</span>
                                             <div className="flex flex-wrap gap-2">
                                                 {learnerVoiceClips.map((c, ci) => c.audioUrl && (
-                                                    <div key={ci} className="spatial-soft px-3 py-2 rounded-xl flex items-center gap-2">
-                                                        <span className="font-mono font-bold text-accent-adaptive">รอบ {ci + 1} ({c.durationSec}s)</span>
+                                                    <div key={ci} className="neu-step-pill px-3 py-2 flex items-center gap-2">
+                                                        <span className="font-mono font-bold text-[var(--neu-teal)]">รอบ {ci + 1} ({c.durationSec}s)</span>
                                                         <audio controls src={c.audioUrl} className="h-7 max-w-[180px]" />
                                                     </div>
                                                 ))}
@@ -2183,15 +2094,15 @@
                                         </div>
                                     )}
 
-                                    <div className="spatial-soft rounded-2xl p-4 space-y-2 text-xs">
-                                        <span className="font-mono text-[10px] font-bold text-amber-400 uppercase">POST-PRACTICE SELF-EFFICACY (ประเมินความมั่นใจหลังฝึก • R2R)</span>
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+                                    <div className="neu-inset p-4 space-y-2.5 text-xs">
+                                        <span className="font-mono text-[10px] font-bold text-[var(--neu-amber)] uppercase">POST-PRACTICE SELF-EFFICACY (ประเมินความมั่นใจหลังฝึก • R2R)</span>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                                             {SELF_EFFICACY_ITEMS.map(it => (
-                                                <div key={it.key} className="space-y-1">
-                                                    <p className="text-secondary-adaptive">{it.labelTH}</p>
-                                                    <div className="flex gap-1">
+                                                <div key={it.key} className="space-y-1.5">
+                                                    <p className="text-[var(--neu-text-sub)] m-0">{it.labelTH}</p>
+                                                    <div className="flex gap-1.5">
                                                         {[1, 2, 3, 4, 5].map(n => (
-                                                            <button key={n} type="button" onClick={() => setPostEff(p => ({ ...p, [it.key]: n }))} className={`flex-1 py-1 rounded-lg font-mono font-bold ${postEff[it.key] === n ? 'bg-amber-400 text-void-950' : 'spatial-soft text-secondary-adaptive'}`}>{n}</button>
+                                                            <button key={n} type="button" onClick={() => setPostEff(p => ({ ...p, [it.key]: n }))} className={`neu-btn flex-1 py-1.5 font-mono font-extrabold text-xs ${postEff[it.key] === n ? 'is-pressed' : ''}`}>{n}</button>
                                                         ))}
                                                     </div>
                                                 </div>
@@ -2199,14 +2110,14 @@
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
-                                        <button type="button" onClick={handleDownloadDebriefPng} className="spatial-soft touch-target py-3.5 px-4 rounded-full font-display font-bold text-xs sm:text-sm text-prism-adaptive inline-flex items-center justify-center gap-1.5">
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                                        <button type="button" onClick={handleDownloadDebriefPng} className="neu-btn touch-target py-3.5 px-4 font-display font-bold text-xs sm:text-sm text-[var(--neu-teal)]">
                                             <Icon name="Download" size={15} /> บันทึกใบสรุปผล (PNG)
                                         </button>
-                                        <button type="button" onClick={() => { stopStudioVoice(); setPhase('lobby'); }} className="spatial-soft touch-target py-3.5 rounded-full font-display font-bold text-xs sm:text-sm text-primary-adaptive">
+                                        <button type="button" onClick={() => { stopStudioVoice(); setPhase('lobby'); }} className="neu-btn touch-target py-3.5 px-4 font-display font-bold text-xs sm:text-sm">
                                             ← ฝึกใหม่ (เปลี่ยน Normal / Hard)
                                         </button>
-                                        <button type="button" onClick={handleSaveAndGoPosttest} className="btn-peach-ambient touch-target py-3.5 rounded-full font-display font-extrabold text-xs sm:text-sm">
+                                        <button type="button" onClick={handleSaveAndGoPosttest} className="neu-btn-teal touch-target py-3.5 px-4 font-display font-extrabold text-xs sm:text-sm">
                                             บันทึกผล &amp; ไปทำ Post-test ต่อทันที →
                                         </button>
                                     </div>
