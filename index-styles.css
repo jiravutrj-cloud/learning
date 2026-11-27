@@ -4,19 +4,21 @@ rjcloud.organ 2.0 — Main Stylesheet (index-styles.css)
 
 ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ โรงพยาบาลราชวิถี
 
-โครงสร้างภายในไฟล์ (ครบทั้ง 6 ส่วน 100% แมตช์กับ index.html ทุกคลาส):
+โครงสร้างภายในไฟล์ (ครบทั้ง 7 ส่วน 100% แมตช์กับ index.html ทุกคลาส):
 
 Adaptive Bento Grid Theme Tokens (Dark Obsidian Glass & Light Crystal Glass)
 
-Spatial Glass Surfaces, Typography, Inputs & Landing Service Pills
+Base Reset, Spatial Glass Surfaces, Typography & Landing Service Pills
 
 Xianxia Peach Blossom Night Atmosphere, Liquid Glass Chamber & Water Text
 
-Auth Transition (Left-to-Right Fade), Peach Ambient White Button & Spring OTP
+Calligraphic Signature Animation (After Effects Trim-Path Style • Desktop & Mobile)
 
-Auto-Classification Badges, AI Navigator Card, Voice Equalizer & Keyframes
+Auth Left-to-Right Fade, Peach Ambient White Button & Spring Liquid OTP
 
-A4 Individual Certificate Letter Print Rules & Reduced Motion Guard
+Auto-Classification Badges, AI Navigator, Studio Voice EQ & Keyframes
+
+A4 Certificate Letter Print & Prefers-Reduced-Motion
 
 ============================================================================ */
 
@@ -311,7 +313,6 @@ linear-gradient(180deg, rgba(1, 3, 10, 0.45) 0%, rgba(1, 3, 10, 0) 18%, rgba(1, 
 background: linear-gradient(180deg, #030b1c 0%, #041026 24%, #030b1e 60%, #020612 100%);
 }
 
-/* z-12: ดวงจันทร์ 3D ทองอุ่น + นกกระเรียนแสง + โคมลอย 18 ดวง + ทิวเขา 4 ระยะ + หมอกเย็น + ผิวน้ำทะเลสาบกระจก */
 #idx-mist-backdrop-canvas {
 position: absolute;
 inset: 0;
@@ -322,7 +323,6 @@ z-index: 12;
 transform: translateZ(0);
 }
 
-/* z-18: อยู่หน้ากิ่งไม้ (z-15) แต่หลังกรอบกระจก (z-25) -> ลมปราณจากยอดเขา + ดอกท้อ 12 กิ่ง + ฝนกลีบดอกท้อ */
 #idx-solar-flare-canvas {
 position: absolute;
 inset: 0;
@@ -399,6 +399,138 @@ text-shadow:
 0 0 10px rgba(254, 249, 195, 0.82),
 0 0 24px rgba(253, 224, 71, 0.4),
 0 0 42px rgba(250, 204, 21, 0.22);
+}
+
+/* ============================================================================
+
+CALLIGRAPHIC SIGNATURE ANIMATION (AFTER EFFECTS TRIM-PATH STYLE)
+
+ข้อความ "ยกระดับทักษะการรับบริจาคและปลูกถ่ายอวัยวะ" -> "สู่มาตรฐานปี 2027"
+
+============================================================================ */
+.sig-reveal-line1 {
+position: relative;
+display: inline-block;
+will-change: clip-path, transform, opacity, filter;
+animation: sigWriteLine1 9.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+.sig-reveal-line2 {
+position: relative;
+display: inline-block;
+will-change: clip-path, transform, opacity, filter;
+animation: sigWriteLine2 9.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+/* เส้นพู่กันลายเซ็น 2 ชั้น (ชั้นแสงฟุ้งนอก + แกนเส้นคมสีขาว-ทองด้านใน) */
+.sig-stroke-glow-1,
+.sig-stroke-core-1 {
+stroke-dasharray: 1000;
+stroke-dashoffset: 1000;
+will-change: stroke-dashoffset, opacity;
+animation: sigFlourishDraw1 9.6s cubic-bezier(0.25, 0.9, 0.3, 1) infinite;
+}
+
+.sig-stroke-glow-2,
+.sig-stroke-core-2 {
+stroke-dasharray: 1000;
+stroke-dashoffset: 1000;
+will-change: stroke-dashoffset, opacity;
+animation: sigFlourishDraw2 9.6s cubic-bezier(0.22, 0.92, 0.28, 1) infinite;
+}
+
+/* ใช้ polygon เฉียงเหมือนปลายปากกาหัวตัดตวัดเปิดตัวอักษรจากซ้ายไปขวา */
+@keyframes sigWriteLine1 {
+0% {
+clip-path: polygon(0% 0%, 0% 0%, -8% 100%, -8% 100%);
+opacity: 0.1;
+transform: translateY(3px);
+filter: brightness(1.45);
+}
+21% {
+clip-path: polygon(0% 0%, 108% 0%, 100% 100%, 0% 100%);
+opacity: 1;
+transform: translateY(0);
+filter: brightness(1.08);
+}
+84% {
+clip-path: polygon(0% 0%, 108% 0%, 100% 100%, 0% 100%);
+opacity: 1;
+transform: translateY(0);
+filter: brightness(1);
+}
+94%, 100% {
+clip-path: polygon(108% 0%, 108% 0%, 100% 100%, 100% 100%);
+opacity: 0;
+transform: translateY(-2px);
+}
+}
+
+@keyframes sigWriteLine2 {
+0%, 17% {
+clip-path: polygon(0% 0%, 0% 0%, -10% 100%, -10% 100%);
+opacity: 0;
+transform: translateY(4px) scale(0.985);
+}
+36% {
+clip-path: polygon(0% 0%, 110% 0%, 100% 100%, 0% 100%);
+opacity: 1;
+transform: translateY(0) scale(1);
+}
+84% {
+clip-path: polygon(0% 0%, 110% 0%, 100% 100%, 0% 100%);
+opacity: 1;
+transform: translateY(0) scale(1);
+}
+94%, 100% {
+clip-path: polygon(110% 0%, 110% 0%, 100% 100%, 100% 100%);
+opacity: 0;
+transform: translateY(-2px);
+}
+}
+
+@keyframes sigFlourishDraw1 {
+0% {
+stroke-dashoffset: 1000;
+opacity: 0;
+}
+4% {
+opacity: 0.96;
+}
+23% {
+stroke-dashoffset: 0;
+opacity: 0.92;
+}
+78% {
+stroke-dashoffset: 0;
+opacity: 0.58;
+}
+91%, 100% {
+stroke-dashoffset: -1000;
+opacity: 0;
+}
+}
+
+@keyframes sigFlourishDraw2 {
+0%, 16% {
+stroke-dashoffset: 1000;
+opacity: 0;
+}
+20% {
+opacity: 1;
+}
+40% {
+stroke-dashoffset: 0;
+opacity: 0.96;
+}
+80% {
+stroke-dashoffset: 0;
+opacity: 0.68;
+}
+92%, 100% {
+stroke-dashoffset: -1000;
+opacity: 0;
+}
 }
 
 /* ลายน้ำ RAJAVITHI HOSPITAL แบบเนื้อน้ำเคลื่อนไหวอัลตร้าสมูท */
@@ -850,7 +982,16 @@ print-color-adjust: exact !important;
 .water-wave-sub,
 .water-caustic-band,
 .water-reflect-layer,
-.auth-fade-ltr {
+.auth-fade-ltr,
+.sig-reveal-line1,
+.sig-reveal-line2,
+.sig-stroke-glow-1,
+.sig-stroke-core-1,
+.sig-stroke-glow-2,
+.sig-stroke-core-2 {
 animation: none !important;
+clip-path: none !important;
+stroke-dashoffset: 0 !important;
+opacity: 1 !important;
 }
 }
