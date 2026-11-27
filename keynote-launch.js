@@ -52,9 +52,16 @@
   let revealStartTs = 0;
   const REVEAL_DURATION = 3.15; // seconds for ultra-smooth cinematic mist parting
 
+  // Volumetric mist sprite & particle pools (must be declared under 'use strict')
+  let denseMistSprite = null;
+  let silkyWispSprite = null;
+  let mistBanks = [];
+  let frostMotes = [];
+
   // Audio state (Studio 24kHz AI Host + Silky WebAudio Ambient Pad)
   let hostPlaying = false;
   let hostLoading = false;
+  let hostErrorMsg = '';
   let hostSegmentIdx = 0;
   let hostSessionId = 0;
   let hostAudioEl = null;
@@ -618,12 +625,19 @@
 
   function fallbackPcmToWav(base64Audio, sampleRate) {
     const rate = sampleRate || 24000;
-    const cleanB64 = String(base64Audio || '').replace(/^data:audio\/[^;]+;base64,/, '').trim();
+    let cleanB64 = String(base64Audio || '')
+      .replace(/^data:audio\/[^;]+;base64,/, '')
+      .replace(/\s+/g, '')
+      .replace(/-/g, '+')
+      .replace(/_/g, '/');
+    while (cleanB64.length % 4 !== 0) cleanB64 += '=';
     const bin = global.atob(cleanB64);
     const bytes = new Uint8Array(bin.length);
     for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
     const isRiff = bytes.length > 44 && bytes[0] === 0x52 && bytes[1] === 0x49 && bytes[2] === 0x46 && bytes[3] === 0x46;
     if (isRiff) return new Blob([bytes], { type: 'audio/wav' });
+    const isMp3 = bytes.length > 4 && ((bytes[0] === 0x49 && bytes[1] === 0x44 && bytes[2] === 0x33) || (bytes[0] === 0xff && (bytes[1] & 0xe0) === 0xe0));
+    if (isMp3) return new Blob([bytes], { type: 'audio/mpeg' });
 
     const buf = new ArrayBuffer(44 + bytes.length);
     const v = new DataView(buf);
@@ -662,8 +676,18 @@
         data.audioBase64 ||
         data.audio ||
         data.audioContent ||
+        data.pcmBase64 ||
+        data.wavBase64 ||
         (data.inlineData && data.inlineData.data) ||
-        (data.data && (data.data.audioBase64 || data.data.audio || data.data.audioContent));
+        (data.data && (data.data.audioBase64 || data.data.audio || data.data.audioContent)) ||
+        (data.result && (data.result.audioBase64 || data.result.audio)) ||
+        (data.candidates &&
+          data.candidates[0] &&
+          data.candidates[0].content &&
+          data.candidates[0].content.parts &&
+          data.candidates[0].content.parts[0] &&
+          data.candidates[0].content.parts[0].inlineData &&
+          data.candidates[0].content.parts[0].inlineData.data);
       if (b64) {
         blob = typeof core.pcm16ToWavBlob === 'function'
           ? core.pcm16ToWavBlob(b64, 24000)
@@ -719,22 +743,11 @@
 
     return await new Promise(function (resolve) {
       hostAudioEl.muted = false;
-      hostAudioEl.volume = 1.0;
-      hostAudioEl.src = hostBlobUrl;
-      hostAudioEl.onended = function () { resolve(true); };
-      hostAudioEl.onerror = function () { resolve(false); };
-      try { hostAudioEl.load(); } catch (_) {}
-      const p = hostAudioEl.play();
-      if (p && typeof p.catch === 'function') {
-        p.catch(function () { resolve(false); });
-      }
-    });
-  }
-
-  function stopHostNarration() {
+  function stopHostNarration(keepErrorMsg) {
     hostSessionId += 1;
     hostPlaying = false;
     hostLoading = false;
+    if (!keepErrorMsg) hostErrorMsg = '';
     if (activeVoiceSource) {
       try {
         activeVoiceSource.onended = null;
@@ -768,14 +781,14 @@
     hostSegmentIdx = idx;
     hostPlaying = true;
     hostLoading = true;
+    hostErrorMsg = '';
     updateControlLabels();
 
     try {
       const blob = await fetchSegmentBlob(idx);
       if (hostSessionId !== sid || !isLandingNow) return;
       if (!blob || blob.size <= 44) {
-        stopHostNarration();
-        return;
+        throw new Error('เซิร์ฟเวอร์ไม่ส่งข้อมูลเสียง 24kHz กลับมา');
       }
 
       // If already cached and mist just started parting, wait a tiny smooth beat before speaking
@@ -800,10 +813,19 @@
       if (hostSessionId === sid && isLandingNow && hostPlaying && played) {
         playHostSegment(idx + 1, sid, 0);
       } else if (hostSessionId === sid) {
-        stopHostNarration();
+        if (!played) {
+          hostErrorMsg = 'แตะปุ่มเพื่อเปิดเสียง AI';
+          stopHostNarration(true);
+        } else {
+          stopHostNarration();
+        }
       }
-    } catch (_) {
-      if (hostSessionId === sid) stopHostNarration();
+    } catch (err) {
+      try { console.warn('[organ cloud 2.0 Keynote Audio]', err); } catch (_) {}
+      if (hostSessionId === sid) {
+        hostErrorMsg = 'โหลดเสียง AI ไม่สำเร็จ (แตะลองใหม่)';
+        stopHostNarration(true);
+      }
     }
   }
 
@@ -822,6 +844,8 @@
         hostBtnEl.textContent = '⏳ กำลังเตรียมเสียงพิธีกร AI...';
       } else if (hostPlaying) {
         hostBtnEl.textContent = '❚❚ พิธีกร' + seg.role + ' AI (' + (hostSegmentIdx + 1) + '/' + HOST_SEGMENTS.length + ') • หยุด';
+      } else if (hostErrorMsg) {
+        hostBtnEl.textContent = '↻ ' + hostErrorMsg;
       } else {
         hostBtnEl.textContent = '▶ พิธีกร AI';
       }
