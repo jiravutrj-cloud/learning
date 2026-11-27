@@ -13,36 +13,52 @@
 (function (global) {
   'use strict';
 
+  const YOUTUBE_VIDEO_ID = 'TTwfAUzEHrM'; // Great (Epic Modern Cinematic) — Alex-Productions (CC BY 3.0)
+  const AUDIO_DB_NAME = 'rjcloud_keynote_voice_cache_v6';
+  const AUDIO_STORE_NAME = 'clips';
+
   const HOST_SEGMENTS = [
     {
-      role: 'หญิง',
-      voice: 'Sulafat',
-      text: 'ยินดีต้อนรับทุกท่านเข้าสู่ ออร์แกน คลาวด์ สองจุดศูนย์ แพลตฟอร์มการเรียนรู้และพัฒนาสมรรถนะด้านการรับบริจาคและปลูกถ่ายอวัยวะ แห่งศูนย์ความเป็นเลิศทางการแพทย์ โรงพยาบาลราชวิถีค่ะ'
-    },
-    {
+      id: 'k1',
       role: 'ชาย',
       voice: 'Puck',
-      text: 'ด้วยพันธกิจในการยกระดับทักษะบุคลากรทางการแพทย์สู่มาตรฐานปีสองพันยี่สิบเจ็ด เราเชื่อมโยงแพทย์ พยาบาล และสหวิชาชีพทั่วทั้งสิบสามเขตสุขภาพ เข้าสู่ศูนย์กลางองค์ความรู้อัจฉริยะบนระบบคลาวด์อย่างครบวงจรครับ'
+      style: 'พูดภาษาไทยด้วยน้ำเสียงผู้ชายวัยทำงานโทนกลางโปร่ง สดใส นุ่มสบายหู คมชัดระดับสตูดิโอ ผ่อนคลายและเป็นกันเองแบบพิธีกรงานเทคโนโลยีสมัยใหม่ ไม่ทุ้มลึกหรือหนักแน่นจนเกินไป',
+      text: 'เบื้องหลังทุกหนึ่งชีวิตที่ได้รับโอกาสครั้งใหม่... คือความเชี่ยวชาญ ความแม่นยำ และหัวใจของทีมบุคลากรทางการแพทย์ทุกคนครับ'
     },
     {
+      id: 'k2',
       role: 'หญิง',
       voice: 'Sulafat',
-      text: 'ภายในห้องเรียน ท่านจะได้เรียนรู้บทเรียนมาตรฐานทางคลินิก พร้อมเอกสารประกอบการเรียน เอไอสรุปสาระสำคัญหนึ่งนาที และผู้ช่วยเอไอที่พร้อมตอบข้อสงสัยทางคลินิกได้ตลอดยี่สิบสี่ชั่วโมงค่ะ'
+      style: 'พูดภาษาไทยสลับอังกฤษด้วยน้ำเสียงผู้หญิงที่อบอุ่น สง่างาม มั่นใจ คมชัดระดับสตูดิโอ และทันสมัยเหมือนพิธีกรงานเปิดตัวเทคโนโลยีระดับสากล',
+      text: 'และวันนี้... Organ Transplantation Center of ราชวิถี Hospital พร้อมแล้วที่จะพาท่านก้าวข้ามทุกขีดจำกัดของการฝึกอบรมเดิมๆ ค่ะ'
     },
     {
+      id: 'k3',
       role: 'ชาย',
       voice: 'Puck',
-      text: 'และไฮไลต์สำคัญที่พลาดไม่ได้ คือห้องฝึกสื่อสารโฮโลแกรมหัวใจสามมิติ เอไอสกิลแล็บ จำลองการเจรจาขอรับบริจาคอวัยวะสิบขั้นตอนเสมือนจริง พร้อมเสียงตอบโต้ระดับสตูดิโอ และกราฟประเมินผลห้าแกนสมรรถนะครับ'
+      style: 'พูดด้วยน้ำเสียงผู้ชายโทนกลางโปร่งที่สดใส ชัดถ้อยชัดคำ ลื่นหู คมชัดระดับสตูดิโอ ทันสมัย และเป็นมิตร สไตล์งานเปิดตัวเทคโนโลยี',
+      text: 'พบกับ ออร์แกน คลาวด์ สองจุดศูนย์ คลาวด์เอไอ แพลตฟอร์มอีเลิร์นนิง การรับบริจาคและปลูกถ่ายอวัยวะ สู่มาตรฐานปีสองพันยี่สิบเจ็ดครับ'
     },
     {
+      id: 'k4',
       role: 'หญิง',
       voice: 'Sulafat',
-      text: 'พร้อมระบบยืนยันตัวตนและเทียบโอนชั่วโมงอบรมออนไซต์อัตโนมัติ รองรับการเก็บหน่วยคะแนนซีเอ็นอียูสำหรับพยาบาลวิชาชีพ และออกประกาศนียบัตรดิจิทัลพร้อมคิวอาร์โค้ดตรวจสอบได้ทันที ภายใต้มาตรฐานความปลอดภัยพีดีพีเอค่ะ'
+      style: 'พูดภาษาไทยด้วยน้ำเสียงนุ่มนวล ลื่นไหล อบอุ่น คมชัดระดับสตูดิโอ และชัดเจน น่าเชื่อถือระดับวิชาการแพทย์สากล',
+      text: 'มาพร้อมผู้ช่วยเอไอติวสรุปบทเรียน, ห้องฝึกสื่อสารกับญาติ เอไอสกิลแล็บ ที่ตอบโต้ด้วยเสียงและอารมณ์เสมือนจริง และระบบรับรองหน่วยคะแนนซีเอ็นอียู มาตรฐานสภาการพยาบาล ภายใต้การคุ้มครองข้อมูลพีดีพีเอ อย่างสูงสุดค่ะ'
     },
     {
+      id: 'k5',
       role: 'ชาย',
       voice: 'Puck',
-      text: 'ทุกการเรียนรู้ในวันนี้ คือพลังสำคัญในการต่อลมหายใจให้ผู้ป่วยอีกหลายชีวิต เชิญทุกท่านกดปุ่มเข้าสู่ระบบ เพื่อเริ่มต้นประสบการณ์การเรียนรู้แห่งอนาคตไปพร้อมกันได้เลยครับ'
+      style: 'พูดด้วยน้ำเสียงผู้ชายโทนกลางที่อบอุ่น เบาสบาย นุ่มนวล คมชัดระดับสตูดิโอ และสร้างแรงบันดาลใจอย่างเป็นธรรมชาติ ไม่ทุ้มหนักหรือแข็งกร้าว',
+      text: 'อนาคตแห่งการเรียนรู้และการให้ชีวิตใหม่...'
+    },
+    {
+      id: 'k6',
+      role: 'หญิง',
+      voice: 'Sulafat',
+      style: 'พูดภาษาไทยด้วยน้ำเสียงผู้หญิงที่อบอุ่น สดใส คมชัดระดับสตูดิโอ ชวนเชิญ และน่าประทับใจเหมือนประโยคปิดงานเปิดตัวเทคโนโลยีระดับโลก',
+      text: 'ยินดีต้อนรับสู่ ออร์แกน คลาวด์ สองจุดศูนย์... กดปุ่มเข้าสู่ระบบ เพื่อเริ่มต้นได้เลยค่ะ'
     }
   ];
 
@@ -88,7 +104,17 @@
   let musicMasterGain = null;
   let voiceMasterGain = null;
   let musicOscs = [];
+  let ytPlayer = null;
+  let ytReady = false;
+  let ytPlaying = false;
+  let ytApiRequested = false;
+  let ytPendingPlay = false;
+  let ytCurrentVol = 0;
+  let ytDesiredVol = 74;
+  let ytRampTimer = null;
+  let idbPromise = null;
   const prefetchedBlobs = {};
+  const prefetchedPromises = {};
 
   const FALLBACK_GAS_URL =
     'https://script.google.com/macros/s/AKfycbwuN8MeZhhhomEhpkfXtpoTP341cugDqw1DbQPK_6NSHun2pGZCE0Kfc3eH4YYJ6aWQIg/exec';
@@ -513,8 +539,161 @@
   }
 
   // ============================================================================
-  // SHARED UNLOCKED AUDIO CONTEXT + SOFT AMBIENT PAD (IMMUNE TO AUTOPLAY BLOCK)
+  // SHARED UNLOCKED AUDIO CONTEXT + YOUTUBE EPIC CINEMATIC MUSIC + AUTO-DUCKING
   // ============================================================================
+  function openVoiceDb() {
+    if (idbPromise) return idbPromise;
+    idbPromise = new Promise(function (resolve) {
+      if (typeof indexedDB === 'undefined') return resolve(null);
+      try {
+        const req = indexedDB.open(AUDIO_DB_NAME, 1);
+        req.onupgradeneeded = function () {
+          const db = req.result;
+          if (!db.objectStoreNames.contains(AUDIO_STORE_NAME)) {
+            db.createObjectStore(AUDIO_STORE_NAME);
+          }
+        };
+        req.onsuccess = function () { resolve(req.result); };
+        req.onerror = function () { resolve(null); };
+      } catch (_) { resolve(null); }
+    });
+    return idbPromise;
+  }
+
+  async function getCachedClip(key) {
+    const db = await openVoiceDb();
+    if (!db) return null;
+    return new Promise(function (resolve) {
+      try {
+        const tx = db.transaction(AUDIO_STORE_NAME, 'readonly');
+        const req = tx.objectStore(AUDIO_STORE_NAME).get(key);
+        req.onsuccess = function () { resolve(req.result || null); };
+        req.onerror = function () { resolve(null); };
+      } catch (_) { resolve(null); }
+    });
+  }
+
+  async function setCachedClip(key, blob) {
+    if (!blob || blob.size <= 44) return;
+    const db = await openVoiceDb();
+    if (!db) return;
+    return new Promise(function (resolve) {
+      try {
+        const tx = db.transaction(AUDIO_STORE_NAME, 'readwrite');
+        tx.objectStore(AUDIO_STORE_NAME).put(blob, key);
+        tx.oncomplete = function () { resolve(); };
+        tx.onerror = function () { resolve(); };
+      } catch (_) { resolve(); }
+    });
+  }
+
+  function ensureYouTubeApi() {
+    if (ytApiRequested || !document.body) return;
+    ytApiRequested = true;
+    if (!document.getElementById('rjkn-yt-host')) {
+      const box = document.createElement('div');
+      box.id = 'rjkn-yt-host';
+      box.style.cssText = 'position:fixed;width:2px;height:2px;bottom:0;left:0;opacity:0.001;pointer-events:none;overflow:hidden;z-index:-1;';
+      const inner = document.createElement('div');
+      inner.id = 'rjkn-yt-player';
+      box.appendChild(inner);
+      document.body.appendChild(box);
+    }
+
+    const createPlayer = function () {
+      if (ytPlayer || !global.YT || !global.YT.Player) return;
+      try {
+        ytPlayer = new global.YT.Player('rjkn-yt-player', {
+          height: '200',
+          width: '200',
+          videoId: YOUTUBE_VIDEO_ID,
+          playerVars: {
+            autoplay: 0, controls: 0, disablekb: 1, fs: 0, iv_load_policy: 3,
+            loop: 1, modestbranding: 1, playsinline: 1, playlist: YOUTUBE_VIDEO_ID, rel: 0
+          },
+          events: {
+            onReady: function () {
+              ytReady = true;
+              try {
+                ytPlayer.setVolume(0);
+                if (ytPendingPlay && musicEnabled) {
+                  ytPlayer.unMute();
+                  ytPlayer.playVideo();
+                }
+              } catch (_) {}
+            },
+            onStateChange: function (ev) {
+              if (global.YT && ev.data === global.YT.PlayerState.PLAYING) {
+                ytPlaying = true;
+                fadeOutSynthPad();
+                if (musicEnabled) rampYouTubeVolume(ytDesiredVol, 850);
+              } else if (global.YT && ev.data === global.YT.PlayerState.ENDED) {
+                try { ytPlayer.seekTo(0); ytPlayer.playVideo(); } catch (_) {}
+              }
+            },
+            onError: function () { ytPlaying = false; }
+          }
+        });
+      } catch (_) {}
+    };
+
+    if (global.YT && global.YT.Player) {
+      createPlayer();
+      return;
+    }
+    const prevReady = global.onYouTubeIframeAPIReady;
+    global.onYouTubeIframeAPIReady = function () {
+      if (typeof prevReady === 'function') { try { prevReady(); } catch (_) {} }
+      createPlayer();
+    };
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    tag.async = true;
+    document.head.appendChild(tag);
+  }
+
+  function rampYouTubeVolume(targetVol, durationMs) {
+    const clamped = Math.max(0, Math.min(100, Math.round(targetVol)));
+    if (ytRampTimer) { clearInterval(ytRampTimer); ytRampTimer = null; }
+    if (!ytReady || !ytPlayer || typeof ytPlayer.setVolume !== 'function') return;
+    const startVol = ytCurrentVol;
+    const steps = Math.max(1, Math.round((durationMs || 600) / 40));
+    let step = 0;
+    ytRampTimer = setInterval(function () {
+      step += 1;
+      const t = Math.min(1, step / steps);
+      const nextVol = Math.round(startVol + (clamped - startVol) * (t * (2 - t)));
+      ytCurrentVol = nextVol;
+      try { ytPlayer.setVolume(musicEnabled ? nextVol : 0); } catch (_) {}
+      if (step >= steps) { clearInterval(ytRampTimer); ytRampTimer = null; }
+    }, 40);
+  }
+
+  function fadeOutSynthPad() {
+    try {
+      if (!sharedAudioCtx || !musicMasterGain) return;
+      const now = sharedAudioCtx.currentTime;
+      musicMasterGain.gain.cancelScheduledValues(now);
+      musicMasterGain.gain.setValueAtTime(Math.max(0.0001, musicMasterGain.gain.value), now);
+      musicMasterGain.gain.linearRampToValueAtTime(0.0001, now + 0.9);
+    } catch (_) {}
+  }
+
+  function duckMusicTo(volPercent, durationMs) {
+    ytDesiredVol = volPercent;
+    if (ytPlaying && musicEnabled) {
+      rampYouTubeVolume(volPercent, durationMs || 650);
+    } else if (sharedAudioCtx && musicMasterGain && musicEnabled) {
+      try {
+        const now = sharedAudioCtx.currentTime;
+        const targetGain = 0.018 + (volPercent / 100) * 0.085;
+        musicMasterGain.gain.cancelScheduledValues(now);
+        musicMasterGain.gain.setValueAtTime(Math.max(0.0001, musicMasterGain.gain.value), now);
+        musicMasterGain.gain.linearRampToValueAtTime(targetGain, now + (durationMs || 650) / 1000);
+      } catch (_) {}
+    }
+  }
+
   function unlockAudioOnUserGesture() {
     // 1. Create & resume shared Web AudioContext synchronously inside click/tap
     try {
@@ -557,59 +736,75 @@
   }
 
   function applyMusicDucking(isDucking) {
-    try {
-      if (!sharedAudioCtx || !musicMasterGain || !musicEnabled) return;
-      const now = sharedAudioCtx.currentTime;
-      const targetGain = isDucking ? 0.045 : 0.11;
-      musicMasterGain.gain.cancelScheduledValues(now);
-      musicMasterGain.gain.setValueAtTime(Math.max(0.0001, musicMasterGain.gain.value), now);
-      musicMasterGain.gain.linearRampToValueAtTime(targetGain, now + 0.45);
-    } catch (_) {}
+    duckMusicTo(isDucking ? 19 : 74, 700);
   }
 
   function startAmbientMusic() {
     try {
       unlockAudioOnUserGesture();
-      if (!sharedAudioCtx) return;
-
-      if (!musicMasterGain) {
-        musicMasterGain = sharedAudioCtx.createGain();
-        musicMasterGain.gain.setValueAtTime(0.0001, sharedAudioCtx.currentTime);
-        musicMasterGain.connect(sharedAudioCtx.destination);
-
-        // Warm cinematic Dmaj9 / ethereal sanctuary chord
-        const freqs = [146.83, 220.0, 277.18, 329.63, 440.0];
-        const filter = sharedAudioCtx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(720, sharedAudioCtx.currentTime);
-        filter.connect(musicMasterGain);
-
-        musicOscs = freqs.map(function (f, idx) {
-          const osc = sharedAudioCtx.createOscillator();
-          const g = sharedAudioCtx.createGain();
-          osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
-          osc.frequency.setValueAtTime(f, sharedAudioCtx.currentTime);
-          osc.detune.setValueAtTime((idx - 2) * 3.5, sharedAudioCtx.currentTime);
-          g.gain.setValueAtTime(idx === 0 ? 0.16 : 0.085, sharedAudioCtx.currentTime);
-          osc.connect(g);
-          g.connect(filter);
-          osc.start();
-          return osc;
-        });
-      }
-      if (sharedAudioCtx.state === 'suspended') sharedAudioCtx.resume().catch(function () {});
-      const now = sharedAudioCtx.currentTime;
-      const targetGain = hostPlaying ? 0.045 : 0.11;
-      musicMasterGain.gain.cancelScheduledValues(now);
-      musicMasterGain.gain.setValueAtTime(Math.max(0.0001, musicMasterGain.gain.value), now);
-      musicMasterGain.gain.linearRampToValueAtTime(targetGain, now + 1.2);
       musicEnabled = true;
+      ytPendingPlay = true;
+      ytDesiredVol = hostPlaying ? 19 : 74;
+      ensureYouTubeApi();
+
+      // Play YouTube Epic Modern Cinematic ("Great" - TTwfAUzEHrM) if ready
+      if (ytReady && ytPlayer) {
+        try {
+          ytPlayer.seekTo(0);
+          ytPlayer.unMute();
+          ytPlayer.playVideo();
+          rampYouTubeVolume(ytDesiredVol, 1100);
+        } catch (_) {}
+      }
+
+      // Soft warm synth pad fallback while YouTube buffers or if offline
+      if (!ytPlaying && sharedAudioCtx) {
+        if (!musicMasterGain) {
+          musicMasterGain = sharedAudioCtx.createGain();
+          musicMasterGain.gain.setValueAtTime(0.0001, sharedAudioCtx.currentTime);
+          musicMasterGain.connect(sharedAudioCtx.destination);
+
+          const freqs = [146.83, 220.0, 277.18, 329.63, 440.0];
+          const filter = sharedAudioCtx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(720, sharedAudioCtx.currentTime);
+          filter.connect(musicMasterGain);
+
+          musicOscs = freqs.map(function (f, idx) {
+            const osc = sharedAudioCtx.createOscillator();
+            const g = sharedAudioCtx.createGain();
+            osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
+            osc.frequency.setValueAtTime(f, sharedAudioCtx.currentTime);
+            osc.detune.setValueAtTime((idx - 2) * 3.5, sharedAudioCtx.currentTime);
+            g.gain.setValueAtTime(idx === 0 ? 0.16 : 0.085, sharedAudioCtx.currentTime);
+            osc.connect(g);
+            g.connect(filter);
+            osc.start();
+            return osc;
+          });
+        }
+        if (sharedAudioCtx.state === 'suspended') sharedAudioCtx.resume().catch(function () {});
+        const now = sharedAudioCtx.currentTime;
+        const targetGain = hostPlaying ? 0.036 : 0.085;
+        musicMasterGain.gain.cancelScheduledValues(now);
+        musicMasterGain.gain.setValueAtTime(Math.max(0.0001, musicMasterGain.gain.value), now);
+        musicMasterGain.gain.linearRampToValueAtTime(targetGain, now + 1.1);
+      }
       updateControlLabels();
     } catch (_) {}
   }
 
   function stopAmbientMusic() {
     musicEnabled = false;
+    ytPendingPlay = false;
+    ytPlaying = false;
+    if (ytRampTimer) { clearInterval(ytRampTimer); ytRampTimer = null; }
+    if (ytReady && ytPlayer) {
+      try {
+        ytPlayer.pauseVideo();
+        ytPlayer.setVolume(0);
+      } catch (_) {}
+    }
     try {
       if (sharedAudioCtx && musicMasterGain) {
         const now = sharedAudioCtx.currentTime;
@@ -623,7 +818,7 @@
 
   // ============================================================================
   // STUDIO 24kHz AI HOST NARRATION (STRICTLY NO BROWSER SPEECH SYNTHESIS!)
-  // Uses unlocked Web Audio AudioBufferSourceNode so async fetch NEVER gets blocked
+  // Uses original style prompts + languageCode: 'th-TH' + 45s timeout + 2 retries + IDB cache
   // ============================================================================
   function resolveGasEndpoint() {
     if (currentGasUrl) return currentGasUrl;
@@ -669,52 +864,97 @@
     if (prefetchedBlobs[idx] instanceof Blob && prefetchedBlobs[idx].size > 44) {
       return prefetchedBlobs[idx];
     }
+    if (prefetchedPromises[idx]) {
+      return prefetchedPromises[idx];
+    }
+
     const seg = HOST_SEGMENTS[idx];
     if (!seg) return null;
-    const endpoint = resolveGasEndpoint();
-    const core = global.RJCLOUD_CORE || global.RJLearningCore || {};
 
-    let blob = null;
-    if (typeof core.fetchStudioGuideBlob === 'function') {
-      blob = await core.fetchStudioGuideBlob(seg.text, endpoint, seg.voice);
-    } else if (endpoint) {
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        redirect: 'follow',
-        body: JSON.stringify({ action: 'callGeminiTTS', text: seg.text, voiceName: seg.voice })
-      });
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      const rawTxt = await res.text();
-      const data = JSON.parse(rawTxt || '{}');
-      const b64 =
-        data.audioBase64 ||
-        data.audio ||
-        data.audioContent ||
-        data.pcmBase64 ||
-        data.wavBase64 ||
-        (data.inlineData && data.inlineData.data) ||
-        (data.data && (data.data.audioBase64 || data.data.audio || data.data.audioContent)) ||
-        (data.result && (data.result.audioBase64 || data.result.audio)) ||
-        (data.candidates &&
-          data.candidates[0] &&
-          data.candidates[0].content &&
-          data.candidates[0].content.parts &&
-          data.candidates[0].content.parts[0] &&
-          data.candidates[0].content.parts[0].inlineData &&
-          data.candidates[0].content.parts[0].inlineData.data);
-      if (b64) {
-        blob = typeof core.pcm16ToWavBlob === 'function'
-          ? core.pcm16ToWavBlob(b64, 24000)
-          : fallbackPcmToWav(b64, 24000);
+    const task = (async function () {
+      const cacheKey = 'keynote_v6_' + seg.id + '_' + seg.voice;
+      const cached = await getCachedClip(cacheKey);
+      if (cached instanceof Blob && cached.size > 44) {
+        prefetchedBlobs[idx] = cached;
+        return cached;
       }
-    }
 
-    if (blob instanceof Blob && blob.size > 44) {
-      prefetchedBlobs[idx] = blob;
-      return blob;
+      const endpoint = resolveGasEndpoint();
+      const core = global.RJCLOUD_CORE || global.RJLearningCore || {};
+      if (!endpoint) return null;
+
+      for (let attempt = 0; attempt < 2; attempt++) {
+        const ctrl = new AbortController();
+        const tm = setTimeout(function () { ctrl.abort(); }, 45000);
+        try {
+          const res = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            redirect: 'follow',
+            body: JSON.stringify({
+              action: 'callGeminiTTS',
+              text: seg.text,
+              voiceName: seg.voice,
+              languageCode: 'th-TH',
+              style: seg.style
+            }),
+            signal: ctrl.signal
+          });
+          clearTimeout(tm);
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+
+          const rawTxt = await res.text();
+          const data = JSON.parse(rawTxt || '{}');
+          const b64 =
+            (data.inlineData && data.inlineData.data) ||
+            data.audioBase64 ||
+            data.audio ||
+            data.audioContent ||
+            data.pcmBase64 ||
+            data.wavBase64 ||
+            (data.data && (data.data.audioBase64 || data.data.audio || data.data.audioContent)) ||
+            (data.result && (data.result.audioBase64 || data.result.audio)) ||
+            (data.candidates &&
+              data.candidates[0] &&
+              data.candidates[0].content &&
+              data.candidates[0].content.parts &&
+              data.candidates[0].content.parts[0] &&
+              data.candidates[0].content.parts[0].inlineData &&
+              data.candidates[0].content.parts[0].inlineData.data);
+
+          if (b64) {
+            const mimeStr = String((data.inlineData && data.inlineData.mimeType) || data.mimeType || '');
+            const rateMatch = mimeStr.match(/rate=(\d+)/i);
+            const rate = rateMatch ? parseInt(rateMatch[1], 10) : 24000;
+            const blob = typeof core.pcm16ToWavBlob === 'function'
+              ? core.pcm16ToWavBlob(b64, rate || 24000)
+              : fallbackPcmToWav(b64, rate || 24000);
+
+            if (blob instanceof Blob && blob.size > 44) {
+              prefetchedBlobs[idx] = blob;
+              setCachedClip(cacheKey, blob).catch(function () {});
+              return blob;
+            }
+          }
+        } catch (_) {
+          clearTimeout(tm);
+        }
+        if (attempt === 0) {
+          await new Promise(function (r) { setTimeout(r, 950); });
+        }
+      }
+      return null;
+    })();
+
+    prefetchedPromises[idx] = task;
+    try {
+      const result = await task;
+      if (!result) delete prefetchedPromises[idx];
+      return result;
+    } catch (e) {
+      delete prefetchedPromises[idx];
+      throw e;
     }
-    return null;
   }
 
   async function playWavBlobReliably(blob, sid) {
@@ -827,7 +1067,7 @@
       }
 
       hostLoading = false;
-      applyMusicDucking(true);
+      duckMusicTo(idx >= HOST_SEGMENTS.length - 2 ? 28 : 19, 750);
       updateControlLabels();
 
       // Prefetch next co-host segment in background for zero gap between speakers
@@ -837,7 +1077,21 @@
 
       const played = await playWavBlobReliably(blob, sid);
       if (hostSessionId === sid && isLandingNow && hostPlaying && played) {
-        playHostSegment(idx + 1, sid, 0);
+        if (idx + 1 < HOST_SEGMENTS.length) {
+          await new Promise(function (r) { setTimeout(r, 240); });
+          if (hostSessionId === sid && isLandingNow && hostPlaying) {
+            playHostSegment(idx + 1, sid, 0);
+          }
+        } else {
+          // Outro music swell after segment 6/6 completes cleanly
+          stopHostNarration();
+          if (musicEnabled) {
+            duckMusicTo(65, 900);
+            setTimeout(function () {
+              if (musicEnabled && !hostPlaying) duckMusicTo(34, 1800);
+            }, 4200);
+          }
+        }
       } else if (hostSessionId === sid) {
         if (!played) {
           hostErrorMsg = 'แตะปุ่มเพื่อเปิดเสียง AI';
@@ -949,13 +1203,13 @@
 
         // Start ambient pad + begin fetching & playing 24kHz studio AI co-hosts immediately
         startAmbientMusic();
-        startHostNarration(performance.now() + 550);
+        startHostNarration(performance.now() + 1850);
         updateControlsVisibility();
       });
     }
 
-    // Subtle top-right audio control bar (only visible on landing after entering)
-    controlsEl = document.createElement('div');
+    // Preload YouTube player in background so music starts instantaneously on click
+    ensureYouTubeApi();
     controlsEl.id = 'rj-keynote-controls';
     controlsEl.innerHTML = [
       '<button id="rj-host-toggle" type="button" class="rj-ctrl-pill">▶ พิธีกร AI</button>',
