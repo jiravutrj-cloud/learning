@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#030611">
+    <meta name="theme-color" content="#1c222b">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>ศูนย์ลงทะเบียนอบรม Onsite &amp; บัตรเข้าสอบดิจิทัล — rjcloud.organ 2.0</title>
+    <title>ศูนย์ลงทะเบียนอบรม Onsite &amp; บัตรเข้าสอบดิจิทัล — organ cloud 2.0</title>
 
-    <!-- ซิงค์โหมดมืด/สว่างทันที + โหลดไฟล์โมดูลกลางเฉพาะบนโดเมนจริง (Zero-Build GitHub Pages) -->
+    <!-- ซิงค์โหมดมืด/สว่างทันที + โหลดโมดูลกลางเฉพาะบนโดเมนจริง (Zero-Build GitHub Pages) -->
     <script>
       (function () {
         try {
@@ -16,7 +16,7 @@
           const mode = saved === 'light' ? 'light' : 'dark';
           document.documentElement.setAttribute('data-theme', mode);
           const meta = document.querySelector('meta[name="theme-color"]');
-          if (meta) meta.setAttribute('content', mode === 'dark' ? '#030611' : '#edf5fc');
+          if (meta) meta.setAttribute('content', mode === 'dark' ? '#1c222b' : '#e6ebf0');
         } catch (_) {}
 
         try {
@@ -31,7 +31,7 @@
             manifest.href = './manifest.json';
             document.head.appendChild(manifest);
 
-            ['./data.js', './learning-core.js?v=202705'].forEach(function (src) {
+            ['./data.js', './learning-core.js?v=202711'].forEach(function (src) {
               const s = document.createElement('script');
               s.src = src;
               s.async = false;
@@ -48,7 +48,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" onerror="console.warn('QR CDN unavailable')"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Prompt:wght@500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Prompt:wght@500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <script>
       if (window.tailwind) {
@@ -56,12 +56,12 @@
           theme: {
             extend: {
               fontFamily: {
-                display: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Anuphan', 'Prompt', 'sans-serif'],
-                sans: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'Anuphan', 'Sarabun', 'sans-serif'],
-                mono: ['SF Mono', 'ui-monospace', 'JetBrains Mono', 'monospace']
+                display: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Prompt', 'Anuphan', 'Inter', 'sans-serif'],
+                sans: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'Anuphan', 'Sarabun', 'Inter', 'sans-serif'],
+                mono: ['JetBrains Mono', 'SF Mono', 'ui-monospace', 'monospace']
               },
               colors: {
-                void: { 950: '#030611', 900: '#061229', 800: '#0c1f42', 700: '#153263' },
+                void: { 950: '#141920', 900: '#1c222b', 800: '#262f3d', 700: '#323d4f' },
                 aurora: { 200: '#a7f3d0', 300: '#6ee7b7', 400: '#34d399', 500: '#10b981', 600: '#059669' },
                 prism: { 200: '#bae6fd', 300: '#7dd3fc', 400: '#38bdf8', 500: '#0ea5e9', 600: '#0284c7' }
               }
@@ -73,156 +73,187 @@
 
     <style>
       /* ============================================================================
-       * 1. ADAPTIVE BENTO GRID TOKENS (DARK OBSIDIAN & LIGHT CRYSTAL GLASS)
+       * 1. NEUMORPHIC SOFT UI SYSTEM TOKENS — organ cloud 2.0 (LIGHT & DARK)
+       *    High-Contrast Dark Mode Typography (WCAG AA/AAA Verified)
        * ============================================================================ */
-      :root, html[data-theme="dark"] {
-        --bg-page: #030611;
-        --text-main: #f8fafc;
-        --text-secondary: #cbd5e1;
-        --text-muted: #94a3b8;
-        --glass-bg: linear-gradient(155deg, rgba(18, 28, 54, 0.78) 0%, rgba(7, 13, 28, 0.92) 100%);
-        --glass-border: rgba(148, 197, 255, 0.18);
-        --glass-border-hover: rgba(253, 164, 175, 0.45);
-        --glass-shadow: 0 24px 60px -20px rgba(0, 4, 18, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.16);
-        --header-bg: rgba(3, 6, 17, 0.84);
-        --surface-soft: rgba(255, 255, 255, 0.048);
-        --surface-soft-hover: rgba(255, 255, 255, 0.095);
-        --surface-border: rgba(148, 197, 255, 0.16);
-        --input-bg: rgba(5, 10, 24, 0.82);
-        --input-border: rgba(148, 197, 255, 0.24);
-        --input-text: #f8fafc;
-        --thead-bg: rgba(15, 36, 78, 0.72);
-        --accent-text: #6ee7b7;
-        --accent-prism: #67e8f9;
-        --grid-line: rgba(148, 197, 255, 0.038);
-        --aura-1: rgba(16, 185, 129, 0.14);
-        --aura-2: rgba(56, 189, 248, 0.16);
-        --aura-3: rgba(249, 168, 212, 0.12);
-      }
-      html[data-theme="light"] {
-        --bg-page: #edf5fc;
-        --text-main: #0f172a;
-        --text-secondary: #334155;
-        --text-muted: #64748b;
-        --glass-bg: linear-gradient(155deg, rgba(255, 255, 255, 0.93) 0%, rgba(236, 246, 255, 0.88) 100%);
-        --glass-border: rgba(255, 255, 255, 0.96);
-        --glass-border-hover: rgba(244, 63, 94, 0.35);
-        --glass-shadow: 0 20px 46px -18px rgba(15, 58, 125, 0.16), 0 0 0 1px rgba(148, 184, 222, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.95);
-        --header-bg: rgba(244, 249, 255, 0.90);
-        --surface-soft: rgba(255, 255, 255, 0.78);
-        --surface-soft-hover: rgba(255, 255, 255, 0.98);
-        --surface-border: rgba(148, 184, 222, 0.36);
-        --input-bg: rgba(255, 255, 255, 0.95);
-        --input-border: rgba(148, 184, 222, 0.65);
-        --input-text: #0f172a;
-        --thead-bg: rgba(219, 234, 254, 0.76);
-        --accent-text: #047857;
-        --accent-prism: #0284c7;
-        --grid-line: rgba(15, 58, 125, 0.045);
-        --aura-1: rgba(16, 185, 129, 0.16);
-        --aura-2: rgba(56, 189, 248, 0.20);
-        --aura-3: rgba(244, 114, 182, 0.12);
+      :root, html[data-theme="light"] {
+        --neu-bg: #e6ebf0;
+        --neu-header-bg: rgba(230, 235, 240, 0.92);
+        --neu-light: #ffffff;
+        --neu-dark: #c5ced9;
+        --neu-border: rgba(255, 255, 255, 0.74);
+        --neu-border-soft: rgba(255, 255, 255, 0.50);
+        --neu-text: #1f2b38;
+        --neu-text-sub: #47586b;
+        --neu-text-muted: #64768a;
+        --neu-teal: #247870;
+        --neu-teal-soft: rgba(36, 120, 112, 0.22);
+        --neu-rose: #d9486b;
+        --neu-rose-soft: rgba(217, 72, 107, 0.20);
+        --neu-amber: #b45309;
+        --neu-sky: #0369a1;
+        --shadow-raised-lg: 12px 12px 26px var(--neu-dark), -12px -12px 26px var(--neu-light);
+        --shadow-raised: 7px 7px 15px var(--neu-dark), -7px -7px 15px var(--neu-light);
+        --shadow-raised-sm: 4px 4px 9px var(--neu-dark), -4px -4px 9px var(--neu-light);
+        --shadow-pressed: inset 6px 6px 12px var(--neu-dark), inset -6px -6px 12px var(--neu-light);
+        --shadow-pressed-deep: inset 8px 8px 15px #b7c2ce, inset -7px -7px 14px #ffffff;
+        --shadow-pressed-sm: inset 4px 4px 8px var(--neu-dark), inset -4px -4px 8px var(--neu-light);
       }
 
-      * { box-sizing: border-box; }
+      html[data-theme="dark"] {
+        --neu-bg: #1c222b;
+        --neu-header-bg: rgba(28, 34, 43, 0.94);
+        --neu-light: #2d3746;
+        --neu-dark: #0e1218;
+        --neu-border: rgba(255, 255, 255, 0.085);
+        --neu-border-soft: rgba(255, 255, 255, 0.055);
+        --neu-text: #f4f7fb;
+        --neu-text-sub: #c9d6e6;
+        --neu-text-muted: #9eb0c7;
+        --neu-teal: #5eead4;
+        --neu-teal-soft: rgba(94, 234, 212, 0.28);
+        --neu-rose: #fda4af;
+        --neu-rose-soft: rgba(253, 164, 175, 0.28);
+        --neu-amber: #fde68a;
+        --neu-sky: #7dd3fc;
+        --shadow-raised-lg: 12px 12px 26px var(--neu-dark), -10px -10px 22px var(--neu-light);
+        --shadow-raised: 7px 7px 15px var(--neu-dark), -6px -6px 14px var(--neu-light);
+        --shadow-raised-sm: 4px 4px 9px var(--neu-dark), -4px -4px 9px var(--neu-light);
+        --shadow-pressed: inset 6px 6px 12px var(--neu-dark), inset -5px -5px 11px var(--neu-light);
+        --shadow-pressed-deep: inset 8px 8px 16px #090c10, inset -6px -6px 13px #313c4d;
+        --shadow-pressed-sm: inset 4px 4px 8px var(--neu-dark), inset -3px -3px 7px var(--neu-light);
+      }
+
+      *, *::before, *::after { box-sizing: border-box; }
       html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
       body {
         margin: 0;
-        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Anuphan', 'Sarabun', sans-serif;
-        background-color: var(--bg-page);
-        color: var(--text-main);
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Anuphan', 'Sarabun', 'Inter', sans-serif;
+        background-color: var(--neu-bg);
+        color: var(--neu-text);
         overflow-x: hidden;
         -webkit-font-smoothing: antialiased;
-        transition: background-color 0.28s ease, color 0.28s ease;
+        transition: background-color 0.32s ease, color 0.32s ease;
       }
 
       .touch-target { min-height: 46px; touch-action: manipulation; }
       .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
       .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
       @media (max-width: 768px) { input, select, textarea { font-size: 16px !important; } }
+      html[data-theme="dark"] select option { background-color: #1c222b; color: #f4f7fb; }
 
-      .spatial-aura {
-        position: fixed; inset: 0; z-index: 0; pointer-events: none;
-        background:
-          radial-gradient(ellipse 90% 55% at 50% 108%, var(--aura-1) 0%, transparent 66%),
-          radial-gradient(circle at 86% 14%, var(--aura-2) 0%, transparent 48%),
-          radial-gradient(circle at 14% 28%, var(--aura-3) 0%, transparent 46%);
+      .neu-header {
+        background: var(--neu-header-bg);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border-bottom: 1px solid var(--neu-border-soft);
       }
-      .spatial-grid {
-        position: fixed; inset: 0; z-index: 0; pointer-events: none;
-        background-image: linear-gradient(to right, var(--grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
-        background-size: 44px 44px;
-        mask-image: radial-gradient(ellipse at center, black 42%, transparent 94%);
+      .neu-card {
+        background: var(--neu-bg);
+        border-radius: 28px;
+        border: 1px solid var(--neu-border);
+        box-shadow: var(--shadow-raised-lg);
+        transition: background-color 0.32s ease, box-shadow 0.25s ease, border-color 0.25s ease;
       }
-      .spatial-card {
-        background: var(--glass-bg);
-        backdrop-filter: blur(24px) saturate(165%);
-        -webkit-backdrop-filter: blur(24px) saturate(165%);
-        border: 1px solid var(--glass-border);
-        box-shadow: var(--glass-shadow);
-        transition: border-color 0.22s ease, box-shadow 0.22s ease, background 0.28s ease;
+      .neu-inset {
+        background: var(--neu-bg);
+        border-radius: 20px;
+        border: 1px solid var(--neu-border-soft);
+        box-shadow: var(--shadow-pressed);
       }
-      .spatial-card:hover { border-color: var(--glass-border-hover); }
-      .spatial-header {
-        background: var(--header-bg);
-        backdrop-filter: blur(22px) saturate(160%);
-        -webkit-backdrop-filter: blur(22px) saturate(160%);
-        border-bottom: 1px solid var(--surface-border);
+      .neu-input {
+        background: var(--neu-bg);
+        color: var(--neu-text);
+        border-radius: 16px;
+        border: 1px solid var(--neu-border-soft);
+        box-shadow: var(--shadow-pressed-sm);
+        outline: none;
+        transition: box-shadow 0.22s ease, border-color 0.22s ease;
       }
-      .spatial-soft { background: var(--surface-soft); border: 1px solid var(--surface-border); transition: background 0.18s ease, border-color 0.18s ease; }
-      .spatial-soft:hover { background: var(--surface-soft-hover); }
-      .spatial-input { background: var(--input-bg); border: 1px solid var(--input-border); color: var(--input-text); }
-      .spatial-input:focus { outline: none; border-color: #38bdf8; box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.22); }
-      .spatial-thead { background: var(--thead-bg); }
+      .neu-input::placeholder { color: var(--neu-text-muted); }
+      .neu-input:focus { border-color: var(--neu-teal); box-shadow: var(--shadow-pressed), 0 0 0 2px var(--neu-teal-soft); }
 
-      .rjc2-pill-btn {
-        background: linear-gradient(95deg, #d7fbe6 0%, #c6f3f9 48%, #b3c8ff 100%);
-        color: #050b16 !important;
-        box-shadow: 0 10px 28px -6px rgba(134, 239, 172, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.72) inset;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-        text-decoration: none;
+      .neu-btn {
+        background: var(--neu-bg);
+        color: var(--neu-text);
+        border-radius: 9999px;
+        border: 1px solid var(--neu-border);
+        box-shadow: var(--shadow-raised);
         cursor: pointer;
-      }
-      .rjc2-pill-btn:hover:not(:disabled) { transform: translateY(-1px) scale(1.015); }
-      .rjc2-pill-btn:active:not(:disabled) { transform: scale(0.98); }
-
-      .btn-peach-ambient {
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 0.5rem;
-        background: #ffffff;
-        color: #1a162b !important;
-        font-weight: 700;
-        border-radius: 9999px;
-        border: 1.5px solid rgba(251, 182, 206, 0.92);
-        box-shadow: 0 0 0 3px rgba(253, 164, 175, 0.22), 0 10px 26px -6px rgba(249, 168, 212, 0.58);
+        gap: 0.4rem;
         text-decoration: none;
-        cursor: pointer;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease, color 0.2s ease, border-color 0.2s ease;
       }
-      .btn-peach-ambient:hover:not(:disabled) {
-        transform: translateY(-1.5px) scale(1.01);
-        box-shadow: 0 0 0 5px rgba(253, 164, 175, 0.28), 0 14px 32px -4px rgba(244, 114, 182, 0.68);
+      .neu-btn:hover:not(:disabled) { transform: translateY(-1.5px); color: var(--neu-teal); }
+      .neu-btn:active:not(:disabled),
+      .neu-btn.is-tapping:not(:disabled),
+      .neu-btn.is-pressed {
+        transform: translateY(1.5px) scale(0.978);
+        box-shadow: var(--shadow-pressed-deep);
+        border-color: var(--neu-teal-soft);
+        color: var(--neu-teal);
       }
-      .btn-peach-ambient:disabled { opacity: 0.5; cursor: not-allowed; }
+      .neu-btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
-      .text-primary-adaptive { color: var(--text-main); }
-      .text-secondary-adaptive { color: var(--text-secondary); }
-      .text-muted-adaptive { color: var(--text-muted); }
-      .text-accent-adaptive { color: var(--accent-text); }
-      .text-prism-adaptive { color: var(--accent-prism); }
-      html[data-theme="dark"] select option { background-color: #061229; color: #f8fafc; }
+      .neu-btn-teal {
+        background: linear-gradient(145deg, #258077 0%, #1b615a 100%);
+        color: #ffffff !important;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.24);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 9999px;
+        box-shadow: 6px 6px 14px var(--neu-dark), -5px -5px 14px var(--neu-light);
+        cursor: pointer;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
+        text-decoration: none;
+        transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease, filter 0.2s ease;
+      }
+      .neu-btn-teal:hover:not(:disabled) { transform: translateY(-1.5px); filter: brightness(1.07); }
+      .neu-btn-teal:active:not(:disabled),
+      .neu-btn-teal.is-tapping:not(:disabled) {
+        transform: translateY(1.5px) scale(0.975);
+        background: linear-gradient(145deg, #1a5c56 0%, #22756d 100%);
+        box-shadow: inset 5px 5px 11px rgba(8, 34, 31, 0.72), inset -4px -4px 9px rgba(94, 234, 212, 0.24);
+      }
+      .neu-btn-teal:disabled { opacity: 0.48; cursor: not-allowed; }
+
+      .neu-step-pill {
+        background: var(--neu-bg);
+        border-radius: 20px;
+        border: 1px solid var(--neu-border);
+        box-shadow: var(--shadow-raised-sm);
+        cursor: pointer;
+        user-select: none;
+        transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease, border-color 0.22s ease;
+      }
+      .neu-step-pill:hover { transform: translateY(-1px); }
+      .neu-step-pill:active,
+      .neu-step-pill.is-tapping,
+      .neu-step-pill.is-active {
+        transform: translateY(1.5px) scale(0.982);
+        box-shadow: var(--shadow-pressed-deep);
+        border-color: var(--neu-teal-soft);
+      }
 
       .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
-      .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(147, 197, 253, 0.36); border-radius: 999px; }
+      .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--neu-dark); border-radius: 999px; }
 
-      /* สไตล์ใบเซ็นชื่อราชการ A4 (สำหรับพิมพ์ / Export PDF) */
+      /* สไตล์ใบเซ็นชื่อราชการ A4 (สำหรับพิมพ์ / Export PDF — คงพื้นขาวคมชัด 100%) */
       .a4-sheet {
         background: #ffffff;
         color: #0f172a;
         font-family: 'Sarabun', sans-serif;
-        box-shadow: 0 24px 60px -16px rgba(0, 0, 0, 0.50);
+        box-shadow: 0 24px 60px -16px rgba(0, 0, 0, 0.45);
       }
       .a4-table { width: 100%; border-collapse: collapse; font-size: 12px; }
       .a4-table th, .a4-table td { border: 1px solid #94a3b8; padding: 6px 8px; vertical-align: middle; }
@@ -231,7 +262,7 @@
       @media print {
         @page { size: A4 portrait; margin: 11mm 9mm; }
         html, body { background: #ffffff !important; color: #0f172a !important; }
-        .no-print, .spatial-aura, .spatial-grid { display: none !important; }
+        .no-print { display: none !important; }
         #onsite-print-root { max-width: 100% !important; width: 100% !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; border-radius: 0 !important; }
         .a4-table thead { display: table-header-group; }
         .a4-table tr, .signature-block { page-break-inside: avoid; break-inside: avoid; }
@@ -257,14 +288,14 @@
 <body>
     <!-- หน้าจอโหลดเริ่มต้น -->
     <div id="onsite-root">
-        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#030611;color:#f8fafc;font-family:-apple-system,'Anuphan','Prompt',sans-serif;gap:14px;padding:24px;text-align:center;">
-            <div style="width:46px;height:46px;border:3px solid rgba(251,207,232,0.22);border-top-color:#f9a8d4;border-right-color:#38bdf8;border-radius:9999px;animation:onsiteSpin 0.85s linear infinite;"></div>
-            <div style="font-weight:800;font-size:17px;">กำลังเปิดศูนย์ลงทะเบียนอบรม Onsite &amp; บัตรเข้าสอบดิจิทัล...</div>
-            <div style="font-size:12px;color:#93b4d8;">rjcloud.organ 2.0 • Central Data Center Hub</div>
+        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#1c222b;color:#f4f7fb;font-family:-apple-system,'Anuphan','Prompt',sans-serif;gap:14px;padding:24px;text-align:center;">
+            <div style="width:46px;height:46px;border:3px solid rgba(94,234,212,0.22);border-top-color:#5eead4;border-right-color:#fda4af;border-radius:9999px;animation:onsiteSpin 0.85s linear infinite;"></div>
+            <div style="font-weight:800;font-size:17px;">กำลังเปิดศูนย์ลงทะเบียนอบรม Onsite (organ cloud 2.0)...</div>
+            <div style="font-size:12px;color:#9eb0c7;">Central Registration &amp; Digital Onsite Pass</div>
         </div>
     </div>
 
-    <!-- Global Error Guard -->
+    <!-- Global Error Guard + Global Tactile Sinking Press Feedback -->
     <script>
       window.addEventListener('error', function (ev) {
         const src = String(ev.filename || (ev.target && ev.target.src) || '');
@@ -273,13 +304,24 @@
         if (root && !root.dataset.mounted && ev.message) {
           const safeMsg = String(ev.message || 'Unknown error').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
           root.innerHTML =
-            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#030611;color:#f8fafc;font-family:Sarabun,sans-serif;">' +
-            '<div style="max-width:440px;width:100%;background:#061229;border:1px solid rgba(244,63,94,0.4);border-radius:24px;padding:24px;text-align:center;">' +
+            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#1c222b;color:#f4f7fb;font-family:Sarabun,sans-serif;">' +
+            '<div style="max-width:440px;width:100%;background:#1c222b;border:1px solid rgba(253,164,175,0.4);border-radius:28px;padding:24px;text-align:center;box-shadow:12px 12px 26px #0e1218,-10px -10px 22px #2d3746;">' +
             '<h2 style="color:#fda4af;font-weight:700;margin:0 0 8px;">ไม่สามารถเปิดระบบลงทะเบียน Onsite ได้ชั่วคราว</h2>' +
-            '<p style="font-size:13px;color:#dbeafe;margin:0 0 16px;">' + safeMsg + '</p>' +
-            '<button onclick="window.location.reload()" style="padding:12px 24px;border:none;border-radius:14px;background:#ffffff;color:#1a162b;font-weight:700;cursor:pointer;">โหลดหน้าใหม่</button>' +
+            '<p style="font-size:13px;color:#c9d6e6;margin:0 0 16px;">' + safeMsg + '</p>' +
+            '<button onclick="window.location.reload()" style="padding:12px 24px;border:none;border-radius:9999px;background:#247870;color:#ffffff;font-weight:700;cursor:pointer;">โหลดหน้าใหม่</button>' +
             '</div></div>';
         }
+      });
+
+      document.addEventListener('pointerdown', function (e) {
+        const el = e.target && e.target.closest ? e.target.closest('.neu-btn, .neu-btn-teal, .neu-step-pill') : null;
+        if (!el || el.disabled) return;
+        el.classList.add('is-tapping');
+        const release = function () {
+          setTimeout(function () { el.classList.remove('is-tapping'); }, 110);
+        };
+        window.addEventListener('pointerup', release, { once: true });
+        window.addEventListener('pointercancel', release, { once: true });
       });
     </script>
 
@@ -298,7 +340,7 @@
         const PORTAL_DISPLAY_URL = 'https://learn.coerj.com';
 
         const BUILTIN_CONFIG = {
-            appName: 'rjcloud.organ',
+            appName: 'organ cloud',
             appId: 'rjcloud-organ-2027',
             theme: { defaultMode: 'dark', storageKey: 'rjcloud_theme' },
             firebaseConfig: {
@@ -444,7 +486,6 @@
             setTimeout(() => URL.revokeObjectURL(url), 1000);
         }
 
-        // วาดข้อความตัดบรรทัดอัตโนมัติบน Canvas (รองรับภาษาไทยความยาวไม่แน่นอน)
         function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 2) {
             const str = String(text || '').trim();
             if (!str) return y;
@@ -453,9 +494,7 @@
                 return y + lineHeight;
             }
             const chars = Array.from(str);
-            let line = '';
-            let curY = y;
-            let lineCount = 0;
+            let line = '', curY = y, lineCount = 0;
             for (let i = 0; i < chars.length; i++) {
                 const test = line + chars[i];
                 if (ctx.measureText(test).width > maxWidth && line.length > 0) {
@@ -471,10 +510,7 @@
                     line = test;
                 }
             }
-            if (line) {
-                ctx.fillText(line, x, curY, maxWidth);
-                curY += lineHeight;
-            }
+            if (line) { ctx.fillText(line, x, curY, maxWidth); curY += lineHeight; }
             return curY;
         }
 
@@ -519,7 +555,7 @@
 
         /**
          * สร้างภาพ "บัตรเข้าสอบดิจิทัล (Digital Onsite Pass Card)" ความละเอียดสูง 1080×1560 px
-         * รวม: ข้อมูลผู้ลงทะเบียน + เวลาเปิดระบบ (เช่น 16:00 น.) + QR Code ส่วนตัว + ข้อความ https://learn.coerj.com ชัดเจน
+         * แบรนด์ใหม่: ORGAN CLOUD 2.0 + QR Code ส่วนตัว + ลิงก์ https://learn.coerj.com ชัดเจน
          */
         function renderDigitalPassDataUrl({ reg, onsiteCfg, cneuCfg, courseTitle }) {
             const canvas = document.createElement('canvas');
@@ -537,58 +573,57 @@
                 ? `สิทธิ์ CNEU: ${cneuCfg.activityCode || '-'} (${cneuCfg.cneuCredits || '-'} หน่วยคะแนน)`
                 : `รับรองชั่วโมงอบรมมาตรฐาน ${cneuCfg.trainingHours || 8} ชั่วโมง`;
 
-            // 1. พื้นหลังบัตรสีขาวครีมละมุน + ขอบหรู
+            // 1. พื้นหลังบัตรสีขาวสะอาด
             const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
             bgGrad.addColorStop(0, '#f8fbff');
             bgGrad.addColorStop(1, '#ffffff');
             ctx.fillStyle = bgGrad;
             ctx.fillRect(0, 0, W, H);
 
-            // 2. แถบหัวบัตรสีกรมท่าลึก + แถบแสงชมพูดอกท้อ-มรกต
+            // 2. แถบหัวบัตรสีเทาเข้มนุ่ม + แถบสีเขียวเทอควอยซ์-ชมพูดอกท้อ
             const hdrGrad = ctx.createLinearGradient(0, 0, W, 260);
-            hdrGrad.addColorStop(0, '#040b1d');
-            hdrGrad.addColorStop(0.55, '#0b2248');
-            hdrGrad.addColorStop(1, '#142c57');
+            hdrGrad.addColorStop(0, '#141920');
+            hdrGrad.addColorStop(0.55, '#1c222b');
+            hdrGrad.addColorStop(1, '#263242');
             ctx.fillStyle = hdrGrad;
             ctx.fillRect(0, 0, W, 255);
 
             const stripeGrad = ctx.createLinearGradient(0, 255, W, 255);
-            stripeGrad.addColorStop(0, '#fda4af');
-            stripeGrad.addColorStop(0.5, '#34d399');
-            stripeGrad.addColorStop(1, '#38bdf8');
+            stripeGrad.addColorStop(0, '#247870');
+            stripeGrad.addColorStop(0.5, '#5eead4');
+            stripeGrad.addColorStop(1, '#fda4af');
             ctx.fillStyle = stripeGrad;
             ctx.fillRect(0, 255, W, 10);
 
-            // ข้อความหัวบัตร
             ctx.textAlign = 'center';
-            ctx.fillStyle = '#fbcfe8';
+            ctx.fillStyle = '#5eead4';
             ctx.font = '700 22px "JetBrains Mono", monospace';
-            ctx.fillText('DIGITAL ONSITE PASS  •  RJCLOUD.ORGAN 2.0', W / 2, 74);
+            ctx.fillText('DIGITAL ONSITE PASS  •  ORGAN CLOUD 2.0', W / 2, 74);
 
             ctx.fillStyle = '#ffffff';
             ctx.font = '800 44px "Prompt", sans-serif';
             ctx.fillText('บัตรเข้าสู่ระบบหลังการอบรม', W / 2, 138);
 
-            ctx.fillStyle = '#bae6fd';
+            ctx.fillStyle = '#c9d6e6';
             ctx.font = '600 24px "Sarabun", sans-serif';
             ctx.fillText('ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ โรงพยาบาลราชวิถี', W / 2, 192, W - 90);
 
-            ctx.fillStyle = '#6ee7b7';
+            ctx.fillStyle = '#fda4af';
             ctx.font = '700 22px "JetBrains Mono", monospace';
             ctx.fillText(`EVENT ID: ${reg.eventId || onsiteCfg.eventId || '-'}   •   เทียบโอนชั่วโมงเรียน 100%`, W / 2, 232);
 
-            // 3. กล่องกำหนดเวลาเปิดระบบ (เด่นสะดุดตา เช่น 16:00 น.)
+            // 3. กล่องกำหนดเวลาเปิดระบบ
             drawRoundedRect(ctx, 56, 296, W - 112, 158, 28);
             ctx.fillStyle = '#ecfdf5';
             ctx.fill();
             ctx.lineWidth = 3;
-            ctx.strokeStyle = '#10b981';
+            ctx.strokeStyle = '#247870';
             ctx.stroke();
 
             ctx.textAlign = 'center';
-            ctx.fillStyle = '#047857';
+            ctx.fillStyle = '#1b615a';
             ctx.font = '700 23px "Prompt", sans-serif';
-            ctx.fillText('เวลาเปิดให้เข้าสู่ระบบ rjcloud.organ 2.0 (ทำแบบทดสอบ & รับใบประกาศฯ)', W / 2, 344, W - 150);
+            ctx.fillText('เวลาเปิดให้เข้าสู่ระบบ organ cloud 2.0 (ทำแบบทดสอบ & รับใบประกาศฯ)', W / 2, 344, W - 150);
 
             ctx.fillStyle = '#064e3b';
             ctx.font = '800 36px "Prompt", sans-serif';
@@ -616,12 +651,12 @@
             ctx.font = '800 38px "Prompt", sans-serif';
             ctx.fillText(reg.name || '-', lx, 574, W - 190);
 
-            ctx.fillStyle = '#0284c7';
+            ctx.fillStyle = '#0369a1';
             ctx.font = '700 26px "JetBrains Mono", monospace';
             ctx.fillText(`เลขใบอนุญาตฯ: ${reg.license || '-'}`, lx, 620);
 
             ctx.textAlign = 'right';
-            ctx.fillStyle = '#047857';
+            ctx.fillStyle = '#247870';
             ctx.font = '700 24px "Prompt", sans-serif';
             ctx.fillText(`กลุ่มวิชาชีพ: ${reg.professionGroup || '-'}`, W - 94, 620);
 
@@ -641,16 +676,16 @@
             ctx.font = '700 22px "Prompt", sans-serif';
             drawWrappedText(ctx, `หลักสูตรเทียบโอน: ${courseTitle || '-'}`, lx, 720, W - 190, 30, 1);
 
-            ctx.fillStyle = isNurse ? '#047857' : '#0369a1';
+            ctx.fillStyle = isNurse ? '#247870' : '#0369a1';
             ctx.font = '700 22px "Prompt", sans-serif';
             ctx.fillText(`✓ ${creditText}`, lx, 760, W - 190);
 
             // 5. โซนสแกน QR Code + ลิงก์พิมพ์เข้าคอมพิวเตอร์ https://learn.coerj.com
             drawRoundedRect(ctx, 56, 814, W - 112, 572, 30);
-            ctx.fillStyle = '#f1f5f9';
+            ctx.fillStyle = '#eef2f6';
             ctx.fill();
             ctx.lineWidth = 2;
-            ctx.strokeStyle = '#94a3b8';
+            ctx.strokeStyle = '#cbd5e1';
             ctx.stroke();
 
             const qrSize = 336;
@@ -670,15 +705,14 @@
             ctx.font = '700 24px "Prompt", sans-serif';
             ctx.fillText('สแกน QR Code จากโทรศัพท์ (ดึงหลักสูตร & เลขใบอนุญาตอัตโนมัติ)', W / 2, 1244, W - 150);
 
-            // กล่องข้อความ https://learn.coerj.com ตัวใหญ่ชัดสำหรับพิมพ์เข้าคอมพิวเตอร์
             drawRoundedRect(ctx, 110, 1266, W - 220, 96, 22);
-            ctx.fillStyle = '#061229';
+            ctx.fillStyle = '#1c222b';
             ctx.fill();
             ctx.lineWidth = 2.5;
-            ctx.strokeStyle = '#fda4af';
+            ctx.strokeStyle = '#5eead4';
             ctx.stroke();
 
-            ctx.fillStyle = '#bae6fd';
+            ctx.fillStyle = '#c9d6e6';
             ctx.font = '600 19px "Prompt", sans-serif';
             ctx.fillText('หรือพิมพ์ลิงก์นี้บนคอมพิวเตอร์ / โทรศัพท์:', W / 2, 1300);
 
@@ -694,7 +728,7 @@
 
             ctx.fillStyle = '#94a3b8';
             ctx.font = '600 18px "JetBrains Mono", monospace';
-            ctx.fillText('SAVE THIS CARD TO YOUR PHONE GALLERY  •  PDPA PROTECTED', W / 2, 1524);
+            ctx.fillText('SAVE THIS CARD TO YOUR PHONE GALLERY  •  ORGAN CLOUD 2.0  •  PDPA PROTECTED', W / 2, 1524);
 
             try { return canvas.toDataURL('image/png', 1.0); }
             catch (_) { return ''; }
@@ -712,7 +746,7 @@
         }
 
         // ============================================================================
-        // 2. UI PRIMITIVES & DIGITAL ONSITE PASS CARD DISPLAY COMPONENT
+        // 2. UI PRIMITIVES & DIGITAL ONSITE PASS CARD DISPLAY (NEUMORPHIC SOFT UI)
         // ============================================================================
         class OnsiteErrorBoundary extends React.Component {
             constructor(props) { super(props); this.state = { hasError: false, err: null }; }
@@ -720,11 +754,11 @@
             render() {
                 if (this.state.hasError) {
                     return (
-                        <div className="min-h-dvh flex items-center justify-center p-6 bg-void-950 text-white">
-                            <div className="spatial-card max-w-md w-full rounded-3xl p-6 text-center space-y-4 border-rose-500/40">
-                                <h2 className="font-display font-bold text-lg text-rose-400">พบข้อผิดพลาดในหน้าลงทะเบียน Onsite</h2>
-                                <p className="text-xs font-mono bg-rose-500/10 text-rose-200 p-3 rounded-xl overflow-auto">{String(this.state.err?.message || this.state.err)}</p>
-                                <button type="button" onClick={() => window.location.reload()} className="btn-peach-ambient touch-target w-full py-3 font-display font-bold text-sm">โหลดหน้าใหม่</button>
+                        <div className="min-h-dvh flex items-center justify-center p-6 bg-[var(--neu-bg)] text-[var(--neu-text)]">
+                            <div className="neu-card max-w-md w-full p-6 text-center space-y-4">
+                                <h2 className="font-display font-bold text-lg text-[var(--neu-rose)]">พบข้อผิดพลาดในหน้าลงทะเบียน Onsite</h2>
+                                <p className="text-xs font-mono neu-inset text-[var(--neu-text-sub)] p-3 overflow-auto">{String(this.state.err?.message || this.state.err)}</p>
+                                <button type="button" onClick={() => window.location.reload()} className="neu-btn-teal touch-target w-full py-3 font-display font-bold text-sm">โหลดหน้าใหม่</button>
                             </div>
                         </div>
                     );
@@ -741,8 +775,8 @@
         function ThemeToggleButton({ theme, onToggle }) {
             const isDark = theme === 'dark';
             return (
-                <button type="button" onClick={onToggle} aria-label="สลับโหมดมืดหรือสว่าง" className="spatial-soft px-2.5 sm:px-3 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5 text-primary-adaptive shrink-0 cursor-pointer">
-                    <Icon name={isDark ? 'Sun' : 'Moon'} size={15} className={isDark ? 'text-amber-300' : 'text-indigo-600'} />
+                <button type="button" onClick={onToggle} aria-label="สลับโหมดมืดหรือสว่าง" className="neu-btn px-3.5 py-2 font-display font-bold text-xs shrink-0">
+                    <span>{isDark ? '☀️' : '🌙'}</span>
                     <span className="hidden sm:inline">{isDark ? 'โหมดสว่าง' : 'โหมดมืด'}</span>
                 </button>
             );
@@ -751,13 +785,9 @@
         function ToastBanner({ toast }) {
             if (!toast.visible) return null;
             return (
-                <div className="no-print fixed top-[calc(1rem+env(safe-area-inset-top,0px))] left-1/2 -translate-x-1/2 z-[180] w-[92vw] max-w-md pointer-events-none">
-                    <div className={`px-4 py-3 rounded-2xl shadow-2xl border backdrop-blur-2xl flex items-center gap-2 text-xs sm:text-sm font-bold text-white ${
-                        toast.type === 'error' ? 'bg-rose-700/95 border-rose-400/60'
-                            : toast.type === 'info' ? 'bg-sky-700/95 border-sky-400/60'
-                                : 'bg-emerald-700/95 border-emerald-400/60'
-                    }`}>
-                        <Icon name={toast.type === 'error' ? 'AlertCircle' : toast.type === 'info' ? 'Sparkles' : 'CheckCircle2'} size={16} className="shrink-0" />
+                <div className="no-print fixed bottom-5 left-1/2 -translate-x-1/2 z-[180] w-[92vw] max-w-md pointer-events-none">
+                    <div className="neu-card px-5 py-3.5 rounded-full flex items-center gap-2.5 text-xs sm:text-sm font-display font-bold text-[var(--neu-text)] border-[var(--neu-teal-soft)]">
+                        <Icon name={toast.type === 'error' ? 'AlertCircle' : toast.type === 'info' ? 'Sparkles' : 'CheckCircle2'} size={17} className={toast.type === 'error' ? 'text-[var(--neu-rose)] shrink-0' : 'text-[var(--neu-teal)] shrink-0'} />
                         <span>{toast.text}</span>
                     </div>
                 </div>
@@ -767,13 +797,13 @@
         function ConfirmModal({ dialog, onClose }) {
             if (!dialog.open) return null;
             return (
-                <div className="no-print fixed inset-0 z-[165] bg-slate-950/75 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
-                    <div className="spatial-card w-full sm:max-w-md rounded-t-[2rem] sm:rounded-[2rem] p-6 space-y-4">
-                        <h3 className="font-display font-bold text-lg text-primary-adaptive">{dialog.title}</h3>
-                        <p className="text-sm text-secondary-adaptive leading-relaxed">{dialog.message}</p>
-                        <div className="grid grid-cols-2 gap-2.5 pt-2">
-                            <button type="button" onClick={onClose} className="touch-target spatial-soft py-3 rounded-2xl text-primary-adaptive font-bold text-sm cursor-pointer">ยกเลิก</button>
-                            <button type="button" onClick={() => { const fn = dialog.onConfirm; onClose(); if (fn) fn(); }} className={`touch-target py-3 rounded-2xl font-display font-bold text-sm cursor-pointer ${dialog.danger ? 'bg-rose-600 text-white' : 'rjc2-pill-btn'}`}>
+                <div className="no-print fixed inset-0 z-[165] bg-slate-950/70 backdrop-blur-md flex items-end sm:items-center justify-center p-3 sm:p-5">
+                    <div className="neu-card w-full sm:max-w-md p-6 space-y-4">
+                        <h3 className="font-display font-bold text-lg text-[var(--neu-text)] m-0">{dialog.title}</h3>
+                        <p className="text-sm text-[var(--neu-text-sub)] leading-relaxed m-0">{dialog.message}</p>
+                        <div className="grid grid-cols-2 gap-3 pt-2">
+                            <button type="button" onClick={onClose} className="neu-btn touch-target py-3 font-bold text-sm">ยกเลิก</button>
+                            <button type="button" onClick={() => { const fn = dialog.onConfirm; onClose(); if (fn) fn(); }} className={`${dialog.danger ? 'neu-btn text-[var(--neu-rose)] font-extrabold' : 'neu-btn-teal font-bold'} touch-target py-3 font-display text-sm`}>
                                 {dialog.confirmText || 'ยืนยัน'}
                             </button>
                         </div>
@@ -782,7 +812,6 @@
             );
         }
 
-        // คอมโพเนนต์แสดงและดาวน์โหลด "บัตรเข้าสอบดิจิทัล (Digital Onsite Pass Card)"
         function DigitalPassCardPanel({ reg, onsiteCfg, cneuCfg, courseTitle, onCopyUrl, onToast, onRegisterAnother, isModal = false, onClose }) {
             const [passImgUrl, setPassImgUrl] = useState('');
             const [nowMs, setNowMs] = useState(Date.now());
@@ -837,74 +866,65 @@
             };
 
             return (
-                <div className={`spatial-card rounded-[2rem] p-5 sm:p-7 space-y-5 border-pink-300/45 ${isModal ? 'max-h-[90vh] overflow-y-auto custom-scrollbar w-full max-w-xl' : ''}`}>
+                <div className={`neu-card p-5 sm:p-7 space-y-5 ${isModal ? 'max-h-[90vh] overflow-y-auto custom-scrollbar w-full max-w-xl' : ''}`}>
                     <div className="flex items-start justify-between gap-2">
                         <div className="space-y-1">
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/45 text-emerald-300 font-mono text-[10px] font-bold">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--neu-bg)] shadow-[var(--shadow-pressed-sm)] text-[var(--neu-teal)] font-mono text-[10px] font-bold">
                                 ✓ DIGITAL ONSITE PASS • บันทึกลงโทรศัพท์ได้เลย
                             </span>
-                            <h2 className="font-display font-extrabold text-xl sm:text-2xl text-primary-adaptive">
+                            <h2 className="font-display font-extrabold text-xl sm:text-2xl text-[var(--neu-text)] m-0">
                                 {isModal ? 'บัตรเข้าสู่ระบบดิจิทัลของท่าน' : 'ลงทะเบียนสำเร็จ! กรุณาบันทึกบัตรนี้ลงโทรศัพท์'}
                             </h2>
-                            <p className="text-xs text-secondary-adaptive">
+                            <p className="text-xs text-[var(--neu-text-sub)] m-0">
                                 {isUnlockedNow
                                     ? 'ขณะนี้ระบบเปิดให้เข้าใช้งานแล้ว สามารถสแกน QR Code หรือกดปุ่มเข้าสู่ระบบด้านล่างได้ทันทีค่ะ'
                                     : `เปิดให้เข้าสู่ระบบอัตโนมัติ: ${formatThaiDateTime(unlockIso)} — เก็บภาพบัตรนี้ไว้สแกนเข้าทำแบบทดสอบได้เลยค่ะ`}
                             </p>
                         </div>
                         {isModal && onClose && (
-                            <button type="button" onClick={onClose} className="spatial-soft w-9 h-9 rounded-xl flex items-center justify-center text-primary-adaptive shrink-0 cursor-pointer">
+                            <button type="button" onClick={onClose} className="neu-btn w-9 h-9 shrink-0">
                                 <Icon name="X" size={16} />
                             </button>
                         )}
                     </div>
 
-                    {/* ภาพบัตร Digital Onsite Pass Card ความละเอียดสูง (รองรับกดดาวน์โหลด & แตะค้างเซฟลง iPhone Photos) */}
                     <div className="max-w-[400px] mx-auto space-y-2">
-                        <div className="rounded-3xl overflow-hidden shadow-2xl border-2 border-pink-300/50 bg-white">
-                            {passImgUrl ? (
-                                <img
-                                    src={passImgUrl}
-                                    alt={`Digital Onsite Pass สำหรับ ${reg.name}`}
-                                    className="w-full h-auto block select-auto"
-                                />
-                            ) : (
-                                <div className="p-10 text-center text-slate-600 text-xs font-bold">กำลังสร้างบัตรเข้าสอบดิจิทัลพร้อม QR Code...</div>
-                            )}
+                        <div className="neu-inset p-2.5 rounded-3xl">
+                            <div className="rounded-2xl overflow-hidden shadow-xl bg-white">
+                                {passImgUrl ? (
+                                    <img src={passImgUrl} alt={`Digital Onsite Pass สำหรับ ${reg.name}`} className="w-full h-auto block select-auto" />
+                                ) : (
+                                    <div className="p-10 text-center text-slate-600 text-xs font-bold">กำลังสร้างบัตรเข้าสอบดิจิทัลพร้อม QR Code...</div>
+                                )}
+                            </div>
                         </div>
-                        <p className="text-[11px] text-center text-muted-adaptive">
+                        <p className="text-[11px] text-center text-[var(--neu-text-muted)] m-0">
                             💡 เคล็ดลับมือถือ: กดปุ่ม <b>“บันทึกรูปบัตรลงโทรศัพท์”</b> ด้านล่าง หรือ <b>แตะค้างที่รูปบัตรด้านบน</b> เพื่อบันทึกลงอัลบั้มภาพได้ทันทีค่ะ
                         </p>
                     </div>
 
-                    {/* กล่องลิงก์ https://learn.coerj.com สำหรับพิมพ์เข้าคอมพิวเตอร์ + ปุ่มคัดลอก */}
-                    <div className="spatial-soft rounded-2xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                    <div className="neu-inset p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                         <div className="min-w-0">
-                            <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase block">สำหรับพิมพ์เข้าผ่านคอมพิวเตอร์ / โน้ตบุ๊ก</span>
-                            <span className="font-mono font-extrabold text-sm sm:text-base text-primary-adaptive block truncate">{PORTAL_DISPLAY_URL}</span>
+                            <span className="font-mono text-[10px] font-bold text-[var(--neu-teal)] uppercase block">สำหรับพิมพ์เข้าผ่านคอมพิวเตอร์ / โน้ตบุ๊ก</span>
+                            <span className="font-mono font-extrabold text-sm sm:text-base text-[var(--neu-text)] block truncate">{PORTAL_DISPLAY_URL}</span>
                         </div>
-                        <button
-                            type="button"
-                            onClick={() => onCopyUrl(PORTAL_DISPLAY_URL)}
-                            className="spatial-soft touch-target px-4 py-2 rounded-xl text-xs font-bold text-accent-adaptive border-aurora-400/45 inline-flex items-center justify-center gap-1.5 shrink-0 cursor-pointer"
-                        >
+                        <button type="button" onClick={() => onCopyUrl(PORTAL_DISPLAY_URL)} className="neu-btn touch-target px-4 py-2 text-xs font-bold text-[var(--neu-teal)] shrink-0">
                             <Icon name="Copy" size={14} /> คัดลอกลิงก์เว็บ
                         </button>
                     </div>
 
-                    {/* ปุ่มหลัก: Save PNG / เข้าสู่ระบบทันที / ลงทะเบียนเพิ่ม */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                        <button type="button" onClick={handleDownloadPng} className="btn-peach-ambient touch-target py-3.5 px-5 font-display font-extrabold text-xs sm:text-sm">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <button type="button" onClick={handleDownloadPng} className="neu-btn-teal touch-target py-3.5 px-5 font-display font-extrabold text-xs sm:text-sm">
                             <Icon name="Download" size={16} /> บันทึกรูปบัตรลงโทรศัพท์ (PNG)
                         </button>
-                        <a href={personalUrl} className="rjc2-pill-btn touch-target py-3.5 px-5 rounded-full font-display font-extrabold text-xs sm:text-sm inline-flex items-center justify-center gap-1.5">
-                            <Icon name="LogIn" size={16} /> เข้า rjcloud.organ 2.0 →
+                        <a href={personalUrl} className="neu-btn touch-target py-3.5 px-5 font-display font-extrabold text-xs sm:text-sm text-[var(--neu-teal)]">
+                            <Icon name="LogIn" size={16} /> เข้า organ cloud 2.0 →
                         </a>
                     </div>
 
                     {!isModal && onRegisterAnother && (
                         <div className="text-center pt-1">
-                            <button type="button" onClick={onRegisterAnother} className="text-xs font-bold text-prism-adaptive hover:underline cursor-pointer">
+                            <button type="button" onClick={onRegisterAnother} className="text-xs font-bold text-[var(--neu-teal)] hover:underline cursor-pointer bg-transparent border-0">
                                 + ลงทะเบียนให้บุคลากรท่านอื่นเพิ่ม
                             </button>
                         </div>
@@ -931,12 +951,11 @@
             useEffect(() => {
                 document.documentElement.setAttribute('data-theme', theme);
                 const meta = document.querySelector('meta[name="theme-color"]');
-                if (meta) meta.setAttribute('content', theme === 'dark' ? '#030611' : '#edf5fc');
+                if (meta) meta.setAttribute('content', theme === 'dark' ? '#1c222b' : '#e6ebf0');
                 try { localStorage.setItem(THEME_KEY, theme); } catch (_) {}
             }, [theme]);
             const toggleTheme = useCallback(() => setTheme(p => (p === 'dark' ? 'light' : 'dark')), []);
 
-            // Cloud & Auth States
             const [authReady, setAuthReady] = useState(!isCloudConfigured);
             const [courseList, setCourseList] = useState(() => normalizeCourseList(CORE.DEFAULT_COURSE_CATALOG));
             const [onsiteConfig, setOnsiteConfig] = useState(() => ({ ...DEFAULT_ONSITE_CONFIG }));
@@ -944,7 +963,6 @@
             const [eventsArchive, setEventsArchive] = useState([]);
             const [allRegistrations, setAllRegistrations] = useState([]);
 
-            // Navigation & Registration Form States
             const [activeTab, setActiveTab] = useState(initialMode); // register | check | organizer
             const [submitting, setSubmitting] = useState(false);
             const [regSuccess, setRegSuccess] = useState(null);
@@ -955,12 +973,10 @@
                 email: '', phone: '', pdpaAccepted: true
             });
 
-            // Self-Service Check / Edit / Withdraw States (PDPA)
             const [checkLicense, setCheckLicense] = useState('');
             const [checkSearched, setCheckSearched] = useState(false);
             const [editingReg, setEditingReg] = useState(null);
 
-            // Organizer Historical Event Archive & A4 Print States
             const [selectedEventId, setSelectedEventId] = useState(urlEventId || '');
             const [orgSearch, setOrgSearch] = useState('');
             const [orgProfFilter, setOrgProfFilter] = useState('ALL');
@@ -984,7 +1000,7 @@
                 if (el) el.dataset.mounted = 'true';
             }, []);
 
-            // Step 1: Firebase Anonymous Auth Before Firestore Query
+            // Firebase Anonymous Auth
             useEffect(() => {
                 if (!isCloudConfigured || !fbAuth) { setAuthReady(true); return; }
                 let active = true;
@@ -1005,7 +1021,7 @@
                 return () => { active = false; clearTimeout(safetyTimer); try { unsub(); } catch (_) {} };
             }, []);
 
-            // Step 2: Subscribe to Settings (including Dynamic Course Catalog), Events Archive & All Registrations
+            // Subscribe to Settings, Events Archive & All Registrations
             useEffect(() => {
                 if (!authReady || !fbDb) return;
                 const unsubSettings = onSnapshot(
@@ -1062,7 +1078,6 @@
                 return found?.titleTH || courseList[0]?.titleTH || 'หลักสูตรการรับบริจาคและปลูกถ่ายอวัยวะ';
             }, [courseList]);
 
-            // รายการกิจกรรมทั้งหมด (ปัจจุบัน + ย้อนหลัง)
             const mergedEventsList = useMemo(() => {
                 const map = new Map();
                 map.set(onsiteConfig.eventId, {
@@ -1102,9 +1117,6 @@
             );
             const targetCourseTitle = getCourseTitleById(onsiteConfig.targetCourseId || DEFAULT_COURSE_ID);
 
-            // ============================================================================
-            // 4. REGISTRATION & SELF-SERVICE HANDLERS
-            // ============================================================================
             const handlePrefillFromExisting = async () => {
                 const cleanLic = form.license.replace(/[^a-zA-Z0-9_-]/g, '').toUpperCase().trim();
                 if (cleanLic.length < 4 || !fbDb) return;
@@ -1171,10 +1183,7 @@
 
                 try {
                     if (fbDb) {
-                        // 1. บันทึกลงคลังรายชื่อแยกตามกิจกรรม ({eventId}_{license}) ไม่ทับรุ่นเก่า 100%
                         await setDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'onsite_registrations', docKey), regPayload, { merge: true });
-
-                        // 2. อัปเดตทะเบียนกิจกรรมใน onsite_events/{eventId}
                         await setDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'onsite_events', eventId), {
                             eventId,
                             activityTitle: onsiteConfig.activityTitle,
@@ -1185,7 +1194,6 @@
                             updatedAt: nowIso
                         }, { merge: true });
 
-                        // 3. ซิงค์สิทธิ์ "เทียบโอน" (CREDIT_TRANSFER) เข้าศูนย์กลาง Data Center (elearning_users/{license})
                         const userRef = doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', cleanLic);
                         let existingUser = null;
                         try {
@@ -1299,9 +1307,6 @@
                 });
             };
 
-            // ============================================================================
-            // 5. ORGANIZER ARCHIVE ROSTER COMPUTATIONS (แยกตามกิจกรรมที่เลือก 100%)
-            // ============================================================================
             const selectedEventRoster = useMemo(() => {
                 const q = orgSearch.trim().toLowerCase();
                 return allRegistrations
@@ -1346,7 +1351,7 @@
                     r.email, r.phone, (r.revoked || r.cancelled) ? 'ยกเลิก' : 'เทียบโอนชั่วโมง (100%)',
                     r.registeredAt || '-'
                 ].map(escapeCsvCell).join(','));
-                downloadCsv(`onsite_roster_${activeArchiveEventId}_${new Date().toISOString().split('T')[0]}.csv`, headers, rows);
+                downloadCsv(`organ_cloud_onsite_${activeArchiveEventId}_${new Date().toISOString().split('T')[0]}.csv`, headers, rows);
                 showToast(`ส่งออกรายชื่อกิจกรรม ${activeArchiveEventId} (${selectedEventRoster.length} ราย) เรียบร้อยค่ะ`);
             };
 
@@ -1356,26 +1361,23 @@
             };
 
             // ============================================================================
-            // 6. RENDER UI
+            // 4. RENDER UI (NEUMORPHIC SOFT UI + A4 PRINT STUDIO)
             // ============================================================================
             return (
-                <div className="min-h-dvh relative flex flex-col pt-safe pb-safe">
-                    <div className="no-print spatial-aura" />
-                    <div className="no-print spatial-grid" />
-
-                    {/* Top Navigation Header */}
-                    <header className="no-print sticky top-0 z-30 spatial-header">
-                        <div className="max-w-6xl mx-auto px-3.5 sm:px-6 h-14 md:h-16 flex items-center justify-between gap-2">
-                            <div className="flex items-center gap-2.5 min-w-0">
-                                <a href="./index.html" aria-label="กลับหน้าหลัก" className="spatial-soft w-9 h-9 rounded-xl flex items-center justify-center text-primary-adaptive shrink-0">
+                <div className="min-h-dvh relative flex flex-col pt-safe pb-safe bg-[var(--neu-bg)] text-[var(--neu-text)]">
+                    {/* Top Neumorphic Header */}
+                    <header className="no-print sticky top-0 z-30 neu-header">
+                        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-3 min-w-0">
+                                <a href="./index.html" aria-label="กลับหน้าหลัก" className="neu-btn w-10 h-10 shrink-0">
                                     <Icon name="ArrowLeft" size={17} />
                                 </a>
                                 <div className="min-w-0">
-                                    <span className="font-display font-extrabold text-sm sm:text-base text-primary-adaptive block leading-none truncate">
-                                        rjcloud<span className="text-accent-adaptive">.organ</span> <span className="font-mono text-[10px] text-prism-adaptive">ONSITE HUB</span>
+                                    <span className="font-display font-extrabold text-sm sm:text-base text-[var(--neu-text)] block leading-none truncate">
+                                        organ <span className="text-[var(--neu-teal)]">cloud</span> <span className="font-mono text-[10.5px] text-[var(--neu-rose)]">ONSITE HUB</span>
                                     </span>
-                                    <span className="text-[10px] font-mono text-muted-adaptive block truncate">
-                                        Central Registration &amp; Digital Onsite Pass
+                                    <span className="text-[10.5px] font-mono text-[var(--neu-text-muted)] block truncate mt-0.5">
+                                        Central Registration &amp; Digital Onsite Pass • 2.0
                                     </span>
                                 </div>
                             </div>
@@ -1383,10 +1385,10 @@
                         </div>
                     </header>
 
-                    <main className="relative z-10 max-w-6xl w-full mx-auto px-3.5 sm:px-6 py-5 space-y-5 flex-1">
-                        {/* Navigation Tabs */}
-                        <div className="no-print flex flex-wrap items-center justify-between gap-2.5">
-                            <div className="inline-flex flex-wrap p-1 rounded-2xl spatial-soft gap-1">
+                    <main className="relative z-10 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6 flex-1">
+                        {/* Neumorphic Navigation Tabs */}
+                        <div className="no-print flex flex-wrap items-center justify-between gap-3">
+                            <div className="flex flex-wrap gap-2">
                                 {[
                                     { id: 'register', label: '1. ลงทะเบียนกิจกรรม', icon: 'UserPlus' },
                                     { id: 'check', label: '2. ตรวจรายชื่อ / รับบัตร QR ใหม่', icon: 'QrCode' },
@@ -1396,52 +1398,48 @@
                                         key={t.id}
                                         type="button"
                                         onClick={() => setActiveTab(t.id)}
-                                        className={`px-3.5 py-2 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 transition-all cursor-pointer ${
-                                            activeTab === t.id
-                                                ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold shadow'
-                                                : 'text-secondary-adaptive hover:text-primary-adaptive'
-                                        }`}
+                                        className={`neu-btn px-4 py-2.5 text-xs font-display font-bold ${activeTab === t.id ? 'is-pressed' : ''}`}
                                     >
                                         <Icon name={t.icon} size={14} /> {t.label}
                                     </button>
                                 ))}
                             </div>
-                            <span className="font-mono text-[10px] font-bold text-accent-adaptive px-3 py-1 rounded-full bg-aurora-500/15 border border-aurora-400/35">
-                                ● DATA CENTER SYNC ACTIVE
+                            <span className="font-mono text-[10.5px] font-bold text-[var(--neu-teal)] px-3.5 py-1.5 rounded-full bg-[var(--neu-bg)] shadow-[var(--shadow-pressed-sm)] border border-[var(--neu-teal-soft)]">
+                                ● organ cloud 2.0 • SYNC ACTIVE
                             </span>
                         </div>
 
                         {/* ==================== TAB 1: ONSITE REGISTRATION + DIGITAL PASS CARD ==================== */}
                         {activeTab === 'register' && (
-                            <div className="no-print grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-                                {/* Bento Left (Col 4): Event Banner & Unlock Time */}
-                                <aside className="lg:col-span-4 space-y-4">
-                                    <div className="spatial-card rounded-[1.75rem] p-5 space-y-3 border-aurora-400/40">
+                            <div className="no-print grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                                {/* Left Info Card (Col 4) */}
+                                <aside className="lg:col-span-4 space-y-5">
+                                    <div className="neu-card p-5 sm:p-6 space-y-4">
                                         <div className="flex items-center justify-between gap-2">
-                                            <span className="px-2.5 py-0.5 rounded-full bg-aurora-500/20 text-accent-adaptive font-mono text-[10px] font-bold">
+                                            <span className="px-3 py-1 rounded-full bg-[var(--neu-bg)] shadow-[var(--shadow-pressed-sm)] text-[var(--neu-teal)] font-mono text-[10px] font-bold">
                                                 {onsiteConfig.eventId}
                                             </span>
-                                            <span className={`px-2.5 py-0.5 rounded-full font-mono text-[10px] font-bold ${onsiteConfig.registrationOpen ? 'bg-prism-500/20 text-prism-adaptive' : 'bg-rose-500/20 text-rose-300'}`}>
+                                            <span className={`px-3 py-1 rounded-full font-mono text-[10px] font-bold bg-[var(--neu-bg)] shadow-[var(--shadow-pressed-sm)] ${onsiteConfig.registrationOpen ? 'text-[var(--neu-sky)]' : 'text-[var(--neu-rose)]'}`}>
                                                 {onsiteConfig.registrationOpen ? 'เปิดรับสมัคร' : 'ปิดรับสมัคร'}
                                             </span>
                                         </div>
-                                        <h1 className="font-display font-extrabold text-lg text-primary-adaptive leading-snug">
+                                        <h1 className="font-display font-extrabold text-lg text-[var(--neu-text)] leading-snug m-0">
                                             {onsiteConfig.activityTitle}
                                         </h1>
-                                        <div className="space-y-2 text-xs text-secondary-adaptive pt-1">
-                                            <p className="flex items-start gap-2 m-0"><Icon name="Calendar" size={14} className="text-prism-adaptive shrink-0 mt-0.5" /> <span><b>วันที่จัด:</b> {onsiteConfig.eventDate}</span></p>
-                                            <p className="flex items-start gap-2 m-0"><Icon name="Clock" size={14} className="text-pink-300 shrink-0 mt-0.5" /> <span><b>เปิดเข้าระบบออนไลน์:</b> {onsiteConfig.forceUnlocked ? 'เปิดให้เข้าได้ทันที' : formatThaiDateTime(onsiteConfig.unlockAt)}</span></p>
-                                            <p className="flex items-start gap-2 m-0"><Icon name="MapPin" size={14} className="text-accent-adaptive shrink-0 mt-0.5" /> <span><b>สถานที่:</b> {onsiteConfig.venueAndOrganizer}</span></p>
-                                            <p className="flex items-start gap-2 m-0"><Icon name="GraduationCap" size={14} className="text-amber-400 shrink-0 mt-0.5" /> <span><b>เทียบโอนเข้าหลักสูตร:</b> {targetCourseTitle}</span></p>
+                                        <div className="space-y-2.5 text-xs text-[var(--neu-text-sub)] pt-1">
+                                            <p className="flex items-start gap-2 m-0"><Icon name="Calendar" size={14} className="text-[var(--neu-sky)] shrink-0 mt-0.5" /> <span><b>วันที่จัด:</b> {onsiteConfig.eventDate}</span></p>
+                                            <p className="flex items-start gap-2 m-0"><Icon name="Clock" size={14} className="text-[var(--neu-rose)] shrink-0 mt-0.5" /> <span><b>เปิดเข้าระบบออนไลน์:</b> {onsiteConfig.forceUnlocked ? 'เปิดให้เข้าได้ทันที' : formatThaiDateTime(onsiteConfig.unlockAt)}</span></p>
+                                            <p className="flex items-start gap-2 m-0"><Icon name="MapPin" size={14} className="text-[var(--neu-teal)] shrink-0 mt-0.5" /> <span><b>สถานที่:</b> {onsiteConfig.venueAndOrganizer}</span></p>
+                                            <p className="flex items-start gap-2 m-0"><Icon name="GraduationCap" size={14} className="text-[var(--neu-amber)] shrink-0 mt-0.5" /> <span><b>เทียบโอนเข้าหลักสูตร:</b> {targetCourseTitle}</span></p>
                                         </div>
-                                        <div className="p-3.5 rounded-2xl bg-pink-400/10 border border-pink-300/35 text-[11.5px] text-secondary-adaptive leading-relaxed">
-                                            <b className="text-pink-300 block mb-0.5">✦ สะดวกสุดๆ หลังลงทะเบียนเสร็จ:</b>
+                                        <div className="neu-inset p-4 text-[11.5px] text-[var(--neu-text-sub)] leading-relaxed">
+                                            <b className="text-[var(--neu-teal)] block mb-1">✦ สะดวกสุดๆ หลังลงทะเบียนเสร็จ:</b>
                                             ท่านจะได้รับ <b>บัตรเข้าสอบดิจิทัล (QR Code + ลิงก์ {PORTAL_DISPLAY_URL})</b> สำหรับบันทึกลงโทรศัพท์ เมื่อถึงเวลาเปิดระบบ แค่เปิดรูปสแกนก็เข้าทำแบบทดสอบรับใบประกาศฯ ได้ทันทีค่ะ
                                         </div>
                                     </div>
                                 </aside>
 
-                                {/* Bento Right (Col 8): Registration Form or Digital Onsite Pass Card */}
+                                {/* Right Form / Pass Card (Col 8) */}
                                 <section className="lg:col-span-8">
                                     {regSuccess ? (
                                         <DigitalPassCardPanel
@@ -1457,32 +1455,32 @@
                                             }}
                                         />
                                     ) : (
-                                        <form onSubmit={handleSubmitRegistration} className="spatial-card rounded-[2rem] p-5 sm:p-7 space-y-5">
+                                        <form onSubmit={handleSubmitRegistration} className="neu-card p-5 sm:p-7 space-y-5">
                                             <div>
-                                                <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">ONLINE PRE-REGISTRATION • เฉพาะบุคลากรทางการแพทย์</span>
-                                                <h2 className="font-display font-extrabold text-xl text-primary-adaptive mt-0.5">กรอกข้อมูลลงทะเบียนเข้าร่วมกิจกรรม Onsite</h2>
+                                                <span className="font-mono text-[10px] font-bold text-[var(--neu-teal)] uppercase">ONLINE PRE-REGISTRATION • เฉพาะบุคลากรทางการแพทย์</span>
+                                                <h2 className="font-display font-extrabold text-xl text-[var(--neu-text)] mt-0.5 m-0">กรอกข้อมูลลงทะเบียนเข้าร่วมกิจกรรม Onsite</h2>
                                             </div>
 
                                             <div className="space-y-1.5">
-                                                <label className="block text-xs font-bold text-secondary-adaptive ml-1">1. เลขที่ใบอนุญาตประกอบวิชาชีพ / รหัสบุคลากร *</label>
-                                                <div className="flex gap-2">
+                                                <label className="block text-xs font-bold text-[var(--neu-text-sub)] ml-1">1. เลขที่ใบอนุญาตประกอบวิชาชีพ / รหัสบุคลากร *</label>
+                                                <div className="flex gap-2.5">
                                                     <input
                                                         required
                                                         value={form.license}
                                                         onChange={e => setForm(p => ({ ...p, license: e.target.value }))}
                                                         onBlur={handlePrefillFromExisting}
                                                         placeholder="กรอกเลขที่ใบอนุญาตฯ"
-                                                        className="touch-target spatial-input flex-1 px-4 py-2.5 rounded-2xl font-mono text-sm font-bold uppercase"
+                                                        className="touch-target neu-input flex-1 px-4 py-2.5 font-mono text-sm font-bold uppercase"
                                                     />
-                                                    <button type="button" onClick={handlePrefillFromExisting} className="spatial-soft px-3.5 rounded-2xl text-xs font-bold text-prism-adaptive shrink-0 cursor-pointer">
+                                                    <button type="button" onClick={handlePrefillFromExisting} className="neu-btn px-4 text-xs font-bold text-[var(--neu-teal)] shrink-0">
                                                         ดึงประวัติเดิม
                                                     </button>
                                                 </div>
                                             </div>
 
-                                            <div className="space-y-2">
-                                                <label className="block text-xs font-bold text-secondary-adaptive ml-1">2. เลือกกลุ่มวิชาชีพของท่าน *</label>
-                                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                            <div className="space-y-2.5">
+                                                <label className="block text-xs font-bold text-[var(--neu-text-sub)] ml-1">2. เลือกกลุ่มวิชาชีพของท่าน *</label>
+                                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                                                     {PROFESSION_OPTIONS.map(opt => {
                                                         const active = form.professionGroup === opt.id;
                                                         return (
@@ -1490,58 +1488,57 @@
                                                                 key={opt.id}
                                                                 type="button"
                                                                 onClick={() => setForm(p => ({ ...p, professionGroup: opt.id, position: p.position || opt.defaultPos }))}
-                                                                className={`text-left p-3 rounded-2xl border transition-all cursor-pointer ${active ? 'bg-aurora-500/20 border-aurora-400 shadow' : 'spatial-soft'}`}
+                                                                className={`neu-step-pill ${active ? 'is-active' : ''} text-left p-3.5`}
                                                             >
                                                                 <div className="flex items-center justify-between">
-                                                                    <span className="font-display font-extrabold text-sm text-primary-adaptive">{opt.label}</span>
-                                                                    <Icon name={opt.icon} size={15} className={active ? 'text-accent-adaptive' : 'text-muted-adaptive'} />
+                                                                    <span className="font-display font-extrabold text-sm text-[var(--neu-text)]">{opt.label}</span>
+                                                                    <Icon name={opt.icon} size={15} className={active ? 'text-[var(--neu-teal)]' : 'text-[var(--neu-text-muted)]'} />
                                                                 </div>
-                                                                <p className="text-[10.5px] text-muted-adaptive mt-0.5 leading-snug m-0">{opt.desc}</p>
+                                                                <p className="text-[10.5px] text-[var(--neu-text-muted)] mt-0.5 leading-snug m-0">{opt.desc}</p>
                                                             </button>
                                                         );
                                                     })}
                                                 </div>
 
-                                                {/* กฎเหล็ก: แสดง CNEU เฉพาะกลุ่มพยาบาลเท่านั้น */}
                                                 {form.professionGroup === 'พยาบาล' && (cneuConfig.activityCode || cneuConfig.cneuCredits) && (
-                                                    <div className="p-3.5 rounded-2xl bg-aurora-500/15 border border-aurora-400/50 space-y-0.5">
-                                                        <p className="font-mono text-[10px] font-bold text-accent-adaptive uppercase m-0">✓ สิทธิ์รับหน่วยคะแนนการศึกษาต่อเนื่องทางการพยาบาล (CNEU • สภาการพยาบาล)</p>
-                                                        <p className="font-display font-extrabold text-sm text-primary-adaptive m-0">
-                                                            รหัสกิจกรรม CNEU: <span className="font-mono text-accent-adaptive">{cneuConfig.activityCode}</span> • จำนวน <span className="font-mono text-accent-adaptive">{cneuConfig.cneuCredits}</span> หน่วยคะแนน
+                                                    <div className="neu-inset p-3.5 space-y-0.5">
+                                                        <p className="font-mono text-[10px] font-bold text-[var(--neu-teal)] uppercase m-0">✓ สิทธิ์รับหน่วยคะแนนการศึกษาต่อเนื่องทางการพยาบาล (CNEU • สภาการพยาบาล)</p>
+                                                        <p className="font-display font-extrabold text-sm text-[var(--neu-text)] m-0">
+                                                            รหัสกิจกรรม CNEU: <span className="font-mono text-[var(--neu-teal)]">{cneuConfig.activityCode}</span> • จำนวน <span className="font-mono text-[var(--neu-teal)]">{cneuConfig.cneuCredits}</span> หน่วยคะแนน
                                                         </p>
                                                     </div>
                                                 )}
                                                 {form.professionGroup && form.professionGroup !== 'พยาบาล' && (
-                                                    <div className="p-3.5 rounded-2xl bg-prism-500/15 border border-prism-400/45 text-xs text-primary-adaptive font-semibold">
-                                                        ✓ กลุ่ม <b>{form.professionGroup}</b> จะได้รับหนังสือรับรองและประกาศนียบัตรจำนวน <b className="font-mono text-prism-adaptive">{cneuConfig.trainingHours || 8}</b> ชั่วโมงการฝึกอบรมมาตรฐานวิชาชีพค่ะ
+                                                    <div className="neu-inset p-3.5 text-xs text-[var(--neu-text)] font-semibold">
+                                                        ✓ กลุ่ม <b>{form.professionGroup}</b> จะได้รับหนังสือรับรองและประกาศนียบัตรจำนวน <b className="font-mono text-[var(--neu-teal)]">{cneuConfig.trainingHours || 8}</b> ชั่วโมงการฝึกอบรมมาตรฐานวิชาชีพค่ะ
                                                     </div>
                                                 )}
                                             </div>
 
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                                                <div><label className="block font-bold text-secondary-adaptive mb-1 ml-1">คำนำหน้า ชื่อ–นามสกุล (ไทย) *</label><input required value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder="เช่น พว.ใจดี มีเมตตา" className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-xl text-sm" /></div>
-                                                <div><label className="block font-bold text-secondary-adaptive mb-1 ml-1">ชื่อ–นามสกุล (อังกฤษ)</label><input value={form.nameEN} onChange={e => setForm(p => ({ ...p, nameEN: e.target.value }))} placeholder="e.g. Jaidee Meemetta, RN" className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-xl text-sm" /></div>
-                                                <div><label className="block font-bold text-secondary-adaptive mb-1 ml-1">ตำแหน่ง</label><input value={form.position} onChange={e => setForm(p => ({ ...p, position: e.target.value }))} placeholder="เช่น พยาบาลวิชาชีพชำนาญการ" className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-xl text-sm" /></div>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
+                                                <div><label className="block font-bold text-[var(--neu-text-sub)] mb-1 ml-1">คำนำหน้า ชื่อ–นามสกุล (ไทย) *</label><input required value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder="เช่น พว.ใจดี มีเมตตา" className="touch-target neu-input w-full px-3.5 py-2.5 text-sm" /></div>
+                                                <div><label className="block font-bold text-[var(--neu-text-sub)] mb-1 ml-1">ชื่อ–นามสกุล (อังกฤษ)</label><input value={form.nameEN} onChange={e => setForm(p => ({ ...p, nameEN: e.target.value }))} placeholder="e.g. Jaidee Meemetta, RN" className="touch-target neu-input w-full px-3.5 py-2.5 text-sm" /></div>
+                                                <div><label className="block font-bold text-[var(--neu-text-sub)] mb-1 ml-1">ตำแหน่ง</label><input value={form.position} onChange={e => setForm(p => ({ ...p, position: e.target.value }))} placeholder="เช่น พยาบาลวิชาชีพชำนาญการ" className="touch-target neu-input w-full px-3.5 py-2.5 text-sm" /></div>
                                                 <div>
-                                                    <label className="block font-bold text-secondary-adaptive mb-1 ml-1">เขตสุขภาพ / สังกัด</label>
-                                                    <select value={form.region} onChange={e => setForm(p => ({ ...p, region: e.target.value }))} className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-xl text-sm">
+                                                    <label className="block font-bold text-[var(--neu-text-sub)] mb-1 ml-1">เขตสุขภาพ / สังกัด</label>
+                                                    <select value={form.region} onChange={e => setForm(p => ({ ...p, region: e.target.value }))} className="touch-target neu-input w-full px-3.5 py-2.5 text-sm">
                                                         {HEALTH_REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
                                                     </select>
                                                 </div>
-                                                <div><label className="block font-bold text-secondary-adaptive mb-1 ml-1">โรงพยาบาล / หน่วยงาน *</label><input required value={form.hospital} onChange={e => setForm(p => ({ ...p, hospital: e.target.value }))} placeholder="เช่น รพ.ราชวิถี" className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-xl text-sm" /></div>
-                                                <div><label className="block font-bold text-secondary-adaptive mb-1 ml-1">จังหวัด</label><input value={form.province} onChange={e => setForm(p => ({ ...p, province: e.target.value }))} placeholder="เช่น กรุงเทพมหานคร" className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-xl text-sm" /></div>
-                                                <div><label className="block font-bold text-secondary-adaptive mb-1 ml-1">อีเมลจริง (สำหรับรับ OTP เข้าสอบ) *</label><input required type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} placeholder="name@hospital.go.th" className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-xl text-sm" /></div>
-                                                <div><label className="block font-bold text-secondary-adaptive mb-1 ml-1">เบอร์โทรศัพท์ *</label><input required value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))} placeholder="08x-xxx-xxxx" className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-xl text-sm" /></div>
+                                                <div><label className="block font-bold text-[var(--neu-text-sub)] mb-1 ml-1">โรงพยาบาล / หน่วยงาน *</label><input required value={form.hospital} onChange={e => setForm(p => ({ ...p, hospital: e.target.value }))} placeholder="เช่น รพ.ราชวิถี" className="touch-target neu-input w-full px-3.5 py-2.5 text-sm" /></div>
+                                                <div><label className="block font-bold text-[var(--neu-text-sub)] mb-1 ml-1">จังหวัด</label><input value={form.province} onChange={e => setForm(p => ({ ...p, province: e.target.value }))} placeholder="เช่น กรุงเทพมหานคร" className="touch-target neu-input w-full px-3.5 py-2.5 text-sm" /></div>
+                                                <div><label className="block font-bold text-[var(--neu-text-sub)] mb-1 ml-1">อีเมลจริง (สำหรับรับ OTP เข้าสอบ) *</label><input required type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} placeholder="name@hospital.go.th" className="touch-target neu-input w-full px-3.5 py-2.5 text-sm" /></div>
+                                                <div><label className="block font-bold text-[var(--neu-text-sub)] mb-1 ml-1">เบอร์โทรศัพท์ *</label><input required value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))} placeholder="08x-xxx-xxxx" className="touch-target neu-input w-full px-3.5 py-2.5 text-sm" /></div>
                                             </div>
 
-                                            <label className="spatial-soft p-3 rounded-2xl flex items-start gap-2.5 text-xs cursor-pointer">
-                                                <input type="checkbox" required checked={Boolean(form.pdpaAccepted)} onChange={e => setForm(p => ({ ...p, pdpaAccepted: e.target.checked }))} className="mt-0.5 w-4 h-4 accent-aurora-500 shrink-0" />
-                                                <span className="text-secondary-adaptive leading-relaxed">
-                                                    ยินยอมให้จัดเก็บข้อมูลเพื่อการจัดทำรายชื่อผู้เข้าร่วมกิจกรรม เทียบโอนชั่วโมงการอบรมเข้าสู่ศูนย์กลาง <b>rjcloud.organ 2.0</b> และออกประกาศนียบัตรตามหลัก PDPA
+                                            <label className="neu-inset p-3.5 flex items-start gap-2.5 text-xs cursor-pointer">
+                                                <input type="checkbox" required checked={Boolean(form.pdpaAccepted)} onChange={e => setForm(p => ({ ...p, pdpaAccepted: e.target.checked }))} className="mt-0.5 w-4 h-4 accent-emerald-600 shrink-0" />
+                                                <span className="text-[var(--neu-text-sub)] leading-relaxed">
+                                                    ยินยอมให้จัดเก็บข้อมูลเพื่อการจัดทำรายชื่อผู้เข้าร่วมกิจกรรม เทียบโอนชั่วโมงการอบรมเข้าสู่ศูนย์กลาง <b>organ cloud 2.0</b> และออกประกาศนียบัตรตามหลัก PDPA
                                                 </span>
                                             </label>
 
-                                            <button type="submit" disabled={submitting || !onsiteConfig.registrationOpen} className="btn-peach-ambient touch-target w-full py-3.5 font-display font-extrabold text-sm">
+                                            <button type="submit" disabled={submitting || !onsiteConfig.registrationOpen} className="neu-btn-teal touch-target w-full py-4 font-display font-extrabold text-sm">
                                                 {submitting ? 'กำลังบันทึกและสร้างบัตร Digital Onsite Pass...' : 'ยืนยันลงทะเบียน & รับบัตรเข้าสอบ QR Code →'}
                                             </button>
                                         </form>
@@ -1552,56 +1549,56 @@
 
                         {/* ==================== TAB 2: SELF-SERVICE CHECK / RE-DOWNLOAD PASS CARD (PDPA) ==================== */}
                         {activeTab === 'check' && (
-                            <section className="no-print max-w-3xl mx-auto space-y-4">
-                                <div className="spatial-card rounded-[2rem] p-5 sm:p-6 space-y-4">
+                            <section className="no-print max-w-3xl mx-auto space-y-5">
+                                <div className="neu-card p-5 sm:p-7 space-y-4">
                                     <div>
-                                        <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">PDPA SELF-SERVICE • ดาวน์โหลดบัตร QR ซ้ำ / แก้ไขข้อมูล</span>
-                                        <h2 className="font-display font-extrabold text-xl text-primary-adaptive mt-0.5">ตรวจสอบรายชื่อ รับบัตร Digital Pass หรือแก้ไขข้อมูล</h2>
+                                        <span className="font-mono text-[10px] font-bold text-[var(--neu-teal)] uppercase">PDPA SELF-SERVICE • ดาวน์โหลดบัตร QR ซ้ำ / แก้ไขข้อมูล</span>
+                                        <h2 className="font-display font-extrabold text-xl text-[var(--neu-text)] mt-0.5 m-0">ตรวจสอบรายชื่อ รับบัตร Digital Pass หรือแก้ไขข้อมูล</h2>
                                     </div>
-                                    <form onSubmit={(e) => { e.preventDefault(); setCheckSearched(true); }} className="flex gap-2">
+                                    <form onSubmit={(e) => { e.preventDefault(); setCheckSearched(true); }} className="flex gap-2.5">
                                         <input
                                             required
                                             value={checkLicense}
                                             onChange={e => { setCheckLicense(e.target.value); setCheckSearched(false); }}
                                             placeholder="กรอกเลขที่ใบอนุญาตฯ ของท่านเพื่อค้นหา..."
-                                            className="touch-target spatial-input flex-1 px-4 py-2.5 rounded-2xl font-mono text-sm font-bold uppercase"
+                                            className="touch-target neu-input flex-1 px-4 py-2.5 font-mono text-sm font-bold uppercase"
                                         />
-                                        <button type="submit" className="btn-peach-ambient touch-target px-5 rounded-2xl font-display font-extrabold text-xs shrink-0">
+                                        <button type="submit" className="neu-btn-teal touch-target px-6 font-display font-extrabold text-xs shrink-0">
                                             ค้นหา
                                         </button>
                                     </form>
 
                                     {checkSearched && matchedCheckRecords.length === 0 && (
-                                        <div className="spatial-soft rounded-2xl p-6 text-center text-xs text-muted-adaptive">
-                                            ไม่พบประวัติการลงทะเบียนสำหรับเลขใบอนุญาต <b className="font-mono text-primary-adaptive">{checkLicense}</b> ค่ะ
+                                        <div className="neu-inset p-6 text-center text-xs text-[var(--neu-text-muted)]">
+                                            ไม่พบประวัติการลงทะเบียนสำหรับเลขใบอนุญาต <b className="font-mono text-[var(--neu-text)]">{checkLicense}</b> ค่ะ
                                         </div>
                                     )}
 
                                     {matchedCheckRecords.length > 0 && (
-                                        <div className="space-y-3">
-                                            <p className="text-xs font-bold text-accent-adaptive">พบประวัติลงทะเบียนทั้งหมด {matchedCheckRecords.length} กิจกรรม:</p>
+                                        <div className="space-y-3.5">
+                                            <p className="text-xs font-bold text-[var(--neu-teal)] m-0">พบประวัติลงทะเบียนทั้งหมด {matchedCheckRecords.length} กิจกรรม:</p>
                                             {matchedCheckRecords.map(rec => {
                                                 const isCancel = Boolean(rec.revoked || rec.cancelled);
                                                 return (
-                                                    <div key={rec.docId} className="spatial-soft rounded-2xl p-4 space-y-2 text-xs">
+                                                    <div key={rec.docId} className="neu-inset p-4 space-y-2 text-xs">
                                                         <div className="flex flex-wrap items-center justify-between gap-2">
-                                                            <span className="font-mono text-[10px] font-bold text-prism-adaptive">{rec.eventId} • {rec.professionGroup}</span>
-                                                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${isCancel ? 'bg-rose-500/20 text-rose-300' : 'bg-aurora-500/20 text-accent-adaptive'}`}>
+                                                            <span className="font-mono text-[10.5px] font-bold text-[var(--neu-sky)]">{rec.eventId} • {rec.professionGroup}</span>
+                                                            <span className={`px-3 py-0.5 rounded-full text-[10.5px] font-bold bg-[var(--neu-bg)] shadow-[var(--shadow-pressed-sm)] ${isCancel ? 'text-[var(--neu-rose)]' : 'text-[var(--neu-teal)]'}`}>
                                                                 {isCancel ? 'ยกเลิกสิทธิ์แล้ว' : 'เทียบโอนชั่วโมง (100%)'}
                                                             </span>
                                                         </div>
-                                                        <p className="font-display font-bold text-sm text-primary-adaptive m-0">{rec.activityTitle || rec.eventName || rec.eventId}</p>
-                                                        <p className="text-secondary-adaptive m-0">{rec.name} • {rec.hospital} ({rec.province || '-'}) • {rec.email || '-'}</p>
-                                                        <p className="text-[11px] text-muted-adaptive m-0">ลงทะเบียนเมื่อ: {formatThaiDateTime(rec.registeredAt)}</p>
+                                                        <p className="font-display font-bold text-sm text-[var(--neu-text)] m-0">{rec.activityTitle || rec.eventName || rec.eventId}</p>
+                                                        <p className="text-[var(--neu-text-sub)] m-0">{rec.name} • {rec.hospital} ({rec.province || '-'}) • {rec.email || '-'}</p>
+                                                        <p className="text-[11px] text-[var(--neu-text-muted)] m-0">ลงทะเบียนเมื่อ: {formatThaiDateTime(rec.registeredAt)}</p>
                                                         <div className="flex flex-wrap gap-2 pt-2">
                                                             {!isCancel && (
-                                                                <button type="button" onClick={() => setPassModalReg(rec)} className="btn-peach-ambient px-4 py-1.5 text-[11px]">
+                                                                <button type="button" onClick={() => setPassModalReg(rec)} className="neu-btn-teal px-4 py-2 text-[11px] font-display font-bold">
                                                                     <Icon name="QrCode" size={13} /> เปิด/บันทึกบัตรเข้าสอบ (PNG)
                                                                 </button>
                                                             )}
-                                                            <button type="button" onClick={() => setEditingReg({ ...rec })} className="spatial-soft px-3.5 py-1.5 rounded-xl font-bold text-prism-adaptive cursor-pointer">แก้ไขข้อมูล</button>
-                                                            <button type="button" onClick={() => handleWithdrawSelf(rec)} className="px-3.5 py-1.5 rounded-xl bg-rose-500/15 text-rose-400 font-bold cursor-pointer">ยกเลิกการลงทะเบียน</button>
-                                                            <a href={buildPersonalPortalUrl(rec.license, rec.targetCourseId || DEFAULT_COURSE_ID)} className="rjc2-pill-btn px-3.5 py-1.5 rounded-xl font-extrabold text-[11px]">เข้าสู่ระบบเรียน →</a>
+                                                            <button type="button" onClick={() => setEditingReg({ ...rec })} className="neu-btn px-3.5 py-2 font-bold text-[var(--neu-sky)] text-[11px]">แก้ไขข้อมูล</button>
+                                                            <button type="button" onClick={() => handleWithdrawSelf(rec)} className="neu-btn px-3.5 py-2 text-[var(--neu-rose)] font-bold text-[11px]">ยกเลิกการลงทะเบียน</button>
+                                                            <a href={buildPersonalPortalUrl(rec.license, rec.targetCourseId || DEFAULT_COURSE_ID)} className="neu-btn px-3.5 py-2 font-bold text-[var(--neu-teal)] text-[11px]">เข้าสู่ระบบเรียน →</a>
                                                         </div>
                                                     </div>
                                                 );
@@ -1611,22 +1608,22 @@
                                 </div>
 
                                 {editingReg && (
-                                    <form onSubmit={handleSaveSelfEdit} className="spatial-card rounded-[2rem] p-5 sm:p-6 space-y-3 border-prism-400/45 text-xs">
+                                    <form onSubmit={handleSaveSelfEdit} className="neu-card p-5 sm:p-6 space-y-3.5 text-xs">
                                         <div className="flex items-center justify-between">
-                                            <h3 className="font-display font-bold text-base text-primary-adaptive">แก้ไขข้อมูล ({editingReg.eventId})</h3>
-                                            <button type="button" onClick={() => setEditingReg(null)} className="spatial-soft px-2.5 py-1 rounded-lg text-muted-adaptive cursor-pointer">ปิด</button>
+                                            <h3 className="font-display font-bold text-base text-[var(--neu-text)] m-0">แก้ไขข้อมูล ({editingReg.eventId})</h3>
+                                            <button type="button" onClick={() => setEditingReg(null)} className="neu-btn px-3 py-1.5 text-xs font-bold">ปิด ✕</button>
                                         </div>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                            <input required value={editingReg.name || ''} onChange={e => setEditingReg(p => ({ ...p, name: e.target.value }))} placeholder="ชื่อ-นามสกุล" className="touch-target spatial-input px-3.5 py-2 rounded-xl text-sm" />
-                                            <select value={editingReg.professionGroup || 'พยาบาล'} onChange={e => setEditingReg(p => ({ ...p, professionGroup: e.target.value }))} className="touch-target spatial-input px-3.5 py-2 rounded-xl text-sm">
+                                            <input required value={editingReg.name || ''} onChange={e => setEditingReg(p => ({ ...p, name: e.target.value }))} placeholder="ชื่อ-นามสกุล" className="touch-target neu-input px-3.5 py-2 text-sm" />
+                                            <select value={editingReg.professionGroup || 'พยาบาล'} onChange={e => setEditingReg(p => ({ ...p, professionGroup: e.target.value }))} className="touch-target neu-input px-3.5 py-2 text-sm">
                                                 {PROFESSION_OPTIONS.map(o => <option key={o.id} value={o.id}>{o.label}</option>)}
                                             </select>
-                                            <input value={editingReg.hospital || ''} onChange={e => setEditingReg(p => ({ ...p, hospital: e.target.value }))} placeholder="โรงพยาบาล" className="touch-target spatial-input px-3.5 py-2 rounded-xl text-sm" />
-                                            <input value={editingReg.province || ''} onChange={e => setEditingReg(p => ({ ...p, province: e.target.value }))} placeholder="จังหวัด" className="touch-target spatial-input px-3.5 py-2 rounded-xl text-sm" />
-                                            <input type="email" value={editingReg.email || ''} onChange={e => setEditingReg(p => ({ ...p, email: e.target.value }))} placeholder="อีเมล" className="touch-target spatial-input px-3.5 py-2 rounded-xl text-sm" />
-                                            <input value={editingReg.phone || ''} onChange={e => setEditingReg(p => ({ ...p, phone: e.target.value }))} placeholder="เบอร์โทร" className="touch-target spatial-input px-3.5 py-2 rounded-xl text-sm" />
+                                            <input value={editingReg.hospital || ''} onChange={e => setEditingReg(p => ({ ...p, hospital: e.target.value }))} placeholder="โรงพยาบาล" className="touch-target neu-input px-3.5 py-2 text-sm" />
+                                            <input value={editingReg.province || ''} onChange={e => setEditingReg(p => ({ ...p, province: e.target.value }))} placeholder="จังหวัด" className="touch-target neu-input px-3.5 py-2 text-sm" />
+                                            <input type="email" value={editingReg.email || ''} onChange={e => setEditingReg(p => ({ ...p, email: e.target.value }))} placeholder="อีเมล" className="touch-target neu-input px-3.5 py-2 text-sm" />
+                                            <input value={editingReg.phone || ''} onChange={e => setEditingReg(p => ({ ...p, phone: e.target.value }))} placeholder="เบอร์โทร" className="touch-target neu-input px-3.5 py-2 text-sm" />
                                         </div>
-                                        <button type="submit" className="rjc2-pill-btn touch-target px-6 py-2.5 rounded-full font-display font-extrabold text-xs">บันทึกการแก้ไข ✓</button>
+                                        <button type="submit" className="neu-btn-teal touch-target px-6 py-2.5 font-display font-extrabold text-xs">บันทึกการแก้ไข ✓</button>
                                     </form>
                                 )}
                             </section>
@@ -1634,29 +1631,29 @@
 
                         {/* ==================== TAB 3: HISTORICAL EVENT ARCHIVE & A4 SIGN-IN STUDIO ==================== */}
                         {activeTab === 'organizer' && (
-                            <div className="space-y-5">
-                                <section className="no-print spatial-card rounded-[1.75rem] p-5 space-y-4 border-prism-400/35">
+                            <div className="space-y-6">
+                                <section className="no-print neu-card p-5 sm:p-6 space-y-4">
                                     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
                                         <div>
-                                            <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">HISTORICAL EVENT ARCHIVE • ตรวจสอบรายชื่อย้อนหลังแยกตามกิจกรรม</span>
-                                            <h2 className="font-display font-extrabold text-lg sm:text-xl text-primary-adaptive mt-0.5">
+                                            <span className="font-mono text-[10px] font-bold text-[var(--neu-teal)] uppercase">HISTORICAL EVENT ARCHIVE • ตรวจสอบรายชื่อย้อนหลังแยกตามกิจกรรม</span>
+                                            <h2 className="font-display font-extrabold text-lg sm:text-xl text-[var(--neu-text)] mt-0.5 m-0">
                                                 คลังรายชื่อผู้เข้าร่วมอบรม &amp; สตูดิโอพิมพ์ใบเซ็นชื่อราชการ (A4 PDF)
                                             </h2>
                                         </div>
-                                        <div className="flex flex-wrap gap-2">
-                                            <button type="button" onClick={handleExportEventCsv} className="spatial-soft touch-target px-4 py-2 rounded-full text-xs font-bold text-accent-adaptive inline-flex items-center gap-1.5 cursor-pointer">
+                                        <div className="flex flex-wrap gap-2.5">
+                                            <button type="button" onClick={handleExportEventCsv} className="neu-btn touch-target px-4 py-2 text-xs font-bold text-[var(--neu-teal)]">
                                                 <Icon name="FileSpreadsheet" size={15} /> ส่งออก CSV ({selectedEventRoster.length})
                                             </button>
-                                            <button type="button" onClick={() => window.print()} className="rjc2-pill-btn touch-target px-5 py-2 rounded-full font-display font-extrabold text-xs inline-flex items-center gap-1.5">
+                                            <button type="button" onClick={() => window.print()} className="neu-btn-teal touch-target px-5 py-2 font-display font-extrabold text-xs">
                                                 <Icon name="Printer" size={15} /> พิมพ์ใบเซ็นชื่อ A4 (PDF)
                                             </button>
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-end text-xs">
+                                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-end text-xs">
                                         <div className="lg:col-span-6">
-                                            <label className="block font-bold text-prism-adaptive mb-1 ml-1">เลือกกิจกรรมที่ต้องการตรวจสอบรายชื่อย้อนหลัง ({mergedEventsList.length} กิจกรรม):</label>
-                                            <select value={activeArchiveEventId} onChange={e => setSelectedEventId(e.target.value)} className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-2xl text-sm font-bold">
+                                            <label className="block font-bold text-[var(--neu-teal)] mb-1 ml-1">เลือกกิจกรรมที่ต้องการตรวจสอบรายชื่อย้อนหลัง ({mergedEventsList.length} กิจกรรม):</label>
+                                            <select value={activeArchiveEventId} onChange={e => setSelectedEventId(e.target.value)} className="touch-target neu-input w-full px-3.5 py-2.5 text-sm font-bold">
                                                 {mergedEventsList.map(ev => (
                                                     <option key={ev.eventId} value={ev.eventId}>
                                                         {ev.isCurrent ? '★ [ปัจจุบัน] ' : '[ย้อนหลัง] '}{ev.eventId} — {ev.activityTitle}
@@ -1665,30 +1662,30 @@
                                             </select>
                                         </div>
                                         <div className="lg:col-span-4">
-                                            <label className="block font-bold text-secondary-adaptive mb-1 ml-1">ค้นหาชื่อ / เลขใบอนุญาต / โรงพยาบาล:</label>
-                                            <input value={orgSearch} onChange={e => setOrgSearch(e.target.value)} placeholder="พิมพ์คำค้นหา..." className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-2xl text-sm" />
+                                            <label className="block font-bold text-[var(--neu-text-sub)] mb-1 ml-1">ค้นหาชื่อ / เลขใบอนุญาต / โรงพยาบาล:</label>
+                                            <input value={orgSearch} onChange={e => setOrgSearch(e.target.value)} placeholder="พิมพ์คำค้นหา..." className="touch-target neu-input w-full px-3.5 py-2.5 text-sm" />
                                         </div>
                                         <div className="lg:col-span-2">
-                                            <label className="block font-bold text-secondary-adaptive mb-1 ml-1">แถวว่าง Walk-in:</label>
-                                            <input type="number" min="0" max="25" value={printBlankRows} onChange={e => setPrintBlankRows(Math.max(0, Math.min(25, Number(e.target.value) || 0)))} className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-2xl font-mono text-sm font-bold text-center" />
+                                            <label className="block font-bold text-[var(--neu-text-sub)] mb-1 ml-1">แถวว่าง Walk-in:</label>
+                                            <input type="number" min="0" max="25" value={printBlankRows} onChange={e => setPrintBlankRows(Math.max(0, Math.min(25, Number(e.target.value) || 0)))} className="touch-target neu-input w-full px-3.5 py-2.5 font-mono text-sm font-bold text-center" />
                                         </div>
                                     </div>
 
-                                    <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-white/10">
-                                        <div className="flex flex-wrap gap-1.5 text-xs">
+                                    <div className="flex flex-wrap items-center justify-between gap-2.5 pt-2 border-t border-[var(--neu-border-soft)]">
+                                        <div className="flex flex-wrap gap-2 text-xs">
                                             {[
                                                 { id: 'ALL', label: `ทั้งหมด (${selectedEventStats.total})` },
                                                 { id: 'พยาบาล', label: `พยาบาล • CNEU (${selectedEventStats.nurse})` },
                                                 { id: 'แพทย์', label: `แพทย์ (${selectedEventStats.doctor})` },
                                                 { id: 'บุคลากรสหวิชาชีพ', label: `สหวิชาชีพ (${selectedEventStats.allied})` }
                                             ].map(f => (
-                                                <button key={f.id} type="button" onClick={() => setOrgProfFilter(f.id)} className={`px-3 py-1.5 rounded-xl font-bold cursor-pointer ${orgProfFilter === f.id ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'spatial-soft text-secondary-adaptive'}`}>
+                                                <button key={f.id} type="button" onClick={() => setOrgProfFilter(f.id)} className={`neu-btn px-3.5 py-2 font-bold ${orgProfFilter === f.id ? 'is-pressed' : ''}`}>
                                                     {f.label}
                                                 </button>
                                             ))}
                                         </div>
-                                        <label className="text-xs font-bold text-muted-adaptive inline-flex items-center gap-1.5 cursor-pointer">
-                                            <input type="checkbox" checked={showRevoked} onChange={e => setShowRevoked(e.target.checked)} className="accent-aurora-500" />
+                                        <label className="text-xs font-bold text-[var(--neu-text-muted)] inline-flex items-center gap-1.5 cursor-pointer">
+                                            <input type="checkbox" checked={showRevoked} onChange={e => setShowRevoked(e.target.checked)} className="accent-emerald-600" />
                                             <span>แสดงผู้ยกเลิกสิทธิ์ ({selectedEventStats.revoked})</span>
                                         </label>
                                     </div>
@@ -1698,7 +1695,7 @@
                                 <article id="onsite-print-root" className="a4-sheet rounded-2xl p-6 sm:p-10 space-y-4 max-w-4xl mx-auto">
                                     <div className="text-center border-b-2 border-slate-800 pb-3.5 space-y-1">
                                         <p className="text-xs font-bold text-emerald-800 uppercase m-0">
-                                            แบบลงทะเบียนเข้าร่วมการอบรมและรับรองสิทธิ์เทียบโอนชั่วโมง (rjcloud.organ 2.0)
+                                            แบบลงทะเบียนเข้าร่วมการอบรมและรับรองสิทธิ์เทียบโอนชั่วโมง (organ cloud 2.0)
                                         </p>
                                         <h2 className="font-display text-lg font-extrabold text-slate-900 m-0">
                                             {activeArchiveEvent.activityTitle}
@@ -1768,7 +1765,7 @@
 
                     {/* Modal เปิดดูและบันทึกรูปบัตร Digital Onsite Pass ย้อนหลัง */}
                     {passModalReg && (
-                        <div className="no-print fixed inset-0 z-[168] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5">
+                        <div className="no-print fixed inset-0 z-[168] bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-5">
                             <DigitalPassCardPanel
                                 reg={passModalReg}
                                 onsiteCfg={onsiteConfig}
