@@ -1210,6 +1210,8 @@
 
     // Preload YouTube player in background so music starts instantaneously on click
     ensureYouTubeApi();
+
+    controlsEl = document.createElement('div');
     controlsEl.id = 'rj-keynote-controls';
     controlsEl.innerHTML = [
       '<button id="rj-host-toggle" type="button" class="rj-ctrl-pill">▶ พิธีกร AI</button>',
@@ -1311,4 +1313,26 @@
   try {
     global.dispatchEvent(new Event('rjcloud-keynote-ready'));
   } catch (_) {}
+
+  // Force the Welcome Gate to appear BEFORE the peach blossom tree renders on landing entry
+  (function autoShowGateBeforeTree() {
+    try {
+      const qs = new URLSearchParams(global.location.search || '');
+      const skipLanding =
+        qs.get('return') === 'dashboard' ||
+        Boolean(qs.get('auto_step')) ||
+        Boolean(qs.get('license')) ||
+        Boolean(qs.get('course'));
+      if (skipLanding) return;
+
+      const boot = function () {
+        if (!hasDismissedGate) {
+          isLandingNow = true;
+          showGate();
+        }
+      };
+      if (document.body) boot();
+      else document.addEventListener('DOMContentLoaded', boot, { once: true });
+    } catch (_) {}
+  })();
 })(typeof window !== 'undefined' ? window : globalThis);
