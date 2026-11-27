@@ -28,7 +28,7 @@
             manifest.href = './manifest.json';
             document.head.appendChild(manifest);
 
-            ['./index-styles.css?v=202705', './styles.css'].forEach(function (href) {
+            ['./index-styles.css?v=202707', './styles.css'].forEach(function (href) {
               const link = document.createElement('link');
               link.rel = 'stylesheet';
               link.href = href;
@@ -574,7 +574,7 @@
         }
 
         // ============================================================================
-        // 3. LANDING HERO SCREEN (เชื่อม hero-peach-engine.js?v=202705 + ลายน้ำเนื้อน้ำ)
+        // 3. LANDING HERO SCREEN (เชื่อม hero-peach-engine.js + Calligraphic Signature Reveal)
         // ============================================================================
         function LandingHeroScreen({ onStartAuth, hasSavedSession, onResumeDashboard, showInstallBtn, onInstallApp }) {
             const heroStageRef = useRef(null);
@@ -739,7 +739,7 @@
                                         </svg>
                                     </div>
 
-                                    {/* Desktop Liquid Glass Chamber (z-25) */}
+                                    {/* Desktop Liquid Glass Chamber (z-25) + Calligraphic Signature Animation */}
                                     <div id="idx-liquid-glass-stage" ref={glassStageRef} className="hidden md:block absolute bottom-0 left-[50.5%] -translate-x-1/2 z-[25] w-[90%] max-w-[730px] aspect-[760/208] pointer-events-auto" style={{ '--gx': '32%', '--gy': '28%' }}>
                                         <div className="liquid-glass-backdrop absolute inset-0" />
                                         <svg viewBox="0 0 760 208" className="absolute inset-0 w-full h-full pointer-events-none" fill="none" preserveAspectRatio="none">
@@ -750,8 +750,58 @@
                                                 <linearGradient id="idxGlassTopHighlight" x1="20" y1="4" x2="420" y2="128" gradientUnits="userSpaceOnUse">
                                                     <stop offset="0%" stopColor="rgba(255,255,255,0.14)" /><stop offset="100%" stopColor="rgba(255,255,255,0)" />
                                                 </linearGradient>
+                                                <linearGradient id="idxSigInkGradDesk" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                    <stop offset="0%" stopColor="#fbcfe8" stopOpacity="0.22" />
+                                                    <stop offset="35%" stopColor="#fde68a" stopOpacity="0.92" />
+                                                    <stop offset="70%" stopColor="#ffffff" stopOpacity="1" />
+                                                    <stop offset="100%" stopColor="#fda4af" stopOpacity="0.95" />
+                                                </linearGradient>
+                                                <filter id="idxSigGlowDesk" x="-15%" y="-40%" width="130%" height="180%">
+                                                    <feGaussianBlur stdDeviation="2.6" result="blur" />
+                                                    <feMerge>
+                                                        <feMergeNode in="blur" />
+                                                        <feMergeNode in="SourceGraphic" />
+                                                    </feMerge>
+                                                </filter>
                                             </defs>
                                             <path d="M 28 4 L 538 4 Q 562 4 562 28 L 562 56 Q 562 80 586 80 L 732 80 Q 756 80 756 104 L 756 180 Q 756 204 732 204 L 210 204 Q 186 204 186 180 L 186 138 Q 186 114 162 114 L 28 114 Q 4 114 4 90 L 4 28 Q 4 4 28 4 Z" fill="url(#idxGlassTopHighlight)" stroke="url(#idxGlassRimStroke)" strokeWidth="1.45" />
+                                            {/* เส้นตวัดลายเซ็นพู่กัน 2 ชั้น (ชั้นแสงฟุ้ง + แกนขาวคม) เชื่อมจากบรรทัดบนลงสู่ "สู่มาตรฐานปี 2027" */}
+                                            <g filter="url(#idxSigGlowDesk)">
+                                                <path
+                                                    pathLength="1000"
+                                                    className="sig-stroke-glow-1"
+                                                    d="M 24 89 C 115 95, 225 79, 325 87 C 405 93, 478 81, 534 88"
+                                                    stroke="url(#idxSigInkGradDesk)"
+                                                    strokeWidth="3.2"
+                                                    strokeOpacity="0.55"
+                                                    strokeLinecap="round"
+                                                />
+                                                <path
+                                                    pathLength="1000"
+                                                    className="sig-stroke-core-1"
+                                                    d="M 24 89 C 115 95, 225 79, 325 87 C 405 93, 478 81, 534 88"
+                                                    stroke="#ffffff"
+                                                    strokeWidth="1.25"
+                                                    strokeLinecap="round"
+                                                />
+                                                <path
+                                                    pathLength="1000"
+                                                    className="sig-stroke-glow-2"
+                                                    d="M 216 130 C 275 137, 365 123, 440 129 C 476 132, 510 126, 528 122 C 496 135, 396 141, 340 136"
+                                                    stroke="url(#idxSigInkGradDesk)"
+                                                    strokeWidth="3.6"
+                                                    strokeOpacity="0.62"
+                                                    strokeLinecap="round"
+                                                />
+                                                <path
+                                                    pathLength="1000"
+                                                    className="sig-stroke-core-2"
+                                                    d="M 216 130 C 275 137, 365 123, 440 129 C 476 132, 510 126, 528 122 C 496 135, 396 141, 340 136"
+                                                    stroke="#fffef5"
+                                                    strokeWidth="1.45"
+                                                    strokeLinecap="round"
+                                                />
+                                            </g>
                                         </svg>
 
                                         <div className="relative z-10 w-full h-full">
@@ -760,12 +810,12 @@
                                                     <span className="w-1.5 h-1.5 rounded-full bg-pink-300 shadow-[0_0_8px_#f9a8d4]" />
                                                     e-Learning Organ Donation Training
                                                 </span>
-                                                <h1 ref={fitLine1Ref} className="hero-headline font-display text-white whitespace-nowrap block m-0" style={{ fontSize: '25px', lineHeight: 1.22 }}>
+                                                <h1 ref={fitLine1Ref} className="hero-headline sig-reveal-line1 font-display text-white whitespace-nowrap block m-0" style={{ fontSize: '25px', lineHeight: 1.22 }}>
                                                     ยกระดับทักษะการรับบริจาคและปลูกถ่ายอวัยวะ
                                                 </h1>
                                             </div>
                                             <div ref={centerCtaRef} className="absolute top-[40.5%] bottom-[4.5%] left-[25.5%] right-[27.5%] flex flex-col items-center justify-between text-center">
-                                                <p ref={fitLine2Ref} className="hero-year-highlight font-display whitespace-nowrap block m-0" style={{ fontSize: '27px', lineHeight: 1.15 }}>สู่มาตรฐานปี 2027</p>
+                                                <p ref={fitLine2Ref} className="hero-year-highlight sig-reveal-line2 font-display whitespace-nowrap block m-0" style={{ fontSize: '27px', lineHeight: 1.15 }}>สู่มาตรฐานปี 2027</p>
                                                 <button type="button" onClick={hasSavedSession ? onResumeDashboard : onStartAuth} className="btn-peach-ambient touch-target px-10 py-1.5 font-display text-[15px] lg:text-[16px] tracking-wide">
                                                     {hasSavedSession ? 'เข้าสู่ห้องเรียนต่อ →' : 'เข้าสู่ระบบ'}
                                                 </button>
@@ -779,7 +829,7 @@
                                     </div>
                                 </div>
 
-                                {/* Mobile Liquid Glass Card */}
+                                {/* Mobile Liquid Glass Card + Local-Defs Calligraphic Signature Animation */}
                                 <div ref={mobileGlassRef} className="md:hidden relative z-[25] -mt-14 w-full max-w-[366px] liquid-glass-mobile rounded-[1.75rem] px-4 pt-4 pb-3 text-center space-y-2.5 overflow-hidden">
                                     <div className="relative z-10 flex justify-center">
                                         <span className="hero-eyebrow inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[11px] font-medium text-amber-50/95">
@@ -788,10 +838,46 @@
                                         </span>
                                     </div>
                                     <div ref={mTextFitBoxRef} className="relative z-10 w-full flex flex-col items-center gap-0.5">
-                                        <h1 ref={mFitLine1Ref} className="hero-headline font-display text-white text-base leading-snug whitespace-nowrap m-0">ยกระดับทักษะการรับบริจาคและปลูกถ่ายอวัยวะ</h1>
-                                        <p ref={mFitLine2Ref} className="hero-year-highlight font-display text-xl leading-tight whitespace-nowrap m-0">สู่มาตรฐานปี 2027</p>
+                                        <h1 ref={mFitLine1Ref} className="hero-headline sig-reveal-line1 font-display text-white text-base leading-snug whitespace-nowrap m-0">ยกระดับทักษะการรับบริจาคและปลูกถ่ายอวัยวะ</h1>
+                                        <p ref={mFitLine2Ref} className="hero-year-highlight sig-reveal-line2 font-display text-xl leading-tight whitespace-nowrap m-0">สู่มาตรฐานปี 2027</p>
+                                        <svg viewBox="0 0 320 22" className="w-[84%] max-w-[270px] h-auto overflow-visible pointer-events-none -mt-0.5" fill="none" aria-hidden="true">
+                                            <defs>
+                                                <linearGradient id="idxSigInkGradMob" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                    <stop offset="0%" stopColor="#fbcfe8" stopOpacity="0.28" />
+                                                    <stop offset="40%" stopColor="#fde68a" stopOpacity="0.95" />
+                                                    <stop offset="75%" stopColor="#ffffff" stopOpacity="1" />
+                                                    <stop offset="100%" stopColor="#fda4af" stopOpacity="0.95" />
+                                                </linearGradient>
+                                                <filter id="idxSigGlowMob" x="-15%" y="-50%" width="130%" height="200%">
+                                                    <feGaussianBlur stdDeviation="2.0" result="blur" />
+                                                    <feMerge>
+                                                        <feMergeNode in="blur" />
+                                                        <feMergeNode in="SourceGraphic" />
+                                                    </feMerge>
+                                                </filter>
+                                            </defs>
+                                            <g filter="url(#idxSigGlowMob)">
+                                                <path
+                                                    pathLength="1000"
+                                                    className="sig-stroke-glow-2"
+                                                    d="M 18 11 C 85 18, 175 4, 248 10 C 276 13, 298 8, 308 5 C 282 16, 195 20, 142 16"
+                                                    stroke="url(#idxSigInkGradMob)"
+                                                    strokeWidth="3.2"
+                                                    strokeOpacity="0.65"
+                                                    strokeLinecap="round"
+                                                />
+                                                <path
+                                                    pathLength="1000"
+                                                    className="sig-stroke-core-2"
+                                                    d="M 18 11 C 85 18, 175 4, 248 10 C 276 13, 298 8, 308 5 C 282 16, 195 20, 142 16"
+                                                    stroke="#fffef5"
+                                                    strokeWidth="1.35"
+                                                    strokeLinecap="round"
+                                                />
+                                            </g>
+                                        </svg>
                                     </div>
-                                    <div className="relative z-10 pt-1 flex justify-center">
+                                    <div className="relative z-10 pt-0.5 flex justify-center">
                                         <button type="button" onClick={hasSavedSession ? onResumeDashboard : onStartAuth} className="btn-peach-ambient touch-target w-full max-w-[235px] py-2.5 px-7 font-display text-base">
                                             {hasSavedSession ? 'เข้าสู่ห้องเรียนต่อ →' : 'เข้าสู่ระบบ'}
                                         </button>
@@ -1581,7 +1667,7 @@
                                         <p className="text-xs sm:text-sm text-secondary-adaptive mt-1">ระบบปิดเฉพาะแพทย์ พยาบาล และบุคลากรสหวิชาชีพ — ตรวจสอบประวัติและสิทธิ์เทียบโอน Onsite ให้อัตโนมัติค่ะ</p>
                                     </div>
 
-                                    {/* Modern Bento Course Selector Cards (แทน Dropdown แบบเก่า) */}
+                                    {/* Modern Bento Course Selector Cards */}
                                     <div className="space-y-2.5">
                                         <div className="flex items-center justify-between gap-2 px-0.5">
                                             <label className="text-xs sm:text-sm font-bold text-primary-adaptive flex items-center gap-1.5">
