@@ -1,12 +1,13 @@
 /* ============================================================================
- * rjcloud.organ 2.0 — Keynote Welcome Gate & Ultra-Smooth Volumetric Mist Reveal
+ * organ cloud 2.0 — Keynote Welcome Gate & Ultra-Smooth Volumetric Mist Reveal
  * File: keynote-launch.js (Zero-Build Standalone Production Module)
  * Public Exports: window.RJCLOUD_KEYNOTE
  *
  * สิ่งที่ปรับปรุงในเวอร์ชันนี้:
- * 1. หน้าการ์ด Welcome คลีนมินิมอล แสดงเฉพาะ BETA / rjcloud.organ 2.0 / เปิดใช้งาน 2027 + ปุ่ม Welcome
- * 2. อนิเมชันหลังกดปุ่ม Welcome เป็นหมอกเย็นสมจริงแบบ Volumetric อัลตร้าสมูท 60/120fps (dt-driven)
- * 3. เชื่อมเสียงพิธีกร AI คุณภาพสตูดิโอ 24kHz (ห้ามใช้เสียงหุ่นยนต์เบราว์เซอร์) + ดนตรีแอมเบียนต์นุ่มนวล
+ * 1. หน้าการ์ด Welcome สไตล์ Neumorphic Soft UI (รองรับโหมดสว่าง #e6ebf0 และโหมดมืด #1c222b)
+ * 2. แบรนด์ใหม่ "organ cloud 2.0" (BETA / organ cloud 2.0 / เปิดใช้งาน 2027) + ปุ่ม Welcome กดบุ๋มลึก
+ * 3. อนิเมชันหลังกดปุ่ม Welcome เป็นหมอกเย็นสมจริงแบบ Volumetric อัลตร้าสมูท 60/120fps
+ * 4. เชื่อมเสียงพิธีกร AI คุณภาพสตูดิโอ 24kHz (ห้ามใช้เสียงหุ่นยนต์เบราว์เซอร์)
  * ============================================================================ */
 
 (function (global) {
@@ -16,7 +17,7 @@
     {
       role: 'หญิง',
       voice: 'Sulafat',
-      text: 'ยินดีต้อนรับสู่ อาร์เจ คลาวด์ ออร์แกน สองจุดศูนย์ แพลตฟอร์มการเรียนรู้ด้านการรับบริจาคและปลูกถ่ายอวัยวะ แห่งศูนย์ความเป็นเลิศทางการแพทย์ โรงพยาบาลราชวิถีค่ะ'
+      text: 'ยินดีต้อนรับสู่ ออร์แกน คลาวด์ สองจุดศูนย์ แพลตฟอร์มการเรียนรู้ด้านการรับบริจาคและปลูกถ่ายอวัยวะ แห่งศูนย์ความเป็นเลิศทางการแพทย์ โรงพยาบาลราชวิถีค่ะ'
     },
     {
       role: 'ชาย',
@@ -191,12 +192,22 @@
     style.id = 'rjcloud-keynote-mist-styles';
     style.textContent = [
       '#rj-keynote-gate {',
+      '  --kn-bg: #1c222b; --kn-light: #2d3746; --kn-dark: #0e1218;',
+      '  --kn-border: rgba(255, 255, 255, 0.09); --kn-text: #f4f7fb; --kn-sub: #c9d6e6; --kn-teal: #5eead4;',
+      '  --kn-raised-lg: 14px 14px 30px #0b0f15, -12px -12px 26px #2a3342;',
+      '  --kn-raised: 7px 7px 16px #0c1016, -6px -6px 14px #2c3646;',
+      '  --kn-pressed-sm: inset 4px 4px 8px #0c1016, inset -3px -3px 7px #2d3746;',
       '  position: fixed; inset: 0; z-index: 9990;',
       '  display: flex; align-items: center; justify-content: center;',
-      '  padding: 20px;',
-      '  overflow: hidden;',
-      '  touch-action: manipulation;',
-      '  -webkit-font-smoothing: antialiased;',
+      '  padding: 20px; overflow: hidden;',
+      '  touch-action: manipulation; -webkit-font-smoothing: antialiased;',
+      '}',
+      'html[data-theme="light"] #rj-keynote-gate {',
+      '  --kn-bg: #e6ebf0; --kn-light: #ffffff; --kn-dark: #c5ced9;',
+      '  --kn-border: rgba(255, 255, 255, 0.78); --kn-text: #1f2b38; --kn-sub: #47586b; --kn-teal: #247870;',
+      '  --kn-raised-lg: 14px 14px 30px #c1cbd6, -14px -14px 30px #ffffff;',
+      '  --kn-raised: 7px 7px 15px #c5ced9, -7px -7px 15px #ffffff;',
+      '  --kn-pressed-sm: inset 4px 4px 8px #c5ced9, inset -4px -4px 8px #ffffff;',
       '}',
       '#rj-keynote-gate.rj-hidden { display: none !important; pointer-events: none !important; }',
       '#rj-keynote-canvas {',
@@ -206,14 +217,12 @@
       '#rj-keynote-card {',
       '  position: relative; z-index: 3;',
       '  width: 100%; max-width: 392px;',
-      '  border-radius: 30px;',
+      '  border-radius: 32px;',
       '  padding: 40px 28px 36px;',
       '  text-align: center;',
-      '  background: linear-gradient(155deg, rgba(16, 30, 62, 0.70) 0%, rgba(5, 12, 28, 0.86) 100%);',
-      '  border: 1px solid rgba(186, 230, 253, 0.24);',
-      '  box-shadow: 0 30px 76px -18px rgba(0, 4, 18, 0.92), inset 0 1px 0 rgba(255, 255, 255, 0.22);',
-      '  backdrop-filter: blur(26px) saturate(165%);',
-      '  -webkit-backdrop-filter: blur(26px) saturate(165%);',
+      '  background: var(--kn-bg);',
+      '  border: 1px solid var(--kn-border);',
+      '  box-shadow: var(--kn-raised-lg);',
       '  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Anuphan", "Prompt", sans-serif;',
       '  transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1), transform 0.72s cubic-bezier(0.22, 1, 0.36, 1), filter 0.65s ease;',
       '  will-change: opacity, transform, filter;',
@@ -226,49 +235,53 @@
       '}',
       '.rj-beta-pill {',
       '  display: inline-flex; align-items: center; gap: 7px;',
-      '  padding: 5px 15px; border-radius: 9999px;',
-      '  background: rgba(255, 255, 255, 0.06);',
-      '  border: 1px solid rgba(186, 230, 253, 0.28);',
-      '  color: #e0f2fe;',
+      '  padding: 6px 16px; border-radius: 9999px;',
+      '  background: var(--kn-bg);',
+      '  border: 1px solid var(--kn-border);',
+      '  box-shadow: var(--kn-pressed-sm);',
+      '  color: var(--kn-teal);',
       '  font-family: "JetBrains Mono", "SF Mono", ui-monospace, monospace;',
       '  font-size: 12px; font-weight: 700; letter-spacing: 0.22em;',
       '  text-transform: uppercase;',
       '}',
       '.rj-beta-dot {',
       '  width: 7px; height: 7px; border-radius: 9999px;',
-      '  background: #6ee7b7; box-shadow: 0 0 10px #34d399;',
+      '  background: var(--kn-teal); box-shadow: 0 0 10px var(--kn-teal);',
       '}',
       '.rj-gate-title {',
       '  margin: 22px 0 8px;',
       '  font-size: clamp(28px, 7.6vw, 35px);',
       '  font-weight: 800; line-height: 1.15; letter-spacing: -0.02em;',
-      '  color: #ffffff;',
-      '  text-shadow: 0 4px 22px rgba(2, 8, 26, 0.72);',
+      '  color: var(--kn-text);',
       '}',
       '.rj-gate-title .rj-ver {',
-      '  color: #fde68a;',
-      '  text-shadow: 0 0 22px rgba(253, 230, 138, 0.42);',
+      '  color: var(--kn-teal);',
       '}',
       '.rj-gate-sub {',
       '  margin: 0 0 30px;',
       '  font-size: 16px; font-weight: 500; letter-spacing: 0.04em;',
-      '  color: rgba(219, 234, 254, 0.88);',
+      '  color: var(--kn-sub);',
       '}',
       '#rj-welcome-btn {',
       '  position: relative; overflow: hidden;',
-      '  width: 100%; min-height: 54px;',
-      '  border: none; border-radius: 9999px;',
+      '  width: 100%; min-height: 56px;',
+      '  border-radius: 9999px;',
       '  display: inline-flex; align-items: center; justify-content: center; gap: 10px;',
-      '  background: linear-gradient(95deg, #d7fbe6 0%, #c6f3f9 48%, #b8ceff 100%);',
-      '  color: #050b16;',
+      '  background: linear-gradient(145deg, #258077 0%, #1b615a 100%);',
+      '  border: 1px solid rgba(255, 255, 255, 0.22);',
+      '  color: #ffffff; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.24);',
       '  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Prompt", sans-serif;',
       '  font-size: 17px; font-weight: 700; letter-spacing: 0.015em;',
       '  cursor: pointer;',
-      '  box-shadow: 0 12px 32px -6px rgba(134, 239, 172, 0.46), 0 0 0 1px rgba(255, 255, 255, 0.78) inset;',
-      '  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease;',
+      '  box-shadow: var(--kn-raised);',
+      '  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease, filter 0.2s ease;',
       '}',
-      '#rj-welcome-btn:hover { transform: translateY(-1.5px) scale(1.015); box-shadow: 0 16px 38px -4px rgba(134, 239, 172, 0.62), 0 0 0 1px #ffffff inset; }',
-      '#rj-welcome-btn:active { transform: scale(0.975); }',
+      '#rj-welcome-btn:hover { transform: translateY(-1.5px); filter: brightness(1.07); }',
+      '#rj-welcome-btn:active, #rj-welcome-btn.is-tapping {',
+      '  transform: translateY(1.5px) scale(0.975);',
+      '  background: linear-gradient(145deg, #1a5c56 0%, #22756d 100%);',
+      '  box-shadow: inset 5px 5px 12px rgba(8, 34, 31, 0.72), inset -4px -4px 9px rgba(94, 234, 212, 0.24);',
+      '}',
       '#rj-keynote-controls {',
       '  position: fixed; top: calc(12px + env(safe-area-inset-top, 0px)); right: 14px; z-index: 60;',
       '  display: none; align-items: center; gap: 8px;',
@@ -277,15 +290,21 @@
       '#rj-keynote-controls.rj-show { display: flex; }',
       '.rj-ctrl-pill {',
       '  display: inline-flex; align-items: center; gap: 6px;',
-      '  padding: 7px 13px; border-radius: 9999px;',
-      '  background: rgba(5, 14, 34, 0.72);',
-      '  border: 1px solid rgba(186, 230, 253, 0.28);',
-      '  color: #e0f2fe; font-size: 11.5px; font-weight: 700;',
+      '  padding: 8px 14px; border-radius: 9999px;',
+      '  background: rgba(28, 34, 43, 0.84);',
+      '  border: 1px solid rgba(255, 255, 255, 0.14);',
+      '  box-shadow: 4px 4px 10px rgba(8, 12, 18, 0.65), -2px -2px 8px rgba(56, 70, 90, 0.25);',
+      '  color: #f4f7fb; font-size: 11.5px; font-weight: 700;',
       '  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);',
-      '  cursor: pointer; transition: border-color 0.2s ease, background 0.2s ease;',
+      '  cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;',
+      '  transition: transform 0.18s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;',
       '}',
-      '.rj-ctrl-pill:hover { border-color: rgba(110, 231, 183, 0.65); background: rgba(10, 24, 54, 0.88); }',
-      '.rj-ctrl-pill.rj-active { border-color: rgba(110, 231, 183, 0.72); color: #a7f3d0; }'
+      '.rj-ctrl-pill:hover { border-color: rgba(94, 234, 212, 0.65); background: rgba(28, 34, 43, 0.96); transform: translateY(-1px); }',
+      '.rj-ctrl-pill:active, .rj-ctrl-pill.is-tapping {',
+      '  transform: translateY(1.5px) scale(0.965);',
+      '  box-shadow: inset 3px 3px 7px rgba(6, 9, 14, 0.8), inset -2px -2px 6px rgba(64, 80, 102, 0.25);',
+      '}',
+      '.rj-ctrl-pill.rj-active { border-color: rgba(94, 234, 212, 0.75); color: #5eead4; }'
     ].join('\n');
     document.head.appendChild(style);
   }
@@ -352,19 +371,25 @@
       const partNorm = Math.max(0, Math.min(1, (p - 0.06) / 0.94));
       partEase = easeInOutQuart(partNorm);
 
-      // Silky fade out to zero on the tail end so zero abrupt cutoff
+      // Smoothly dissolve parting mist clouds after p = 0.36 into the Moonlit Peach Cliff
       if (p > 0.36) {
-        const fadeNorm = (p - 0.36) / 0.64;
-        revealFade = Math.pow(Math.max(0, 1 - fadeNorm), 1.65);
+        revealFade = Math.pow(Math.max(0, 1 - (p - 0.36) / 0.64), 1.65);
       }
     }
 
-    // 1. Dark Nocturnal Backdrop (fades smoothly to reveal Peach Blossom Tree behind)
+    // 1. Neumorphic Adaptive Backdrop (fades smoothly to reveal Moonlit Peach Cliff behind)
     if (backdropAlpha > 0.003) {
+      const isLightGate = document.documentElement.getAttribute('data-theme') === 'light';
       const bgGrad = ctx.createRadialGradient(W * 0.5, H * 0.44, 20, W * 0.5, H * 0.5, Math.max(W, H) * 0.78);
-      bgGrad.addColorStop(0, 'rgba(10, 22, 48, ' + (backdropAlpha * 0.96).toFixed(3) + ')');
-      bgGrad.addColorStop(0.55, 'rgba(4, 10, 25, ' + (backdropAlpha * 0.98).toFixed(3) + ')');
-      bgGrad.addColorStop(1, 'rgba(2, 5, 14, ' + backdropAlpha.toFixed(3) + ')');
+      if (isLightGate) {
+        bgGrad.addColorStop(0, 'rgba(235, 240, 245, ' + (backdropAlpha * 0.96).toFixed(3) + ')');
+        bgGrad.addColorStop(0.60, 'rgba(226, 233, 240, ' + (backdropAlpha * 0.98).toFixed(3) + ')');
+        bgGrad.addColorStop(1, 'rgba(214, 222, 232, ' + backdropAlpha.toFixed(3) + ')');
+      } else {
+        bgGrad.addColorStop(0, 'rgba(32, 39, 50, ' + (backdropAlpha * 0.96).toFixed(3) + ')');
+        bgGrad.addColorStop(0.55, 'rgba(24, 30, 39, ' + (backdropAlpha * 0.98).toFixed(3) + ')');
+        bgGrad.addColorStop(1, 'rgba(18, 22, 29, ' + backdropAlpha.toFixed(3) + ')');
+      }
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, W, H);
     }
@@ -630,9 +655,9 @@
     rootEl.className = 'rj-hidden';
     rootEl.innerHTML = [
       '<canvas id="rj-keynote-canvas" aria-hidden="true"></canvas>',
-      '<div id="rj-keynote-card" role="dialog" aria-modal="true" aria-label="BETA rjcloud.organ 2.0 เปิดใช้งาน 2027">',
+      '<div id="rj-keynote-card" role="dialog" aria-modal="true" aria-label="BETA organ cloud 2.0 เปิดใช้งาน 2027">',
       '  <div class="rj-beta-pill"><span class="rj-beta-dot"></span><span>BETA</span></div>',
-      '  <h1 class="rj-gate-title">rjcloud.organ <span class="rj-ver">2.0</span></h1>',
+      '  <h1 class="rj-gate-title">organ cloud <span class="rj-ver">2.0</span></h1>',
       '  <p class="rj-gate-sub">เปิดใช้งาน 2027</p>',
       '  <button id="rj-welcome-btn" type="button">',
       '    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M4 2.5v11l9.5-5.5L4 2.5z"/></svg>',
@@ -649,6 +674,15 @@
 
     const welcomeBtn = document.getElementById('rj-welcome-btn');
     if (welcomeBtn) {
+      welcomeBtn.addEventListener('pointerdown', function () {
+        welcomeBtn.classList.add('is-tapping');
+        const release = function () {
+          setTimeout(function () { welcomeBtn.classList.remove('is-tapping'); }, 110);
+        };
+        global.addEventListener('pointerup', release, { once: true });
+        global.addEventListener('pointercancel', release, { once: true });
+      });
+
       welcomeBtn.addEventListener('click', function () {
         if (isTransitioning) return;
         hasDismissedGate = true;
@@ -697,18 +731,18 @@
       });
     }
 
-    resizeCanvas();
-    seedMistParticles();
-    global.addEventListener('resize', resizeCanvas);
-  }
+    [hostBtnEl, musicBtnEl].forEach(function (pill) {
+      if (!pill) return;
+      pill.addEventListener('pointerdown', function () {
+        pill.classList.add('is-tapping');
+        const release = function () {
+          setTimeout(function () { pill.classList.remove('is-tapping'); }, 110);
+        };
+        global.addEventListener('pointerup', release, { once: true });
+        global.addEventListener('pointercancel', release, { once: true });
+      });
+    });
 
-  function showGate() {
-    ensureDom();
-    if (!rootEl) return;
-    isTransitioning = false;
-    rootEl.style.pointerEvents = 'auto';
-    rootEl.classList.remove('rj-hidden');
-    if (cardEl) cardEl.classList.remove('rj-dissolving');
     resizeCanvas();
     seedMistParticles();
     startLoop();
