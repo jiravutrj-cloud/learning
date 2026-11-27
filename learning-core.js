@@ -1,15 +1,16 @@
 /* ============================================================================
- * rjcloud.organ 2.0 — Core Learning, AI Diagnosis, PDPA & Audio Engine (learning-core.js)
- * ชื่อธีมอย่างเป็นทางการ: rjcloud.organ 2.0 (Atmospheric Horizon + Liquid Glass)
- * ไฟล์โมดูลกลาง (Zero-Build) เผยแพร่ผ่าน window.RJCLOUD_CORE
+ * rjcloud.organ 2.0 — Core Learning, Central Data Center, PDPA & 24kHz Audio Engine
+ * File: learning-core.js (Zero-Build Standalone Module)
+ * Public Exports: window.RJCLOUD_CORE (Alias: window.RJLearningCore)
  *
- * โครงสร้างภายในไฟล์ (ครบทั้ง 6 ส่วน 100%):
- * 1. Configuration & Built-in Fallback Defaults (ธีม rjcloud.organ 2.0 + ค่าสำรองครบชุด)
- * 2. Exam Parser & 4-Domain AI Diagnostic Roadmap Engine
- * 3. Role-Adaptive Profile, Study Timer & Thai Date Formatters
- * 4. PDPA Privacy Masking (Pre-OTP) & Zero-PII Executive Telemetry Builder
- * 5. Natural Thai Speech Polisher, Exact RIFF-Data WAV Converter & IndexedDB Cache (v4)
- * 6. Public API Export (window.RJCLOUD_CORE)
+ * โครงสร้างภายในไฟล์ (ครบสมบูรณ์ทั้ง 7 ส่วน 100%):
+ * 1. Configuration & Built-in Fallback Defaults (Production 2027)
+ * 2. Central Data Center 2.0 (Multi-Course Hub & Auto-Classification Read-Only)
+ * 3. Exam Parser & 4-Domain AI Diagnostic Roadmap Engine
+ * 4. Role-Adaptive Profile, CNEU Nurse-Only Filter, Study Timer & Thai Date
+ * 5. PDPA Privacy Masking (Pre-OTP) & Zero-PII Executive Telemetry Builder
+ * 6. Natural Thai Speech Polisher, Anti-Hiss 24kHz WAV DSP & IndexedDB Cache (v4)
+ * 7. Clinical Pocket Guide, R2R SUS & Public API Export
  * ============================================================================ */
 
 (function (global) {
@@ -27,7 +28,7 @@
     appId: 'rjcloud-organ-2027',
     adminEmails: ['rjcloud.organ@gmail.com'],
     learningRules: {
-      allowedUserTypes: ['เรียนใหม่', 'เรียนต่อเนื่อง'],
+      allowedUserTypes: ['เทียบโอน', 'เรียนต่อเนื่อง', 'เรียนใหม่'],
       minStudyPercent: 80,
       minPosttestPercent: 80
     },
@@ -55,7 +56,10 @@
    * เพื่อป้องกันการทำงานขัดข้องหากบางฟิลด์ยังไม่ได้กำหนดไว้ใน data.js
    */
   function getResolvedConfig() {
-    const ext = global.RJCLOUD_CONFIG && typeof global.RJCLOUD_CONFIG === 'object' ? global.RJCLOUD_CONFIG : {};
+    const ext =
+      global.RJCLOUD_CONFIG && typeof global.RJCLOUD_CONFIG === 'object'
+        ? global.RJCLOUD_CONFIG
+        : {};
     const extFb = ext.firebaseConfig && ext.firebaseConfig.apiKey ? ext.firebaseConfig : null;
     return Object.assign({}, BUILTIN_CONFIG, ext, {
       adminEmails:
@@ -176,10 +180,34 @@
     Array.isArray(global.INITIAL_LESSONS) && global.INITIAL_LESSONS.length > 0
       ? global.INITIAL_LESSONS
       : [
-          { id: 1, domain: 'policy_ethics', title: 'บทที่ 1: นโยบายและเป้าหมาย Service Plan ด้านการรับบริจาคอวัยวะ', videoId: '', documentUrl: '' },
-          { id: 2, domain: 'brain_death_donor', title: 'บทที่ 2: เกณฑ์วินิจฉัยภาวะสมองตายและ Donor Management', videoId: '', documentUrl: '' },
-          { id: 3, domain: 'family_communication', title: 'บทที่ 3: การสื่อสารกับครอบครัวด้วยหลัก SPIKES และ Decoupling', videoId: '', documentUrl: '' },
-          { id: 4, domain: 'procurement_transplant', title: 'บทที่ 4: การจัดเก็บ ขนส่ง (Cold Chain) และดูแลหลังปลูกถ่าย', videoId: '', documentUrl: '' }
+          {
+            id: 1,
+            domain: 'policy_ethics',
+            title: 'บทที่ 1: นโยบายและเป้าหมาย Service Plan ด้านการรับบริจาคอวัยวะ',
+            videoId: '',
+            documentUrl: ''
+          },
+          {
+            id: 2,
+            domain: 'brain_death_donor',
+            title: 'บทที่ 2: เกณฑ์วินิจฉัยภาวะสมองตายและ Donor Management',
+            videoId: '',
+            documentUrl: ''
+          },
+          {
+            id: 3,
+            domain: 'family_communication',
+            title: 'บทที่ 3: การสื่อสารกับครอบครัวด้วยหลัก SPIKES และ Decoupling',
+            videoId: '',
+            documentUrl: ''
+          },
+          {
+            id: 4,
+            domain: 'procurement_transplant',
+            title: 'บทที่ 4: การจัดเก็บ ขนส่ง (Cold Chain) และดูแลหลังปลูกถ่าย',
+            videoId: '',
+            documentUrl: ''
+          }
         ];
 
   const FALLBACK_QUIZ_RAW =
@@ -218,7 +246,9 @@
     ? global.CLINICAL_CASE_SIMULATIONS
     : [];
 
-  const SPACED_FLASHCARDS = Array.isArray(global.SPACED_FLASHCARDS) ? global.SPACED_FLASHCARDS : [];
+  const SPACED_FLASHCARDS = Array.isArray(global.SPACED_FLASHCARDS)
+    ? global.SPACED_FLASHCARDS
+    : [];
 
   const PRE_APPROACH_TAGS = global.PRE_APPROACH_TAGS || {
     ageGroups: ['เด็ก/วัยรุ่น', 'วัยทำงาน (20–45 ปี)', 'วัยกลางคน (46–65 ปี)', 'ผู้สูงอายุ (>65 ปี)'],
@@ -244,7 +274,232 @@
   ];
 
   // ============================================================================
-  // 2. EXAM PARSER & 4-DOMAIN AI DIAGNOSTIC ROADMAP ENGINE
+  // 2. CENTRAL DATA CENTER 2.0 (MULTI-COURSE HUB & AUTO-CLASSIFICATION)
+  // ============================================================================
+  const CLINICAL_AI_SYSTEM_PREFIX =
+    'บริบททางการแพทย์ (Clinical Professional Context — ศูนย์ความเป็นเลิศทางการแพทย์ โรงพยาบาลราชวิถี): ' +
+    'ผู้ใช้งานคือแพทย์ พยาบาล และบุคลากรสหวิชาชีพที่ยืนยันตัวตนด้วยเลขใบอนุญาตประกอบวิชาชีพและ OTP แล้ว ' +
+    'โปรดสื่อสารศัพท์ทางการแพทย์ด้านการวินิจฉัยภาวะสมองตาย การดูแลผู้บริจาคอวัยวะใน ICU ' +
+    'การผ่าตัดนำอวัยวะออกและการปลูกถ่ายไตอย่างชัดเจน ตรงไปตรงมาตามหลักวิชาการแพทย์และจริยธรรมวิชาชีพ';
+
+  const DEFAULT_COURSE_CATALOG = [
+    {
+      id: 'organ_donation_core',
+      code: 'ODC-CORE-2027',
+      titleTH: 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ',
+      titleEN: 'Organ Donation & Transplantation Clinical Coordination Program',
+      trainingHours: 8,
+      cneuCredits: '8.0',
+      active: true
+    },
+    {
+      id: 'kidney_transplant_surgery',
+      code: 'KTS-SURG-2027',
+      titleTH: 'หลักสูตรการผ่าตัดปลูกถ่ายไตและการดูแลผู้ป่วยระยะผ่าตัด',
+      titleEN: 'Kidney Transplantation Surgery & Perioperative Care Program',
+      trainingHours: 8,
+      cneuCredits: '8.0',
+      active: true
+    }
+  ];
+
+  // กลุ่มวิชาชีพ (กฎเหล็ก: แสดงรหัสกิจกรรมและหน่วยคะแนน CNEU เฉพาะกลุ่ม "พยาบาล" เท่านั้น)
+  const PROFESSION_OPTIONS = [
+    { id: 'nurse', label: 'พยาบาล', en: 'Registered Nurse', cneuEligible: true },
+    { id: 'doctor', label: 'แพทย์', en: 'Physician', cneuEligible: false },
+    { id: 'allied', label: 'บุคลากรสหวิชาชีพ', en: 'Allied Health Professional', cneuEligible: false }
+  ];
+
+  // เขตสุขภาพ 1 - 13 (กระทรวงสาธารณสุข)
+  const HEALTH_REGIONS = [
+    'เขตสุขภาพที่ 1 (เชียงใหม่ และภาคเหนือตอนบน)',
+    'เขตสุขภาพที่ 2 (พิษณุโลก และภาคเหนือตอนล่าง)',
+    'เขตสุขภาพที่ 3 (นครสวรรค์ และภาคกลางตอนบน)',
+    'เขตสุขภาพที่ 4 (สระบุรี และปริมณฑลตอนเหนือ)',
+    'เขตสุขภาพที่ 5 (ราชบุรี และภาคตะวันตก)',
+    'เขตสุขภาพที่ 6 (ชลบุรี และภาคตะวันออก)',
+    'เขตสุขภาพที่ 7 (ขอนแก่น และอีสานตอนกลาง)',
+    'เขตสุขภาพที่ 8 (อุดรธานี และอีสานตอนบน)',
+    'เขตสุขภาพที่ 9 (นครราชสีมา และอีสานตอนล่าง 1)',
+    'เขตสุขภาพที่ 10 (อุบลราชธานี และอีสานตอนล่าง 2)',
+    'เขตสุขภาพที่ 11 (สุราษฎร์ธานี และภาคใต้ตอนบน)',
+    'เขตสุขภาพที่ 12 (สงขลา และภาคใต้ตอนล่าง)',
+    'เขตสุขภาพที่ 13 (กรุงเทพมหานคร)'
+  ];
+
+  // วลีสื่อสารฉุกเฉินหน้างาน ICU (Pocket Phrases)
+  const POCKET_PHRASES = [
+    {
+      stage: 'เปิดบทสนทนาด้วยความเห็นอกเห็นใจ',
+      phrase:
+        'หมอและทีมพยาบาลเสียใจอย่างสุดซึ้งกับการสูญเสียครั้งนี้ค่ะ เราดูแลท่านอย่างเต็มที่ที่สุดแล้ว และอยากอยู่เป็นกำลังใจให้ครอบครัวในช่วงเวลาที่ยากลำบากนี้'
+    },
+    {
+      stage: 'อธิบายภาวะสมองตายอย่างชัดเจน',
+      phrase:
+        'ผลการตรวจยืนยันตามเกณฑ์แพทยสภาพบว่าก้านสมองหยุดทำงานอย่างถาวรแล้ว เครื่องช่วยหายใจเพียงพยุงให้หัวใจเต้นชั่วคราว แต่ท่านไม่สามารถฟื้นกลับมาได้อีก'
+    },
+    {
+      stage: 'เสนอทางเลือกแห่งการให้ (ไม่กดดัน)',
+      phrase:
+        'ในวาระสุดท้ายนี้ มีอีกหนึ่งบุญกุศลอันยิ่งใหญ่ที่ครอบครัวอาจพิจารณาได้ คือการบริจาคอวัยวะเพื่อต่อชีวิตให้ผู้ป่วยวิกฤตอีกหลายชีวิต ไม่ทราบว่าท่านเคยพูดคุยเรื่องนี้ไว้บ้างไหมคะ'
+    },
+    {
+      stage: 'คลายความกังวลเรื่องร่างกายและพิธีกรรม',
+      phrase:
+        'ทีมศัลยแพทย์จะดูแลร่างกายของท่านด้วยความเคารพสูงสุดเหมือนการผ่าตัดทั่วไป แผลจะถูกเย็บปิดอย่างเรียบร้อย สามารถประกอบพิธีทางศาสนาได้ตามปกติทุกประการค่ะ'
+    }
+  ];
+
+  // แบบประเมินความพึงพอใจและการใช้งานระบบมาตรฐาน R2R (SUS 10 ข้อ)
+  const SUS_QUESTIONS = [
+    '1. ฉันต้องการกลับมาใช้งานระบบ rjcloud.organ 2.0 นี้อย่างสม่ำเสมอ',
+    '2. ฉันรู้สึกว่าระบบนี้มีความซับซ้อนเกินความจำเป็น',
+    '3. ฉันคิดว่าระบบนี้ใช้งานง่ายและเข้าใจได้ทันที',
+    '4. ฉันคิดว่าฉันจำเป็นต้องมีผู้เชี่ยวชาญคอยช่วยเหลือจึงจะใช้งานระบบนี้ได้',
+    '5. ฉันพบว่าฟังก์ชันต่างๆ (บทเรียน, AI สรุป, Skill Lab) เชื่อมโยงกันได้อย่างลงตัว',
+    '6. ฉันรู้สึกว่ามีหลายส่วนในระบบที่ทำงานไม่สอดคล้องกัน',
+    '7. ฉันเชื่อว่าบุคลากรทางการแพทย์ส่วนใหญ่สามารถเรียนรู้การใช้งานระบบนี้ได้อย่างรวดเร็ว',
+    '8. ฉันรู้สึกว่าระบบนี้ใช้งานยุ่งยากและไม่คล่องตัว',
+    '9. ฉันรู้สึกมั่นใจขณะใช้งานระบบนี้ในการเรียนรู้และสอบวัดผล',
+    '10. ฉันต้องเรียนรู้สิ่งใหม่ๆ มากมายก่อนจะเริ่มใช้งานระบบนี้ได้'
+  ];
+
+  /**
+   * สร้างคีย์เอกสารลงทะเบียน Onsite มาตรฐาน {eventId}_{license}
+   * เพื่อแยกทุกรุ่นอย่างชัดเจน ไม่ให้รุ่นใหม่ทับรุ่นเก่า และตรวจสอบย้อนหลังได้ทุกรุ่น
+   */
+  function buildOnsiteRegistrationKey(eventId, license) {
+    const cleanEvent = String(eventId || 'ONSITE_DEFAULT')
+      .trim()
+      .replace(/[^a-zA-Z0-9_-]/g, '_');
+    const cleanLic = String(license || '')
+      .trim()
+      .toUpperCase()
+      .replace(/[^A-Z0-9_-]/g, '');
+    return cleanEvent + '_' + cleanLic;
+  }
+
+  /**
+   * ระบบจำแนกประเภทผู้เรียนอัตโนมัติ (System-Driven Auto-Classification — Read-only ห้ามผู้เรียนเลือกเอง)
+   * ลำดับสิทธิ์:
+   *   1. เทียบโอน (CREDIT_TRANSFER) — พบชื่อใน onsite_registrations ของหลักสูตรนั้นและไม่ถูกยกเลิก -> ยกเว้นชั่วโมงเรียน 100%
+   *   2. เรียนต่อเนื่อง (CONTINUING) — พบประวัติเดิมใน elearning_users
+   *   3. เรียนใหม่ (NEW_LEARNER) — ยังไม่เคยมีประวัติในระบบ
+   */
+  function classifyLearnerForCourse(arg1, arg2, arg3, arg4) {
+    const opts =
+      arg1 && typeof arg1 === 'object'
+        ? arg1
+        : { license: arg1, courseId: arg2, onsiteRecords: arg3, existingUser: arg4 };
+
+    const targetCourseId = String(opts.courseId || 'organ_donation_core').trim();
+    const normLicense = String(opts.license || '')
+      .trim()
+      .toUpperCase()
+      .replace(/\s+/g, '');
+
+    let onsiteList = [];
+    if (Array.isArray(opts.onsiteRecords)) {
+      onsiteList = opts.onsiteRecords;
+    } else if (opts.onsiteRecords && typeof opts.onsiteRecords === 'object') {
+      onsiteList = Object.values(opts.onsiteRecords);
+    }
+
+    const existingUser =
+      opts.existingUser && typeof opts.existingUser === 'object' ? opts.existingUser : null;
+
+    const matchedOnsite = onsiteList.find(function (rec) {
+      if (!rec || typeof rec !== 'object') return false;
+      const recLic = String(rec.license || '')
+        .trim()
+        .toUpperCase()
+        .replace(/\s+/g, '');
+      if (normLicense && recLic && recLic !== normLicense) return false;
+
+      const recCourse = String(rec.targetCourseId || rec.courseId || 'organ_donation_core').trim();
+      const statusText = String(rec.status || '').trim().toLowerCase();
+      const isCancelled =
+        Boolean(rec.cancelled) ||
+        Boolean(rec.isCancelled) ||
+        statusText === 'cancelled' ||
+        statusText === 'canceled' ||
+        statusText === 'ยกเลิก';
+
+      return !isCancelled && recCourse === targetCourseId;
+    });
+
+    if (matchedOnsite) {
+      return {
+        code: 'CREDIT_TRANSFER',
+        userType: 'เทียบโอน',
+        labelTH: 'เทียบโอน (ยกเว้นชั่วโมงเรียน 100%)',
+        badgeClass: 'badge-credit-transfer',
+        studyHoursExempt: true,
+        readOnly: true,
+        matchedEventId: matchedOnsite.eventId || '',
+        matchedEventName:
+          matchedOnsite.eventName ||
+          matchedOnsite.eventTitle ||
+          'กิจกรรมอบรม Onsite ที่ยืนยันแล้ว'
+      };
+    }
+
+    if (
+      existingUser &&
+      (existingUser.license || existingUser.email || existingUser.createdAt || existingUser.name)
+    ) {
+      return {
+        code: 'CONTINUING',
+        userType: 'เรียนต่อเนื่อง',
+        labelTH: 'เรียนต่อเนื่อง',
+        badgeClass: 'badge-continuing',
+        studyHoursExempt: false,
+        readOnly: true,
+        matchedEventId: '',
+        matchedEventName: ''
+      };
+    }
+
+    return {
+      code: 'NEW_LEARNER',
+      userType: 'เรียนใหม่',
+      labelTH: 'เรียนใหม่',
+      badgeClass: 'badge-new-learner',
+      studyHoursExempt: false,
+      readOnly: true,
+      matchedEventId: '',
+      matchedEventName: ''
+    };
+  }
+
+  /**
+   * สร้างระเบียนการลงทะเบียนรายหลักสูตรสำหรับ Central Data Center (Multi-Course Hub)
+   */
+  function buildCourseEnrollmentRecord(userObj, courseId, classification) {
+    const u = userObj || {};
+    const cid = String(courseId || 'organ_donation_core').trim();
+    const cls = classification || {
+      code: 'NEW_LEARNER',
+      userType: 'เรียนใหม่',
+      studyHoursExempt: false,
+      matchedEventId: '',
+      matchedEventName: ''
+    };
+    return {
+      courseId: cid,
+      classificationCode: cls.code,
+      userType: cls.userType,
+      studyHoursExempt: Boolean(cls.studyHoursExempt),
+      matchedOnsiteEventId: cls.matchedEventId || '',
+      matchedOnsiteEventName: cls.matchedEventName || '',
+      enrolledAt: u.enrolledAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+  }
+
+  // ============================================================================
+  // 3. EXAM PARSER & 4-DOMAIN AI DIAGNOSTIC ROADMAP ENGINE
   // ============================================================================
 
   /**
@@ -260,7 +515,11 @@
         if (item && typeof item === 'object' && item.question) {
           return {
             id: item.id || idx + 1,
-            domain: item.domain || domainMap[idx] || domainKeys[idx % domainKeys.length] || 'policy_ethics',
+            domain:
+              item.domain ||
+              domainMap[idx] ||
+              domainKeys[idx % domainKeys.length] ||
+              'policy_ethics',
             question: String(item.question || '').trim(),
             options: Array.isArray(item.options) ? item.options : [],
             answer: Number(item.answer) || 0
@@ -375,15 +634,33 @@
   }
 
   // ============================================================================
-  // 3. ROLE-ADAPTIVE PROFILE, STUDY TIMER & THAI DATE FORMATTERS
+  // 4. ROLE-ADAPTIVE PROFILE, CNEU FILTER, STUDY TIMER & THAI DATE FORMATTERS
   // ============================================================================
+
+  /**
+   * ตรวจสอบสิทธิ์การแสดงรหัสกิจกรรมและหน่วยคะแนน CNEU (กฎเหล็ก: เฉพาะกลุ่ม "พยาบาล" เท่านั้น)
+   */
+  function isCneuEligible(userOrProfession) {
+    const raw =
+      userOrProfession && typeof userOrProfession === 'object'
+        ? String(userOrProfession.professionGroup || userOrProfession.profession || userOrProfession.position || '')
+        : String(userOrProfession || '');
+    const normalized = raw.trim().toLowerCase();
+    return normalized === 'nurse' || normalized.includes('พยาบาล') || normalized.includes('registered nurse');
+  }
 
   /**
    * ระบุโปรไฟล์บทบาททางคลินิกของผู้เรียนเพื่อปรับคำแนะนำ AI Tutor ให้ตรงหน้างาน
    */
   function resolveRoleProfile(userObj) {
     const u = userObj || {};
-    const txt = (String(u.position || '') + ' ' + String(u.department || '') + ' ' + String(u.name || '')).toLowerCase();
+    const txt = (
+      String(u.position || '') +
+      ' ' +
+      String(u.department || '') +
+      ' ' +
+      String(u.name || '')
+    ).toLowerCase();
     if (/(tc|transplant|coordinator|รับบริจาค|ปลูกถ่าย|ประสานงาน)/.test(txt)) {
       return ROLE_ADAPTIVE_PROFILES.donor_team;
     }
@@ -394,11 +671,18 @@
   }
 
   /**
-   * คำนวณจำนวนชั่วโมงเรียนเป้าหมายของผู้เรียน (หากเทียบโอนชั่วโมง = 0 ชม.)
+   * คำนวณจำนวนชั่วโมงเรียนเป้าหมายของผู้เรียน
+   * กฎเหล็ก: ยกเว้นชั่วโมงเรียน 100% (0 ชม.) เฉพาะกลุ่ม "เทียบโอน" (CREDIT_TRANSFER / studyHoursExempt) เท่านั้น
    */
   function getTargetHoursForUser(userObj, defaultHours) {
     const u = userObj || {};
-    if (u.studyHoursExempt || u.userType === 'เรียนต่อเนื่อง') return 0;
+    if (
+      Boolean(u.studyHoursExempt) ||
+      u.userType === 'เทียบโอน' ||
+      u.classificationCode === 'CREDIT_TRANSFER'
+    ) {
+      return 0;
+    }
     const hrs = Number(defaultHours || u.trainingHours || 8);
     return isNaN(hrs) || hrs <= 0 ? 8 : hrs;
   }
@@ -430,7 +714,7 @@
   }
 
   // ============================================================================
-  // 4. PDPA PRIVACY MASKING (PRE-OTP) & ZERO-PII EXECUTIVE TELEMETRY BUILDER
+  // 5. PDPA PRIVACY MASKING (PRE-OTP) & ZERO-PII EXECUTIVE TELEMETRY BUILDER
   // ============================================================================
 
   /**
@@ -460,7 +744,14 @@
   function resolveRegionId(department) {
     const d = String(department || '').trim();
     if (!d) return 'OTHER';
-    if (d.includes('เขตสุขภาพที่ 13') || ['กรมการแพทย์', 'สำนักการแพทย์', 'สำนักอนามัย', 'กรุงเทพมหานคร', 'รพ.ราชวิถี'].some(function (k) { return d.includes(k); })) {
+    if (
+      d.includes('เขตสุขภาพที่ 13') ||
+      ['กรมการแพทย์', 'สำนักการแพทย์', 'สำนักอนามัย', 'กรุงเทพมหานคร', 'รพ.ราชวิถี'].some(
+        function (k) {
+          return d.includes(k);
+        }
+      )
+    ) {
       return 'BKK';
     }
     const m = d.match(/เขตสุขภาพที่\s*(\d+)/);
@@ -530,25 +821,31 @@
       radar: radar,
       domains: domains,
       satisfactionScore:
-        typeof u.satisfactionScore === 'number' && u.satisfactionScore > 0 ? Number(u.satisfactionScore) : null,
+        typeof u.satisfactionScore === 'number' && u.satisfactionScore > 0
+          ? Number(u.satisfactionScore)
+          : null,
       susScore: typeof u.susScore === 'number' && u.susScore >= 0 ? Number(u.susScore) : null,
       preSelfEfficacyAvg:
-        typeof u.preSelfEfficacyAvg === 'number' && u.preSelfEfficacyAvg > 0 ? Number(u.preSelfEfficacyAvg) : null,
+        typeof u.preSelfEfficacyAvg === 'number' && u.preSelfEfficacyAvg > 0
+          ? Number(u.preSelfEfficacyAvg)
+          : null,
       postSelfEfficacyAvg:
-        typeof u.postSelfEfficacyAvg === 'number' && u.postSelfEfficacyAvg > 0 ? Number(u.postSelfEfficacyAvg) : null,
+        typeof u.postSelfEfficacyAvg === 'number' && u.postSelfEfficacyAvg > 0
+          ? Number(u.postSelfEfficacyAvg)
+          : null,
       updatedAt: new Date().toISOString()
     };
   }
 
   // ============================================================================
-  // 5. NATURAL THAI SPEECH POLISHER, ANTI-HISS WAV CONVERTER & AUDIO CACHE (v4)
+  // 6. NATURAL THAI SPEECH POLISHER, ANTI-HISS 24kHz WAV DSP & AUDIO CACHE (v4)
   // ============================================================================
   const AUDIO_DB_NAME = 'rjcloud_lesson_audio_cache_v4';
   const AUDIO_STORE_NAME = 'clips';
   let audioDbPromise = null;
 
   /**
-   * แปลงสัญลักษณ์และคำย่อทางการแพทย์ให้เป็นคำอ่านภาษาไทยที่เป็นธรรมชาติ ลื่นหู ไม่ติดขัดแบบหุ่นยนต์
+   * แปลงสัญลักษณ์และคำย่อทางการแพทย์ให้เป็นคำอ่านภาษาไทยที่เป็นธรรมชาติ ลื่นหู
    */
   function prepareNaturalThaiSpeech(rawText) {
     return String(rawText || '')
@@ -585,41 +882,40 @@
   }
 
   /**
-   * คัดเลือกเสียงพูดภาษาไทยหรืออังกฤษที่ลื่นหูที่สุดในอุปกรณ์ (กรณี fallback ไปใช้ speechSynthesis)
+   * กฎเหล็กเสียง AI สตูดิโอ 24kHz เท่านั้น: ปิดการใช้งาน window.speechSynthesis ของเบราว์เซอร์ถาวร
+   * คงฟังก์ชันไว้คืนค่า null เพื่อไม่ให้โค้ดเก่าที่อาจเรียกใช้เกิด error
    */
-  function pickNaturalBrowserVoice(lang) {
-    if (!('speechSynthesis' in global)) return null;
-    try {
-      const voices = global.speechSynthesis.getVoices() || [];
-      const prefix = lang === 'en' ? 'en' : 'th';
-      const matches = voices.filter(function (v) {
-        return String(v.lang || '').toLowerCase().startsWith(prefix);
-      });
-      if (matches.length === 0) return null;
-      const preferred = matches.find(function (v) {
-        return /premwadee|kanya|google|natural|samantha|aria|narisa/i.test(v.name || '');
-      });
-      return preferred || matches[0];
-    } catch (_) {
-      return null;
-    }
+  function pickNaturalBrowserVoice() {
+    return null;
   }
 
   /**
-   * แปลงเสียง Base64 PCM16 หรือ WAV จาก Gemini TTS เป็นไฟล์ WAV สะอาด 100%
-   * - หากต้นทางเป็นไฟล์ RIFF/WAVE จะอ่านเฉพาะช่วงไบต์ของก้อน 'data' เท่านั้น (ตัด Metadata ท้ายไฟล์ทิ้งทั้งหมด)
-   * - เสริมระบบ DSP ตัดเสียงซ่าท้ายคลิป (Anti-Hiss) + Smooth Cosine Fade-out + เติมความเงียบ 45ms
+   * แปลงเสียง Base64 PCM16/WAV หรือ Uint8Array จาก Gemini TTS เป็นไฟล์ WAV 24kHz สะอาด 100%
+   * - หากต้นทางเป็นไฟล์ RIFF/WAVE จะอ่านเฉพาะช่วงไบต์ของก้อน 'data' (ตัด Metadata ท้ายไฟล์ทิ้ง)
+   * - เสริม DSP ตัดเสียงซ่าท้ายคลิป (Anti-Hiss) + Smooth Cosine Fade-out + เติมความเงียบ 45ms
    */
-  function pcm16ToWavBlob(base64PCM, sampleRate) {
+  function pcm16ToWavBlob(inputAudio, sampleRate) {
     let rate = sampleRate || 24000;
-    const binaryString = global.atob(base64PCM);
-    const rawBytes = new Uint8Array(binaryString.length);
-    for (let i = 0; i < binaryString.length; i++) {
-      rawBytes[i] = binaryString.charCodeAt(i);
+    let rawBytes;
+
+    try {
+      if (inputAudio instanceof Uint8Array) {
+        rawBytes = inputAudio;
+      } else {
+        const cleanB64 = String(inputAudio || '').replace(/^data:audio\/[^;]+;base64,/, '').trim();
+        const binaryString = global.atob(cleanB64);
+        rawBytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          rawBytes[i] = binaryString.charCodeAt(i);
+        }
+      }
+    } catch (_) {
+      return new Blob([], { type: 'audio/wav' });
     }
 
     let offsetBytes = 0;
     let byteLength = rawBytes.length;
+
     if (
       rawBytes.length >= 44 &&
       rawBytes[0] === 0x52 &&
@@ -664,7 +960,11 @@
     const sampleCount = Math.floor(byteLength / 2);
     if (sampleCount <= 0) return new Blob([], { type: 'audio/wav' });
 
-    const inView = new DataView(rawBytes.buffer, rawBytes.byteOffset + offsetBytes, sampleCount * 2);
+    const inView = new DataView(
+      rawBytes.buffer,
+      rawBytes.byteOffset + offsetBytes,
+      sampleCount * 2
+    );
     const samples = new Float32Array(sampleCount);
     for (let i = 0; i < sampleCount; i++) {
       samples[i] = inView.getInt16(i * 2, true) / 32768;
@@ -741,6 +1041,7 @@
         view.setUint8(offset + i, str.charCodeAt(i));
       }
     };
+
     writeStr(0, 'RIFF');
     view.setUint32(4, 36 + outBytesLen, true);
     writeStr(8, 'WAVE');
@@ -838,13 +1139,106 @@
   }
 
   // ============================================================================
-  // 6. EXPORT PUBLIC API TO window.RJCLOUD_CORE
+  // 7. LESSON HELPERS, 24kHz STUDIO GUIDE AUDIO & PUBLIC API EXPORT
   // ============================================================================
-  global.RJCLOUD_CORE = {
+
+  /**
+   * ตัวช่วยสร้างบทสรุป 1 นาทีมาตรฐานสำหรับแต่ละบทเรียน
+   */
+  function buildDefaultOneMinSummary(lesson) {
+    if (!lesson) return 'สรุปเนื้อหาสำคัญของบทเรียนเพื่อการประยุกต์ใช้จริงในคลินิก';
+    if (lesson.oneMinSummary && String(lesson.oneMinSummary).trim()) {
+      return String(lesson.oneMinSummary).trim();
+    }
+    const title = lesson.title || 'บทเรียนหลัก';
+    const keyPoints =
+      Array.isArray(lesson.keyPoints) && lesson.keyPoints.length > 0
+        ? lesson.keyPoints
+            .map(function (p, idx) {
+              return idx + 1 + '. ' + p;
+            })
+            .join('\n')
+        : '1. ทำความเข้าใจเกณฑ์มาตรฐานทางคลินิกและขั้นตอนปฏิบัติที่ถูกต้อง\n' +
+          '2. ประสานงานทีมสหวิชาชีพและสื่อสารกับครอบครัวผู้ป่วยอย่างอ่อนโยน\n' +
+          '3. บันทึกข้อมูลและตรวจสอบความถูกต้องตามระเบียบศูนย์รับบริจาคอวัยวะ';
+    return 'สรุปสาระสำคัญ 1 นาที — ' + title + '\n' + keyPoints;
+  }
+
+  /**
+   * ตัวช่วยแปลงลิงก์เอกสาร PDF / Google Drive ให้ฝังแสดงผลใน iframe ได้ทันที
+   */
+  function resolveLessonDocUrl(lesson) {
+    const raw =
+      (lesson && (lesson.documentUrl || lesson.docUrl || lesson.pdfUrl || lesson.url)) || '';
+    if (!raw) return '';
+    const trimmed = String(raw).trim();
+    const driveMatch = trimmed.match(/drive\.google\.com\/file\/d\/([^/]+)/i);
+    if (driveMatch && driveMatch[1]) {
+      return 'https://drive.google.com/file/d/' + driveMatch[1] + '/preview';
+    }
+    return trimmed;
+  }
+
+  /**
+   * สร้างไฟล์เสียง AI สตูดิโอ 24kHz เท่านั้น (ผ่าน Code.gs -> Gemini TTS + Anti-Hiss DSP + IndexedDB Cache)
+   * กฎเหล็ก: ห้ามตกกลับไปใช้ window.speechSynthesis ของเบราว์เซอร์โดยเด็ดขาด
+   */
+  async function fetchStudioGuideBlob(text, gasUrl, voiceName) {
+    const cleanText = prepareNaturalThaiSpeech(text);
+    const chosenVoice = voiceName || 'Sulafat';
+    const endpoint = gasUrl || getResolvedConfig().appsScriptUrl;
+
+    if (!cleanText) throw new Error('ไม่มีข้อความสำหรับสร้างเสียงสตูดิโอ');
+    if (!endpoint) throw new Error('ไม่พบปลายทางเซิร์ฟเวอร์เสียงสตูดิโอ (GAS URL)');
+
+    const cacheKey = 'tts24k_' + chosenVoice + '_' + buildAnonTelemetryId(cleanText);
+    const cached = await getCachedAudio(cacheKey);
+    if (cached instanceof Blob && cached.size > 44) {
+      return cached;
+    }
+
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      redirect: 'follow',
+      body: JSON.stringify({
+        action: 'callGeminiTTS',
+        text: cleanText,
+        voiceName: chosenVoice
+      })
+    });
+
+    if (!res.ok) {
+      throw new Error('เชื่อมต่อระบบเสียงสตูดิโอไม่สำเร็จ (HTTP ' + res.status + ')');
+    }
+
+    const data = await res.json();
+    const base64Audio =
+      data.audioBase64 ||
+      data.audio ||
+      (data.data && (data.data.audioBase64 || data.data.audio));
+
+    if (!base64Audio) {
+      throw new Error(data.error || 'ไม่พบข้อมูลเสียงสตูดิโอ 24kHz จากเซิร์ฟเวอร์');
+    }
+
+    const wavBlob = pcm16ToWavBlob(base64Audio, 24000);
+    if (!wavBlob || wavBlob.size <= 44) {
+      throw new Error('ข้อมูลเสียง 24kHz ที่ได้รับไม่สมบูรณ์ กรุณาลองใหม่อีกครั้ง');
+    }
+
+    await setCachedAudio(cacheKey, wavBlob);
+    return wavBlob;
+  }
+
+  // เผยแพร่ API กลางที่ window.RJCLOUD_CORE พร้อม Alias window.RJLearningCore
+  const api = {
     BUILTIN_CONFIG: BUILTIN_CONFIG,
     getResolvedConfig: getResolvedConfig,
     DEFAULT_CERT_TEMPLATE: DEFAULT_CERT_TEMPLATE,
     DEFAULT_CNEU_CONFIG: DEFAULT_CNEU_CONFIG,
+    DEFAULT_COURSE_CATALOG: DEFAULT_COURSE_CATALOG,
+    CLINICAL_AI_SYSTEM_PREFIX: CLINICAL_AI_SYSTEM_PREFIX,
     CLINICAL_DOMAINS: CLINICAL_DOMAINS,
     HOSPITAL_MAPPING: HOSPITAL_MAPPING,
     FALLBACK_LESSONS: FALLBACK_LESSONS,
@@ -855,6 +1249,18 @@
     PRE_APPROACH_TAGS: PRE_APPROACH_TAGS,
     CSAT_RATING_LABELS: CSAT_RATING_LABELS,
     CNEU_EVAL_CRITERIA: CNEU_EVAL_CRITERIA,
+    PROFESSION_OPTIONS: PROFESSION_OPTIONS,
+    HEALTH_REGIONS: HEALTH_REGIONS,
+    POCKET_PHRASES: POCKET_PHRASES,
+    SUS_QUESTIONS: SUS_QUESTIONS,
+
+    buildOnsiteRegistrationKey: buildOnsiteRegistrationKey,
+    classifyLearnerForCourse: classifyLearnerForCourse,
+    buildCourseEnrollmentRecord: buildCourseEnrollmentRecord,
+    buildDefaultOneMinSummary: buildDefaultOneMinSummary,
+    resolveLessonDocUrl: resolveLessonDocUrl,
+    fetchStudioGuideBlob: fetchStudioGuideBlob,
+    isCneuEligible: isCneuEligible,
 
     parseRawExams: parseRawExams,
     normalizeQuestionSets: normalizeQuestionSets,
@@ -878,168 +1284,8 @@
     openAudioCacheDb: openAudioCacheDb,
     getCachedAudio: getCachedAudio,
     setCachedAudio: setCachedAudio
-    /* ==========================================================================
-   PATCH: Constants, Clinical Pocket Guide, R2R SUS & 24kHz Studio Audio Helper
-   (วางต่อท้ายสุดของไฟล์ learning-core.js)
-   ========================================================================== */
-(function attachRjCloudCoreExtras(globalScope) {
-  const core = (globalScope.RJLearningCore = globalScope.RJLearningCore || {});
-
-  // 1. กลุ่มวิชาชีพ (กฎเหล็ก: CNEU แสดงเฉพาะกลุ่ม "พยาบาล" เท่านั้น)
-  core.PROFESSION_OPTIONS = [
-    { id: "nurse", label: "พยาบาล", en: "Registered Nurse", cneuEligible: true },
-    { id: "doctor", label: "แพทย์", en: "Physician", cneuEligible: false },
-    { id: "allied", label: "บุคลากรสหวิชาชีพ", en: "Allied Health Professional", cneuEligible: false }
-  ];
-
-  // 2. เขตสุขภาพ 1 - 13 (กระทรวงสาธารณสุข)
-  core.HEALTH_REGIONS = [
-    "เขตสุขภาพที่ 1 (เชียงใหม่ และภาคเหนือตอนบน)",
-    "เขตสุขภาพที่ 2 (พิษณุโลก และภาคเหนือตอนล่าง)",
-    "เขตสุขภาพที่ 3 (นครสวรรค์ และภาคกลางตอนบน)",
-    "เขตสุขภาพที่ 4 (สระบุรี และปริมณฑลตอนเหนือ)",
-    "เขตสุขภาพที่ 5 (ราชบุรี และภาคตะวันตก)",
-    "เขตสุขภาพที่ 6 (ชลบุรี และภาคตะวันออก)",
-    "เขตสุขภาพที่ 7 (ขอนแก่น และอีสานตอนกลาง)",
-    "เขตสุขภาพที่ 8 (อุดรธานี และอีสานตอนบน)",
-    "เขตสุขภาพที่ 9 (นครราชสีมา และอีสานตอนล่าง 1)",
-    "เขตสุขภาพที่ 10 (อุบลราชธานี และอีสานตอนล่าง 2)",
-    "เขตสุขภาพที่ 11 (สุราษฎร์ธานี และภาคใต้ตอนบน)",
-    "เขตสุขภาพที่ 12 (สงขลา และภาคใต้ตอนล่าง)",
-    "เขตสุขภาพที่ 13 (กรุงเทพมหานคร)"
-  ];
-
-  // 3. วลีสื่อสารฉุกเฉินหน้างาน ICU (Pocket Phrases สำหรับเจรจาขอรับบริจาคอวัยวะ)
-  core.POCKET_PHRASES = [
-    {
-      stage: "เปิดบทสนทนาด้วยความเห็นอกเห็นใจ",
-      phrase: "หมอและทีมพยาบาลเสียใจอย่างสุดซึ้งกับการสูญเสียครั้งนี้ค่ะ เราดูแลท่านอย่างเต็มที่ที่สุดแล้ว และอยากอยู่เป็นกำลังใจให้ครอบครัวในช่วงเวลาที่ยากลำบากนี้"
-    },
-    {
-      stage: "อธิบายภาวะสมองตายอย่างชัดเจน",
-      phrase: "ผลการตรวจยืนยันตามเกณฑ์แพทยสภาพบว่าก้านสมองหยุดทำงานอย่างถาวรแล้ว เครื่องช่วยหายใจเพียงพยุงให้หัวใจเต้นชั่วคราว แต่ท่านไม่สามารถฟื้นกลับมาได้อีก"
-    },
-    {
-      stage: "เสนอทางเลือกแห่งการให้ (ไม่กดดัน)",
-      phrase: "ในวาระสุดท้ายนี้ มีอีกหนึ่งบุญกุศลอันยิ่งใหญ่ที่ครอบครัวอาจพิจารณาได้ คือการบริจาคอวัยวะเพื่อต่อชีวิตให้ผู้ป่วยวิกฤตอีกหลายชีวิต ไม่ทราบว่าท่านเคยพูดคุยเรื่องนี้ไว้บ้างไหมคะ"
-    },
-    {
-      stage: "คลายความกังวลเรื่องร่างกายและพิธีกรรม",
-      phrase: "ทีมศัลยแพทย์จะดูแลร่างกายของท่านด้วยความเคารพสูงสุดเหมือนการผ่าตัดทั่วไป แผลจะถูกเย็บปิดอย่างเรียบร้อย สามารถประกอบพิธีทางศาสนาได้ตามปกติทุกประการค่ะ"
-    }
-  ];
-
-  // 4. แบบประเมินความพึงพอใจและการใช้งานระบบมาตรฐาน R2R (SUS 10 ข้อ)
-  core.SUS_QUESTIONS = [
-    "1. ฉันต้องการกลับมาใช้งานระบบ rjcloud.organ 2.0 นี้อย่างสม่ำเสมอ",
-    "2. ฉันรู้สึกว่าระบบนี้มีความซับซ้อนเกินความจำเป็น",
-    "3. ฉันคิดว่าระบบนี้ใช้งานง่ายและเข้าใจได้ทันที",
-    "4. ฉันคิดว่าฉันจำเป็นต้องมีผู้เชี่ยวชาญคอยช่วยเหลือจึงจะใช้งานระบบนี้ได้",
-    "5. ฉันพบว่าฟังก์ชันต่างๆ (บทเรียน, AI สรุป, Skill Lab) เชื่อมโยงกันได้อย่างลงตัว",
-    "6. ฉันรู้สึกว่ามีหลายส่วนในระบบที่ทำงานไม่สอดคล้องกัน",
-    "7. ฉันเชื่อว่าบุคลากรทางการแพทย์ส่วนใหญ่สามารถเรียนรู้การใช้งานระบบนี้ได้อย่างรวดเร็ว",
-    "8. ฉันรู้สึกว่าระบบนี้ใช้งานยุ่งยากและไม่คล่องตัว",
-    "9. ฉันรู้สึกมั่นใจขณะใช้งานระบบนี้ในการเรียนรู้และสอบวัดผล",
-    "10. ฉันต้องเรียนรู้สิ่งใหม่ๆ มากมายก่อนจะเริ่มใช้งานระบบนี้ได้"
-  ];
-
-  // 5. ตัวช่วยสร้างบทสรุป 1 นาทีมาตรฐานสำหรับแต่ละบทเรียน
-  core.buildDefaultOneMinSummary = function buildDefaultOneMinSummary(lesson) {
-    if (!lesson) return "สรุปเนื้อหาสำคัญของบทเรียนเพื่อการประยุกต์ใช้จริงในคลินิก";
-    if (lesson.oneMinSummary && String(lesson.oneMinSummary).trim()) {
-      return String(lesson.oneMinSummary).trim();
-    }
-    const title = lesson.title || "บทเรียนหลัก";
-    const keyPoints = Array.isArray(lesson.keyPoints) && lesson.keyPoints.length > 0
-      ? lesson.keyPoints.map((p, idx) => `${idx + 1}. ${p}`).join("\n")
-      : "1. ทำความเข้าใจเกณฑ์มาตรฐานทางคลินิกและขั้นตอนปฏิบัติที่ถูกต้อง\n2. ประสานงานทีมสหวิชาชีพและสื่อสารกับครอบครัวผู้ป่วยอย่างอ่อนโยน\n3. บันทึกข้อมูลและตรวจสอบความถูกต้องตามระเบียบศูนย์รับบริจาคอวัยวะ";
-    return `สรุปสาระสำคัญ 1 นาที — ${title}\n${keyPoints}`;
   };
 
-  // 6. ตัวช่วยแปลงลิงก์เอกสาร PDF / Google Drive ให้ฝังแสดงผลได้ทันที
-  core.resolveLessonDocUrl = function resolveLessonDocUrl(lesson) {
-    const raw = (lesson && (lesson.docUrl || lesson.pdfUrl || lesson.url)) || "";
-    if (!raw) return "";
-    const trimmed = String(raw).trim();
-    // แปลงลิงก์ Google Drive /view หรือ /edit เป็น /preview สำหรับ iframe
-    const driveMatch = trimmed.match(/drive\.google\.com\/file\/d\/([^/]+)/i);
-    if (driveMatch && driveMatch[1]) {
-      return `https://drive.google.com/file/d/${driveMatch[1]}/preview`;
-    }
-    return trimmed;
-  };
-
-  // 7. ตัวช่วยสร้างไฟล์เสียง AI สตูดิโอ 24kHz เท่านั้น (ผ่าน Code.gs -> Gemini TTS)
-  // กฎเหล็ก: ห้ามตกกลับไปใช้ window.speechSynthesis ของเบราว์เซอร์โดยเด็ดขาด
-  function pcm16ToWavBlob(pcmBytes, sampleRate = 24000) {
-    // หากเป็นไฟล์ WAV อยู่แล้ว (ขึ้นต้นด้วย "RIFF") ส่งคืนทันที
-    if (
-      pcmBytes.length >= 4 &&
-      pcmBytes[0] === 0x52 && pcmBytes[1] === 0x49 &&
-      pcmBytes[2] === 0x46 && pcmBytes[3] === 0x46
-    ) {
-      return new Blob([pcmBytes], { type: "audio/wav" });
-    }
-    const numChannels = 1;
-    const bitsPerSample = 16;
-    const byteRate = (sampleRate * numChannels * bitsPerSample) / 8;
-    const blockAlign = (numChannels * bitsPerSample) / 8;
-    const dataSize = pcmBytes.length;
-    const buffer = new ArrayBuffer(44 + dataSize);
-    const view = new DataView(buffer);
-
-    const writeStr = (offset, str) => {
-      for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
-    };
-
-    writeStr(0, "RIFF");
-    view.setUint32(4, 36 + dataSize, true);
-    writeStr(8, "WAVE");
-    writeStr(12, "fmt ");
-    view.setUint32(16, 16, true);
-    view.setUint16(20, 1, true); // PCM
-    view.setUint16(22, numChannels, true);
-    view.setUint32(24, sampleRate, true);
-    view.setUint32(28, byteRate, true);
-    view.setUint16(32, blockAlign, true);
-    view.setUint16(34, bitsPerSample, true);
-    writeStr(36, "data");
-    view.setUint32(40, dataSize, true);
-
-    new Uint8Array(buffer, 44).set(pcmBytes);
-    return new Blob([buffer], { type: "audio/wav" });
-  }
-
-  core.fetchStudioGuideBlob = async function fetchStudioGuideBlob(text, gasUrl, voiceName = "Sulafat") {
-    const cleanText = String(text || "").trim();
-    if (!cleanText) throw new Error("ไม่มีข้อความสำหรับสร้างเสียงสตูดิโอ");
-    if (!gasUrl) throw new Error("ไม่พบปลายทางเซิร์ฟเวอร์เสียงสตูดิโอ (GAS URL)");
-
-    const res = await fetch(gasUrl, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      redirect: "follow",
-      body: JSON.stringify({
-        action: "callGeminiTTS",
-        text: cleanText,
-        voiceName
-      })
-    });
-
-    if (!res.ok) throw new Error(`เชื่อมต่อระบบเสียงสตูดิโอไม่สำเร็จ (${res.status})`);
-    const data = await res.json();
-    const base64Audio = data.audioBase64 || data.audio || (data.data && data.data.audioBase64);
-    if (!base64Audio) {
-      throw new Error(data.error || "ไม่พบข้อมูลเสียง 24kHz จากเซิร์ฟเวอร์");
-    }
-
-    const binaryStr = atob(base64Audio);
-    const bytes = new Uint8Array(binaryStr.length);
-    for (let i = 0; i < binaryStr.length; i++) {
-      bytes[i] = binaryStr.charCodeAt(i);
-    }
-    return pcm16ToWavBlob(bytes, 24000);
-  };
-})(window);
-  };
-})(window);
+  global.RJCLOUD_CORE = api;
+  global.RJLearningCore = api;
+})(typeof window !== 'undefined' ? window : globalThis);
