@@ -745,6 +745,19 @@
 
     resizeCanvas();
     seedMistParticles();
+    global.addEventListener('resize', resizeCanvas);
+    startLoop();
+  }
+
+  function showGate() {
+    ensureDom();
+    if (!rootEl) return;
+    isTransitioning = false;
+    rootEl.style.pointerEvents = 'auto';
+    rootEl.classList.remove('rj-hidden');
+    if (cardEl) cardEl.classList.remove('rj-dissolving');
+    resizeCanvas();
+    seedMistParticles();
     startLoop();
   }
 
