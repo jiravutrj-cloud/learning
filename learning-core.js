@@ -893,7 +893,12 @@
       if (inputAudio instanceof Uint8Array) {
         rawBytes = inputAudio;
       } else {
-        const cleanB64 = String(inputAudio || '').replace(/^data:audio\/[^;]+;base64,/, '').trim();
+        let cleanB64 = String(inputAudio || '')
+          .replace(/^data:audio\/[^;]+;base64,/, '')
+          .replace(/\s+/g, '')
+          .replace(/-/g, '+')
+          .replace(/_/g, '/');
+        while (cleanB64.length % 4 !== 0) cleanB64 += '=';
         const binaryString = global.atob(cleanB64);
         rawBytes = new Uint8Array(binaryString.length);
         for (let i = 0; i < binaryString.length; i++) {
@@ -902,6 +907,24 @@
       }
     } catch (_) {
       return new Blob([], { type: 'audio/wav' });
+    }
+
+    // หากต้นทางเป็นไฟล์บีบอัด (MP3 / OGG) ให้ส่งคืนทันทีโดยไม่แปลงเป็น PCM16
+    if (
+      rawBytes.length > 4 &&
+      ((rawBytes[0] === 0x49 && rawBytes[1] === 0x44 && rawBytes[2] === 0x33) ||
+        (rawBytes[0] === 0xff && (rawBytes[1] & 0xe0) === 0xe0))
+    ) {
+      return new Blob([rawBytes], { type: 'audio/mpeg' });
+    }
+    if (
+      rawBytes.length > 4 &&
+      rawBytes[0] === 0x4f &&
+      rawBytes[1] === 0x67 &&
+      rawBytes[2] === 0x67 &&
+      rawBytes[3] === 0x53
+    ) {
+      return new Blob([rawBytes], { type: 'audio/ogg' });
     }
 
     let offsetBytes = 0;
@@ -1215,14 +1238,39 @@
       data.audioBase64 ||
       data.audio ||
       data.audioContent ||
+      data.pcmBase64 ||
+      data.wavBase64 ||
       (data.inlineData && data.inlineData.data) ||
-      (data.data && (data.data.audioBase64 || data.data.audio || data.data.audioContent));
+      (data.data && (data.data.audioBase64 || data.data.audio || data.data.audioContent)) ||
+      (data.result && (data.result.audioBase64 || data.result.audio)) ||
+      (data.candidates &&
+        data.candidates[0] &&
+        data.candidates[0].content &&
+        data.candidates[0].content.parts &&
+        data.candidates[0].content.parts[0] &&
+        data.candidates[0].content.parts[0].inlineData &&
+        data.candidates[0].content.parts[0].inlineData.data);
 
     if (!base64Audio) {
       throw new Error(data.error || 'ไม่พบข้อมูลเสียงสตูดิโอ 24kHz จากเซิร์ฟเวอร์');
     }
 
-    const wavBlob = pcm16ToWavBlob(base64Audio, 24000);
+    const mimeHint = String(
+      data.mimeType ||
+        (data.inlineData && data.inlineData.mimeType) ||
+        (data.candidates &&
+          data.candidates[0] &&
+          data.candidates[0].content &&
+          data.candidates[0].content.parts &&
+          data.candidates[0].content.parts[0] &&
+          data.candidates[0].content.parts[0].inlineData &&
+          data.candidates[0].content.parts[0].inlineData.mimeType) ||
+        ''
+    );
+    const rateMatch = mimeHint.match(/rate=(\d+)/i);
+    const detectedRate = rateMatch ? Number(rateMatch[1]) : 24000;
+
+    const wavBlob = pcm16ToWavBlob(base64Audio, detectedRate || 24000);
     if (!wavBlob || wavBlob.size <= 44) {
       throw new Error('ข้อมูลเสียง 24kHz ที่ได้รับไม่สมบูรณ์ กรุณาลองใหม่อีกครั้ง');
     }
