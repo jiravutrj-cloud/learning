@@ -1,1291 +1,765 @@
-/**
- * ============================================================================
- * rjcloud.organ 2.0 — World-Class Launch Experience Module (keynote-launch.js)
- * เชื่อมต่อหน้าแรกต้นไม้ (index.html) ผ่าน window.RJCLOUD_KEYNOTE
+/* ============================================================================
+ * rjcloud.organ 2.0 — Keynote Welcome Gate & Ultra-Smooth Volumetric Mist Reveal
+ * File: keynote-launch.js (Zero-Build Standalone Production Module)
+ * Public Exports: window.RJCLOUD_KEYNOTE
  *
- * ความสามารถครบชุด (อัปเกรด Studio-Grade AI Voice 2027 • ไฟล์ 3/4):
- * 1. ม่านเปิดตัวแบบแตะ 1 ครั้ง (ป้าย "สู่มาตรฐานปี 2027") ปลดล็อกเสียงบน iOS/Android/Desktop 100%
- * 2. เพลงประกอบฟรีไม่มีลิขสิทธิ์จาก YouTube: "Great (Epic Modern Cinematic)" — Alex-Productions
- *    (Video ID: TTwfAUzEHrM • CC BY 3.0) พร้อมดนตรีซินธ์ Cinematic สำรองในตัวขณะบัฟเฟอร์หรือออฟไลน์
- * 3. ระบบ Auto-Ducking หรี่เสียงเพลงอัตโนมัติ (~19%) ตอนพิธีกรพูด และเร่งเพลงขึ้น (~74%) ช่วงเปิด–ปิด
- * 4. พิธีกรคู่ ชาย–หญิง คุณภาพสตูดิโอ 24kHz PCM WAV (Puck + Sulafat) แบบแบ่งช่วงโหลดล่วงหน้า
- *    (Lookahead Prefetching + Timeout 45 วิ + ลองใหม่อัตโนมัติ 2 รอบ + แคช IndexedDB v5)
- * 5. ตัดเสียงหุ่นยนต์จากเบราว์เซอร์ (speechSynthesis) ออก 100% รอจนเสียง AI สตูดิโอพร้อมจริง
- * 6. แสดงแถบไฟแอมเบียนวิ่งด้านบนสุด + สถานะบนปุ่มมุมขวาบน โดยไม่มีกรอบซับไตเติลบังต้นไม้
- * ============================================================================
- */
+ * สิ่งที่ปรับปรุงในเวอร์ชันนี้:
+ * 1. หน้าการ์ด Welcome คลีนมินิมอล แสดงเฉพาะ BETA / rjcloud.organ 2.0 / เปิดใช้งาน 2027 + ปุ่ม Welcome
+ * 2. อนิเมชันหลังกดปุ่ม Welcome เป็นหมอกเย็นสมจริงแบบ Volumetric อัลตร้าสมูท 60/120fps (dt-driven)
+ * 3. เชื่อมเสียงพิธีกร AI คุณภาพสตูดิโอ 24kHz (ห้ามใช้เสียงหุ่นยนต์เบราว์เซอร์) + ดนตรีแอมเบียนต์นุ่มนวล
+ * ============================================================================ */
+
 (function (global) {
   'use strict';
 
-  if (global.RJCLOUD_KEYNOTE_LOADED) return;
-  global.RJCLOUD_KEYNOTE_LOADED = true;
-
-  // ==========================================================================
-  // 1. CONSTANTS, YOUTUBE TRACK & DUAL-HOST SCRIPT (6 ช่วงฉบับสมบูรณ์)
-  // ==========================================================================
-  const YOUTUBE_VIDEO_ID = 'TTwfAUzEHrM'; // Great (Epic Modern Cinematic) — Alex-Productions (Audio Library)
-  const MUSIC_CREDIT = 'Music: "Great" by Alex-Productions (CC BY 3.0)';
-  const AUDIO_DB_NAME = 'rjcloud_keynote_voice_cache_v5';
-  const AUDIO_STORE_NAME = 'clips';
-  const SESSION_DISMISS_KEY = 'rjcloud_keynote_seen_session_v1';
-  const SILENT_UNLOCK_WAV = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
-
-  const MALE_VOICE_NAME = 'Puck';
-  const FEMALE_VOICE_NAME = 'Sulafat';
-
-  const DUAL_HOST_SCRIPT = [
+  const HOST_SEGMENTS = [
     {
-      id: 'k1',
-      speaker: 'male',
-      voiceName: MALE_VOICE_NAME,
-      badge: 'พิธีกรชาย',
-      style: 'พูดภาษาไทยด้วยน้ำเสียงผู้ชายวัยทำงานโทนกลางโปร่ง สดใส นุ่มสบายหู คมชัดระดับสตูดิโอ ผ่อนคลายและเป็นกันเองแบบพิธีกรงานเทคโนโลยีสมัยใหม่ ไม่ทุ้มลึกหรือหนักแน่นจนเกินไป',
-      speech: 'เบื้องหลังทุกหนึ่งชีวิตที่ได้รับโอกาสครั้งใหม่... คือความเชี่ยวชาญ ความแม่นยำ และหัวใจของทีมบุคลากรทางการแพทย์ทุกคนครับ'
+      role: 'หญิง',
+      voice: 'Sulafat',
+      text: 'ยินดีต้อนรับสู่ อาร์เจ คลาวด์ ออร์แกน สองจุดศูนย์ แพลตฟอร์มการเรียนรู้ด้านการรับบริจาคและปลูกถ่ายอวัยวะ แห่งศูนย์ความเป็นเลิศทางการแพทย์ โรงพยาบาลราชวิถีค่ะ'
     },
     {
-      id: 'k2',
-      speaker: 'female',
-      voiceName: FEMALE_VOICE_NAME,
-      badge: 'พิธีกรหญิง',
-      style: 'พูดภาษาไทยสลับอังกฤษด้วยน้ำเสียงผู้หญิงที่อบอุ่น สง่างาม มั่นใจ คมชัดระดับสตูดิโอ และทันสมัยเหมือนพิธีกรงานเปิดตัวเทคโนโลยีระดับสากล',
-      speech: 'และวันนี้... Organ Transplantation Center of ราชวิถี Hospital พร้อมแล้วที่จะพาท่านก้าวข้ามทุกขีดจำกัดของการฝึกอบรมเดิมๆ ค่ะ'
+      role: 'ชาย',
+      voice: 'Puck',
+      text: 'ยกระดับทักษะทางการแพทย์สู่มาตรฐานปีสองพันยี่สิบเจ็ด ด้วยบทเรียนคลินิก ห้องฝึกสื่อสารโฮโลแกรมหัวใจสามมิติ เอไอสกิลแล็บ และประกาศนียบัตรดิจิทัลพร้อมคิวอาร์โค้ดครับ'
     },
     {
-      id: 'k3',
-      speaker: 'male',
-      voiceName: MALE_VOICE_NAME,
-      badge: 'พิธีกรชาย',
-      style: 'พูดด้วยน้ำเสียงผู้ชายโทนกลางโปร่งที่สดใส ชัดถ้อยชัดคำ ลื่นหู คมชัดระดับสตูดิโอ ทันสมัย และเป็นมิตร สไตล์งานเปิดตัวเทคโนโลยี',
-      speech: 'พบกับ อาร์เจ คลาวด์ ออร์แกน สองจุดศูนย์ คลาวด์เอไอ แพลตฟอร์มอีเลิร์นนิง การรับบริจาคและปลูกถ่ายอวัยวะ สู่มาตรฐานปีสองพันยี่สิบเจ็ดครับ'
-    },
-    {
-      id: 'k4',
-      speaker: 'female',
-      voiceName: FEMALE_VOICE_NAME,
-      badge: 'พิธีกรหญิง',
-      style: 'พูดภาษาไทยด้วยน้ำเสียงนุ่มนวล ลื่นไหล อบอุ่น คมชัดระดับสตูดิโอ และชัดเจน น่าเชื่อถือระดับวิชาการแพทย์สากล',
-      speech: 'มาพร้อมผู้ช่วยเอไอติวสรุปบทเรียน, ห้องฝึกสื่อสารกับญาติ เอไอสกิลแล็บ ที่ตอบโต้ด้วยเสียงและอารมณ์เสมือนจริง และระบบรับรองหน่วยคะแนนซีเอ็นอียู มาตรฐานสภาการพยาบาล ภายใต้การคุ้มครองข้อมูลพีดีพีเอ อย่างสูงสุดค่ะ'
-    },
-    {
-      id: 'k5',
-      speaker: 'male',
-      voiceName: MALE_VOICE_NAME,
-      badge: 'พิธีกรชาย',
-      style: 'พูดด้วยน้ำเสียงผู้ชายโทนกลางที่อบอุ่น เบาสบาย นุ่มนวล คมชัดระดับสตูดิโอ และสร้างแรงบันดาลใจอย่างเป็นธรรมชาติ ไม่ทุ้มหนักหรือแข็งกร้าว',
-      speech: 'อนาคตแห่งการเรียนรู้และการให้ชีวิตใหม่...'
-    },
-    {
-      id: 'k6',
-      speaker: 'female',
-      voiceName: FEMALE_VOICE_NAME,
-      badge: 'พิธีกรหญิง',
-      style: 'พูดภาษาไทยด้วยน้ำเสียงผู้หญิงที่อบอุ่น สดใส คมชัดระดับสตูดิโอ ชวนเชิญ และน่าประทับใจเหมือนประโยคปิดงานเปิดตัวเทคโนโลยีระดับโลก',
-      speech: 'ยินดีต้อนรับสู่ อาร์เจ คลาวด์ ออร์แกน สองจุดศูนย์... กดปุ่มเข้าสู่ระบบ เพื่อเริ่มต้นได้เลยค่ะ'
+      role: 'หญิง',
+      voice: 'Sulafat',
+      text: 'เชิญบุคลากรทางการแพทย์ทุกท่านกดปุ่มเข้าสู่ระบบ เพื่อเริ่มต้นประสบการณ์การเรียนรู้แห่งอนาคตไปพร้อมกันได้เลยค่ะ'
     }
   ];
 
-  // ==========================================================================
-  // 2. STYLES INJECTION (CURTAIN, AMBIENT LIGHT BAR & FLOATING CONTROL DOCK)
-  // ==========================================================================
-  function injectKeynoteStyles() {
-    if (document.getElementById('rjcloud-keynote-styles')) return;
+  let rootEl = null;
+  let canvasEl = null;
+  let ctx = null;
+  let cardEl = null;
+  let controlsEl = null;
+  let hostBtnEl = null;
+  let musicBtnEl = null;
+
+  let isLandingNow = false;
+  let currentGasUrl = '';
+  let hasDismissedGate = false;
+  let isTransitioning = false;
+
+  // Animation loop state
+  let rafId = null;
+  let lastTs = 0;
+  let W = 0;
+  let H = 0;
+  let revealStartTs = 0;
+  const REVEAL_DURATION = 3.15; // seconds for ultra-smooth cinematic mist parting
+
+  // Audio state (Studio 24kHz AI Host + Silky WebAudio Ambient Pad)
+  let hostPlaying = false;
+  let hostSegmentIdx = 0;
+  let hostSessionId = 0;
+  let hostAudioEl = null;
+  let hostBlobUrl = null;
+
+  let musicEnabled = false;
+  let musicCtx = null;
+  let musicMasterGain = null;
+  let musicOscs = [];
+
+  // Pre-rendered volumetric mist sprites
+  let denseMistSprite = null;
+  let silkyWispSprite = null;
+  let mistBanks = [];
+  let frostMotes = [];
+
+  // Deterministic PRNG for silky organic mist texture
+  function createRng(seed) {
+    let s = seed >>> 0;
+    return function () {
+      s = (s * 1664525 + 1013904223) >>> 0;
+      return s / 4294967296;
+    };
+  }
+
+  function buildMistSprite(seed, variant) {
+    const c = document.createElement('canvas');
+    const isWisp = variant === 'wisp';
+    c.width = isWisp ? 480 : 440;
+    c.height = isWisp ? 210 : 280;
+    const mc = c.getContext('2d');
+    if (!mc) return c;
+
+    const rng = createRng(seed);
+    const puffs = isWisp ? 30 : 38;
+
+    for (let i = 0; i < puffs; i++) {
+      const u = i / Math.max(1, puffs - 1);
+      const arch = Math.sin(u * Math.PI);
+      const px = 72 + u * (c.width - 144) + (rng() - 0.5) * (isWisp ? 34 : 56);
+      const py = c.height * 0.52 - arch * (isWisp ? 8 : 16) + (rng() - 0.5) * (isWisp ? 32 : 68);
+      const rx = (isWisp ? 52 : 62) + rng() * (isWisp ? 56 : 74) * (0.65 + arch * 0.42);
+      const ry = (isWisp ? 22 : 34) + rng() * (isWisp ? 24 : 44) * (0.65 + arch * 0.45);
+
+      const roll = rng();
+      const rgb =
+        roll < 0.36
+          ? '234, 246, 255' // luminous frosty white
+          : roll < 0.72
+            ? '192, 228, 252' // pale moonlight cyan-silver
+            : roll < 0.90
+              ? '148, 204, 248' // glacial night mist blue
+              : '245, 224, 244'; // whisper of peach-blossom reflection
+
+      const alpha = isWisp ? 0.052 + rng() * 0.042 : 0.064 + rng() * 0.048;
+
+      mc.save();
+      mc.translate(px, py);
+      mc.scale(1, ry / Math.max(1, rx));
+      const g = mc.createRadialGradient(0, 0, rx * 0.06, 0, 0, rx);
+      g.addColorStop(0, 'rgba(' + rgb + ',' + alpha.toFixed(3) + ')');
+      g.addColorStop(0.5, 'rgba(' + rgb + ',' + (alpha * 0.52).toFixed(3) + ')');
+      g.addColorStop(1, 'rgba(' + rgb + ',0)');
+      mc.fillStyle = g;
+      mc.beginPath();
+      mc.arc(0, 0, rx, 0, Math.PI * 2);
+      mc.fill();
+      mc.restore();
+    }
+    return c;
+  }
+
+  function ensureMistAssets() {
+    if (!denseMistSprite) denseMistSprite = buildMistSprite(42071, 'cloud');
+    if (!silkyWispSprite) silkyWispSprite = buildMistSprite(89123, 'wisp');
+  }
+
+  function seedMistParticles() {
+    ensureMistAssets();
+    mistBanks = [];
+    const total = 40;
+
+    for (let i = 0; i < total; i++) {
+      // Distribute across 3 depth layers (0: background, 1: mid, 2: foreground parting curtain)
+      const layer = i < 12 ? 0 : i < 26 ? 1 : 2;
+      const side = i % 2 === 0 ? -1 : 1; // smoothly parts left & right from center
+      const centerBias = layer === 2 ? (Math.random() - 0.5) * 0.52 : (Math.random() - 0.5) * 1.15;
+      const x0 = 0.5 + centerBias;
+      const y0 = 0.08 + Math.random() * 0.84;
+
+      // Outward radial + lateral parting vector for natural billowing clouds
+      const dxFromCenter = x0 - 0.5;
+      const dirX = Math.abs(dxFromCenter) < 0.06 ? side : Math.sign(dxFromCenter);
+      const partVx = dirX * (0.48 + layer * 0.24 + Math.random() * 0.36);
+      const partVy = (y0 - 0.52) * (0.28 + Math.random() * 0.22) - (layer === 2 ? 0.04 : 0.02);
+
+      mistBanks.push({
+        layer: layer,
+        x: x0,
+        y: y0,
+        baseX: x0,
+        baseY: y0,
+        idleVx: (layer === 0 ? 0.006 : layer === 1 ? 0.011 : 0.016) * (i % 3 === 0 ? -1 : 1),
+        partVx: partVx,
+        partVy: partVy,
+        w: (layer === 2 ? 0.68 : layer === 1 ? 0.58 : 0.52) + Math.random() * 0.34,
+        h: (layer === 2 ? 0.36 : layer === 1 ? 0.28 : 0.24) + Math.random() * 0.20,
+        idleAlpha: (layer === 0 ? 0.22 : layer === 1 ? 0.28 : 0.16) + Math.random() * 0.14,
+        surgeAlpha: (layer === 2 ? 0.82 : layer === 1 ? 0.72 : 0.56) + Math.random() * 0.16,
+        rot: (Math.random() - 0.5) * 0.22,
+        rotSpd: (Math.random() - 0.5) * 0.18,
+        bobSpd: 0.26 + Math.random() * 0.28,
+        bobAmp: 6 + Math.random() * 12,
+        ph: Math.random() * Math.PI * 2,
+        sprite: i % 3 === 0 ? silkyWispSprite : denseMistSprite
+      });
+    }
+
+    frostMotes = Array.from({ length: 30 }, function () {
+      const ang = Math.random() * Math.PI * 2;
+      return {
+        x: 0.5 + (Math.random() - 0.5) * 0.56,
+        y: 0.5 + (Math.random() - 0.5) * 0.56,
+        vx: Math.cos(ang) * (0.06 + Math.random() * 0.14),
+        vy: Math.sin(ang) * (0.05 + Math.random() * 0.12) - 0.03,
+        r: 0.9 + Math.random() * 1.8,
+        tw: 1.8 + Math.random() * 2.6,
+        ph: Math.random() * Math.PI * 2
+      };
+    });
+  }
+
+  function injectStyles() {
+    if (document.getElementById('rjcloud-keynote-mist-styles')) return;
     const style = document.createElement('style');
-    style.id = 'rjcloud-keynote-styles';
-    style.textContent = `
-      @keyframes rjknEqBounce {
-        0%, 100% { transform: scaleY(0.28); }
-        50% { transform: scaleY(1); }
-      }
-      @keyframes rjknAmbientRun {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-      }
-      @keyframes rjknPulseHalo {
-        0%, 100% { box-shadow: 0 0 0 0 rgba(110, 231, 183, 0.45), 0 0 36px rgba(56, 189, 248, 0.35); }
-        50% { box-shadow: 0 0 0 14px rgba(110, 231, 183, 0), 0 0 54px rgba(253, 224, 71, 0.45); }
-      }
-      @keyframes rjknFadeUp {
-        from { opacity: 0; transform: translateY(12px) scale(0.98); }
-        to { opacity: 1; transform: translateY(0) scale(1); }
-      }
-      @keyframes rjknFlashBurst {
-        0% { opacity: 0; }
-        20% { opacity: 0.55; }
-        100% { opacity: 0; }
-      }
-      @keyframes rjknTextVaporize {
-        0% {
-          opacity: 1;
-          filter: blur(0px);
-          transform: translate3d(0, 0, 0) scale(1);
-        }
-        45% {
-          opacity: 0.62;
-          filter: blur(7px) brightness(1.35);
-          transform: translate3d(0, -8px, 0) scale(1.03);
-        }
-        100% {
-          opacity: 0;
-          filter: blur(22px) brightness(1.6);
-          transform: translate3d(0, -22px, 0) scale(1.09);
-        }
-      }
-      @keyframes rjknGlassToMist {
-        0% {
-          opacity: 1;
-          filter: blur(0px) brightness(1);
-          transform: translate3d(0, 0, 0) scale(1);
-          border-color: rgba(186, 230, 253, 0.34);
-        }
-        38% {
-          opacity: 0.72;
-          filter: blur(10px) brightness(1.28);
-          transform: translate3d(0, -6px, 0) scale(1.06);
-          border-color: rgba(224, 242, 254, 0.65);
-        }
-        100% {
-          opacity: 0;
-          filter: blur(34px) brightness(1.55);
-          transform: translate3d(0, -24px, 0) scale(1.22);
-          border-color: rgba(255, 255, 255, 0);
-        }
-      }
-      .rjkn-ambient-bar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        z-index: 148;
-        pointer-events: none;
-        opacity: 0;
-        background: linear-gradient(90deg, #6ee7b7, #38bdf8, #818cf8, #f0abfc, #fde68a, #6ee7b7);
-        background-size: 300% 100%;
-        animation: rjknAmbientRun 2s linear infinite;
-        box-shadow: 0 0 20px rgba(56, 189, 248, 0.9), 0 2px 14px rgba(110, 231, 183, 0.65);
-        transition: opacity 0.35s ease;
-      }
-      .rjkn-ambient-bar.is-visible {
-        opacity: 1;
-      }
-      .rjkn-curtain {
-        position: fixed;
-        inset: 0;
-        z-index: 150;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-        background:
-          radial-gradient(ellipse 80% 55% at 50% 35%, rgba(22, 92, 196, 0.36) 0%, rgba(2, 8, 24, 0.88) 65%, rgba(0, 0, 0, 0.96) 100%);
-        backdrop-filter: blur(18px) saturate(150%);
-        -webkit-backdrop-filter: blur(18px) saturate(150%);
-        transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.65s ease;
-      }
-      .rjkn-curtain.is-hidden {
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
-      }
-      .rjkn-curtain.is-dissolving {
-        pointer-events: none;
-        opacity: 0;
-        backdrop-filter: blur(0px) saturate(100%);
-        -webkit-backdrop-filter: blur(0px) saturate(100%);
-        transition: opacity 1.5s cubic-bezier(0.22, 1, 0.36, 1) 0.12s,
-                    backdrop-filter 1.35s ease-out,
-                    -webkit-backdrop-filter 1.35s ease-out;
-      }
-      .rjkn-curtain.is-dissolving .rjkn-curtain-card {
-        animation: rjknGlassToMist 1.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        will-change: transform, opacity, filter;
-      }
-      .rjkn-curtain.is-dissolving .rjkn-curtain-card > * {
-        animation: rjknTextVaporize 0.98s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        will-change: transform, opacity, filter;
-      }
-      .rjkn-curtain.is-dissolving .rjkn-curtain-card > *:nth-child(2) { animation-delay: 0.04s; }
-      .rjkn-curtain.is-dissolving .rjkn-curtain-card > *:nth-child(3) { animation-delay: 0.07s; }
-      .rjkn-curtain.is-dissolving .rjkn-curtain-card > *:nth-child(4) { animation-delay: 0.1s; }
-      .rjkn-curtain.is-dissolving .rjkn-curtain-card > *:nth-child(5) { animation-delay: 0.13s; }
-      .rjkn-curtain.is-dissolving .rjkn-curtain-card > *:nth-child(6) { animation-delay: 0.16s; }
-      .rjkn-mist-canvas {
-        position: fixed;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 156;
-        pointer-events: none;
-      }
-      .rjkn-curtain-card {
-        width: 100%;
-        max-width: 520px;
-        border-radius: 2rem;
-        padding: 32px 26px;
-        text-align: center;
-        color: #ffffff;
-        background: linear-gradient(155deg, rgba(255, 255, 255, 0.12) 0%, rgba(10, 32, 76, 0.68) 55%, rgba(2, 8, 22, 0.9) 100%);
-        border: 1px solid rgba(186, 230, 253, 0.34);
-        box-shadow: 0 32px 72px -18px rgba(0, 6, 24, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.35);
-        animation: rjknFadeUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
-      }
-      .rjkn-launch-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        width: 100%;
-        min-height: 54px;
-        padding: 14px 26px;
-        border: none;
-        border-radius: 9999px;
-        cursor: pointer;
-        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Anuphan', 'Prompt', sans-serif;
-        font-weight: 700;
-        font-size: 16px;
-        color: #050b16;
-        background: linear-gradient(95deg, #d7fbe6 0%, #c6f3f9 48%, #b3c8ff 100%);
-        animation: rjknPulseHalo 2.4s ease-in-out infinite;
-        transition: transform 0.2s ease, filter 0.2s ease;
-      }
-      .rjkn-launch-btn:hover { transform: translateY(-2px) scale(1.02); filter: brightness(1.04); }
-      .rjkn-launch-btn:active { transform: scale(0.97); }
-      .rjkn-dock {
-        position: fixed;
-        top: calc(14px + env(safe-area-inset-top, 0px));
-        right: 14px;
-        z-index: 120;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-      }
-      .rjkn-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-        padding: 8px 13px;
-        border-radius: 9999px;
-        border: 1px solid rgba(186, 230, 253, 0.34);
-        background: rgba(4, 14, 34, 0.72);
-        backdrop-filter: blur(18px) saturate(160%);
-        -webkit-backdrop-filter: blur(18px) saturate(160%);
-        color: #f0f9ff;
-        font-family: -apple-system, BlinkMacSystemFont, 'Anuphan', 'Prompt', sans-serif;
-        font-size: 12px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 10px 28px -8px rgba(0, 8, 28, 0.75);
-        transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
-      }
-      .rjkn-pill:hover {
-        background: rgba(12, 34, 76, 0.86);
-        border-color: rgba(110, 231, 183, 0.65);
-        transform: translateY(-1px);
-      }
-      .rjkn-pill.is-live {
-        border-color: rgba(110, 231, 183, 0.8);
-        background: linear-gradient(95deg, rgba(16, 185, 129, 0.24), rgba(14, 165, 233, 0.26));
-        box-shadow: 0 0 22px rgba(56, 189, 248, 0.42);
-      }
-      .rjkn-pill.is-loading {
-        border-color: rgba(103, 232, 249, 0.85);
-        background: linear-gradient(95deg, rgba(14, 165, 233, 0.26), rgba(129, 140, 248, 0.26));
-        box-shadow: 0 0 22px rgba(103, 232, 249, 0.45);
-      }
-      .rjkn-eq {
-        display: inline-flex;
-        align-items: flex-end;
-        gap: 2px;
-        height: 12px;
-      }
-      .rjkn-eq span {
-        width: 2.5px;
-        height: 100%;
-        border-radius: 999px;
-        background: linear-gradient(180deg, #fde68a, #6ee7b7, #38bdf8);
-        animation: rjknEqBounce 0.75s ease-in-out infinite;
-        transform-origin: bottom;
-      }
-      .rjkn-eq span:nth-child(2) { animation-delay: 0.16s; }
-      .rjkn-eq span:nth-child(3) { animation-delay: 0.32s; }
-      .rjkn-flash {
-        position: fixed;
-        inset: 0;
-        z-index: 145;
-        pointer-events: none;
-        background: radial-gradient(circle at 50% 24%, rgba(254, 240, 178, 0.85) 0%, rgba(56, 189, 248, 0.32) 38%, transparent 72%);
-        animation: rjknFlashBurst 1.15s ease-out forwards;
-      }
-      @media (prefers-reduced-motion: reduce) {
-        .rjkn-ambient-bar, .rjkn-eq span, .rjkn-launch-btn { animation: none !important; }
-        .rjkn-curtain.is-dissolving .rjkn-curtain-card,
-        .rjkn-curtain.is-dissolving .rjkn-curtain-card > * {
-          animation: none !important;
-          opacity: 0;
-          transition: opacity 0.35s ease;
-        }
-      }
-    `;
+    style.id = 'rjcloud-keynote-mist-styles';
+    style.textContent = [
+      '#rj-keynote-gate {',
+      '  position: fixed; inset: 0; z-index: 9990;',
+      '  display: flex; align-items: center; justify-content: center;',
+      '  padding: 20px;',
+      '  overflow: hidden;',
+      '  touch-action: manipulation;',
+      '  -webkit-font-smoothing: antialiased;',
+      '}',
+      '#rj-keynote-gate.rj-hidden { display: none !important; pointer-events: none !important; }',
+      '#rj-keynote-canvas {',
+      '  position: absolute; inset: 0; width: 100%; height: 100%;',
+      '  pointer-events: none; z-index: 1;',
+      '}',
+      '#rj-keynote-card {',
+      '  position: relative; z-index: 3;',
+      '  width: 100%; max-width: 392px;',
+      '  border-radius: 30px;',
+      '  padding: 40px 28px 36px;',
+      '  text-align: center;',
+      '  background: linear-gradient(155deg, rgba(16, 30, 62, 0.70) 0%, rgba(5, 12, 28, 0.86) 100%);',
+      '  border: 1px solid rgba(186, 230, 253, 0.24);',
+      '  box-shadow: 0 30px 76px -18px rgba(0, 4, 18, 0.92), inset 0 1px 0 rgba(255, 255, 255, 0.22);',
+      '  backdrop-filter: blur(26px) saturate(165%);',
+      '  -webkit-backdrop-filter: blur(26px) saturate(165%);',
+      '  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Anuphan", "Prompt", sans-serif;',
+      '  transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1), transform 0.72s cubic-bezier(0.22, 1, 0.36, 1), filter 0.65s ease;',
+      '  will-change: opacity, transform, filter;',
+      '}',
+      '#rj-keynote-card.rj-dissolving {',
+      '  opacity: 0;',
+      '  transform: scale(0.95) translateY(-10px);',
+      '  filter: blur(18px);',
+      '  pointer-events: none;',
+      '}',
+      '.rj-beta-pill {',
+      '  display: inline-flex; align-items: center; gap: 7px;',
+      '  padding: 5px 15px; border-radius: 9999px;',
+      '  background: rgba(255, 255, 255, 0.06);',
+      '  border: 1px solid rgba(186, 230, 253, 0.28);',
+      '  color: #e0f2fe;',
+      '  font-family: "JetBrains Mono", "SF Mono", ui-monospace, monospace;',
+      '  font-size: 12px; font-weight: 700; letter-spacing: 0.22em;',
+      '  text-transform: uppercase;',
+      '}',
+      '.rj-beta-dot {',
+      '  width: 7px; height: 7px; border-radius: 9999px;',
+      '  background: #6ee7b7; box-shadow: 0 0 10px #34d399;',
+      '}',
+      '.rj-gate-title {',
+      '  margin: 22px 0 8px;',
+      '  font-size: clamp(28px, 7.6vw, 35px);',
+      '  font-weight: 800; line-height: 1.15; letter-spacing: -0.02em;',
+      '  color: #ffffff;',
+      '  text-shadow: 0 4px 22px rgba(2, 8, 26, 0.72);',
+      '}',
+      '.rj-gate-title .rj-ver {',
+      '  color: #fde68a;',
+      '  text-shadow: 0 0 22px rgba(253, 230, 138, 0.42);',
+      '}',
+      '.rj-gate-sub {',
+      '  margin: 0 0 30px;',
+      '  font-size: 16px; font-weight: 500; letter-spacing: 0.04em;',
+      '  color: rgba(219, 234, 254, 0.88);',
+      '}',
+      '#rj-welcome-btn {',
+      '  position: relative; overflow: hidden;',
+      '  width: 100%; min-height: 54px;',
+      '  border: none; border-radius: 9999px;',
+      '  display: inline-flex; align-items: center; justify-content: center; gap: 10px;',
+      '  background: linear-gradient(95deg, #d7fbe6 0%, #c6f3f9 48%, #b8ceff 100%);',
+      '  color: #050b16;',
+      '  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Prompt", sans-serif;',
+      '  font-size: 17px; font-weight: 700; letter-spacing: 0.015em;',
+      '  cursor: pointer;',
+      '  box-shadow: 0 12px 32px -6px rgba(134, 239, 172, 0.46), 0 0 0 1px rgba(255, 255, 255, 0.78) inset;',
+      '  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease;',
+      '}',
+      '#rj-welcome-btn:hover { transform: translateY(-1.5px) scale(1.015); box-shadow: 0 16px 38px -4px rgba(134, 239, 172, 0.62), 0 0 0 1px #ffffff inset; }',
+      '#rj-welcome-btn:active { transform: scale(0.975); }',
+      '#rj-keynote-controls {',
+      '  position: fixed; top: calc(12px + env(safe-area-inset-top, 0px)); right: 14px; z-index: 60;',
+      '  display: none; align-items: center; gap: 8px;',
+      '  font-family: -apple-system, BlinkMacSystemFont, "Anuphan", "Prompt", sans-serif;',
+      '}',
+      '#rj-keynote-controls.rj-show { display: flex; }',
+      '.rj-ctrl-pill {',
+      '  display: inline-flex; align-items: center; gap: 6px;',
+      '  padding: 7px 13px; border-radius: 9999px;',
+      '  background: rgba(5, 14, 34, 0.72);',
+      '  border: 1px solid rgba(186, 230, 253, 0.28);',
+      '  color: #e0f2fe; font-size: 11.5px; font-weight: 700;',
+      '  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);',
+      '  cursor: pointer; transition: border-color 0.2s ease, background 0.2s ease;',
+      '}',
+      '.rj-ctrl-pill:hover { border-color: rgba(110, 231, 183, 0.65); background: rgba(10, 24, 54, 0.88); }',
+      '.rj-ctrl-pill.rj-active { border-color: rgba(110, 231, 183, 0.72); color: #a7f3d0; }'
+    ].join('\n');
     document.head.appendChild(style);
   }
 
-  // ==========================================================================
-  // 3. INDEXEDDB VOICE CACHE + 24kHz PCM WAV CONVERTER
-  // ==========================================================================
-  let idbPromise = null;
-
-  function openVoiceDb() {
-    if (idbPromise) return idbPromise;
-    idbPromise = new Promise(function (resolve) {
-      if (typeof indexedDB === 'undefined') return resolve(null);
-      try {
-        const req = indexedDB.open(AUDIO_DB_NAME, 1);
-        req.onupgradeneeded = function () {
-          const db = req.result;
-          if (!db.objectStoreNames.contains(AUDIO_STORE_NAME)) {
-            db.createObjectStore(AUDIO_STORE_NAME);
-          }
-        };
-        req.onsuccess = function () { resolve(req.result); };
-        req.onerror = function () { resolve(null); };
-      } catch (_) {
-        resolve(null);
-      }
-    });
-    return idbPromise;
+  function resizeCanvas() {
+    if (!canvasEl || !ctx) return;
+    const dpr = Math.min(global.devicePixelRatio || 1, 2);
+    W = global.innerWidth || 1024;
+    H = global.innerHeight || 768;
+    canvasEl.width = Math.round(W * dpr);
+    canvasEl.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
-  async function getCachedClip(key) {
-    const db = await openVoiceDb();
-    if (!db) return null;
-    return new Promise(function (resolve) {
-      try {
-        const tx = db.transaction(AUDIO_STORE_NAME, 'readonly');
-        const req = tx.objectStore(AUDIO_STORE_NAME).get(key);
-        req.onsuccess = function () { resolve(req.result || null); };
-        req.onerror = function () { resolve(null); };
-      } catch (_) {
-        resolve(null);
-      }
-    });
+  function easeInOutQuart(x) {
+    return x < 0.5 ? 8 * x * x * x * x : 1 - Math.pow(-2 * x + 2, 4) / 2;
   }
 
-  async function setCachedClip(key, blob) {
-    if (!blob || blob.size === 0) return;
-    const db = await openVoiceDb();
-    if (!db) return;
-    return new Promise(function (resolve) {
-      try {
-        const tx = db.transaction(AUDIO_STORE_NAME, 'readwrite');
-        tx.objectStore(AUDIO_STORE_NAME).put(blob, key);
-        tx.oncomplete = function () { resolve(); };
-        tx.onerror = function () { resolve(); };
-      } catch (_) {
-        resolve();
-      }
-    });
+  function easeOutCubic(x) {
+    return 1 - Math.pow(1 - x, 3);
   }
 
-  function base64PcmToWavBlob(base64PCM, sampleRate) {
-    if (global.RJCLOUD_CORE && typeof global.RJCLOUD_CORE.pcm16ToWavBlob === 'function') {
-      return global.RJCLOUD_CORE.pcm16ToWavBlob(base64PCM, sampleRate || 24000);
+  function stopLoop() {
+    if (rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
     }
+  }
+
+  function renderMistFrame(now) {
+    if (!rootEl || rootEl.classList.contains('rj-hidden') || !ctx) {
+      stopLoop();
+      return;
+    }
+    rafId = requestAnimationFrame(renderMistFrame);
+    if (document.hidden || W <= 0 || H <= 0) return;
+
+    const dt = Math.min(0.05, Math.max(0.001, (now - lastTs) * 0.001));
+    lastTs = now;
+    const t = now * 0.001;
+
+    ctx.clearRect(0, 0, W, H);
+
+    // Compute backdrop opacity and mist reveal progress
+    let p = 0;
+    let backdropAlpha = 0.94;
+    let partEase = 0;
+    let surgeMix = 0;
+    let revealFade = 1;
+
+    if (isTransitioning) {
+      p = Math.min(1, (now - revealStartTs) / (REVEAL_DURATION * 1000));
+      // Smoothly lift dark obsidian backdrop between p = 0.08 and p = 0.68
+      const bgNorm = Math.max(0, Math.min(1, (p - 0.08) / 0.60));
+      backdropAlpha = 0.94 * (1 - easeInOutQuart(bgNorm));
+
+      // Mist swells softly right after click (0 -> 0.24), then parts & dissolves smoothly
+      if (p < 0.24) {
+        surgeMix = easeOutCubic(p / 0.24);
+      } else {
+        surgeMix = 1;
+      }
+
+      const partNorm = Math.max(0, Math.min(1, (p - 0.06) / 0.94));
+      partEase = easeInOutQuart(partNorm);
+
+      // Silky fade out to zero on the tail end so zero abrupt cutoff
+      if (p > 0.36) {
+        const fadeNorm = (p - 0.36) / 0.64;
+        revealFade = Math.pow(Math.max(0, 1 - fadeNorm), 1.65);
+      }
+    }
+
+    // 1. Dark Nocturnal Backdrop (fades smoothly to reveal Peach Blossom Tree behind)
+    if (backdropAlpha > 0.003) {
+      const bgGrad = ctx.createRadialGradient(W * 0.5, H * 0.44, 20, W * 0.5, H * 0.5, Math.max(W, H) * 0.78);
+      bgGrad.addColorStop(0, 'rgba(10, 22, 48, ' + (backdropAlpha * 0.96).toFixed(3) + ')');
+      bgGrad.addColorStop(0.55, 'rgba(4, 10, 25, ' + (backdropAlpha * 0.98).toFixed(3) + ')');
+      bgGrad.addColorStop(1, 'rgba(2, 5, 14, ' + backdropAlpha.toFixed(3) + ')');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    // 2. Soft Luminous Mist Opening Halo at Center during Parting
+    if (isTransitioning && p > 0.05 && p < 0.85) {
+      const haloEnv = Math.sin(Math.min(1, (p - 0.05) / 0.80) * Math.PI);
+      const haloR = Math.max(W, H) * (0.28 + partEase * 0.48);
+      const hg = ctx.createRadialGradient(W * 0.5, H * 0.48, 8, W * 0.5, H * 0.48, haloR);
+      hg.addColorStop(0, 'rgba(216, 240, 255, ' + (0.24 * haloEnv).toFixed(3) + ')');
+      hg.addColorStop(0.5, 'rgba(147, 197, 253, ' + (0.10 * haloEnv).toFixed(3) + ')');
+      hg.addColorStop(1, 'rgba(147, 197, 253, 0)');
+      ctx.fillStyle = hg;
+      ctx.beginPath();
+      ctx.arc(W * 0.5, H * 0.48, haloR, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 3. Volumetric Layered Mist Clouds (Idle Drift -> Surge -> Silky Outward Parting)
+    for (let i = 0; i < mistBanks.length; i++) {
+      const m = mistBanks[i];
+      if (!isTransitioning) {
+        m.x += m.idleVx * dt;
+        if (m.x > 1.38) m.x = -0.38;
+        if (m.x < -0.38) m.x = 1.38;
+        m.baseX = m.x;
+        m.baseY = m.y;
+      }
+
+      const pxNorm = isTransitioning ? m.baseX + m.partVx * partEase : m.x;
+      const pyNorm = isTransitioning ? m.baseY + m.partVy * partEase : m.y;
+
+      const breath = 0.88 + 0.12 * Math.sin(t * m.bobSpd + m.ph);
+      let alpha = isTransitioning
+        ? (m.idleAlpha + (m.surgeAlpha - m.idleAlpha) * surgeMix) * revealFade * breath
+        : m.idleAlpha * breath;
+
+      if (!isTransitioning) {
+        const edgeNorm = (m.x + 0.38) / 1.76;
+        const edgeFade = Math.min(1, Math.sin(Math.max(0, Math.min(1, edgeNorm)) * Math.PI) * 2.2);
+        alpha *= edgeFade;
+      }
+
+      if (alpha < 0.004) continue;
+
+      const scaleBoost = isTransitioning ? 1 + partEase * (0.42 + m.layer * 0.14) : 1;
+      const mw = m.w * W * scaleBoost;
+      const mh = m.h * H * scaleBoost;
+      const cx = pxNorm * W;
+      const cy = pyNorm * H + Math.sin(t * m.bobSpd + m.ph) * m.bobAmp;
+
+      ctx.save();
+      ctx.globalAlpha = Math.min(0.88, alpha);
+      ctx.translate(cx, cy);
+      ctx.rotate(m.rot + (isTransitioning ? m.rotSpd * partEase * 2.4 : Math.sin(t * 0.25 + m.ph) * 0.03));
+      ctx.drawImage(m.sprite, -mw / 2, -mh / 2, mw, mh);
+      ctx.restore();
+    }
+
+    // 4. Shimmering Cold Frost Motes Swirling with the Parting Mist
+    if (isTransitioning && revealFade > 0.02) {
+      for (let i = 0; i < frostMotes.length; i++) {
+        const mt = frostMotes[i];
+        mt.x += mt.vx * dt * (0.6 + partEase * 1.4);
+        mt.y += mt.vy * dt * (0.6 + partEase * 1.4);
+        const mx = mt.x * W;
+        const my = mt.y * H;
+        const tw = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(t * mt.tw + mt.ph));
+        const a = 0.65 * tw * revealFade;
+        const r = mt.r * 3.2;
+
+        const mg = ctx.createRadialGradient(mx, my, 0.2, mx, my, r);
+        mg.addColorStop(0, 'rgba(240, 249, 255, ' + a.toFixed(3) + ')');
+        mg.addColorStop(0.5, 'rgba(186, 230, 253, ' + (a * 0.42).toFixed(3) + ')');
+        mg.addColorStop(1, 'rgba(186, 230, 253, 0)');
+        ctx.fillStyle = mg;
+        ctx.beginPath();
+        ctx.arc(mx, my, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // Complete transition cleanly with zero residual overhead
+    if (isTransitioning && p >= 1) {
+      isTransitioning = false;
+      rootEl.classList.add('rj-hidden');
+      stopLoop();
+      updateControlsVisibility();
+    }
+  }
+
+  function startLoop() {
+    if (rafId) return;
+    lastTs = performance.now();
+    rafId = requestAnimationFrame(renderMistFrame);
+  }
+
+  // ============================================================================
+  // SOFT CINEMATIC AMBIENT PAD (WEB AUDIO API — ZERO EXTERNAL LINK FAILURES)
+  // ============================================================================
+  function startAmbientMusic() {
     try {
-      const rate = sampleRate || 24000;
-      const bin = global.atob(base64PCM);
-      const raw = new Uint8Array(bin.length);
-      for (let i = 0; i < bin.length; i++) raw[i] = bin.charCodeAt(i);
-      const off = (raw.length > 44 && raw[0] === 0x52 && raw[1] === 0x49 && raw[2] === 0x46 && raw[3] === 0x46) ? 44 : 0;
-      const pcmLen = Math.max(0, raw.length - off);
-      const buf = new ArrayBuffer(44 + pcmLen);
-      const v = new DataView(buf);
-      const ws = function (o, s) { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
-      ws(0, 'RIFF'); v.setUint32(4, 36 + pcmLen, true); ws(8, 'WAVE'); ws(12, 'fmt ');
-      v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
-      v.setUint32(24, rate, true); v.setUint32(28, rate * 2, true);
-      v.setUint16(32, 2, true); v.setUint16(34, 16, true); ws(36, 'data'); v.setUint32(40, pcmLen, true);
-      new Uint8Array(buf, 44).set(raw.subarray(off));
-      return new Blob([buf], { type: 'audio/wav' });
+      const AC = global.AudioContext || global.webkitAudioContext;
+      if (!AC) return;
+      if (!musicCtx) {
+        musicCtx = new AC();
+        musicMasterGain = musicCtx.createGain();
+        musicMasterGain.gain.setValueAtTime(0.0001, musicCtx.currentTime);
+        musicMasterGain.connect(musicCtx.destination);
+
+        // Warm cinematic Dmaj9 / ethereal sanctuary chord
+        const freqs = [146.83, 220.0, 277.18, 329.63, 440.0];
+        const filter = musicCtx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(720, musicCtx.currentTime);
+        filter.connect(musicMasterGain);
+
+        musicOscs = freqs.map(function (f, idx) {
+          const osc = musicCtx.createOscillator();
+          const g = musicCtx.createGain();
+          osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
+          osc.frequency.setValueAtTime(f, musicCtx.currentTime);
+          osc.detune.setValueAtTime((idx - 2) * 3.5, musicCtx.currentTime);
+          g.gain.setValueAtTime(idx === 0 ? 0.16 : 0.085, musicCtx.currentTime);
+          osc.connect(g);
+          g.connect(filter);
+          osc.start();
+          return osc;
+        });
+      }
+      if (musicCtx.state === 'suspended') musicCtx.resume().catch(function () {});
+      const now = musicCtx.currentTime;
+      musicMasterGain.gain.cancelScheduledValues(now);
+      musicMasterGain.gain.setValueAtTime(Math.max(0.0001, musicMasterGain.gain.value), now);
+      musicMasterGain.gain.linearRampToValueAtTime(0.11, now + 1.4);
+      musicEnabled = true;
+      updateControlLabels();
+    } catch (_) {}
+  }
+
+  function stopAmbientMusic() {
+    musicEnabled = false;
+    try {
+      if (musicCtx && musicMasterGain) {
+        const now = musicCtx.currentTime;
+        musicMasterGain.gain.cancelScheduledValues(now);
+        musicMasterGain.gain.setValueAtTime(musicMasterGain.gain.value, now);
+        musicMasterGain.gain.linearRampToValueAtTime(0.0001, now + 0.55);
+      }
+    } catch (_) {}
+    updateControlLabels();
+  }
+
+  // ============================================================================
+  // STUDIO 24kHz AI HOST NARRATION (STRICTLY NO BROWSER SPEECH SYNTHESIS!)
+  // ============================================================================
+  function stopHostNarration() {
+    hostSessionId += 1;
+    hostPlaying = false;
+    if (hostAudioEl) {
+      try {
+        hostAudioEl.onended = null;
+        hostAudioEl.onerror = null;
+        hostAudioEl.pause();
+      } catch (_) {}
+    }
+    if (hostBlobUrl) {
+      try { URL.revokeObjectURL(hostBlobUrl); } catch (_) {}
+      hostBlobUrl = null;
+    }
+    updateControlLabels();
+  }
+
+  async function playHostSegment(idx) {
+    const core = global.RJCLOUD_CORE || global.RJLearningCore || {};
+    if (typeof core.fetchStudioGuideBlob !== 'function') {
+      stopHostNarration();
+      return;
+    }
+    if (idx >= HOST_SEGMENTS.length) {
+      stopHostNarration();
+      return;
+    }
+
+    const sid = hostSessionId;
+    hostSegmentIdx = idx;
+    hostPlaying = true;
+    updateControlLabels();
+
+    const seg = HOST_SEGMENTS[idx];
+    try {
+      const blob = await core.fetchStudioGuideBlob(seg.text, currentGasUrl, seg.voice);
+      if (hostSessionId !== sid || !isLandingNow) return;
+      if (!blob || blob.size <= 44) {
+        stopHostNarration();
+        return;
+      }
+
+      if (!hostAudioEl) {
+        hostAudioEl = new Audio();
+        hostAudioEl.playsInline = true;
+        hostAudioEl.setAttribute('playsinline', '');
+      }
+      if (hostBlobUrl) {
+        try { URL.revokeObjectURL(hostBlobUrl); } catch (_) {}
+      }
+      hostBlobUrl = URL.createObjectURL(blob);
+
+      await new Promise(function (resolve) {
+        hostAudioEl.muted = false;
+        hostAudioEl.src = hostBlobUrl;
+        hostAudioEl.onended = function () { resolve(true); };
+        hostAudioEl.onerror = function () { resolve(false); };
+        try { hostAudioEl.load(); } catch (_) {}
+        const p = hostAudioEl.play();
+        if (p && typeof p.catch === 'function') p.catch(function () { resolve(false); });
+      });
+
+      if (hostSessionId === sid && isLandingNow && hostPlaying) {
+        playHostSegment(idx + 1);
+      }
     } catch (_) {
-      return null;
+      if (hostSessionId === sid) stopHostNarration();
     }
   }
 
-  // ==========================================================================
-  // 4. MUSIC ENGINE: YOUTUBE ("Great" — TTwfAUzEHrM) + EPIC SYNTH FALLBACK
-  // ==========================================================================
-  const MusicEngine = {
-    ytPlayer: null,
-    ytReady: false,
-    ytPlaying: false,
-    ytMuted: false,
-    ytCurrentVol: 0,
-    ytRampTimer: null,
-    apiRequested: false,
-    pendingPlay: false,
-    desiredTargetVol: 75,
+  function startHostNarration() {
+    stopHostNarration();
+    const sid = ++hostSessionId;
+    if (sid) playHostSegment(0);
+  }
 
-    synthCtx: null,
-    synthGain: null,
-    synthNodes: [],
-    synthTimer: null,
-    synthActive: false,
+  function updateControlLabels() {
+    if (hostBtnEl) {
+      const seg = HOST_SEGMENTS[hostSegmentIdx] || HOST_SEGMENTS[0];
+      hostBtnEl.classList.toggle('rj-active', hostPlaying);
+      hostBtnEl.textContent = hostPlaying
+        ? '❚❚ พิธีกร' + seg.role + ' AI (' + (hostSegmentIdx + 1) + '/' + HOST_SEGMENTS.length + ') • หยุด'
+        : '▶ พิธีกร AI';
+    }
+    if (musicBtnEl) {
+      musicBtnEl.classList.toggle('rj-active', musicEnabled);
+      musicBtnEl.textContent = musicEnabled ? '♪ เพลง: เปิด' : '♪ เพลง: ปิด';
+    }
+  }
 
-    ensureYtMount: function () {
-      if (document.getElementById('rjkn-yt-host')) return;
-      const box = document.createElement('div');
-      box.id = 'rjkn-yt-host';
-      box.style.cssText = 'position:fixed;width:2px;height:2px;bottom:0;left:0;opacity:0.001;pointer-events:none;overflow:hidden;z-index:-1;';
-      const inner = document.createElement('div');
-      inner.id = 'rjkn-yt-player';
-      box.appendChild(inner);
-      document.body.appendChild(box);
-    },
+  function updateControlsVisibility() {
+    if (!controlsEl) return;
+    const show = isLandingNow && hasDismissedGate && !isTransitioning;
+    controlsEl.classList.toggle('rj-show', show);
+    updateControlLabels();
+  }
 
-    loadYouTubeApi: function () {
-      if (this.apiRequested) return;
-      this.apiRequested = true;
-      this.ensureYtMount();
+  // ============================================================================
+  // DOM CREATION & WELCOME BUTTON TRIGGER
+  // ============================================================================
+  function ensureDom() {
+    if (rootEl) return;
+    injectStyles();
 
-      const self = this;
-      const createPlayer = function () {
-        if (self.ytPlayer || !global.YT || !global.YT.Player) return;
-        try {
-          self.ytPlayer = new global.YT.Player('rjkn-yt-player', {
-            height: '200',
-            width: '200',
-            videoId: YOUTUBE_VIDEO_ID,
-            playerVars: {
-              autoplay: 0,
-              controls: 0,
-              disablekb: 1,
-              fs: 0,
-              iv_load_policy: 3,
-              loop: 1,
-              modestbranding: 1,
-              playsinline: 1,
-              playlist: YOUTUBE_VIDEO_ID,
-              rel: 0
-            },
-            events: {
-              onReady: function () {
-                self.ytReady = true;
-                try {
-                  self.ytPlayer.setVolume(0);
-                  if (self.pendingPlay) {
-                    self.ytPlayer.unMute();
-                    self.ytPlayer.playVideo();
-                  }
-                } catch (_) {}
-              },
-              onStateChange: function (ev) {
-                if (global.YT && ev.data === global.YT.PlayerState.PLAYING) {
-                  self.ytPlaying = true;
-                  self.fadeOutSynth(900);
-                  if (!self.ytMuted) {
-                    self.rampYouTubeVolume(self.desiredTargetVol, 900);
-                  }
-                } else if (global.YT && ev.data === global.YT.PlayerState.ENDED) {
-                  try {
-                    self.ytPlayer.seekTo(0);
-                    self.ytPlayer.playVideo();
-                  } catch (_) {}
-                }
-              },
-              onError: function () {
-                self.ytPlaying = false;
-              }
-            }
-          });
-        } catch (_) {}
-      };
+    rootEl = document.createElement('div');
+    rootEl.id = 'rj-keynote-gate';
+    rootEl.className = 'rj-hidden';
+    rootEl.innerHTML = [
+      '<canvas id="rj-keynote-canvas" aria-hidden="true"></canvas>',
+      '<div id="rj-keynote-card" role="dialog" aria-modal="true" aria-label="BETA rjcloud.organ 2.0 เปิดใช้งาน 2027">',
+      '  <div class="rj-beta-pill"><span class="rj-beta-dot"></span><span>BETA</span></div>',
+      '  <h1 class="rj-gate-title">rjcloud.organ <span class="rj-ver">2.0</span></h1>',
+      '  <p class="rj-gate-sub">เปิดใช้งาน 2027</p>',
+      '  <button id="rj-welcome-btn" type="button">',
+      '    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M4 2.5v11l9.5-5.5L4 2.5z"/></svg>',
+      '    <span>Welcome</span>',
+      '  </button>',
+      '</div>'
+    ].join('');
 
-      if (global.YT && global.YT.Player) {
-        createPlayer();
-        return;
-      }
+    document.body.appendChild(rootEl);
 
-      const prevReady = global.onYouTubeIframeAPIReady;
-      global.onYouTubeIframeAPIReady = function () {
-        if (typeof prevReady === 'function') {
-          try { prevReady(); } catch (_) {}
+    canvasEl = document.getElementById('rj-keynote-canvas');
+    cardEl = document.getElementById('rj-keynote-card');
+    ctx = canvasEl ? canvasEl.getContext('2d') : null;
+
+    const welcomeBtn = document.getElementById('rj-welcome-btn');
+    if (welcomeBtn) {
+      welcomeBtn.addEventListener('click', function () {
+        if (isTransitioning) return;
+        hasDismissedGate = true;
+        isTransitioning = true;
+        revealStartTs = performance.now();
+
+        // Freeze current drift positions as smooth starting coordinates for outward mist parting
+        for (let i = 0; i < mistBanks.length; i++) {
+          mistBanks[i].baseX = mistBanks[i].x;
+          mistBanks[i].baseY = mistBanks[i].y;
         }
-        createPlayer();
-      };
 
-      const tag = document.createElement('script');
-      tag.src = 'https://www.youtube.com/iframe_api';
-      tag.async = true;
-      document.head.appendChild(tag);
-    },
+        if (cardEl) cardEl.classList.add('rj-dissolving');
+        rootEl.style.pointerEvents = 'none';
 
-    rampYouTubeVolume: function (targetVol, durationMs) {
-      const self = this;
-      const clamped = Math.max(0, Math.min(100, Math.round(targetVol)));
-      if (this.ytRampTimer) {
-        clearInterval(this.ytRampTimer);
-        this.ytRampTimer = null;
-      }
-      if (!this.ytReady || !this.ytPlayer || typeof this.ytPlayer.setVolume !== 'function') return;
-
-      const startVol = this.ytCurrentVol;
-      const steps = Math.max(1, Math.round((durationMs || 600) / 40));
-      let step = 0;
-      this.ytRampTimer = setInterval(function () {
-        step += 1;
-        const t = Math.min(1, step / steps);
-        const eased = t * (2 - t);
-        const nextVol = Math.round(startVol + (clamped - startVol) * eased);
-        self.ytCurrentVol = nextVol;
-        try {
-          self.ytPlayer.setVolume(self.ytMuted ? 0 : nextVol);
-        } catch (_) {}
-        if (step >= steps) {
-          clearInterval(self.ytRampTimer);
-          self.ytRampTimer = null;
-        }
-      }, 40);
-    },
-
-    startSynthFallback: function (gainLevel) {
-      if (this.synthActive) return;
-      try {
-        const AudioCtx = global.AudioContext || global.webkitAudioContext;
-        if (!AudioCtx) return;
-        if (!this.synthCtx) this.synthCtx = new AudioCtx();
-        if (this.synthCtx.state === 'suspended') this.synthCtx.resume().catch(function () {});
-
-        const ctx = this.synthCtx;
-        const master = ctx.createGain();
-        master.gain.setValueAtTime(0.0001, ctx.currentTime);
-        master.gain.linearRampToValueAtTime(this.ytMuted ? 0.0001 : (gainLevel || 0.06), ctx.currentTime + 1.2);
-        master.connect(ctx.destination);
-        this.synthGain = master;
-        this.synthActive = true;
-
-        const chords = [
-          [146.83, 220.0, 261.63, 329.63],
-          [116.54, 220.0, 293.66, 349.23],
-          [174.61, 261.63, 329.63, 440.0],
-          [130.81, 261.63, 349.23, 392.0]
-        ];
-        let chordIdx = 0;
-        const self = this;
-
-        const triggerChord = function () {
-          if (!self.synthActive || !self.synthCtx || !self.synthGain) return;
-          const now = ctx.currentTime;
-          const notes = chords[chordIdx % chords.length];
-          chordIdx += 1;
-
-          notes.forEach(function (freq, idx) {
-            const osc = ctx.createOscillator();
-            const g = ctx.createGain();
-            osc.type = idx === 0 ? 'triangle' : 'sine';
-            osc.frequency.setValueAtTime(freq, now);
-            g.gain.setValueAtTime(0.0001, now);
-            g.gain.linearRampToValueAtTime(idx === 0 ? 0.24 : 0.14, now + 0.9);
-            g.gain.linearRampToValueAtTime(0.0001, now + 4.4);
-            osc.connect(g);
-            g.connect(master);
-            osc.start(now);
-            osc.stop(now + 4.5);
-            self.synthNodes.push(osc);
-          });
-        };
-
-        triggerChord();
-        this.synthTimer = setInterval(triggerChord, 4000);
-      } catch (_) {}
-    },
-
-    setSynthLevel: function (level, durationSec) {
-      if (!this.synthActive || !this.synthCtx || !this.synthGain) return;
-      try {
-        const now = this.synthCtx.currentTime;
-        const target = this.ytMuted ? 0.0001 : Math.max(0.0001, level);
-        this.synthGain.gain.cancelScheduledValues(now);
-        this.synthGain.gain.setValueAtTime(Math.max(0.0001, this.synthGain.gain.value), now);
-        this.synthGain.gain.linearRampToValueAtTime(target, now + (durationSec || 0.7));
-      } catch (_) {}
-    },
-
-    fadeOutSynth: function (ms) {
-      if (!this.synthActive) return;
-      const self = this;
-      this.setSynthLevel(0.0001, (ms || 700) / 1000);
-      setTimeout(function () {
-        self.stopSynthImmediate();
-      }, (ms || 700) + 80);
-    },
-
-    stopSynthImmediate: function () {
-      this.synthActive = false;
-      if (this.synthTimer) {
-        clearInterval(this.synthTimer);
-        this.synthTimer = null;
-      }
-      this.synthNodes.forEach(function (n) {
-        try { n.stop(); } catch (_) {}
+        // Start gentle ambient pad + 24kHz studio AI host narration (if configured)
+        startAmbientMusic();
+        setTimeout(function () {
+          if (isLandingNow) startHostNarration();
+        }, 750);
       });
-      this.synthNodes = [];
-    },
-
-    start: function (initialVol) {
-      this.desiredTargetVol = typeof initialVol === 'number' ? initialVol : 74;
-      this.pendingPlay = true;
-      this.loadYouTubeApi();
-      if (!this.ytPlaying) {
-        this.startSynthFallback(0.065);
-      }
-      if (this.ytReady && this.ytPlayer) {
-        try {
-          this.ytPlayer.seekTo(0);
-          if (!this.ytMuted) this.ytPlayer.unMute();
-          this.ytPlayer.playVideo();
-          this.rampYouTubeVolume(this.desiredTargetVol, 1200);
-        } catch (_) {}
-      }
-    },
-
-    duckTo: function (volPercent, durationMs) {
-      this.desiredTargetVol = volPercent;
-      if (this.ytPlaying) {
-        this.rampYouTubeVolume(volPercent, durationMs || 650);
-      } else if (this.synthActive) {
-        this.setSynthLevel(0.018 + (volPercent / 100) * 0.06, (durationMs || 650) / 1000);
-      }
-    },
-
-    setMuted: function (muted) {
-      this.ytMuted = Boolean(muted);
-      if (this.ytReady && this.ytPlayer) {
-        try {
-          if (this.ytMuted) {
-            this.ytPlayer.mute();
-            this.ytPlayer.setVolume(0);
-          } else {
-            this.ytPlayer.unMute();
-            this.ytPlayer.setVolume(this.desiredTargetVol);
-          }
-        } catch (_) {}
-      }
-      if (this.synthActive) {
-        this.setSynthLevel(this.ytMuted ? 0.0001 : 0.035, 0.35);
-      }
-    },
-
-    stop: function () {
-      this.pendingPlay = false;
-      this.ytPlaying = false;
-      if (this.ytRampTimer) {
-        clearInterval(this.ytRampTimer);
-        this.ytRampTimer = null;
-      }
-      this.stopSynthImmediate();
-      if (this.ytReady && this.ytPlayer) {
-        try {
-          this.ytPlayer.pauseVideo();
-          this.ytPlayer.setVolume(0);
-        } catch (_) {}
-      }
-    }
-  };
-
-  // ==========================================================================
-  // 5. MAIN KEYNOTE CONTROLLER (STUDIO 24kHz AI VOICE • ZERO BROWSER SPEECH)
-  // ==========================================================================
-  const State = {
-    mounted: false,
-    isLanding: false,
-    appsScriptUrl: '',
-    sessionId: 0,
-    running: false,
-    voicePhase: 'idle', // idle | loading | speaking | music_only
-    statusLabel: '',
-    musicMuted: false,
-    sharedAudio: null,
-    activeBlobUrl: null,
-    activeControllers: new Set(),
-    els: {}
-  };
-
-  function unlockMobileAudio() {
-    try {
-      if (!State.sharedAudio) {
-        const a = new Audio();
-        a.playsInline = true;
-        a.setAttribute('playsinline', '');
-        a.preload = 'auto';
-        State.sharedAudio = a;
-      }
-      const a = State.sharedAudio;
-      a.muted = true;
-      a.src = SILENT_UNLOCK_WAV;
-      const p = a.play();
-      if (p && typeof p.then === 'function') {
-        p.then(function () {
-          try { a.pause(); a.currentTime = 0; } catch (_) {}
-          a.muted = false;
-        }).catch(function () { a.muted = false; });
-      } else {
-        a.muted = false;
-      }
-    } catch (_) {}
-  }
-
-  function stopVoiceOnly() {
-    State.sessionId += 1;
-    State.activeControllers.forEach(function (c) {
-      try { c.abort(); } catch (_) {}
-    });
-    State.activeControllers.clear();
-    if (State.sharedAudio) {
-      try {
-        State.sharedAudio.onended = null;
-        State.sharedAudio.onerror = null;
-        State.sharedAudio.pause();
-      } catch (_) {}
-    }
-    if (State.activeBlobUrl) {
-      try { URL.revokeObjectURL(State.activeBlobUrl); } catch (_) {}
-      State.activeBlobUrl = null;
-    }
-    // ตัดเสียงรบกวนจากเบราว์เซอร์ทิ้งเสมอ (ไม่ใช้เสียงหุ่นยนต์เบราว์เซอร์ 100%)
-    if ('speechSynthesis' in global) {
-      try { global.speechSynthesis.cancel(); } catch (_) {}
-    }
-    State.voicePhase = 'idle';
-    State.statusLabel = '';
-  }
-
-  function stopAll() {
-    stopVoiceOnly();
-    MusicEngine.stop();
-    State.running = false;
-    updateDockUi();
-  }
-
-  /**
-   * โหลดเสียงพิธีกร AI คุณภาพสตูดิโอ 24kHz PCM WAV (รอสูงสุด 45 วิ/รอบ + ลองใหม่อัตโนมัติ 2 รอบ + แคช IndexedDB)
-   * ไม่ลดทอนคุณภาพเสียงและไม่สลับไปใช้เสียงเบราว์เซอร์เด็ดขาด
-   */
-  async function fetchSegmentAudio(seg, appsScriptUrl, sid) {
-    const cacheKey = 'keynote_v5_' + seg.id + '_' + seg.voiceName;
-    const hit = await getCachedClip(cacheKey);
-    if (hit && hit.size > 0) return hit;
-    if (!appsScriptUrl || (typeof navigator !== 'undefined' && !navigator.onLine)) return null;
-
-    for (let attempt = 0; attempt < 2; attempt++) {
-      if (State.sessionId !== sid) return null;
-      const ctrl = new AbortController();
-      State.activeControllers.add(ctrl);
-      const tm = setTimeout(function () { ctrl.abort(); }, 45000);
-
-      try {
-        const rawRes = await fetch(appsScriptUrl, {
-          method: 'POST',
-          redirect: 'follow',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({
-            action: 'callGeminiTTS',
-            text: seg.speech,
-            voiceName: seg.voiceName,
-            languageCode: 'th-TH',
-            style: seg.style
-          }),
-          signal: ctrl.signal
-        });
-        clearTimeout(tm);
-        State.activeControllers.delete(ctrl);
-        if (State.sessionId !== sid) return null;
-
-        const txt = await rawRes.text();
-        const res = JSON.parse(txt || '{}');
-        if (res && res.status === 'success' && res.inlineData && res.inlineData.data) {
-          const rateMatch = String(res.inlineData.mimeType || '').match(/rate=(\d+)/);
-          const rate = rateMatch ? parseInt(rateMatch[1], 10) : 24000;
-          const blob = base64PcmToWavBlob(res.inlineData.data, rate);
-          if (blob && blob.size > 0) {
-            await setCachedClip(cacheKey, blob);
-            return blob;
-          }
-        }
-      } catch (_) {
-        clearTimeout(tm);
-        State.activeControllers.delete(ctrl);
-      }
-
-      if (attempt === 0 && State.sessionId === sid) {
-        await new Promise(function (r) { setTimeout(r, 1100); });
-      }
-    }
-    return null;
-  }
-
-  function playBlobOnSharedAudio(blob, sid) {
-    return new Promise(function (resolve) {
-      if (State.sessionId !== sid || !blob) return resolve(false);
-      if (State.activeBlobUrl) {
-        try { URL.revokeObjectURL(State.activeBlobUrl); } catch (_) {}
-        State.activeBlobUrl = null;
-      }
-      if (!State.sharedAudio) {
-        const a = new Audio();
-        a.playsInline = true;
-        a.setAttribute('playsinline', '');
-        State.sharedAudio = a;
-      }
-      const url = URL.createObjectURL(blob);
-      State.activeBlobUrl = url;
-      const a = State.sharedAudio;
-      a.muted = false;
-      a.src = url;
-      a.onended = function () { resolve(true); };
-      a.onerror = function () { resolve(false); };
-      try { a.load(); } catch (_) {}
-      const p = a.play();
-      if (p && typeof p.catch === 'function') {
-        p.catch(function () { resolve(false); });
-      }
-    });
-  }
-
-  // ==========================================================================
-  // 6. UI BUILDERS (AMBIENT LIGHT BAR, LAUNCH CURTAIN & FLOATING CONTROL DOCK)
-  // ==========================================================================
-  function ensureDomOverlays() {
-    injectKeynoteStyles();
-
-    const legacySub = document.getElementById('rjkn-subtitle');
-    if (legacySub && legacySub.parentNode) legacySub.parentNode.removeChild(legacySub);
-
-    // 0) Top Ambient Glow Bar แสดงสถานะรอเสียง AI พร้อมและขณะพิธีกร AI พูด (ไม่บังต้นไม้)
-    if (!State.els.ambientBar) {
-      const bar = document.createElement('div');
-      bar.id = 'rjkn-ambient-bar';
-      bar.className = 'rjkn-ambient-bar';
-      bar.setAttribute('aria-hidden', 'true');
-      document.body.appendChild(bar);
-      State.els.ambientBar = bar;
     }
 
-    // 1) One-Tap Keynote Launch Curtain (ป้าย "สู่มาตรฐานปี 2027")
-    if (!State.els.curtain) {
-      const curtain = document.createElement('div');
-      curtain.id = 'rjkn-launch-curtain';
-      curtain.className = 'rjkn-curtain is-hidden';
-      curtain.innerHTML = `
-        <div class="rjkn-curtain-card">
-          <div style="display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:9999px;background:rgba(255,255,255,0.08);border:1px solid rgba(186,230,253,0.32);font-size:12px;font-weight:700;letter-spacing:0.06em;color:#a7f3d0;margin-bottom:16px;">
-            <span style="width:7px;height:7px;border-radius:9999px;background:#6ee7b7;box-shadow:0 0 10px #6ee7b7;"></span>
-            สู่มาตรฐานปี 2027
-          </div>
-          <p style="margin:0 0 6px;font-size:12px;letter-spacing:0.14em;color:#7dd3fc;font-weight:600;text-transform:uppercase;">
-            Organ Transplantation Center of Rajavithi Hospital
-          </p>
-          <h2 style="margin:0 0 10px;font-size:28px;line-height:1.2;font-weight:800;background:linear-gradient(95deg,#ffffff 0%,#e0f2fe 50%,#fde68a 100%);-webkit-background-clip:text;background-clip:text;color:transparent;">
-            rjcloud.organ 2.0
-          </h2>
-          <p style="margin:0 0 22px;font-size:14px;line-height:1.65;color:#dbeafe;">
-            สัมผัสการเปิดตัวระบบ e-Learning แห่งอนาคต พร้อมเสียงพิธีกรคู่ AI คุณภาพสตูดิโอ (ชาย–หญิง) และดนตรีประกอบ Epic Cinematic
-          </p>
-          <button type="button" id="rjkn-btn-start-show" class="rjkn-launch-btn" style="letter-spacing:0.04em;">
-            <span style="font-size:15px;">▶</span>
-            <span>Welcome</span>
-          </button>
-          <div style="margin-top:16px;display:flex;flex-direction:column;align-items:center;gap:8px;">
-            <button type="button" id="rjkn-btn-skip-show" style="background:none;border:none;color:rgba(219,234,254,0.75);font-size:13px;cursor:pointer;text-decoration:underline;padding:6px 12px;">
-              เข้าสู่หน้าแรกแบบไม่เปิดเสียง →
-            </button>
-            <span style="font-size:10.5px;color:rgba(147,180,216,0.72);">${MUSIC_CREDIT}</span>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(curtain);
-      State.els.curtain = curtain;
+    // Subtle top-right audio control bar (only visible on landing after entering)
+    controlsEl = document.createElement('div');
+    controlsEl.id = 'rj-keynote-controls';
+    controlsEl.innerHTML = [
+      '<button id="rj-host-toggle" type="button" class="rj-ctrl-pill">▶ พิธีกร AI</button>',
+      '<button id="rj-music-toggle" type="button" class="rj-ctrl-pill">♪ เพลง: ปิด</button>'
+    ].join('');
+    document.body.appendChild(controlsEl);
 
-      curtain.querySelector('#rjkn-btn-start-show').onclick = function () {
-        markSessionSeen();
-        dissolveCurtainToClouds();
-        startExperience();
-      };
-      curtain.querySelector('#rjkn-btn-skip-show').onclick = function () {
-        markSessionSeen();
-        dissolveCurtainToClouds();
-      };
-    }
+    hostBtnEl = document.getElementById('rj-host-toggle');
+    musicBtnEl = document.getElementById('rj-music-toggle');
 
-    // 2) Top-Right Floating Control Dock
-    if (!State.els.dock) {
-      const dock = document.createElement('div');
-      dock.id = 'rjkn-control-dock';
-      dock.className = 'rjkn-dock';
-      dock.style.display = 'none';
-      dock.innerHTML = `
-        <button type="button" id="rjkn-dock-play" class="rjkn-pill" title="ฟังเสียงพิธีกรคู่ AI แนะนำระบบ rjcloud.organ 2.0">
-          <span id="rjkn-dock-icon">▶</span>
-          <span id="rjkn-dock-label">แนะนำระบบ AI</span>
-        </button>
-        <button type="button" id="rjkn-dock-mute" class="rjkn-pill" style="display:none;" title="เปิด/ปิดเสียงเพลงประกอบ">
-          <span id="rjkn-mute-label">🎵 เพลง: เปิด</span>
-        </button>
-      `;
-      document.body.appendChild(dock);
-      State.els.dock = dock;
-
-      dock.querySelector('#rjkn-dock-play').onclick = function () {
-        if (State.running) {
-          stopAll();
-        } else {
-          startExperience();
-        }
-      };
-      dock.querySelector('#rjkn-dock-mute').onclick = function () {
-        State.musicMuted = !State.musicMuted;
-        MusicEngine.setMuted(State.musicMuted);
-        updateDockUi();
-      };
-    }
-  }
-
-  function updateDockUi() {
-    if (State.els.ambientBar) {
-      const showAmbient = State.isLanding && State.running && (State.voicePhase === 'loading' || State.voicePhase === 'speaking');
-      State.els.ambientBar.classList.toggle('is-visible', showAmbient);
-    }
-
-    if (!State.els.dock) return;
-    State.els.dock.style.display = State.isLanding ? 'flex' : 'none';
-    const playBtn = State.els.dock.querySelector('#rjkn-dock-play');
-    const iconEl = State.els.dock.querySelector('#rjkn-dock-icon');
-    const labelEl = State.els.dock.querySelector('#rjkn-dock-label');
-    const muteBtn = State.els.dock.querySelector('#rjkn-dock-mute');
-    const muteLabel = State.els.dock.querySelector('#rjkn-mute-label');
-
-    playBtn.classList.remove('is-live', 'is-loading');
-
-    if (State.running) {
-      playBtn.classList.add(State.voicePhase === 'loading' ? 'is-loading' : 'is-live');
-      iconEl.innerHTML = '<span class="rjkn-eq"><span></span><span></span><span></span></span>';
-      labelEl.textContent = State.statusLabel || 'หยุดเสียงเปิดตัว';
-      muteBtn.style.display = 'inline-flex';
-      muteLabel.textContent = State.musicMuted ? '🔇 เพลง: ปิด' : '🎵 เพลง: เปิด';
-    } else {
-      iconEl.textContent = '▶';
-      labelEl.textContent = 'แนะนำระบบ AI';
-      muteBtn.style.display = 'none';
-    }
-  }
-
-  function showCurtain() {
-    if (!State.els.curtain) return;
-    if (State.dissolveTimer) {
-      clearTimeout(State.dissolveTimer);
-      State.dissolveTimer = null;
-    }
-    State.els.curtain.classList.remove('is-dissolving');
-    State.els.curtain.classList.remove('is-hidden');
-  }
-
-  function hideCurtain() {
-    if (!State.els.curtain) return;
-    if (State.dissolveTimer) {
-      clearTimeout(State.dissolveTimer);
-      State.dissolveTimer = null;
-    }
-    State.els.curtain.classList.remove('is-dissolving');
-    State.els.curtain.classList.add('is-hidden');
-  }
-
-  /**
-   * สร้างปุยเมฆและละอองหมอกสีขาว–ฟ้าออร่าจากตำแหน่งกรอบกระจกจริง (60fps GPU Canvas)
-   * เพื่อให้กรอบกระจกและข้อความสลายตัวกลายเป็นเมฆลอยกระจายออกไปอย่างนุ่มนวล
-   */
-  function spawnCloudMistDissolve(originRect) {
-    if (!originRect || originRect.width <= 0) return;
-    if (global.matchMedia && global.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    try {
-      const vw = Math.max(1, global.innerWidth);
-      const vh = Math.max(1, global.innerHeight);
-      const dpr = Math.min(global.devicePixelRatio || 1, 2);
-
-      const canvas = document.createElement('canvas');
-      canvas.className = 'rjkn-mist-canvas';
-      canvas.width = Math.round(vw * dpr);
-      canvas.height = Math.round(vh * dpr);
-      document.body.appendChild(canvas);
-
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
-        return;
-      }
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-      // เตรียม Sprite ปุยเมฆนุ่ม 3 โทนสี (ขาวมุก / หมอกฟ้าอ่อน / ออร่ามิ้นต์) สำหรับวาดลื่น 60fps
-      const palettes = [
-        ['rgba(255,255,255,0.68)', 'rgba(224,242,254,0.34)', 'rgba(186,230,253,0.1)', 'rgba(186,230,253,0)'],
-        ['rgba(240,249,255,0.62)', 'rgba(186,230,253,0.3)', 'rgba(125,211,252,0.08)', 'rgba(56,189,248,0)'],
-        ['rgba(236,253,245,0.52)', 'rgba(167,243,208,0.24)', 'rgba(125,211,252,0.07)', 'rgba(56,189,248,0)']
-      ];
-      const sprites = palettes.map(function (stops) {
-        const sc = document.createElement('canvas');
-        sc.width = 160;
-        sc.height = 160;
-        const sctx = sc.getContext('2d');
-        const g = sctx.createRadialGradient(80, 80, 4, 80, 80, 78);
-        g.addColorStop(0, stops[0]);
-        g.addColorStop(0.36, stops[1]);
-        g.addColorStop(0.72, stops[2]);
-        g.addColorStop(1, stops[3]);
-        sctx.fillStyle = g;
-        sctx.fillRect(0, 0, 160, 160);
-        return sc;
+    if (hostBtnEl) {
+      hostBtnEl.addEventListener('click', function () {
+        if (hostPlaying) stopHostNarration();
+        else startHostNarration();
       });
-
-      const cx = originRect.left + originRect.width * 0.5;
-      const cy = originRect.top + originRect.height * 0.5;
-      const puffCount = vw < 640 ? 34 : 46;
-      const puffs = [];
-
-      for (let i = 0; i < puffCount; i++) {
-        // กระจายจุดกำเนิดทั้งตามขอบกรอบกระจกและบริเวณข้อความตรงกลาง
-        const onEdge = i < Math.floor(puffCount * 0.48);
-        let px, py;
-        if (onEdge) {
-          const side = i % 4;
-          const u = Math.random();
-          if (side === 0) { px = originRect.left + u * originRect.width; py = originRect.top + (Math.random() - 0.5) * 18; }
-          else if (side === 1) { px = originRect.left + u * originRect.width; py = originRect.bottom + (Math.random() - 0.5) * 18; }
-          else if (side === 2) { px = originRect.left + (Math.random() - 0.5) * 18; py = originRect.top + u * originRect.height; }
-          else { px = originRect.right + (Math.random() - 0.5) * 18; py = originRect.top + u * originRect.height; }
-        } else {
-          px = originRect.left + (0.12 + Math.random() * 0.76) * originRect.width;
-          py = originRect.top + (0.14 + Math.random() * 0.72) * originRect.height;
-        }
-
-        const dx = px - cx;
-        const dy = py - cy;
-        const dist = Math.max(18, Math.hypot(dx, dy));
-        const outSpeed = 28 + Math.random() * 58;
-        puffs.push({
-          x: px,
-          y: py,
-          vx: (dx / dist) * outSpeed + (Math.random() - 0.5) * 28,
-          vy: (dy / dist) * (outSpeed * 0.55) - (22 + Math.random() * 44), // ลอยขึ้นด้านบนอย่างอ่อนโยนแบบปุยเมฆ
-          baseR: 46 + Math.random() * 72,
-          grow: 1.55 + Math.random() * 0.95,
-          delay: Math.random() * 0.22,
-          life: 1.45 + Math.random() * 0.65,
-          maxAlpha: 0.42 + Math.random() * 0.34,
-          swirlSeed: Math.random() * Math.PI * 2,
-          sprite: sprites[i % sprites.length]
-        });
-      }
-
-      const startTs = performance.now();
-      const totalDurationMs = 2250;
-
-      function frame(now) {
-        const elapsed = (now - startTs) / 1000;
-        ctx.clearRect(0, 0, vw, vh);
-        ctx.globalCompositeOperation = 'screen';
-
-        let anyAlive = false;
-        for (let i = 0; i < puffs.length; i++) {
-          const p = puffs[i];
-          const localT = elapsed - p.delay;
-          if (localT < 0) { anyAlive = true; continue; }
-          const prog = localT / p.life;
-          if (prog >= 1) continue;
-          anyAlive = true;
-
-          // Ease-out ธรรมชาติของหมอกที่ค่อยๆ ฟุ้งขึ้นแล้วจางหายไปในอากาศ
-          const ease = 1 - Math.pow(1 - prog, 2.4);
-          const fadeIn = Math.min(1, prog / 0.22);
-          const fadeOut = 1 - Math.pow(Math.max(0, (prog - 0.24) / 0.76), 1.65);
-          const alpha = Math.max(0, p.maxAlpha * fadeIn * fadeOut);
-          const radius = p.baseR * (0.72 + ease * p.grow);
-          const driftX = Math.sin(elapsed * 1.4 + p.swirlSeed) * 16 * prog;
-          const x = p.x + p.vx * ease * 1.45 + driftX;
-          const y = p.y + p.vy * ease * 1.35;
-
-          ctx.globalAlpha = alpha;
-          ctx.drawImage(p.sprite, x - radius, y - radius, radius * 2, radius * 2);
-        }
-
-        if (anyAlive && (now - startTs) < totalDurationMs) {
-          requestAnimationFrame(frame);
-        } else if (canvas.parentNode) {
-          canvas.parentNode.removeChild(canvas);
-        }
-      }
-
-      requestAnimationFrame(frame);
-    } catch (_) {}
-  }
-
-  function dissolveCurtainToClouds() {
-    if (!State.els.curtain) return;
-    if (State.els.curtain.classList.contains('is-dissolving')) return;
-
-    const card = State.els.curtain.querySelector('.rjkn-curtain-card');
-    if (card) {
-      spawnCloudMistDissolve(card.getBoundingClientRect());
+    }
+    if (musicBtnEl) {
+      musicBtnEl.addEventListener('click', function () {
+        if (musicEnabled) stopAmbientMusic();
+        else startAmbientMusic();
+      });
     }
 
-    State.els.curtain.classList.add('is-dissolving');
-    if (State.dissolveTimer) clearTimeout(State.dissolveTimer);
-    State.dissolveTimer = setTimeout(function () {
-      if (State.els.curtain) {
-        State.els.curtain.classList.add('is-hidden');
-        State.els.curtain.classList.remove('is-dissolving');
-      }
-      State.dissolveTimer = null;
-    }, 1680);
+    resizeCanvas();
+    seedMistParticles();
+    global.addEventListener('resize', resizeCanvas);
   }
 
-  function triggerLaunchFlash() {
-    const flash = document.createElement('div');
-    flash.className = 'rjkn-flash';
-    document.body.appendChild(flash);
-    setTimeout(function () {
-      if (flash.parentNode) flash.parentNode.removeChild(flash);
-    }, 1250);
+  function showGate() {
+    ensureDom();
+    if (!rootEl) return;
+    isTransitioning = false;
+    rootEl.style.pointerEvents = 'auto';
+    rootEl.classList.remove('rj-hidden');
+    if (cardEl) cardEl.classList.remove('rj-dissolving');
+    resizeCanvas();
+    seedMistParticles();
+    startLoop();
   }
 
-  function markSessionSeen() {
-    try { sessionStorage.setItem(SESSION_DISMISS_KEY, '1'); } catch (_) {}
+  function hideGateImmediately() {
+    if (!rootEl) return;
+    isTransitioning = false;
+    rootEl.classList.add('rj-hidden');
+    stopLoop();
   }
 
-  function hasSeenInSession() {
-    try { return sessionStorage.getItem(SESSION_DISMISS_KEY) === '1'; } catch (_) { return false; }
-  }
+  // Public API called by index.html
+  const api = {
+    sync: function (opts) {
+      const cfg = opts || {};
+      isLandingNow = Boolean(cfg.isLanding);
+      if (cfg.appsScriptUrl) currentGasUrl = String(cfg.appsScriptUrl);
 
-  // ==========================================================================
-  // 7. DUAL-HOST KEYNOTE SHOW RUNNER (LOOKAHEAD PREFETCH + ZERO BROWSER VOICE)
-  // ==========================================================================
-  async function startExperience() {
-    ensureDomOverlays();
-    unlockMobileAudio();
-    stopVoiceOnly();
+      ensureDom();
 
-    const sid = State.sessionId;
-    State.running = true;
-    State.musicMuted = false;
-    State.voicePhase = 'loading';
-    State.statusLabel = 'กำลังรอเสียง AI สตูดิโอ (1/' + DUAL_HOST_SCRIPT.length + ')...';
-    updateDockUi();
-    triggerLaunchFlash();
-
-    MusicEngine.setMuted(false);
-    MusicEngine.start(74);
-
-    // เริ่มโหลดเสียงช่วงที่ 1 ล่วงหน้าทันทีระหว่างที่เพลงบรรเลงอินโทร 2.2 วินาที
-    const firstClipPromise = fetchSegmentAudio(DUAL_HOST_SCRIPT[0], State.appsScriptUrl, sid);
-    await new Promise(function (r) { setTimeout(r, 2200); });
-    if (State.sessionId !== sid || !State.running) return;
-
-    let nextPromise = firstClipPromise;
-    let ducked = false;
-
-    for (let i = 0; i < DUAL_HOST_SCRIPT.length; i++) {
-      if (State.sessionId !== sid || !State.running) return;
-      const seg = DUAL_HOST_SCRIPT[i];
-      const stepTag = (i + 1) + '/' + DUAL_HOST_SCRIPT.length;
-
-      State.voicePhase = 'loading';
-      State.statusLabel = 'รอเสียง AI ' + seg.badge + ' (' + stepTag + ')...';
-      updateDockUi();
-
-      const blob = await nextPromise;
-      if (State.sessionId !== sid || !State.running) return;
-
-      // Lookahead Prefetching: โหลดช่วงถัดไปล่วงหน้าทันทีขณะที่ช่วงนี้กำลังเล่น (รักษาคุณภาพ 24kHz เต็ม 100%)
-      if (i + 1 < DUAL_HOST_SCRIPT.length) {
-        nextPromise = fetchSegmentAudio(DUAL_HOST_SCRIPT[i + 1], State.appsScriptUrl, sid);
-      } else {
-        nextPromise = null;
-      }
-
-      // ไม่สลับไปใช้เสียงหุ่นยนต์จากเบราว์เซอร์เด็ดขาด หากช่วงใดโหลดไม่สำเร็จให้ข้ามอย่างนุ่มนวล
-      if (!blob || blob.size === 0) {
-        continue;
-      }
-
-      if (!ducked) {
-        ducked = true;
-        MusicEngine.duckTo(19, 750);
-      } else if (i === DUAL_HOST_SCRIPT.length - 2) {
-        MusicEngine.duckTo(28, 800);
-      }
-
-      State.voicePhase = 'speaking';
-      State.statusLabel = seg.badge + ' AI (' + stepTag + ') • หยุด';
-      updateDockUi();
-
-      await playBlobOnSharedAudio(blob, sid);
-
-      if (State.sessionId !== sid || !State.running) return;
-      if (i + 1 < DUAL_HOST_SCRIPT.length) {
-        await new Promise(function (r) { setTimeout(r, 240); });
-      }
-    }
-
-    if (State.sessionId === sid && State.running) {
-      State.voicePhase = 'music_only';
-      State.statusLabel = 'หยุดเสียงเปิดตัว';
-      updateDockUi();
-      MusicEngine.duckTo(65, 900);
-      setTimeout(function () {
-        if (State.sessionId === sid && State.running) {
-          MusicEngine.duckTo(34, 1800);
-        }
-      }, 4200);
-    }
-  }
-
-  // ==========================================================================
-  // 8. PUBLIC API FOR index.html
-  // ==========================================================================
-  global.RJCLOUD_KEYNOTE = {
-    sync: function (options) {
-      const opts = options || {};
-      State.appsScriptUrl = opts.appsScriptUrl || State.appsScriptUrl || (global.RJCLOUD_CONFIG && global.RJCLOUD_CONFIG.appsScriptUrl) || '';
-      const nowLanding = Boolean(opts.isLanding);
-      const isAdminPreview = Boolean(opts.isAdminPreview);
-
-      ensureDomOverlays();
-      State.isLanding = nowLanding;
-
-      if (!nowLanding) {
-        hideCurtain();
-        if (State.running) stopAll();
-        updateDockUi();
+      if (!isLandingNow) {
+        hideGateImmediately();
+        stopHostNarration();
+        stopAmbientMusic();
+        updateControlsVisibility();
         return;
       }
 
-      MusicEngine.loadYouTubeApi();
-      updateDockUi();
-
-      if (!State.mounted) {
-        State.mounted = true;
-        if (!isAdminPreview && !hasSeenInSession()) {
-          showCurtain();
-        }
+      if (!hasDismissedGate) {
+        showGate();
+      } else {
+        updateControlsVisibility();
       }
     },
-
-    startExperience: startExperience,
-    stopAll: stopAll,
-    openCurtain: function () {
-      ensureDomOverlays();
-      showCurtain();
+    open: function () {
+      hasDismissedGate = false;
+      isLandingNow = true;
+      showGate();
+      updateControlsVisibility();
+    },
+    stopAudio: function () {
+      stopHostNarration();
+      stopAmbientMusic();
     }
   };
-})(window);
+
+  global.RJCLOUD_KEYNOTE = api;
+
+  // Signal index.html immediately so there is zero race condition
+  try {
+    global.dispatchEvent(new Event('rjcloud-keynote-ready'));
+  } catch (_) {}
+})(typeof window !== 'undefined' ? window : globalThis);
