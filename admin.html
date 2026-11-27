@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#020612">
+    <meta name="theme-color" content="#1c222b">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Admin Mission Control — rjcloud.organ 2.0</title>
+    <title>Admin Mission Control — organ cloud 2.0</title>
 
     <!-- ซิงค์โหมดมืด/สว่างทันที + โหลดไฟล์โมดูลกลางเฉพาะบนโดเมนจริง (Zero-Build GitHub Pages) -->
     <script>
@@ -16,7 +16,7 @@
           const mode = saved === 'light' ? 'light' : 'dark';
           document.documentElement.setAttribute('data-theme', mode);
           const meta = document.querySelector('meta[name="theme-color"]');
-          if (meta) meta.setAttribute('content', mode === 'dark' ? '#020612' : '#edf6fd');
+          if (meta) meta.setAttribute('content', mode === 'dark' ? '#1c222b' : '#e6ebf0');
         } catch (_) {}
 
         try {
@@ -31,7 +31,7 @@
             manifest.href = './manifest.json';
             document.head.appendChild(manifest);
 
-            ['./data.js', './learning-core.js?v=202705', './cert-engine.js'].forEach(function (src) {
+            ['./data.js', './learning-core.js?v=202711', './cert-engine.js'].forEach(function (src) {
               const s = document.createElement('script');
               s.src = src;
               s.async = false;
@@ -48,7 +48,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" onerror="console.warn('QR CDN unavailable')"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Prompt:wght@500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Prompt:wght@500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <script>
       if (window.tailwind) {
@@ -56,12 +56,12 @@
           theme: {
             extend: {
               fontFamily: {
-                display: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Anuphan', 'Prompt', 'sans-serif'],
-                sans: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'Anuphan', 'Sarabun', 'sans-serif'],
-                mono: ['SF Mono', 'ui-monospace', 'JetBrains Mono', 'monospace']
+                display: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Prompt', 'Anuphan', 'Inter', 'sans-serif'],
+                sans: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'Anuphan', 'Sarabun', 'Inter', 'sans-serif'],
+                mono: ['JetBrains Mono', 'SF Mono', 'ui-monospace', 'monospace']
               },
               colors: {
-                void: { 950: '#020612', 900: '#061229', 800: '#0c1f42', 700: '#153263' },
+                void: { 950: '#141920', 900: '#1c222b', 800: '#262f3d', 700: '#323d4f' },
                 aurora: { 200: '#a7f3d0', 300: '#6ee7b7', 400: '#34d399', 500: '#10b981', 600: '#059669' },
                 prism: { 200: '#bae6fd', 300: '#7dd3fc', 400: '#38bdf8', 500: '#0ea5e9', 600: '#0284c7' }
               }
@@ -72,65 +72,78 @@
     </script>
 
     <style>
-      :root, html[data-theme="dark"] {
-        --bg-page: #020612;
-        --text-main: #f8fafc;
-        --text-secondary: #dbeafe;
-        --text-muted: #93b4d8;
-        --glass-bg: linear-gradient(145deg, rgba(16, 40, 86, 0.56) 0%, rgba(5, 16, 40, 0.84) 100%);
-        --glass-border: rgba(186, 230, 253, 0.24);
-        --glass-shadow: 0 24px 54px -18px rgba(0, 8, 28, 0.78), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-        --header-bg: rgba(4, 12, 30, 0.86);
-        --dock-bg: rgba(4, 12, 30, 0.94);
-        --surface-soft: rgba(147, 197, 253, 0.08);
-        --surface-soft-hover: rgba(147, 197, 253, 0.16);
-        --surface-border: rgba(186, 230, 253, 0.18);
-        --input-bg: rgba(6, 18, 44, 0.86);
-        --input-border: rgba(147, 197, 253, 0.3);
-        --input-text: #f8fafc;
-        --thead-bg: rgba(15, 36, 78, 0.72);
-        --accent-text: #6ee7b7;
-        --accent-prism: #67e8f9;
-        --grid-line: rgba(147, 197, 253, 0.055);
-        --aura-1: rgba(22, 92, 196, 0.34);
-        --aura-2: rgba(56, 189, 248, 0.22);
-        --aura-3: rgba(249, 168, 212, 0.14);
-      }
-      html[data-theme="light"] {
-        --bg-page: #edf6fd;
-        --text-main: #0c1b33;
-        --text-secondary: #284366;
-        --text-muted: #5a7496;
-        --glass-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.92) 0%, rgba(232, 244, 253, 0.84) 100%);
-        --glass-border: rgba(255, 255, 255, 0.96);
-        --glass-shadow: 0 18px 42px -14px rgba(15, 58, 125, 0.14);
-        --header-bg: rgba(244, 250, 255, 0.9);
-        --dock-bg: rgba(244, 250, 255, 0.96);
-        --surface-soft: rgba(255, 255, 255, 0.78);
-        --surface-soft-hover: rgba(255, 255, 255, 0.98);
-        --surface-border: rgba(125, 175, 226, 0.32);
-        --input-bg: rgba(255, 255, 255, 0.95);
-        --input-border: rgba(148, 184, 222, 0.65);
-        --input-text: #0c1b33;
-        --thead-bg: rgba(219, 234, 254, 0.72);
-        --accent-text: #047857;
+      /* ============================================================================
+       * 1. NEUMORPHIC SOFT UI SYSTEM TOKENS — organ cloud 2.0 (LIGHT & DARK)
+       *    High-Contrast Dark Mode Typography (WCAG AA/AAA Verified)
+       * ============================================================================ */
+      :root, html[data-theme="light"] {
+        --bg-page: #e6ebf0;
+        --neu-bg: #e6ebf0;
+        --neu-light: #ffffff;
+        --neu-dark: #c5ced9;
+        --neu-border: rgba(255, 255, 255, 0.74);
+        --neu-border-soft: rgba(255, 255, 255, 0.50);
+        --text-main: #1f2b38;
+        --text-secondary: #47586b;
+        --text-muted: #64768a;
+        --accent-text: #247870;
         --accent-prism: #0369a1;
-        --grid-line: rgba(22, 92, 196, 0.04);
-        --aura-1: rgba(75, 152, 232, 0.24);
-        --aura-2: rgba(169, 214, 247, 0.36);
-        --aura-3: rgba(244, 114, 182, 0.12);
+        --neu-teal: #247870;
+        --neu-teal-soft: rgba(36, 120, 112, 0.22);
+        --neu-rose: #d9486b;
+        --neu-rose-soft: rgba(217, 72, 107, 0.20);
+        --neu-amber: #b45309;
+        --neu-divider: rgba(148, 163, 184, 0.28);
+        --header-bg: rgba(230, 235, 240, 0.94);
+        --dock-bg: rgba(230, 235, 240, 0.96);
+        --thead-bg: rgba(197, 206, 217, 0.34);
+        --shadow-raised-lg: 12px 12px 26px var(--neu-dark), -12px -12px 26px var(--neu-light);
+        --shadow-raised: 7px 7px 15px var(--neu-dark), -7px -7px 15px var(--neu-light);
+        --shadow-raised-sm: 4px 4px 9px var(--neu-dark), -4px -4px 9px var(--neu-light);
+        --shadow-pressed: inset 6px 6px 12px var(--neu-dark), inset -6px -6px 12px var(--neu-light);
+        --shadow-pressed-deep: inset 8px 8px 15px #b7c2ce, inset -7px -7px 14px #ffffff;
+        --shadow-pressed-sm: inset 4px 4px 8px var(--neu-dark), inset -4px -4px 8px var(--neu-light);
       }
 
-      * { box-sizing: border-box; }
+      html[data-theme="dark"] {
+        --bg-page: #1c222b;
+        --neu-bg: #1c222b;
+        --neu-light: #2d3746;
+        --neu-dark: #0e1218;
+        --neu-border: rgba(255, 255, 255, 0.085);
+        --neu-border-soft: rgba(255, 255, 255, 0.055);
+        --text-main: #f4f7fb;
+        --text-secondary: #c9d6e6;
+        --text-muted: #9eb0c7;
+        --accent-text: #5eead4;
+        --accent-prism: #7dd3fc;
+        --neu-teal: #5eead4;
+        --neu-teal-soft: rgba(94, 234, 212, 0.28);
+        --neu-rose: #fda4af;
+        --neu-rose-soft: rgba(253, 164, 175, 0.28);
+        --neu-amber: #fde68a;
+        --neu-divider: rgba(255, 255, 255, 0.08);
+        --header-bg: rgba(28, 34, 43, 0.94);
+        --dock-bg: rgba(28, 34, 43, 0.97);
+        --thead-bg: rgba(14, 18, 24, 0.50);
+        --shadow-raised-lg: 12px 12px 26px var(--neu-dark), -10px -10px 22px var(--neu-light);
+        --shadow-raised: 7px 7px 15px var(--neu-dark), -6px -6px 14px var(--neu-light);
+        --shadow-raised-sm: 4px 4px 9px var(--neu-dark), -4px -4px 9px var(--neu-light);
+        --shadow-pressed: inset 6px 6px 12px var(--neu-dark), inset -5px -5px 11px var(--neu-light);
+        --shadow-pressed-deep: inset 8px 8px 16px #090c10, inset -6px -6px 13px #313c4d;
+        --shadow-pressed-sm: inset 4px 4px 8px var(--neu-dark), inset -3px -3px 7px var(--neu-light);
+      }
+
+      *, *::before, *::after { box-sizing: border-box; }
       html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
       body {
         margin: 0;
-        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Anuphan', 'Sarabun', sans-serif;
-        background-color: var(--bg-page);
+        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Anuphan', 'Sarabun', 'Inter', sans-serif;
+        background-color: var(--neu-bg);
         color: var(--text-main);
         overflow-x: hidden;
         -webkit-font-smoothing: antialiased;
-        transition: background-color 0.28s ease, color 0.28s ease;
+        transition: background-color 0.32s ease, color 0.32s ease;
       }
 
       .touch-target { min-height: 44px; touch-action: manipulation; }
@@ -138,87 +151,157 @@
       .pb-dock-safe { padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px)); }
       @media (max-width: 768px) { input, select, textarea { font-size: 16px !important; } }
 
-      .spatial-aura {
-        position: fixed; inset: 0; z-index: 0; pointer-events: none;
-        background:
-          radial-gradient(ellipse 90% 55% at 50% 108%, var(--aura-1) 0%, transparent 66%),
-          radial-gradient(circle at 86% 14%, var(--aura-2) 0%, transparent 48%),
-          radial-gradient(circle at 14% 28%, var(--aura-3) 0%, transparent 46%);
-      }
-      .spatial-grid {
-        position: fixed; inset: 0; z-index: 0; pointer-events: none;
-        background-image: linear-gradient(to right, var(--grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
-        background-size: 44px 44px;
-        mask-image: radial-gradient(ellipse at center, black 42%, transparent 94%);
-      }
+      /* Clean matte Neumorphic canvas (suppress old dark-glass grid overlays) */
+      .spatial-aura, .spatial-grid { display: none; }
+
       .spatial-card {
-        background: var(--glass-bg);
-        backdrop-filter: blur(22px) saturate(165%);
-        -webkit-backdrop-filter: blur(22px) saturate(165%);
-        border: 1px solid var(--glass-border);
-        box-shadow: var(--glass-shadow);
+        background: var(--neu-bg);
+        border: 1px solid var(--neu-border);
+        box-shadow: var(--shadow-raised-lg);
+        transition: background-color 0.32s ease, box-shadow 0.25s ease, border-color 0.25s ease;
       }
       .spatial-header {
         background: var(--header-bg);
-        backdrop-filter: blur(22px) saturate(160%);
-        -webkit-backdrop-filter: blur(22px) saturate(160%);
-        border-bottom: 1px solid var(--surface-border);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border-bottom: 1px solid var(--neu-border-soft);
       }
       .spatial-dock {
         background: var(--dock-bg);
-        backdrop-filter: blur(24px) saturate(160%);
-        -webkit-backdrop-filter: blur(24px) saturate(160%);
-        border-top: 1px solid var(--surface-border);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-top: 1px solid var(--neu-border-soft);
       }
-      .spatial-soft { background: var(--surface-soft); border: 1px solid var(--surface-border); transition: background 0.18s ease, border-color 0.18s ease; }
-      .spatial-soft:hover { background: var(--surface-soft-hover); }
-      .spatial-input { background: var(--input-bg); border: 1px solid var(--input-border); color: var(--input-text); }
-      .spatial-input:focus { outline: none; border-color: #38bdf8; box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.22); }
+      .spatial-soft {
+        background: var(--neu-bg);
+        border: 1px solid var(--neu-border);
+        box-shadow: var(--shadow-raised-sm);
+        transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+      }
+      button.spatial-soft, a.spatial-soft {
+        cursor: pointer;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+      button.spatial-soft:hover:not(:disabled), a.spatial-soft:hover {
+        transform: translateY(-1.5px);
+        color: var(--neu-teal);
+      }
+      button.spatial-soft:active:not(:disabled),
+      button.spatial-soft.is-tapping:not(:disabled),
+      a.spatial-soft:active,
+      a.spatial-soft.is-tapping {
+        transform: translateY(1.5px) scale(0.978);
+        box-shadow: var(--shadow-pressed-deep);
+        border-color: var(--neu-teal-soft);
+        color: var(--neu-teal);
+      }
+
+      .neu-inset {
+        background: var(--neu-bg);
+        border-radius: 20px;
+        border: 1px solid var(--neu-border-soft);
+        box-shadow: var(--shadow-pressed);
+      }
+      .neu-btn {
+        background: var(--neu-bg);
+        color: var(--text-main);
+        border-radius: 9999px;
+        border: 1px solid var(--neu-border);
+        box-shadow: var(--shadow-raised);
+        cursor: pointer;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        text-decoration: none;
+        transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+      }
+      .neu-btn:hover:not(:disabled) { transform: translateY(-1.5px); color: var(--neu-teal); }
+      .neu-btn:active:not(:disabled),
+      .neu-btn.is-tapping:not(:disabled),
+      .neu-btn.is-pressed {
+        transform: translateY(1.5px) scale(0.978);
+        box-shadow: var(--shadow-pressed-deep);
+        border-color: var(--neu-teal-soft);
+        color: var(--neu-teal);
+      }
+      .neu-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+      .neu-nav-active {
+        background: var(--neu-bg);
+        color: var(--neu-teal) !important;
+        border: 1px solid var(--neu-teal-soft);
+        box-shadow: var(--shadow-pressed-deep);
+        font-weight: 800;
+      }
+
+      .spatial-input {
+        background: var(--neu-bg);
+        border: 1px solid var(--neu-border-soft);
+        box-shadow: var(--shadow-pressed-sm);
+        color: var(--text-main);
+        transition: box-shadow 0.22s ease, border-color 0.22s ease;
+      }
+      .spatial-input::placeholder { color: var(--text-muted); }
+      .spatial-input:focus {
+        outline: none;
+        border-color: var(--neu-teal);
+        box-shadow: var(--shadow-pressed), 0 0 0 2px var(--neu-teal-soft);
+      }
       .spatial-thead { background: var(--thead-bg); }
 
-      .rjc2-pill-btn {
-        background: linear-gradient(95deg, #d7fbe6 0%, #c6f3f9 48%, #b3c8ff 100%);
-        color: #050b16 !important;
-        box-shadow: 0 10px 28px -6px rgba(134, 239, 172, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.72) inset;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      /* Primary Neumorphic Teal Action Buttons (replaces old pastel pill & peach button) */
+      .rjc2-pill-btn, .btn-peach-ambient {
+        background: linear-gradient(145deg, #258077 0%, #1b615a 100%);
+        color: #ffffff !important;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.24);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 9999px;
+        box-shadow: 6px 6px 14px var(--neu-dark), -5px -5px 14px var(--neu-light);
+        transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease, filter 0.2s ease;
         text-decoration: none;
         cursor: pointer;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
       }
-      .rjc2-pill-btn:hover:not(:disabled) { transform: translateY(-1px) scale(1.015); }
-      .rjc2-pill-btn:active:not(:disabled) { transform: scale(0.98); }
-      .rjc2-pill-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-      .btn-peach-ambient {
-        background: #ffffff;
-        color: #1a162b !important;
-        font-weight: 700;
-        border-radius: 9999px;
-        border: 1.5px solid rgba(251, 182, 206, 0.92);
-        box-shadow: 0 0 0 3px rgba(253, 164, 175, 0.22), 0 10px 26px -6px rgba(249, 168, 212, 0.55);
-        cursor: pointer;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-      }
-      .btn-peach-ambient:hover:not(:disabled) {
+      .rjc2-pill-btn:hover:not(:disabled), .btn-peach-ambient:hover:not(:disabled) {
         transform: translateY(-1.5px);
-        box-shadow: 0 0 0 5px rgba(253, 164, 175, 0.28), 0 14px 32px -4px rgba(244, 114, 182, 0.68);
+        filter: brightness(1.07);
       }
+      .rjc2-pill-btn:active:not(:disabled),
+      .rjc2-pill-btn.is-tapping:not(:disabled),
+      .btn-peach-ambient:active:not(:disabled),
+      .btn-peach-ambient.is-tapping:not(:disabled) {
+        transform: translateY(1.5px) scale(0.975);
+        background: linear-gradient(145deg, #1a5c56 0%, #22756d 100%);
+        box-shadow: inset 5px 5px 11px rgba(8, 34, 31, 0.72), inset -4px -4px 9px rgba(94, 234, 212, 0.24);
+      }
+      .rjc2-pill-btn:disabled, .btn-peach-ambient:disabled { opacity: 0.48; cursor: not-allowed; }
 
       .text-primary-adaptive { color: var(--text-main); }
       .text-secondary-adaptive { color: var(--text-secondary); }
       .text-muted-adaptive { color: var(--text-muted); }
       .text-accent-adaptive { color: var(--accent-text); }
       .text-prism-adaptive { color: var(--accent-prism); }
+      .text-rose-adaptive { color: var(--neu-rose); }
+      .text-amber-adaptive { color: var(--neu-amber); }
 
-      html[data-theme="dark"] select option { background-color: #061229; color: #f8fafc; }
+      /* Ensure table row dividers look crisp in both Light & Dark Neumorphic themes */
+      .neu-divide > :not([hidden]) ~ :not([hidden]) { border-top: 1px solid var(--neu-divider); }
+
+      html[data-theme="dark"] select option { background-color: #1c222b; color: #f4f7fb; }
       .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
-      .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(147, 197, 253, 0.38); border-radius: 999px; }
+      .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--neu-dark); border-radius: 999px; }
 
-      /* สไตล์เอกสารรายงาน CNEU & รายงานแยกวิชาชีพ (A4 Print / Export PDF) */
+      /* สไตล์เอกสารรายงาน CNEU & รายงานแยกวิชาชีพ (A4 Print / Export PDF — พื้นขาวคมชัด 100%) */
       .cneu-paper {
         background: #ffffff;
         color: #0f172a;
         font-family: 'Sarabun', sans-serif;
-        box-shadow: 0 24px 60px -16px rgba(0, 0, 0, 0.52);
+        box-shadow: 0 24px 60px -16px rgba(0, 0, 0, 0.45);
       }
       .cneu-table { width: 100%; border-collapse: collapse; font-size: 12px; }
       .cneu-table th, .cneu-table td { border: 1px solid #cbd5e1; padding: 6px 8px; vertical-align: middle; }
@@ -253,14 +336,14 @@
 <body>
     <!-- หน้าจอโหลดเริ่มต้น -->
     <div id="admin-root">
-        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#020612;color:#f8fafc;font-family:-apple-system,'Anuphan','Prompt',sans-serif;gap:14px;padding:24px;text-align:center;">
-            <div style="width:46px;height:46px;border:3px solid rgba(56,189,248,0.22);border-top-color:#6ee7b7;border-right-color:#38bdf8;border-radius:9999px;animation:adminSpin 0.85s linear infinite;"></div>
-            <div style="font-weight:800;font-size:17px;">กำลังเปิดศูนย์ควบคุม Admin Mission Control...</div>
-            <div style="font-size:12px;color:#93b4d8;">rjcloud.organ 2.0 • Central Data Center (Production Only)</div>
+        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#1c222b;color:#f4f7fb;font-family:-apple-system,'Anuphan','Prompt',sans-serif;gap:14px;padding:24px;text-align:center;">
+            <div style="width:46px;height:46px;border:3px solid rgba(94,234,212,0.22);border-top-color:#5eead4;border-right-color:#fda4af;border-radius:9999px;animation:adminSpin 0.85s linear infinite;"></div>
+            <div style="font-weight:800;font-size:17px;">กำลังเปิดศูนย์ควบคุม Admin Mission Control (organ cloud 2.0)...</div>
+            <div style="font-size:12px;color:#9eb0c7;">organ cloud 2.0 • Central Data Center (Production Only)</div>
         </div>
     </div>
 
-    <!-- Global Error Guard -->
+    <!-- Global Error Guard + Global Tactile Sinking Press Feedback -->
     <script>
       window.addEventListener('error', function (ev) {
         const src = String(ev.filename || (ev.target && ev.target.src) || '');
@@ -269,13 +352,24 @@
         if (root && !root.dataset.mounted && ev.message) {
           const safeMsg = String(ev.message || 'Unknown error').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
           root.innerHTML =
-            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#020612;color:#f8fafc;font-family:Sarabun,sans-serif;">' +
-            '<div style="max-width:440px;width:100%;background:#061229;border:1px solid rgba(244,63,94,0.4);border-radius:24px;padding:24px;text-align:center;">' +
+            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#1c222b;color:#f4f7fb;font-family:Sarabun,sans-serif;">' +
+            '<div style="max-width:440px;width:100%;background:#1c222b;border:1px solid rgba(253,164,175,0.4);border-radius:28px;padding:24px;text-align:center;box-shadow:12px 12px 26px #0e1218,-10px -10px 22px #2d3746;">' +
             '<h2 style="color:#fda4af;font-weight:700;margin:0 0 8px;">ไม่สามารถเปิดระบบหลังบ้านได้ชั่วคราว</h2>' +
-            '<p style="font-size:13px;color:#dbeafe;margin:0 0 16px;">' + safeMsg + '</p>' +
-            '<button onclick="window.location.reload()" style="padding:12px 24px;border:none;border-radius:14px;background:#34d399;color:#020612;font-weight:700;cursor:pointer;">โหลดหน้าใหม่</button>' +
+            '<p style="font-size:13px;color:#c9d6e6;margin:0 0 16px;">' + safeMsg + '</p>' +
+            '<button onclick="window.location.reload()" style="padding:12px 24px;border:none;border-radius:9999px;background:#247870;color:#ffffff;font-weight:700;cursor:pointer;">โหลดหน้าใหม่</button>' +
             '</div></div>';
         }
+      });
+
+      document.addEventListener('pointerdown', function (e) {
+        const el = e.target && e.target.closest ? e.target.closest('.neu-btn, .rjc2-pill-btn, .btn-peach-ambient, button.spatial-soft, a.spatial-soft') : null;
+        if (!el || el.disabled) return;
+        el.classList.add('is-tapping');
+        const release = function () {
+          setTimeout(function () { el.classList.remove('is-tapping'); }, 110);
+        };
+        window.addEventListener('pointerup', release, { once: true });
+        window.addEventListener('pointercancel', release, { once: true });
       });
     </script>
 
@@ -294,7 +388,7 @@
         const CERT = window.RJCLOUD_CERT || {};
 
         const BUILTIN_CONFIG = {
-            appName: 'rjcloud.organ',
+            appName: 'organ cloud',
             appId: 'rjcloud-organ-2027',
             contactEmail: 'rjcloud.organ@gmail.com',
             adminEmails: ['rjcloud.organ@gmail.com'],
@@ -326,7 +420,7 @@
         const THEME_KEY = CONFIG.theme?.storageKey || 'rjcloud_theme';
         const MIN_STUDY_PERCENT = Number(CONFIG.learningRules?.minStudyPercent || 80);
         const MIN_POSTTEST_PERCENT = Number(CONFIG.learningRules?.minPosttestPercent || 80);
-        const DEFAULT_ONLINE_COURSE_NAME = 'หลักสูตรออนไลน์การรับบริจาคและปลูกถ่ายอวัยวะ (rjcloud.organ 2.0)';
+        const DEFAULT_ONLINE_COURSE_NAME = 'หลักสูตรออนไลน์การรับบริจาคและปลูกถ่ายอวัยวะ (organ cloud 2.0)';
         const PROFESSION_LIST = ['พยาบาล', 'แพทย์', 'บุคลากรสหวิชาชีพ'];
 
         const DEFAULT_COURSE_CATALOG = Array.isArray(CORE.DEFAULT_COURSE_CATALOG) && CORE.DEFAULT_COURSE_CATALOG.length > 0
@@ -357,7 +451,7 @@
         const DEFAULT_CERT_TEMPLATE = window.DEFAULT_CERT_TEMPLATE || CORE.DEFAULT_CERT_TEMPLATE || {
             certPrefix: 'RJC-2027',
             orgTitleTH: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ',
-            orgTitleEN: 'rjcloud.organ • Clinical Organ Donation & Transplantation Network',
+            orgTitleEN: 'organ cloud 2.0 • Clinical Organ Donation & Transplantation Network',
             courseTitleTH: 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ',
             courseTitleEN: 'Organ Donation & Transplantation Clinical Coordination Program',
             subtitleTH: 'ขอมอบประกาศนียบัตรฉบับนี้เพื่อแสดงว่า',
@@ -371,7 +465,7 @@
         const DEFAULT_CNEU_CONFIG = CORE.DEFAULT_CNEU_CONFIG || {
             logoUrl: '',
             orgName: 'ศูนย์ความเป็นเลิศทางการแพทย์ด้านการรับบริจาคและปลูกถ่ายอวัยวะ โรงพยาบาลราชวิถี',
-            courseName: 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ (rjcloud.organ)',
+            courseName: 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ (organ cloud 2.0)',
             activityCode: 'CNEU-2027-0148',
             batchLabel: 'รุ่นที่ 1 ประจำปีงบประมาณ 2570',
             cneuCredits: '8.0',
@@ -532,7 +626,7 @@
                 ctx.fillText('สแกน QR CODE เพื่อลงทะเบียนอบรม ONSITE', 500, 104);
 
                 ctx.fillStyle = '#0f172a'; ctx.font = '700 28px "Prompt", sans-serif';
-                const title = String(onsiteCfg?.activityTitle || 'ลงทะเบียนอบรม Onsite (rjcloud.organ 2.0)');
+                const title = String(onsiteCfg?.activityTitle || 'ลงทะเบียนอบรม Onsite (organ cloud 2.0)');
                 if (title.length > 42) {
                     const mid = title.lastIndexOf(' ', Math.floor(title.length / 2));
                     const cut = mid > 15 ? mid : Math.floor(title.length / 2);
@@ -553,7 +647,7 @@
                 ctx.fillStyle = '#0f172a'; ctx.font = '700 22px "JetBrains Mono", monospace';
                 ctx.fillText(url, 500, 1042, 860);
                 ctx.fillStyle = '#0369a1'; ctx.font = '600 20px "Sarabun", sans-serif';
-                ctx.fillText(`เปิดสิทธิ์เข้า rjcloud.organ 2.0: ${formatThaiDateTimeFull(onsiteCfg?.unlockAt)}`, 500, 1094, 860);
+                ctx.fillText(`เปิดสิทธิ์เข้า organ cloud 2.0: ${formatThaiDateTimeFull(onsiteCfg?.unlockAt)}`, 500, 1094, 860);
                 ctx.fillStyle = '#64748b'; ctx.font = '600 18px "Prompt", sans-serif';
                 ctx.fillText('ORGAN TRANSPLANTATION CENTER OF RAJAVITHI HOSPITAL', 500, 1148, 860);
             }
@@ -581,12 +675,12 @@
 
         function resolveClassificationBadge(u) {
             if (isHoursExemptUser(u)) {
-                return { label: 'เทียบโอน', cls: 'bg-emerald-500/20 border-emerald-400/45 text-emerald-300' };
+                return { label: 'เทียบโอน', cls: 'bg-[var(--neu-bg)] shadow-[var(--shadow-pressed-sm)] border-[var(--neu-teal-soft)] text-accent-adaptive' };
             }
             if (u?.userType === 'เรียนต่อเนื่อง' || u?.classificationCode === 'CONTINUING') {
-                return { label: 'เรียนต่อเนื่อง', cls: 'bg-sky-500/20 border-sky-400/45 text-sky-300' };
+                return { label: 'เรียนต่อเนื่อง', cls: 'bg-[var(--neu-bg)] shadow-[var(--shadow-pressed-sm)] border-[var(--neu-border)] text-prism-adaptive' };
             }
-            return { label: 'เรียนใหม่', cls: 'bg-pink-400/20 border-pink-300/45 text-pink-200' };
+            return { label: 'เรียนใหม่', cls: 'bg-[var(--neu-bg)] shadow-[var(--shadow-pressed-sm)] border-[var(--neu-rose-soft)] text-rose-adaptive' };
         }
 
         function resolveLearnerStatusInfo(u) {
@@ -704,10 +798,10 @@
             render() {
                 if (this.state.hasError) {
                     return (
-                        <div className="min-h-dvh flex items-center justify-center p-6 bg-void-950 text-white">
-                            <div className="spatial-card max-w-md w-full rounded-3xl p-6 text-center space-y-4 border-rose-500/40">
-                                <h2 className="font-display font-bold text-lg text-rose-400">พบข้อผิดพลาดในระบบหลังบ้าน</h2>
-                                <p className="text-xs font-mono bg-rose-500/10 text-rose-200 p-3 rounded-xl overflow-auto">{String(this.state.err?.message || this.state.err)}</p>
+                        <div className="min-h-dvh flex items-center justify-center p-6 bg-[var(--neu-bg)] text-primary-adaptive">
+                            <div className="spatial-card max-w-md w-full rounded-[28px] p-6 text-center space-y-4">
+                                <h2 className="font-display font-bold text-lg text-rose-adaptive">พบข้อผิดพลาดในระบบหลังบ้าน</h2>
+                                <p className="text-xs font-mono neu-inset text-secondary-adaptive p-3 overflow-auto">{String(this.state.err?.message || this.state.err)}</p>
                                 <button type="button" onClick={() => window.location.reload()} className="rjc2-pill-btn touch-target w-full py-3 rounded-full font-display font-bold text-sm">โหลดหน้าใหม่</button>
                             </div>
                         </div>
@@ -725,8 +819,8 @@
         function ThemeToggleButton({ theme, onToggle, compact = false }) {
             const isDark = theme === 'dark';
             return (
-                <button type="button" onClick={onToggle} aria-label="สลับโหมดมืดหรือสว่าง" className="spatial-soft px-2.5 sm:px-3 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5 text-primary-adaptive shrink-0">
-                    <Icon name={isDark ? 'Sun' : 'Moon'} size={15} className={isDark ? 'text-amber-300' : 'text-indigo-600'} />
+                <button type="button" onClick={onToggle} aria-label="สลับโหมดมืดหรือสว่าง" className="neu-btn px-3 py-2 font-display font-bold text-xs shrink-0">
+                    <span>{isDark ? '☀️' : '🌙'}</span>
                     {!compact && <span className="hidden sm:inline">{isDark ? 'โหมดสว่าง' : 'โหมดมืด'}</span>}
                 </button>
             );
@@ -736,7 +830,7 @@
             return (
                 <div className={className}>
                     {label && <label className="block text-xs font-bold text-secondary-adaptive mb-1 ml-1">{label}</label>}
-                    <input {...props} className="touch-target spatial-input w-full px-3.5 py-2 rounded-xl text-sm" />
+                    <input {...props} className="touch-target spatial-input w-full px-3.5 py-2 rounded-2xl text-sm" />
                 </div>
             );
         }
@@ -758,13 +852,9 @@
         function ToastBanner({ toast }) {
             if (!toast.visible) return null;
             return (
-                <div className="no-print fixed top-[calc(1rem+env(safe-area-inset-top,0px))] left-1/2 -translate-x-1/2 z-[170] w-[92vw] max-w-md pointer-events-none">
-                    <div className={`px-4 py-3 rounded-2xl shadow-2xl border backdrop-blur-2xl flex items-center gap-2 text-xs sm:text-sm font-bold text-white ${
-                        toast.type === 'error' ? 'bg-rose-700/95 border-rose-400/60'
-                            : toast.type === 'info' ? 'bg-sky-700/95 border-sky-400/60'
-                                : 'bg-emerald-700/95 border-emerald-400/60'
-                    }`}>
-                        <Icon name={toast.type === 'error' ? 'AlertCircle' : toast.type === 'info' ? 'Sparkles' : 'CheckCircle2'} size={16} className="shrink-0" />
+                <div className="no-print fixed bottom-20 lg:bottom-6 left-1/2 -translate-x-1/2 z-[180] w-[92vw] max-w-md pointer-events-none">
+                    <div className="spatial-card px-5 py-3.5 rounded-full flex items-center gap-2.5 text-xs sm:text-sm font-display font-bold text-primary-adaptive border-[var(--neu-teal-soft)]">
+                        <Icon name={toast.type === 'error' ? 'AlertCircle' : toast.type === 'info' ? 'Sparkles' : 'CheckCircle2'} size={17} className={toast.type === 'error' ? 'text-rose-adaptive shrink-0' : 'text-accent-adaptive shrink-0'} />
                         <span>{toast.text}</span>
                     </div>
                 </div>
@@ -774,13 +864,13 @@
         function ConfirmModal({ dialog, onClose }) {
             if (!dialog.open) return null;
             return (
-                <div className="no-print fixed inset-0 z-[165] bg-slate-950/75 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
-                    <div className="spatial-card w-full sm:max-w-md rounded-t-[2rem] sm:rounded-[2rem] p-6 space-y-4">
+                <div className="no-print fixed inset-0 z-[165] bg-slate-950/70 backdrop-blur-md flex items-end sm:items-center justify-center p-3 sm:p-4">
+                    <div className="spatial-card w-full sm:max-w-md rounded-[28px] p-6 space-y-4">
                         <h3 className="font-display font-bold text-lg text-primary-adaptive">{dialog.title}</h3>
                         <p className="text-sm text-secondary-adaptive leading-relaxed">{dialog.message}</p>
-                        <div className="grid grid-cols-2 gap-2.5 pt-2">
-                            <button type="button" onClick={onClose} className="touch-target spatial-soft py-3 rounded-2xl text-primary-adaptive font-bold text-sm">ยกเลิก</button>
-                            <button type="button" onClick={() => { const fn = dialog.onConfirm; onClose(); if (fn) fn(); }} className={`touch-target py-3 rounded-2xl font-display font-bold text-sm ${dialog.danger ? 'bg-rose-600 text-white' : 'rjc2-pill-btn'}`}>
+                        <div className="grid grid-cols-2 gap-3 pt-2">
+                            <button type="button" onClick={onClose} className="neu-btn touch-target py-3 font-bold text-sm">ยกเลิก</button>
+                            <button type="button" onClick={() => { const fn = dialog.onConfirm; onClose(); if (fn) fn(); }} className={`${dialog.danger ? 'neu-btn text-rose-adaptive font-extrabold' : 'rjc2-pill-btn font-bold'} touch-target py-3 font-display text-sm`}>
                                 {dialog.confirmText || 'ยืนยัน'}
                             </button>
                         </div>
@@ -800,16 +890,18 @@
                 { key: 'cert', label: 'Cert', done: st.step5Cert, title: u.certificateCode ? `รหัส: ${u.certificateCode}` : 'ยังไม่ออกใบประกาศฯ' }
             ];
             return (
-                <div className="flex flex-wrap gap-1">
+                <div className="flex flex-wrap gap-1.5">
                     {pills.map(p => (
                         <button
                             key={p.key}
                             type="button"
                             title={p.title}
                             onClick={p.clickable ? onToggleLab : undefined}
-                            className={`px-2 py-0.5 rounded-lg font-mono text-[10px] font-bold border transition-all ${
-                                p.done ? 'bg-aurora-500/20 border-aurora-400/45 text-accent-adaptive' : 'spatial-soft text-muted-adaptive'
-                            } ${p.clickable ? 'cursor-pointer hover:border-prism-400' : 'cursor-default'}`}
+                            className={`px-2.5 py-0.5 rounded-full font-mono text-[10px] font-bold border transition-all ${
+                                p.done
+                                    ? 'bg-[var(--neu-bg)] shadow-[var(--shadow-pressed-sm)] border-[var(--neu-teal-soft)] text-accent-adaptive'
+                                    : 'bg-[var(--neu-bg)] shadow-[var(--shadow-raised-sm)] border-[var(--neu-border)] text-muted-adaptive'
+                            } ${p.clickable ? 'cursor-pointer hover:text-prism-adaptive' : 'cursor-default'}`}
                         >
                             {p.done ? '✓ ' : ''}{p.label}
                         </button>
@@ -832,7 +924,7 @@
             useEffect(() => {
                 document.documentElement.setAttribute('data-theme', theme);
                 const meta = document.querySelector('meta[name="theme-color"]');
-                if (meta) meta.setAttribute('content', theme === 'dark' ? '#020612' : '#edf6fd');
+                if (meta) meta.setAttribute('content', theme === 'dark' ? '#1c222b' : '#e6ebf0');
                 try { localStorage.setItem(THEME_KEY, theme); } catch (_) {}
             }, [theme]);
             const toggleTheme = useCallback(() => setTheme(p => (p === 'dark' ? 'light' : 'dark')), []);
@@ -1333,7 +1425,7 @@
                         }, { merge: true });
                         okCount += 1;
                     }
-                    showToast(`ซิงค์สิทธิ์เทียบโอนและเวลาเปิดระบบเข้า rjcloud.organ 2.0 ครบ ${okCount} รายเรียบร้อยค่ะ`);
+                    showToast(`ซิงค์สิทธิ์เทียบโอนและเวลาเปิดระบบเข้า organ cloud 2.0 ครบ ${okCount} รายเรียบร้อยค่ะ`);
                 } catch (err) {
                     showToast('ซิงค์ไม่สำเร็จบางรายการ: ' + err.message, 'error');
                 } finally {
@@ -1431,7 +1523,7 @@
                         u.susScore ?? '-', u.satisfactionScore || '-', u.certificateCode || '-'
                     ].map(escapeCsvCell).join(',');
                 });
-                triggerCsvDownload(`rjcloud_learners_${new Date().toISOString().split('T')[0]}.csv`, headers, rows);
+                triggerCsvDownload(`organ_cloud_learners_${new Date().toISOString().split('T')[0]}.csv`, headers, rows);
                 showToast(`ส่งออกไฟล์ CSV ผู้เรียน ${usersList.length} รายเรียบร้อยค่ะ`);
             };
 
@@ -1451,7 +1543,7 @@
                     });
                 });
                 if (rows.length === 0) { showToast('ยังไม่มีประวัติฝึก AI Skill Lab สำหรับส่งออก R2R ค่ะ', 'info'); return; }
-                triggerCsvDownload(`rjcloud_R2R_SkillLab_${new Date().toISOString().split('T')[0]}.csv`, headers, rows);
+                triggerCsvDownload(`organ_cloud_R2R_SkillLab_${new Date().toISOString().split('T')[0]}.csv`, headers, rows);
                 showToast(`ส่งออกข้อมูลวิจัย R2R (${rows.length} รอบฝึก • Zero-PII) เรียบร้อยแล้วค่ะ`);
             };
 
@@ -1552,7 +1644,7 @@
                         topHeading: 'รายงานสรุปรายชื่อผู้สำเร็จการอบรมเพื่อขอรับรองหน่วยคะแนนการศึกษาต่อเนื่อง (CNEU • เฉพาะพยาบาลวิชาชีพ)',
                         creditSummary: `รหัสกิจกรรม CNEU: ${cneuConfig.activityCode || '-'} • จำนวน ${cneuConfig.cneuCredits || '-'} หน่วยคะแนน • ${cneuConfig.batchLabel} • ${cneuConfig.dateRange}`,
                         licenseCol: 'เลขที่ใบอนุญาตฯ การพยาบาล', rows: passedBreakdown.nurses,
-                        certifyText: `ข้าพเจ้าขอรับรองว่ารายชื่อพยาบาลวิชาชีพผู้สำเร็จการอบรมจำนวน ${passedBreakdown.nurses.length} ราย ข้างต้น (คัดกรองเฉพาะผู้มีสิทธิ์รับหน่วยคะแนน CNEU ตามระเบียบสภาการพยาบาลแล้ว) เป็นผู้ผ่านการยืนยันตัวตนด้วยรหัส OTP ผ่านเกณฑ์ชั่วโมงการอบรม ผ่าน AI Skill Lab และสอบวัดผลหลังเรียน (Post-test) ≥ 80% ถูกต้องตรงตามฐานข้อมูล rjcloud.organ`
+                        certifyText: `ข้าพเจ้าขอรับรองว่ารายชื่อพยาบาลวิชาชีพผู้สำเร็จการอบรมจำนวน ${passedBreakdown.nurses.length} ราย ข้างต้น (คัดกรองเฉพาะผู้มีสิทธิ์รับหน่วยคะแนน CNEU ตามระเบียบสภาการพยาบาลแล้ว) เป็นผู้ผ่านการยืนยันตัวตนด้วยรหัส OTP ผ่านเกณฑ์ชั่วโมงการอบรม ผ่าน AI Skill Lab และสอบวัดผลหลังเรียน (Post-test) ≥ 80% ถูกต้องตรงตามฐานข้อมูล organ cloud 2.0`
                     };
                 }
                 if (reportMode === 'doctor_hours') {
@@ -1564,7 +1656,7 @@
                             ? `รหัสกิจกรรม CME: ${cneuConfig.cmeActivityCode || '-'} • จำนวน ${cneuConfig.cmeCredits || '-'} หน่วยคะแนน • ${cneuConfig.batchLabel} • ${cneuConfig.dateRange}`
                             : `รับรองจำนวน ${hrs} ชั่วโมงการฝึกอบรมวิชาการทางการแพทย์ • ${cneuConfig.batchLabel} • ${cneuConfig.dateRange}`,
                         licenseCol: 'เลขที่ใบอนุญาตฯ เวชกรรม', rows: passedBreakdown.doctors,
-                        certifyText: `ข้าพเจ้าขอรับรองว่ารายชื่อแพทย์ผู้สำเร็จการอบรมจำนวน ${passedBreakdown.doctors.length} ราย ข้างต้น เป็นผู้ผ่านเกณฑ์ชั่วโมงการฝึกอบรมวิชาการ ผ่าน AI Skill Lab และสอบวัดผลหลังเรียน (Post-test) ≥ 80% ถูกต้องตรงตามฐานข้อมูล rjcloud.organ`
+                        certifyText: `ข้าพเจ้าขอรับรองว่ารายชื่อแพทย์ผู้สำเร็จการอบรมจำนวน ${passedBreakdown.doctors.length} ราย ข้างต้น เป็นผู้ผ่านเกณฑ์ชั่วโมงการฝึกอบรมวิชาการ ผ่าน AI Skill Lab และสอบวัดผลหลังเรียน (Post-test) ≥ 80% ถูกต้องตรงตามฐานข้อมูล organ cloud 2.0`
                     };
                 }
                 if (reportMode === 'allied_hours') {
@@ -1573,7 +1665,7 @@
                         topHeading: 'รายงานสรุปรายชื่อบุคลากรสหวิชาชีพผู้สำเร็จการอบรมและรับรองชั่วโมงพัฒนาบุคลากร',
                         creditSummary: `รับรองจำนวน ${hrs} ชั่วโมงการพัฒนาสมรรถนะวิชาชีพ • ${cneuConfig.batchLabel} • ${cneuConfig.dateRange}`,
                         licenseCol: 'เลขใบอนุญาต / รหัสบุคลากร', rows: passedBreakdown.allied,
-                        certifyText: `ข้าพเจ้าขอรับรองว่ารายชื่อบุคลากรสหวิชาชีพผู้สำเร็จการอบรมจำนวน ${passedBreakdown.allied.length} ราย ข้างต้น เป็นผู้ผ่านเกณฑ์ชั่วโมงการอบรม ผ่าน AI Skill Lab และสอบวัดผลหลังเรียน (Post-test) ≥ 80% ถูกต้องตรงตามฐานข้อมูล rjcloud.organ`
+                        certifyText: `ข้าพเจ้าขอรับรองว่ารายชื่อบุคลากรสหวิชาชีพผู้สำเร็จการอบรมจำนวน ${passedBreakdown.allied.length} ราย ข้างต้น เป็นผู้ผ่านเกณฑ์ชั่วโมงการอบรม ผ่าน AI Skill Lab และสอบวัดผลหลังเรียน (Post-test) ≥ 80% ถูกต้องตรงตามฐานข้อมูล organ cloud 2.0`
                     };
                 }
                 return {
@@ -1596,7 +1688,7 @@
                         u.certificateCode || '-'
                     ].map(escapeCsvCell).join(',');
                 });
-                triggerCsvDownload(`rjcloud_${activeReportMeta.fileTag}_${new Date().toISOString().split('T')[0]}.csv`, headers, rows);
+                triggerCsvDownload(`organ_cloud_${activeReportMeta.fileTag}_${new Date().toISOString().split('T')[0]}.csv`, headers, rows);
                 showToast(`ส่งออก CSV "${activeReportMeta.fileTag}" จำนวน ${activeReportMeta.rows.length} รายเรียบร้อยค่ะ`);
             };
 
@@ -1623,22 +1715,21 @@
             // ============================================================================
             if (!adminSession) {
                 return (
-                    <div className="min-h-dvh relative flex items-center justify-center p-4 pt-safe">
-                        <div className="spatial-aura" /><div className="spatial-grid" />
-                        <div className="spatial-card relative z-10 max-w-md w-full rounded-[2rem] p-6 sm:p-8 space-y-5">
+                    <div className="min-h-dvh relative flex items-center justify-center p-4 pt-safe bg-[var(--neu-bg)] text-primary-adaptive">
+                        <div className="spatial-card relative z-10 max-w-md w-full rounded-[28px] p-6 sm:p-8 space-y-5">
                             <div className="flex items-center justify-between">
-                                <a href="./index.html" className="spatial-soft px-3 py-2 rounded-xl text-xs font-bold text-primary-adaptive inline-flex items-center gap-1">
+                                <a href="./index.html" className="neu-btn px-3.5 py-2 text-xs font-bold">
                                     <Icon name="ArrowLeft" size={14} /> หน้าแรก
                                 </a>
                                 <ThemeToggleButton theme={theme} onToggle={toggleTheme} compact />
                             </div>
                             <div className="text-center space-y-2">
-                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-aurora-400 to-prism-400 text-void-950 flex items-center justify-center mx-auto">
-                                    <Icon name="ShieldCheck" size={24} />
+                                <div className="w-14 h-14 rounded-full bg-[var(--neu-bg)] shadow-[var(--shadow-pressed-sm)] text-accent-adaptive flex items-center justify-center mx-auto">
+                                    <Icon name="ShieldCheck" size={26} />
                                 </div>
-                                <span className="font-mono text-[10px] font-bold text-pink-300 uppercase tracking-wider">PRODUCTION ONLY • ADMIN ACCESS</span>
+                                <span className="font-mono text-[10px] font-bold text-rose-adaptive uppercase tracking-wider block">PRODUCTION ONLY • ADMIN ACCESS</span>
                                 <h1 className="font-display font-extrabold text-xl text-primary-adaptive">Admin Mission Control</h1>
-                                <p className="text-xs text-secondary-adaptive">rjcloud.organ 2.0 • จัดการหลักสูตร ผู้เรียน Onsite คัดกรอง CNEU และข้อมูลวิจัย R2R</p>
+                                <p className="text-xs text-secondary-adaptive">organ cloud 2.0 • จัดการหลักสูตร ผู้เรียน Onsite คัดกรอง CNEU และข้อมูลวิจัย R2R</p>
                             </div>
                             <form onSubmit={handleAdminLogin} className="space-y-3.5">
                                 <FieldInput label="อีเมลผู้ดูแลระบบ (Firebase Auth)" type="email" required value={loginEmail} onChange={e => setLoginEmail(e.target.value)} />
@@ -1657,35 +1748,32 @@
             }
 
             // ============================================================================
-            // 8. MAIN PRODUCTION ADMIN WORKSPACE
+            // 8. MAIN PRODUCTION ADMIN WORKSPACE (NEUMORPHIC SOFT UI)
             // ============================================================================
             return (
-                <div className="min-h-dvh relative flex flex-col pt-safe pb-dock-safe lg:pb-10">
-                    <div className="spatial-aura" /><div className="spatial-grid" />
+                <div className="min-h-dvh relative flex flex-col pt-safe pb-dock-safe lg:pb-10 bg-[var(--neu-bg)] text-primary-adaptive">
 
-                    {/* Top Navigation Bar */}
+                    {/* Top Neumorphic Navigation Bar */}
                     <header className="no-print sticky top-0 z-30 spatial-header">
-                        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 h-14 md:h-16 flex items-center justify-between gap-2">
-                            <div className="flex items-center gap-2.5 min-w-0">
-                                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-aurora-400 to-prism-400 text-void-950 flex items-center justify-center font-display font-extrabold text-xs shrink-0">AD</div>
+                        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 h-16 flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-3 min-w-0">
+                                <div className="w-10 h-10 rounded-full bg-[var(--neu-bg)] shadow-[var(--shadow-pressed-sm)] text-accent-adaptive flex items-center justify-center font-display font-extrabold text-xs shrink-0">AD</div>
                                 <div className="min-w-0">
                                     <span className="font-display font-extrabold text-sm sm:text-base text-primary-adaptive block leading-none truncate">
-                                        rjcloud<span className="text-accent-adaptive">.organ</span> <span className="font-mono text-[10px] text-prism-adaptive">ADMIN 2.0</span>
+                                        organ <span className="text-accent-adaptive">cloud</span> <span className="font-mono text-[10px] text-rose-adaptive">ADMIN 2.0</span>
                                     </span>
-                                    <span className="text-[10px] font-mono text-muted-adaptive block truncate">{adminSession.email}</span>
+                                    <span className="text-[10.5px] font-mono text-muted-adaptive block truncate mt-0.5">{adminSession.email}</span>
                                 </div>
                             </div>
 
-                            <div className="hidden lg:flex items-center gap-1">
+                            <div className="hidden lg:flex items-center gap-1.5">
                                 {navItems.map(item => (
                                     <button
                                         key={item.id}
                                         type="button"
                                         onClick={() => setActiveTab(item.id)}
-                                        className={`px-3 py-2 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 transition-all ${
-                                            activeTab === item.id
-                                                ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold'
-                                                : 'text-secondary-adaptive hover:bg-white/10'
+                                        className={`neu-btn px-3.5 py-2 text-xs font-display font-bold ${
+                                            activeTab === item.id ? 'is-pressed' : ''
                                         }`}
                                     >
                                         <Icon name={item.icon} size={14} /> {item.label}
@@ -1693,9 +1781,9 @@
                                 ))}
                             </div>
 
-                            <div className="flex items-center gap-1.5 shrink-0">
+                            <div className="flex items-center gap-2 shrink-0">
                                 <ThemeToggleButton theme={theme} onToggle={toggleTheme} compact />
-                                <button type="button" onClick={handleAdminLogout} className="spatial-soft px-3 py-2 rounded-xl text-xs font-bold text-rose-400 hover:bg-rose-600 hover:text-white inline-flex items-center gap-1">
+                                <button type="button" onClick={handleAdminLogout} className="neu-btn px-3.5 py-2 text-xs font-bold text-rose-adaptive">
                                     <Icon name="LogOut" size={14} /> <span className="hidden sm:inline">ออก</span>
                                 </button>
                             </div>
@@ -1713,28 +1801,28 @@
                                         <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive">จัดการผู้เรียน กลุ่มวิชาชีพ สิทธิ์เทียบโอน และข้อมูลวิจัย R2R</h2>
                                     </div>
                                     <div className="flex flex-wrap gap-2">
-                                        <button type="button" onClick={() => { setActiveTab('content'); setContentSubTab('courses'); }} className="spatial-soft touch-target px-3.5 py-2 rounded-full text-xs font-bold text-pink-300 border-pink-300/40 inline-flex items-center gap-1.5">
+                                        <button type="button" onClick={() => { setActiveTab('content'); setContentSubTab('courses'); }} className="neu-btn touch-target px-4 py-2 text-xs font-bold text-rose-adaptive">
                                             <Icon name="GraduationCap" size={15} /> จัดการหลักสูตร ({courseCatalog.filter(c => c.active !== false).length})
                                         </button>
-                                        <button type="button" onClick={() => setShowAddUser(v => !v)} className="rjc2-pill-btn touch-target px-4 py-2 rounded-full font-display font-extrabold text-xs inline-flex items-center gap-1.5">
+                                        <button type="button" onClick={() => setShowAddUser(v => !v)} className="rjc2-pill-btn touch-target px-4 py-2 font-display font-extrabold text-xs inline-flex items-center gap-1.5">
                                             <Icon name="UserPlus" size={15} /> เพิ่มผู้เรียน
                                         </button>
-                                        <button type="button" onClick={handleExportCSV} className="spatial-soft touch-target px-3.5 py-2 rounded-full text-xs font-bold text-primary-adaptive inline-flex items-center gap-1.5">
+                                        <button type="button" onClick={handleExportCSV} className="neu-btn touch-target px-4 py-2 text-xs font-bold">
                                             <Icon name="FileSpreadsheet" size={15} className="text-accent-adaptive" /> CSV ผู้เรียน
                                         </button>
-                                        <button type="button" onClick={handleExportBlindTranscriptCsv} className="spatial-soft touch-target px-3.5 py-2 rounded-full text-xs font-bold text-prism-adaptive inline-flex items-center gap-1.5">
+                                        <button type="button" onClick={handleExportBlindTranscriptCsv} className="neu-btn touch-target px-4 py-2 text-xs font-bold text-prism-adaptive">
                                             <Icon name="Microscope" size={15} /> Export R2R
                                         </button>
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 text-center text-xs">
-                                    <div className="spatial-card rounded-2xl p-3.5"><span className="text-muted-adaptive block">ผู้เรียนทั้งหมด</span><span className="font-mono text-2xl font-extrabold text-primary-adaptive">{quickStats.total}</span></div>
-                                    <div className="spatial-card rounded-2xl p-3.5"><span className="text-muted-adaptive block">พยาบาล (CNEU)</span><span className="font-mono text-2xl font-extrabold text-accent-adaptive">{usersList.filter(isNurseCneuUser).length}</span></div>
-                                    <div className="spatial-card rounded-2xl p-3.5"><span className="text-muted-adaptive block">แพทย์ / สหวิชาชีพ</span><span className="font-mono text-2xl font-extrabold text-prism-adaptive">{usersList.filter(u => !isNurseCneuUser(u)).length}</span></div>
-                                    <div className="spatial-card rounded-2xl p-3.5"><span className="text-muted-adaptive block">สำเร็จหลักสูตร</span><span className="font-mono text-2xl font-extrabold text-accent-adaptive">{quickStats.passed}</span></div>
-                                    <div className="spatial-card rounded-2xl p-3.5"><span className="text-muted-adaptive block">SUS / CSAT</span><span className="font-mono text-lg font-extrabold text-amber-400">{quickStats.avgSus} / {quickStats.avgCsat}</span></div>
-                                    <div className="spatial-card rounded-2xl p-3.5"><span className="text-muted-adaptive block">ความมั่นใจ Pre→Post</span><span className="font-mono text-lg font-extrabold text-accent-adaptive">{quickStats.preEff}→{quickStats.postEff}</span></div>
+                                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-center text-xs">
+                                    <div className="spatial-card rounded-2xl p-4"><span className="text-muted-adaptive block">ผู้เรียนทั้งหมด</span><span className="font-mono text-2xl font-extrabold text-primary-adaptive">{quickStats.total}</span></div>
+                                    <div className="spatial-card rounded-2xl p-4"><span className="text-muted-adaptive block">พยาบาล (CNEU)</span><span className="font-mono text-2xl font-extrabold text-accent-adaptive">{usersList.filter(isNurseCneuUser).length}</span></div>
+                                    <div className="spatial-card rounded-2xl p-4"><span className="text-muted-adaptive block">แพทย์ / สหวิชาชีพ</span><span className="font-mono text-2xl font-extrabold text-prism-adaptive">{usersList.filter(u => !isNurseCneuUser(u)).length}</span></div>
+                                    <div className="spatial-card rounded-2xl p-4"><span className="text-muted-adaptive block">สำเร็จหลักสูตร</span><span className="font-mono text-2xl font-extrabold text-accent-adaptive">{quickStats.passed}</span></div>
+                                    <div className="spatial-card rounded-2xl p-4"><span className="text-muted-adaptive block">SUS / CSAT</span><span className="font-mono text-lg font-extrabold text-amber-adaptive">{quickStats.avgSus} / {quickStats.avgCsat}</span></div>
+                                    <div className="spatial-card rounded-2xl p-4"><span className="text-muted-adaptive block">ความมั่นใจ Pre→Post</span><span className="font-mono text-lg font-extrabold text-accent-adaptive">{quickStats.preEff}→{quickStats.postEff}</span></div>
                                 </div>
 
                                 {showAddUser && (
@@ -1779,7 +1867,7 @@
                                             <input value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder="ค้นหาชื่อ, เลขใบอนุญาต, กลุ่มวิชาชีพ, โรงพยาบาล หรือชื่อกิจกรรม..." className="touch-target spatial-input w-full pl-10 pr-4 py-2 rounded-2xl text-sm" />
                                         </div>
                                         <div className="flex flex-wrap gap-1.5">
-                                            <select value={filterProf} onChange={e => setFilterProf(e.target.value)} className="spatial-input px-3 py-2 rounded-xl text-xs font-bold">
+                                            <select value={filterProf} onChange={e => setFilterProf(e.target.value)} className="spatial-input px-3 py-2 rounded-full text-xs font-bold">
                                                 <option value="ALL">ทุกกลุ่มวิชาชีพ</option>
                                                 {PROFESSION_LIST.map(p => <option key={p} value={p}>{p}</option>)}
                                             </select>
@@ -1788,7 +1876,7 @@
                                                 { id: 'EXEMPT', label: `เทียบโอน (${quickStats.exempt})` },
                                                 { id: 'PASSED', label: `ผ่าน (${quickStats.passed})` }
                                             ].map(f => (
-                                                <button key={f.id} type="button" onClick={() => setFilterType(f.id)} className={`px-3 py-2 rounded-xl text-xs font-bold shrink-0 ${filterType === f.id ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'spatial-soft text-secondary-adaptive'}`}>
+                                                <button key={f.id} type="button" onClick={() => setFilterType(f.id)} className={`neu-btn px-3.5 py-2 text-xs font-bold shrink-0 ${filterType === f.id ? 'is-pressed' : ''}`}>
                                                     {f.label}
                                                 </button>
                                             ))}
@@ -1799,14 +1887,14 @@
                                         <table className="w-full text-left border-collapse">
                                             <thead className="spatial-thead font-mono text-[10px] uppercase text-muted-adaptive">
                                                 <tr>
-                                                    <th className="py-3 px-4">ผู้เรียน / ประเภทอัตโนมัติ / กิจกรรมอ้างอิง</th>
+                                                    <th className="py-3 px-4 rounded-l-xl">ผู้เรียน / ประเภทอัตโนมัติ / กิจกรรมอ้างอิง</th>
                                                     <th className="py-3 px-3">กลุ่มวิชาชีพ &amp; CNEU</th>
                                                     <th className="py-3 px-3">ความคืบหน้า 5 ขั้นตอน</th>
                                                     <th className="py-3 px-3">Pre / Post</th>
-                                                    <th className="py-3 px-4 text-right">จัดการ</th>
+                                                    <th className="py-3 px-4 text-right rounded-r-xl">จัดการ</th>
                                                 </tr>
                                             </thead>
-                                            <tbody className="divide-y divide-white/10 text-xs">
+                                            <tbody className="neu-divide text-xs">
                                                 {visibleUsers.map(u => {
                                                     const lic = getUserLicense(u);
                                                     const st = getUserFiveStepStatus(u);
@@ -1815,17 +1903,17 @@
                                                     const prof = resolveProfessionGroupSafe(u);
                                                     const isNurse = isNurseCneuUser(u);
                                                     return (
-                                                        <tr key={u.id || lic} className="hover:bg-white/[0.03] transition-colors">
+                                                        <tr key={u.id || lic} className="transition-colors">
                                                             <td className="py-3.5 px-4">
                                                                 <div className="flex items-center gap-2 flex-wrap">
                                                                     <p className="font-display font-bold text-sm text-primary-adaptive">{u.name || 'ไม่ระบุชื่อ'}</p>
-                                                                    <span className={`px-2 py-0.5 rounded-full border font-mono text-[10px] font-bold ${clsBadge.cls}`}>{clsBadge.label}</span>
+                                                                    <span className={`px-2.5 py-0.5 rounded-full border font-mono text-[10px] font-bold ${clsBadge.cls}`}>{clsBadge.label}</span>
                                                                 </div>
                                                                 <p className="text-[11px] text-muted-adaptive">
                                                                     <span className="font-mono text-prism-adaptive">{lic}</span> • {u.hospital || '-'} • <span className="text-accent-adaptive font-semibold">{info.statusLabel}</span>
                                                                 </p>
                                                                 {info.activityName && (
-                                                                    <p className="text-[10px] text-secondary-adaptive mt-0.5 truncate max-w-xs" title={info.activityName}>
+                                                                    <p className="text-[10.5px] text-secondary-adaptive mt-0.5 truncate max-w-xs" title={info.activityName}>
                                                                         {info.hoursLabel} — {info.activityName}
                                                                     </p>
                                                                 )}
@@ -1853,11 +1941,11 @@
                                                             </td>
                                                             <td className="py-3.5 px-4 text-right">
                                                                 <div className="inline-flex items-center gap-1.5">
-                                                                    <button type="button" onClick={() => handleOpenTransferModal(u)} className="px-2.5 py-1.5 rounded-xl spatial-soft text-prism-adaptive hover:border-prism-400 font-bold text-[11px]">เทียบโอน</button>
-                                                                    <button type="button" onClick={() => handleUpdateUser(u, { status: u.status === 'ผ่าน' ? 'กำลังเรียน' : 'ผ่าน' })} className={`px-2.5 py-1.5 rounded-xl font-bold text-[11px] border ${u.status === 'ผ่าน' ? 'bg-aurora-500/20 border-aurora-400/40 text-accent-adaptive' : 'spatial-soft text-secondary-adaptive'}`}>
+                                                                    <button type="button" onClick={() => handleOpenTransferModal(u)} className="neu-btn px-3 py-1.5 text-prism-adaptive font-bold text-[11px]">เทียบโอน</button>
+                                                                    <button type="button" onClick={() => handleUpdateUser(u, { status: u.status === 'ผ่าน' ? 'กำลังเรียน' : 'ผ่าน' })} className={`neu-btn px-3 py-1.5 font-bold text-[11px] ${u.status === 'ผ่าน' ? 'is-pressed' : ''}`}>
                                                                         {u.status === 'ผ่าน' ? 'ผ่านแล้ว ✓' : 'กำลังเรียน'}
                                                                     </button>
-                                                                    <button type="button" onClick={() => handleDeleteUser(u)} className="p-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-400" title="ลบผู้เรียน">
+                                                                    <button type="button" onClick={() => handleDeleteUser(u)} className="neu-btn w-8 h-8 text-rose-adaptive" title="ลบผู้เรียน">
                                                                         <Icon name="Trash2" size={14} />
                                                                     </button>
                                                                 </div>
@@ -1872,7 +1960,7 @@
                                         </table>
                                     </div>
 
-                                    <div className="md:hidden divide-y divide-white/10">
+                                    <div className="md:hidden neu-divide">
                                         {visibleUsers.map(u => {
                                             const lic = getUserLicense(u);
                                             const st = getUserFiveStepStatus(u);
@@ -1890,12 +1978,12 @@
                                                             <p className="text-xs text-muted-adaptive truncate"><span className="font-mono text-prism-adaptive">{lic}</span> • {prof} • {u.hospital || '-'}</p>
                                                             <p className="text-[11px] font-semibold text-accent-adaptive truncate">สถานะ: {info.statusLabel}</p>
                                                         </div>
-                                                        <button type="button" onClick={() => handleDeleteUser(u)} className="p-2 rounded-xl bg-rose-500/15 text-rose-400 shrink-0"><Icon name="Trash2" size={14} /></button>
+                                                        <button type="button" onClick={() => handleDeleteUser(u)} className="neu-btn w-9 h-9 text-rose-adaptive shrink-0"><Icon name="Trash2" size={14} /></button>
                                                     </div>
                                                     <FiveStepTelemetryPills u={u} onToggleLab={() => handleUpdateUser(u, { skillLabPassed: !st.step3Lab })} />
                                                     <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
-                                                        <button type="button" onClick={() => handleOpenTransferModal(u)} className="px-2.5 py-1.5 rounded-xl spatial-soft text-prism-adaptive font-bold text-xs">กิจกรรม/เทียบโอน</button>
-                                                        <button type="button" onClick={() => handleUpdateUser(u, { status: u.status === 'ผ่าน' ? 'กำลังเรียน' : 'ผ่าน' })} className={`px-3 py-1.5 rounded-xl font-bold text-xs border ${u.status === 'ผ่าน' ? 'bg-aurora-500/20 border-aurora-400/40 text-accent-adaptive' : 'spatial-soft text-secondary-adaptive'}`}>
+                                                        <button type="button" onClick={() => handleOpenTransferModal(u)} className="neu-btn px-3 py-1.5 text-prism-adaptive font-bold text-xs">กิจกรรม/เทียบโอน</button>
+                                                        <button type="button" onClick={() => handleUpdateUser(u, { status: u.status === 'ผ่าน' ? 'กำลังเรียน' : 'ผ่าน' })} className={`neu-btn px-3.5 py-1.5 font-bold text-xs ${u.status === 'ผ่าน' ? 'is-pressed' : ''}`}>
                                                             {u.status === 'ผ่าน' ? 'ผ่านแล้ว ✓' : 'กำลังเรียน'}
                                                         </button>
                                                     </div>
@@ -1912,14 +2000,14 @@
                             <div className="space-y-5">
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <div>
-                                        <span className="px-2.5 py-0.5 rounded-full bg-aurora-500/20 text-accent-adaptive font-mono text-[10px] font-bold">CENTRAL ONSITE HUB • MULTI-COURSE LINKING</span>
-                                        <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive mt-1">ตั้งค่ากิจกรรม Onsite, เวลาเปิดระบบ และคลังรายชื่อย้อนหลัง</h2>
+                                        <span className="px-3 py-1 rounded-full bg-[var(--neu-bg)] shadow-[var(--shadow-pressed-sm)] text-accent-adaptive font-mono text-[10px] font-bold">CENTRAL ONSITE HUB • MULTI-COURSE LINKING</span>
+                                        <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive mt-1.5">ตั้งค่ากิจกรรม Onsite, เวลาเปิดระบบ และคลังรายชื่อย้อนหลัง</h2>
                                     </div>
                                     <div className="flex flex-wrap gap-2 shrink-0">
-                                        <a href="./onsite.html" target="_blank" rel="noreferrer" className="spatial-soft touch-target px-4 py-2.5 rounded-full font-display font-bold text-xs text-primary-adaptive inline-flex items-center gap-1.5">
+                                        <a href="./onsite.html" target="_blank" rel="noreferrer" className="neu-btn touch-target px-4 py-2.5 font-display font-bold text-xs">
                                             <Icon name="ExternalLink" size={14} className="text-prism-adaptive" /> เปิดหน้า onsite.html
                                         </a>
-                                        <a href="./onsite.html?mode=organizer" target="_blank" rel="noreferrer" className="rjc2-pill-btn touch-target px-5 py-2.5 rounded-full font-display font-extrabold text-xs inline-flex items-center justify-center gap-1.5">
+                                        <a href="./onsite.html?mode=organizer" target="_blank" rel="noreferrer" className="rjc2-pill-btn touch-target px-5 py-2.5 font-display font-extrabold text-xs inline-flex items-center justify-center gap-1.5">
                                             <Icon name="Printer" size={15} /> พิมพ์ใบเซ็นชื่อ (PDF)
                                         </a>
                                     </div>
@@ -1936,39 +2024,39 @@
                                         </div>
 
                                         <div className="flex flex-col sm:flex-row gap-2">
-                                            <input readOnly value={onsitePublicUrl} onFocus={e => e.target.select()} className="touch-target spatial-input flex-1 px-3.5 py-2.5 rounded-xl font-mono text-xs sm:text-sm font-bold text-prism-adaptive" />
-                                            <button type="button" onClick={handleCopyOnsiteLink} className={`touch-target px-5 py-2.5 rounded-xl font-display font-extrabold text-xs inline-flex items-center justify-center gap-1.5 shrink-0 ${onsiteLinkCopied ? 'bg-emerald-500 text-void-950 shadow-lg' : 'rjc2-pill-btn'}`}>
+                                            <input readOnly value={onsitePublicUrl} onFocus={e => e.target.select()} className="touch-target spatial-input flex-1 px-3.5 py-2.5 rounded-2xl font-mono text-xs sm:text-sm font-bold text-prism-adaptive" />
+                                            <button type="button" onClick={handleCopyOnsiteLink} className="rjc2-pill-btn touch-target px-5 py-2.5 font-display font-extrabold text-xs inline-flex items-center justify-center gap-1.5 shrink-0">
                                                 <Icon name={onsiteLinkCopied ? 'Check' : 'Copy'} size={15} />
                                                 <span>{onsiteLinkCopied ? 'คัดลอกลิงก์แล้ว ✓' : 'Copy Link รับสมัคร'}</span>
                                             </button>
                                         </div>
 
                                         <div className="flex flex-wrap gap-2 pt-1">
-                                            <button type="button" onClick={() => handleDownloadOnsiteQr('poster')} className="rjc2-pill-btn touch-target px-4 py-2.5 rounded-full font-display font-extrabold text-xs inline-flex items-center gap-1.5">
+                                            <button type="button" onClick={() => handleDownloadOnsiteQr('poster')} className="rjc2-pill-btn touch-target px-4 py-2.5 font-display font-extrabold text-xs inline-flex items-center gap-1.5">
                                                 <Icon name="Download" size={15} /> ดาวน์โหลดโปสเตอร์ QR (PNG)
                                             </button>
-                                            <button type="button" onClick={() => handleDownloadOnsiteQr('raw')} className="spatial-soft touch-target px-4 py-2.5 rounded-full font-display font-bold text-xs text-prism-adaptive inline-flex items-center gap-1.5">
+                                            <button type="button" onClick={() => handleDownloadOnsiteQr('raw')} className="neu-btn touch-target px-4 py-2.5 font-display font-bold text-xs text-prism-adaptive">
                                                 <Icon name="QrCode" size={15} /> ดาวน์โหลดเฉพาะ QR ล้วน (PNG)
                                             </button>
                                         </div>
                                     </div>
 
-                                    <div className="lg:col-span-4 flex flex-col items-center justify-center gap-2 p-4 rounded-2xl spatial-soft text-center">
+                                    <div className="lg:col-span-4 flex flex-col items-center justify-center gap-2 p-4 neu-inset text-center">
                                         <LiveQrCanvas url={onsitePublicUrl} size={172} />
                                         <span className="font-mono text-[10px] font-bold text-accent-adaptive">{onsiteConfig.eventId}</span>
                                         <span className="text-[11px] text-muted-adaptive leading-tight">วางในหนังสือเชิญประชุมหรือขึ้นจอห้องประชุม</span>
                                     </div>
                                 </section>
 
-                                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 text-center text-xs">
-                                    <div className="spatial-card rounded-2xl p-3.5"><span className="text-muted-adaptive block">ผู้สมัครใช้งานสิทธิ์</span><span className="font-mono text-2xl font-extrabold text-primary-adaptive">{onsiteStats.total}</span></div>
-                                    <div className="spatial-card rounded-2xl p-3.5"><span className="text-muted-adaptive block">แพทย์</span><span className="font-mono text-2xl font-extrabold text-prism-adaptive">{onsiteStats.doctor}</span></div>
-                                    <div className="spatial-card rounded-2xl p-3.5"><span className="text-muted-adaptive block">พยาบาล</span><span className="font-mono text-2xl font-extrabold text-accent-adaptive">{onsiteStats.nurse}</span></div>
-                                    <div className="spatial-card rounded-2xl p-3.5"><span className="text-muted-adaptive block">สหวิชาชีพ</span><span className="font-mono text-2xl font-extrabold text-amber-400">{onsiteStats.allied}</span></div>
-                                    <div className="col-span-2 sm:col-span-1 spatial-card rounded-2xl p-3.5"><span className="text-muted-adaptive block">ยกเลิก (No-show)</span><span className="font-mono text-2xl font-extrabold text-rose-400">{onsiteStats.revoked}</span></div>
+                                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-center text-xs">
+                                    <div className="spatial-card rounded-2xl p-4"><span className="text-muted-adaptive block">ผู้สมัครใช้งานสิทธิ์</span><span className="font-mono text-2xl font-extrabold text-primary-adaptive">{onsiteStats.total}</span></div>
+                                    <div className="spatial-card rounded-2xl p-4"><span className="text-muted-adaptive block">แพทย์</span><span className="font-mono text-2xl font-extrabold text-prism-adaptive">{onsiteStats.doctor}</span></div>
+                                    <div className="spatial-card rounded-2xl p-4"><span className="text-muted-adaptive block">พยาบาล</span><span className="font-mono text-2xl font-extrabold text-accent-adaptive">{onsiteStats.nurse}</span></div>
+                                    <div className="spatial-card rounded-2xl p-4"><span className="text-muted-adaptive block">สหวิชาชีพ</span><span className="font-mono text-2xl font-extrabold text-amber-adaptive">{onsiteStats.allied}</span></div>
+                                    <div className="col-span-2 sm:col-span-1 spatial-card rounded-2xl p-4"><span className="text-muted-adaptive block">ยกเลิก (No-show)</span><span className="font-mono text-2xl font-extrabold text-rose-adaptive">{onsiteStats.revoked}</span></div>
                                 </div>
 
-                                <div className="spatial-card rounded-[1.75rem] p-5 sm:p-6 space-y-4 border-prism-400/35">
+                                <div className="spatial-card rounded-[28px] p-5 sm:p-6 space-y-4">
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                         <FieldInput label="รหัสกิจกรรม / รุ่น (Event ID — แยกรุ่นไม่ทับของเดิม)" value={onsiteDraft.eventId} onChange={e => setOnsiteDraft(p => ({ ...p, eventId: e.target.value }))} />
                                         <div>
@@ -1976,7 +2064,7 @@
                                             <select
                                                 value={onsiteDraft.targetCourseId || courseCatalog[0]?.id || 'organ_donation_core'}
                                                 onChange={e => setOnsiteDraft(p => ({ ...p, targetCourseId: e.target.value }))}
-                                                className="touch-target spatial-input w-full px-3.5 py-2 rounded-xl text-sm font-bold"
+                                                className="touch-target spatial-input w-full px-3.5 py-2 rounded-2xl text-sm font-bold"
                                             >
                                                 {courseCatalog.map(c => (
                                                     <option key={c.id} value={c.id}>
@@ -1988,43 +2076,43 @@
                                         <FieldInput className="sm:col-span-2" label="ชื่อกิจกรรมอบรม Onsite" value={onsiteDraft.activityTitle} onChange={e => setOnsiteDraft(p => ({ ...p, activityTitle: e.target.value }))} />
                                         <FieldInput label="วัน/เดือน/ปี ที่จัดกิจกรรม" value={onsiteDraft.eventDate} onChange={e => setOnsiteDraft(p => ({ ...p, eventDate: e.target.value }))} />
                                         <FieldInput label="สถานที่ / หน่วยงานที่จัด" value={onsiteDraft.venueAndOrganizer} onChange={e => setOnsiteDraft(p => ({ ...p, venueAndOrganizer: e.target.value }))} />
-                                        <div className="sm:col-span-2 p-4 rounded-2xl bg-prism-500/15 border border-prism-400/35 space-y-2">
-                                            <label className="block text-xs font-bold text-prism-adaptive">วันและเวลาที่เปิดให้เข้า rjcloud.organ 2.0 (แสดงบนบัตร Digital Onsite Pass เช่น 16:00 น.)</label>
-                                            <input type="datetime-local" value={onsiteDraft.unlockAtLocal} onChange={e => setOnsiteDraft(p => ({ ...p, unlockAtLocal: e.target.value }))} className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-xl font-mono text-sm font-bold" />
+                                        <div className="sm:col-span-2 neu-inset p-4 space-y-2">
+                                            <label className="block text-xs font-bold text-prism-adaptive">วันและเวลาที่เปิดให้เข้า organ cloud 2.0 (แสดงบนบัตร Digital Onsite Pass เช่น 16:00 น.)</label>
+                                            <input type="datetime-local" value={onsiteDraft.unlockAtLocal} onChange={e => setOnsiteDraft(p => ({ ...p, unlockAtLocal: e.target.value }))} className="touch-target spatial-input w-full px-3.5 py-2.5 rounded-2xl font-mono text-sm font-bold" />
                                             <p className="text-[11px] text-secondary-adaptive">เวลาเปิดระบบปัจจุบัน: <b className="text-accent-adaptive">{formatThaiDateTimeFull(onsiteConfig.unlockAt)}</b></p>
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
-                                        <label className="spatial-soft p-3.5 rounded-2xl flex items-center justify-between gap-2 cursor-pointer">
+                                        <label className="neu-inset p-3.5 flex items-center justify-between gap-2 cursor-pointer">
                                             <span className="font-bold text-primary-adaptive">เปิดรับสมัครออนไลน์บน onsite.html</span>
-                                            <input type="checkbox" checked={Boolean(onsiteDraft.registrationOpen)} onChange={e => setOnsiteDraft(p => ({ ...p, registrationOpen: e.target.checked }))} className="w-5 h-5 accent-aurora-500" />
+                                            <input type="checkbox" checked={Boolean(onsiteDraft.registrationOpen)} onChange={e => setOnsiteDraft(p => ({ ...p, registrationOpen: e.target.checked }))} className="w-5 h-5 accent-emerald-600" />
                                         </label>
-                                        <label className="spatial-soft p-3.5 rounded-2xl flex items-center justify-between gap-2 cursor-pointer">
+                                        <label className="neu-inset p-3.5 flex items-center justify-between gap-2 cursor-pointer">
                                             <span className="font-bold text-accent-adaptive">เปิดสิทธิ์ทันที (ข้ามเวลานับถอยหลัง)</span>
-                                            <input type="checkbox" checked={Boolean(onsiteDraft.forceUnlocked)} onChange={e => setOnsiteDraft(p => ({ ...p, forceUnlocked: e.target.checked }))} className="w-5 h-5 accent-aurora-500" />
+                                            <input type="checkbox" checked={Boolean(onsiteDraft.forceUnlocked)} onChange={e => setOnsiteDraft(p => ({ ...p, forceUnlocked: e.target.checked }))} className="w-5 h-5 accent-emerald-600" />
                                         </label>
                                     </div>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                                        <button type="button" onClick={handleSaveOnsiteConfig} className="rjc2-pill-btn touch-target py-3.5 rounded-full font-display font-extrabold text-xs sm:text-sm">บันทึกกิจกรรม &amp; เวลาเปิดระบบขึ้น Cloud</button>
-                                        <button type="button" disabled={onsiteSyncing} onClick={handleBatchSyncOnsiteToLearners} className="spatial-soft touch-target py-3.5 rounded-full font-display font-bold text-xs sm:text-sm text-accent-adaptive border-aurora-400/45 disabled:opacity-50">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <button type="button" onClick={handleSaveOnsiteConfig} className="rjc2-pill-btn touch-target py-3.5 font-display font-extrabold text-xs sm:text-sm">บันทึกกิจกรรม &amp; เวลาเปิดระบบขึ้น Cloud</button>
+                                        <button type="button" disabled={onsiteSyncing} onClick={handleBatchSyncOnsiteToLearners} className="neu-btn touch-target py-3.5 font-display font-bold text-xs sm:text-sm text-accent-adaptive">
                                             {onsiteSyncing ? 'กำลังซิงค์...' : `ซิงค์สิทธิ์เทียบโอนให้ผู้สมัคร (${onsiteStats.total} ราย)`}
                                         </button>
                                     </div>
                                 </div>
 
-                                <div className="spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3.5">
+                                <div className="spatial-card rounded-[28px] p-4 sm:p-5 space-y-3.5">
                                     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-2.5">
                                         <div className="relative flex-1">
                                             <Icon name="Search" size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-adaptive" />
                                             <input value={onsiteSearch} onChange={e => setOnsiteSearch(e.target.value)} placeholder="ค้นหารายชื่อผู้สมัคร Onsite, เลขใบอนุญาต, โรงพยาบาล..." className="touch-target spatial-input w-full pl-10 pr-4 py-2 rounded-2xl text-xs sm:text-sm" />
                                         </div>
                                         <div className="flex flex-wrap gap-1.5">
-                                            <select value={onsiteEventFilter} onChange={e => setOnsiteEventFilter(e.target.value)} className="spatial-input px-3 py-2 rounded-xl text-xs font-bold">
+                                            <select value={onsiteEventFilter} onChange={e => setOnsiteEventFilter(e.target.value)} className="spatial-input px-3 py-2 rounded-full text-xs font-bold">
                                                 <option value="ALL">ทุกรุ่นกิจกรรม ({onsiteRegistrants.length})</option>
                                                 {onsiteEventIds.map(evId => <option key={evId} value={evId}>รุ่น {evId}</option>)}
                                             </select>
                                             {['ALL', 'แพทย์', 'พยาบาล', 'บุคลากรสหวิชาชีพ'].map(pg => (
-                                                <button key={pg} type="button" onClick={() => setOnsiteFilterProf(pg)} className={`px-3 py-2 rounded-xl text-xs font-bold shrink-0 ${onsiteFilterProf === pg ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'spatial-soft text-secondary-adaptive'}`}>
+                                                <button key={pg} type="button" onClick={() => setOnsiteFilterProf(pg)} className={`neu-btn px-3.5 py-2 text-xs font-bold shrink-0 ${onsiteFilterProf === pg ? 'is-pressed' : ''}`}>
                                                     {pg === 'ALL' ? 'ทุกวิชาชีพ' : pg}
                                                 </button>
                                             ))}
@@ -2034,14 +2122,14 @@
                                         <table className="w-full text-left border-collapse text-xs">
                                             <thead className="spatial-thead font-mono text-[10px] uppercase text-muted-adaptive">
                                                 <tr>
-                                                    <th className="py-3 px-3">ผู้สมัคร / เลขใบอนุญาต / รุ่น</th>
+                                                    <th className="py-3 px-3 rounded-l-xl">ผู้สมัคร / เลขใบอนุญาต / รุ่น</th>
                                                     <th className="py-3 px-3">กลุ่มวิชาชีพ</th>
                                                     <th className="py-3 px-3">โรงพยาบาล / จังหวัด / เขตสุขภาพ</th>
                                                     <th className="py-3 px-3">สถานะเทียบโอน</th>
-                                                    <th className="py-3 px-3 text-right">จัดการ (No-show)</th>
+                                                    <th className="py-3 px-3 text-right rounded-r-xl">จัดการ (No-show)</th>
                                                 </tr>
                                             </thead>
-                                            <tbody className="divide-y divide-white/10">
+                                            <tbody className="neu-divide">
                                                 {filteredOnsiteRegistrants.map(r => {
                                                     const isCancel = Boolean(r.revoked || r.cancelled);
                                                     return (
@@ -2053,12 +2141,12 @@
                                                             <td className="py-3 px-3 font-semibold text-secondary-adaptive">{r.professionGroup || '-'}</td>
                                                             <td className="py-3 px-3"><p className="font-semibold text-primary-adaptive">{r.hospital}</p><p className="text-[11px] text-muted-adaptive">จ.{r.province || '-'} • {r.region || '-'}</p></td>
                                                             <td className="py-3 px-3">
-                                                                <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold ${isCancel ? 'bg-rose-500/20 text-rose-300' : 'bg-aurora-500/20 text-accent-adaptive'}`}>
+                                                                <span className={`px-3 py-1 rounded-full text-[11px] font-bold bg-[var(--neu-bg)] shadow-[var(--shadow-pressed-sm)] ${isCancel ? 'text-rose-adaptive' : 'text-accent-adaptive'}`}>
                                                                     {isCancel ? 'ยกเลิกสิทธิ์แล้ว' : 'เทียบโอน 100%'}
                                                                 </span>
                                                             </td>
                                                             <td className="py-3 px-3 text-right">
-                                                                <button type="button" onClick={() => handleToggleOnsiteRevoke(r)} className={`px-3 py-1.5 rounded-xl font-bold text-[11px] ${isCancel ? 'bg-aurora-500/20 text-accent-adaptive' : 'bg-rose-500/15 border border-rose-400/35 text-rose-300'}`}>
+                                                                <button type="button" onClick={() => handleToggleOnsiteRevoke(r)} className={`neu-btn px-3.5 py-1.5 font-bold text-[11px] ${isCancel ? 'text-accent-adaptive' : 'text-rose-adaptive'}`}>
                                                                     {isCancel ? 'คืนสิทธิ์เทียบโอน' : 'ยกเลิกสิทธิ์ (ไม่มางาน)'}
                                                                 </button>
                                                             </td>
@@ -2079,46 +2167,46 @@
                         {activeTab === 'content' && (
                             <div className="space-y-4">
                                 <div className="flex flex-wrap items-center justify-between gap-2">
-                                    <div className="inline-flex p-1 rounded-2xl spatial-soft gap-1">
-                                        <button type="button" onClick={() => setContentSubTab('courses')} className={`px-4 py-2 rounded-xl text-xs font-bold ${contentSubTab === 'courses' ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'text-secondary-adaptive'}`}>
+                                    <div className="flex flex-wrap gap-2">
+                                        <button type="button" onClick={() => setContentSubTab('courses')} className={`neu-btn px-4 py-2 text-xs font-display font-bold ${contentSubTab === 'courses' ? 'is-pressed' : ''}`}>
                                             จัดการหลักสูตร ({courseCatalog.length})
                                         </button>
-                                        <button type="button" onClick={() => setContentSubTab('lessons')} className={`px-4 py-2 rounded-xl text-xs font-bold ${contentSubTab === 'lessons' ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'text-secondary-adaptive'}`}>
+                                        <button type="button" onClick={() => setContentSubTab('lessons')} className={`neu-btn px-4 py-2 text-xs font-display font-bold ${contentSubTab === 'lessons' ? 'is-pressed' : ''}`}>
                                             บทเรียน ({contentConfig.lessons.length})
                                         </button>
-                                        <button type="button" onClick={() => setContentSubTab('quiz')} className={`px-4 py-2 rounded-xl text-xs font-bold ${contentSubTab === 'quiz' ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'text-secondary-adaptive'}`}>
+                                        <button type="button" onClick={() => setContentSubTab('quiz')} className={`neu-btn px-4 py-2 text-xs font-display font-bold ${contentSubTab === 'quiz' ? 'is-pressed' : ''}`}>
                                             คลังข้อสอบ ({(contentConfig.questionSets[0] || []).length})
                                         </button>
                                     </div>
 
                                     {contentSubTab === 'courses' ? (
                                         <div className="flex flex-wrap gap-2">
-                                            <button type="button" onClick={() => setShowAddCourseForm(v => !v)} className="spatial-soft px-4 py-2.5 rounded-full text-xs font-bold text-pink-300 border-pink-300/45 inline-flex items-center gap-1.5">
+                                            <button type="button" onClick={() => setShowAddCourseForm(v => !v)} className="neu-btn px-4 py-2.5 text-xs font-bold text-rose-adaptive">
                                                 <Icon name="Plus" size={14} /> เพิ่มหลักสูตรใหม่
                                             </button>
-                                            <button type="button" onClick={() => persistSettings({ courseCatalog }, 'บันทึกรายการหลักสูตรทั้งหมดขึ้น Cloud และอัปเดตหน้าเว็บแล้วค่ะ')} className="rjc2-pill-btn px-5 py-2.5 rounded-full font-display font-extrabold text-xs inline-flex items-center gap-1.5">
+                                            <button type="button" onClick={() => persistSettings({ courseCatalog }, 'บันทึกรายการหลักสูตรทั้งหมดขึ้น Cloud และอัปเดตหน้าเว็บแล้วค่ะ')} className="rjc2-pill-btn px-5 py-2.5 font-display font-extrabold text-xs inline-flex items-center gap-1.5">
                                                 <Icon name="Save" size={14} /> บันทึกการแก้ไขหลักสูตรขึ้น Cloud
                                             </button>
                                         </div>
                                     ) : (
-                                        <button type="button" onClick={() => persistContent(contentConfig)} className="rjc2-pill-btn px-5 py-2.5 rounded-full font-display font-extrabold text-xs">
+                                        <button type="button" onClick={() => persistContent(contentConfig)} className="rjc2-pill-btn px-5 py-2.5 font-display font-extrabold text-xs">
                                             บันทึกบทเรียนและข้อสอบขึ้น Cloud
                                         </button>
                                     )}
                                 </div>
 
-                                {/* SUB-TAB A: COURSE CATALOG MANAGEMENT (ADD / EDIT / TOGGLE ACTIVE / DELETE) */}
+                                {/* SUB-TAB A: COURSE CATALOG MANAGEMENT */}
                                 {contentSubTab === 'courses' && (
                                     <div className="space-y-4">
-                                        <div className="spatial-card rounded-[1.75rem] p-4 sm:p-5 border-pink-300/35 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                        <div className="spatial-card rounded-[28px] p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                             <div>
-                                                <span className="font-mono text-[10px] font-bold text-pink-300 uppercase">MULTI-COURSE HUB • REAL-TIME SYNC TO INDEX.HTML &amp; ONSITE.HTML</span>
+                                                <span className="font-mono text-[10px] font-bold text-rose-adaptive uppercase">MULTI-COURSE HUB • REAL-TIME SYNC TO INDEX.HTML &amp; ONSITE.HTML</span>
                                                 <h3 className="font-display font-extrabold text-base sm:text-lg text-primary-adaptive mt-0.5">ควบคุมหลักสูตรที่แสดงหน้ายืนยันตัวตนบุคลากร</h3>
                                                 <p className="text-xs text-secondary-adaptive mt-0.5">หลักสูตรที่เปิดสถานะ <b>“เปิดแสดงผล”</b> จะปรากฏเป็นการ์ดเลือกหลักสูตรบนหน้าแรกทันที และหากกด <b>“ปิดซ่อนไว้”</b> จะไม่แสดงให้ผู้เรียนเลือกค่ะ</p>
                                             </div>
                                             <div className="flex gap-2 text-xs font-mono shrink-0">
-                                                <span className="px-3 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-300 font-bold">เปิดสอน {courseCatalog.filter(c => c.active !== false).length}</span>
-                                                <span className="px-3 py-1.5 rounded-xl spatial-soft text-muted-adaptive font-bold">ซ่อนไว้ {courseCatalog.filter(c => c.active === false).length}</span>
+                                                <span className="px-3.5 py-1.5 rounded-full bg-[var(--neu-bg)] shadow-[var(--shadow-pressed-sm)] text-accent-adaptive font-bold">เปิดสอน {courseCatalog.filter(c => c.active !== false).length}</span>
+                                                <span className="px-3.5 py-1.5 rounded-full bg-[var(--neu-bg)] shadow-[var(--shadow-pressed-sm)] text-muted-adaptive font-bold">ซ่อนไว้ {courseCatalog.filter(c => c.active === false).length}</span>
                                             </div>
                                         </div>
 
@@ -2153,23 +2241,23 @@
                                             {courseCatalog.map((c, idx) => {
                                                 const isActive = c.active !== false;
                                                 return (
-                                                    <div key={c.id || idx} className={`spatial-card rounded-[1.5rem] p-4 sm:p-5 space-y-3 transition-all ${isActive ? 'border-emerald-400/35' : 'opacity-70 border-slate-500/30'}`}>
+                                                    <div key={c.id || idx} className={`spatial-card rounded-[24px] p-4 sm:p-5 space-y-3 transition-all ${isActive ? '' : 'opacity-70'}`}>
                                                         <div className="flex flex-wrap items-center justify-between gap-2">
                                                             <div className="flex items-center gap-2 flex-wrap">
-                                                                <span className="px-2.5 py-0.5 rounded-lg spatial-soft font-mono text-[11px] font-bold text-prism-adaptive">ID: {c.id}</span>
-                                                                <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${isActive ? 'bg-emerald-500/20 border-emerald-400/45 text-emerald-300' : 'bg-slate-500/20 border-slate-400/35 text-slate-300'}`}>
+                                                                <span className="px-3 py-0.5 rounded-full bg-[var(--neu-bg)] shadow-[var(--shadow-pressed-sm)] font-mono text-[11px] font-bold text-prism-adaptive">ID: {c.id}</span>
+                                                                <span className={`px-3 py-0.5 rounded-full text-[11px] font-bold bg-[var(--neu-bg)] shadow-[var(--shadow-pressed-sm)] ${isActive ? 'text-accent-adaptive' : 'text-muted-adaptive'}`}>
                                                                     {isActive ? '● เปิดแสดงผลหน้าเว็บ' : '○ ปิดซ่อนไว้'}
                                                                 </span>
                                                             </div>
-                                                            <div className="flex items-center gap-1.5">
+                                                            <div className="flex items-center gap-2">
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => handleToggleCourseActive(idx)}
-                                                                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all ${isActive ? 'bg-amber-400/15 border-amber-400/45 text-amber-300 hover:bg-amber-400/25' : 'bg-emerald-500/20 border-emerald-400/45 text-emerald-300 hover:bg-emerald-500/30'}`}
+                                                                    className={`neu-btn px-3.5 py-1.5 text-xs font-bold ${isActive ? 'text-amber-adaptive' : 'text-accent-adaptive'}`}
                                                                 >
                                                                     {isActive ? 'ปิดซ่อนหลักสูตร' : 'เปิดแสดงผล'}
                                                                 </button>
-                                                                <button type="button" onClick={() => handleDeleteCourse(c)} className="p-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-400" title="ลบหลักสูตร">
+                                                                <button type="button" onClick={() => handleDeleteCourse(c)} className="neu-btn w-8 h-8 text-rose-adaptive" title="ลบหลักสูตร">
                                                                     <Icon name="Trash2" size={15} />
                                                                 </button>
                                                             </div>
@@ -2245,21 +2333,21 @@
                         {activeTab === 'cert' && (
                             <div className="space-y-5">
                                 <div className="no-print flex flex-wrap items-center justify-between gap-2">
-                                    <div className="inline-flex p-1 rounded-2xl spatial-soft gap-1">
-                                        <button type="button" onClick={() => setCertSubTab('cneu')} className={`px-4 py-2 rounded-xl text-xs font-bold ${certSubTab === 'cneu' ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'text-secondary-adaptive'}`}>
+                                    <div className="flex flex-wrap gap-2">
+                                        <button type="button" onClick={() => setCertSubTab('cneu')} className={`neu-btn px-4 py-2 text-xs font-display font-bold ${certSubTab === 'cneu' ? 'is-pressed' : ''}`}>
                                             รายงาน CNEU (เฉพาะพยาบาล) &amp; แยกวิชาชีพ
                                         </button>
-                                        <button type="button" onClick={() => setCertSubTab('designer')} className={`px-4 py-2 rounded-xl text-xs font-bold ${certSubTab === 'designer' ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'text-secondary-adaptive'}`}>
+                                        <button type="button" onClick={() => setCertSubTab('designer')} className={`neu-btn px-4 py-2 text-xs font-display font-bold ${certSubTab === 'designer' ? 'is-pressed' : ''}`}>
                                             ออกแบบประกาศนียบัตร
                                         </button>
                                     </div>
 
                                     {certSubTab === 'cneu' && (
                                         <div className="flex flex-wrap gap-2">
-                                            <button type="button" onClick={handleExportActiveReportCsv} className="spatial-soft px-4 py-2.5 rounded-full text-xs font-bold text-accent-adaptive inline-flex items-center gap-1.5">
+                                            <button type="button" onClick={handleExportActiveReportCsv} className="neu-btn px-4 py-2.5 text-xs font-bold text-accent-adaptive">
                                                 <Icon name="FileSpreadsheet" size={14} /> ส่งออก CSV กลุ่มนี้ ({activeReportMeta.rows.length})
                                             </button>
-                                            <button type="button" onClick={() => window.print()} className="rjc2-pill-btn px-5 py-2.5 rounded-full font-display font-extrabold text-xs inline-flex items-center gap-1.5">
+                                            <button type="button" onClick={() => window.print()} className="rjc2-pill-btn px-5 py-2.5 font-display font-extrabold text-xs inline-flex items-center gap-1.5">
                                                 <Icon name="Printer" size={15} /> พิมพ์ / Export PDF ({activeReportMeta.rows.length} ราย)
                                             </button>
                                         </div>
@@ -2285,9 +2373,9 @@
                                         <div className="lg:col-span-7 spatial-card rounded-[1.75rem] p-4 space-y-3">
                                             <div className="flex flex-wrap items-center justify-between gap-2">
                                                 <p className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">LIVE CERTIFICATE PREVIEW BY PROFESSION</p>
-                                                <div className="flex gap-1">
+                                                <div className="flex gap-1.5">
                                                     {PROFESSION_LIST.map(p => (
-                                                        <button key={p} type="button" onClick={() => setCertPreviewProf(p)} className={`px-2.5 py-1 rounded-full text-[11px] font-bold ${certPreviewProf === p ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 font-extrabold' : 'spatial-soft text-secondary-adaptive'}`}>
+                                                        <button key={p} type="button" onClick={() => setCertPreviewProf(p)} className={`neu-btn px-3 py-1 text-[11px] font-bold ${certPreviewProf === p ? 'is-pressed' : ''}`}>
                                                             {p === 'พยาบาล' ? 'พยาบาล (CNEU)' : p}
                                                         </button>
                                                     ))}
@@ -2332,18 +2420,18 @@
                                                     </label>
                                                 </div>
 
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs">
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-xs">
                                                     {[
-                                                        { id: 'nurse_cneu', title: '1. ส่งสภาการพยาบาล (CNEU)', sub: `เฉพาะพยาบาลวิชาชีพ (${passedBreakdown.nurses.length} ราย)`, accent: 'border-aurora-400 bg-aurora-500/20' },
-                                                        { id: 'doctor_hours', title: '2. รายงานกลุ่มแพทย์', sub: `รับรองชั่วโมงวิชาการ (${passedBreakdown.doctors.length} ราย)`, accent: 'border-prism-400 bg-prism-500/20' },
-                                                        { id: 'allied_hours', title: '3. บุคลากรสหวิชาชีพ', sub: `รับรองชั่วโมงพัฒนาสมรรถนะ (${passedBreakdown.allied.length} ราย)`, accent: 'border-indigo-400 bg-indigo-500/20' },
-                                                        { id: 'all_exec', title: '4. รวมทุกวิชาชีพ (ผู้บริหาร)', sub: `สรุปทั้งหมด (${passedBreakdown.allPassed.length} ราย)`, accent: 'border-amber-400 bg-amber-500/20' }
+                                                        { id: 'nurse_cneu', title: '1. ส่งสภาการพยาบาล (CNEU)', sub: `เฉพาะพยาบาลวิชาชีพ (${passedBreakdown.nurses.length} ราย)` },
+                                                        { id: 'doctor_hours', title: '2. รายงานกลุ่มแพทย์', sub: `รับรองชั่วโมงวิชาการ (${passedBreakdown.doctors.length} ราย)` },
+                                                        { id: 'allied_hours', title: '3. บุคลากรสหวิชาชีพ', sub: `รับรองชั่วโมงพัฒนาสมรรถนะ (${passedBreakdown.allied.length} ราย)` },
+                                                        { id: 'all_exec', title: '4. รวมทุกวิชาชีพ (ผู้บริหาร)', sub: `สรุปทั้งหมด (${passedBreakdown.allPassed.length} ราย)` }
                                                     ].map(tab => (
                                                         <button
                                                             key={tab.id}
                                                             type="button"
                                                             onClick={() => setReportMode(tab.id)}
-                                                            className={`text-left p-3 rounded-2xl border transition-all ${reportMode === tab.id ? tab.accent : 'spatial-soft'}`}
+                                                            className={`text-left p-3.5 rounded-2xl transition-all ${reportMode === tab.id ? 'neu-nav-active' : 'spatial-soft'}`}
                                                         >
                                                             <p className="font-display font-extrabold text-primary-adaptive">{tab.title}</p>
                                                             <p className="text-[11px] text-secondary-adaptive mt-0.5">{tab.sub}</p>
@@ -2512,9 +2600,9 @@
                         )}
                     </main>
 
-                    {/* Mobile Bottom Spatial Dock (ครบทั้ง 7 เมนู) */}
-                    <nav className="no-print lg:hidden fixed bottom-0 left-0 right-0 z-40 spatial-dock px-1.5 pt-1.5 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))]">
-                        <div className="grid grid-cols-7 gap-0.5 max-w-xl mx-auto">
+                    {/* Mobile Bottom Neumorphic Dock (ครบทั้ง 7 เมนู) */}
+                    <nav className="no-print lg:hidden fixed bottom-0 left-0 right-0 z-40 spatial-dock px-1.5 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))]">
+                        <div className="grid grid-cols-7 gap-1 max-w-xl mx-auto">
                             {navItems.map(item => {
                                 const active = activeTab === item.id;
                                 return (
@@ -2522,8 +2610,8 @@
                                         key={item.id}
                                         type="button"
                                         onClick={() => { setActiveTab(item.id); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                                        className={`touch-target flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-xl text-[9px] font-bold transition-all active:scale-95 ${
-                                            active ? 'bg-gradient-to-r from-aurora-400 to-prism-400 text-void-950 shadow-sm' : 'text-secondary-adaptive'
+                                        className={`touch-target flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-2xl text-[9px] font-bold transition-all active:scale-95 ${
+                                            active ? 'neu-nav-active' : 'text-secondary-adaptive'
                                         }`}
                                     >
                                         <Icon name={item.icon} size={16} />
@@ -2536,25 +2624,25 @@
 
                     {/* Modal มอบสิทธิ์เทียบโอนรายบุคคล */}
                     {transferModal.open && transferModal.user && (
-                        <div className="no-print fixed inset-0 z-[132] bg-slate-950/75 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
-                            <form onSubmit={handleSaveTransferModal} className="spatial-card w-full sm:max-w-lg rounded-t-[2rem] sm:rounded-[2rem] p-6 space-y-4">
+                        <div className="no-print fixed inset-0 z-[132] bg-slate-950/70 backdrop-blur-md flex items-end sm:items-center justify-center p-3 sm:p-4">
+                            <form onSubmit={handleSaveTransferModal} className="spatial-card w-full sm:max-w-lg rounded-[28px] p-6 space-y-4">
                                 <div className="flex items-start justify-between gap-2">
                                     <div>
                                         <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">CREDIT TRANSFER &amp; ACTIVITY REFERENCE</span>
                                         <h3 className="font-display font-extrabold text-lg text-primary-adaptive">จัดการสิทธิ์เทียบโอนชั่วโมงอบรม</h3>
                                         <p className="text-xs text-secondary-adaptive">{transferModal.user.name} ({getUserLicense(transferModal.user)})</p>
                                     </div>
-                                    <button type="button" onClick={() => setTransferModal(p => ({ ...p, open: false, user: null }))} className="spatial-soft w-8 h-8 rounded-xl flex items-center justify-center text-muted-adaptive">
+                                    <button type="button" onClick={() => setTransferModal(p => ({ ...p, open: false, user: null }))} className="neu-btn w-9 h-9">
                                         <Icon name="X" size={16} />
                                     </button>
                                 </div>
 
-                                <label className="spatial-soft p-3.5 rounded-2xl flex items-center justify-between gap-3 cursor-pointer">
+                                <label className="neu-inset p-4 flex items-center justify-between gap-3 cursor-pointer">
                                     <div>
                                         <p className="text-sm font-bold text-accent-adaptive">มอบสิทธิ์ “เทียบโอน (ยกเว้นชั่วโมง 100%)”</p>
                                         <p className="text-xs text-muted-adaptive">ผู้เรียนสามารถทำ Pre-test → AI Skill Lab 3D → Post-test ≥ 80% ได้ทันทีโดยไม่ต้องสะสมเวลาวิดีโอซ้ำ</p>
                                     </div>
-                                    <input type="checkbox" checked={Boolean(transferModal.studyHoursExempt)} onChange={e => setTransferModal(p => ({ ...p, studyHoursExempt: e.target.checked }))} className="w-5 h-5 accent-aurora-500 shrink-0" />
+                                    <input type="checkbox" checked={Boolean(transferModal.studyHoursExempt)} onChange={e => setTransferModal(p => ({ ...p, studyHoursExempt: e.target.checked }))} className="w-5 h-5 accent-emerald-600 shrink-0" />
                                 </label>
 
                                 {transferModal.studyHoursExempt && (
@@ -2565,9 +2653,9 @@
                                     </div>
                                 )}
 
-                                <div className="grid grid-cols-2 gap-2.5 pt-2">
-                                    <button type="button" onClick={() => setTransferModal(p => ({ ...p, open: false, user: null }))} className="touch-target spatial-soft py-3 rounded-2xl font-bold text-sm text-primary-adaptive">ยกเลิก</button>
-                                    <button type="submit" className="rjc2-pill-btn touch-target py-3 rounded-2xl font-display font-extrabold text-sm">บันทึกสิทธิ์ขึ้น Cloud</button>
+                                <div className="grid grid-cols-2 gap-3 pt-2">
+                                    <button type="button" onClick={() => setTransferModal(p => ({ ...p, open: false, user: null }))} className="neu-btn touch-target py-3 font-bold text-sm">ยกเลิก</button>
+                                    <button type="submit" className="rjc2-pill-btn touch-target py-3 font-display font-extrabold text-sm">บันทึกสิทธิ์ขึ้น Cloud</button>
                                 </div>
                             </form>
                         </div>
