@@ -308,39 +308,34 @@
     bc.fill();
 
     // Unopened deep-pink buds
-    for (let b = 0; b < 4; b++) {
-      const bx = 64 + (rng() - 0.5) * 68;
-      const by = 64 + (rng() - 0.5) * 52;
-      bc.save();
-      bc.translate(bx, by);
-      bc.rotate(rng() * Math.PI * 2);
-      bc.fillStyle = '#be185d';
-      bc.beginPath();
-      bc.ellipse(0, 0, 4.2, 2.6, 0, 0, Math.PI * 2);
-      bc.fill();
-      bc.fillStyle = '#fbcfe8';
-      bc.beginPath();
-      bc.ellipse(1.2, -0.4, 2.2, 1.3, 0, 0, Math.PI * 2);
-      bc.fill();
-      bc.restore();
-    }
-
-    const cnt = mode === 'hero' ? 4 : mode === 'sss' ? 5 : 7;
-    for (let f = 0; f < cnt; f++) {
-      const fx = 64 + (rng() - 0.5) * 58;
-      const fy = 64 + (rng() - 0.5) * 44;
-      const sc = (mode === 'hero' ? 0.82 : 0.65) + rng() * 0.42;
-      drawSingleBotanicalBlossom(bc, fx, fy, sc, rng() * Math.PI * 2, mode === 'hero' ? 'light' : mode);
-    }
-    return c;
+  function applySoftEllipticalFeather(targetCanvas) {
+    const tc = targetCanvas.getContext('2d');
+    if (!tc) return;
+    const cw = targetCanvas.width;
+    const ch = targetCanvas.height;
+    tc.save();
+    tc.globalCompositeOperation = 'destination-in';
+    tc.translate(cw * 0.5, ch * 0.5);
+    tc.scale(1, ch / Math.max(1, cw));
+    const rMax = cw * 0.49;
+    const mask = tc.createRadialGradient(0, 0, rMax * 0.46, 0, 0, rMax);
+    mask.addColorStop(0, 'rgba(0,0,0,1)');
+    mask.addColorStop(0.72, 'rgba(0,0,0,0.88)');
+    mask.addColorStop(0.90, 'rgba(0,0,0,0.28)');
+    mask.addColorStop(1, 'rgba(0,0,0,0)');
+    tc.fillStyle = mask;
+    tc.beginPath();
+    tc.arc(0, 0, rMax, 0, Math.PI * 2);
+    tc.fill();
+    tc.restore();
   }
 
   function createColdMistSprite(seed, variant) {
     const c = document.createElement('canvas');
     const isPlume = variant === 'plume';
     const isWisp = variant === 'wisp';
-    c.width = isPlume ? 200 : isWisp ? 540 : 500;
-    c.height = isPlume ? 360 : isWisp ? 230 : 300;
+    c.width = isPlume ? 240 : isWisp ? 600 : 560;
+    c.height = isPlume ? 400 : isWisp ? 260 : 340;
     const mc = c.getContext('2d');
     const rng = createRng(seed);
 
@@ -350,15 +345,15 @@
       const dome = Math.sin(u * Math.PI);
       let px, py, rx, ry;
       if (isPlume) {
-        px = c.width * 0.5 + (rng() - 0.5) * (36 + u * 60);
-        py = 36 + u * (c.height - 80) + (rng() - 0.5) * 20;
-        rx = 26 + u * 30 + rng() * 20;
-        ry = 34 + rng() * 32;
+        px = c.width * 0.5 + (rng() - 0.5) * (32 + u * 44);
+        py = 56 + u * (c.height - 112) + (rng() - 0.5) * 16;
+        rx = 24 + u * 24 + rng() * 14;
+        ry = 32 + rng() * 24;
       } else {
-        px = 82 + u * (c.width - 164) + (rng() - 0.5) * (isWisp ? 42 : 70);
-        py = c.height * 0.54 - dome * (isWisp ? 12 : 22) + (rng() - 0.5) * (isWisp ? 34 : 80);
-        rx = (isWisp ? 56 : 70) + rng() * (isWisp ? 64 : 86) * (0.62 + dome * 0.48);
-        ry = (isWisp ? 23 : 38) + rng() * (isWisp ? 26 : 50) * (0.62 + dome * 0.48);
+        px = 128 + u * (c.width - 256) + (rng() - 0.5) * (isWisp ? 34 : 52);
+        py = c.height * 0.52 - dome * (isWisp ? 10 : 18) + (rng() - 0.5) * (isWisp ? 28 : 58);
+        rx = (isWisp ? 48 : 60) + rng() * (isWisp ? 50 : 66) * (0.62 + dome * 0.44);
+        ry = (isWisp ? 20 : 32) + rng() * (isWisp ? 22 : 38) * (0.62 + dome * 0.44);
       }
 
       const roll = rng();
@@ -384,14 +379,15 @@
       mc.fill();
       mc.restore();
     }
+    applySoftEllipticalFeather(c);
     return c;
   }
 
   function buildCinematicCloudPair(seed, shape) {
     const isCirrus = shape === 'cirrus';
     const isAnvil = shape === 'anvil';
-    const cw = isCirrus ? 620 : isAnvil ? 680 : 560;
-    const ch = isCirrus ? 180 : isAnvil ? 330 : 280;
+    const cw = isCirrus ? 720 : isAnvil ? 780 : 660;
+    const ch = isCirrus ? 230 : isAnvil ? 400 : 340;
 
     const baseCanvas = document.createElement('canvas');
     baseCanvas.width = cw;
@@ -412,31 +408,31 @@
       const dome = Math.sin(u * Math.PI);
       let px, py, rx, ry;
       if (isCirrus) {
-        px = 70 + u * (cw - 140) + (rng() - 0.5) * 40;
-        py = ch * 0.52 + (rng() - 0.5) * 34;
-        rx = 58 + rng() * 72 * (0.55 + dome * 0.5);
-        ry = 14 + rng() * 18;
+        px = 140 + u * (cw - 280) + (rng() - 0.5) * 32;
+        py = ch * 0.50 + (rng() - 0.5) * 28;
+        rx = 50 + rng() * 58 * (0.55 + dome * 0.45);
+        ry = 14 + rng() * 16;
       } else if (isAnvil) {
         const inTop = i > count * 0.42;
-        const spread = inTop ? 0.72 : 0.88;
-        px = cw * (0.5 + (u - 0.5) * spread) + (rng() - 0.5) * 70;
-        py = inTop ? ch * (0.52 - dome * 0.28) + (rng() - 0.5) * 44 : ch * 0.67 + (rng() - 0.5) * 28;
-        rx = (inTop ? 46 : 68) + rng() * (inTop ? 58 : 74) * (0.65 + dome * 0.45);
-        ry = (inTop ? 38 : 30) + rng() * (inTop ? 44 : 30) * (0.65 + dome * 0.45);
+        const spread = inTop ? 0.54 : 0.64;
+        px = cw * (0.5 + (u - 0.5) * spread) + (rng() - 0.5) * 48;
+        py = inTop ? ch * (0.48 - dome * 0.20) + (rng() - 0.5) * 34 : ch * 0.59 + (rng() - 0.5) * 24;
+        rx = (inTop ? 40 : 56) + rng() * (inTop ? 46 : 56) * (0.62 + dome * 0.42);
+        ry = (inTop ? 32 : 26) + rng() * (inTop ? 34 : 24) * (0.62 + dome * 0.42);
       } else {
-        px = 86 + u * (cw - 172) + (rng() - 0.5) * 62;
-        py = ch * 0.58 - dome * 42 + (rng() - 0.5) * 50;
-        rx = 52 + rng() * 64 * (0.62 + dome * 0.48);
-        ry = 32 + rng() * 38 * (0.62 + dome * 0.48);
+        px = 136 + u * (cw - 272) + (rng() - 0.5) * 46;
+        py = ch * 0.54 - dome * 32 + (rng() - 0.5) * 38;
+        rx = 46 + rng() * 52 * (0.60 + dome * 0.44);
+        ry = 28 + rng() * 32 * (0.60 + dome * 0.44);
       }
       puffs.push({ px: px, py: py, rx: rx, ry: ry, rand: rng() });
     }
 
-    // Pass 1: Heavy Storm Underside & Volumetric Core Shadow
+    // Pass 1: Heavy Storm Underside & Deep Volumetric Core Shadow
     for (let i = 0; i < puffs.length; i++) {
       const p = puffs[i];
       bc.save();
-      bc.translate(p.px, p.py + (isCirrus ? 0 : 10));
+      bc.translate(p.px, p.py + (isCirrus ? 0 : 8));
       bc.scale(1, p.ry / Math.max(1, p.rx));
       const g = bc.createRadialGradient(0, p.rx * 0.12, p.rx * 0.05, 0, 0, p.rx);
       if (isCirrus) {
@@ -478,7 +474,7 @@
       }
     }
 
-    // Pass 3: Matching Internal Lightning Subsurface Glow Sprite
+    // Pass 3: Matching Internal Lightning Subsurface Illumination Sprite
     for (let i = 0; i < puffs.length; i++) {
       const p = puffs[i];
       const distFromHeart = Math.hypot((p.px - cw * 0.52) / (cw * 0.42), (p.py - ch * 0.54) / (ch * 0.42));
@@ -499,6 +495,10 @@
       lc.fill();
       lc.restore();
     }
+
+    // Soft elliptical feather mask eliminates 100% of rectangular cloud edge clipping
+    applySoftEllipticalFeather(baseCanvas);
+    applySoftEllipticalFeather(litCanvas);
 
     return { base: baseCanvas, lit: litCanvas };
   }
@@ -2028,7 +2028,7 @@
   }
 
   global.RJCLOUD_HERO_PEACH = {
-    version: '2027.17-ultrareal-matte',
+    version: '2027.18-ultrareal-matte',
     mount: mount
   };
 })(typeof window !== 'undefined' ? window : globalThis);
