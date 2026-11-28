@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html lang="th" data-theme="dark">
+<html lang="th" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#1c222b">
+    <meta name="theme-color" content="#e6ebf0">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>organ cloud 2.0 — Organ Transplantation Center of Rajavithi Hospital</title>
 
-    <!-- ซิงค์ธีมมืด/สว่างทันที + โหลดโมดูลกลาง (Zero-Build GitHub Pages) -->
+    <!-- ซิงค์ธีมสว่างมาตรฐาน/มืดทันที + โหลดโมดูลกลาง (Zero-Build GitHub Pages) -->
     <script>
       (function () {
         try {
-          const saved = localStorage.getItem('rjcloud_theme') || 'dark';
-          const mode = saved === 'light' ? 'light' : 'dark';
+          const saved = localStorage.getItem('rjcloud_theme_v2');
+          const mode = saved === 'dark' ? 'dark' : 'light';
           document.documentElement.setAttribute('data-theme', mode);
           const meta = document.querySelector('meta[name="theme-color"]');
           if (meta) meta.setAttribute('content', mode === 'dark' ? '#1c222b' : '#e6ebf0');
@@ -33,7 +33,7 @@
 
             [
               './data.js',
-              './learning-core.js?v=202718',
+              './learning-core.js?v=202719',
               './cert-engine.js',
               './hero-peach-engine.js?v=202718',
               './keynote-launch.js?v=202718'
@@ -459,6 +459,22 @@
       .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
       .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--neu-dark); border-radius: 999px; }
 
+      /* Ultra-Smooth Screen & Step Motion (organ cloud 2.0) */
+      .oc-screen-enter {
+        animation: ocScreenSilkyIn 0.56s cubic-bezier(0.16, 1, 0.3, 1) both;
+      }
+      .oc-step-enter {
+        animation: ocStepSilkyIn 0.44s cubic-bezier(0.16, 1, 0.3, 1) both;
+      }
+
+      @keyframes ocScreenSilkyIn {
+        0% { opacity: 0; transform: translate3d(0, 14px, 0) scale(0.992); }
+        100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+      }
+      @keyframes ocStepSilkyIn {
+        0% { opacity: 0; transform: translate3d(0, 10px, 0); }
+        100% { opacity: 1; transform: translate3d(0, 0, 0); }
+      }
       @keyframes appSpin { to { transform: rotate(360deg); } }
       @keyframes rjcAmbientRun { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
       @keyframes fadeWaveIn { 0% { opacity: 0; transform: scaleX(0.7); } 100% { opacity: 1; transform: scaleX(1); } }
@@ -481,7 +497,8 @@
 
       @media (prefers-reduced-motion: reduce) {
         .btn-heartbeat-halo, .btn-heartbeat-halo::before, .btn-heartbeat-halo::after,
-        .sig-reveal-1, .sig-reveal-2, .mist-veil-back, .mist-veil-chill, .water-wave-anim, .neu-wave-bar, .neu-tray-icon {
+        .sig-reveal-1, .sig-reveal-2, .mist-veil-back, .mist-veil-chill, .water-wave-anim, .neu-wave-bar, .neu-tray-icon,
+        .oc-screen-enter, .oc-step-enter {
           animation: none !important; clip-path: none !important; opacity: 1 !important;
         }
       }
@@ -503,12 +520,12 @@
     </script>
 </head>
 <body>
-    <!-- หน้าจอโหลดเริ่มต้น -->
+    <!-- หน้าจอโหลดเริ่มต้น (ธีมสว่างมาตรฐาน Soft Daylight) -->
     <div id="app-root">
-        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#1c222b;color:#f4f7fb;font-family:-apple-system,'Anuphan','Prompt',sans-serif;gap:14px;padding:24px;text-align:center;">
-            <div style="width:46px;height:46px;border:3px solid rgba(94,234,212,0.22);border-top-color:#5eead4;border-right-color:#fda4af;border-radius:9999px;animation:appSpin 0.85s linear infinite;"></div>
+        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#e6ebf0;color:#1f2b38;font-family:-apple-system,'Anuphan','Prompt',sans-serif;gap:14px;padding:24px;text-align:center;">
+            <div style="width:46px;height:46px;border:3px solid rgba(36,120,112,0.20);border-top-color:#247870;border-right-color:#d9486b;border-radius:9999px;animation:appSpin 0.85s linear infinite;"></div>
             <div style="font-weight:800;font-size:17px;">กำลังเปิดแพลตฟอร์ม organ cloud 2.0...</div>
-            <div style="font-size:12px;color:#9eb0c7;">Organ Transplantation Center of Rajavithi Hospital • Central Data Center</div>
+            <div style="font-size:12px;color:#64768a;">Organ Transplantation Center of Rajavithi Hospital • Central Data Center</div>
         </div>
     </div>
 
@@ -521,10 +538,10 @@
         if (root && !root.dataset.mounted && ev.message) {
           const safeMsg = String(ev.message || 'Unknown error').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
           root.innerHTML =
-            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#1c222b;color:#f4f7fb;font-family:Sarabun,sans-serif;">' +
-            '<div style="max-width:440px;width:100%;background:#1c222b;border:1px solid rgba(253,164,175,0.4);border-radius:28px;padding:24px;text-align:center;box-shadow:12px 12px 26px #0e1218,-10px -10px 22px #2d3746;">' +
-            '<h2 style="color:#fda4af;font-weight:700;margin:0 0 8px;">ไม่สามารถเปิดระบบได้ชั่วคราว</h2>' +
-            '<p style="font-size:13px;color:#c9d6e6;margin:0 0 16px;">' + safeMsg + '</p>' +
+            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#e6ebf0;color:#1f2b38;font-family:Sarabun,sans-serif;">' +
+            '<div style="max-width:440px;width:100%;background:#e6ebf0;border:1px solid rgba(255,255,255,0.75);border-radius:28px;padding:24px;text-align:center;box-shadow:12px 12px 26px #c5ced9,-12px -12px 26px #ffffff;">' +
+            '<h2 style="color:#d9486b;font-weight:700;margin:0 0 8px;">ไม่สามารถเปิดระบบได้ชั่วคราว</h2>' +
+            '<p style="font-size:13px;color:#47586b;margin:0 0 16px;">' + safeMsg + '</p>' +
             '<button onclick="window.location.reload()" style="padding:12px 24px;border:none;border-radius:9999px;background:#247870;color:#ffffff;font-weight:700;cursor:pointer;">โหลดหน้าใหม่</button>' +
             '</div></div>';
         }
@@ -561,7 +578,7 @@
         const BUILTIN_CONFIG = {
             appName: 'organ cloud',
             appId: 'rjcloud-organ-2027',
-            theme: { defaultMode: 'dark', storageKey: 'rjcloud_theme' },
+            theme: { defaultMode: 'light', storageKey: 'rjcloud_theme_v2' },
             learningRules: { minStudyPercent: 80, minPosttestPercent: 80 },
             firebaseConfig: {
                 apiKey: 'AIzaSyCpvK0FCVVk9dt0ylHn_VzUStl7540UsbY',
@@ -579,15 +596,38 @@
             : {
                 ...BUILTIN_CONFIG,
                 ...(window.RJCLOUD_CONFIG || {}),
-                theme: { ...BUILTIN_CONFIG.theme, ...(window.RJCLOUD_CONFIG?.theme || {}) },
+                theme: {
+                    ...BUILTIN_CONFIG.theme,
+                    ...(window.RJCLOUD_CONFIG?.theme || {}),
+                    defaultMode: 'light',
+                    storageKey: 'rjcloud_theme_v2'
+                },
                 learningRules: { ...BUILTIN_CONFIG.learningRules, ...(window.RJCLOUD_CONFIG?.learningRules || {}) },
                 firebaseConfig: (window.RJCLOUD_CONFIG?.firebaseConfig?.apiKey) ? window.RJCLOUD_CONFIG.firebaseConfig : BUILTIN_CONFIG.firebaseConfig,
                 appsScriptUrl: window.RJCLOUD_CONFIG?.appsScriptUrl || BUILTIN_CONFIG.appsScriptUrl
             };
 
-        const THEME_KEY = CONFIG.theme?.storageKey || 'rjcloud_theme';
+        const THEME_KEY = CONFIG.theme?.storageKey || 'rjcloud_theme_v2';
         const MIN_STUDY_PERCENT = Number(CONFIG.learningRules?.minStudyPercent || 80);
         const MIN_POSTTEST_PERCENT = Number(CONFIG.learningRules?.minPosttestPercent || 80);
+
+        const INLINE_FALLBACK_LESSONS = [
+            { id: 1, domain: 'policy_ethics', title: 'บทที่ 1: นโยบายและเป้าหมาย Service Plan ด้านการรับบริจาคอวัยวะ', videoId: '', documentUrl: '' },
+            { id: 2, domain: 'brain_death_donor', title: 'บทที่ 2: เกณฑ์วินิจฉัยภาวะสมองตายและ Donor Management', videoId: '', documentUrl: '' },
+            { id: 3, domain: 'family_communication', title: 'บทที่ 3: การสื่อสารกับครอบครัวด้วยหลัก SPIKES และ Decoupling', videoId: '', documentUrl: '' },
+            { id: 4, domain: 'procurement_transplant', title: 'บทที่ 4: การจัดเก็บ ขนส่ง (Cold Chain) และดูแลหลังปลูกถ่าย', videoId: '', documentUrl: '' }
+        ];
+
+        function navigateSmoothSafe(url, statusText, openInNewTab = false) {
+            if (!url) return;
+            if (typeof CORE.navigateSmooth === 'function') {
+                CORE.navigateSmooth(url, statusText, openInNewTab);
+            } else if (openInNewTab) {
+                window.open(url, '_blank', 'noopener,noreferrer');
+            } else {
+                window.location.href = url;
+            }
+        }
         const CLINICAL_AI_PREFIX = CORE.CLINICAL_AI_SYSTEM_PREFIX ||
             'บริบททางการแพทย์ (ศูนย์ความเป็นเลิศทางการแพทย์ โรงพยาบาลราชวิถี): ผู้ใช้งานคือแพทย์ พยาบาล และบุคลากรสหวิชาชีพ สื่อสารด้านการรับบริจาคและปลูกถ่ายอวัยวะอย่างแม่นยำตามหลักวิชาการแพทย์';
 
@@ -1403,14 +1443,21 @@
             const incomingCourseId = urlParams.get('course') || '';
 
             const [theme, setTheme] = useState(() => {
-                try { const s = localStorage.getItem(THEME_KEY); if (s === 'light' || s === 'dark') return s; } catch (_) {}
-                return CONFIG.theme?.defaultMode === 'light' ? 'light' : 'dark';
+                if (typeof CORE.resolvePreferredTheme === 'function') return CORE.resolvePreferredTheme();
+                try { return localStorage.getItem(THEME_KEY) === 'dark' ? 'dark' : 'light'; } catch (_) { return 'light'; }
             });
             useEffect(() => {
-                document.documentElement.setAttribute('data-theme', theme);
-                const meta = document.querySelector('meta[name="theme-color"]');
-                if (meta) meta.setAttribute('content', theme === 'dark' ? '#1c222b' : '#e6ebf0');
-                try { localStorage.setItem(THEME_KEY, theme); } catch (_) {}
+                if (typeof CORE.applyPreferredTheme === 'function') {
+                    CORE.applyPreferredTheme(theme, true);
+                } else {
+                    document.documentElement.setAttribute('data-theme', theme);
+                    const meta = document.querySelector('meta[name="theme-color"]');
+                    if (meta) meta.setAttribute('content', theme === 'dark' ? '#1c222b' : '#e6ebf0');
+                    try {
+                        localStorage.setItem(THEME_KEY, theme);
+                        localStorage.setItem('rjcloud_theme', theme);
+                    } catch (_) {}
+                }
             }, [theme]);
             const toggleTheme = useCallback(() => setTheme(p => (p === 'dark' ? 'light' : 'dark')), []);
 
@@ -1425,7 +1472,11 @@
             const [cneuConfig, setCneuConfig] = useState(() => ({ ...(CORE.DEFAULT_CNEU_CONFIG || {}) }));
             const [certTemplate, setCertTemplate] = useState(() => ({ ...(CORE.DEFAULT_CERT_TEMPLATE || {}) }));
             const [liveConfig, setLiveConfig] = useState({ status: 'offline', hours: 8, allowPosttest: false, topic: 'การบรรยายพิเศษด้านการรับบริจาคและปลูกถ่ายอวัยวะ', url: '', documentUrl: '' });
-            const [lessons, setLessons] = useState(() => (Array.isArray(window.INITIAL_LESSONS) && window.INITIAL_LESSONS.length > 0 ? window.INITIAL_LESSONS : (CORE.FALLBACK_LESSONS || [])));
+            const [lessons, setLessons] = useState(() => (
+                Array.isArray(window.INITIAL_LESSONS) && window.INITIAL_LESSONS.length > 0
+                    ? window.INITIAL_LESSONS
+                    : (Array.isArray(CORE.FALLBACK_LESSONS) && CORE.FALLBACK_LESSONS.length > 0 ? CORE.FALLBACK_LESSONS : INLINE_FALLBACK_LESSONS)
+            ));
             const [quizList, setQuizList] = useState(() => (typeof CORE.parseRawExams === 'function' ? CORE.parseRawExams(window.QUIZ_QUESTIONS_RAW) : []));
             const [courseCatalog, setCourseCatalog] = useState(() => FALLBACK_COURSE_CATALOG.filter(c => c && c.active !== false));
             const [selectedCourseId, setSelectedCourseId] = useState(() => {
@@ -1440,6 +1491,10 @@
                 if (incomingLicense || incomingCourseId) return 'auth';
                 return 'landing';
             });
+            const goScreen = useCallback((nextScreen) => {
+                setScreen(nextScreen);
+                try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (_) {}
+            }, []);
             const [dashTab, setDashTab] = useState('lessons');
 
             const [authStep, setAuthStep] = useState(1);
@@ -1503,6 +1558,7 @@
             useEffect(() => {
                 const el = document.getElementById('app-root');
                 if (el) el.dataset.mounted = 'true';
+                if (typeof CORE.initSmoothTransitions === 'function') CORE.initSmoothTransitions();
 
                 if (autoStepParam === 'posttest' && loadSessionTwoLayer()?.id) {
                     setNavPopup({
@@ -1513,7 +1569,7 @@
                         voiceKey: 'nav_auto_posttest',
                         voiceText: 'ยินดีด้วยค่ะ ท่านผ่านห้องฝึกสื่อสารสามมิติ เอไอสกิลแล็บ เรียบร้อยแล้ว เชิญทำแบบทดสอบหลังเรียนเพื่อปลดล็อกประกาศนียบัตรได้เลยค่ะ',
                         ctaLabel: 'เข้าทำ Post-test ทันที →',
-                        onConfirm: () => { setQuizAnswers({}); setScreen('posttest'); }
+                        onConfirm: () => { setQuizAnswers({}); goScreen('posttest'); }
                     });
                     try { window.history.replaceState({}, '', './index.html'); } catch (_) {}
                 } else if (returnToDashboard && loadSessionTwoLayer()?.id) {
@@ -1531,7 +1587,7 @@
                 window.addEventListener('beforeinstallprompt', onBeforeInstall);
                 window.addEventListener('appinstalled', onAppInstalled);
                 return () => { window.removeEventListener('beforeinstallprompt', onBeforeInstall); window.removeEventListener('appinstalled', onAppInstalled); };
-            }, [autoStepParam, returnToDashboard, showToast]);
+            }, [autoStepParam, returnToDashboard, showToast, goScreen]);
 
             useEffect(() => {
                 const syncKeynote = () => {
@@ -1776,7 +1832,7 @@
                 };
 
                 await persistUserUpdate(nextUser);
-                setAuthBusy(false); stopStudioVoice(); setScreen('dashboard');
+                setAuthBusy(false); stopStudioVoice(); goScreen('dashboard');
 
                 const needPretest = !nextUser.pretest || nextUser.pretest === '-';
                 setNavPopup({
@@ -1791,7 +1847,7 @@
                         ? 'ยืนยันตัวตนสำเร็จแล้วค่ะ เชิญเริ่มทำแบบทดสอบก่อนเรียนเพื่อประเมินพื้นฐานได้เลยค่ะ'
                         : 'ยินดีต้อนรับกลับสู่ห้องเรียน ออร์แกน คลาวด์ สองจุดศูนย์ ค่ะ',
                     ctaLabel: needPretest ? 'เริ่มทำ Pre-test เลย →' : 'เข้าสู่ห้องเรียนหลัก →',
-                    onConfirm: () => { if (needPretest) { setQuizAnswers({}); setScreen('pretest'); } }
+                    onConfirm: () => { if (needPretest) { setQuizAnswers({}); goScreen('pretest'); } }
                 });
             };
 
@@ -1861,22 +1917,22 @@
 
                 if (type === 'pretest') {
                     await persistUserUpdate({ ...user, pretest: scoreStr, aiRoadmap: roadmap || user.aiRoadmap || null });
-                    setScreen('dashboard');
+                    goScreen('dashboard');
                     setNavPopup({
                         open: true,
                         badge: `PRE-TEST เสร็จสมบูรณ์ (${scoreStr})`,
-                        title: isExempt ? 'สิทธิ์เทียบโอน: ไปห้อง AI Skill Lab 3D ได้เลย!' : 'ขั้นตอนถัดไป: ศึกษาบทเรียน & AI Skill Lab 3D',
+                        title: isExempt ? 'สิทธิ์เทียบโอน: ไปห้อง AI Skill Lab ได้เลย!' : 'ขั้นตอนถัดไป: ศึกษาบทเรียน & AI Skill Lab',
                         message: isExempt
-                            ? 'ท่านได้รับสิทธิ์เทียบโอนยกเว้นชั่วโมงเรียน 100% สามารถเข้าฝึกสื่อสาร 3 มิติ AI Skill Lab ต่อได้ทันทีค่ะ'
-                            : `ทำคะแนน Pre-test ได้ ${pct}% เชิญศึกษาบทเรียนให้ครบ ≥ ${MIN_STUDY_PERCENT}% แล้วเข้าฝึกสื่อสาร AI Skill Lab 3D ค่ะ`,
-                        ctaLabel: isExempt ? 'เปิดห้อง AI Skill Lab 3D →' : 'เข้าศึกษาบทเรียนเลย →',
-                        onConfirm: () => { if (isExempt) { saveSessionTwoLayer(user); window.location.href = './aiskilllab.html'; } }
+                            ? 'ท่านได้รับสิทธิ์เทียบโอนยกเว้นชั่วโมงเรียน 100% สามารถเข้าฝึกสื่อสารฉากหน้าผาต้นดอกท้อ 10 สเต็ปต่อได้ทันทีค่ะ'
+                            : `ทำคะแนน Pre-test ได้ ${pct}% เชิญศึกษาบทเรียนให้ครบ ≥ ${MIN_STUDY_PERCENT}% แล้วเข้าฝึกสื่อสาร AI Skill Lab ค่ะ`,
+                        ctaLabel: isExempt ? 'เปิดห้อง AI Skill Lab →' : 'เข้าศึกษาบทเรียนเลย →',
+                        onConfirm: () => { if (isExempt) { saveSessionTwoLayer(user); navigateSmoothSafe('./aiskilllab.html', 'กำลังเปิดห้องฝึก AI Skill Lab ต้นดอกท้อ 10 สเต็ป...'); } }
                     });
                 } else {
                     const passed = pct >= MIN_POSTTEST_PERCENT;
                     await persistUserUpdate({ ...user, posttest: scoreStr, status: passed ? 'ผ่าน' : (user?.status || 'กำลังเรียน'), aiRoadmap: roadmap || user.aiRoadmap || null });
-                    if (passed) { setScreen('cert_confirm'); showToast(`ยินดีด้วยค่ะ! สอบ Post-test ผ่านเกณฑ์ (${pct}%) ปลดล็อกประกาศนียบัตรแล้วค่ะ`); }
-                    else { setScreen('dashboard'); showToast(`คะแนน Post-test ได้ ${pct}% (เกณฑ์ผ่าน ≥ ${MIN_POSTTEST_PERCENT}%) สามารถทบทวนและสอบใหม่ได้ค่ะ`, 'info'); }
+                    if (passed) { goScreen('cert_confirm'); showToast(`ยินดีด้วยค่ะ! สอบ Post-test ผ่านเกณฑ์ (${pct}%) ปลดล็อกประกาศนียบัตรแล้วค่ะ`); }
+                    else { goScreen('dashboard'); showToast(`คะแนน Post-test ได้ ${pct}% (เกณฑ์ผ่าน ≥ ${MIN_POSTTEST_PERCENT}%) สามารถทบทวนและสอบใหม่ได้ค่ะ`, 'info'); }
                 }
             };
 
@@ -1903,7 +1959,7 @@
                         await setDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'certificates', code), pubPayload, { merge: true });
                     } catch (_) {}
                 }
-                setScreen('certificate');
+                goScreen('certificate');
                 showToast('ออกประกาศนียบัตรดิจิทัลพร้อมรหัส QR ตรวจสอบความถูกต้องเรียบร้อยแล้วค่ะ');
             };
 
@@ -1918,7 +1974,7 @@
                         title: 'พร้อมเข้าฝึกสื่อสาร AI Skill Lab',
                         message: 'ท่านสะสมเวลาเรียนครบเกณฑ์แล้ว เชิญเข้าฝึกสื่อสารในฉากหน้าผาต้นดอกท้อผลิบาน 10 สเต็ป เติมปราณให้ดอกท้อเบ่งบานเต็มที่เพื่อปลดล็อก Post-test ค่ะ',
                         ctaLabel: 'เปิดห้อง AI Skill Lab →',
-                        onConfirm: () => { saveSessionTwoLayer(user); window.location.href = './aiskilllab.html'; }
+                        onConfirm: () => { saveSessionTwoLayer(user); navigateSmoothSafe('./aiskilllab.html', 'กำลังเปิดห้องฝึก AI Skill Lab ต้นดอกท้อ 10 สเต็ป...'); }
                     });
                 }
             };
@@ -1986,8 +2042,8 @@
                     <>
                         <LandingHeroScreen
                             hasSavedSession={Boolean(user?.id)}
-                            onResumeDashboard={() => setScreen('dashboard')}
-                            onStartAuth={() => { setAuthStep(1); setScreen('auth'); }}
+                            onResumeDashboard={() => goScreen('dashboard')}
+                            onStartAuth={() => { setAuthStep(1); goScreen('auth'); }}
                             showInstallBtn={!isStandalonePwa}
                             onInstallApp={handleInstallPwaClick}
                             theme={theme}
@@ -2008,7 +2064,7 @@
                     <header className="no-print-letter sticky top-0 z-30 neu-header">
                         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
                             <div className="flex items-center gap-3 min-w-0">
-                                <button type="button" onClick={() => { stopStudioVoice(); setScreen(user?.id && screen !== 'dashboard' ? 'dashboard' : 'landing'); }} className="neu-btn w-10 h-10 shrink-0" aria-label="ย้อนกลับ">
+                                <button type="button" onClick={() => { stopStudioVoice(); goScreen(user?.id && screen !== 'dashboard' ? 'dashboard' : 'landing'); }} className="neu-btn w-10 h-10 shrink-0" aria-label="ย้อนกลับ">
                                     <Icon name={user?.id && screen !== 'dashboard' ? 'ArrowLeft' : 'Home'} size={17} />
                                 </button>
                                 <div className="min-w-0">
@@ -2028,7 +2084,7 @@
                                 )}
                                 <ThemeToggleButton theme={theme} onToggle={toggleTheme} />
                                 {user?.id && (
-                                    <button type="button" onClick={() => { stopStudioVoice(); clearSessionTwoLayer(); setUser(null); setScreen('landing'); showToast('ออกจากระบบเรียบร้อยค่ะ'); }} className="neu-btn w-10 h-10 text-[var(--neu-rose)]" title="ออกจากระบบ">
+                                    <button type="button" onClick={() => { stopStudioVoice(); clearSessionTwoLayer(); setUser(null); goScreen('landing'); showToast('ออกจากระบบเรียบร้อยค่ะ'); }} className="neu-btn w-10 h-10 text-[var(--neu-rose)]" title="ออกจากระบบ">
                                         <Icon name="LogOut" size={15} />
                                     </button>
                                 )}
@@ -2038,7 +2094,7 @@
 
                     {/* ==================== SCREEN: AUTH (3 STEPS • NEUMORPHIC) ==================== */}
                     {screen === 'auth' && (
-                        <main className="no-print-letter max-w-2xl w-full mx-auto px-4 py-7 space-y-5 flex-1">
+                        <main key={`auth_${authStep}`} className="no-print-letter oc-screen-enter max-w-2xl w-full mx-auto px-4 py-7 space-y-5 flex-1">
                             {authStep === 1 && (
                                 <form onSubmit={handleAuthStep1Lookup} className="neu-card p-6 sm:p-8 space-y-6">
                                     <div>
@@ -2199,7 +2255,7 @@
 
                     {/* ==================== SCREEN: CLASSROOM DASHBOARD (NEUMORPHIC SOFT UI) ==================== */}
                     {screen === 'dashboard' && user && (
-                        <main className="no-print-letter max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6 flex-1">
+                        <main key="dashboard" className="no-print-letter oc-screen-enter max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6 flex-1">
                             {/* Top Row: Course Title + Neumorphic Tabs */}
                             <section className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                                 <div className="space-y-1">
@@ -2234,7 +2290,7 @@
                                 </div>
                                 <div className="neu-progress-track"><div className="neu-progress-fill" style={{ width: `${studyPct}%` }} /></div>
                                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 pt-1">
-                                    <button type="button" onClick={() => { setQuizAnswers({}); setScreen('pretest'); }} className={`neu-step-pill ${user.pretest && user.pretest !== '-' ? 'is-done' : ''} p-3.5 text-left space-y-1`}>
+                                    <button type="button" onClick={() => { setQuizAnswers({}); goScreen('pretest'); }} className={`neu-step-pill ${user.pretest && user.pretest !== '-' ? 'is-done' : ''} p-3.5 text-left space-y-1`}>
                                         <div className="flex items-center justify-between">
                                             <span className="font-mono text-[10px] font-bold text-[var(--neu-teal)]">01. PRE-TEST</span>
                                             <span className="text-[var(--neu-teal)] font-bold text-xs">{user.pretest && user.pretest !== '-' ? '✓' : '→'}</span>
@@ -2261,8 +2317,8 @@
                                     <button
                                         type="button"
                                         onClick={() => {
-                                            if (!canTakePosttest) { showToast(`กรุณาสะสมเวลาเรียน ≥ ${MIN_STUDY_PERCENT}% และผ่าน AI Skill Lab 3D ก่อนทำ Post-test ค่ะ`, 'info'); return; }
-                                            setQuizAnswers({}); setScreen('posttest');
+                                            if (!canTakePosttest) { showToast(`กรุณาสะสมเวลาเรียน ≥ ${MIN_STUDY_PERCENT}% และผ่าน AI Skill Lab ก่อนทำ Post-test ค่ะ`, 'info'); return; }
+                                            setQuizAnswers({}); goScreen('posttest');
                                         }}
                                         className={`neu-step-pill ${hasPassedPosttest ? 'is-done' : ''} p-3.5 text-left space-y-1 ${!canTakePosttest ? 'opacity-75' : ''}`}
                                     >
@@ -2277,7 +2333,7 @@
                                         type="button"
                                         onClick={() => {
                                             if (!hasPassedPosttest) { showToast('สอบ Post-test ผ่านเกณฑ์ ≥ 80% เพื่อปลดล็อกประกาศนียบัตรค่ะ', 'info'); return; }
-                                            setScreen(user.certificateCode ? 'certificate' : 'cert_confirm');
+                                            goScreen(user.certificateCode ? 'certificate' : 'cert_confirm');
                                         }}
                                         className={`col-span-2 sm:col-span-1 neu-step-pill ${user.certificateCode ? 'is-done' : ''} p-3.5 text-left space-y-1 ${!hasPassedPosttest ? 'opacity-75' : ''}`}
                                     >
@@ -2311,10 +2367,10 @@
 
                             {/* TAB 1: LESSONS VIEW */}
                             {dashTab === 'lessons' && (
-                                <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                                <section key="tab_lessons" className="oc-step-enter grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                                     <div className="lg:col-span-8 space-y-6">
                                         {/* Active Lesson Card */}
-                                        <article className="neu-card p-5 sm:p-7 space-y-5">
+                                        <article key={`lesson_${activeLessonIdx}`} className="oc-step-enter neu-card p-5 sm:p-7 space-y-5">
                                             <div className="flex flex-wrap items-center justify-between gap-3">
                                                 <div className="min-w-0 flex-1 space-y-1">
                                                     <span className="font-mono text-[10.5px] font-bold text-[var(--neu-teal)] uppercase block">
@@ -2459,7 +2515,7 @@
 
                             {/* TAB 2: ICU POCKET PHRASES */}
                             {dashTab === 'phrases' && (
-                                <section className="neu-card p-5 sm:p-7 space-y-5">
+                                <section key="tab_phrases" className="oc-step-enter neu-card p-5 sm:p-7 space-y-5">
                                     <div>
                                         <span className="font-mono text-[10.5px] font-bold text-[var(--neu-teal)] uppercase">ICU POCKET PHRASES • STUDIO 24kHz GUIDANCE</span>
                                         <h2 className="font-display font-extrabold text-xl text-[var(--neu-text)] m-0 mt-0.5">คลังคำพูดสื่อสารฉุกเฉินหน้างาน ICU</h2>
@@ -2489,7 +2545,7 @@
 
                             {/* TAB 3: LEARNER PROFILE */}
                             {dashTab === 'profile' && (
-                                <section className="neu-card p-5 sm:p-7 space-y-5 max-w-3xl mx-auto">
+                                <section key="tab_profile" className="oc-step-enter neu-card p-5 sm:p-7 space-y-5 max-w-3xl mx-auto">
                                     <div className="flex flex-wrap items-center justify-between gap-3">
                                         <div>
                                             <span className="font-mono text-[10.5px] font-bold text-[var(--neu-teal)] uppercase">LEARNER PROFILE • organ cloud 2.0 DATA CENTER</span>
@@ -2536,7 +2592,7 @@
 
                     {/* ==================== SCREEN: PRE-TEST & POST-TEST (NEUMORPHIC) ==================== */}
                     {(screen === 'pretest' || screen === 'posttest') && (
-                        <main className="no-print-letter max-w-3xl w-full mx-auto px-4 py-6 space-y-5 flex-1">
+                        <main key={screen} className="no-print-letter oc-screen-enter max-w-3xl w-full mx-auto px-4 py-6 space-y-5 flex-1">
                             <div className="neu-card p-5 sm:p-7 space-y-2">
                                 <div className="flex items-center justify-between gap-2">
                                     <span className="font-mono text-[10.5px] font-bold text-[var(--neu-teal)] uppercase">
@@ -2577,7 +2633,7 @@
                             </div>
 
                             <div className="flex gap-3 pb-6">
-                                <button type="button" onClick={() => setScreen('dashboard')} className="neu-btn px-5 py-3.5 text-xs sm:text-sm font-bold">← กลับห้องเรียน</button>
+                                <button type="button" onClick={() => goScreen('dashboard')} className="neu-btn px-5 py-3.5 text-xs sm:text-sm font-bold">← กลับห้องเรียน</button>
                                 <button type="button" onClick={() => handleSubmitQuiz(screen)} className="neu-btn-teal flex-1 py-3.5 font-display font-extrabold text-sm">
                                     {screen === 'pretest' ? 'ส่งคำตอบ Pre-test →' : 'ส่งคำตอบ Post-test & ประเมินผล →'}
                                 </button>
@@ -2587,7 +2643,7 @@
 
                     {/* ==================== SCREEN: CERT CONFIRM & R2R EVALUATION ==================== */}
                     {screen === 'cert_confirm' && user && (
-                        <main className="no-print-letter max-w-2xl w-full mx-auto px-4 py-7 flex-1">
+                        <main key="cert_confirm" className="no-print-letter oc-screen-enter max-w-2xl w-full mx-auto px-4 py-7 flex-1">
                             <form onSubmit={handleClaimCertificate} className="neu-card p-6 sm:p-8 space-y-5">
                                 <div>
                                     <span className="font-mono text-[10.5px] font-bold text-[var(--neu-teal)] uppercase">STEP 05 • EVALUATION &amp; CERTIFICATE CLAIM</span>
@@ -2632,7 +2688,7 @@
 
                     {/* ==================== SCREEN: DIGITAL CERTIFICATE & A4 LETTER ==================== */}
                     {screen === 'certificate' && user && (
-                        <main className="no-print-letter max-w-4xl w-full mx-auto px-4 py-7 space-y-5 flex-1">
+                        <main key="certificate" className="no-print-letter oc-screen-enter max-w-4xl w-full mx-auto px-4 py-7 space-y-5 flex-1">
                             <div className="neu-card p-5 sm:p-7 space-y-5">
                                 <div className="flex flex-wrap items-center justify-between gap-2">
                                     <div>
