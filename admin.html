@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html lang="th" data-theme="dark">
+<html lang="th" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#1c222b">
+    <meta name="theme-color" content="#e6ebf0">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Admin Mission Control — organ cloud 2.0</title>
 
-    <!-- ซิงค์โหมดมืด/สว่างทันที + โหลดไฟล์โมดูลกลางเฉพาะบนโดเมนจริง (Zero-Build GitHub Pages) -->
+    <!-- ซิงค์ธีมสว่างมาตรฐาน/มืดทันที + โหลดไฟล์โมดูลกลางเฉพาะบนโดเมนจริง (Zero-Build GitHub Pages) -->
     <script>
       (function () {
         try {
-          const saved = localStorage.getItem('rjcloud_theme') || 'dark';
-          const mode = saved === 'light' ? 'light' : 'dark';
+          const saved = localStorage.getItem('rjcloud_theme_v2');
+          const mode = saved === 'dark' ? 'dark' : 'light';
           document.documentElement.setAttribute('data-theme', mode);
           const meta = document.querySelector('meta[name="theme-color"]');
           if (meta) meta.setAttribute('content', mode === 'dark' ? '#1c222b' : '#e6ebf0');
@@ -31,7 +31,7 @@
             manifest.href = './manifest.json';
             document.head.appendChild(manifest);
 
-            ['./data.js', './learning-core.js?v=202718', './cert-engine.js'].forEach(function (src) {
+            ['./data.js', './learning-core.js?v=202719', './cert-engine.js'].forEach(function (src) {
               const s = document.createElement('script');
               s.src = src;
               s.async = false;
@@ -315,7 +315,26 @@
         .cneu-table thead { display: table-header-group; }
         .cneu-table tr, .signature-block { page-break-inside: avoid; break-inside: avoid; }
       }
+
+      /* Ultra-Smooth Tab & Sub-Tab Transitions (organ cloud 2.0) */
+      .oc-screen-enter {
+        animation: ocScreenSilkyIn 0.54s cubic-bezier(0.16, 1, 0.3, 1) both;
+      }
+      .oc-step-enter {
+        animation: ocStepSilkyIn 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+      }
+      @keyframes ocScreenSilkyIn {
+        0% { opacity: 0; transform: translate3d(0, 14px, 0) scale(0.992); }
+        100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+      }
+      @keyframes ocStepSilkyIn {
+        0% { opacity: 0; transform: translate3d(0, 10px, 0); }
+        100% { opacity: 1; transform: translate3d(0, 0, 0); }
+      }
       @keyframes adminSpin { to { transform: rotate(360deg); } }
+      @media (prefers-reduced-motion: reduce) {
+        .oc-screen-enter, .oc-step-enter { animation: none !important; }
+      }
     </style>
 
     <!-- ESM Import Map (React 18, Lucide Icons, Firebase 11) -->
@@ -334,12 +353,12 @@
     </script>
 </head>
 <body>
-    <!-- หน้าจอโหลดเริ่มต้น -->
+    <!-- หน้าจอโหลดเริ่มต้น (ธีมสว่างมาตรฐาน Soft Daylight) -->
     <div id="admin-root">
-        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#1c222b;color:#f4f7fb;font-family:-apple-system,'Anuphan','Prompt',sans-serif;gap:14px;padding:24px;text-align:center;">
-            <div style="width:46px;height:46px;border:3px solid rgba(94,234,212,0.22);border-top-color:#5eead4;border-right-color:#fda4af;border-radius:9999px;animation:adminSpin 0.85s linear infinite;"></div>
+        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#e6ebf0;color:#1f2b38;font-family:-apple-system,'Anuphan','Prompt',sans-serif;gap:14px;padding:24px;text-align:center;">
+            <div style="width:46px;height:46px;border:3px solid rgba(36,120,112,0.20);border-top-color:#247870;border-right-color:#d9486b;border-radius:9999px;animation:adminSpin 0.85s linear infinite;"></div>
             <div style="font-weight:800;font-size:17px;">กำลังเปิดศูนย์ควบคุม Admin Mission Control (organ cloud 2.0)...</div>
-            <div style="font-size:12px;color:#9eb0c7;">organ cloud 2.0 • Central Data Center (Production Only)</div>
+            <div style="font-size:12px;color:#64768a;">organ cloud 2.0 • Central Data Center (Production Only)</div>
         </div>
     </div>
 
@@ -352,10 +371,10 @@
         if (root && !root.dataset.mounted && ev.message) {
           const safeMsg = String(ev.message || 'Unknown error').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
           root.innerHTML =
-            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#1c222b;color:#f4f7fb;font-family:Sarabun,sans-serif;">' +
-            '<div style="max-width:440px;width:100%;background:#1c222b;border:1px solid rgba(253,164,175,0.4);border-radius:28px;padding:24px;text-align:center;box-shadow:12px 12px 26px #0e1218,-10px -10px 22px #2d3746;">' +
-            '<h2 style="color:#fda4af;font-weight:700;margin:0 0 8px;">ไม่สามารถเปิดระบบหลังบ้านได้ชั่วคราว</h2>' +
-            '<p style="font-size:13px;color:#c9d6e6;margin:0 0 16px;">' + safeMsg + '</p>' +
+            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#e6ebf0;color:#1f2b38;font-family:Sarabun,sans-serif;">' +
+            '<div style="max-width:440px;width:100%;background:#e6ebf0;border:1px solid rgba(255,255,255,0.75);border-radius:28px;padding:24px;text-align:center;box-shadow:12px 12px 26px #c5ced9,-12px -12px 26px #ffffff;">' +
+            '<h2 style="color:#d9486b;font-weight:700;margin:0 0 8px;">ไม่สามารถเปิดระบบหลังบ้านได้ชั่วคราว</h2>' +
+            '<p style="font-size:13px;color:#47586b;margin:0 0 16px;">' + safeMsg + '</p>' +
             '<button onclick="window.location.reload()" style="padding:12px 24px;border:none;border-radius:9999px;background:#247870;color:#ffffff;font-weight:700;cursor:pointer;">โหลดหน้าใหม่</button>' +
             '</div></div>';
         }
@@ -392,7 +411,7 @@
             appId: 'rjcloud-organ-2027',
             contactEmail: 'rjcloud.organ@gmail.com',
             adminEmails: ['rjcloud.organ@gmail.com'],
-            theme: { defaultMode: 'dark', storageKey: 'rjcloud_theme' },
+            theme: { defaultMode: 'light', storageKey: 'rjcloud_theme_v2' },
             learningRules: { minStudyPercent: 80, minPosttestPercent: 80 },
             firebaseConfig: {
                 apiKey: 'AIzaSyCpvK0FCVVk9dt0ylHn_VzUStl7540UsbY',
@@ -411,13 +430,18 @@
             : {
                 ...BUILTIN_CONFIG,
                 ...(window.RJCLOUD_CONFIG || {}),
-                theme: { ...BUILTIN_CONFIG.theme, ...(window.RJCLOUD_CONFIG?.theme || {}) },
+                theme: {
+                    ...BUILTIN_CONFIG.theme,
+                    ...(window.RJCLOUD_CONFIG?.theme || {}),
+                    defaultMode: 'light',
+                    storageKey: 'rjcloud_theme_v2'
+                },
                 learningRules: { ...BUILTIN_CONFIG.learningRules, ...(window.RJCLOUD_CONFIG?.learningRules || {}) },
                 firebaseConfig: (window.RJCLOUD_CONFIG?.firebaseConfig?.apiKey) ? window.RJCLOUD_CONFIG.firebaseConfig : BUILTIN_CONFIG.firebaseConfig,
                 appsScriptUrl: window.RJCLOUD_CONFIG?.appsScriptUrl || BUILTIN_CONFIG.appsScriptUrl
             };
 
-        const THEME_KEY = CONFIG.theme?.storageKey || 'rjcloud_theme';
+        const THEME_KEY = CONFIG.theme?.storageKey || 'rjcloud_theme_v2';
         const MIN_STUDY_PERCENT = Number(CONFIG.learningRules?.minStudyPercent || 80);
         const MIN_POSTTEST_PERCENT = Number(CONFIG.learningRules?.minPosttestPercent || 80);
         const DEFAULT_ONLINE_COURSE_NAME = 'หลักสูตรออนไลน์การรับบริจาคและปลูกถ่ายอวัยวะ (organ cloud 2.0)';
@@ -915,17 +939,21 @@
         // ============================================================================
         function AdminApp() {
             const [theme, setTheme] = useState(() => {
-                try {
-                    const saved = localStorage.getItem(THEME_KEY);
-                    if (saved === 'light' || saved === 'dark') return saved;
-                } catch (_) {}
-                return CONFIG.theme?.defaultMode === 'light' ? 'light' : 'dark';
+                if (typeof CORE.resolvePreferredTheme === 'function') return CORE.resolvePreferredTheme();
+                try { return localStorage.getItem(THEME_KEY) === 'dark' ? 'dark' : 'light'; } catch (_) { return 'light'; }
             });
             useEffect(() => {
-                document.documentElement.setAttribute('data-theme', theme);
-                const meta = document.querySelector('meta[name="theme-color"]');
-                if (meta) meta.setAttribute('content', theme === 'dark' ? '#1c222b' : '#e6ebf0');
-                try { localStorage.setItem(THEME_KEY, theme); } catch (_) {}
+                if (typeof CORE.applyPreferredTheme === 'function') {
+                    CORE.applyPreferredTheme(theme, true);
+                } else {
+                    document.documentElement.setAttribute('data-theme', theme);
+                    const meta = document.querySelector('meta[name="theme-color"]');
+                    if (meta) meta.setAttribute('content', theme === 'dark' ? '#1c222b' : '#e6ebf0');
+                    try {
+                        localStorage.setItem(THEME_KEY, theme);
+                        localStorage.setItem('rjcloud_theme', theme);
+                    } catch (_) {}
+                }
             }, [theme]);
             const toggleTheme = useCallback(() => setTheme(p => (p === 'dark' ? 'light' : 'dark')), []);
 
@@ -937,6 +965,10 @@
 
             // Navigation State
             const [activeTab, setActiveTab] = useState('users'); // users | onsite | cert | live | content | sync | overview
+            const goTab = useCallback((nextTab) => {
+                setActiveTab(nextTab);
+                try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (_) {}
+            }, []);
             const [certSubTab, setCertSubTab] = useState('cneu'); // designer | cneu
             const [certPreviewProf, setCertPreviewProf] = useState('พยาบาล');
             const [reportMode, setReportMode] = useState('nurse_cneu');
@@ -1019,6 +1051,7 @@
             useEffect(() => {
                 const el = document.getElementById('admin-root');
                 if (el) el.dataset.mounted = 'true';
+                if (typeof CORE.initSmoothTransitions === 'function') CORE.initSmoothTransitions();
             }, []);
 
             // Check Existing Firebase Admin Session
@@ -1783,7 +1816,7 @@
             if (!adminSession) {
                 return (
                     <div className="min-h-dvh relative flex items-center justify-center p-4 pt-safe bg-[var(--neu-bg)] text-primary-adaptive">
-                        <div className="spatial-card relative z-10 max-w-md w-full rounded-[28px] p-6 sm:p-8 space-y-5">
+                        <div className="oc-screen-enter spatial-card relative z-10 max-w-md w-full rounded-[28px] p-6 sm:p-8 space-y-5">
                             <div className="flex items-center justify-between">
                                 <a href="./index.html" className="neu-btn px-3.5 py-2 text-xs font-bold">
                                     <Icon name="ArrowLeft" size={14} /> หน้าแรก
@@ -1838,7 +1871,7 @@
                                     <button
                                         key={item.id}
                                         type="button"
-                                        onClick={() => setActiveTab(item.id)}
+                                        onClick={() => goTab(item.id)}
                                         className={`neu-btn px-3.5 py-2 text-xs font-display font-bold ${
                                             activeTab === item.id ? 'is-pressed' : ''
                                         }`}
@@ -1861,14 +1894,14 @@
 
                         {/* ==================== TAB 1: USERS 5-STEP TELEMETRY & AUTO-CLASSIFICATION ==================== */}
                         {activeTab === 'users' && (
-                            <div className="space-y-5">
+                            <div key="tab_users" className="oc-screen-enter space-y-5">
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <div>
                                         <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">CENTRAL DATA CENTER • 5-STEP TELEMETRY &amp; R2R</span>
                                         <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive">จัดการผู้เรียน กลุ่มวิชาชีพ สิทธิ์เทียบโอน และข้อมูลวิจัย R2R</h2>
                                     </div>
                                     <div className="flex flex-wrap gap-2">
-                                        <button type="button" onClick={() => { setActiveTab('content'); setContentSubTab('courses'); }} className="neu-btn touch-target px-4 py-2 text-xs font-bold text-rose-adaptive">
+                                        <button type="button" onClick={() => { goTab('content'); setContentSubTab('courses'); }} className="neu-btn touch-target px-4 py-2 text-xs font-bold text-rose-adaptive">
                                             <Icon name="GraduationCap" size={15} /> จัดการหลักสูตร ({courseCatalog.filter(c => c.active !== false).length})
                                         </button>
                                         <button type="button" onClick={() => setShowAddUser(v => !v)} className="rjc2-pill-btn touch-target px-4 py-2 font-display font-extrabold text-xs inline-flex items-center gap-1.5">
@@ -2064,7 +2097,7 @@
 
                         {/* ==================== TAB 2: ONSITE REGISTRATION HUB (TARGET COURSE + 16:00 UNLOCK + ARCHIVE) ==================== */}
                         {activeTab === 'onsite' && (
-                            <div className="space-y-5">
+                            <div key="tab_onsite" className="oc-screen-enter space-y-5">
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <div>
                                         <span className="px-3 py-1 rounded-full bg-[var(--neu-bg)] shadow-[var(--shadow-pressed-sm)] text-accent-adaptive font-mono text-[10px] font-bold">CENTRAL ONSITE HUB • MULTI-COURSE LINKING</span>
@@ -2232,7 +2265,7 @@
 
                         {/* ==================== TAB 3: COURSE CATALOG MANAGER, LESSONS & QUIZ ==================== */}
                         {activeTab === 'content' && (
-                            <div className="space-y-4">
+                            <div key="tab_content" className="oc-screen-enter space-y-4">
                                 <div className="flex flex-wrap items-center justify-between gap-2">
                                     <div className="flex flex-wrap gap-2">
                                         <button type="button" onClick={() => setContentSubTab('courses')} className={`neu-btn px-4 py-2 text-xs font-display font-bold ${contentSubTab === 'courses' ? 'is-pressed' : ''}`}>
@@ -2264,7 +2297,7 @@
 
                                 {/* SUB-TAB A: COURSE CATALOG MANAGEMENT */}
                                 {contentSubTab === 'courses' && (
-                                    <div className="space-y-4">
+                                    <div key="sub_courses" className="oc-step-enter space-y-4">
                                         <div className="spatial-card rounded-[28px] p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                             <div>
                                                 <span className="font-mono text-[10px] font-bold text-rose-adaptive uppercase">MULTI-COURSE HUB • REAL-TIME SYNC TO INDEX.HTML &amp; ONSITE.HTML</span>
@@ -2361,7 +2394,7 @@
 
                                 {/* SUB-TAB B: LESSONS */}
                                 {contentSubTab === 'lessons' && (
-                                    <div className="spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3">
+                                    <div key="sub_lessons" className="oc-step-enter spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3">
                                         {contentConfig.lessons.map((l, idx) => (
                                             <div key={l.id || idx} className="spatial-soft p-3.5 rounded-2xl grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-center text-xs">
                                                 <span className="sm:col-span-1 font-mono font-bold text-prism-adaptive">#{l.id}</span>
@@ -2378,7 +2411,7 @@
 
                                 {/* SUB-TAB C: QUIZ */}
                                 {contentSubTab === 'quiz' && (
-                                    <div className="spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3 max-h-[600px] overflow-y-auto custom-scrollbar">
+                                    <div key="sub_quiz" className="oc-step-enter spatial-card rounded-[1.75rem] p-4 sm:p-5 space-y-3 max-h-[600px] overflow-y-auto custom-scrollbar">
                                         {(contentConfig.questionSets[0] || []).map((q, idx) => (
                                             <div key={q.id || idx} className="spatial-soft p-3.5 rounded-2xl space-y-2 text-xs">
                                                 <p className="font-bold text-primary-adaptive"><span className="font-mono text-prism-adaptive mr-1.5">{idx + 1}.</span>{q.question}</p>
@@ -2398,7 +2431,7 @@
 
                         {/* ==================== TAB 4: CERTIFICATE DESIGNER & CNEU REPORT STUDIO ==================== */}
                         {activeTab === 'cert' && (
-                            <div className="space-y-5">
+                            <div key="tab_cert" className="oc-screen-enter space-y-5">
                                 <div className="no-print flex flex-wrap items-center justify-between gap-2">
                                     <div className="flex flex-wrap gap-2">
                                         <button type="button" onClick={() => setCertSubTab('cneu')} className={`neu-btn px-4 py-2 text-xs font-display font-bold ${certSubTab === 'cneu' ? 'is-pressed' : ''}`}>
@@ -2422,7 +2455,7 @@
                                 </div>
 
                                 {certSubTab === 'designer' && (
-                                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+                                    <div key="sub_designer" className="oc-step-enter grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
                                         <div className="lg:col-span-5 spatial-card rounded-[1.75rem] p-5 space-y-3">
                                             <h3 className="font-display font-bold text-base text-primary-adaptive">ตั้งค่าข้อความประกาศนียบัตร (ปรับหน่วยคะแนน/ชั่วโมงตามวิชาชีพอัตโนมัติ)</h3>
                                             <FieldInput label="รหัสนำหน้า (Prefix)" value={certTemplate.certPrefix} onChange={e => setCertTemplate(p => ({ ...p, certPrefix: e.target.value }))} />
@@ -2456,7 +2489,7 @@
                                 )}
 
                                 {certSubTab === 'cneu' && (
-                                    <div className="space-y-5">
+                                    <div key="sub_cneu" className="oc-step-enter space-y-5">
                                         <div className="no-print spatial-card rounded-[1.75rem] p-5 space-y-4">
                                             <div className="flex flex-wrap items-center justify-between gap-2">
                                                 <div>
@@ -2587,7 +2620,7 @@
 
                         {/* ==================== TAB 5: LIVE BROADCAST CONTROL ==================== */}
                         {activeTab === 'live' && (
-                            <div className="space-y-5 max-w-4xl mx-auto">
+                            <div key="tab_live" className="oc-screen-enter space-y-5 max-w-4xl mx-auto">
                                 <div className="flex flex-wrap items-center justify-between gap-3">
                                     <div>
                                         <span className="font-mono text-[10px] font-bold text-rose-adaptive uppercase">LIVE BROADCAST • REAL-TIME CLASSROOM STREAM</span>
@@ -2676,7 +2709,7 @@
 
                         {/* ==================== TAB 6: CLOUD & CENTRAL DATA CENTER SYNC ==================== */}
                         {activeTab === 'sync' && (
-                            <div className="space-y-5 max-w-4xl mx-auto">
+                            <div key="tab_sync" className="oc-screen-enter space-y-5 max-w-4xl mx-auto">
                                 <div>
                                     <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">CLOUD INFRASTRUCTURE • GAS &amp; 1-READ TELEMETRY</span>
                                     <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive mt-0.5">การเชื่อมต่อ Cloud, เสียง AI 24kHz และสรุปข้อมูลผู้บริหาร</h2>
@@ -2749,7 +2782,7 @@
 
                         {/* ==================== TAB 7: LIVE MULTI-PAGE PREVIEW & SYSTEM INSPECTOR ==================== */}
                         {activeTab === 'overview' && (
-                            <div className="space-y-5">
+                            <div key="tab_overview" className="oc-screen-enter space-y-5">
                                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
                                     <div>
                                         <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">ADMIN LIVE PREVIEW STUDIO • ALL ECOSYSTEM PAGES</span>
@@ -2861,7 +2894,7 @@
                                         {/* Responsive Viewport Frame */}
                                         <div className="neu-inset p-3 sm:p-4 flex flex-col items-center justify-center overflow-x-auto">
                                             <div
-                                                className="w-full rounded-2xl overflow-hidden bg-[#040a18] shadow-2xl border border-white/10 transition-all duration-500"
+                                                className="w-full rounded-2xl overflow-hidden bg-[var(--neu-bg)] shadow-2xl border border-[var(--neu-border)] transition-all duration-500"
                                                 style={{
                                                     maxWidth: previewViewport === 'mobile' ? '390px' : previewViewport === 'tablet' ? '768px' : '100%',
                                                     height: previewViewport === 'mobile' ? '680px' : '640px'
@@ -2871,7 +2904,7 @@
                                                     key={`${activePreviewPage?.id}_${previewReloadKey}`}
                                                     title={`Admin Live Preview: ${activePreviewPage?.title}`}
                                                     src={activePreviewPage?.url}
-                                                    className="w-full h-full border-0 block bg-[#040a18]"
+                                                    className="w-full h-full border-0 block bg-[var(--neu-bg)]"
                                                     allow="autoplay; fullscreen; picture-in-picture; microphone"
                                                 />
                                             </div>
@@ -2894,7 +2927,7 @@
                                     <button
                                         key={item.id}
                                         type="button"
-                                        onClick={() => { setActiveTab(item.id); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                                        onClick={() => goTab(item.id)}
                                         className={`touch-target flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-2xl text-[9px] font-bold transition-all active:scale-95 ${
                                             active ? 'neu-nav-active' : 'text-secondary-adaptive'
                                         }`}
