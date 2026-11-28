@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html lang="th" data-theme="dark">
+<html lang="th" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#1c222b">
+    <meta name="theme-color" content="#e6ebf0">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>AI Skill Lab — ต้นดอกท้อผลิบาน 10 สเต็ป | organ cloud 2.0</title>
 
-    <!-- ซิงค์โหมดมืด/สว่างทันที + โหลดโมดูลกลางและเอนจินต้นดอกท้อ (Zero-Build GitHub Pages) -->
+    <!-- ซิงค์ธีมสว่างมาตรฐาน/มืดทันที + โหลดโมดูลกลางและเอนจินต้นดอกท้อ (Zero-Build GitHub Pages) -->
     <script>
       (function () {
         try {
-          const saved = localStorage.getItem('rjcloud_theme') || 'dark';
-          const mode = saved === 'light' ? 'light' : 'dark';
+          const saved = localStorage.getItem('rjcloud_theme_v2');
+          const mode = saved === 'dark' ? 'dark' : 'light';
           document.documentElement.setAttribute('data-theme', mode);
           const meta = document.querySelector('meta[name="theme-color"]');
           if (meta) meta.setAttribute('content', mode === 'dark' ? '#1c222b' : '#e6ebf0');
@@ -31,7 +31,7 @@
             manifest.href = './manifest.json';
             document.head.appendChild(manifest);
 
-            ['./data.js', './learning-core.js?v=202717', './hero-peach-engine.js?v=202717'].forEach(function (src) {
+            ['./data.js', './learning-core.js?v=202719', './hero-peach-engine.js?v=202718'].forEach(function (src) {
               const s = document.createElement('script');
               s.src = src;
               s.async = false;
@@ -288,6 +288,27 @@
       .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
       .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--neu-dark); border-radius: 999px; }
+
+      /* Ultra-Smooth Phase & Stage Transitions (organ cloud 2.0) */
+      .oc-screen-enter {
+        animation: ocScreenSilkyIn 0.56s cubic-bezier(0.16, 1, 0.3, 1) both;
+      }
+      .oc-stage-fade-in {
+        animation: ocStageFadeIn 0.64s cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+      @keyframes ocScreenSilkyIn {
+        0% { opacity: 0; transform: translate3d(0, 14px, 0) scale(0.992); }
+        100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+      }
+      @keyframes ocStageFadeIn {
+        0% { opacity: 0; transform: scale(1.018); }
+        100% { opacity: 1; transform: scale(1); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .oc-screen-enter, .oc-stage-fade-in, .qi-surge-toast {
+          animation: none !important;
+        }
+      }
     </style>
 
     <!-- ESM Import Map (React 18, Lucide Icons, Firebase 11) -->
@@ -306,12 +327,12 @@
     </script>
 </head>
 <body>
-    <!-- หน้าจอโหลดเริ่มต้น -->
+    <!-- หน้าจอโหลดเริ่มต้น (ธีมสว่างมาตรฐาน Soft Daylight) -->
     <div id="skilllab-root">
-        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#1c222b;color:#f4f7fb;font-family:-apple-system,'Anuphan','Prompt',sans-serif;gap:14px;padding:24px;text-align:center;">
-            <div style="width:46px;height:46px;border:3px solid rgba(94,234,212,0.22);border-top-color:#5eead4;border-right-color:#fda4af;border-radius:9999px;animation:labSpin 0.85s linear infinite;"></div>
+        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#e6ebf0;color:#1f2b38;font-family:-apple-system,'Anuphan','Prompt',sans-serif;gap:14px;padding:24px;text-align:center;">
+            <div style="width:46px;height:46px;border:3px solid rgba(36,120,112,0.20);border-top-color:#247870;border-right-color:#d9486b;border-radius:9999px;animation:labSpin 0.85s linear infinite;"></div>
             <div style="font-weight:800;font-size:17px;">กำลังเปิดห้องฝึกสื่อสาร AI Skill Lab (organ cloud 2.0)...</div>
-            <div style="font-size:12px;color:#9eb0c7;">การเจรจาขอรับบริจาคอวัยวะ 10 สเต็ป • ฉากหน้าผาต้นดอกท้อผลิบานตามแสงปราณ</div>
+            <div style="font-size:12px;color:#64768a;">การเจรจาขอรับบริจาคอวัยวะ 10 สเต็ป • ฉากหน้าผาต้นดอกท้อผลิบานตามแสงปราณ</div>
         </div>
     </div>
 
@@ -324,10 +345,10 @@
         if (root && !root.dataset.mounted && ev.message) {
           const safeMsg = String(ev.message || 'Unknown error').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
           root.innerHTML =
-            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#1c222b;color:#f4f7fb;font-family:Sarabun,sans-serif;">' +
-            '<div style="max-width:440px;width:100%;background:#1c222b;border:1px solid rgba(253,164,175,0.4);border-radius:28px;padding:24px;text-align:center;box-shadow:12px 12px 26px #0e1218,-10px -10px 22px #2d3746;">' +
-            '<h2 style="color:#fda4af;font-weight:700;margin:0 0 8px;">ไม่สามารถเปิดห้องฝึก AI Skill Lab ได้ชั่วคราว</h2>' +
-            '<p style="font-size:13px;color:#c9d6e6;margin:0 0 16px;">' + safeMsg + '</p>' +
+            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#e6ebf0;color:#1f2b38;font-family:Sarabun,sans-serif;">' +
+            '<div style="max-width:440px;width:100%;background:#e6ebf0;border:1px solid rgba(255,255,255,0.75);border-radius:28px;padding:24px;text-align:center;box-shadow:12px 12px 26px #c5ced9,-12px -12px 26px #ffffff;">' +
+            '<h2 style="color:#d9486b;font-weight:700;margin:0 0 8px;">ไม่สามารถเปิดห้องฝึก AI Skill Lab ได้ชั่วคราว</h2>' +
+            '<p style="font-size:13px;color:#47586b;margin:0 0 16px;">' + safeMsg + '</p>' +
             '<button onclick="window.location.reload()" style="padding:12px 24px;border:none;border-radius:9999px;background:#247870;color:#ffffff;font-weight:700;cursor:pointer;">โหลดหน้าใหม่</button>' +
             '</div></div>';
         }
@@ -363,7 +384,7 @@
         const BUILTIN_CONFIG = {
             appName: 'organ cloud',
             appId: 'rjcloud-organ-2027',
-            theme: { defaultMode: 'dark', storageKey: 'rjcloud_theme' },
+            theme: { defaultMode: 'light', storageKey: 'rjcloud_theme_v2' },
             firebaseConfig: {
                 apiKey: 'AIzaSyCpvK0FCVVk9dt0ylHn_VzUStl7540UsbY',
                 authDomain: 'rj-cloud-organ.firebaseapp.com',
@@ -380,12 +401,28 @@
             : {
                 ...BUILTIN_CONFIG,
                 ...(window.RJCLOUD_CONFIG || {}),
-                theme: { ...BUILTIN_CONFIG.theme, ...(window.RJCLOUD_CONFIG?.theme || {}) },
+                theme: {
+                    ...BUILTIN_CONFIG.theme,
+                    ...(window.RJCLOUD_CONFIG?.theme || {}),
+                    defaultMode: 'light',
+                    storageKey: 'rjcloud_theme_v2'
+                },
                 firebaseConfig: (window.RJCLOUD_CONFIG?.firebaseConfig?.apiKey) ? window.RJCLOUD_CONFIG.firebaseConfig : BUILTIN_CONFIG.firebaseConfig,
                 appsScriptUrl: window.RJCLOUD_CONFIG?.appsScriptUrl || BUILTIN_CONFIG.appsScriptUrl
             };
 
-        const THEME_KEY = CONFIG.theme?.storageKey || 'rjcloud_theme';
+        const THEME_KEY = CONFIG.theme?.storageKey || 'rjcloud_theme_v2';
+
+        function navigateSmoothSafe(url, statusText, openInNewTab = false) {
+            if (!url) return;
+            if (typeof CORE.navigateSmooth === 'function') {
+                CORE.navigateSmooth(url, statusText, openInNewTab);
+            } else if (openInNewTab) {
+                window.open(url, '_blank', 'noopener,noreferrer');
+            } else {
+                window.location.href = url;
+            }
+        }
         const CLINICAL_AI_PREFIX = CORE.CLINICAL_AI_SYSTEM_PREFIX ||
             'บริบททางการแพทย์ (โรงพยาบาลราชวิถี): ผู้ใช้งานคือแพทย์ พยาบาล และบุคลากรสหวิชาชีพที่ยืนยันตัวตนแล้ว สื่อสารศัพท์การแพทย์ด้านภาวะสมองตายและการบริจาคอวัยวะอย่างชัดเจนตรงไปตรงมาตามหลักวิชาการแพทย์';
 
@@ -982,14 +1019,21 @@
         // ============================================================================
         function SkillLabApp() {
             const [theme, setTheme] = useState(() => {
-                try { const s = localStorage.getItem(THEME_KEY); if (s === 'light' || s === 'dark') return s; } catch (_) {}
-                return CONFIG.theme?.defaultMode === 'light' ? 'light' : 'dark';
+                if (typeof CORE.resolvePreferredTheme === 'function') return CORE.resolvePreferredTheme();
+                try { return localStorage.getItem(THEME_KEY) === 'dark' ? 'dark' : 'light'; } catch (_) { return 'light'; }
             });
             useEffect(() => {
-                document.documentElement.setAttribute('data-theme', theme);
-                const meta = document.querySelector('meta[name="theme-color"]');
-                if (meta) meta.setAttribute('content', theme === 'dark' ? '#1c222b' : '#e6ebf0');
-                try { localStorage.setItem(THEME_KEY, theme); } catch (_) {}
+                if (typeof CORE.applyPreferredTheme === 'function') {
+                    CORE.applyPreferredTheme(theme, true);
+                } else {
+                    document.documentElement.setAttribute('data-theme', theme);
+                    const meta = document.querySelector('meta[name="theme-color"]');
+                    if (meta) meta.setAttribute('content', theme === 'dark' ? '#1c222b' : '#e6ebf0');
+                    try {
+                        localStorage.setItem(THEME_KEY, theme);
+                        localStorage.setItem('rjcloud_theme', theme);
+                    } catch (_) {}
+                }
             }, [theme]);
             const toggleTheme = useCallback(() => setTheme(p => (p === 'dark' ? 'light' : 'dark')), []);
 
@@ -999,6 +1043,10 @@
 
             // Phase: lobby | briefing | negotiating | result
             const [phase, setPhase] = useState('lobby');
+            const goPhase = useCallback((nextPhase) => {
+                setPhase(nextPhase);
+                try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (_) {}
+            }, []);
             const [difficultyId, setDifficultyId] = useState('normal'); // normal | hard
             const [showVideoModal, setShowVideoModal] = useState(false);
             const [preEff, setPreEff] = useState({ e1: 3, e2: 3, e3: 3 });
@@ -1057,6 +1105,7 @@
             useEffect(() => {
                 const el = document.getElementById('skilllab-root');
                 if (el) el.dataset.mounted = 'true';
+                if (typeof CORE.initSmoothTransitions === 'function') CORE.initSmoothTransitions();
             }, []);
 
             // Firebase Cloud Sync
@@ -1075,489 +1124,23 @@
             }, []);
 
             // ============================================================================
-            // 6. REAL AUDIO LIP-SYNC ANALYSER & 24kHz STUDIO TTS ONLY (NO BROWSER VOICE)
-            // ============================================================================
-            const getLiveAudioAmplitude = useCallback(() => {
-                const an = analyserRef.current, buf = ampBufRef.current;
-                if (!an || !buf) return -1;
-                try {
-                    an.getByteTimeDomainData(buf);
-                    let sum = 0;
-                    for (let i = 0; i < buf.length; i++) { const n = (buf[i] - 128) / 128; sum += n * n; }
-                    const rms = Math.sqrt(sum / buf.length);
-                    return rms < 0.012 ? 0 : Math.min(1, (rms - 0.012) * 7.2);
-                } catch (_) { return -1; }
-            }, []);
-
-            const ensureSharedAudioWithAnalyser = useCallback(() => {
-                if (!sharedAudioRef.current) {
-                    const a = new Audio();
-                    a.playsInline = true;
-                    a.setAttribute('playsinline', '');
-                    a.crossOrigin = 'anonymous';
-                    sharedAudioRef.current = a;
-                }
-                if (!analyserRef.current) {
-                    try {
-                        const AC = window.AudioContext || window.webkitAudioContext;
-                        if (AC) {
-                            const ctx = new AC();
-                            const src = ctx.createMediaElementSource(sharedAudioRef.current);
-                            const an = ctx.createAnalyser();
-                            an.fftSize = 256;
-                            src.connect(an);
-                            an.connect(ctx.destination);
-                            audioCtxRef.current = ctx;
-                            analyserRef.current = an;
-                            ampBufRef.current = new Uint8Array(an.fftSize);
-                        }
-                    } catch (_) {}
-                }
-                if (audioCtxRef.current?.state === 'suspended') audioCtxRef.current.resume().catch(() => {});
-                return sharedAudioRef.current;
-            }, []);
-
-            const stopStudioVoice = useCallback(() => {
-                voiceSessionRef.current += 1;
-                if (sharedAudioRef.current) {
-                    try { sharedAudioRef.current.onended = null; sharedAudioRef.current.onerror = null; sharedAudioRef.current.pause(); } catch (_) {}
-                }
-                if (audioUrlRef.current) { try { URL.revokeObjectURL(audioUrlRef.current); } catch (_) {} audioUrlRef.current = null; }
-                setVoicePhase('idle');
-            }, []);
-            useEffect(() => () => stopStudioVoice(), [stopStudioVoice]);
-
-            // เสียง AI สตูดิโอ 24kHz เท่านั้น (ผ่าน learning-core.js -> Code.gs Gemini TTS)
-            const playStudioSpeech = useCallback(async (text) => {
-                stopStudioVoice();
-                const sid = voiceSessionRef.current;
-                setLatestCaption(text);
-                setVoicePhase('loading');
-                try {
-                    const a = ensureSharedAudioWithAnalyser();
-                    let blob = null;
-                    if (typeof CORE.fetchStudioGuideBlob === 'function') {
-                        blob = await CORE.fetchStudioGuideBlob(text, appsScriptUrl, 'Sulafat');
-                    } else if (appsScriptUrl && navigator.onLine) {
-                        const res = await fetch(appsScriptUrl, {
-                            method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                            body: JSON.stringify({ action: 'callGeminiTTS', text, voiceName: 'Sulafat' })
-                        });
-                        const data = await res.json();
-                        const b64 = data.audioBase64 || data.audio || data.inlineData?.data;
-                        if (b64) blob = pcm16FallbackBlob(b64, 24000);
-                    }
-                    if (voiceSessionRef.current !== sid) return;
-                    if (!blob || blob.size <= 44) { setVoicePhase('idle'); return; }
-
-                    setVoicePhase('speaking');
-                    const url = URL.createObjectURL(blob);
-                    audioUrlRef.current = url;
-                    await new Promise(resolve => {
-                        a.muted = false; a.src = url; a.onended = () => resolve(true); a.onerror = () => resolve(false);
-                        try { a.load(); } catch (_) {}
-                        const p = a.play();
-                        if (p && typeof p.catch === 'function') p.catch(() => resolve(false));
-                    });
-                    if (voiceSessionRef.current === sid) setVoicePhase('idle');
-                } catch (_) {
-                    if (voiceSessionRef.current === sid) setVoicePhase('idle');
-                }
-            }, [stopStudioVoice, ensureSharedAudioWithAnalyser, appsScriptUrl]);
-
-            // Mount & Sync Ultra-Realism Blooming Peach Cliff Stage
-            useEffect(() => {
-                if (phase !== 'negotiating' || !stageContainerRef.current) return;
-                const ctrl = mountBloomingPeachStage(stageContainerRef.current, {
-                    initialBloom: Math.max(0.06, bloomPercent / 100),
-                    stormEnabled
-                });
-                peachCtrlRef.current = ctrl;
-                return () => {
-                    ctrl.destroy();
-                    peachCtrlRef.current = null;
-                    if (qiBannerTimerRef.current) clearTimeout(qiBannerTimerRef.current);
-                };
-            }, [phase]);
-
-            useEffect(() => {
-                if (!peachCtrlRef.current) return;
-                peachCtrlRef.current.setBloomProgress(bloomPercent / 100);
-            }, [bloomPercent]);
-
-            useEffect(() => {
-                if (!peachCtrlRef.current) return;
-                peachCtrlRef.current.setStormEnabled(stormEnabled);
-            }, [stormEnabled]);
-
-            const triggerQiBloomFeedback = useCallback((nextPct, customText) => {
-                setBloomPercent(nextPct);
-                if (peachCtrlRef.current) {
-                    peachCtrlRef.current.setBloomProgress(nextPct / 100);
-                    peachCtrlRef.current.triggerQiSurge();
-                }
-                if (customText) {
-                    setQiPulseBanner(customText);
-                    if (qiBannerTimerRef.current) clearTimeout(qiBannerTimerRef.current);
-                    qiBannerTimerRef.current = setTimeout(() => setQiPulseBanner(''), 3400);
-                }
-            }, []);
-
-            // ============================================================================
-            // 7. 10-STEP CONSULTATION, SILENCE 2.5s, MIC, STEP-10 FREE DECISION & CLOUD SAVE
-            // ============================================================================
-            const handleStartConsultation = () => {
-                stopStudioVoice();
-                const s0 = TEN_STEPS[0];
-                setStepIdx(0);
-                setMatchedStepIds([]);
-                setMessages([{ role: 'ai', step: 1, text: s0.relativeLineTH, emotion: s0.emotion, at: Date.now() }]);
-                setCurrentEmotion(s0.emotion);
-                setTrustScore(difficultyId === 'hard' ? 36 : 46);
-                setSilenceCount(0);
-                setSilenceTimer(0);
-                setTriggerTotal(0);
-                setBloomPercent(6);
-                setHideHudForAdmire(false);
-                setQiPulseBanner('');
-                setFinalDecision(null);
-                setHintBanner('');
-                setInputText('');
-                setLearnerVoiceClips([]);
-                setPhase('negotiating');
-                setTimeout(() => playStudioSpeech(s0.relativeLineTH), 320);
-            };
-
-            const handleTherapeuticSilence = () => {
-                if (silenceTimer > 0) return;
-                setSilenceTimer(3);
-                const iv = setInterval(() => {
-                    setSilenceTimer(prev => {
-                        if (prev <= 1) {
-                            clearInterval(iv);
-                            setSilenceCount(c => c + 1);
-                            setTrustScore(t => Math.min(100, t + 6));
-                            showToast('✓ เว้นความเงียบเยียวยา 2.5 วินาทีสำเร็จ! ญาติรู้สึกปลอดภัยและเปิดใจมากขึ้นค่ะ');
-                            return 0;
-                        }
-                        return prev - 1;
-                    });
-                }, 850);
-            };
-
-            const handleToggleMic = async () => {
-                if (isRecordingMic) {
-                    setIsRecordingMic(false);
-                    if (speechRecRef.current) { try { speechRecRef.current.stop(); } catch (_) {} }
-                    if (mediaRecRef.current && mediaRecRef.current.state !== 'inactive') { try { mediaRecRef.current.stop(); } catch (_) {} }
-                    return;
-                }
-                const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-                if (!SR) {
-                    showToast('เบราว์เซอร์นี้ไม่รองรับการพิมพ์ด้วยเสียง สามารถพิมพ์ข้อความโต้ตอบได้ทันทีค่ะ', 'info');
-                    return;
-                }
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    micChunksRef.current = [];
-                    micStartTsRef.current = Date.now();
-                    const mr = new MediaRecorder(stream);
-                    mr.ondataavailable = (ev) => { if (ev.data.size > 0) micChunksRef.current.push(ev.data); };
-                    mr.onstop = () => {
-                        stream.getTracks().forEach(t => t.stop());
-                        const blob = new Blob(micChunksRef.current, { type: 'audio/webm' });
-                        const dur = Math.max(1, Math.round((Date.now() - micStartTsRef.current) / 1000));
-                        setLearnerVoiceClips(prev => [...prev.slice(-4), { audioUrl: URL.createObjectURL(blob), durationSec: dur }]);
-                    };
-                    mr.start();
-                    mediaRecRef.current = mr;
-
-                    const rec = new SR();
-                    rec.lang = 'th-TH';
-                    rec.interimResults = false;
-                    rec.onresult = (ev) => {
-                        const transcript = ev.results?.[0]?.[0]?.transcript || '';
-                        if (transcript) setInputText(prev => (prev ? `${prev} ${transcript}` : transcript));
-                    };
-                    rec.onerror = () => setIsRecordingMic(false);
-                    rec.onend = () => {
-                        setIsRecordingMic(false);
-                        if (mediaRecRef.current && mediaRecRef.current.state !== 'inactive') { try { mediaRecRef.current.stop(); } catch (_) {} }
-                    };
-                    speechRecRef.current = rec;
-                    rec.start();
-                    setIsRecordingMic(true);
-                    showToast('🎙️ กำลังรับเสียงพูดของท่าน (บันทึกเฉพาะใน RAM เพื่อฟังย้อนหลัง • PDPA 100%)', 'info');
-                } catch (_) {
-                    showToast('ไม่ได้รับสิทธิ์ไมโครโฟน สามารถพิมพ์หรือเลือกแนวทางคำพูดแทนได้ค่ะ', 'error');
-                }
-            };
-
-            const handleSendMessage = async (e, overrideText = null) => {
-                if (e) e.preventDefault();
-                const txt = String(overrideText ?? inputText).trim();
-                if (!txt || isAiThinking || finalDecision) return;
-
-                setInputText('');
-                setHintBanner('');
-                stopStudioVoice();
-
-                const stepObj = TEN_STEPS[stepIdx];
-                const lowTxt = txt.toLowerCase();
-                const hitTriggers = TRIGGER_WORDS.filter(w => lowTxt.includes(w.toLowerCase()));
-                const nextTriggerTotal = triggerTotal + hitTriggers.length;
-                if (hitTriggers.length > 0) {
-                    setTriggerTotal(nextTriggerTotal);
-                    showToast(`⚠️ พบคำที่อาจกระทบจิตใจ (${hitTriggers.join(', ')}) แนะนำหลีกเลี่ยงในสถานการณ์จริงค่ะ`, 'error');
-                }
-
-                const hitKeywords = (stepObj.keywords || []).filter(k => lowTxt.includes(k.toLowerCase()));
-                const isStepMatched = hitTriggers.length === 0 && (hitKeywords.length >= 1 || txt.length >= 38);
-                const nextMatched = isStepMatched && !matchedStepIds.includes(stepObj.step)
-                    ? [...matchedStepIds, stepObj.step]
-                    : matchedStepIds;
-                setMatchedStepIds(nextMatched);
-
-                const trustDelta = hitTriggers.length > 0
-                    ? (difficultyId === 'hard' ? -16 : -10)
-                    : (isStepMatched ? (difficultyId === 'hard' ? 6 : 8) : (difficultyId === 'hard' ? 1 : 3));
-                const nextTrust = Math.max(10, Math.min(100, trustScore + trustDelta));
-                setTrustScore(nextTrust);
-
-                const nextMessages = [...messages, { role: 'user', step: stepObj.step, text: txt, at: Date.now() }];
-                setMessages(nextMessages);
-                setIsAiThinking(true);
-
-                // สเต็ปที่ 10: ญาติตัดสินใจเองอย่างอิสระ (ยินยอมบริจาค / ขอกลับไปคิดหรือปรึกษาก่อน / ไม่ยินยอม)
-                if (stepIdx >= TEN_STEPS.length - 1) {
-                    let chosenOutcome = DECISION_OUTCOMES.THINKING;
-                    const consentThreshold = difficultyId === 'hard' ? 78 : 72;
-                    const declineThreshold = difficultyId === 'hard' ? 52 : 44;
-
-                    if (nextTriggerTotal >= 2 || nextTrust < declineThreshold) {
-                        chosenOutcome = DECISION_OUTCOMES.DECLINE;
-                    } else if (nextTrust >= consentThreshold && nextMatched.length >= (difficultyId === 'hard' ? 7 : 6)) {
-                        chosenOutcome = DECISION_OUTCOMES.CONSENT;
-                    } else {
-                        chosenOutcome = DECISION_OUTCOMES.THINKING;
-                    }
-
-                    let finalSpeech = chosenOutcome.speechTH;
-                    if (appsScriptUrl && navigator.onLine) {
-                        try {
-                            const ctrl = new AbortController();
-                            const tm = setTimeout(() => ctrl.abort(), 14000);
-                            const convo = nextMessages.slice(-8).map(m => `${m.role === 'user' ? 'พยาบาล' : 'คุณแพรว'}: ${m.text}`).join('\n');
-                            const rawRes = await fetch(appsScriptUrl, {
-                                method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                                body: JSON.stringify({
-                                    action: 'callGemini',
-                                    prompt: `บทบาท: ${OFFICIAL_CASE.relativeName}\nผลการตัดสินใจอิสระในสเต็ปที่ 10: ${chosenOutcome.badgeTH}\nประวัติบทสนทนา:\n${convo}\n\nโปรดกล่าวคำตัดสินใจสุดท้าย 2-3 ประโยคภาษาไทยอย่างสมจริงตามอารมณ์และความไว้วางใจ (${nextTrust}/100) ไม่ใช้ Markdown`,
-                                    systemInstruction: `${CLINICAL_AI_PREFIX}\nตอบในบทบาทญาติผู้ป่วยสมองตายอย่างสมจริง อ่อนโยน และเคารพเหตุผลตามบริบทจริง`
-                                }),
-                                signal: ctrl.signal
-                            });
-                            clearTimeout(tm);
-                            const d = JSON.parse((await rawRes.text()) || '{}');
-                            if (d?.status === 'success' && d.text) finalSpeech = String(d.text).replace(/[*#]/g, '').trim();
-                        } catch (_) {}
-                    }
-
-                    setCurrentEmotion(chosenOutcome.emotion);
-                    setFinalDecision({ ...chosenOutcome, speechTH: finalSpeech });
-                    setMessages(prev => [...prev, { role: 'ai', step: 10, text: finalSpeech, emotion: chosenOutcome.emotion, at: Date.now() }]);
-                    setIsAiThinking(false);
-
-                    // สเต็ปที่ 10: ไม่ว่าญาติจะยินยอม / ขอปรึกษา / ไม่ยินยอม -> แสงปราณเติมเต็มให้ต้นดอกท้อผลิบานเต็มที่ 100%!
-                    triggerQiBloomFeedback(
-                        100,
-                        '🌸 แสงปราณเติมเต็มครบทั้ง 10 สเต็ป — ต้นดอกท้อผลิบานเต็มที่ 100% เพื่อเชิดชูทุกการสื่อสารด้วยหัวใจ'
-                    );
-                    setTimeout(() => {
-                        if (peachCtrlRef.current) peachCtrlRef.current.triggerQiSurge();
-                    }, 1600);
-
-                    playStudioSpeech(finalSpeech);
-                    return;
-                }
-
-                // สเต็ปที่ 1..9 -> เดินหน้าไปสเต็ปถัดไปพร้อมส่งแสงปราณไหลเติมให้ต้นดอกท้อผลิบานทีละขั้น
-                const nextIdx = stepIdx + 1;
-                const nextStepObj = TEN_STEPS[nextIdx];
-                let aiReply = nextStepObj.relativeLineTH;
-                let nextEmo = hitTriggers.length > 0 ? 'ANGRY' : nextStepObj.emotion;
-
-                if (appsScriptUrl && navigator.onLine) {
-                    try {
-                        const ctrl = new AbortController();
-                        const tm = setTimeout(() => ctrl.abort(), 14000);
-                        const convo = nextMessages.slice(-6).map(m => `${m.role === 'user' ? 'พยาบาล' : 'คุณแพรว'}: ${m.text}`).join('\n');
-                        const rawRes = await fetch(appsScriptUrl, {
-                            method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                            body: JSON.stringify({
-                                action: 'callGemini',
-                                prompt: `บทบาท: ${OFFICIAL_CASE.relativeName} (ระดับความยาก: ${difficultyId === 'hard' ? 'Hard เข้มข้นสมจริง' : 'Normal'})\nสเต็ปถัดไป (${nextStepObj.step}/10): ${nextStepObj.titleTH}\nประเด็นที่ญาติจะถาม/สะท้อนต่อ: ${nextStepObj.relativeLineTH}\nประวัติสนทนา:\n${convo}\n\nโปรดตอบรับคำพูดของพยาบาลและเชื่อมเข้าสู่ประเด็นสเต็ปที่ ${nextStepObj.step} ความยาว 2-3 ประโยคภาษาไทยเป็นธรรมชาติ ขึ้นต้นด้วย [EMOTION:SHOCK|CONFUSED|SAD|ANGRY|HESITANT|CALM] ไม่ใช้ Markdown`,
-                                systemInstruction: `${CLINICAL_AI_PREFIX}\nแสดงบทบาทญาติผู้เสียชีวิตสมองตายตามสื่อการสอน รพ.ราชวิถีอย่างสมจริง`
-                            }),
-                            signal: ctrl.signal
-                        });
-                        clearTimeout(tm);
-                        const d = JSON.parse((await rawRes.text()) || '{}');
-                        if (d?.status === 'success' && d.text) {
-                            const clean = String(d.text).replace(/[*#]/g, '').trim();
-                            const em = clean.match(/\[EMOTION:(SHOCK|CONFUSED|SAD|ANGRY|HESITANT|CALM)\]/i);
-                            if (em) nextEmo = em[1].toUpperCase();
-                            const stripped = clean.replace(/\[EMOTION:[^\]]+\]/gi, '').trim();
-                            if (stripped) aiReply = stripped;
-                        }
-                    } catch (_) {}
-                }
-
-                setStepIdx(nextIdx);
-                setCurrentEmotion(nextEmo);
-                setMessages(prev => [...prev, { role: 'ai', step: nextStepObj.step, text: aiReply, emotion: nextEmo, at: Date.now() }]);
-                setIsAiThinking(false);
-
-                const nextBloomPct = Math.min(92, Math.round(6 + (nextIdx / TEN_STEPS.length) * 86));
-                triggerQiBloomFeedback(
-                    nextBloomPct,
-                    `✨ ผ่านสเต็ปที่ ${stepObj.step}/10 — แสงปราณไหลเติมกิ่ง ต้นดอกท้อผลิบานแล้ว ${nextBloomPct}%`
-                );
-
-                playStudioSpeech(aiReply);
-            };
-
-            const handleOpenDebriefResult = () => {
-                stopStudioVoice();
-                const userMsgs = messages.filter(m => m.role === 'user');
-                const coverageRatio = matchedStepIds.length / TEN_STEPS.length;
-                const rawScore = Math.round(
-                    45 +
-                    coverageRatio * 38 +
-                    Math.min(10, silenceCount * 4) +
-                    (finalDecision?.code === 'CONSENT' ? 7 : finalDecision?.code === 'THINKING' ? 3 : 0) -
-                    triggerTotal * 10
-                );
-                const finalScore = Math.max(48, Math.min(99, rawScore));
-
-                const radar = RADAR_AXES.map((a, idx) => ({
-                    key: a.key,
-                    labelTH: a.labelTH,
-                    value: Math.max(48, Math.min(99, finalScore + (idx % 2 === 0 ? 3 : -2)))
-                }));
-
-                const longestMsg = userMsgs.slice().sort((a, b) => b.text.length - a.text.length)[0];
-                const missedStep = TEN_STEPS.find(s => !matchedStepIds.includes(s.step));
-
-                setEvalResult({
-                    score: finalScore,
-                    decision: finalDecision || DECISION_OUTCOMES.THINKING,
-                    radar,
-                    summary: finalDecision?.code === 'CONSENT'
-                        ? `ยอดเยี่ยมมากค่ะ! ท่านสื่อสารครบทั้ง 10 สเต็ปด้วยความอบอุ่น ชัดเจน และให้เกียรติ จนครอบครัววางใจและตัดสินใจยินยอมบริจาคอวัยวะด้วยตนเองค่ะ`
-                        : finalDecision?.code === 'THINKING'
-                            ? `สื่อสารได้ดีและไม่กดดันครอบครัวค่ะ ญาติเปิดใจรับฟังและขอกลับไปปรึกษาครอบครัวก่อน ซึ่งเป็นผลลัพธ์ที่พบได้จริงและมีคุณค่าทางคลินิกค่ะ`
-                            : `ท่านได้ฝึกครบทั้ง 10 สเต็ปแล้วค่ะ แม้ครอบครัวตัดสินใจไม่ยินยอม แต่การเคารพการตัดสินใจและลดถ้อยคำที่กระทบจิตใจคือหัวใจสำคัญของการพัฒนาทักษะค่ะ`,
-                    goldenMoment: longestMsg ? `“${longestMsg.text.slice(0, 150)}”` : 'สื่อสารด้วยความตั้งใจและรับฟังครอบครัวจนจบครบทั้ง 10 สเต็ป',
-                    turningPoint: missedStep
-                        ? `ลองเสริมประเด็นในสเต็ปที่ ${missedStep.step} (${missedStep.titleTH}): ${missedStep.hintTH}`
-                        : 'ท่านเก็บครบทุกประเด็นสำคัญทั้ง 10 สเต็ปแล้วค่ะ ลองท้าทายตัวเองในโหมด Hard Mode ต่อได้เลยนะคะ'
-                });
-                setPhase('result');
-            };
-
-            const handleDownloadDebriefPng = () => {
-                try {
-                    const c = document.createElement('canvas'); c.width = 1200; c.height = 760;
-                    const ctx = c.getContext('2d');
-                    const g = ctx.createLinearGradient(0, 0, 1200, 760);
-                    g.addColorStop(0, '#030611'); g.addColorStop(1, '#0c1f42');
-                    ctx.fillStyle = g; ctx.fillRect(0, 0, 1200, 760);
-                    ctx.strokeStyle = 'rgba(253,164,175,0.55)'; ctx.lineWidth = 3; ctx.strokeRect(30, 30, 1140, 700);
-                    ctx.fillStyle = '#fda4af'; ctx.font = '700 18px JetBrains Mono, monospace';
-                    ctx.fillText('ORGAN CLOUD 2.0 • AI SKILL LAB 10-STEP DEBRIEF REPORT', 64, 92);
-                    ctx.fillStyle = '#ffffff'; ctx.font = '800 32px Prompt, sans-serif';
-                    ctx.fillText(OFFICIAL_CASE.titleTH, 64, 146, 1060);
-                    ctx.fillStyle = '#bae6fd'; ctx.font = '600 22px Sarabun, sans-serif';
-                    ctx.fillText(`ผู้เข้าฝึก: ${user?.name || '-'} (${user?.hospital || 'รพ.ราชวิถี'}) • ${difficultyId.toUpperCase()} MODE`, 64, 192);
-                    ctx.fillStyle = '#34d399'; ctx.font = '800 84px JetBrains Mono, monospace';
-                    ctx.fillText(`${evalResult?.score || 0}/100`, 64, 306);
-                    ctx.fillStyle = '#fde68a'; ctx.font = '700 24px Prompt, sans-serif';
-                    ctx.fillText(evalResult?.decision?.badgeTH || '', 360, 290, 760);
-                    ctx.fillStyle = '#e2e8f0'; ctx.font = '500 22px Sarabun, sans-serif';
-                    ctx.fillText(String(evalResult?.summary || '').slice(0, 88), 64, 382, 1060);
-                    ctx.fillStyle = '#6ee7b7'; ctx.font = '700 20px Prompt, sans-serif';
-                    ctx.fillText(`Golden Moment: ${String(evalResult?.goldenMoment || '').slice(0, 76)}`, 64, 462, 1060);
-                    ctx.fillStyle = '#7dd3fc'; ctx.font = '600 20px Sarabun, sans-serif';
-                    ctx.fillText(`ข้อเสนอแนะ: ${String(evalResult?.turningPoint || '').slice(0, 84)}`, 64, 520, 1060);
-                    const a = document.createElement('a');
-                    a.href = c.toDataURL('image/png', 1);
-                    a.download = `AI_SkillLab_10Step_${user?.license || Date.now()}.png`;
-                    a.click();
-                    showToast('ดาวน์โหลดใบสรุปผล AI Skill Lab (PNG) เรียบร้อยค่ะ');
-                } catch (_) {
-                    showToast('ไม่สามารถสร้างภาพสรุปผลได้ในขณะนี้ค่ะ', 'error');
-                }
-            };
-
-            const handleSaveAndGoPosttest = async () => {
-                stopStudioVoice();
-                const preAvg = Number(((preEff.e1 + preEff.e2 + preEff.e3) / 3).toFixed(2));
-                const postAvg = Number(((postEff.e1 + postEff.e2 + postEff.e3) / 3).toFixed(2));
-                const score = Number(evalResult?.score || 80);
-                const prevHist = Array.isArray(user?.skillLabHistory) ? user.skillLabHistory : [];
-                const newEntry = {
-                    at: new Date().toISOString(),
-                    caseId: OFFICIAL_CASE.id,
-                    difficultyId,
-                    score,
-                    decisionCode: evalResult?.decision?.code || 'THINKING',
-                    matchedSteps: matchedStepIds.length,
-                    silenceCount,
-                    triggerTotal,
-                    radar: evalResult?.radar || [],
-                    preSelfEfficacyAvg: preAvg,
-                    postSelfEfficacyAvg: postAvg
-                };
-                const nextUser = {
-                    ...user,
-                    skillLabPassed: true,
-                    skillLabBestScore: Math.max(Number(user?.skillLabBestScore || 0), score),
-                    preSelfEfficacyAvg: preAvg,
-                    postSelfEfficacyAvg: postAvg,
-                    skillLabHistory: [...prevHist, newEntry].slice(-15)
-                };
-                setUser(nextUser);
-                saveLearnerSessionSafe(nextUser);
-
-                if (fbDb && nextUser?.id) {
-                    try {
-                        await setDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'elearning_users', String(nextUser.id)), nextUser, { merge: true });
-                        if (typeof CORE.buildAnonTelemetryId === 'function' && typeof CORE.buildExecutiveTelemetryPayload === 'function') {
-                            const anonId = CORE.buildAnonTelemetryId(nextUser.id);
-                            await setDoc(doc(fbDb, 'artifacts', CONFIG.appId, 'public', 'data', 'executive_telemetry', anonId), CORE.buildExecutiveTelemetryPayload(nextUser), { merge: true });
-                        }
-                    } catch (_) {}
-                }
-                showToast('บันทึกผล AI Skill Lab ขึ้น Central Data Center แล้ว กำลังพาไปสอบ Post-test ค่ะ');
-                setTimeout(() => { window.location.href = './index.html?auto_step=posttest'; }, 650);
-            };
-
-            // ============================================================================
-            // 8. RENDER PHASES (PRODUCTION ONLY — NEUMORPHIC SOFT UI + 3D HEART STAGE)
+            // 8. RENDER PHASES (PRODUCTION ONLY — NEUMORPHIC SOFT UI + PEACH CLIFF STAGE)
             // ============================================================================
             if (!user?.id) {
                 return (
                     <div className="min-h-dvh relative flex items-center justify-center p-4 pt-safe pb-safe bg-[var(--neu-bg)] text-[var(--neu-text)]">
-                        <div className="neu-card relative z-10 w-full max-w-md p-6 sm:p-8 text-center space-y-5">
-                            <div className="neu-icon-well w-14 h-14 mx-auto text-[var(--neu-teal)]">
+                        <div className="oc-screen-enter neu-card relative z-10 w-full max-w-md p-6 sm:p-8 text-center space-y-5">
+                            <div className="flex items-center justify-between gap-2">
+                                <span className="font-mono text-[10px] font-bold text-[var(--neu-teal)] uppercase tracking-wider">organ cloud 2.0 • VERIFIED ACCESS</span>
+                                <ThemeToggleButton theme={theme} onToggle={toggleTheme} compact />
+                            </div>
+                            <div className="neu-icon-well w-16 h-16 mx-auto text-[var(--neu-teal)]">
                                 <Icon name="ShieldCheck" size={28} />
                             </div>
                             <div className="space-y-1.5">
-                                <span className="font-mono text-[10px] font-bold text-[var(--neu-teal)] uppercase tracking-wider">organ cloud 2.0 • VERIFIED ACCESS</span>
                                 <h1 className="font-display font-extrabold text-xl text-[var(--neu-text)] m-0">กรุณายืนยันตัวตนบุคลากรทางการแพทย์</h1>
                                 <p className="text-xs sm:text-sm text-[var(--neu-text-sub)] leading-relaxed m-0">
-                                    ห้องฝึกสื่อสาร AI Skill Lab 3D เป็นระบบปิดเฉพาะแพทย์ พยาบาล และบุคลากรสหวิชาชีพที่ยืนยันตัวตนด้วยเลขใบอนุญาตประกอบวิชาชีพและรหัส OTP แล้วเท่านั้นค่ะ
+                                    ห้องฝึกสื่อสาร AI Skill Lab ต้นดอกท้อ 10 สเต็ป เป็นระบบปิดเฉพาะแพทย์ พยาบาล และบุคลากรสหวิชาชีพที่ยืนยันตัวตนด้วยเลขใบอนุญาตประกอบวิชาชีพและรหัส OTP แล้วเท่านั้นค่ะ
                                 </p>
                             </div>
                             <a href="./index.html" className="neu-btn-teal touch-target w-full py-3.5 font-display font-extrabold text-sm">
@@ -1601,7 +1184,7 @@
                                 </div>
                             </header>
 
-                            <main className="relative z-10 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 space-y-5 flex-1">
+                            <main key="phase_lobby" className="oc-screen-enter relative z-10 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 space-y-5 flex-1">
                                 {/* HERO OFFICIAL CASE CARD */}
                                 <section className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
                                     <div className="lg:col-span-8 neu-card p-5 sm:p-7 flex flex-col justify-between gap-4">
@@ -1697,7 +1280,7 @@
                                             </div>
                                         ))}
                                     </div>
-                                    <button type="button" onClick={() => setPhase('briefing')} className="neu-btn-teal touch-target w-full py-4 font-display font-extrabold text-sm sm:text-base">
+                                    <button type="button" onClick={() => goPhase('briefing')} className="neu-btn-teal touch-target w-full py-4 font-display font-extrabold text-sm sm:text-base">
                                         เปิดแฟ้มเคส ICU &amp; เตรียมเข้าห้องรับรอง ({difficultyId === 'hard' ? 'Hard Mode ⚡' : 'Normal Mode • 10 สเต็ป'}) →
                                     </button>
                                 </section>
@@ -1707,10 +1290,10 @@
 
                     {/* ==================== PHASE 2: ICU BRIEFING (NEUMORPHIC SOFT UI) ==================== */}
                     {phase === 'briefing' && (
-                        <main className="relative z-10 max-w-3xl w-full mx-auto px-4 py-7 space-y-5 flex-1 flex flex-col justify-center">
+                        <main key="phase_briefing" className="oc-screen-enter relative z-10 max-w-3xl w-full mx-auto px-4 py-7 space-y-5 flex-1 flex flex-col justify-center">
                             <div className="neu-card p-6 sm:p-8 space-y-5">
                                 <div className="flex items-center justify-between gap-2">
-                                    <button type="button" onClick={() => setPhase('lobby')} className="neu-btn px-4 py-2 text-xs font-bold">
+                                    <button type="button" onClick={() => goPhase('lobby')} className="neu-btn px-4 py-2 text-xs font-bold">
                                         <Icon name="ArrowLeft" size={14} /> กลับหน้าหลัก Skill Lab
                                     </button>
                                     <span className={`px-3 py-1 rounded-full font-mono text-[10px] font-bold bg-[var(--neu-bg)] shadow-[var(--shadow-pressed-sm)] ${difficultyId === 'hard' ? 'text-[var(--neu-rose)]' : 'text-[var(--neu-teal)]'}`}>
@@ -1757,7 +1340,7 @@
 
                     {/* ==================== PHASE 3: FULLSCREEN ULTRA-REALISM BLOOMING PEACH CLIFF STAGE ==================== */}
                     {phase === 'negotiating' && (
-                        <div className="peach-stage-bg fixed inset-0 z-20 flex flex-col justify-between overflow-hidden select-none text-white">
+                        <div key="phase_negotiating" className="oc-stage-fade-in peach-stage-bg fixed inset-0 z-20 flex flex-col justify-between overflow-hidden select-none text-white">
                             {/* Fullscreen Ultra-Realism Moonlit Peach Cliff + Storm Clouds + Lightning Canvas */}
                             <div ref={stageContainerRef} className="fixed inset-0 z-10 pointer-events-none" />
                             <div className="peach-vignette" aria-hidden="true" />
@@ -1788,7 +1371,7 @@
                             <header className={`relative z-20 max-w-6xl w-full mx-auto px-3 sm:px-5 pt-[calc(0.75rem+env(safe-area-inset-top,0px))] space-y-2 pointer-events-none transition-opacity duration-500 ${hideHudForAdmire ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
                                 <div className="flex flex-wrap items-center justify-between gap-2">
                                     <div className="flex items-center gap-1.5 pointer-events-auto min-w-0">
-                                        <button type="button" onClick={() => { stopStudioVoice(); setPhase('lobby'); }} className="stage-hud-glass w-9 h-9 rounded-xl flex items-center justify-center shrink-0">
+                                        <button type="button" onClick={() => { stopStudioVoice(); goPhase('lobby'); }} className="stage-hud-glass w-9 h-9 rounded-xl flex items-center justify-center shrink-0">
                                             <Icon name="ArrowLeft" size={16} />
                                         </button>
                                         <div className="stage-hud-glass px-3 h-9 rounded-xl flex items-center gap-2 text-xs min-w-0">
@@ -1999,7 +1582,7 @@
 
                     {/* ==================== PHASE 4: 5-AXIS DEBRIEF REPORT (NEUMORPHIC SOFT UI) ==================== */}
                     {phase === 'result' && evalResult && (
-                        <main className="relative z-10 max-w-5xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-5 flex-1">
+                        <main key="phase_result" className="oc-screen-enter relative z-10 max-w-5xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-5 flex-1">
                             <div className="flex flex-wrap items-center justify-between gap-3">
                                 <div>
                                     <span className="font-mono text-[10px] font-bold text-[var(--neu-rose)] uppercase">organ cloud 2.0 • 10-STEP AI SUPERVISOR DEBRIEF</span>
@@ -2084,7 +1667,7 @@
                                         <button type="button" onClick={handleDownloadDebriefPng} className="neu-btn touch-target py-3.5 px-4 font-display font-bold text-xs sm:text-sm text-[var(--neu-teal)]">
                                             <Icon name="Download" size={15} /> บันทึกใบสรุปผล (PNG)
                                         </button>
-                                        <button type="button" onClick={() => { stopStudioVoice(); setPhase('lobby'); }} className="neu-btn touch-target py-3.5 px-4 font-display font-bold text-xs sm:text-sm">
+                                        <button type="button" onClick={() => { stopStudioVoice(); goPhase('lobby'); }} className="neu-btn touch-target py-3.5 px-4 font-display font-bold text-xs sm:text-sm">
                                             ← ฝึกใหม่ (เปลี่ยน Normal / Hard)
                                         </button>
                                         <button type="button" onClick={handleSaveAndGoPosttest} className="neu-btn-teal touch-target py-3.5 px-4 font-display font-extrabold text-xs sm:text-sm">
