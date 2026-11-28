@@ -1,7 +1,7 @@
 /* ============================================================================
  * organ cloud 2.0 — Moonlit Peach Cliff Pure WebGPU Engine (iPhone Metal)
  * File: hero-peach-engine.js (Zero-Build Standalone Production Module)
- * Version: 2027.24-webgpu-only
+ * Version: 2027.25-webgpu-only
  * Public Exports: window.RJCLOUD_HERO_PEACH
  *
  * Pure Native WebGPU Only (WGSL + Compute Shader 4,096 อนุภาคบน GPU)
@@ -313,7 +313,7 @@
     fn noise2(p: vec2<f32>) -> f32 {
       let i = floor(p);
       let f = fract(p);
-      let s = f * f * (3.0 - 2.0 * f);
+      let s = f * f * (vec2<f32>(3.0) - 2.0 * f);
       return mix(mix(hash21(i), hash21(i + vec2<f32>(1.0, 0.0)), s.x),
                  mix(hash21(i + vec2<f32>(0.0, 1.0)), hash21(i + vec2<f32>(1.0, 1.0)), s.x), s.y);
     }
@@ -369,7 +369,7 @@
       if (uv.y < horizon + 0.02) {
         let starFade = sstep(horizon + 0.01, horizon * 0.22, uv.y);
         let grid1 = skyUv * vec2<f32>(160.0 * aspect, 160.0);
-        let id1 = floor(grid1); let f1 = fract(grid1) - 0.5;
+        let id1 = floor(grid1); let f1 = fract(grid1) - vec2<f32>(0.5);
         let rnd1 = hash21(id1);
         if (rnd1 > 0.962) {
           let tw = 0.45 + 0.55 * sin(t * (1.8 + rnd1 * 4.0) + rnd1 * 62.0);
@@ -394,7 +394,7 @@
       col += vec3<f32>(0.58, 0.80, 1.0) * rayShafts * sstep(-0.35, 0.75, toMoon.x + toMoon.y * 0.7) * exp(-distMoon * 1.65) * sstep(moonR * 0.8, moonR * 1.9, distMoon) * 0.15;
 
       if (distMoon < moonR) {
-        let localM = toMoon / moonR;
+        let localM = toMoon * (1.0 / moonR);
         let nMoon = normalize(vec3<f32>(localM.x, -localM.y, sqrt(max(0.0, 1.0 - dot(localM, localM)))));
         let ndl = dot(nMoon, normalize(vec3<f32>(0.78, -0.34, -0.52)));
         let maria = fbm5(localM * 3.4 + vec2<f32>(1.8, 0.7));
@@ -512,8 +512,9 @@
 
       let mistVal = fbm4(vec2<f32>(uv.x * aspect * 1.9 - t * 0.032, uv.y * 4.5)) * sstep(0.36, 0.56, uv.y) * sstep(0.95, 0.52, uv.y);
       col = mix(col, vec3<f32>(0.72, 0.86, 0.98), mistVal * 0.22);
-      col = (col * (2.51 * col + 0.03)) / (col * (2.43 * col + 0.59) + 0.14);
-      let vig = 1.0 - dot((uv - 0.5) * vec2<f32>(1.15, 1.12), (uv - 0.5) * vec2<f32>(1.15, 1.12)) * 0.50;
+      col = (col * (col * 2.51 + vec3<f32>(0.03))) / (col * (col * 2.43 + vec3<f32>(0.59)) + vec3<f32>(0.14));
+      let vUv = (uv - vec2<f32>(0.5)) * vec2<f32>(1.15, 1.12);
+      let vig = 1.0 - dot(vUv, vUv) * 0.50;
       return vec4<f32>(clamp(col * clamp(vig, 0.45, 1.0), vec3<f32>(0.0), vec3<f32>(1.0)), 1.0);
     }
   `;
@@ -747,6 +748,7 @@
       for (let i = 0; i < infos.length; i++) {
         for (let j = 0; j < infos[i].messages.length; j++) {
           if (infos[i].messages[j].type === 'error') {
+            try { console.error('[WGSL Compile Error]', infos[i].messages[j].message, 'line', infos[i].messages[j].lineNum); } catch (_) {}
             await device.popErrorScope();
             return false;
           }
@@ -779,84 +781,9 @@
         primitive: { topology: 'triangle-list' }
       });
       const vErr = await device.popErrorScope();
-      if (vErr || st.disposed) return false;
-
-      sizeCanvas();
-      const context = canvas.getContext('webgpu');
-      if (!context) return false;
-      context.configure({ device: device, format: format, alphaMode: 'opaque' });
-
-      const treeTex = device.createTexture({
-        size: [treeAtlas.width, treeAtlas.height, 1],
-        format: 'rgba8unorm',
-        usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT
-      });
-      device.queue.copyExternalImageToTexture({ source: treeAtlas }, { texture: treeTex }, [treeAtlas.width, treeAtlas.height]);
-      const treeSamp = device.createSampler({ magFilter: 'linear', minFilter: 'linear' });
-
-      const uData = new Float32Array(16);
-      const uBuf = device.createBuffer({ size: 64, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
-      const pInit = createParticleSeedBuffer(PARTICLE_COUNT);
-      const pBuf = device.createBuffer({ size: pInit.byteLength, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST });
-      device.queue.writeBuffer(pBuf, 0, pInit);
-
-      const worldBG = device.createBindGroup({
-        layout: worldPipe.getBindGroupLayout(0),
-        entries: [{ binding: 0, resource: { buffer: uBuf } }, { binding: 1, resource: treeTex.createView() }, { binding: 2, resource: treeSamp }]
-      });
-      const compBG = device.createBindGroup({
-        layout: compPipe.getBindGroupLayout(0),
-        entries: [{ binding: 0, resource: { buffer: uBuf } }, { binding: 1, resource: { buffer: pBuf } }]
-      });
-      const partBG = device.createBindGroup({
-        layout: partPipe.getBindGroupLayout(0),
-        entries: [{ binding: 0, resource: { buffer: uBuf } }, { binding: 1, resource: { buffer: pBuf } }]
-      });
-
-      let lastTs = performance.now();
-      const loop = function (now) {
-        if (st.disposed) return;
-        st.rafId = requestAnimationFrame(loop);
-        if (document.hidden || canvas.width <= 0 || canvas.height <= 0) return;
-        const dt = Math.min(0.05, Math.max(0.001, (now - lastTs) * 0.001));
-        lastTs = now;
-        const t = now * 0.001;
-        stepSimulation(t, dt);
-
-        const aspect = st.W / Math.max(1, st.H);
-        const isPortrait = aspect < 0.85;
-        const treeH = isPortrait ? 0.52 : 0.72;
-        const treeW = treeH / Math.max(0.35, aspect);
-
-        uData[0] = canvas.width; uData[1] = canvas.height; uData[2] = t; uData[3] = dt;
-        uData[4] = st.ptrX; uData[5] = st.ptrY; uData[6] = evalFlash(); uData[7] = st.flashX;
-        uData[8] = st.flashY; uData[9] = st.qiSurge; uData[10] = st.bloomCur; uData[11] = st.stormEnabled ? 1.0 : 0.0;
-        uData[12] = isPortrait ? 0.54 : 0.495; uData[13] = 0.545; uData[14] = treeW; uData[15] = treeH;
-        device.queue.writeBuffer(uBuf, 0, uData);
-
-        const enc = device.createCommandEncoder();
-        const cp = enc.beginComputePass();
-        cp.setPipeline(compPipe); cp.setBindGroup(0, compBG);
-        cp.dispatchWorkgroups(Math.ceil(PARTICLE_COUNT / 64));
-        cp.end();
-
-        const rp = enc.beginRenderPass({
-          colorAttachments: [{ view: context.getCurrentTexture().createView(), loadOp: 'clear', storeOp: 'store', clearValue: { r: 0.008, g: 0.02, b: 0.06, a: 1 } }]
-        });
-        rp.setPipeline(worldPipe); rp.setBindGroup(0, worldBG); rp.draw(3, 1, 0, 0);
-        rp.setPipeline(partPipe); rp.setBindGroup(0, partBG); rp.draw(6, PARTICLE_COUNT, 0, 0);
-        rp.end();
-        device.queue.submit([enc.finish()]);
-      };
-      st.rafId = requestAnimationFrame(loop);
-      return true;
-    }
-
-    // Boot Sequence: Pure Native WebGPU Only (No WebGL2 / No 2D Canvas Fallback)
-    (async function bootWebGPUOnly() {
-      if (!navigator.gpu) {
-        try { console.warn('[organ cloud 2.0] อุปกรณ์หรือเบราว์เซอร์นี้ไม่รองรับ WebGPU'); } catch (_) {}
-        return;
+      if (vErr || st.disposed) {
+        if (vErr) { try { console.error('[WebGPU Pipeline Error]', vErr.message); } catch (_) {} }
+        return false;
       }
       const atlas = getTreeAtlas();
       try {
@@ -896,6 +823,6 @@
 
   global.RJCLOUD_HERO_PEACH = {
     mount: mount,
-    version: '2027.24-webgpu-only'
+    version: '2027.25-webgpu-only'
   };
 })(typeof window !== 'undefined' ? window : globalThis);
