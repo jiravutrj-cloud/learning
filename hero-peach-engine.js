@@ -785,6 +785,137 @@
         if (vErr) { try { console.error('[WebGPU Pipeline Error]', vErr.message); } catch (_) {} }
         return false;
       }
+
+      // กำหนดขนาด Canvas ก่อน configure WebGPU swapchain เสมอ
+      sizeCanvas();
+      const context = canvas.getContext('webgpu');
+      if (!context) return false;
+      context.configure({ device: device, format: format, alphaMode: 'opaque' });
+
+      // อัปโหลดภาพต้นดอกท้อ 1024x1024 ขึ้น GPUTexture
+      const treeTex = device.createTexture({
+        size: [treeAtlas.width, treeAtlas.height, 1],
+        format: 'rgba8unorm',
+        usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT
+      });
+      device.queue.copyExternalImageToTexture(
+        { source: treeAtlas },
+        { texture: treeTex },
+        [treeAtlas.width, treeAtlas.height]
+      );
+      const treeSamp = device.createSampler({ magFilter: 'linear', minFilter: 'linear' });
+
+      // Uniform Buffer (64 bytes = 4 x vec4<f32>) และ Storage Buffer 4,096 อนุภาค
+      const uniformData = new Float32Array(16);
+      const uniformBuf = device.createBuffer({
+        size: 64,
+        usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+      });
+
+      const initParts = createParticleSeedBuffer(PARTICLE_COUNT);
+      const partBuf = device.createBuffer({
+        size: initParts.byteLength,
+        usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST
+      });
+      device.queue.writeBuffer(partBuf, 0, initParts);
+
+      const worldBG = device.createBindGroup({
+        layout: worldPipe.getBindGroupLayout(0),
+        entries: [
+          { binding: 0, resource: { buffer: uniformBuf } },
+          { binding: 1, resource: treeTex.createView() },
+          { binding: 2, resource: treeSamp }
+        ]
+      });
+      const compBG = device.createBindGroup({
+        layout: compPipe.getBindGroupLayout(0),
+        entries: [
+          { binding: 0, resource: { buffer: uniformBuf } },
+          { binding: 1, resource: { buffer: partBuf } }
+        ]
+      });
+      const partBG = device.createBindGroup({
+        layout: partPipe.getBindGroupLayout(0),
+        entries: [
+          { binding: 0, resource: { buffer: uniformBuf } },
+          { binding: 1, resource: { buffer: partBuf } }
+        ]
+      });
+
+      // ลูปเรนเดอร์ Pure WebGPU (Compute 4,096 อนุภาค + World Shader + Instanced Particles)
+      let lastTs = performance.now();
+      const frame = function (now) {
+        if (st.disposed) return;
+        st.rafId = requestAnimationFrame(frame);
+        if (document.hidden || canvas.width <= 0 || canvas.height <= 0) return;
+
+        const dt = Math.min(0.05, Math.max(0.001, (now - lastTs) * 0.001));
+        lastTs = now;
+        const t = now * 0.001;
+        stepSimulation(t, dt);
+
+        const aspect = st.W / Math.max(1, st.H);
+        const isPortrait = aspect < 0.85;
+        const treeH = isPortrait ? 0.52 : 0.72;
+        const treeW = treeH / Math.max(0.35, aspect);
+
+        uniformData[0] = canvas.width;
+        uniformData[1] = canvas.height;
+        uniformData[2] = t;
+        uniformData[3] = dt;
+        uniformData[4] = st.ptrX;
+        uniformData[5] = st.ptrY;
+        uniformData[6] = evalFlash();
+        uniformData[7] = st.flashX;
+        uniformData[8] = st.flashY;
+        uniformData[9] = st.qiSurge;
+        uniformData[10] = st.bloomCur;
+        uniformData[11] = st.stormEnabled ? 1.0 : 0.0;
+        uniformData[12] = isPortrait ? 0.54 : 0.495;
+        uniformData[13] = 0.545;
+        uniformData[14] = treeW;
+        uniformData[15] = treeH;
+        device.queue.writeBuffer(uniformBuf, 0, uniformData);
+
+        try {
+          const encoder = device.createCommandEncoder();
+
+          const cPass = encoder.beginComputePass();
+          cPass.setPipeline(compPipe);
+          cPass.setBindGroup(0, compBG);
+          cPass.dispatchWorkgroups(Math.ceil(PARTICLE_COUNT / 64));
+          cPass.end();
+
+          const view = context.getCurrentTexture().createView();
+          const rPass = encoder.beginRenderPass({
+            colorAttachments: [{
+              view: view,
+              loadOp: 'clear',
+              storeOp: 'store',
+              clearValue: { r: 0.008, g: 0.02, b: 0.06, a: 1.0 }
+            }]
+          });
+          rPass.setPipeline(worldPipe);
+          rPass.setBindGroup(0, worldBG);
+          rPass.draw(3, 1, 0, 0);
+
+          rPass.setPipeline(partPipe);
+          rPass.setBindGroup(0, partBG);
+          rPass.draw(6, PARTICLE_COUNT, 0, 0);
+          rPass.end();
+
+          device.queue.submit([encoder.finish()]);
+        } catch (renderErr) {
+          try { console.warn('[WebGPU Frame Warning]', renderErr); } catch (_) {}
+        }
+      };
+
+      st.rafId = requestAnimationFrame(frame);
+      return true;
+    }
+
+    // เริ่มต้นเอนจิน Pure WebGPU ทันที
+    (async function bootPureWebGPU() {
       const atlas = getTreeAtlas();
       try {
         const ok = await tryStartWebGPU(atlas);
@@ -823,6 +954,6 @@
 
   global.RJCLOUD_HERO_PEACH = {
     mount: mount,
-    version: '2027.25-webgpu-only'
+    version: '2027.26-webgpu-only'
   };
 })(typeof window !== 'undefined' ? window : globalThis);
