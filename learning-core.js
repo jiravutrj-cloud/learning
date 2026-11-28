@@ -26,8 +26,8 @@
     theme: {
       name: 'organ cloud 2.0',
       subtitle: 'Cloud AI',
-      defaultMode: 'dark',
-      storageKey: 'rjcloud_theme'
+      defaultMode: 'light',
+      storageKey: 'rjcloud_theme_v2'
     },
     firebaseConfig: {
       apiKey: 'AIzaSyCpvK0FCVVk9dt0ylHn_VzUStl7540UsbY',
@@ -58,7 +58,10 @@
           ? ext.adminEmails
           : BUILTIN_CONFIG.adminEmails,
       learningRules: Object.assign({}, BUILTIN_CONFIG.learningRules, ext.learningRules || {}),
-      theme: Object.assign({}, BUILTIN_CONFIG.theme, ext.theme || {}),
+      theme: Object.assign({}, BUILTIN_CONFIG.theme, ext.theme || {}, {
+        defaultMode: 'light',
+        storageKey: 'rjcloud_theme_v2'
+      }),
       firebaseConfig: extFb
         ? Object.assign({}, BUILTIN_CONFIG.firebaseConfig, extFb)
         : Object.assign({}, BUILTIN_CONFIG.firebaseConfig),
@@ -1279,6 +1282,203 @@
     return wavBlob;
   }
 
+  // ============================================================================
+  // 8. UNIFIED SOFT DAYLIGHT THEME & ULTRA-SMOOTH PAGE TRANSITION ENGINE
+  // ============================================================================
+  const UNIFIED_THEME_KEY = 'rjcloud_theme_v2';
+  let smoothVeilTimer = null;
+  let smoothIsNavigating = false;
+  let smoothTransitionsBound = false;
+
+  /**
+   * อ่านค่าธีมมาตรฐาน (ค่าเริ่มต้น = ธีมสว่าง 'light' เว้นแต่ผู้ใช้กดสลับเป็น 'dark' เอง)
+   */
+  function resolvePreferredTheme() {
+    try {
+      const saved = global.localStorage && global.localStorage.getItem(UNIFIED_THEME_KEY);
+      return saved === 'dark' ? 'dark' : 'light';
+    } catch (_) {
+      return 'light';
+    }
+  }
+
+  /**
+   * ใช้ธีมสว่าง/มืดทันทีพร้อมซิงค์คีย์กลางทั้งระบบ organ cloud 2.0
+   */
+  function applyPreferredTheme(mode, persist) {
+    const nextMode = mode === 'dark' ? 'dark' : 'light';
+    try {
+      if (global.document && global.document.documentElement) {
+        global.document.documentElement.setAttribute('data-theme', nextMode);
+      }
+      const meta = global.document && global.document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', nextMode === 'dark' ? '#1c222b' : '#e6ebf0');
+      if (persist && global.localStorage) {
+        global.localStorage.setItem(UNIFIED_THEME_KEY, nextMode);
+        global.localStorage.setItem('rjcloud_theme', nextMode);
+      }
+    } catch (_) {}
+    return nextMode;
+  }
+
+  /**
+   * สร้างสไตล์และองค์ประกอบม่านเปลี่ยนหน้าแบบอัลตร้าสมูทกลาง (ใช้ร่วมกันทุกหน้าใน e-Learning)
+   */
+  function ensureSmoothVeilDom() {
+    if (!global.document || !global.document.body) return null;
+
+    if (!global.document.getElementById('organ-cloud-smooth-transition-css')) {
+      const style = global.document.createElement('style');
+      style.id = 'organ-cloud-smooth-transition-css';
+      style.textContent = [
+        '.oc-transition-veil {',
+        '  position: fixed; inset: 0; z-index: 99990;',
+        '  display: flex; flex-direction: column; align-items: center; justify-content: center;',
+        '  gap: 14px; padding: 24px; pointer-events: none; opacity: 0; visibility: hidden;',
+        '  background: radial-gradient(ellipse 72% 58% at 50% 44%, rgba(36, 120, 112, 0.12) 0%, rgba(217, 72, 107, 0.07) 38%, rgba(230, 235, 240, 0.98) 78%), #e6ebf0;',
+        '  backdrop-filter: blur(24px) saturate(140%); -webkit-backdrop-filter: blur(24px) saturate(140%);',
+        '  transition: opacity 0.58s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.58s ease;',
+        '}',
+        'html[data-theme="dark"] .oc-transition-veil {',
+        '  background: radial-gradient(ellipse 72% 58% at 50% 44%, rgba(94, 234, 212, 0.14) 0%, rgba(253, 164, 175, 0.08) 38%, rgba(28, 34, 43, 0.98) 78%), #1c222b;',
+        '}',
+        '.oc-transition-veil.is-active { opacity: 1; visibility: visible; pointer-events: auto; }',
+        '.oc-transition-core {',
+        '  display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center;',
+        '  transform: translate3d(0, 10px, 0) scale(0.95); opacity: 0;',
+        '  transition: transform 0.56s cubic-bezier(0.16, 1, 0.3, 1) 0.05s, opacity 0.48s ease 0.05s;',
+        '}',
+        '.oc-transition-veil.is-active .oc-transition-core { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }',
+        '.oc-transition-orb {',
+        '  width: 48px; height: 48px; border-radius: 9999px;',
+        '  border: 2.5px solid rgba(36, 120, 112, 0.20); border-top-color: #247870; border-right-color: #d9486b;',
+        '  box-shadow: 0 0 22px rgba(36, 120, 112, 0.20); animation: ocVeilSpin 0.86s linear infinite;',
+        '}',
+        'html[data-theme="dark"] .oc-transition-orb {',
+        '  border-color: rgba(94, 234, 212, 0.22); border-top-color: #5eead4; border-right-color: #fda4af;',
+        '  box-shadow: 0 0 24px rgba(94, 234, 212, 0.24);',
+        '}',
+        '.oc-transition-brand {',
+        '  font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 10.5px; font-weight: 700;',
+        '  letter-spacing: 0.22em; text-transform: uppercase; color: #247870;',
+        '}',
+        'html[data-theme="dark"] .oc-transition-brand { color: #5eead4; }',
+        '.oc-transition-label {',
+        '  font-family: "Prompt", "Anuphan", -apple-system, sans-serif; font-size: 14px; font-weight: 700;',
+        '  color: #1f2b38; margin: 0;',
+        '}',
+        'html[data-theme="dark"] .oc-transition-label { color: #f4f7fb; }',
+        '@keyframes ocVeilSpin { to { transform: rotate(360deg); } }'
+      ].join('\n');
+      global.document.head.appendChild(style);
+    }
+
+    let veil = global.document.getElementById('organCloudTransitionVeil');
+    if (!veil) {
+      veil = global.document.createElement('div');
+      veil.id = 'organCloudTransitionVeil';
+      veil.className = 'oc-transition-veil';
+      veil.setAttribute('aria-live', 'polite');
+      veil.setAttribute('aria-hidden', 'true');
+      veil.innerHTML =
+        '<div class="oc-transition-core">' +
+        '  <div class="oc-transition-orb" aria-hidden="true"></div>' +
+        '  <span class="oc-transition-brand">ORGAN CLOUD 2.0</span>' +
+        '  <p id="organCloudTransitionLabel" class="oc-transition-label">กำลังเข้าสู่หน้าถัดไปอย่างนุ่มนวล...</p>' +
+        '</div>';
+      global.document.body.appendChild(veil);
+    }
+    return veil;
+  }
+
+  function hideSmoothVeil() {
+    clearTimeout(smoothVeilTimer);
+    smoothIsNavigating = false;
+    const veil = global.document && global.document.getElementById('organCloudTransitionVeil');
+    if (veil) {
+      veil.classList.remove('is-active');
+      veil.setAttribute('aria-hidden', 'true');
+    }
+  }
+
+  /**
+   * เปลี่ยนหน้าแบบอัลตร้าสมูทด้วยม่าน organ cloud 2.0 (ใช้ได้ทั้งลิงก์และปุ่ม React)
+   */
+  function navigateSmooth(targetUrl, statusText, openInNewTab) {
+    if (!targetUrl) return;
+    const reduced =
+      global.matchMedia && global.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const veil = !reduced ? ensureSmoothVeilDom() : null;
+
+    if (!veil || smoothIsNavigating) {
+      if (openInNewTab) global.open(targetUrl, '_blank', 'noopener,noreferrer');
+      else global.location.href = targetUrl;
+      return;
+    }
+
+    smoothIsNavigating = true;
+    const labelEl = global.document.getElementById('organCloudTransitionLabel');
+    if (labelEl) {
+      labelEl.textContent = statusText || 'กำลังเข้าสู่หน้าถัดไปอย่างนุ่มนวล...';
+    }
+    veil.classList.add('is-active');
+    veil.setAttribute('aria-hidden', 'false');
+
+    clearTimeout(smoothVeilTimer);
+    smoothVeilTimer = setTimeout(function () {
+      if (openInNewTab) {
+        global.open(targetUrl, '_blank', 'noopener,noreferrer');
+        setTimeout(hideSmoothVeil, 360);
+      } else {
+        global.location.href = targetUrl;
+      }
+    }, 520);
+  }
+
+  /**
+   * ผูกตัวจับการคลิกลิงก์ข้ามหน้าและคืนสถานะเมื่อกดย้อนกลับ (pageshow) อัตโนมัติ
+   */
+  function initSmoothTransitions() {
+    if (smoothTransitionsBound || !global.document) return;
+    smoothTransitionsBound = true;
+
+    const bindDom = function () {
+      ensureSmoothVeilDom();
+      hideSmoothVeil();
+    };
+    if (global.document.body) bindDom();
+    else global.document.addEventListener('DOMContentLoaded', bindDom, { once: true });
+
+    global.addEventListener('pageshow', hideSmoothVeil);
+    global.document.addEventListener('visibilitychange', function () {
+      if (!global.document.hidden && smoothIsNavigating) {
+        setTimeout(hideSmoothVeil, 220);
+      }
+    });
+
+    global.document.addEventListener('click', function (e) {
+      const link = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+      if (!link || smoothIsNavigating) return;
+      if (link.hasAttribute('download') || link.hasAttribute('data-no-transition')) return;
+      const href = link.getAttribute('href') || '';
+      if (
+        !href ||
+        href.startsWith('#') ||
+        href.startsWith('javascript:') ||
+        href.startsWith('mailto:') ||
+        href.startsWith('tel:')
+      ) {
+        return;
+      }
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+
+      e.preventDefault();
+      const openBlank = link.getAttribute('target') === '_blank';
+      const txt = (link.textContent || '').replace(/\s+/g, ' ').replace(/[↗→←]/g, '').trim();
+      navigateSmooth(href, txt ? 'กำลังเปิด ' + txt + '...' : 'กำลังเข้าสู่หน้าถัดไปอย่างนุ่มนวล...', openBlank);
+    });
+  }
+
   // เผยแพร่ API กลางที่ window.RJCLOUD_CORE พร้อม Alias window.RJLearningCore
   const api = {
     BUILTIN_CONFIG: BUILTIN_CONFIG,
@@ -1331,7 +1531,12 @@
     pcm16ToWavBlob: pcm16ToWavBlob,
     openAudioCacheDb: openAudioCacheDb,
     getCachedAudio: getCachedAudio,
-    setCachedAudio: setCachedAudio
+    setCachedAudio: setCachedAudio,
+
+    resolvePreferredTheme: resolvePreferredTheme,
+    applyPreferredTheme: applyPreferredTheme,
+    navigateSmooth: navigateSmooth,
+    initSmoothTransitions: initSmoothTransitions
   };
 
   global.RJCLOUD_CORE = api;
