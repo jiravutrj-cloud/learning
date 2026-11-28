@@ -6,9 +6,9 @@
     <meta name="theme-color" content="#1c222b">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>AI Skill Lab 3D — โฮโลแกรมหัวใจ 3 มิติ 10 สเต็ป | organ cloud 2.0</title>
+    <title>AI Skill Lab — ต้นดอกท้อผลิบาน 10 สเต็ป | organ cloud 2.0</title>
 
-    <!-- ซิงค์โหมดมืด/สว่างทันที + โหลดโมดูลกลาง (Zero-Build GitHub Pages) -->
+    <!-- ซิงค์โหมดมืด/สว่างทันที + โหลดโมดูลกลางและเอนจินต้นดอกท้อ (Zero-Build GitHub Pages) -->
     <script>
       (function () {
         try {
@@ -31,7 +31,7 @@
             manifest.href = './manifest.json';
             document.head.appendChild(manifest);
 
-            ['./data.js', './learning-core.js?v=202711'].forEach(function (src) {
+            ['./data.js', './learning-core.js?v=202717', './hero-peach-engine.js?v=202717'].forEach(function (src) {
               const s = document.createElement('script');
               s.src = src;
               s.async = false;
@@ -243,18 +243,30 @@
         color: var(--neu-teal); flex-shrink: 0;
       }
 
-      /* เวทีโฮโลแกรมหัวใจ 3 มิติสมจริง (Volumetric Consultation Chamber — คงความสวยคมชัดเต็มระบบ) */
-      .holo-stage-bg {
+      /* เวทีฉากหน้าผาต้นดอกท้อ Ultra-Realism + เมฆพายุฟ้าแลบ (Moonlit Peach Sanctuary) */
+      .peach-stage-bg {
+        background: linear-gradient(180deg, #020510 0%, #0a1a36 32%, #15305c 58%, #071222 86%, #02060f 100%);
+      }
+      .peach-vignette {
+        position: fixed; inset: 0; z-index: 12; pointer-events: none;
         background:
-          radial-gradient(ellipse 68% 58% at 50% 44%, #0b1b3d 0%, #050c20 50%, #01030a 100%);
+          radial-gradient(ellipse 88% 80% at 48% 44%, transparent 50%, rgba(1, 5, 16, 0.56) 100%),
+          linear-gradient(180deg, rgba(2, 6, 18, 0.34) 0%, transparent 18%, transparent 74%, rgba(2, 6, 18, 0.72) 100%);
       }
       .stage-hud-glass {
-        background: linear-gradient(155deg, rgba(14, 22, 38, 0.84) 0%, rgba(7, 12, 24, 0.94) 100%);
-        backdrop-filter: blur(20px) saturate(165%);
-        -webkit-backdrop-filter: blur(20px) saturate(165%);
-        border: 1px solid rgba(148, 197, 255, 0.22);
+        background: linear-gradient(155deg, rgba(10, 19, 36, 0.78) 0%, rgba(5, 10, 22, 0.90) 100%);
+        backdrop-filter: blur(18px) saturate(160%);
+        -webkit-backdrop-filter: blur(18px) saturate(160%);
+        border: 1px solid rgba(186, 230, 253, 0.22);
         box-shadow: 0 18px 46px -14px rgba(0, 4, 18, 0.88), inset 0 1px 0 rgba(255, 255, 255, 0.14);
         color: #f8fafc;
+      }
+      .qi-surge-toast {
+        animation: qiToastRise 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+      @keyframes qiToastRise {
+        0% { opacity: 0; transform: translateY(10px) scale(0.95); }
+        100% { opacity: 1; transform: translateY(0) scale(1); }
       }
 
       @keyframes labSpin { to { transform: rotate(360deg); } }
@@ -298,8 +310,8 @@
     <div id="skilllab-root">
         <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#1c222b;color:#f4f7fb;font-family:-apple-system,'Anuphan','Prompt',sans-serif;gap:14px;padding:24px;text-align:center;">
             <div style="width:46px;height:46px;border:3px solid rgba(94,234,212,0.22);border-top-color:#5eead4;border-right-color:#fda4af;border-radius:9999px;animation:labSpin 0.85s linear infinite;"></div>
-            <div style="font-weight:800;font-size:17px;">กำลังเปิดห้องฝึกสื่อสาร AI Skill Lab 3D (organ cloud 2.0)...</div>
-            <div style="font-size:12px;color:#9eb0c7;">การเจรจาขอรับบริจาคอวัยวะ 10 สเต็ป • Volumetric 3D Heart Hologram</div>
+            <div style="font-weight:800;font-size:17px;">กำลังเปิดห้องฝึกสื่อสาร AI Skill Lab (organ cloud 2.0)...</div>
+            <div style="font-size:12px;color:#9eb0c7;">การเจรจาขอรับบริจาคอวัยวะ 10 สเต็ป • ฉากหน้าผาต้นดอกท้อผลิบานตามแสงปราณ</div>
         </div>
     </div>
 
@@ -307,7 +319,7 @@
     <script>
       window.addEventListener('error', function (ev) {
         const src = String(ev.filename || (ev.target && ev.target.src) || '');
-        if (/(data|learning-core)\.js/i.test(src)) return;
+        if (/(data|learning-core|hero-peach-engine)\.js/i.test(src)) return;
         const root = document.getElementById('skilllab-root');
         if (root && !root.dataset.mounted && ev.message) {
           const safeMsg = String(ev.message || 'Unknown error').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -650,324 +662,189 @@
         ];
 
         // ============================================================================
-        // 3. VOLUMETRIC 3D PARTICLE HEART HOLOGRAM ENGINE (ULTRA-SMOOTH 60/120FPS)
-        //    - เต้นตามจังหวะชีพจรอารมณ์ + ตอบสนองคลื่นเสียง AI สตูดิโอ 24kHz แบบเรียลไทม์
-        //    - แปลงร่างเป็นข้อความอารมณ์ 3 มิติเมื่ออารมณ์ญาติเปลี่ยน แล้วคืนรูปเป็นหัวใจอัตโนมัติ
+        // 3. ULTRA-REALISM BLOOMING PEACH CLIFF STAGE ADAPTER (STEP-BY-STEP QI BLOOM)
+        //    - เชื่อมต่อเอนจินฉากหน้าผาต้นดอกท้อ Ultra-Realism + เมฆพายุฟ้าแลบ (hero-peach-engine.js)
+        //    - ปรับระดับการบานของดอกท้อตามสเต็ป (setBloomProgress) และปล่อยแสงปราณ (triggerQiSurge)
+        //    - พร้อม Fallback Canvas ในตัวหากเปิดทดสอบแบบไฟล์เดี่ยวโดยไม่โหลดสคริปต์ภายนอก
         // ============================================================================
-        function mountVolumetricHeartHologram(container, initOpts = {}) {
-            if (!container) return { update: () => {}, toggleViewMode: () => 'heart', destroy: () => {} };
+        function mountBloomingPeachStage(container, initOpts = {}) {
+            if (!container) {
+                return { setBloomProgress: () => {}, triggerQiSurge: () => {}, setStormEnabled: () => {}, triggerLightning: () => {}, destroy: () => {} };
+            }
 
             const canvas = document.createElement('canvas');
-            canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;';
+            canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;';
             container.innerHTML = '';
             container.appendChild(canvas);
-            const ctx = canvas.getContext('2d');
-            if (!ctx) return { update: () => {}, toggleViewMode: () => 'heart', destroy: () => {} };
 
-            let state = {
-                emotion: initOpts.emotion || 'SHOCK',
-                trust: Number(initOpts.trust ?? 46),
-                isSpeaking: Boolean(initOpts.isSpeaking),
-                step: Number(initOpts.step || 1),
-                getAudioAmplitude: initOpts.getAudioAmplitude || null,
-                onViewModeChange: initOpts.onViewModeChange || null
-            };
-
-            let W = container.clientWidth || window.innerWidth || 1024;
-            let H = container.clientHeight || window.innerHeight || 768;
+            let externalCtrl = null;
+            let fallbackRaf = null;
+            let pollTimer = null;
             let disposed = false;
-            let rafId = null;
 
-            let viewMode = 'heart'; // 'heart' | 'text'
-            let autoReturnTimer = null;
-            let currentRgb = [...(EMOTIONS[state.emotion]?.rgb || [56, 189, 248])];
-            let targetRgb = [...currentRgb];
+            let desiredBloom = typeof initOpts.initialBloom === 'number' ? initOpts.initialBloom : 0.06;
+            let desiredStorm = initOpts.stormEnabled !== false;
+            let pendingSurge = false;
 
-            // Interactive 3D orbit rotation
-            let rotY = 0;
-            let rotX = 0.08;
-            let velY = 0.24;
-            let dragging = false;
-            let lastPtrX = 0;
-            let lastPtrY = 0;
-
-            // Generate 900 volumetric 3D heart particles
-            const PARTICLE_COUNT = 900;
-            const particles = [];
-            for (let i = 0; i < PARTICLE_COUNT; i++) {
-                const u = Math.random() * Math.PI * 2;
-                const sinU = Math.sin(u);
-                const hx = 16 * sinU * sinU * sinU;
-                const hy = -(13 * Math.cos(u) - 5 * Math.cos(2 * u) - 2 * Math.cos(3 * u) - Math.cos(4 * u));
-                const shell = Math.pow(Math.random(), 0.42);
-                const thick = (Math.random() - 0.5) * 2 * (1 - shell * 0.45) * 7.8;
-
-                const nx = (hx / 18) * shell;
-                const ny = (hy / 18) * shell;
-                const nz = thick / 18;
-
-                particles.push({
-                    hx: nx, hy: ny, hz: nz,
-                    tx: nx, ty: ny, tz: nz,
-                    x: nx, y: ny, z: nz,
-                    size: 1.15 + Math.random() * 1.9,
-                    ph: Math.random() * Math.PI * 2,
-                    bright: 0.55 + Math.random() * 0.45
-                });
-            }
-
-            // Build 3D particle target coordinates from Thai emotion label text
-            function buildTextTargets(labelStr) {
-                const off = document.createElement('canvas');
-                off.width = 560;
-                off.height = 140;
-                const oc = off.getContext('2d');
-                if (!oc) return;
-                oc.clearRect(0, 0, off.width, off.height);
-                oc.fillStyle = '#ffffff';
-                oc.textAlign = 'center';
-                oc.textBaseline = 'middle';
-                oc.font = '800 44px "Prompt", "Anuphan", sans-serif';
-                oc.fillText(String(labelStr || ''), off.width / 2, off.height / 2, off.width - 36);
-
-                const img = oc.getImageData(0, 0, off.width, off.height).data;
-                const pts = [];
-                for (let y = 0; y < off.height; y += 4) {
-                    for (let x = 0; x < off.width; x += 4) {
-                        if (img[(y * off.width + x) * 4 + 3] > 110) {
-                            pts.push([
-                                ((x - off.width / 2) / (off.width * 0.34)),
-                                ((y - off.height / 2) / (off.width * 0.34)),
-                                (Math.random() - 0.5) * 0.14
-                            ]);
-                        }
+            const startExternalEngine = () => {
+                if (disposed || externalCtrl) return true;
+                if (window.RJCLOUD_HERO_PEACH && typeof window.RJCLOUD_HERO_PEACH.mount === 'function') {
+                    if (fallbackRaf) { cancelAnimationFrame(fallbackRaf); fallbackRaf = null; }
+                    externalCtrl = window.RJCLOUD_HERO_PEACH.mount({
+                        stage: container,
+                        canvas: canvas,
+                        bgCanvas: canvas,
+                        initialBloom: desiredBloom,
+                        stormEnabled: desiredStorm
+                    });
+                    if (externalCtrl && typeof externalCtrl.setBloomProgress === 'function') {
+                        externalCtrl.setBloomProgress(desiredBloom);
                     }
+                    if (pendingSurge && externalCtrl && typeof externalCtrl.triggerQiSurge === 'function') {
+                        externalCtrl.triggerQiSurge();
+                        pendingSurge = false;
+                    }
+                    return true;
                 }
-                if (pts.length === 0) return;
-                for (let i = 0; i < particles.length; i++) {
-                    const pick = pts[i % pts.length];
-                    particles[i].tx = pick[0] + (Math.random() - 0.5) * 0.015;
-                    particles[i].ty = pick[1] + (Math.random() - 0.5) * 0.015;
-                    particles[i].tz = pick[2];
-                }
-            }
-            buildTextTargets(EMOTIONS[state.emotion]?.holoText || 'ช็อก • ยังทำใจไม่ได้');
-
-            // Background ambient stardust rings
-            const ambientDust = Array.from({ length: 65 }, () => ({
-                x: Math.random(), y: Math.random(),
-                r: 0.7 + Math.random() * 1.4,
-                vy: 0.005 + Math.random() * 0.011,
-                ph: Math.random() * Math.PI * 2
-            }));
-
-            function resize() {
-                const rect = container.getBoundingClientRect();
-                if (rect.width <= 0 || rect.height <= 0) return;
-                const dpr = Math.min(window.devicePixelRatio || 1, 2);
-                W = rect.width;
-                H = rect.height;
-                canvas.width = Math.round(W * dpr);
-                canvas.height = Math.round(H * dpr);
-                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-            }
-            resize();
-
-            let ro = null;
-            if (typeof ResizeObserver !== 'undefined') {
-                ro = new ResizeObserver(resize);
-                ro.observe(container);
-            }
-            window.addEventListener('resize', resize);
-
-            const onPtrDown = (e) => { dragging = true; lastPtrX = e.clientX; lastPtrY = e.clientY; };
-            const onPtrMove = (e) => {
-                if (!dragging) return;
-                const dx = e.clientX - lastPtrX;
-                const dy = e.clientY - lastPtrY;
-                lastPtrX = e.clientX;
-                lastPtrY = e.clientY;
-                rotY += dx * 0.008;
-                rotX = Math.max(-0.55, Math.min(0.55, rotX + dy * 0.006));
-                velY = dx * 0.04;
+                return false;
             };
-            const onPtrUp = () => { dragging = false; };
 
-            canvas.addEventListener('pointerdown', onPtrDown);
-            window.addEventListener('pointermove', onPtrMove);
-            window.addEventListener('pointerup', onPtrUp);
+            // Fallback soft moonlit peach silhouette (only runs if hero-peach-engine.js is unavailable in isolated sandbox)
+            const startFallbackRenderer = () => {
+                const ctx = canvas.getContext('2d');
+                if (!ctx) return;
+                let curBloom = desiredBloom;
+                let qiBoost = 0;
+                let lastTs = performance.now();
 
-            function setMode(nextMode) {
-                viewMode = nextMode;
-                if (typeof state.onViewModeChange === 'function') state.onViewModeChange(viewMode);
-            }
+                const resizeFallback = () => {
+                    const r = container.getBoundingClientRect();
+                    if (r.width <= 0 || r.height <= 0) return;
+                    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+                    canvas.width = Math.round(r.width * dpr);
+                    canvas.height = Math.round(r.height * dpr);
+                    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                };
+                resizeFallback();
 
-            let lastTs = performance.now();
-            let beatPhase = 0;
+                const blossomPts = Array.from({ length: 68 }, (_, i) => {
+                    const ang = (i / 68) * Math.PI * 2 + (i % 5) * 0.25;
+                    const rad = 0.14 + ((i * 37) % 100) / 155;
+                    return {
+                        lx: -0.06 + Math.cos(ang) * rad * 1.15,
+                        ly: -0.44 + Math.sin(ang) * rad * 0.62,
+                        r: 12 + (i % 6) * 4,
+                        order: (i * 19 % 68) / 68,
+                        ph: i * 0.7
+                    };
+                });
 
-            function render(now) {
-                if (disposed) return;
-                rafId = requestAnimationFrame(render);
-                if (document.hidden || W <= 0 || H <= 0) return;
+                const tick = (now) => {
+                    if (disposed || externalCtrl) return;
+                    fallbackRaf = requestAnimationFrame(tick);
+                    const dt = Math.min(0.05, Math.max(0.001, (now - lastTs) * 0.001));
+                    lastTs = now;
+                    const t = now * 0.001;
+                    const W = container.clientWidth || window.innerWidth;
+                    const H = container.clientHeight || window.innerHeight;
+                    curBloom += (desiredBloom - curBloom) * (1 - Math.exp(-dt * 2.0));
+                    if (pendingSurge) { qiBoost = 1; pendingSurge = false; }
+                    qiBoost = Math.max(0, qiBoost - dt * 0.55);
 
-                const dt = Math.min(0.05, Math.max(0.001, (now - lastTs) * 0.001));
-                lastTs = now;
-                const t = now * 0.001;
+                    ctx.clearRect(0, 0, W, H);
+                    const g = ctx.createLinearGradient(0, 0, 0, H);
+                    g.addColorStop(0, '#020612'); g.addColorStop(0.54, '#132d54'); g.addColorStop(1, '#040a18');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
 
-                ctx.clearRect(0, 0, W, H);
+                    // Moon
+                    const mx = W * 0.19, my = H * 0.16;
+                    const mg = ctx.createRadialGradient(mx, my, 8, mx, my, 92);
+                    mg.addColorStop(0, 'rgba(240,249,255,0.85)'); mg.addColorStop(0.45, 'rgba(186,230,253,0.22)'); mg.addColorStop(1, 'rgba(0,0,0,0)');
+                    ctx.fillStyle = mg; ctx.beginPath(); ctx.arc(mx, my, 92, 0, Math.PI * 2); ctx.fill();
 
-                // Smooth color interpolation
-                const cLerp = 1 - Math.exp(-dt * 2.6);
-                for (let c = 0; c < 3; c++) currentRgb[c] += (targetRgb[c] - currentRgb[c]) * cLerp;
-                const rCol = Math.round(currentRgb[0]);
-                const gCol = Math.round(currentRgb[1]);
-                const bCol = Math.round(currentRgb[2]);
+                    // Cliff & Trunk
+                    ctx.fillStyle = '#071324';
+                    ctx.beginPath();
+                    ctx.moveTo(W * 0.28, H); ctx.lineTo(W * 0.30, H * 0.55); ctx.lineTo(W, H * 0.52); ctx.lineTo(W, H); ctx.closePath();
+                    ctx.fill();
 
-                // Lub-Dub physiological heartbeat pulse + live 24kHz voice amplitude
-                const emoMeta = EMOTIONS[state.emotion] || EMOTIONS.SHOCK;
-                const bpm = emoMeta.bpm || 80;
-                beatPhase = (beatPhase + dt * (bpm / 60)) % 1;
-                const lub = Math.exp(-Math.pow((beatPhase - 0.14) / 0.055, 2));
-                const dub = 0.65 * Math.exp(-Math.pow((beatPhase - 0.32) / 0.06, 2));
-                const liveAmp = typeof state.getAudioAmplitude === 'function' ? Math.max(0, state.getAudioAmplitude()) : 0;
-                const speakBoost = state.isSpeaking ? (liveAmp > 0.01 ? liveAmp * 0.14 : (0.04 + 0.04 * Math.sin(t * 14))) : 0;
-                const pulseScale = viewMode === 'heart' ? (1 + (lub + dub) * 0.085 + speakBoost) : (1 + speakBoost * 0.45);
+                    const rx = W * 0.50, ry = H * 0.54, S = Math.min(W * 0.44, H * 0.48);
+                    ctx.strokeStyle = '#1f1529'; ctx.lineWidth = Math.max(10, S * 0.055); ctx.lineCap = 'round';
+                    ctx.beginPath(); ctx.moveTo(rx + 0.03 * S, ry); ctx.quadraticCurveTo(rx - 0.05 * S, ry - 0.2 * S, rx - 0.1 * S, ry - 0.36 * S); ctx.stroke();
 
-                // Smooth orbit rotation (levels facing front in text mode)
-                if (!dragging) {
-                    if (viewMode === 'text') {
-                        rotY += (0 - rotY) * (1 - Math.exp(-dt * 4.5));
-                        rotX += (0 - rotX) * (1 - Math.exp(-dt * 4.5));
-                    } else {
-                        velY += (0.28 - velY) * (1 - Math.exp(-dt * 1.8));
-                        rotY += velY * dt;
-                        rotX += (0.08 + Math.sin(t * 0.5) * 0.04 - rotX) * (1 - Math.exp(-dt * 2.0));
+                    if (qiBoost > 0.02) {
+                        ctx.save(); ctx.globalCompositeOperation = 'lighter';
+                        ctx.strokeStyle = `rgba(253,224,71,${(0.75 * qiBoost).toFixed(2)})`;
+                        ctx.lineWidth = 4;
+                        ctx.beginPath(); ctx.moveTo(rx + 0.03 * S, ry); ctx.quadraticCurveTo(rx - 0.05 * S, ry - 0.2 * S, rx - 0.1 * S, ry - 0.36 * S); ctx.stroke();
+                        ctx.restore();
                     }
-                }
 
-                const cx = W * 0.5;
-                const cy = H * (W < 640 ? 0.44 : 0.45);
-                const baseScale = Math.min(W, H) * (W < 640 ? 0.28 : 0.265);
+                    // Progressive blossoms
+                    for (let i = 0; i < blossomPts.length; i++) {
+                        const b = blossomPts[i];
+                        const vis = Math.max(0, Math.min(1, (curBloom - b.order * 0.85) / 0.18));
+                        if (vis <= 0.01) continue;
+                        const bx = rx + b.lx * S + Math.sin(t + b.ph) * 2.5;
+                        const by = ry + b.ly * S + Math.cos(t * 0.8 + b.ph) * 1.6;
+                        const br = b.r * (0.4 + 0.6 * vis) * (1 + qiBoost * 0.15);
+                        const bg = ctx.createRadialGradient(bx, by, 1, bx, by, br);
+                        bg.addColorStop(0, `rgba(255,244,250,${(0.92 * vis).toFixed(2)})`);
+                        bg.addColorStop(0.55, `rgba(249,168,212,${(0.68 * vis).toFixed(2)})`);
+                        bg.addColorStop(1, 'rgba(244,114,182,0)');
+                        ctx.fillStyle = bg; ctx.beginPath(); ctx.arc(bx, by, br, 0, Math.PI * 2); ctx.fill();
+                    }
+                };
+                fallbackRaf = requestAnimationFrame(tick);
+            };
 
-                // 1. Central Volumetric Glow Aura
-                const auraR = baseScale * (1.55 + (lub + dub) * 0.25 + speakBoost);
-                const ag = ctx.createRadialGradient(cx, cy, 8, cx, cy, auraR);
-                ag.addColorStop(0, `rgba(${rCol},${gCol},${bCol},${(0.28 + speakBoost * 0.5).toFixed(3)})`);
-                ag.addColorStop(0.5, `rgba(${rCol},${gCol},${bCol},0.08)`);
-                ag.addColorStop(1, 'rgba(0,0,0,0)');
-                ctx.fillStyle = ag;
-                ctx.beginPath();
-                ctx.arc(cx, cy, auraR, 0, Math.PI * 2);
-                ctx.fill();
-
-                // 2. Holographic Floor Projection Rings
-                ctx.save();
-                ctx.translate(cx, cy + baseScale * 1.12);
-                ctx.scale(1, 0.24);
-                for (let ring = 0; ring < 2; ring++) {
-                    const rr = baseScale * (0.68 + ring * 0.34 + (lub * 0.06));
-                    ctx.strokeStyle = `rgba(${rCol},${gCol},${bCol},${ring === 0 ? 0.32 : 0.16})`;
-                    ctx.lineWidth = ring === 0 ? 1.8 : 1.1;
-                    ctx.beginPath();
-                    ctx.arc(0, 0, rr, 0, Math.PI * 2);
-                    ctx.stroke();
-                }
-                ctx.restore();
-
-                // 3. Ambient Rising Dust
-                for (let i = 0; i < ambientDust.length; i++) {
-                    const d = ambientDust[i];
-                    d.y -= d.vy * dt;
-                    if (d.y < 0.05) d.y = 0.95;
-                    const a = 0.15 + 0.38 * (0.5 + 0.5 * Math.sin(t * 2.2 + d.ph));
-                    ctx.fillStyle = `rgba(${rCol},${gCol},${bCol},${a.toFixed(2)})`;
-                    ctx.beginPath();
-                    ctx.arc(d.x * W, d.y * H, d.r, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-
-                // 4. 3D Particle Morphing & Perspective Projection
-                const cosY = Math.cos(rotY), sinY = Math.sin(rotY);
-                const cosX = Math.cos(rotX), sinX = Math.sin(rotX);
-                const morphLerp = 1 - Math.exp(-dt * 4.4);
-                const fov = 3.2;
-
-                ctx.save();
-                ctx.globalCompositeOperation = 'lighter';
-                for (let i = 0; i < particles.length; i++) {
-                    const p = particles[i];
-                    const goalX = viewMode === 'text' ? p.tx : p.hx;
-                    const goalY = viewMode === 'text' ? p.ty : p.hy;
-                    const goalZ = viewMode === 'text' ? p.tz : p.hz;
-
-                    p.x += (goalX - p.x) * morphLerp;
-                    p.y += (goalY - p.y) * morphLerp;
-                    p.z += (goalZ - p.z) * morphLerp;
-
-                    const sx = p.x * pulseScale;
-                    const sy = p.y * pulseScale;
-                    const sz = p.z * pulseScale;
-
-                    // Rotate Y then X
-                    const x1 = sx * cosY - sz * sinY;
-                    const z1 = sx * sinY + sz * cosY;
-                    const y2 = sy * cosX - z1 * sinX;
-                    const z2 = sy * sinX + z1 * cosX;
-
-                    const depth = fov / (fov + z2 + 1.15);
-                    const px = cx + x1 * baseScale * depth;
-                    const py = cy + y2 * baseScale * depth;
-                    const pr = Math.max(0.7, p.size * depth * (viewMode === 'text' ? 1.15 : 1.05));
-                    const twinkle = 0.72 + 0.28 * Math.sin(t * 3.2 + p.ph);
-                    const alpha = Math.min(0.95, Math.max(0.14, depth * p.bright * twinkle));
-
-                    ctx.fillStyle = i % 7 === 0
-                        ? `rgba(255,248,252,${alpha.toFixed(2)})`
-                        : `rgba(${rCol},${gCol},${bCol},${alpha.toFixed(2)})`;
-                    ctx.beginPath();
-                    ctx.arc(px, py, pr, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-                ctx.restore();
+            if (!startExternalEngine()) {
+                let tries = 0;
+                pollTimer = setInterval(() => {
+                    tries += 1;
+                    if (startExternalEngine()) {
+                        clearInterval(pollTimer);
+                        pollTimer = null;
+                    } else if (tries >= 18) {
+                        clearInterval(pollTimer);
+                        pollTimer = null;
+                        startFallbackRenderer();
+                    }
+                }, 120);
             }
-
-            rafId = requestAnimationFrame(render);
 
             return {
-                update: (nextOpts = {}) => {
-                    const prevEmotion = state.emotion;
-                    state = { ...state, ...nextOpts };
-                    const emo = EMOTIONS[state.emotion] || EMOTIONS.SHOCK;
-                    targetRgb = [...(emo.rgb || [56, 189, 248])];
-
-                    if (nextOpts.emotion && nextOpts.emotion !== prevEmotion) {
-                        buildTextTargets(emo.holoText || emo.labelTH);
-                        setMode('text');
-                        clearTimeout(autoReturnTimer);
-                        autoReturnTimer = setTimeout(() => {
-                            if (!disposed) setMode('heart');
-                        }, 2600);
+                setBloomProgress: (ratio) => {
+                    desiredBloom = Math.max(0.05, Math.min(1, Number(ratio) || 0.05));
+                    if (externalCtrl && typeof externalCtrl.setBloomProgress === 'function') {
+                        externalCtrl.setBloomProgress(desiredBloom);
                     }
                 },
-                toggleViewMode: () => {
-                    clearTimeout(autoReturnTimer);
-                    const next = viewMode === 'heart' ? 'text' : 'heart';
-                    if (next === 'text') {
-                        const emo = EMOTIONS[state.emotion] || EMOTIONS.SHOCK;
-                        buildTextTargets(emo.holoText || emo.labelTH);
+                triggerQiSurge: () => {
+                    if (externalCtrl && typeof externalCtrl.triggerQiSurge === 'function') {
+                        externalCtrl.triggerQiSurge();
+                    } else {
+                        pendingSurge = true;
                     }
-                    setMode(next);
-                    return next;
+                },
+                setStormEnabled: (enabled) => {
+                    desiredStorm = Boolean(enabled);
+                    if (externalCtrl && typeof externalCtrl.setStormEnabled === 'function') {
+                        externalCtrl.setStormEnabled(desiredStorm);
+                    }
+                },
+                triggerLightning: () => {
+                    if (externalCtrl && typeof externalCtrl.triggerLightning === 'function') {
+                        externalCtrl.triggerLightning();
+                    }
                 },
                 destroy: () => {
                     disposed = true;
-                    clearTimeout(autoReturnTimer);
-                    if (rafId) cancelAnimationFrame(rafId);
-                    if (ro) { try { ro.disconnect(); } catch (_) {} }
-                    window.removeEventListener('resize', resize);
-                    canvas.removeEventListener('pointerdown', onPtrDown);
-                    window.removeEventListener('pointermove', onPtrMove);
-                    window.removeEventListener('pointerup', onPtrUp);
+                    if (pollTimer) clearInterval(pollTimer);
+                    if (fallbackRaf) cancelAnimationFrame(fallbackRaf);
+                    if (externalCtrl && typeof externalCtrl.destroy === 'function') {
+                        externalCtrl.destroy();
+                    }
                 }
             };
         }
@@ -1138,7 +1015,10 @@
             const [silenceCount, setSilenceCount] = useState(0);
             const [silenceTimer, setSilenceTimer] = useState(0);
             const [triggerTotal, setTriggerTotal] = useState(0);
-            const [holoViewMode, setHoloViewMode] = useState('heart');
+            const [bloomPercent, setBloomPercent] = useState(6); // 6% ตอนเริ่มสเต็ป 1 -> ค่อยๆ ผลิบานทุกสเต็ป -> 100% เต็มพุ่มในสเต็ปที่ 10
+            const [stormEnabled, setStormEnabled] = useState(true);
+            const [hideHudForAdmire, setHideHudForAdmire] = useState(false);
+            const [qiPulseBanner, setQiPulseBanner] = useState('');
             const [latestCaption, setLatestCaption] = useState('');
             const [showCaptions, setShowCaptions] = useState(true);
             const [showHistoryModal, setShowHistoryModal] = useState(false);
@@ -1154,7 +1034,8 @@
 
             // Refs
             const stageContainerRef = useRef(null);
-            const holoCtrlRef = useRef(null);
+            const peachCtrlRef = useRef(null);
+            const qiBannerTimerRef = useRef(null);
             const sharedAudioRef = useRef(null);
             const audioUrlRef = useRef(null);
             const audioCtxRef = useRef(null);
@@ -1284,31 +1165,43 @@
                 }
             }, [stopStudioVoice, ensureSharedAudioWithAnalyser, appsScriptUrl]);
 
-            // Mount & Sync 3D Volumetric Heart Hologram
+            // Mount & Sync Ultra-Realism Blooming Peach Cliff Stage
             useEffect(() => {
                 if (phase !== 'negotiating' || !stageContainerRef.current) return;
-                const ctrl = mountVolumetricHeartHologram(stageContainerRef.current, {
-                    emotion: currentEmotion,
-                    trust: trustScore,
-                    isSpeaking: voicePhase === 'speaking',
-                    step: stepIdx + 1,
-                    getAudioAmplitude: getLiveAudioAmplitude,
-                    onViewModeChange: (m) => setHoloViewMode(m)
+                const ctrl = mountBloomingPeachStage(stageContainerRef.current, {
+                    initialBloom: Math.max(0.06, bloomPercent / 100),
+                    stormEnabled
                 });
-                holoCtrlRef.current = ctrl;
-                return () => { ctrl.destroy(); holoCtrlRef.current = null; };
+                peachCtrlRef.current = ctrl;
+                return () => {
+                    ctrl.destroy();
+                    peachCtrlRef.current = null;
+                    if (qiBannerTimerRef.current) clearTimeout(qiBannerTimerRef.current);
+                };
             }, [phase]);
 
             useEffect(() => {
-                if (!holoCtrlRef.current) return;
-                holoCtrlRef.current.update({
-                    emotion: currentEmotion,
-                    trust: trustScore,
-                    isSpeaking: voicePhase === 'speaking',
-                    step: stepIdx + 1,
-                    getAudioAmplitude: getLiveAudioAmplitude
-                });
-            }, [currentEmotion, trustScore, voicePhase, stepIdx, getLiveAudioAmplitude]);
+                if (!peachCtrlRef.current) return;
+                peachCtrlRef.current.setBloomProgress(bloomPercent / 100);
+            }, [bloomPercent]);
+
+            useEffect(() => {
+                if (!peachCtrlRef.current) return;
+                peachCtrlRef.current.setStormEnabled(stormEnabled);
+            }, [stormEnabled]);
+
+            const triggerQiBloomFeedback = useCallback((nextPct, customText) => {
+                setBloomPercent(nextPct);
+                if (peachCtrlRef.current) {
+                    peachCtrlRef.current.setBloomProgress(nextPct / 100);
+                    peachCtrlRef.current.triggerQiSurge();
+                }
+                if (customText) {
+                    setQiPulseBanner(customText);
+                    if (qiBannerTimerRef.current) clearTimeout(qiBannerTimerRef.current);
+                    qiBannerTimerRef.current = setTimeout(() => setQiPulseBanner(''), 3400);
+                }
+            }, []);
 
             // ============================================================================
             // 7. 10-STEP CONSULTATION, SILENCE 2.5s, MIC, STEP-10 FREE DECISION & CLOUD SAVE
@@ -1324,11 +1217,13 @@
                 setSilenceCount(0);
                 setSilenceTimer(0);
                 setTriggerTotal(0);
+                setBloomPercent(6);
+                setHideHudForAdmire(false);
+                setQiPulseBanner('');
                 setFinalDecision(null);
                 setHintBanner('');
                 setInputText('');
                 setLearnerVoiceClips([]);
-                setHoloViewMode('heart');
                 setPhase('negotiating');
                 setTimeout(() => playStudioSpeech(s0.relativeLineTH), 320);
             };
@@ -1472,11 +1367,21 @@
                     setFinalDecision({ ...chosenOutcome, speechTH: finalSpeech });
                     setMessages(prev => [...prev, { role: 'ai', step: 10, text: finalSpeech, emotion: chosenOutcome.emotion, at: Date.now() }]);
                     setIsAiThinking(false);
+
+                    // สเต็ปที่ 10: ไม่ว่าญาติจะยินยอม / ขอปรึกษา / ไม่ยินยอม -> แสงปราณเติมเต็มให้ต้นดอกท้อผลิบานเต็มที่ 100%!
+                    triggerQiBloomFeedback(
+                        100,
+                        '🌸 แสงปราณเติมเต็มครบทั้ง 10 สเต็ป — ต้นดอกท้อผลิบานเต็มที่ 100% เพื่อเชิดชูทุกการสื่อสารด้วยหัวใจ'
+                    );
+                    setTimeout(() => {
+                        if (peachCtrlRef.current) peachCtrlRef.current.triggerQiSurge();
+                    }, 1600);
+
                     playStudioSpeech(finalSpeech);
                     return;
                 }
 
-                // สเต็ปที่ 1..9 -> เดินหน้าไปสเต็ปถัดไปพร้อมปฏิกิริยาอารมณ์ที่สอดคล้อง
+                // สเต็ปที่ 1..9 -> เดินหน้าไปสเต็ปถัดไปพร้อมส่งแสงปราณไหลเติมให้ต้นดอกท้อผลิบานทีละขั้น
                 const nextIdx = stepIdx + 1;
                 const nextStepObj = TEN_STEPS[nextIdx];
                 let aiReply = nextStepObj.relativeLineTH;
@@ -1512,6 +1417,13 @@
                 setCurrentEmotion(nextEmo);
                 setMessages(prev => [...prev, { role: 'ai', step: nextStepObj.step, text: aiReply, emotion: nextEmo, at: Date.now() }]);
                 setIsAiThinking(false);
+
+                const nextBloomPct = Math.min(92, Math.round(6 + (nextIdx / TEN_STEPS.length) * 86));
+                triggerQiBloomFeedback(
+                    nextBloomPct,
+                    `✨ ผ่านสเต็ปที่ ${stepObj.step}/10 — แสงปราณไหลเติมกิ่ง ต้นดอกท้อผลิบานแล้ว ${nextBloomPct}%`
+                );
+
                 playStudioSpeech(aiReply);
             };
 
@@ -1673,7 +1585,7 @@
                                         </a>
                                         <div className="min-w-0">
                                             <span className="font-display font-extrabold text-sm sm:text-base text-[var(--neu-text)] block leading-none truncate">
-                                                AI Skill Lab <span className="text-[var(--neu-teal)]">3D</span> <span className="font-mono text-[10px] text-[var(--neu-rose)]">organ cloud 2.0</span>
+                                                AI Skill Lab <span className="text-[var(--neu-teal)]">10 Steps</span> <span className="font-mono text-[10px] text-[var(--neu-rose)]">organ cloud 2.0</span>
                                             </span>
                                             <span className="text-[10.5px] font-mono text-[var(--neu-text-muted)] block truncate mt-0.5">
                                                 {user.name} • {user.professionGroup || 'บุคลากรทางการแพทย์'}
@@ -1706,7 +1618,7 @@
                                                 {OFFICIAL_CASE.titleTH}
                                             </h1>
                                             <p className="text-xs sm:text-sm text-[var(--neu-text-sub)] leading-relaxed m-0">
-                                                {OFFICIAL_CASE.subtitleTH} — ฝึกสื่อสารกับ <b>โฮโลแกรมหัวใจ 3 มิติ</b> ที่เต้นและเปลี่ยนสีตามอารมณ์ แปลงร่างเป็นข้อความอารมณ์เมื่อความรู้สึกญาติเปลี่ยนแล้วกลับคืนเป็นหัวใจ พร้อมเสียง AI สตูดิโอ 24kHz จนถึง <b>สเต็ปที่ 10 ให้ญาติตัดสินใจเองอย่างอิสระ</b>
+                                                {OFFICIAL_CASE.subtitleTH} — ฝึกสื่อสารใน <b>ฉากหน้าผาต้นดอกท้อสมจริง (Ultra-Realism + เมฆพายุฟ้าแลบ)</b> ทุกการพูดคุยที่ผ่านไปในแต่ละสเต็ปจะมี <b>แสงปราณไหลขึ้นเติมกิ่งให้ดอกท้อค่อยๆ ผลิบาน</b> และเมื่อถึงสเต็ปที่ 10 ไม่ว่าญาติจะตัดสินใจเช่นไร <b>ต้นดอกท้อจะผลิดอกเบ่งบานเต็มที่ 100%</b> เพื่อเชิดชูคุณค่าของการสื่อสารด้วยหัวใจก่อนพาไปทำ Post-test ค่ะ
                                             </p>
                                         </div>
 
@@ -1836,21 +1748,44 @@
                                         <Icon name="PlayCircle" size={16} /> ดูวิดีโอต้นแบบ
                                     </button>
                                     <button type="button" onClick={handleStartConsultation} className="neu-btn-teal touch-target flex-1 py-3.5 font-display font-extrabold text-sm sm:text-base">
-                                        เคาะประตูเข้าห้องรับรอง &amp; เปิด 3D Heart Hologram (Step 1/10) →
+                                        เคาะประตูเข้าห้องรับรอง &amp; เริ่มปลูกแสงปราณต้นดอกท้อ (Step 1/10) →
                                     </button>
                                 </div>
                             </div>
                         </main>
                     )}
 
-                    {/* ==================== PHASE 3: FULLSCREEN VOLUMETRIC 3D HEART HOLOGRAM STAGE ==================== */}
+                    {/* ==================== PHASE 3: FULLSCREEN ULTRA-REALISM BLOOMING PEACH CLIFF STAGE ==================== */}
                     {phase === 'negotiating' && (
-                        <div className="holo-stage-bg fixed inset-0 z-20 flex flex-col justify-between overflow-hidden select-none text-white">
-                            {/* Volumetric 3D Heart Hologram Canvas */}
-                            <div ref={stageContainerRef} className="fixed inset-0 z-10 cursor-grab active:cursor-grabbing" />
+                        <div className="peach-stage-bg fixed inset-0 z-20 flex flex-col justify-between overflow-hidden select-none text-white">
+                            {/* Fullscreen Ultra-Realism Moonlit Peach Cliff + Storm Clouds + Lightning Canvas */}
+                            <div ref={stageContainerRef} className="fixed inset-0 z-10 pointer-events-none" />
+                            <div className="peach-vignette" aria-hidden="true" />
+
+                            {/* Pure Contemplation Mode Floating Bar (เมื่อผู้เรียนกดซ่อนกรอบเพื่อชมต้นดอกท้อเต็มตา) */}
+                            {hideHudForAdmire && (
+                                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex flex-wrap items-center justify-center gap-2.5 px-4 w-full max-w-xl">
+                                    <button
+                                        type="button"
+                                        onClick={() => setHideHudForAdmire(false)}
+                                        className="stage-hud-glass touch-target px-5 py-2.5 rounded-full font-display font-bold text-xs sm:text-sm text-sky-100 inline-flex items-center gap-2"
+                                    >
+                                        <Icon name="Eye" size={15} /> แสดงแผงควบคุม
+                                    </button>
+                                    {finalDecision && (
+                                        <button
+                                            type="button"
+                                            onClick={handleOpenDebriefResult}
+                                            className="neu-btn-teal touch-target px-6 py-2.5 font-display font-extrabold text-xs sm:text-sm"
+                                        >
+                                            ดูรายงาน 5 แกน &amp; เตรียมทำ Post-test →
+                                        </button>
+                                    )}
+                                </div>
+                            )}
 
                             {/* Top HUD */}
-                            <header className="relative z-20 max-w-6xl w-full mx-auto px-3 sm:px-5 pt-[calc(0.75rem+env(safe-area-inset-top,0px))] space-y-2 pointer-events-none">
+                            <header className={`relative z-20 max-w-6xl w-full mx-auto px-3 sm:px-5 pt-[calc(0.75rem+env(safe-area-inset-top,0px))] space-y-2 pointer-events-none transition-opacity duration-500 ${hideHudForAdmire ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
                                 <div className="flex flex-wrap items-center justify-between gap-2">
                                     <div className="flex items-center gap-1.5 pointer-events-auto min-w-0">
                                         <button type="button" onClick={() => { stopStudioVoice(); setPhase('lobby'); }} className="stage-hud-glass w-9 h-9 rounded-xl flex items-center justify-center shrink-0">
@@ -1867,21 +1802,32 @@
                                     </div>
 
                                     <div className="flex items-center gap-1.5 pointer-events-auto flex-wrap">
-                                        <div className="stage-hud-glass px-3 h-9 rounded-xl flex items-center gap-2 text-[11px] font-mono">
-                                            <span className="text-pink-300 font-bold">STEP {stepIdx + 1}/10</span>
+                                        <div className={`stage-hud-glass px-3 h-9 rounded-xl flex items-center gap-2 text-[11px] font-mono ${bloomPercent >= 100 ? 'border-pink-300/75 text-pink-200' : ''}`}>
+                                            <span className="text-pink-300 font-bold">🌸 ผลิบาน {bloomPercent}%</span>
+                                            <span className="text-white/25">|</span>
+                                            <span className="text-sky-200 font-bold">STEP {stepIdx + 1}/10</span>
                                             {difficultyId === 'normal' && (
                                                 <>
-                                                    <span className="text-white/25">|</span>
-                                                    <span className="text-emerald-300 font-bold">วางใจ {trustScore}%</span>
+                                                    <span className="text-white/25 hidden sm:inline">|</span>
+                                                    <span className="text-emerald-300 font-bold hidden sm:inline">วางใจ {trustScore}%</span>
                                                 </>
                                             )}
                                         </div>
                                         <button
                                             type="button"
-                                            onClick={() => { if (holoCtrlRef.current) setHoloViewMode(holoCtrlRef.current.toggleViewMode()); }}
-                                            className="stage-hud-glass px-3 h-9 rounded-xl text-[11px] font-bold text-pink-200"
+                                            onClick={() => setStormEnabled(v => !v)}
+                                            className={`stage-hud-glass px-2.5 h-9 rounded-xl text-[11px] font-bold ${stormEnabled ? 'text-sky-200 border-sky-300/45' : 'text-slate-400'}`}
+                                            title="เปิด/ปิดเมฆพายุและฟ้าแลบ"
                                         >
-                                            {holoViewMode === 'heart' ? '✨ ข้อความอารมณ์' : '💗 หัวใจ 3 มิติ'}
+                                            ⛈️ {stormEnabled ? 'พายุ' : 'โปร่ง'}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setHideHudForAdmire(true)}
+                                            className="stage-hud-glass px-2.5 h-9 rounded-xl text-[11px] font-bold text-pink-200"
+                                            title="ซ่อนแผงควบคุมเพื่อชมต้นดอกท้อเต็มตา"
+                                        >
+                                            🌸 ชมต้นไม้
                                         </button>
                                         <button type="button" onClick={() => setShowCaptions(v => !v)} className={`stage-hud-glass px-2.5 h-9 rounded-xl text-[11px] font-mono font-bold ${showCaptions ? 'border-emerald-400 text-emerald-300' : 'text-slate-300'}`}>
                                             CC
@@ -1908,11 +1854,11 @@
                                         {TEN_STEPS.map((s, idx) => (
                                             <div
                                                 key={s.step}
-                                                className={`h-1.5 flex-1 rounded-full transition-all ${
+                                                className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${
                                                     idx < stepIdx || finalDecision
-                                                        ? 'bg-emerald-400'
+                                                        ? 'bg-gradient-to-r from-pink-300 to-amber-200 shadow-[0_0_8px_rgba(249,168,212,0.75)]'
                                                         : idx === stepIdx
-                                                            ? 'bg-pink-300 shadow-[0_0_8px_#fda4af]'
+                                                            ? 'bg-emerald-300 shadow-[0_0_8px_#6ee7b7]'
                                                             : 'bg-white/15'
                                                 }`}
                                             />
@@ -1928,10 +1874,19 @@
                                         )}
                                     </div>
                                 </div>
+
+                                {/* Live Qi Infusion Banner on Every Step Completion */}
+                                {qiPulseBanner && (
+                                    <div className="flex justify-center pt-0.5">
+                                        <span className="qi-surge-toast stage-hud-glass px-4 py-1.5 rounded-full border-pink-300/60 text-xs font-display font-bold text-amber-100 shadow-[0_0_24px_rgba(249,168,212,0.45)]">
+                                            {qiPulseBanner}
+                                        </span>
+                                    </div>
+                                )}
                             </header>
 
                             {/* Bottom Interactive Controls */}
-                            <div className="relative z-20 max-w-4xl w-full mx-auto px-3 sm:px-5 pb-[calc(0.9rem+env(safe-area-inset-bottom,0px))] space-y-2 pointer-events-none">
+                            <div className={`relative z-20 max-w-4xl w-full mx-auto px-3 sm:px-5 pb-[calc(0.9rem+env(safe-area-inset-bottom,0px))] space-y-2 pointer-events-none transition-opacity duration-500 ${hideHudForAdmire ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
                                 {!finalDecision && (
                                     <div className="flex justify-center">
                                         <span className="stage-hud-glass px-3.5 py-1 rounded-full text-[11px] text-amber-200/95 italic">{currentStepObj.cueTH}</span>
@@ -1953,20 +1908,35 @@
                                     </div>
                                 )}
 
-                                {/* STEP 10 FINAL INDEPENDENT DECISION BANNER */}
+                                {/* STEP 10 FULL-BLOOM CONTEMPLATION BANNER (ALL DECISIONS BLOOM 100%) */}
                                 {finalDecision ? (
-                                    <div className="stage-hud-glass rounded-[1.75rem] p-4 sm:p-5 space-y-3 border-pink-300/55 pointer-events-auto text-center">
-                                        <div className="flex justify-center">
+                                    <div className="stage-hud-glass rounded-[1.75rem] p-4 sm:p-5 space-y-3 border-pink-300/60 pointer-events-auto text-center">
+                                        <div className="flex flex-wrap items-center justify-center gap-2">
                                             <span className={`px-4 py-1.5 rounded-full border font-display font-extrabold text-xs sm:text-sm ${finalDecision.colorClass}`}>
                                                 {finalDecision.badgeTH}
                                             </span>
+                                            <span className="px-3.5 py-1.5 rounded-full border border-pink-300/55 bg-pink-400/15 font-mono font-bold text-xs text-pink-200">
+                                                🌸 ต้นดอกท้อผลิบานเต็มที่ 100%
+                                            </span>
                                         </div>
                                         <p className="text-xs sm:text-sm text-sky-100 leading-relaxed max-w-2xl mx-auto">
-                                            ครบทั้ง 10 สเต็ปเรียบร้อยแล้วค่ะ ญาติได้ตัดสินใจด้วยตนเองอย่างอิสระแล้ว เชิญรับชมรายงานการประเมินผล 5 แกนสมรรถนะค่ะ
+                                            ทุกถ้อยคำที่สื่อสารด้วยความเคารพและความเมตตา คือแสงปราณที่เติมเต็มให้ต้นดอกท้อต้นนี้ผลิบานอย่างสมบูรณ์ ไม่ว่าคำตอบของครอบครัวจะเป็นเช่นไร คุณค่าของการดูแลด้วยหัวใจยังคงงดงามเสมอค่ะ
                                         </p>
-                                        <button type="button" onClick={handleOpenDebriefResult} className="neu-btn-teal touch-target px-7 py-3 font-display font-extrabold text-sm">
-                                            ดูรายงานประเมินผล 5 แกน &amp; สรุปผลการตัดสินใจ →
-                                        </button>
+                                        <div className="flex flex-wrap items-center justify-center gap-2.5 pt-0.5">
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setHideHudForAdmire(true);
+                                                    if (peachCtrlRef.current) peachCtrlRef.current.triggerQiSurge();
+                                                }}
+                                                className="stage-hud-glass touch-target px-5 py-3 rounded-full font-display font-bold text-xs sm:text-sm text-pink-200 border-pink-300/50"
+                                            >
+                                                🌸 ซ่อนกรอบเพื่อชมต้นดอกท้อผลิบานเต็มตา
+                                            </button>
+                                            <button type="button" onClick={handleOpenDebriefResult} className="neu-btn-teal touch-target px-7 py-3 font-display font-extrabold text-xs sm:text-sm">
+                                                ดูรายงานประเมินผล 5 แกน &amp; เตรียมทำ Post-test →
+                                            </button>
+                                        </div>
                                     </div>
                                 ) : (
                                     <div className="stage-hud-glass rounded-[1.5rem] p-3 sm:p-3.5 space-y-2.5 pointer-events-auto">
