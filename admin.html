@@ -31,7 +31,7 @@
             manifest.href = './manifest.json';
             document.head.appendChild(manifest);
 
-            ['./data.js', './learning-core.js?v=202711', './cert-engine.js'].forEach(function (src) {
+            ['./data.js', './learning-core.js?v=202718', './cert-engine.js'].forEach(function (src) {
               const s = document.createElement('script');
               s.src = src;
               s.async = false;
@@ -991,6 +991,17 @@
             const [cneuIncludeScores, setCneuIncludeScores] = useState(true);
             const [rebuildingSummary, setRebuildingSummary] = useState(false);
 
+            // Live Multi-Page Inspector & Preview Studio States (Admin Only)
+            const [previewPageId, setPreviewPageId] = useState('elearn_home');
+            const [previewViewport, setPreviewViewport] = useState('desktop'); // desktop | tablet | mobile
+            const [previewReloadKey, setPreviewReloadKey] = useState(0);
+            const [adminPreviewSessionActive, setAdminPreviewSessionActive] = useState(() => {
+                try {
+                    const parsed = JSON.parse(localStorage.getItem('rjcloud_organ_state_v2027') || 'null');
+                    return Boolean(parsed?.user?.isAdminPreviewSession);
+                } catch (_) { return false; }
+            });
+
             const [toast, setToast] = useState({ visible: false, text: '', type: 'success' });
             const [confirmDialog, setConfirmDialog] = useState({ open: false, title: '', message: '', danger: false, confirmText: 'ยืนยัน', onConfirm: null });
             const certPreviewCanvasRef = useRef(null);
@@ -1693,12 +1704,68 @@
             };
 
             const inspectorLinks = useMemo(() => ([
-                { title: 'หน้าหลักผู้เรียน (index.html)', desc: 'ฉากต้นดอกท้อ, การ์ดเลือกหลักสูตร, ยืนยันตัวตน OTP จริง และห้องเรียน', url: './index.html', icon: 'Home' },
-                { title: 'ศูนย์ลงทะเบียน Onsite (onsite.html)', desc: 'ลงทะเบียนรวมศูนย์ + บัตร Digital Onsite Pass + คลังรายชื่อย้อนหลัง PDF', url: './onsite.html', icon: 'ClipboardList' },
-                { title: 'ห้องฝึก AI Skill Lab 3D (aiskilllab.html)', desc: 'โฮโลแกรมหัวใจ 3 มิติ 10 สเต็ปตามวิดีโอ รพ.ราชวิถี + เสียงสตูดิโอ 24kHz', url: './aiskilllab.html', icon: 'HeartPulse' },
-                { title: 'ตรวจสอบใบประกาศฯ QR (verify.html)', desc: 'ตรวจรหัสประกาศนียบัตรดิจิทัลจากฐานข้อมูลสาธารณะ', url: './verify.html', icon: 'QrCode' },
-                { title: 'Dashboard ผู้บริหาร 13 เขต (executive.html)', desc: 'สถิติภาพรวม 13 เขตสุขภาพแบบ Zero-PII + Eco 1-Read', url: './executive.html', icon: 'BarChart3' }
+                { id: 'elearn_home', group: 'e-Learning (learn.coerj.com)', title: 'หน้าแรกต้นดอกท้อ (index.html)', desc: 'หน้า Welcome + ฉากต้นดอกท้อ Ultra-Realism + ปุ่มเข้าสู่ระบบ', url: './index.html', icon: 'Home' },
+                { id: 'elearn_dash', group: 'e-Learning (learn.coerj.com)', title: 'ห้องเรียนหลัก (Classroom)', desc: 'ตรวจหน้าบทเรียน, AI สรุป 1 นาที, เอกสารประกอบการเรียน และ 5 ขั้นตอน', url: './index.html?return=dashboard', icon: 'BookOpen', requiresSession: true },
+                { id: 'elearn_lab', group: 'e-Learning (learn.coerj.com)', title: 'ห้องฝึก AI Skill Lab 10 สเต็ป', desc: 'ฉากหน้าผาต้นดอกท้อผลิบานตามแสงปราณ 10 สเต็ป + รายงาน 5 แกน', url: './aiskilllab.html', icon: 'HeartPulse', requiresSession: true },
+                { id: 'elearn_onsite', group: 'e-Learning (learn.coerj.com)', title: 'ศูนย์ลงทะเบียน Onsite', desc: 'ลงทะเบียนรวมศูนย์ + บัตร Digital Onsite Pass + QR เข้าสอบ', url: './onsite.html', icon: 'ClipboardList' },
+                { id: 'elearn_onsite_org', group: 'e-Learning (learn.coerj.com)', title: 'คลังรายชื่อ Onsite & ใบเซ็นชื่อ A4', desc: 'ตรวจรายชื่อย้อนหลังทุกรุ่นและสตูดิโอพิมพ์ใบเซ็นชื่อ PDF', url: './onsite.html?mode=organizer', icon: 'Printer' },
+                { id: 'elearn_verify', group: 'e-Learning (learn.coerj.com)', title: 'ตรวจสอบใบประกาศฯ QR', desc: 'หน้าตรวจสอบความถูกต้องประกาศนียบัตรดิจิทัลสาธารณะ', url: './verify.html', icon: 'QrCode' },
+                { id: 'elearn_exec', group: 'e-Learning (learn.coerj.com)', title: 'Dashboard ผู้บริหาร 13 เขต', desc: 'สถิติภาพรวม 13 เขตสุขภาพแบบ Zero-PII + Eco 1-Read', url: './executive.html', icon: 'BarChart3' },
+                { id: 'web_portal', group: 'Website Portal (coerj.com)', title: 'ประตูพอร์ทัล Bento 3 การ์ด', desc: 'หน้าแรก www.coerj.com พร้อมการ์ด Welcome 3D + เสียง AI ต้อนรับ', url: 'https://www.coerj.com/', icon: 'LayoutGrid' },
+                { id: 'web_beta', group: 'Website Portal (coerj.com)', title: 'เว็บใหม่ BETA organ cloud 2.0', desc: 'info-portal โฉมใหม่ + Live Dashboard 24 ชม. สภากาชาดไทย + MDT', url: 'https://www.coerj.com/website.html', icon: 'Globe' },
+                { id: 'web_classic', group: 'Website Portal (coerj.com)', title: 'เว็บไซต์เดิม (Classic Portal)', desc: 'หน้าเว็บไซต์เดิมของศูนย์ปลูกถ่ายอวัยวะ รพ.ราชวิถี', url: 'https://info.coerj.com/transplantation', icon: 'ExternalLink' }
             ]), []);
+
+            const activePreviewPage = useMemo(
+                () => inspectorLinks.find(x => x.id === previewPageId) || inspectorLinks[0],
+                [inspectorLinks, previewPageId]
+            );
+
+            const handleToggleAdminPreviewSession = () => {
+                const STORAGE_KEY = 'rjcloud_organ_state_v2027';
+                const SESSION_BACKUP_KEY = 'rjcloud_active_session_v2027';
+                if (adminPreviewSessionActive) {
+                    try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
+                    try { sessionStorage.removeItem(SESSION_BACKUP_KEY); } catch (_) {}
+                    setAdminPreviewSessionActive(false);
+                    setPreviewReloadKey(k => k + 1);
+                    showToast('ล้าง Session ทดลองของ Admin เรียบร้อยแล้วค่ะ', 'info');
+                    return;
+                }
+                const mockAdminLearner = {
+                    id: 'ADMIN-PREVIEW',
+                    license: 'ADMIN-PREVIEW',
+                    isAdminPreviewSession: true,
+                    activeCourseId: courseCatalog[0]?.id || 'organ_donation_core',
+                    name: 'ผู้ดูแลระบบ (Admin Live Preview)',
+                    nameEN: 'Admin Inspector, RN',
+                    professionGroup: 'พยาบาล',
+                    cneuEligible: true,
+                    position: 'ผู้ดูแลระบบ organ cloud 2.0',
+                    department: 'เขตสุขภาพที่ 13 (กรุงเทพมหานคร)',
+                    hospital: 'โรงพยาบาลราชวิถี',
+                    email: adminSession?.email || CONFIG.contactEmail,
+                    userType: 'เทียบโอน',
+                    classificationCode: 'CREDIT_TRANSFER',
+                    studyHoursExempt: true,
+                    progress: 100,
+                    pretest: '38/40',
+                    posttest: '39/40',
+                    status: 'ผ่าน',
+                    skillLabPassed: true,
+                    skillLabBestScore: 94,
+                    skillLabHistory: [],
+                    certificateClaimed: true,
+                    certificateCode: 'RJC-2027-ADMIN',
+                    certificateIssuedAt: new Date().toISOString()
+                };
+                const payload = JSON.stringify({ user: mockAdminLearner, savedAt: Date.now() });
+                try { localStorage.setItem(STORAGE_KEY, payload); } catch (_) {}
+                try { sessionStorage.setItem(SESSION_BACKUP_KEY, payload); } catch (_) {}
+                setAdminPreviewSessionActive(true);
+                setPreviewReloadKey(k => k + 1);
+                showToast('เปิดสิทธิ์ Admin Preview Session แล้ว — เข้าตรวจห้องเรียนและ AI Skill Lab ได้ทันทีโดยไม่กระทบฐานข้อมูลจริงค่ะ');
+            };
 
             const navItems = [
                 { id: 'users', label: 'ผู้เรียน', icon: 'Users' },
@@ -1707,7 +1774,7 @@
                 { id: 'cert', label: 'ประกาศฯ', icon: 'Award' },
                 { id: 'live', label: 'Live สด', icon: 'Radio' },
                 { id: 'sync', label: 'Cloud', icon: 'Database' },
-                { id: 'overview', label: 'ลิงก์ระบบ', icon: 'ExternalLink' }
+                { id: 'overview', label: 'ตรวจทุกหน้า', icon: 'Monitor' }
             ];
 
             // ============================================================================
@@ -2463,56 +2530,53 @@
                                                 </thead>
                                                 <tbody>
                                                     {activeReportMeta.rows.map((u, idx) => {
+                                                        const lic = getUserLicense(u);
                                                         const st = getUserFiveStepStatus(u);
-                                                        const postPct = parsePosttestScorePct(u.posttest);
                                                         const prof = resolveProfessionGroupSafe(u);
+                                                        const creditLine = resolveCreditLineForAdmin(u, cneuConfig);
                                                         return (
-                                                            <tr key={u.id || idx}>
+                                                            <tr key={u.id || lic || idx}>
                                                                 <td className="text-center font-mono font-bold">{idx + 1}</td>
-                                                                <td className="font-bold">{u.name}</td>
+                                                                <td className="font-bold">{u.name || '-'}</td>
                                                                 {reportMode === 'all_exec' && (
-                                                                    <td>
-                                                                        <div className="font-bold text-slate-900">{prof}</div>
-                                                                        <div className="text-[10px] text-slate-600">{resolveCreditLineForAdmin(u, cneuConfig)}</div>
+                                                                    <td className="text-[11px]">
+                                                                        <span className="font-bold block">{prof}</span>
+                                                                        <span className="text-slate-600">{creditLine}</span>
                                                                     </td>
                                                                 )}
-                                                                <td className="text-center font-mono">{getUserLicense(u)}</td>
+                                                                <td className="text-center font-mono">{lic}</td>
                                                                 <td>{u.hospital || '-'}</td>
                                                                 {cneuIncludeScores && (
-                                                                    <td className="text-center">
-                                                                        <div className="font-mono text-[11px] font-bold text-emerald-800">
-                                                                            {isHoursExemptUser(u) ? 100 : (u.progress || 0)}% • {u.posttest || '-'} ({postPct}%)
-                                                                        </div>
-                                                                        <div className="text-[10px] text-slate-500 font-mono">
-                                                                            Lab {st.bestLab !== null ? `${st.bestLab}/100` : (st.step3Lab ? 'ผ่าน' : '-')}
-                                                                        </div>
+                                                                    <td className="text-center font-mono text-[11px]">
+                                                                        {isHoursExemptUser(u) ? 'เทียบโอน' : `${u.progress || 0}%`} • Post {u.posttest || '-'} • Lab {st.bestLab ?? (st.step3Lab ? 'ผ่าน' : '-')}
                                                                     </td>
                                                                 )}
-                                                                <td className="text-center font-mono text-[11px]">{u.certificateCode || '-'}</td>
+                                                                <td className="text-center font-mono font-bold">{u.certificateCode || '-'}</td>
                                                             </tr>
                                                         );
                                                     })}
                                                     {activeReportMeta.rows.length === 0 && (
-                                                        <tr><td colSpan={6 + (reportMode === 'all_exec' ? 1 : 0)} className="text-center py-6 text-slate-500">ยังไม่มีรายชื่อผู้สอบผ่านเกณฑ์ในกลุ่มรายงานนี้</td></tr>
+                                                        <tr>
+                                                            <td colSpan={reportMode === 'all_exec' ? (cneuIncludeScores ? 7 : 6) : (cneuIncludeScores ? 6 : 5)} className="text-center py-6 text-slate-500">
+                                                                ยังไม่มีผู้สำเร็จการอบรมในกลุ่มรายงานนี้ค่ะ
+                                                            </td>
+                                                        </tr>
                                                     )}
                                                 </tbody>
                                             </table>
 
-                                            <div className="signature-block pt-3 space-y-6">
-                                                <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-700 leading-relaxed">
-                                                    <b>คำรับรองความถูกต้องของข้อมูล:</b> {activeReportMeta.certifyText} และสามารถตรวจสอบรหัสประกาศนียบัตรย้อนกลับได้ผ่าน <span className="font-mono">verify.html</span>
+                                            <p className="text-xs text-slate-700 leading-relaxed pt-2">{activeReportMeta.certifyText}</p>
+
+                                            <div className="signature-block pt-6 grid grid-cols-2 gap-8 text-center text-xs">
+                                                <div className="space-y-1">
+                                                    <p>ลงชื่อ ...............................................................</p>
+                                                    <p className="font-bold">({cneuConfig.reporterName})</p>
+                                                    <p className="text-slate-600">{cneuConfig.reporterPosition}</p>
                                                 </div>
-                                                <div className="grid grid-cols-2 gap-8 text-center text-xs pt-4">
-                                                    <div className="space-y-1">
-                                                        <p>ลงชื่อ ...............................................................</p>
-                                                        <p className="font-bold">({cneuConfig.reporterName})</p>
-                                                        <p className="text-slate-600">{cneuConfig.reporterPosition}</p>
-                                                    </div>
-                                                    <div className="space-y-1">
-                                                        <p>ลงชื่อ ...............................................................</p>
-                                                        <p className="font-bold">({cneuConfig.approverName})</p>
-                                                        <p className="text-slate-600">{cneuConfig.approverPosition}</p>
-                                                    </div>
+                                                <div className="space-y-1">
+                                                    <p>ลงชื่อ ...............................................................</p>
+                                                    <p className="font-bold">({cneuConfig.approverName})</p>
+                                                    <p className="text-slate-600">{cneuConfig.approverPosition}</p>
                                                 </div>
                                             </div>
                                         </article>
@@ -2521,80 +2585,301 @@
                             </div>
                         )}
 
-                        {/* ==================== TAB 5: LIVE STREAM CONTROL ==================== */}
+                        {/* ==================== TAB 5: LIVE BROADCAST CONTROL ==================== */}
                         {activeTab === 'live' && (
-                            <div className="spatial-card max-w-2xl rounded-[1.75rem] p-5 sm:p-6 space-y-4">
-                                <div>
-                                    <span className="font-mono text-[10px] font-bold text-rose-400 uppercase">LIVE BROADCAST CONTROL</span>
-                                    <h2 className="font-display text-xl font-extrabold text-primary-adaptive">ควบคุมห้องถ่ายทอดสด &amp; เกณฑ์ชั่วโมงเรียน</h2>
-                                </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div className="space-y-5 max-w-4xl mx-auto">
+                                <div className="flex flex-wrap items-center justify-between gap-3">
                                     <div>
-                                        <label className="block text-xs font-bold text-secondary-adaptive mb-1 ml-1">สถานะการถ่ายทอดสด</label>
-                                        <select value={liveConfig.status} onChange={e => setLiveConfig(p => ({ ...p, status: e.target.value }))} className="touch-target spatial-input w-full px-3.5 py-2 rounded-xl text-sm">
-                                            <option value="offline">ปิดถ่ายทอดสด (Offline)</option>
-                                            <option value="live">กำลังถ่ายทอดสด (ON AIR)</option>
-                                        </select>
+                                        <span className="font-mono text-[10px] font-bold text-rose-adaptive uppercase">LIVE BROADCAST • REAL-TIME CLASSROOM STREAM</span>
+                                        <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive mt-0.5">ควบคุมการถ่ายทอดสดและเปิดสิทธิ์สอบ Post-test</h2>
                                     </div>
-                                    <FieldInput label="ชั่วโมงเรียนเป้าหมาย (ชม.)" type="number" min="1" max="40" value={liveConfig.hours} onChange={e => setLiveConfig(p => ({ ...p, hours: Number(e.target.value) || 8 }))} />
-                                    <FieldInput className="sm:col-span-2" label="หัวข้อการบรรยายสด" value={liveConfig.topic} onChange={e => setLiveConfig(p => ({ ...p, topic: e.target.value }))} />
-                                    <FieldInput className="sm:col-span-2" label="URL วิดีโอ Embed (YouTube Live / Vimeo / Zoom)" value={liveConfig.url} onChange={e => setLiveConfig(p => ({ ...p, url: e.target.value }))} placeholder="https://..." />
-                                    <FieldInput className="sm:col-span-2" label="URL เอกสารประกอบการบรรยาย" value={liveConfig.documentUrl} onChange={e => setLiveConfig(p => ({ ...p, documentUrl: e.target.value }))} placeholder="https://..." />
-                                </div>
-                                <label className="spatial-soft p-3.5 rounded-2xl flex items-center justify-between gap-2 text-xs cursor-pointer">
-                                    <span className="font-bold text-accent-adaptive">เปิดสิทธิ์ทำ Post-test ชั่วคราวให้ผู้เรียนทุกคน (Override)</span>
-                                    <input type="checkbox" checked={Boolean(liveConfig.allowPosttest)} onChange={e => setLiveConfig(p => ({ ...p, allowPosttest: e.target.checked }))} className="w-5 h-5 accent-aurora-500" />
-                                </label>
-                                <button type="button" onClick={() => persistSettings({ liveConfig })} className="rjc2-pill-btn touch-target w-full py-3.5 rounded-full font-display font-extrabold text-sm">
-                                    บันทึกการตั้งค่า Live สดขึ้น Cloud
-                                </button>
-                            </div>
-                        )}
-
-                        {/* ==================== TAB 6: CLOUD & ECO 1-READ SUMMARY GUARD ==================== */}
-                        {activeTab === 'sync' && (
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-                                <div className="spatial-card rounded-[1.75rem] p-5 space-y-4">
-                                    <h2 className="font-display font-extrabold text-lg text-primary-adaptive">เชื่อมต่อ Google Apps Script (OTP &amp; Gemini AI)</h2>
-                                    <FieldInput label="Google Apps Script Web App URL" value={systemConfig.appsScriptUrl} onChange={e => setSystemConfig(p => ({ ...p, appsScriptUrl: e.target.value }))} placeholder="https://script.google.com/macros/s/.../exec" />
-                                    <FieldInput label="Master CSV URL (สำรอง)" value={systemConfig.masterCsvUrl} onChange={e => setSystemConfig(p => ({ ...p, masterCsvUrl: e.target.value }))} placeholder="https://docs.google.com/spreadsheets/..." />
-                                    <button type="button" onClick={() => persistSettings(systemConfig)} className="rjc2-pill-btn touch-target w-full py-3 rounded-full font-display font-extrabold text-sm">
-                                        บันทึกการเชื่อมต่อ Cloud
-                                    </button>
+                                    <span className={`px-4 py-1.5 rounded-full font-mono text-xs font-bold bg-[var(--neu-bg)] shadow-[var(--shadow-pressed-sm)] ${liveConfig.status === 'live' ? 'text-rose-adaptive' : 'text-muted-adaptive'}`}>
+                                        {liveConfig.status === 'live' ? '● ON AIR กำลังถ่ายทอดสด' : '○ OFFLINE ปิดสัญญาณ'}
+                                    </span>
                                 </div>
 
-                                <div className="spatial-card rounded-[1.75rem] p-5 space-y-4 border-aurora-400/35">
-                                    <div>
-                                        <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">ZERO-COST SCALABILITY GUARD</span>
-                                        <h2 className="font-display font-extrabold text-lg text-primary-adaptive">รีเฟรชเอกสารสรุป 1-Read (`executive_summary/global`)</h2>
-                                        <p className="text-xs text-secondary-adaptive mt-1 leading-relaxed">
-                                            รวมยอดผู้เรียนทั้งหมด, 13 เขตสุขภาพ, CSAT, SUS Score และ Pre/Post Self-Efficacy ลงเอกสารใบเดียว เพื่อให้หน้า <b>executive.html</b> อ่านเพียง 1 ครั้ง ประหยัดโควต้า Firebase ฟรีมากกว่า 99% ค่ะ
-                                        </p>
+                                <div className="spatial-card rounded-[28px] p-5 sm:p-7 space-y-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                        <div>
+                                            <label className="block text-xs font-bold text-secondary-adaptive mb-1 ml-1">สถานะการถ่ายทอดสด</label>
+                                            <select
+                                                value={liveConfig.status}
+                                                onChange={e => setLiveConfig(p => ({ ...p, status: e.target.value }))}
+                                                className="touch-target spatial-input w-full px-3.5 py-2 rounded-2xl text-sm font-bold"
+                                            >
+                                                <option value="offline">OFFLINE (ปิดการแสดงกรอบถ่ายทอดสด)</option>
+                                                <option value="live">LIVE ON AIR (แสดงบนหน้าห้องเรียนผู้เรียนทันที)</option>
+                                            </select>
+                                        </div>
+                                        <FieldInput
+                                            label="ชั่วโมงอบรมมาตรฐาน (ชั่วโมง)"
+                                            type="number"
+                                            min="1"
+                                            max="100"
+                                            value={liveConfig.hours}
+                                            onChange={e => setLiveConfig(p => ({ ...p, hours: Number(e.target.value) || 8 }))}
+                                        />
+                                        <FieldInput
+                                            className="sm:col-span-2"
+                                            label="หัวข้อการบรรยายสด"
+                                            value={liveConfig.topic}
+                                            onChange={e => setLiveConfig(p => ({ ...p, topic: e.target.value }))}
+                                        />
+                                        <FieldInput
+                                            className="sm:col-span-2"
+                                            label="Embed URL ถ่ายทอดสด (YouTube / Vimeo / Zoom Embed)"
+                                            value={liveConfig.url}
+                                            onChange={e => setLiveConfig(p => ({ ...p, url: e.target.value }))}
+                                            placeholder="https://www.youtube.com/embed/... หรือ https://player.vimeo.com/video/..."
+                                        />
+                                        <FieldInput
+                                            className="sm:col-span-2"
+                                            label="ลิงก์เอกสารประกอบการบรรยายสด (PDF / Google Drive)"
+                                            value={liveConfig.documentUrl}
+                                            onChange={e => setLiveConfig(p => ({ ...p, documentUrl: e.target.value }))}
+                                            placeholder="https://drive.google.com/file/d/.../preview"
+                                        />
                                     </div>
-                                    <button type="button" disabled={rebuildingSummary} onClick={handleRebuildGlobalSummary} className="rjc2-pill-btn touch-target w-full py-3.5 rounded-full font-display font-extrabold text-sm disabled:opacity-50">
-                                        {rebuildingSummary ? 'กำลังคำนวณยอดสรุประดับประเทศ...' : `คำนวณยอดสรุปใหม่จากผู้เรียน ${usersList.length} ราย`}
-                                    </button>
-                                </div>
-                            </div>
-                        )}
 
-                        {/* ==================== TAB 7: PRODUCTION SYSTEM DIRECTORY ==================== */}
-                        {activeTab === 'overview' && (
-                            <div className="space-y-4">
-                                <div>
-                                    <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">PRODUCTION SYSTEM DIRECTORY</span>
-                                    <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive mt-1">ทางลัดเข้าถึงทุกโมดูล Production ในระบบ</h2>
-                                </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                                    {inspectorLinks.map(it => (
-                                        <a key={it.url} href={it.url} target="_blank" rel="noreferrer" className="spatial-card hover:border-aurora-400 p-4 rounded-[1.5rem] flex items-start gap-3 transition-all">
-                                            <div className="w-10 h-10 rounded-xl bg-aurora-500/15 text-accent-adaptive flex items-center justify-center shrink-0"><Icon name={it.icon} size={18} /></div>
-                                            <div className="min-w-0">
-                                                <p className="font-display font-bold text-sm text-primary-adaptive">{it.title}</p>
-                                                <p className="text-xs text-muted-adaptive mt-0.5 leading-snug">{it.desc}</p>
+                                    <label className="neu-inset p-4 flex items-center justify-between gap-3 cursor-pointer">
+                                        <div>
+                                            <p className="text-sm font-bold text-accent-adaptive m-0">เปิดสิทธิ์ให้ผู้เรียนทุกคนทำ Post-test ได้ทันที (โหมด Live / สอบพร้อมกันทั้งรุ่น)</p>
+                                            <p className="text-xs text-muted-adaptive m-0 mt-0.5">หากเปิดใช้งาน ผู้เรียนที่เข้าร่วมอบรมสดจะสามารถกดเข้าทำแบบทดสอบหลังเรียนได้โดยไม่ต้องรอสะสมชั่วโมงวิดีโอ</p>
+                                        </div>
+                                        <input
+                                            type="checkbox"
+                                            checked={Boolean(liveConfig.allowPosttest)}
+                                            onChange={e => setLiveConfig(p => ({ ...p, allowPosttest: e.target.checked }))}
+                                            className="w-5 h-5 accent-emerald-600 shrink-0"
+                                        />
+                                    </label>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => persistSettings({ liveConfig }, 'บันทึกสถานะ Live สดและสิทธิ์สอบขึ้น Cloud เรียบร้อยค่ะ')}
+                                        className="rjc2-pill-btn touch-target w-full py-3.5 font-display font-extrabold text-sm"
+                                    >
+                                        บันทึกการตั้งค่า Live สดขึ้น Cloud
+                                    </button>
+
+                                    {liveConfig.url && (
+                                        <div className="space-y-2 pt-2">
+                                            <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase block">PREVIEW LIVE STREAM FRAME</span>
+                                            <div className="w-full aspect-video rounded-2xl overflow-hidden neu-inset bg-black">
+                                                <iframe title="Live Broadcast Preview" src={liveConfig.url} className="w-full h-full border-0" allowFullScreen />
                                             </div>
-                                        </a>
-                                    ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* ==================== TAB 6: CLOUD & CENTRAL DATA CENTER SYNC ==================== */}
+                        {activeTab === 'sync' && (
+                            <div className="space-y-5 max-w-4xl mx-auto">
+                                <div>
+                                    <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase">CLOUD INFRASTRUCTURE • GAS &amp; 1-READ TELEMETRY</span>
+                                    <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive mt-0.5">การเชื่อมต่อ Cloud, เสียง AI 24kHz และสรุปข้อมูลผู้บริหาร</h2>
+                                </div>
+
+                                <div className="spatial-card rounded-[28px] p-5 sm:p-7 space-y-4">
+                                    <div className="space-y-3">
+                                        <FieldInput
+                                            label="Google Apps Script Web App URL (ส่ง OTP ทางอีเมล, Gemini AI Tutor & เสียงสตูดิโอ 24kHz)"
+                                            value={systemConfig.appsScriptUrl}
+                                            onChange={e => setSystemConfig(p => ({ ...p, appsScriptUrl: e.target.value }))}
+                                            placeholder="https://script.google.com/macros/s/.../exec"
+                                        />
+                                        <FieldInput
+                                            label="Master Google Sheet CSV URL (ตัวเลือกเสริมสำหรับซิงค์รายชื่อกลาง)"
+                                            value={systemConfig.masterCsvUrl}
+                                            onChange={e => setSystemConfig(p => ({ ...p, masterCsvUrl: e.target.value }))}
+                                            placeholder="https://docs.google.com/spreadsheets/d/.../export?format=csv"
+                                        />
+                                    </div>
+
+                                    <label className="neu-inset p-4 flex items-center justify-between gap-3 cursor-pointer">
+                                        <div>
+                                            <p className="text-sm font-bold text-primary-adaptive m-0">เปิดใช้งานการซิงค์อัตโนมัติจาก Master Sheet</p>
+                                            <p className="text-xs text-muted-adaptive m-0 mt-0.5">ซิงค์ข้อมูลประกอบกับฐานข้อมูล Firestore กลาง (App ID: {CONFIG.appId})</p>
+                                        </div>
+                                        <input
+                                            type="checkbox"
+                                            checked={Boolean(systemConfig.autoSyncFromSheet)}
+                                            onChange={e => setSystemConfig(p => ({ ...p, autoSyncFromSheet: e.target.checked }))}
+                                            className="w-5 h-5 accent-emerald-600 shrink-0"
+                                        />
+                                    </label>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => persistSettings({
+                                            appsScriptUrl: systemConfig.appsScriptUrl.trim(),
+                                            masterCsvUrl: systemConfig.masterCsvUrl.trim(),
+                                            autoSyncFromSheet: Boolean(systemConfig.autoSyncFromSheet)
+                                        }, 'บันทึกการตั้งค่า Cloud และ Apps Script URL เรียบร้อยค่ะ')}
+                                        className="rjc2-pill-btn touch-target w-full py-3.5 font-display font-extrabold text-sm"
+                                    >
+                                        บันทึกการตั้งค่า Cloud ขึ้น Firestore
+                                    </button>
+                                </div>
+
+                                <div className="spatial-card rounded-[28px] p-5 sm:p-7 space-y-4">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                        <div className="space-y-1">
+                                            <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase block">ECO 1-READ EXECUTIVE CACHE (ZERO-PII)</span>
+                                            <h3 className="font-display font-extrabold text-base sm:text-lg text-primary-adaptive m-0">สร้างเอกสารสรุป Dashboard 13 เขตสุขภาพ (`executive_summary/global`)</h3>
+                                            <p className="text-xs text-secondary-adaptive m-0 leading-relaxed">
+                                                ประมวลผลสถิติผู้เรียนทั้งหมด ({usersList.length} ราย) รวมคะแนน AI Skill Lab, CSAT, SUS และความมั่นใจ Pre→Post แบบไม่เก็บข้อมูลส่วนบุคคล (Zero-PII 100%) เพื่อให้หน้าผู้บริหารโหลดได้ภายใน 1 Read ค่ะ
+                                            </p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            disabled={rebuildingSummary}
+                                            onClick={handleRebuildGlobalSummary}
+                                            className="neu-btn touch-target px-5 py-3 text-xs font-display font-bold text-accent-adaptive shrink-0"
+                                        >
+                                            <Icon name="RefreshCw" size={15} className={rebuildingSummary ? 'animate-spin' : ''} />
+                                            <span>{rebuildingSummary ? 'กำลังประมวลผล...' : 'อัปเดตสรุป 1-Read ทันที'}</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* ==================== TAB 7: LIVE MULTI-PAGE PREVIEW & SYSTEM INSPECTOR ==================== */}
+                        {activeTab === 'overview' && (
+                            <div className="space-y-5">
+                                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                                    <div>
+                                        <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase">ADMIN LIVE PREVIEW STUDIO • ALL ECOSYSTEM PAGES</span>
+                                        <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary-adaptive mt-0.5">ตรวจสอบตัวอย่างจริงได้ครบทุกหน้า (e-Learning &amp; Website)</h2>
+                                        <p className="text-xs text-secondary-adaptive mt-0.5">เลือกหน้าที่ต้องการตรวจสอบด้านซ้าย แล้วสลับขนาดหน้าจอ Desktop / Tablet / Mobile เพื่อตรวจความสมบูรณ์จริงแบบเรียลไทม์ค่ะ</p>
+                                    </div>
+                                    <div className="flex flex-wrap items-center gap-2 shrink-0">
+                                        <button
+                                            type="button"
+                                            onClick={handleToggleAdminPreviewSession}
+                                            className={`neu-btn touch-target px-4 py-2 text-xs font-display font-bold ${adminPreviewSessionActive ? 'is-pressed text-accent-adaptive' : 'text-rose-adaptive'}`}
+                                        >
+                                            <Icon name={adminPreviewSessionActive ? 'ShieldCheck' : 'KeyRound'} size={15} />
+                                            <span>{adminPreviewSessionActive ? 'โหมด Admin Preview: เปิดอยู่ (คลิกเพื่อล้าง)' : 'เปิด Admin Preview (ตรวจห้องเรียน/Skill Lab)'}</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+                                    {/* Left Page Selector Rail (Col 4) */}
+                                    <aside className="lg:col-span-4 spatial-card rounded-[28px] p-4 space-y-4 max-h-[760px] overflow-y-auto custom-scrollbar">
+                                        {['e-Learning (learn.coerj.com)', 'Website Portal (coerj.com)'].map(groupName => (
+                                            <div key={groupName} className="space-y-2">
+                                                <span className="font-mono text-[10px] font-bold text-accent-adaptive uppercase block px-1">
+                                                    {groupName}
+                                                </span>
+                                                <div className="space-y-2">
+                                                    {inspectorLinks.filter(x => x.group === groupName).map(it => {
+                                                        const active = activePreviewPage?.id === it.id;
+                                                        return (
+                                                            <button
+                                                                key={it.id}
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    setPreviewPageId(it.id);
+                                                                    if (it.requiresSession && !adminPreviewSessionActive) {
+                                                                        showToast('แนะนำกดปุ่ม “เปิด Admin Preview” ด้านบน เพื่อข้ามหน้า OTP เข้าตรวจดูด้านในได้ทันทีค่ะ', 'info');
+                                                                    }
+                                                                }}
+                                                                className={`w-full text-left p-3.5 rounded-2xl flex items-start gap-3 transition-all ${active ? 'neu-nav-active' : 'spatial-soft'}`}
+                                                            >
+                                                                <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${active ? 'bg-emerald-500/20 text-accent-adaptive' : 'bg-[var(--neu-bg)] shadow-[var(--shadow-pressed-sm)] text-secondary-adaptive'}`}>
+                                                                    <Icon name={it.icon} size={16} />
+                                                                </div>
+                                                                <div className="min-w-0 flex-1">
+                                                                    <div className="flex items-center justify-between gap-1.5">
+                                                                        <p className="font-display font-bold text-xs sm:text-[13px] text-primary-adaptive truncate m-0">{it.title}</p>
+                                                                        {it.requiresSession && (
+                                                                            <span className="font-mono text-[9px] px-1.5 py-0.5 rounded-full bg-rose-500/15 text-rose-adaptive shrink-0">AUTH</span>
+                                                                        )}
+                                                                    </div>
+                                                                    <p className="text-[11px] text-muted-adaptive mt-0.5 leading-snug m-0">{it.desc}</p>
+                                                                </div>
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </aside>
+
+                                    {/* Right Live Interactive Iframe Preview Stage (Col 8) */}
+                                    <section className="lg:col-span-8 spatial-card rounded-[28px] p-4 sm:p-5 space-y-4">
+                                        {/* Stage Toolbar */}
+                                        <div className="flex flex-wrap items-center justify-between gap-2.5 pb-3 border-b border-[var(--neu-divider)]">
+                                            <div className="min-w-0">
+                                                <span className="font-mono text-[10px] font-bold text-prism-adaptive uppercase block">LIVE PREVIEWING</span>
+                                                <h3 className="font-display font-extrabold text-sm sm:text-base text-primary-adaptive truncate m-0">
+                                                    {activePreviewPage?.title}
+                                                </h3>
+                                            </div>
+
+                                            <div className="flex flex-wrap items-center gap-1.5">
+                                                {[
+                                                    { id: 'desktop', label: 'Desktop', icon: 'Monitor' },
+                                                    { id: 'tablet', label: 'Tablet', icon: 'Tablet' },
+                                                    { id: 'mobile', label: 'Mobile', icon: 'Smartphone' }
+                                                ].map(vp => (
+                                                    <button
+                                                        key={vp.id}
+                                                        type="button"
+                                                        onClick={() => setPreviewViewport(vp.id)}
+                                                        className={`neu-btn px-3 py-1.5 text-[11px] font-display font-bold ${previewViewport === vp.id ? 'is-pressed' : ''}`}
+                                                    >
+                                                        <Icon name={vp.icon} size={13} />
+                                                        <span className="hidden sm:inline">{vp.label}</span>
+                                                    </button>
+                                                ))}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setPreviewReloadKey(k => k + 1)}
+                                                    className="neu-btn w-9 h-9 text-accent-adaptive"
+                                                    title="โหลดหน้าตัวอย่างใหม่"
+                                                >
+                                                    <Icon name="RefreshCw" size={14} />
+                                                </button>
+                                                <a
+                                                    href={activePreviewPage?.url || './index.html'}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    className="rjc2-pill-btn px-3.5 py-2 text-[11px] font-display font-bold inline-flex items-center gap-1"
+                                                >
+                                                    <span>เปิดเต็มจอ</span>
+                                                    <Icon name="ExternalLink" size={13} />
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        {/* Responsive Viewport Frame */}
+                                        <div className="neu-inset p-3 sm:p-4 flex flex-col items-center justify-center overflow-x-auto">
+                                            <div
+                                                className="w-full rounded-2xl overflow-hidden bg-[#040a18] shadow-2xl border border-white/10 transition-all duration-500"
+                                                style={{
+                                                    maxWidth: previewViewport === 'mobile' ? '390px' : previewViewport === 'tablet' ? '768px' : '100%',
+                                                    height: previewViewport === 'mobile' ? '680px' : '640px'
+                                                }}
+                                            >
+                                                <iframe
+                                                    key={`${activePreviewPage?.id}_${previewReloadKey}`}
+                                                    title={`Admin Live Preview: ${activePreviewPage?.title}`}
+                                                    src={activePreviewPage?.url}
+                                                    className="w-full h-full border-0 block bg-[#040a18]"
+                                                    allow="autoplay; fullscreen; picture-in-picture; microphone"
+                                                />
+                                            </div>
+                                            <p className="text-[11px] font-mono text-muted-adaptive mt-2.5 text-center m-0">
+                                                URL: <span className="text-prism-adaptive">{activePreviewPage?.url}</span> • หากเว็บปลายทางไม่อนุญาตแสดงในกรอบ ให้กดปุ่ม <b>“เปิดเต็มจอ ↗”</b> ด้านบนได้เลยค่ะ
+                                            </p>
+                                        </div>
+                                    </section>
                                 </div>
                             </div>
                         )}
