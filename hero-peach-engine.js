@@ -308,6 +308,42 @@
     bc.fill();
 
     // Unopened deep-pink buds
+    for (let b = 0; b < 4; b++) {
+      const bx = 64 + (rng() - 0.5) * 68;
+      const by = 64 + (rng() - 0.5) * 52;
+      const bang = rng() * Math.PI * 2;
+      bc.save();
+      bc.translate(bx, by);
+      bc.rotate(bang);
+      bc.fillStyle = '#be185d';
+      bc.beginPath();
+      bc.ellipse(0, 0, 4.2, 2.6, 0, 0, Math.PI * 2);
+      bc.fill();
+      bc.fillStyle = '#fbcfe8';
+      bc.beginPath();
+      bc.ellipse(1.2, -0.4, 2.2, 1.3, 0, 0, Math.PI * 2);
+      bc.fill();
+      bc.restore();
+    }
+
+    // Full 5-petal detailed botanical blossoms
+    const cnt = mode === 'hero' ? 4 : mode === 'sss' ? 5 : 7;
+    for (let f = 0; f < cnt; f++) {
+      const fx = 64 + (rng() - 0.5) * 58;
+      const fy = 64 + (rng() - 0.5) * 44;
+      const sc = (mode === 'hero' ? 0.82 : 0.65) + rng() * 0.42;
+      drawSingleBotanicalBlossom(
+        bc,
+        fx,
+        fy,
+        sc,
+        rng() * Math.PI * 2,
+        mode === 'hero' ? 'light' : mode
+      );
+    }
+    return c;
+  }
+
   function applySoftEllipticalFeather(targetCanvas) {
     const tc = targetCanvas.getContext('2d');
     if (!tc) return;
@@ -1289,10 +1325,9 @@
 
     function resize(immediate) {
       const rect = stage.getBoundingClientRect();
-      if (rect.width <= 0 || rect.height <= 0) return;
       DPR = Math.min(global.devicePixelRatio || 1, 2);
-      W = rect.width;
-      H = rect.height;
+      W = Math.max(320, Math.round(rect.width || stage.clientWidth || global.innerWidth || 1280));
+      H = Math.max(480, Math.round(rect.height || stage.clientHeight || global.innerHeight || 720));
       canvas.width = Math.round(W * DPR);
       canvas.height = Math.round(H * DPR);
       ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
