@@ -35,7 +35,7 @@
               './data.js',
               './learning-core.js?v=202719',
               './cert-engine.js',
-              './hero-peach-engine.js?v=202721',
+              './hero-peach-engine.js?v=202724',
               './keynote-launch.js?v=202718'
             ].forEach(function (src) {
               const s = document.createElement('script');
@@ -574,12 +574,23 @@
         const CERT = window.RJCLOUD_CERT || {};
         const STORAGE_KEY = 'rjcloud_organ_state_v2027';
         const SESSION_BACKUP_KEY = 'rjcloud_active_session_v2027';
+        const IS_REAL_HOST = (() => {
+            try {
+                const loc = window.location;
+                return (loc.protocol === 'https:' || loc.protocol === 'http:') &&
+                    loc.origin !== 'null' &&
+                    !/(googleusercontent|webcontainer|stackblitz|sandbox|srcdoc|blob:)/i.test(loc.href);
+            } catch (_) {
+                return false;
+            }
+        })();
 
         const BUILTIN_CONFIG = {
             appName: 'organ cloud',
             appId: 'rjcloud-organ-2027',
-            theme: { defaultMode: 'light', storageKey: 'rjcloud_theme_v2' },
+            contactEmail: 'rjcloud.organ@gmail.com',
             learningRules: { minStudyPercent: 80, minPosttestPercent: 80 },
+            theme: { defaultMode: 'light', storageKey: 'rjcloud_theme_v2' },
             firebaseConfig: {
                 apiKey: 'AIzaSyCpvK0FCVVk9dt0ylHn_VzUStl7540UsbY',
                 authDomain: 'rj-cloud-organ.firebaseapp.com',
@@ -590,6 +601,43 @@
             },
             appsScriptUrl: 'https://script.google.com/macros/s/AKfycbwuN8MeZhhhomEhpkfXtpoTP341cugDqw1DbQPK_6NSHun2pGZCE0Kfc3eH4YYJ6aWQIg/exec'
         };
+
+        const FALLBACK_COURSE_CATALOG = (Array.isArray(CORE.DEFAULT_COURSE_CATALOG) && CORE.DEFAULT_COURSE_CATALOG.length > 0)
+            ? CORE.DEFAULT_COURSE_CATALOG
+            : [
+                {
+                    id: 'organ_donation_core',
+                    code: 'ODC-CORE-2027',
+                    titleTH: 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ',
+                    titleEN: 'Organ Donation & Transplantation Clinical Coordination Program',
+                    trainingHours: 8,
+                    cneuCredits: '8.0',
+                    active: true
+                },
+                {
+                    id: 'kidney_transplant_surgery',
+                    code: 'KTS-SURG-2027',
+                    titleTH: 'หลักสูตรการผ่าตัดปลูกถ่ายไตและการดูแลผู้ป่วยระยะผ่าตัด',
+                    titleEN: 'Kidney Transplantation Surgery & Perioperative Care Program',
+                    trainingHours: 8,
+                    cneuCredits: '8.0',
+                    active: true
+                }
+            ];
+
+        const CLINICAL_AI_PREFIX = CORE.CLINICAL_AI_SYSTEM_PREFIX ||
+            'บริบททางการแพทย์ (โรงพยาบาลราชวิถี): ผู้ใช้งานคือแพทย์ พยาบาล และบุคลากรสหวิชาชีพที่ยืนยันตัวตนแล้ว สื่อสารศัพท์การแพทย์ด้านภาวะสมองตายและการบริจาคอวัยวะอย่างชัดเจนตรงไปตรงมาตามหลักวิชาการแพทย์';
+
+        function navigateSmoothSafe(url, statusText, openInNewTab = false) {
+            if (!url) return;
+            if (typeof CORE.navigateSmooth === 'function') {
+                CORE.navigateSmooth(url, statusText, openInNewTab);
+            } else if (openInNewTab) {
+                window.open(url, '_blank', 'noopener,noreferrer');
+            } else {
+                window.location.href = url;
+            }
+        }
 
         const CONFIG = typeof CORE.getResolvedConfig === 'function'
             ? CORE.getResolvedConfig()
@@ -618,25 +666,13 @@
             { id: 4, domain: 'procurement_transplant', title: 'บทที่ 4: การจัดเก็บ ขนส่ง (Cold Chain) และดูแลหลังปลูกถ่าย', videoId: '', documentUrl: '' }
         ];
 
-        function navigateSmoothSafe(url, statusText, openInNewTab = false) {
-            if (!url) return;
-            if (typeof CORE.navigateSmooth === 'function') {
-                CORE.navigateSmooth(url, statusText, openInNewTab);
-            } else if (openInNewTab) {
-                window.open(url, '_blank', 'noopener,noreferrer');
-            } else {
-                window.location.href = url;
-            }
-        }
-        const CLINICAL_AI_PREFIX = CORE.CLINICAL_AI_SYSTEM_PREFIX ||
-            'บริบททางการแพทย์ (ศูนย์ความเป็นเลิศทางการแพทย์ โรงพยาบาลราชวิถี): ผู้ใช้งานคือแพทย์ พยาบาล และบุคลากรสหวิชาชีพ สื่อสารด้านการรับบริจาคและปลูกถ่ายอวัยวะอย่างแม่นยำตามหลักวิชาการแพทย์';
-
-        const FALLBACK_COURSE_CATALOG = Array.isArray(CORE.DEFAULT_COURSE_CATALOG) && CORE.DEFAULT_COURSE_CATALOG.length > 0
-            ? CORE.DEFAULT_COURSE_CATALOG
-            : [
-                { id: 'organ_donation_core', code: 'ODC-CORE-2027', titleTH: 'หลักสูตรการพยาบาลและการประสานงานการรับบริจาคและปลูกถ่ายอวัยวะ', titleEN: 'Organ Donation & Transplantation Clinical Coordination Program', trainingHours: 8, cneuCredits: '8.0', active: true },
-                { id: 'kidney_transplant_surgery', code: 'KTS-SURG-2027', titleTH: 'หลักสูตรการผ่าตัดปลูกถ่ายไตและการดูแลผู้ป่วยระยะผ่าตัด', titleEN: 'Kidney Transplantation Surgery & Perioperative Care Program', trainingHours: 8, cneuCredits: '8.0', active: true }
-            ];
+        const INLINE_FALLBACK_QUIZ = [
+            { id: 1, domain: 'policy_ethics', question: 'เป้าหมายหลักของ Service Plan สาขาการรับบริจาคและปลูกถ่ายอวัยวะคือข้อใด?', options: ['ลดค่าใช้จ่ายของโรงพยาบาล', 'เพิ่มจำนวนผู้บริจาคสมองตายและผู้ได้รับการปลูกถ่ายอวัยวะให้เพียงพอ', 'ลดจำนวนเตียง ICU', 'เปิดศูนย์รับบริจาคในทุกตำบล'], answer: 1 },
+            { id: 2, domain: 'brain_death_donor', question: 'การวินิจฉัยภาวะสมองตายในผู้ใหญ่ตามเกณฑ์แพทยสภาต้องตรวจทางคลินิกกี่ครั้ง?', options: ['1 ครั้ง', '2 ครั้ง ห่างกันอย่างน้อย 6 ชั่วโมง โดยคณะแพทย์ 3 ท่าน', '3 ครั้ง ห่างกัน 24 ชั่วโมง', 'ไม่ต้องตรวจซ้ำ'], answer: 1 },
+            { id: 3, domain: 'family_communication', question: 'หลัก Decoupling ในการสื่อสารกับญาติหมายถึงข้อใด?', options: ['แยกแพทย์ออกจากพยาบาล', 'แยกขั้นตอนการแจ้งข่าวสมองตายออกจากการเจรจาขอรับบริจาคอวัยวะ', 'แยกหัวใจออกจากปอด', 'แยกห้องพักญาติ'], answer: 1 },
+            { id: 4, domain: 'procurement_transplant', question: 'การบรรจุและขนส่งไต (Kidney Packaging) ต้องควบคุมอุณหภูมิในช่วงใด?', options: ['-20 องศาเซลเซียส', '25 องศาเซลเซียส', '2–4 องศาเซลเซียส', '37 องศาเซลเซียส'], answer: 2 },
+            { id: 5, domain: 'brain_death_donor', question: 'ยาหลักที่นิยมใช้ควบคุมภาวะเบาจืด (Diabetes Insipidus) ในผู้บริจาคสมองตายคือข้อใด?', options: ['Epinephrine', 'Desmopressin (DDAVP)', 'Insulin', 'Furosemide'], answer: 1 }
+        ];
 
         const PROFESSION_OPTIONS = [
             { id: 'nurse', value: 'พยาบาล', label: 'พยาบาล', en: 'Registered Nurse • CNEU', defaultPos: 'พยาบาลวิชาชีพชำนาญการ', icon: 'HeartPulse' },
@@ -671,7 +707,7 @@
         ];
 
         let fbApp = null, fbAuth = null, fbDb = null;
-        if (CONFIG.firebaseConfig?.apiKey && CONFIG.firebaseConfig?.projectId) {
+        if (IS_REAL_HOST && CONFIG.firebaseConfig?.apiKey && CONFIG.firebaseConfig?.projectId) {
             try {
                 fbApp = getApps().length === 0 ? initializeApp(CONFIG.firebaseConfig) : getApp();
                 fbAuth = getAuth(fbApp);
@@ -1083,24 +1119,185 @@
 
             const mistTone = theme === 'light' ? 'light' : 'dark';
 
-            // Mount original Moonlit Peach Cliff hero engine (100% untouched elements)
+            // Mount Moonlit Peach Cliff hero engine (uses hero-peach-engine.js on production, with built-in preview fallback)
             useEffect(() => {
                 const refs = { stage: heroStageRef.current, canvas: moonlitCanvasRef.current, bgCanvas: moonlitCanvasRef.current };
                 if (!refs.stage || !refs.canvas) return;
-                let engineCtrl = null, pollTimer = null, disposed = false;
+                let engineCtrl = null, pollTimer = null, fallbackRaf = null, resizeObs = null, disposed = false;
+
+                // Built-in lightweight moonlit peach cliff renderer for standalone Preview when external engine script is absent
+                const startPreviewFallback = () => {
+                    if (disposed || engineCtrl || fallbackRaf) return;
+                    const cv = refs.canvas;
+                    const st = refs.stage;
+                    const ctx = cv.getContext('2d');
+                    if (!ctx) return;
+
+                    let W = Math.max(320, st.clientWidth || window.innerWidth || 1024);
+                    let H = Math.max(480, st.clientHeight || window.innerHeight || 720);
+                    const resize = () => {
+                        const r = st.getBoundingClientRect();
+                        W = Math.max(320, Math.round(r.width || window.innerWidth || 1024));
+                        H = Math.max(480, Math.round(r.height || window.innerHeight || 720));
+                        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+                        cv.width = Math.round(W * dpr);
+                        cv.height = Math.round(H * dpr);
+                        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                    };
+                    resize();
+                    if (typeof ResizeObserver !== 'undefined') {
+                        resizeObs = new ResizeObserver(resize);
+                        resizeObs.observe(st);
+                    }
+                    window.addEventListener('resize', resize);
+
+                    const stars = Array.from({ length: 84 }, (_, i) => ({
+                        x: ((i * 73) % 100) / 100, y: ((i * 37) % 48) / 100,
+                        r: 0.6 + (i % 4) * 0.35, ph: i * 0.9, tw: 1.2 + (i % 5) * 0.45
+                    }));
+                    const petals = Array.from({ length: 26 }, (_, i) => ({
+                        x: 0.16 + (i / 26) * 0.62, y: 0.18 + ((i * 29) % 45) / 100,
+                        vx: -(0.012 + (i % 5) * 0.004), vy: 0.011 + (i % 4) * 0.004,
+                        rot: i * 0.7, sz: 2.6 + (i % 3) * 1.1, ph: i * 1.1
+                    }));
+                    const canopy = Array.from({ length: 58 }, (_, i) => {
+                        const ang = (i / 58) * Math.PI * 2 + (i % 3) * 0.3;
+                        const rad = 0.12 + ((i * 41) % 100) / 150;
+                        return { lx: -0.10 + Math.cos(ang) * rad * 1.25, ly: -0.46 + Math.sin(ang) * rad * 0.66, r: 15 + (i % 5) * 5, ph: i * 0.6 };
+                    });
+
+                    let lastTs = performance.now();
+                    const tick = (now) => {
+                        if (disposed || engineCtrl) return;
+                        fallbackRaf = requestAnimationFrame(tick);
+                        if (document.hidden) return;
+                        const dt = Math.min(0.05, Math.max(0.001, (now - lastTs) * 0.001));
+                        lastTs = now;
+                        const t = now * 0.001;
+                        const horizon = H * 0.54;
+                        const isNarrow = W < 640;
+
+                        ctx.clearRect(0, 0, W, H);
+                        const sky = ctx.createLinearGradient(0, 0, 0, horizon + 20);
+                        sky.addColorStop(0, '#020612'); sky.addColorStop(0.55, '#0e2449'); sky.addColorStop(1, '#1e4473');
+                        ctx.fillStyle = sky; ctx.fillRect(0, 0, W, horizon + 20);
+
+                        for (let i = 0; i < stars.length; i++) {
+                            const s = stars[i];
+                            const a = 0.25 + 0.72 * (0.5 + 0.5 * Math.sin(t * s.tw + s.ph));
+                            ctx.fillStyle = `rgba(224,242,254,${a.toFixed(2)})`;
+                            ctx.beginPath(); ctx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2); ctx.fill();
+                        }
+
+                        // Crescent Moon & Halo
+                        const mx = W * (isNarrow ? 0.22 : 0.185), my = H * 0.15, mr = Math.min(W, H) * 0.052;
+                        const mg = ctx.createRadialGradient(mx, my, mr * 0.3, mx, my, mr * 3.1);
+                        mg.addColorStop(0, 'rgba(240,249,255,0.48)'); mg.addColorStop(0.45, 'rgba(147,197,253,0.16)'); mg.addColorStop(1, 'rgba(0,0,0,0)');
+                        ctx.fillStyle = mg; ctx.beginPath(); ctx.arc(mx, my, mr * 3.1, 0, Math.PI * 2); ctx.fill();
+                        ctx.fillStyle = '#f8fdff'; ctx.beginPath(); ctx.arc(mx, my, mr, 0, Math.PI * 2); ctx.fill();
+                        ctx.fillStyle = '#07142b'; ctx.beginPath(); ctx.arc(mx - mr * 0.34, my - mr * 0.22, mr * 0.94, 0, Math.PI * 2); ctx.fill();
+
+                        // Ocean & Moonlight Glints
+                        const sea = ctx.createLinearGradient(0, horizon, 0, H);
+                        sea.addColorStop(0, '#183a66'); sea.addColorStop(0.45, '#0c203e'); sea.addColorStop(1, '#030816');
+                        ctx.fillStyle = sea; ctx.fillRect(0, horizon, W, H - horizon);
+                        for (let i = 0; i < 42; i++) {
+                            const d = i / 41;
+                            const gy = horizon + 8 + d * d * (H - horizon - 16);
+                            const gx = mx * 0.92 + Math.sin(t * (1.2 + d) + i) * (12 + d * 48) + ((i % 7) - 3) * (6 + d * 18);
+                            const gl = 10 + d * 34;
+                            ctx.fillStyle = `rgba(224,242,254,${(0.18 + 0.42 * (1 - d * 0.5)).toFixed(2)})`;
+                            ctx.fillRect(gx - gl / 2, gy, gl, 1.2 + d * 1.4);
+                        }
+
+                        // Cliff Silhouette
+                        const leftEdge = isNarrow ? 0.14 : 0.28;
+                        ctx.beginPath();
+                        ctx.moveTo(W * (leftEdge + 0.04), H); ctx.lineTo(W * leftEdge, H * 0.56);
+                        ctx.lineTo(W * 0.56, H * 0.53); ctx.lineTo(W, H * 0.48); ctx.lineTo(W, H); ctx.closePath();
+                        const cg = ctx.createLinearGradient(W * leftEdge, H * 0.52, W * 0.8, H);
+                        cg.addColorStop(0, '#18324a'); cg.addColorStop(0.45, '#091728'); cg.addColorStop(1, '#02060e');
+                        ctx.fillStyle = cg; ctx.fill();
+
+                        // Grounded Peach Blossom Tree
+                        const rx = W * (isNarrow ? 0.54 : 0.495), ry = H * 0.533;
+                        const S = Math.min(W * (isNarrow ? 0.60 : 0.44), H * 0.48);
+                        ctx.strokeStyle = '#24162d'; ctx.lineCap = 'round';
+                        ctx.lineWidth = Math.max(9, S * 0.056);
+                        ctx.beginPath(); ctx.moveTo(rx + 0.04 * S, ry + 4); ctx.quadraticCurveTo(rx - 0.04 * S, ry - 0.18 * S, rx - 0.10 * S, ry - 0.34 * S); ctx.stroke();
+                        [[-0.78, -0.22], [-0.66, -0.44], [-0.46, -0.62], [-0.14, -0.74], [0.24, -0.70], [0.54, -0.44]].forEach(([bx, by]) => {
+                            ctx.lineWidth = Math.max(4, S * 0.024);
+                            ctx.beginPath(); ctx.moveTo(rx - 0.09 * S, ry - 0.30 * S);
+                            ctx.quadraticCurveTo(rx + bx * 0.52 * S, ry + (by - 0.08) * S, rx + bx * S, ry + by * S); ctx.stroke();
+                        });
+                        for (let i = 0; i < canopy.length; i++) {
+                            const b = canopy[i];
+                            const bx = rx + b.lx * S + Math.sin(t * 1.1 + b.ph) * 2.4;
+                            const by = ry + b.ly * S + Math.cos(t * 0.8 + b.ph) * 1.6;
+                            const rad = b.r * (S / 310);
+                            const bg = ctx.createRadialGradient(bx, by, 1, bx, by, rad);
+                            bg.addColorStop(0, 'rgba(255,244,250,0.88)'); bg.addColorStop(0.55, 'rgba(249,168,212,0.58)'); bg.addColorStop(1, 'rgba(244,114,182,0)');
+                            ctx.fillStyle = bg; ctx.beginPath(); ctx.arc(bx, by, rad, 0, Math.PI * 2); ctx.fill();
+                        }
+
+                        // Drifting Petals
+                        for (let i = 0; i < petals.length; i++) {
+                            const p = petals[i];
+                            p.x += (p.vx + Math.sin(t + p.ph) * 0.005) * dt;
+                            p.y += p.vy * dt; p.rot += dt * 1.4;
+                            if (p.x < -0.05 || p.y > 0.96) { p.x = (rx + (Math.random() - 0.45) * S) / W; p.y = (ry - (0.25 + Math.random() * 0.45) * S) / H; }
+                            ctx.save(); ctx.translate(p.x * W, p.y * H); ctx.rotate(p.rot);
+                            ctx.fillStyle = 'rgba(252,231,243,0.85)';
+                            ctx.beginPath(); ctx.ellipse(0, 0, p.sz, p.sz * 0.55, 0, 0, Math.PI * 2); ctx.fill();
+                            ctx.restore();
+                        }
+                    };
+                    fallbackRaf = requestAnimationFrame(tick);
+                    engineCtrl = {
+                        destroy: () => {
+                            if (fallbackRaf) cancelAnimationFrame(fallbackRaf);
+                            if (resizeObs) resizeObs.disconnect();
+                            window.removeEventListener('resize', resize);
+                        }
+                    };
+                };
+
                 const tryMount = () => {
                     if (disposed || engineCtrl) return true;
                     if (window.RJCLOUD_HERO_PEACH && typeof window.RJCLOUD_HERO_PEACH.mount === 'function') {
-                        engineCtrl = window.RJCLOUD_HERO_PEACH.mount(refs);
-                        return true;
+                        try {
+                            engineCtrl = window.RJCLOUD_HERO_PEACH.mount(refs);
+                            return Boolean(engineCtrl);
+                        } catch (_) {
+                            return false;
+                        }
                     }
                     return false;
                 };
+
                 if (!tryMount()) {
-                    let tries = 0;
-                    pollTimer = setInterval(() => { tries += 1; if (tryMount() || tries > 45) { clearInterval(pollTimer); pollTimer = null; } }, 120);
+                    if (!IS_REAL_HOST) {
+                        startPreviewFallback();
+                    } else {
+                        let tries = 0;
+                        pollTimer = setInterval(() => {
+                            tries += 1;
+                            if (tryMount()) {
+                                clearInterval(pollTimer); pollTimer = null;
+                            } else if (tries > 25) {
+                                clearInterval(pollTimer); pollTimer = null;
+                                startPreviewFallback();
+                            }
+                        }, 120);
+                    }
                 }
-                return () => { disposed = true; if (pollTimer) clearInterval(pollTimer); if (engineCtrl?.destroy) engineCtrl.destroy(); };
+                return () => {
+                    disposed = true;
+                    if (pollTimer) clearInterval(pollTimer);
+                    if (fallbackRaf) cancelAnimationFrame(fallbackRaf);
+                    if (resizeObs) resizeObs.disconnect();
+                    if (engineCtrl?.destroy) engineCtrl.destroy();
+                };
             }, []);
 
             // Clean up mist dissolve animation on unmount
@@ -1477,7 +1674,13 @@
                     ? window.INITIAL_LESSONS
                     : (Array.isArray(CORE.FALLBACK_LESSONS) && CORE.FALLBACK_LESSONS.length > 0 ? CORE.FALLBACK_LESSONS : INLINE_FALLBACK_LESSONS)
             ));
-            const [quizList, setQuizList] = useState(() => (typeof CORE.parseRawExams === 'function' ? CORE.parseRawExams(window.QUIZ_QUESTIONS_RAW) : []));
+            const [quizList, setQuizList] = useState(() => {
+                if (typeof CORE.parseRawExams === 'function') {
+                    const parsed = CORE.parseRawExams(window.QUIZ_QUESTIONS_RAW);
+                    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                }
+                return INLINE_FALLBACK_QUIZ;
+            });
             const [courseCatalog, setCourseCatalog] = useState(() => FALLBACK_COURSE_CATALOG.filter(c => c && c.active !== false));
             const [selectedCourseId, setSelectedCourseId] = useState(() => {
                 const activeList = FALLBACK_COURSE_CATALOG.filter(c => c && c.active !== false);
